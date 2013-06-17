@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Trix Editor Demo</title>
+    <script type="text/javascript" src="<%= environment["trix.js"].digest_path %>"></script>
+    <style type="text/css">
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      #editor {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+
+      #editor .trix_editor_view {
+        padding: 10px 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="editor" tabindex="1"></div>
+    <script type="text/javascript">
+      (function(element) {
+        new Trix.EditorView(element);
+        element.focus();
+      })(document.getElementById('editor'));
+    </script>
+  </body>
+</html>
