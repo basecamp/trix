@@ -22,6 +22,7 @@ class Trix.EditorView extends Trix.View
     @compositionView = new Trix.CompositionView this
 
     @composition = new Trix.Composition this
+    @compositionView.refresh @composition
     @composition.setPosition 0
 
     @keyboardInput = new Trix.KeyboardInput this, @outerElement

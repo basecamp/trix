@@ -5,6 +5,11 @@ class Trix.CompositionView extends Trix.View
     @element = @createElement "div", "composition_view"
     @setOwner owner
 
+  refresh: (composition) ->
+    @element.innerHTML = ""
+    for line, index in composition.getLines()
+      @insertLineAtIndex index, line
+
   getLineElementAtIndex: (index) ->
     @element.childNodes[index]
 
