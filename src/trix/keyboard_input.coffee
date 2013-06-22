@@ -1,25 +1,13 @@
+#= require trix/observer
+
 DOM_VK_BACK_SPACE = 8
 
-class Trix.KeyboardInput
+class Trix.KeyboardInput extends Trix.Observer
   constructor: (@delegate, @element) ->
 
-  start: ->
-    unless @started
-      @on "keydown", @onKeyDown, true
-      @on "keypress", @onKeyPress, true
-      @started = true
-
-  stop: ->
-    if @started
-      @off "keydown", @onKeyDown, true
-      @off "keypress", @onKeyPress, true
-      @started = false
-
-  on: (eventName, handler, useCapture) ->
-    @element.addEventListener eventName, handler, useCapture
-
-  off: (eventName, handler, useCapture) ->
-    @element.removeEventListener eventName, handler, useCapture
+  getObservedEvents: ->
+    [["keydown", @onKeyDown, true],
+     ["keypress", @onKeyPress, true]]
 
   onKeyDown: (event) =>
     if event.keyCode == DOM_VK_BACK_SPACE
