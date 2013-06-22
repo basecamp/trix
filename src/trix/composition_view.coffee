@@ -1,4 +1,5 @@
 #= require trix/view
+#= require trix/line_view
 
 class Trix.CompositionView extends Trix.View
   constructor: (owner) ->
@@ -10,22 +11,19 @@ class Trix.CompositionView extends Trix.View
     for line, index in composition.getLines()
       @insertLineAtIndex index, line
 
-  getLineElementAtIndex: (index) ->
-    @element.childNodes[index]
-
   insertLineAtIndex: (index, line) ->
-    element = @createLineElement line
-    sibling = @getLineElementAtIndex index
-    @element.insertBefore element, sibling
+    lineView = new Trix.LineView line
+    siblingView = @getSubview index
+    @addSubview lineView, siblingView
 
   updateLineAtIndex: (index, line) ->
-    originalElement = @getLineElementAtIndex index
-    element = @createLineElement line
-    @element.replaceChild element, originalElement
+    lineView = @getSubview index
+    lineView.update line
 
   deleteLineAtIndex: (index) ->
-    element = @getLineElementAtIndex index
-    @element.removeChild element
+    lineView = @getSubview index
+    lineView.destroy()
+    @removeSubview lineView
 
   createLineElement: (line) ->
     element = @createElement "div", "line"
@@ -38,21 +36,3 @@ class Trix.CompositionView extends Trix.View
     if element = elements[elements.length - 1]
       return element.getBoundingClientRect()
 
-  formatLine = (line) ->
-    line
-      .replace(/\n$/, "")
-      .replace /^ +/, (match) ->
-        Array(match.length + 1).join "\u00A0"
-      .replace /\ ( +)/, (match) ->
-        " " + Array(match.length).join "\u00A0"
-
-  highlightElement = (element) ->
-    element.style.outline = "1px solid rgba(255, 0, 0, 1)"
-    element.style.webkitTransition = "outline 350ms 100ms ease-out"
-    setTimeout ->
-      element.style.outline = "1px solid rgba(255, 0, 0, 0)"
-    , 1
-    setTimeout ->
-      element.style.outline = null
-      element.style.webkitTransition = null
-    , 450
