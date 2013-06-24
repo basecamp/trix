@@ -1,49 +1,52 @@
 class Trix.Layout
   constructor: (@document) ->
     @document.delegate = this
+    @lineStartPositions = [0]
     @lineEndPositions = [-1]
 
-  getLine: (index) ->
-    lineEndPosition = @lineEndPositions[index]
-    lineStartPosition = (@lineEndPositions[index - 1] ? -1) + 1
-    length = lineEndPosition + 1 - lineStartPosition
-    @document.getText lineStartPosition, length
+  getRowAndColumnAtPosition: (position) ->
+    for lineStartPosition, row in @lineStartPositions
+      lineEndPosition = @lineEndPositions[row]
+      if lineStartPosition <= position <= lineEndPosition
+        return [row, position - lineStartPosition]
+    null
+
+  getRowAtPosition: (position) ->
+    [row, column] = @getRowAndColumnAtPosition(position) ? []
+    row
+
+  getLineAtRow: (row) ->
+    lineStartPosition = @lineStartPositions[row]
+    lineEndPosition = @lineEndPositions[row]
+    @document.getText lineStartPosition, lineEndPosition
 
   getLines: ->
     lines = []
-    lineStartPosition = 0
-    for lineEndPosition, index in @lineEndPositions
-      length = lineEndPosition + 1 - lineStartPosition
-      lines.push @document.getText lineStartPosition, length
-      lineStartPosition = lineEndPosition + 1
+    for lineStartPosition, row in @lineStartPositions
+      lineEndPosition = @lineEndPositions[row]
+      lines.push @document.getText lineStartPosition, lineEndPosition
     lines
-
-  findLineIndexAtPosition: (position) ->
-    lineStartPosition = -1
-    for lineEndPosition, index in @lineEndPositions
-      return index if lineStartPosition <= position <= lineEndPosition
-      lineStartPosition = lineEndPosition + 1
-    null
 
   documentObjectInsertedAtPosition: (document, object, position) ->
     # assume end position for now
-    index = @lineEndPositions.length - 1
-
-    @lineEndPositions[index] = position
-    @delegate?.layoutLineModifiedAtIndex this, index
+    row = @lineStartPositions.length - 1
 
     if object is "\n"
+      @lineStartPositions.push position
       @lineEndPositions.push position
-      @delegate?.layoutLineInsertedAtIndex this, index + 1
+      @delegate?.layoutLineInsertedAtRow this, row + 1
+    else
+      @lineEndPositions[row]++
+      @delegate?.layoutLineModifiedAtRow this, row
 
   documentObjectDeletedAtPosition: (document, object, position) ->
     # assume end position for now
-    index = @lineEndPositions.length - 1
+    row = @lineStartPositions.length - 1
 
     if object is "\n"
+      @lineStartPositions.pop()
       @lineEndPositions.pop()
-      @delegate?.layoutLineDeletedAtIndex this, index
-      index -= 1
-
-    @lineEndPositions[index] = position - 1
-    @delegate?.layoutLineModifiedAtIndex this, index
+      @delegate?.layoutLineDeletedAtRow this, row
+    else
+      @lineEndPositions[row]--
+      @delegate?.layoutLineModifiedAtRow this, row

@@ -31,7 +31,7 @@
     <div id="editor" tabindex="1"></div>
     <script type="text/javascript">
       (function(element) {
-        new Trix.EditorView(element);
+        window.editor = new Trix.Editor(element);
         element.focus();
       })(document.getElementById('editor'));
     </script>

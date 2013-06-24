@@ -3,7 +3,9 @@
 DOM_VK_BACK_SPACE = 8
 
 class Trix.KeyboardInput extends Trix.Observer
-  constructor: (@delegate, @element) ->
+  constructor: (delegate, element) ->
+    @delegate = delegate
+    @element = element
 
   getObservedEvents: ->
     [["keydown", @onKeyDown, true],

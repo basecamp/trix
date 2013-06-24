@@ -2,39 +2,42 @@
 #= require trix/layout
 
 class Trix.Composition
-  constructor: (@delegate) ->
+  constructor: ->
     @document = new Trix.Document
     @layout = new Trix.Layout @document
     @layout.delegate = this
 
-  deleteBackward: ->
-    @document.deleteObject @position - 1
-    @adjustPosition -1
+  getRowAndColumnAtPosition: (position) ->
+    @layout.getRowAndColumnAtPosition position
 
-  insertText: (text) ->
-    insertedText = @document.insertText text, @position
-    @adjustPosition insertedText.length
-
-  getLine: (index) ->
-    @layout.getLine index
+  getLineAtRow: (row) ->
+    @layout.getLineAtRow row
 
   getLines: ->
     @layout.getLines()
 
-  setPosition: (position) ->
-    previousPosition = @position
-    @position = Math.max 0, position
-    if @position isnt previousPosition
-      @delegate.compositionPositionChanged this, position, previousPosition
+  setCaretPosition: (caretPosition) ->
+    previousCaretPosition = @caretPosition
+    @caretPosition = Math.max 0, caretPosition
+    if @caretPosition isnt previousCaretPosition
+      @delegate?.compositionCaretPositionChanged this, caretPosition, previousCaretPosition
 
-  adjustPosition: (length) ->
-    @setPosition @position + length
+  adjustCaretPosition: (byLength) ->
+    @setCaretPosition @caretPosition + byLength
 
-  layoutLineModifiedAtIndex: (layout, lineIndex) ->
-    @delegate.compositionLineModifiedAtIndex this, lineIndex, @getLine lineIndex
+  deleteBackward: ->
+    @document.deleteObject @caretPosition - 1
+    @adjustCaretPosition -1
 
-  layoutLineInsertedAtIndex: (layout, lineIndex) ->
-    @delegate.compositionLineInsertedAtIndex this, lineIndex, @getLine lineIndex
+  insertText: (text) ->
+    insertedText = @document.insertText text, @caretPosition
+    @adjustCaretPosition insertedText.length
 
-  layoutLineDeletedAtIndex: (layout, lineIndex) ->
-    @delegate.compositionLineDeletedAtIndex this, lineIndex
+  layoutLineModifiedAtRow: (layout, row) ->
+    @delegate?.compositionLineModifiedAtRow this, row, @getLineAtRow row
+
+  layoutLineInsertedAtRow: (layout, row) ->
+    @delegate?.compositionLineInsertedAtRow this, row, @getLineAtRow row
+
+  layoutLineDeletedAtRow: (layout, row) ->
+    @delegate?.compositionLineDeletedAtRow this, row

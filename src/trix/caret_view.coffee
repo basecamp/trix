@@ -1,7 +1,8 @@
 #= require trix/view
+#= require trix/util
 
 class Trix.CaretView extends Trix.View
-  constructor: (owner) ->
+  constructor: (compositionView) ->
     @element = @createElement "div", "caret_view", """
       position: absolute;
       top: 0;
@@ -10,7 +11,7 @@ class Trix.CaretView extends Trix.View
       background-color: WindowText;
     """
     @element.appendChild document.createTextNode "\uFEFF"
-    @setOwner owner
+    @setOwner compositionView
     @hide()
 
   show: ->
@@ -21,9 +22,13 @@ class Trix.CaretView extends Trix.View
     @element.style.visibility = "hidden"
     @stopBlinking()
 
+  refresh: ->
+    @startBlinking() unless @element.style.visibility is "hidden"
+
   repositionAt: (x, y) ->
     @element.style.top = y + "px"
     @element.style.left = x + "px"
+    @refresh()
 
   startBlinking: ->
     @blinkTime = null
@@ -44,7 +49,7 @@ class Trix.CaretView extends Trix.View
       if @blinkTime
         x = ((now - @blinkTime) % BLINK_LENGTH) / BLINK_LENGTH
         @element.style.opacity = cursorOpacity x
-      requestAnimationFrame @blink, @element
+      Trix.Util.requestAnimationFrame @blink
 
   BLINK_LENGTH = 1250
 
@@ -64,16 +69,3 @@ class Trix.CaretView extends Trix.View
 
   sinusoidalOut = (x) ->
     Math.sin(Math.PI * (x + 0.5)) * 0.5 + 0.5
-
-  requestAnimationFrame =
-    window.requestAnimationFrame ?
-    window.webkitRequestAnimationFrame ?
-    window.mozRequestAnimationFrame ?
-    window.msRequestAnimationFrame ?
-    do ->
-      lastTime = 0
-      (callback, element) ->
-        currentTime = new Date().getTime()
-        timeToCall = Math.max 0, 16 - (currentTime - lastTime)
-        setTimeout (-> callback currentTime + timeToCall), timeToCall
-        lastTime = currentTime + timeToCall

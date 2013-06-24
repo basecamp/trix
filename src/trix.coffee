@@ -1,4 +1,4 @@
 #= require_self
-#= require trix/editor_view
+#= require trix/editor
 
 @Trix = version: "0.1.0"

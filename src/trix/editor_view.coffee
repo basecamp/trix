@@ -1,11 +1,7 @@
 #= require trix/view
-#= require trix/composition
-#= require trix/caret_view
-#= require trix/composition_view
-#= require trix/keyboard_input
 
 class Trix.EditorView extends Trix.View
-  constructor: (@outerElement) ->
+  constructor: (@editor, @outerElement) ->
     @element = @createElement "div", "editor_view", """
       position: absolute;
       overflow: auto;
@@ -15,42 +11,11 @@ class Trix.EditorView extends Trix.View
       right: 0;
     """
     @outerElement.appendChild @element
-    @outerElement.addEventListener "focus", @onFocus
-    @outerElement.addEventListener "blur", @onBlur
-
-    @caretView = new Trix.CaretView this
-    @compositionView = new Trix.CompositionView this
-
-    @composition = new Trix.Composition this
-    @compositionView.refresh @composition
-    @composition.setPosition 0
-
-    @keyboardInput = new Trix.KeyboardInput this, @outerElement
-    @keyboardInput.start()
-
-  deleteBackward: ->
-    @composition.deleteBackward()
-    @caretView.startBlinking()
-
-  insertText: (text) ->
-    @composition.insertText text
-    @caretView.startBlinking()
+    @outerElement.addEventListener "focus", @onFocus, false
+    @outerElement.addEventListener "blur", @onBlur, false
 
   onFocus: =>
-    @caretView.show()
+    @editor.didReceiveFocus()
 
   onBlur: =>
-    @caretView.hide()
-
-  compositionPositionChanged: (composition, position) ->
-    if offsets = @compositionView.getMarkOffsets "position"
-      @caretView.repositionAt offsets.left, offsets.top
-
-  compositionLineModifiedAtIndex: (composition, index, line) ->
-    @compositionView.updateLineAtIndex index, line
-
-  compositionLineInsertedAtIndex: (composition, index, line) ->
-    @compositionView.insertLineAtIndex index, line
-
-  compositionLineDeletedAtIndex: (composition, index) ->
-    @compositionView.deleteLineAtIndex index
+    @editor.didLoseFocus()

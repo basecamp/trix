@@ -1,38 +1,41 @@
 #= require trix/view
-#= require trix/line_view
+#= require trix/caret_view
+#= require trix/layout_view
 
 class Trix.CompositionView extends Trix.View
-  constructor: (owner) ->
+  constructor: (editorView, composition) ->
     @element = @createElement "div", "composition_view"
-    @setOwner owner
 
-  refresh: (composition) ->
-    @element.innerHTML = ""
-    for line, index in composition.getLines()
-      @insertLineAtIndex index, line
+    @setOwner editorView
+    @caretView = new Trix.CaretView this
+    @layoutView = new Trix.LayoutView this
 
-  insertLineAtIndex: (index, line) ->
-    lineView = new Trix.LineView line
-    siblingView = @getSubview index
-    @addSubview lineView, siblingView
+    @composition = composition
+    @composition.delegate = this
+    @refresh()
 
-  updateLineAtIndex: (index, line) ->
-    lineView = @getSubview index
-    lineView.update line
+  didReceiveFocus: ->
+    @caretView.show()
 
-  deleteLineAtIndex: (index) ->
-    lineView = @getSubview index
-    lineView.destroy()
-    @removeSubview lineView
+  didLoseFocus: ->
+    @caretView.hide()
 
-  createLineElement: (line) ->
-    element = @createElement "div", "line"
-    element.appendChild document.createTextNode formatLine(line) + "\uFEFF"
-    element.appendChild @createElement "span", "position_mark"
-    element
+  refresh: ->
+    @layoutView.refresh @composition.getLines()
 
-  getMarkOffsets: (markName) ->
-    elements = @element.querySelectorAll "span.trix_#{markName}_mark"
-    if element = elements[elements.length - 1]
-      return element.getBoundingClientRect()
+  compositionCaretPositionChanged: (composition, caretPosition) ->
+    if rect = @getBoundingClientRectAtPosition caretPosition - 1
+      @caretView.repositionAt rect.left + rect.width, rect.top
 
+  compositionLineModifiedAtRow: (composition, row, line) ->
+    @layoutView.updateLineViewAtRow row, line
+
+  compositionLineInsertedAtRow: (composition, row, line) ->
+    @layoutView.insertLineViewAtRow row, line
+
+  compositionLineDeletedAtRow: (composition, row) ->
+    @layoutView.deleteLineViewAtRow row
+
+  getBoundingClientRectAtPosition: (position) ->
+    [row, column] = @composition.getRowAndColumnAtPosition(position) ? [0, 0]
+    @layoutView.getBoundingClientRectAtRowAndColumn row, column

@@ -40,7 +40,7 @@ class Trix.View extends Trix.Observer
       view.unsetOwner()
       @subviews.splice index, 1
 
-  getSubview: (index) ->
+  getSubviewAtIndex: (index) ->
     @subviews ?= []
     @subviews[index]
 
