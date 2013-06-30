@@ -28,25 +28,44 @@ class Trix.Layout
     lines
 
   documentObjectInsertedAtPosition: (document, object, position) ->
-    # assume end position for now
-    row = @lineStartPositions.length - 1
+    row = @getRowAtPosition(position - 1) ? 0
 
     if object is "\n"
-      @lineStartPositions.push position
-      @lineEndPositions.push position
+      insertValueAtIndex @lineStartPositions, row + 1, position
+      insertValueAtIndex @lineEndPositions, row, position - 1
+      incrementValuesFromIndex @lineStartPositions, row + 2
+      incrementValuesFromIndex @lineEndPositions, row + 1
+      @delegate?.layoutLineModifiedAtRow this, row
       @delegate?.layoutLineInsertedAtRow this, row + 1
     else
-      @lineEndPositions[row]++
+      incrementValuesFromIndex @lineStartPositions, row + 1
+      incrementValuesFromIndex @lineEndPositions, row
       @delegate?.layoutLineModifiedAtRow this, row
 
   documentObjectDeletedAtPosition: (document, object, position) ->
-    # assume end position for now
-    row = @lineStartPositions.length - 1
+    row = @getRowAtPosition position
 
     if object is "\n"
-      @lineStartPositions.pop()
-      @lineEndPositions.pop()
+      removeValueAtIndex @lineStartPositions, row
+      removeValueAtIndex @lineEndPositions, row - 1
+      decrementValuesFromIndex @lineStartPositions, row
+      decrementValuesFromIndex @lineEndPositions, row - 1
+      @delegate?.layoutLineModifiedAtRow this, row - 1
       @delegate?.layoutLineDeletedAtRow this, row
     else
-      @lineEndPositions[row]--
+      decrementValuesFromIndex @lineStartPositions, row + 1
+      decrementValuesFromIndex @lineEndPositions, row
       @delegate?.layoutLineModifiedAtRow this, row
+
+  insertValueAtIndex = (array, index, value) ->
+    array.splice index, 0, value
+
+  removeValueAtIndex = (array, index) ->
+    array.splice index, 1
+
+  incrementValuesFromIndex = (array, index, byAmount = 1) ->
+    array[index++] += byAmount while index < array.length
+    array
+
+  decrementValuesFromIndex = (array, index, byAmount = 1) ->
+    incrementValuesFromIndex array, index, -byAmount

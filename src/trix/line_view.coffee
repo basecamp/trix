@@ -12,24 +12,27 @@ class Trix.LineView extends Trix.View
     @element.appendChild document.createTextNode formatLine(@line) + "\uFEFF"
 
   getBoundingClientRectAtColumn: (column) ->
-    anteriorTextNode = @element.childNodes[0]
-    columnTextNode = anteriorTextNode.splitText column
-    posteriorTextNode = columnTextNode.splitText 1 if columnTextNode.length > 1
+    if column is -1
+      posteriorTextNode = @element.childNodes[0]
+    else
+      anteriorTextNode = @element.childNodes[0]
+      columnTextNode = anteriorTextNode.splitText column
+      posteriorTextNode = columnTextNode.splitText 1 if columnTextNode.length > 1
+      @measurementElement.appendChild columnTextNode
 
-    @measurementElement.appendChild columnTextNode
     @element.insertBefore @measurementElement, posteriorTextNode
-
     rect = @measurementElement.getBoundingClientRect()
     @element.removeChild @measurementElement
 
-    @element.insertBefore columnTextNode, posteriorTextNode
-    @element.normalize()
+    if column isnt -1
+      @element.insertBefore columnTextNode, posteriorTextNode
+      @element.normalize()
 
     rect
 
   formatLine = (line) ->
     line
-      .replace(/\n$/, "")
+      .replace(/^\n/, "\uFEFF")
       .replace /^ +/, (match) ->
         Array(match.length + 1).join "\u00A0"
       .replace /\ ( +)/, (match) ->

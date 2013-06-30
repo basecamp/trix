@@ -16,14 +16,11 @@
         bottom: 0;
         left: 0;
         right: 0;
+        cursor: text;
       }
 
       #editor .trix_editor_view {
         padding: 10px 30px;
-      }
-
-      #editor .trix_line_view {
-        cursor: text;
       }
     </style>
   </head>
@@ -31,7 +28,7 @@
     <div id="editor" tabindex="1"></div>
     <script type="text/javascript">
       (function(element) {
-        window.editor = new Trix.Editor(element);
+        window.editor = Trix(element);
         element.focus();
       })(document.getElementById('editor'));
     </script>

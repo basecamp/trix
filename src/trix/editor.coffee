@@ -14,6 +14,12 @@ class Trix.Editor
     @composition.setCaretPosition 0
     @keyboardInput.start()
 
+  moveBackward: ->
+    @composition.moveBackward()
+
+  moveForward: ->
+    @composition.moveForward()
+
   deleteBackward: ->
     @composition.deleteBackward()
 

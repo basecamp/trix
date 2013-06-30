@@ -18,16 +18,22 @@ class Trix.Composition
 
   setCaretPosition: (caretPosition) ->
     previousCaretPosition = @caretPosition
-    @caretPosition = Math.max 0, caretPosition
+    @caretPosition = Math.min @document.length, Math.max 0, caretPosition
     if @caretPosition isnt previousCaretPosition
       @delegate?.compositionCaretPositionChanged this, caretPosition, previousCaretPosition
 
   adjustCaretPosition: (byLength) ->
     @setCaretPosition @caretPosition + byLength
 
+  moveBackward: ->
+    @adjustCaretPosition -1
+
+  moveForward: ->
+    @adjustCaretPosition 1
+
   deleteBackward: ->
     @document.deleteObject @caretPosition - 1
-    @adjustCaretPosition -1
+    @moveBackward()
 
   insertText: (text) ->
     insertedText = @document.insertText text, @caretPosition

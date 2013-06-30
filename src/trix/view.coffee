@@ -29,7 +29,7 @@ class Trix.View extends Trix.Observer
     unless view in @subviews
       view.setOwner this
       if (index = @subviews.indexOf beforeView) != -1
-        @owner?.element.insertBefore beforeView.element
+        @element.insertBefore view.element, beforeView.element
         @subviews.splice index, 0, view
       else
         @subviews.push view

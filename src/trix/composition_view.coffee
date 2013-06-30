@@ -37,5 +37,5 @@ class Trix.CompositionView extends Trix.View
     @layoutView.deleteLineViewAtRow row
 
   getBoundingClientRectAtPosition: (position) ->
-    [row, column] = @composition.getRowAndColumnAtPosition(position) ? [0, 0]
+    [row, column] = @composition.getRowAndColumnAtPosition(position) ? [0, -1]
     @layoutView.getBoundingClientRectAtRowAndColumn row, column
