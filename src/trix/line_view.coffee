@@ -1,7 +1,6 @@
 class Trix.LineView extends Trix.View
   constructor: (line) ->
     @element = @createElement "div", "line_view"
-    @measurementElement = @createElement "span", "measurement"
     @update line
 
   update: (@line) ->
@@ -9,25 +8,18 @@ class Trix.LineView extends Trix.View
 
   refresh: ->
     @element.innerHTML = ""
-    @element.appendChild document.createTextNode formatLine(@line) + "\uFEFF"
+    @element.appendChild document.createTextNode "\uFEFF" + formatLine(@line) + "\uFEFF"
 
   getBoundingClientRectAtColumn: (column) ->
-    if column is -1
-      posteriorTextNode = @element.childNodes[0]
-    else
-      anteriorTextNode = @element.childNodes[0]
-      columnTextNode = anteriorTextNode.splitText column
-      posteriorTextNode = columnTextNode.splitText 1 if columnTextNode.length > 1
-      @measurementElement.appendChild columnTextNode
+    anteriorTextNode = @element.childNodes[0]
+    columnTextNode = anteriorTextNode.splitText column + 1
+    posteriorTextNode = columnTextNode.splitText 1 if columnTextNode.length > 1
 
-    @element.insertBefore @measurementElement, posteriorTextNode
-    rect = @measurementElement.getBoundingClientRect()
-    @element.removeChild @measurementElement
+    range = document.createRange()
+    range.selectNodeContents(columnTextNode)
+    rect = range.getClientRects()[0]
 
-    if column isnt -1
-      @element.insertBefore columnTextNode, posteriorTextNode
-      @element.normalize()
-
+    @element.normalize()
     rect
 
   formatLine = (line) ->
