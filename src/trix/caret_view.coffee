@@ -10,6 +10,7 @@ class Trix.CaretView extends Trix.View
       width: 2px;
       margin-left: -1px;
       background-color: windowtext;
+      z-index: -1;
     """
     @element.appendChild document.createTextNode "\uFEFF"
     @setOwner compositionView

@@ -12,13 +12,30 @@ class Trix.CompositionView extends Trix.View
 
     @composition = composition
     @composition.delegate = this
+    @showCaret()
     @refresh()
 
   didReceiveFocus: ->
-    @caretView.show()
+    @elementFocused = true
+    @updateCaretVisibility()
 
   didLoseFocus: ->
-    @caretView.hide()
+    @elementFocused = false
+    @updateCaretVisibility()
+
+  showCaret: ->
+    @caretVisible = true
+    @updateCaretVisibility()
+
+  hideCaret: ->
+    @caretVisible = false
+    @updateCaretVisibility()
+
+  updateCaretVisibility: ->
+    if @elementFocused and @caretVisible
+      @caretView.show()
+    else
+      @caretView.hide()
 
   refresh: ->
     @layoutView.refresh @composition.getLines()

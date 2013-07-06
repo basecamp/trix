@@ -2,6 +2,7 @@
 #= require trix/editor_view
 #= require trix/composition_view
 #= require trix/keyboard_input
+#= require trix/browser_selection
 
 class Trix.Editor
   constructor: (@element) ->
@@ -9,10 +10,14 @@ class Trix.Editor
 
     @editorView = new Trix.EditorView this, @element
     @compositionView = new Trix.CompositionView @editorView, @composition
-    @keyboardInput = new Trix.KeyboardInput this, @element
 
     @composition.setCaretPosition 0
+
+    @keyboardInput = new Trix.KeyboardInput this, @element
+    @browserSelection = new Trix.BrowserSelection this, @element
+
     @keyboardInput.start()
+    @browserSelection.start()
 
   moveBackward: ->
     @composition.moveBackward()
@@ -31,3 +36,9 @@ class Trix.Editor
 
   didLoseFocus: ->
     @compositionView.didLoseFocus()
+
+  browserSelectionChanged: (selectionInfo) ->
+    if selectionInfo
+      @compositionView.hideCaret()
+    else
+      @compositionView.showCaret()
