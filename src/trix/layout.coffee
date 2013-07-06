@@ -4,6 +4,9 @@ class Trix.Layout
     @lineStartPositions = [0]
     @lineEndPositions = [-1]
 
+  getPositionAtRowAndColumn: (row, column) ->
+    @lineStartPositions[row] + column
+
   getRowAndColumnAtPosition: (position) ->
     for lineStartPosition, row in @lineStartPositions
       lineEndPosition = @lineEndPositions[row]

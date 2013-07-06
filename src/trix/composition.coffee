@@ -7,6 +7,9 @@ class Trix.Composition
     @layout = new Trix.Layout @document
     @layout.delegate = this
 
+  getPositionAtRowAndColumn: (row, column) ->
+    @layout.getPositionAtRowAndColumn row, column
+
   getRowAndColumnAtPosition: (position) ->
     @layout.getRowAndColumnAtPosition position
 

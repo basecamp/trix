@@ -25,6 +25,10 @@ class Trix.LayoutView extends Trix.View
     lineView.destroy()
     @removeSubview lineView
 
+  lineViewClickedAtColumn: (lineView, column) ->
+    row = @indexOfSubview lineView
+    @owner.layoutViewClickedAtRowAndColumn this, row, column
+
   getBoundingClientRectAtRowAndColumn: (row, column) ->
     lineView = @getSubviewAtIndex row
     lineView.getBoundingClientRectAtColumn column

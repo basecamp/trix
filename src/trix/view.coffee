@@ -28,7 +28,7 @@ class Trix.View extends Trix.Observer
     @subviews ?= []
     unless view in @subviews
       view.setOwner this
-      if (index = @subviews.indexOf beforeView) != -1
+      if (index = @indexOfSubview beforeView)?
         @element.insertBefore view.element, beforeView.element
         @subviews.splice index, 0, view
       else
@@ -36,7 +36,7 @@ class Trix.View extends Trix.Observer
 
   removeSubview: (view) ->
     @subviews ?= []
-    if (index = @subviews.indexOf view) != -1
+    if (index = @indexOfSubview view)?
       view.unsetOwner()
       @subviews.splice index, 1
 
@@ -47,6 +47,10 @@ class Trix.View extends Trix.Observer
   getSubviews: ->
     @subviews ?= []
     @subviews.slice 0
+
+  indexOfSubview: (view) ->
+    index = @subviews.indexOf view
+    index if index >= 0
 
   destroy: ->
     for view in @getSubviews()
