@@ -24,3 +24,8 @@ task :test => :build do
 end
 
 task :default => :open
+
+task :loc do
+  puts `find src -name '*.coffee' -type f | xargs sed -n '/^ *\\(#.*\\)*\$/!p' | wc -l`
+end
+
