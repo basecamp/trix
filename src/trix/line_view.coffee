@@ -1,6 +1,6 @@
 class Trix.LineView extends Trix.View
   constructor: (line) ->
-    @element = @createElement "div", "line_view"
+    @element = @createElement "div", "line_view", "white-space: pre-wrap"
     @update line
 
   update: (@line) ->
@@ -27,22 +27,19 @@ class Trix.LineView extends Trix.View
     rect = range.getClientRects()[0]
 
     @element.normalize()
-    rect
+
+    return rect if rect
+    @getBoundingClientRectAtColumn column + 1 if column < @line.length
 
   getColumnAtPoint: (left, top) ->
     column = @line.length
 
     while column >= 0
-      rect = @getBoundingClientRectAtColumn column
-      return column if rect.left <= left <= rect.right and rect.top <= top <= rect.bottom
+      if rect = @getBoundingClientRectAtColumn column
+        return column if rect.left <= left <= rect.right and rect.top <= top <= rect.bottom
       column--
 
     null
 
   formatLine = (line) ->
-    line
-      .replace(/^\n/, "\uFEFF")
-      .replace /^ +/, (match) ->
-        Array(match.length + 1).join "\u00A0"
-      .replace /\ ( +)/, (match) ->
-        " " + Array(match.length).join "\u00A0"
+    line.replace(/^\n/, "\uFEFF")
