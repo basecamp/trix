@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="<%= environment["rich_text.js"].digest_path %>"></script>
+    <style type="text/css">
+      #richtext { outline: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="richtext"></div>
+    <script type="text/javascript">
+      var element = document.getElementById("richtext");
+      RichText.install(element);
+      element.focus();
+    </script>
+  </body>
+</html>
