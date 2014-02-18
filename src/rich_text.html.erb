@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <script type="text/javascript" src="<%= environment["rich_text.js"].digest_path %>"></script>
     <style type="text/css">
-      #richtext { outline: 0; }
+      #richtext {
+        outline: 0;
+        white-space: pre-wrap;
+      }
     </style>
   </head>
   <body>
