@@ -21,3 +21,10 @@ class RichText.Controller
   render: ->
     @element.innerHTML = ""
     @element.appendChild(@renderer.render())
+    @updateSelection()
+
+  updateSelection: ->
+    selection = window.getSelection()
+    selection.removeAllRanges()
+    selection.selectAllChildren(@element)
+    selection.collapseToEnd()
