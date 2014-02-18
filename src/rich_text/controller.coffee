@@ -35,6 +35,9 @@ class RichText.Controller
   didPressReturn: ->
     @insertString("\n")
 
+  didReceiveExternalChange: ->
+    @render()
+
   insertString: (string) ->
     @text.insertTextAtPosition(new RichText.Text(string), @getPosition())
     @render()

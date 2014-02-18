@@ -44,6 +44,7 @@ class RichText.Input
     @logAndCancel(event)
 
   input: (event) =>
+    @delegate?.didReceiveExternalChange()
     @logAndCancel(event)
 
   backspace: (event) =>
