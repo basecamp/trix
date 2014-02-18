@@ -13,4 +13,5 @@ class RichText.Renderer
         element.style["text-decoration"] = "underline" if attributes.underline
         element.appendChild(textNode)
         container.appendChild(element)
+    container.appendChild(document.createTextNode("\uFEFF"))
     container

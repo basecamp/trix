@@ -1,5 +1,10 @@
 class RichText.Input
   @events: "keydown keypress drop cut copy paste input".split(" ")
+  @keys:
+    0x08: "backspace"
+    0x0D: "return"
+    0x25: "left"
+    0x27: "right"
 
   constructor: (@element) ->
 
@@ -12,7 +17,10 @@ class RichText.Input
       @element.removeEventListener(event, @[event], true)
 
   keydown: (event) =>
-    console.log "key down: key code = ", event.keyCode
+    if keyName = @constructor.keys[event.keyCode]
+      if handler = @[keyName]
+        handler.call this, event
+        event.preventDefault()
 
   keypress: (event) =>
     if event.which is null
@@ -37,6 +45,16 @@ class RichText.Input
 
   input: (event) =>
     @logAndCancel(event)
+
+  backspace: (event) =>
+    @delegate?.didPressBackspace()
+
+  return: (event) =>
+    @delegate?.didPressReturn()
+
+  left: (event) =>
+
+  right: (event) =>
 
   logAndCancel: (event) =>
     console.log "trapped event:", event

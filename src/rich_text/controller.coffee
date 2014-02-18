@@ -14,8 +14,19 @@ class RichText.Controller
   didTypeCharacter: (character) ->
     @insertString(character)
 
+  didPressBackspace: ->
+    @backspace()
+
+  didPressReturn: ->
+    @insertString("\n")
+
   insertString: (string) ->
     @text.appendText(new RichText.Text(string))
+    @render()
+
+  backspace: ->
+    position = @text.getLength()
+    @text.removeTextAtRange([position - 1, position]) if position > 0
     @render()
 
   render: ->
