@@ -38,8 +38,10 @@ class RichText.Text
     @pieceList.getLength()
 
   eachRun: (callback) ->
+    position = 0
     @pieceList.consolidate().eachPiece (piece) ->
-      callback(piece.toString(), piece.getAttributes())
+      callback(piece.toString(), piece.getAttributes(), position)
+      position += piece.length
 
   inspect: ->
     @pieceList.inspect()

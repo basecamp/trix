@@ -3,15 +3,18 @@ class RichText.Renderer
 
   render: ->
     container = document.createElement("div")
-    @text.eachRun (string, attributes) ->
-      for substring, index in string.split("\n")
-        container.appendChild(document.createElement("br")) if index > 0
-        element = document.createElement("span")
-        textNode = document.createTextNode(substring)
-        element.style["font-weight"] = "bold" if attributes.bold
-        element.style["font-style"] = "italic" if attributes.italic
-        element.style["text-decoration"] = "underline" if attributes.underline
-        element.appendChild(textNode)
-        container.appendChild(element)
+    @text.eachRun (string, attributes, position) ->
+      element = document.createElement("span")
+      element.setAttribute("data-position", position)
+
+      element.style["font-weight"] = "bold" if attributes.bold
+      element.style["font-style"] = "italic" if attributes.italic
+      element.style["text-decoration"] = "underline" if attributes.underline
+
+      textNode = document.createTextNode(string)
+      element.appendChild(textNode)
+
+      container.appendChild(element)
+
     container.appendChild(document.createTextNode("\uFEFF"))
     container
