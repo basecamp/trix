@@ -10,7 +10,7 @@ class RichText.Text
     @insertTextAtPosition(text, @getLength())
 
   insertTextAtPosition: (text, position) ->
-    @pieceList.insertPieceListAtPosition(text.pieces, position)
+    @pieceList.insertPieceListAtPosition(text.pieceList, position)
 
   removeTextAtRange: (range) ->
     @pieceList.removePiecesInRange(range)

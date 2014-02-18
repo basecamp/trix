@@ -60,7 +60,7 @@ class RichText.PieceList
         @pieces.splice(index, 1, leftPiece, rightPiece)
         index + 1
     else
-      null
+      @pieces.length
 
   consolidate: ->
     pieces = []
