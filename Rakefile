@@ -2,6 +2,18 @@ require 'fileutils'
 require 'json'
 require 'shellwords'
 
+def with_server
+  begin
+    pid = spawn "rackup config.ru"
+    sleep 2
+    yield
+    Process.waitpid pid
+  ensure
+    puts "Exiting"
+    Process.kill "INT", pid
+  end
+end
+
 task :clean do
   FileUtils.rm_rf "dist"
   FileUtils.mkdir_p "dist"
@@ -14,8 +26,10 @@ task :build do
   FileUtils.ln_sf manifest["assets"]["rich_text.html"], "dist/rich_text.html"
 end
 
-task :open => [:clean, :build] do
-  `open -a Safari dist/rich_text.html`
+task :open do
+  with_server do
+    `open http://localhost:9292`
+  end
 end
 
 task :test => :build do
