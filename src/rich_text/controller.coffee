@@ -26,6 +26,12 @@ class RichText.Controller
 
     position
 
+  setPosition: (position) ->
+    selection = window.getSelection()
+    selection.removeAllRanges()
+    selection.selectAllChildren(@element)
+    selection.collapse(selection.anchorNode, position)
+
   didTypeCharacter: (character) ->
     @insertString(character)
 
@@ -39,21 +45,19 @@ class RichText.Controller
     @render()
 
   insertString: (string) ->
-    @text.insertTextAtPosition(new RichText.Text(string), @getPosition())
+    text = new RichText.Text(string)
+    position = @getPosition()
+
+    @text.insertTextAtPosition(text, position)
     @render()
+    @setPosition(position + text.getLength())
 
   backspace: ->
-    position = @getPosition()
-    @text.removeTextAtRange([position - 1, position]) if position > 0
-    @render()
+    if position = @getPosition()
+      @text.removeTextAtRange([position - 1, position])
+      @render()
+      @setPosition(position - 1)
 
   render: ->
     @element.innerHTML = ""
     @element.appendChild(@renderer.render())
-    @updateSelection()
-
-  updateSelection: ->
-    selection = window.getSelection()
-    selection.removeAllRanges()
-    selection.selectAllChildren(@element)
-    selection.collapseToEnd()
