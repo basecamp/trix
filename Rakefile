@@ -7,10 +7,8 @@ def with_server
     pid = spawn "rackup config.ru"
     sleep 2
     yield
+    trap("INT") { Process.kill "INT", pid }
     Process.waitpid pid
-  ensure
-    puts "Exiting"
-    Process.kill "INT", pid
   end
 end
 
