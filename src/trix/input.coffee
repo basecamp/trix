@@ -1,4 +1,4 @@
-class RichText.Input
+class Trix.Input
   @events: "keydown keypress drop cut copy paste input".split(" ")
   @keys:
     0x08: "backspace"

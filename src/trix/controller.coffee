@@ -1,13 +1,13 @@
-#= require rich_text/text
-#= require rich_text/input
-#= require rich_text/dom
+#= require trix/text
+#= require trix/input
+#= require trix/dom
 
-class RichText.Controller
+class Trix.Controller
   constructor: (@element) ->
-    @text = new RichText.Text
+    @text = new Trix.Text
     @text.delegate = this
-    @input = new RichText.Input @element, this
-    @dom = new RichText.DOM @element
+    @input = new Trix.Input @element, this
+    @dom = new Trix.DOM @element
 
   # Text delegate
 
@@ -17,7 +17,7 @@ class RichText.Controller
   # Input responder
 
   insertString: (string) ->
-    text = new RichText.Text(string)
+    text = new Trix.Text(string)
 
     if selectedRange = @getSelectedRange()
       position = selectedRange[0]

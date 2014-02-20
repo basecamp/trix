@@ -1,4 +1,4 @@
-class RichText.Hash
+class Trix.Hash
   @box: (values) ->
     box(values)
 
@@ -8,10 +8,10 @@ class RichText.Hash
     @merge(object(key, value))
 
   remove: (key) ->
-    new RichText.Hash copy(@values, key)
+    new Trix.Hash copy(@values, key)
 
   merge: (values) ->
-    new RichText.Hash merge(@values, unbox(values))
+    new Trix.Hash merge(@values, unbox(values))
 
   isEqualTo: (values) ->
     thisArray = @toArray()
@@ -53,13 +53,13 @@ class RichText.Hash
     result
 
   box = (object) ->
-    if object instanceof RichText.Hash
+    if object instanceof Trix.Hash
       object
     else
-      new RichText.Hash object
+      new Trix.Hash object
 
   unbox = (object) ->
-    if object instanceof RichText.Hash
+    if object instanceof Trix.Hash
       object.values
     else
       object

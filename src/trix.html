@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <script type="text/javascript" src="/js/rich_text.js"></script>
+    <script type="text/javascript" src="/js/trix.js"></script>
     <style type="text/css">
       #richtext {
         width: 90%;
@@ -21,7 +21,7 @@
     <div id="richtext"></div>
     <script type="text/javascript">
       var element = document.getElementById("richtext");
-      var controller = RichText.install(element);
+      var controller = Trix.install(element);
       element.focus();
     </script>
   </body>

@@ -18,10 +18,10 @@ task :clean do
 end
 
 task :build do
-  `sprockets -I src -o dist src/rich_text.coffee src/rich_text.html.erb`
+  `sprockets -I src -o dist src/trix.coffee src/trix.html.erb`
   manifest_file = Dir["dist/manifest*.json"].first
   manifest = JSON.parse(File.read(manifest_file))
-  FileUtils.ln_sf manifest["assets"]["rich_text.html"], "dist/rich_text.html"
+  FileUtils.ln_sf manifest["assets"]["trix.html"], "dist/trix.html"
 end
 
 task :open do
@@ -31,7 +31,7 @@ task :open do
 end
 
 task :test => :build do
-  `sprockets -I src -I test test/rich_text/test.coffee > test/test.js`
+  `sprockets -I src -I test test/trix/test.coffee > test/test.js`
   `open -a Safari test/test.html`
 end
 

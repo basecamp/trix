@@ -1,18 +1,18 @@
-#= require rich_text/hash
+#= require trix/hash
 
-class RichText.Piece
+class Trix.Piece
   constructor: (@string, attributes = {}) ->
-    @attributes = RichText.Hash.box(attributes)
+    @attributes = Trix.Hash.box(attributes)
     @length = @string.length
 
   copyWithAttributes: (attributes) ->
-    new RichText.Piece @string, attributes
+    new Trix.Piece @string, attributes
 
   copyWithAdditionalAttributes: (attributes) ->
-    new RichText.Piece @string, @attributes.merge(attributes)
+    new Trix.Piece @string, @attributes.merge(attributes)
 
   copyWithoutAttribute: (attribute) ->
-    new RichText.Piece @string, @attributes.remove(attribute)
+    new Trix.Piece @string, @attributes.remove(attribute)
 
   getAttributes: ->
     @attributes.toObject()
@@ -21,7 +21,7 @@ class RichText.Piece
     piece? and (@attributes is piece.attributes or @attributes.isEqualTo(piece.attributes))
 
   append: (piece) ->
-    new RichText.Piece @string + piece, @attributes
+    new Trix.Piece @string + piece, @attributes
 
   splitAtOffset: (offset) ->
     if offset is 0
@@ -31,8 +31,8 @@ class RichText.Piece
       left = this
       right = null
     else
-      left = new RichText.Piece @string.slice(0, offset), @attributes
-      right = new RichText.Piece @string.slice(offset), @attributes
+      left = new Trix.Piece @string.slice(0, offset), @attributes
+      right = new Trix.Piece @string.slice(offset), @attributes
     [left, right]
 
   toString: ->

@@ -1,10 +1,10 @@
-#= require rich_text/piece
-#= require rich_text/piece_list
+#= require trix/piece
+#= require trix/piece_list
 
-class RichText.Text
+class Trix.Text
   constructor: (string = "", attributes) ->
-    piece = new RichText.Piece string, attributes
-    @pieceList = new RichText.PieceList [piece]
+    piece = new Trix.Piece string, attributes
+    @pieceList = new Trix.PieceList [piece]
 
   edit = (fn) -> ->
     fn.apply(this, arguments)

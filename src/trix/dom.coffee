@@ -1,4 +1,4 @@
-class RichText.DOM
+class Trix.DOM
   constructor: (@element) ->
     @element.setAttribute("contenteditable", "true")
 

@@ -11,4 +11,4 @@ map "/js" do
   run Assets
 end
 
-map("/") { run Rack::File.new("#{Root}/src/rich_text.html") }
+map("/") { run Rack::File.new("#{Root}/src/trix.html") }

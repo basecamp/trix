@@ -1,4 +1,4 @@
-class RichText.PieceList
+class Trix.PieceList
   constructor: (@pieces = []) ->
 
   eachPiece: (callback) ->
@@ -23,7 +23,7 @@ class RichText.PieceList
 
   getPieceListInRange: (range) ->
     [leftIndex, rightIndex] = @splitPiecesAtRange(range)
-    new RichText.PieceList @pieces.slice(leftIndex, rightIndex + 1)
+    new Trix.PieceList @pieces.slice(leftIndex, rightIndex + 1)
 
   removePiecesInRange: (range) ->
     [leftIndex, rightIndex] = @splitPiecesAtRange(range)
