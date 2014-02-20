@@ -54,7 +54,7 @@ class RichText.DOM
   findPositionFromContainerAtOffset: (container, offset, textOffset) ->
     return 0 unless container
 
-    if (position = extractPositionFromDataAttribute(container))?
+    if (position = container?.trixPosition)?
       return position + textOffset
 
     if container.nodeType is Node.TEXT_NODE
@@ -80,9 +80,7 @@ class RichText.DOM
     element.style["font-style"] = "italic" if attributes.italic
     element.style["text-decoration"] = "underline" if attributes.underline
 
-    element.setAttribute("data-position", position)
     element.trixPosition = position
-    element.trixLength = string.length
     element
 
   isWithin = (ancestor, element) ->
@@ -90,7 +88,3 @@ class RichText.DOM
       return true if element is ancestor
       element = element.parentNode
     false
-
-  extractPositionFromDataAttribute = (element) ->
-    if element.hasAttribute?("data-position")
-      parseInt element.getAttribute("data-position"), 10
