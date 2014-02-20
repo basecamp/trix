@@ -6,22 +6,10 @@ class RichText.Controller
   constructor: (@element) ->
     @element.setAttribute("contenteditable", "true")
     @text = new RichText.Text
-    @input = new RichText.Input @element
-    @input.delegate = this
-    @input.install()
+    @input = new RichText.Input @element, this
     @dom = new RichText.DOM @element
 
-  didTypeCharacter: (character) ->
-    @insertString(character)
-
-  didPressBackspace: ->
-    @backspace()
-
-  didPressReturn: ->
-    @insertString("\n")
-
-  didReceiveExternalChange: ->
-    @render()
+  # Input responder methods
 
   insertString: (string) ->
     text = new RichText.Text(string)
@@ -36,7 +24,7 @@ class RichText.Controller
     @render()
     @setPosition(position + string.length)
 
-  backspace: ->
+  deleteBackward: ->
     if selectedRange = @getSelectedRange()
       position = selectedRange[0]
       @text.removeTextAtRange(selectedRange)
@@ -51,6 +39,8 @@ class RichText.Controller
 
   render: ->
     @dom.render(@text)
+
+  # Selection methods
 
   getSelectedRange: ->
     selectedRange = @dom.getSelectedRange()

@@ -4,15 +4,9 @@ class RichText.Input
     0x08: "backspace"
     0x0D: "return"
 
-  constructor: (@element) ->
-
-  install: ->
+  constructor: (@element, @responder) ->
     for event in @constructor.events
       @element.addEventListener(event, @[event], true)
-
-  remove: ->
-    for event in @constructor.events
-      @element.removeEventListener(event, @[event], true)
 
   keydown: (event) =>
     if keyName = @constructor.keys[event.keyCode]
@@ -26,7 +20,7 @@ class RichText.Input
     else if event.which isnt 0 and event.charCode isnt 0
       character = String.fromCharCode event.charCode
 
-    @delegate?.didTypeCharacter(character)
+    @responder?.insertString(character)
     event.preventDefault()
 
   drop: (event) =>
@@ -42,14 +36,14 @@ class RichText.Input
     @logAndCancel(event)
 
   input: (event) =>
-    @delegate?.didReceiveExternalChange()
+    @responder?.render()
     @logAndCancel(event)
 
   backspace: (event) =>
-    @delegate?.didPressBackspace()
+    @responder?.deleteBackward()
 
   return: (event) =>
-    @delegate?.didPressReturn()
+    @responder?.insertString("\n")
 
   logAndCancel: (event) =>
     console.log "trapped event:", event
