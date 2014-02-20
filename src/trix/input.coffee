@@ -20,8 +20,9 @@ class Trix.Input
     else if event.which isnt 0 and event.charCode isnt 0
       character = String.fromCharCode event.charCode
 
-    @responder?.insertString(character)
-    event.preventDefault()
+    if character
+      @responder?.insertString(character)
+      event.preventDefault()
 
   drop: (event) =>
     @logAndCancel(event)
