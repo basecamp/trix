@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <script type="text/javascript" src="/js/trix.js"></script>
     <style type="text/css">
-      #richtext {
+      #editor {
         width: 90%;
         max-width: 450px;
         min-height: 300px;
@@ -14,15 +14,50 @@
         padding: 5px 10px;
         outline: 0;
         white-space: pre-wrap;
+        font-size: 16px;
+      }
+
+      #toolbar {
+        padding: 10px 0;
+        white-space: collapse;
+      }
+
+      #toolbar a.button {
+        border: 1px solid #aaa;
+        border-radius: 3px;
+        padding: 3px 10px;
+        color: #333;
+        text-decoration: none;
+        font-family: Georgia;
+        font-size: 12px;
+      }
+
+      #toolbar a.button.active {
+        background: #d3e6fd;
+      }
+
+      #toolbar a.button[data-attribute=bold] {
+        font-weight: bold;
+      }
+
+      #toolbar a.button[data-attribute=italic] {
+        font-style: italic;
       }
     </style>
   </head>
   <body>
-    <div id="richtext"></div>
+    <div id="toolbar">
+      <a class="button" href="#" data-attribute="bold">Bold</a>
+      <a class="button" href="#" data-attribute="italic">Italic</a>
+    </div>
+    <div id="editor"></div>
     <script type="text/javascript">
-      var element = document.getElementById("richtext");
-      var controller = Trix.install(element);
-      element.focus();
+      (function() {
+        var editor = document.getElementById("editor");
+        var toolbar = document.getElementById("toolbar");
+        window.controller = Trix.install(editor, toolbar);
+        editor.focus();
+      })();
     </script>
   </body>
 </html>
