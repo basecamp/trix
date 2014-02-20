@@ -19,10 +19,12 @@ class RichText.DOM
     length = 0
 
     text.eachRun (string, attributes, position) ->
-      containers.push createContainer(string, attributes, position)
+      container = createContainer(string, attributes, position)
+      containers.push(container)
       length += string.length
 
-    containers.push createContainer("\uFEFF", {}, length)
+    container = createContainer("\uFEFF", {}, length)
+    containers.push(container)
     containers
 
   getSelectedRange: ->
@@ -58,9 +60,9 @@ class RichText.DOM
       return position + textOffset
 
     if container.nodeType is Node.TEXT_NODE
-      @findPositionFromContainerAtOffset container.parentNode, null, offset
+      @findPositionFromContainerAtOffset(container.parentNode, null, offset)
     else
-      @findPositionFromContainerAtOffset container.childNodes[offset], null, 0
+      @findPositionFromContainerAtOffset(container.childNodes[offset], null, 0)
 
   findContainerAndOffsetForPosition: (position) ->
     index = 0
