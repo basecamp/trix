@@ -3,8 +3,6 @@ class RichText.Input
   @keys:
     0x08: "backspace"
     0x0D: "return"
-    0x25: "left"
-    0x27: "right"
 
   constructor: (@element) ->
 
@@ -52,10 +50,6 @@ class RichText.Input
 
   return: (event) =>
     @delegate?.didPressReturn()
-
-  left: (event) =>
-
-  right: (event) =>
 
   logAndCancel: (event) =>
     console.log "trapped event:", event
