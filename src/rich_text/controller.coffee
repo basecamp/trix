@@ -1,6 +1,6 @@
 #= require rich_text/text
 #= require rich_text/input
-#= require rich_text/renderer
+#= require rich_text/dom
 
 class RichText.Controller
   constructor: (@element) ->
@@ -9,22 +9,7 @@ class RichText.Controller
     @input = new RichText.Input @element
     @input.delegate = this
     @input.install()
-    @renderer = new RichText.Renderer(@text)
-
-  getPosition: ->
-    selection = window.getSelection()
-    selection.collapseToEnd()
-    range = selection.getRangeAt(0)
-    position = @text.getLength()
-
-    node = range.startContainer
-    if node.nodeType is Node.TEXT_NODE
-      parent = node.parentNode
-      if parent.nodeType is Node.ELEMENT_NODE and parent.tagName?.toLowerCase() is "span"
-        position = parseInt(parent.getAttribute("data-position"), 10)
-        position += range.startOffset
-
-    position
+    @dom = new RichText.DOM @element
 
   didTypeCharacter: (character) ->
     @insertString(character)
@@ -39,21 +24,44 @@ class RichText.Controller
     @render()
 
   insertString: (string) ->
-    @text.insertTextAtPosition(new RichText.Text(string), @getPosition())
+    text = new RichText.Text(string)
+
+    if selectedRange = @getSelectedRange()
+      position = selectedRange[0]
+      @text.replaceTextAtRange(text, selectedRange)
+    else
+      position = @getPosition()
+      @text.insertTextAtPosition(text, position)
+
     @render()
+    @setPosition(position + string.length)
 
   backspace: ->
-    position = @getPosition()
-    @text.removeTextAtRange([position - 1, position]) if position > 0
-    @render()
+    if selectedRange = @getSelectedRange()
+      position = selectedRange[0]
+      @text.removeTextAtRange(selectedRange)
+      @render()
+      @setPosition(position)
+    else
+      position = @getPosition()
+      if position > 0
+        @text.removeTextAtRange([position - 1, position])
+        @render()
+        @setPosition(position - 1)
 
   render: ->
-    @element.innerHTML = ""
-    @element.appendChild(@renderer.render())
-    @updateSelection()
+    @dom.render(@text)
 
-  updateSelection: ->
-    selection = window.getSelection()
-    selection.removeAllRanges()
-    selection.selectAllChildren(@element)
-    selection.collapseToEnd()
+  getSelectedRange: ->
+    selectedRange = @dom.getSelectedRange()
+    selectedRange unless rangeIsCollapsed(selectedRange)
+
+  getPosition: ->
+    selectedRange = @dom.getSelectedRange()
+    selectedRange[0] if rangeIsCollapsed(selectedRange)
+
+  setPosition: (position) ->
+    @dom.setSelectedRange([position, position])
+
+  rangeIsCollapsed = ([startPosition, endPosition]) ->
+    startPosition is endPosition
