@@ -37,8 +37,8 @@ class RichText.DOM
     return unless startPosition? and endPosition?
 
     range = document.createRange()
-    start = [startContainer, startOffset] = @findContainerAndOffsetForPosition(startPosition)
-    end = [endContainer, endOffset] = @findContainerAndOffsetForPosition(endPosition)
+    [startContainer, startOffset] = @findContainerAndOffsetForPosition(startPosition)
+    [endContainer, endOffset] = @findContainerAndOffsetForPosition(endPosition)
 
     try
       range.setStart(startContainer, startOffset)
