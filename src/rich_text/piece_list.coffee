@@ -74,7 +74,7 @@ class RichText.PieceList
         pendingPiece = piece
 
     pieces.push(pendingPiece) if pendingPiece?
-    new RichText.PieceList pieces
+    @pieces = pieces
 
   findIndexAndOffsetAtPosition: (position) ->
     currentPosition = 0

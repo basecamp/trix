@@ -6,28 +6,33 @@ class RichText.Text
     piece = new RichText.Piece string, attributes
     @pieceList = new RichText.PieceList [piece]
 
-  appendText: (text) ->
+  edit = (fn) -> ->
+    fn.apply(this, arguments)
+    @pieceList.consolidate()
+    this
+
+  appendText: edit (text) ->
     @insertTextAtPosition(text, @getLength())
 
-  insertTextAtPosition: (text, position) ->
+  insertTextAtPosition: edit (text, position) ->
     @pieceList.insertPieceListAtPosition(text.pieceList, position)
 
-  removeTextAtRange: (range) ->
+  removeTextAtRange: edit (range) ->
     @pieceList.removePiecesInRange(range)
 
-  replaceTextAtRange: (text, range) ->
+  replaceTextAtRange: edit (text, range) ->
     @removeTextAtRange(range)
     @insertTextAtPosition(text, range[0])
 
-  addAttributesAtRange: (attributes, range) ->
+  addAttributesAtRange: edit (attributes, range) ->
     @pieceList.transformPiecesInRange range, (piece) ->
       piece.copyWithAdditionalAttributes(attributes)
 
-  removeAttributeAtRange: (attribute, range) ->
+  removeAttributeAtRange: edit (attribute, range) ->
     @pieceList.transformPiecesInRange range, (piece) ->
       piece.copyWithoutAttribute(attribute)
 
-  setAttributesAtRange: (attributes, range) ->
+  setAttributesAtRange: edit (attributes, range) ->
     @pieceList.transformPiecesInRange range, (piece) ->
       piece.copyWithAttributes(attributes)
 
@@ -39,7 +44,7 @@ class RichText.Text
 
   eachRun: (callback) ->
     position = 0
-    @pieceList.consolidate().eachPiece (piece) ->
+    @pieceList.eachPiece (piece) ->
       callback(piece.toString(), piece.getAttributes(), position)
       position += piece.length
 
