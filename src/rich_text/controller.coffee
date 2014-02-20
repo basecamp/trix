@@ -4,7 +4,6 @@
 
 class RichText.Controller
   constructor: (@element) ->
-    @element.setAttribute("contenteditable", "true")
     @text = new RichText.Text
     @input = new RichText.Input @element, this
     @dom = new RichText.DOM @element

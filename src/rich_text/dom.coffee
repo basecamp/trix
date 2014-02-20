@@ -1,5 +1,6 @@
 class RichText.DOM
   constructor: (@element) ->
+    @element.setAttribute("contenteditable", "true")
 
   render: (text) ->
     selectedRange = @getSelectedRange()
