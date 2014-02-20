@@ -5,10 +5,16 @@
 class RichText.Controller
   constructor: (@element) ->
     @text = new RichText.Text
+    @text.delegate = this
     @input = new RichText.Input @element, this
     @dom = new RichText.DOM @element
 
-  # Input responder methods
+  # Text delegate
+
+  didEditText: (text) ->
+    @render()
+
+  # Input responder
 
   insertString: (string) ->
     text = new RichText.Text(string)
@@ -20,26 +26,23 @@ class RichText.Controller
       position = @getPosition()
       @text.insertTextAtPosition(text, position)
 
-    @render()
     @setPosition(position + string.length)
 
   deleteBackward: ->
     if selectedRange = @getSelectedRange()
       position = selectedRange[0]
       @text.removeTextAtRange(selectedRange)
-      @render()
       @setPosition(position)
     else
       position = @getPosition()
       if position > 0
         @text.removeTextAtRange([position - 1, position])
-        @render()
         @setPosition(position - 1)
 
   render: ->
     @dom.render(@text)
 
-  # Selection methods
+  # Selection
 
   getSelectedRange: ->
     selectedRange = @dom.getSelectedRange()

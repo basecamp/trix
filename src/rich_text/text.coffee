@@ -9,6 +9,7 @@ class RichText.Text
   edit = (fn) -> ->
     fn.apply(this, arguments)
     @pieceList.consolidate()
+    @delegate?.didEditText?(this)
     this
 
   appendText: edit (text) ->
