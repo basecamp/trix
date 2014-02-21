@@ -3,7 +3,7 @@
 #= require trix/dom
 #= require trix/selection_observer
 
-class Trix.Controller
+class Trix.TextController
   constructor: (@element) ->
     @text = new Trix.Text
     @text.delegate = this

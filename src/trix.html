@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <script type="text/javascript" src="/js/trix.js"></script>
     <style type="text/css">
-      #editor {
+      #text {
         width: 90%;
         max-width: 450px;
         min-height: 300px;
@@ -49,13 +49,13 @@
       <a class="button" href="#" data-attribute="bold">Bold</a>
       <a class="button" href="#" data-attribute="italic">Italic</a>
     </div>
-    <div id="editor"></div>
+    <div id="text"></div>
     <script type="text/javascript">
       (function() {
-        var editor = document.getElementById("editor");
-        var toolbar = document.getElementById("toolbar");
-        window.controller = Trix.install(editor, toolbar);
-        editor.focus();
+        var textElement = document.getElementById("text");
+        var toolbarElement = document.getElementById("toolbar");
+        window.controller = Trix.install(textElement, toolbarElement);
+        textElement.focus();
       })();
     </script>
   </body>

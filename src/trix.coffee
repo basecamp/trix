@@ -1,6 +1,6 @@
 #= require_self
-#= require trix/controller
+#= require trix/editor_controller
 
 @Trix =
-  install: (element) ->
-    new Trix.Controller element
+  install: (textElement, toolbarElement) ->
+    new Trix.EditorController textElement, toolbarElement
