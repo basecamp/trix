@@ -52,6 +52,7 @@ class Trix.TextController
     if selectedRange = @dom.getSelectedRange()
       position = selectedRange[0] - 1
       @currentAttributes = @text.getAttributesAtPosition(position)
+      @delegate?.currentAttributesDidChange?(@currentAttributes)
 
   # Selection
 
