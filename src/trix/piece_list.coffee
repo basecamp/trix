@@ -47,7 +47,7 @@ class Trix.PieceList
 
   getPieceAtPosition: (position) ->
     {index, offset} = @findIndexAndOffsetAtPosition(position)
-    index
+    @pieces[index]
 
   splitPieceAtPosition: (position) ->
     {index, offset} = @findIndexAndOffsetAtPosition(position)
