@@ -1,5 +1,5 @@
 class Trix.Input
-  @events: "keydown keypress drop cut copy paste input".split(" ")
+  @events: "keydown keypress drop cut paste input".split(" ")
   @keys:
     0x08: "backspace"
     0x0D: "return"
@@ -12,9 +12,10 @@ class Trix.Input
     if keyName = @constructor.keys[event.keyCode]
       if handler = @[keyName]
         handler.call this, event
-        event.preventDefault()
 
   keypress: (event) =>
+    return if event.metaKey
+
     if event.which is null
       character = String.fromCharCode event.keyCode
     else if event.which isnt 0 and event.charCode isnt 0
@@ -28,13 +29,12 @@ class Trix.Input
     @logAndCancel(event)
 
   cut: (event) =>
-    @logAndCancel(event)
-
-  copy: (event) =>
-    @logAndCancel(event)
+    @responder?.deleteBackward()
 
   paste: (event) =>
-    @logAndCancel(event)
+    if text = event.clipboardData.getData("text/plain")
+      @responder?.insertString(text)
+    event.preventDefault()
 
   input: (event) =>
     @responder?.render()
@@ -42,9 +42,11 @@ class Trix.Input
 
   backspace: (event) =>
     @responder?.deleteBackward()
+    event.preventDefault()
 
   return: (event) =>
     @responder?.insertString("\n")
+    event.preventDefault()
 
   logAndCancel: (event) =>
     console.log "trapped event:", event
