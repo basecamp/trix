@@ -1,6 +1,6 @@
 #= require trix/text
 #= require trix/input
-#= require trix/dom
+#= require trix/text_view
 #= require trix/selection_observer
 
 class Trix.TextController
@@ -8,7 +8,7 @@ class Trix.TextController
     @text = new Trix.Text
     @text.delegate = this
     @input = new Trix.Input @element, this
-    @dom = new Trix.DOM @element
+    @textView = new Trix.TextView @element, @text
     @selectionObserver = new Trix.SelectionObserver
     @selectionObserver.delegate = this
     @currentAttributes = {}
@@ -44,12 +44,12 @@ class Trix.TextController
         @setPosition(position - 1)
 
   render: ->
-    @dom.render(@text)
+    @textView.render()
 
   # Selection observer delegate
 
   selectionDidChange: ->
-    if selectedRange = @dom.getSelectedRange()
+    if selectedRange = @textView.getSelectedRange()
       position = selectedRange[0] - 1
       @currentAttributes = @text.getAttributesAtPosition(position)
       @delegate?.currentAttributesDidChange?(@currentAttributes)
@@ -57,15 +57,15 @@ class Trix.TextController
   # Selection
 
   getSelectedRange: ->
-    if selectedRange = @dom.getSelectedRange()
+    if selectedRange = @textView.getSelectedRange()
       selectedRange unless rangeIsCollapsed(selectedRange)
 
   getPosition: ->
-    if selectedRange = @dom.getSelectedRange()
+    if selectedRange = @textView.getSelectedRange()
       selectedRange[0] if rangeIsCollapsed(selectedRange)
 
   setPosition: (position) ->
-    @dom.setSelectedRange([position, position])
+    @textView.setSelectedRange([position, position])
 
   rangeIsCollapsed = ([startPosition, endPosition]) ->
     startPosition is endPosition

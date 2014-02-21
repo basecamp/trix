@@ -1,14 +1,14 @@
-class Trix.DOM
-  constructor: (@element) ->
+class Trix.TextView
+  constructor: (@element, @text) ->
     @element.setAttribute("contenteditable", "true")
 
-  render: (text) ->
+  render: ->
     selectedRange = @getSelectedRange()
     @nodes = []
     @positions = []
 
     @element.innerHTML = ""
-    for container in @createContainersForText(text)
+    for container in @createContainersForText()
       @element.appendChild(container)
       for node in container.childNodes
         @nodes.push(node)
@@ -16,11 +16,11 @@ class Trix.DOM
 
     @setSelectedRange(selectedRange)
 
-  createContainersForText: (text) ->
+  createContainersForText: ->
     containers = []
     length = 0
 
-    text.eachRun (string, attributes, position) ->
+    @text.eachRun (string, attributes, position) ->
       container = createContainer(string, attributes, position)
       containers.push(container)
       length += string.length
