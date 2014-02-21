@@ -13,6 +13,9 @@ class Trix.TextController
     @selectionObserver.delegate = this
     @currentAttributes = {}
 
+  focus: ->
+    @textView.focus()
+
   # Text delegate
 
   didEditText: (text) ->
@@ -46,13 +49,29 @@ class Trix.TextController
   render: ->
     @textView.render()
 
-  # Selection observer delegate
+  # Current attributes
 
-  selectionDidChange: ->
+  toggleCurrentAttribute: (attributeName) ->
+    if @currentAttributes[attributeName]
+      delete @currentAttributes[attributeName]
+    else
+      @currentAttributes[attributeName] = true
+    @notifyDelegateOfCurrentAttributeChange()
+
+  updateCurrentAttributes: ->
     if selectedRange = @textView.getSelectedRange()
       position = selectedRange[0] - 1
       @currentAttributes = @text.getAttributesAtPosition(position)
-      @delegate?.currentAttributesDidChange?(@currentAttributes)
+      @notifyDelegateOfCurrentAttributeChange()
+
+  notifyDelegateOfCurrentAttributeChange: ->
+    @delegate?.textControllerDidChangeCurrentAttributes?(@currentAttributes)
+
+
+  # Selection observer delegate
+
+  selectionDidChange: ->
+    @updateCurrentAttributes()
 
   # Selection
 

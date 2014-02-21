@@ -6,8 +6,15 @@ class Trix.EditorController
     @textController = new Trix.TextController textElement
     @textController.delegate = this
     @toolbarController = new Trix.ToolbarController toolbarElement
+    @toolbarController.delegate = this
 
   # Text controller delegate
 
-  currentAttributesDidChange: (currentAttributes) ->
+  textControllerDidChangeCurrentAttributes: (currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
+
+  # Toolbar controller delegate
+
+  didClickToolbarButtonForAttributeName: (attributeName) ->
+    @textController.toggleCurrentAttribute(attributeName)
+    @textController.focus()

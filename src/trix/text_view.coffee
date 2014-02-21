@@ -2,6 +2,9 @@ class Trix.TextView
   constructor: (@element, @text) ->
     @element.setAttribute("contenteditable", "true")
 
+  focus: ->
+    @element.focus()
+
   render: ->
     selectedRange = @getSelectedRange()
     @nodes = []
