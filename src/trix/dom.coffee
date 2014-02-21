@@ -72,7 +72,7 @@ class Trix.DOM
     if node.nodeType is Node.TEXT_NODE
       [node, position - node.trixPosition]
     else
-      offset = (index for child, index in node.parentNode.childNodes when child is node)
+      offset = [node.parentNode.childNodes...].indexOf(node)
       [node.parentNode, offset]
 
   createContainer = (string, attributes, position) ->
