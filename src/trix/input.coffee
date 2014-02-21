@@ -14,7 +14,7 @@ class Trix.Input
         handler.call this, event
 
   keypress: (event) =>
-    return if event.metaKey
+    return if event.metaKey or event.ctrlKey or event.altKey
 
     if event.which is null
       character = String.fromCharCode event.keyCode
