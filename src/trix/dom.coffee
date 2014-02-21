@@ -4,14 +4,15 @@ class Trix.DOM
 
   render: (text) ->
     selectedRange = @getSelectedRange()
-    @containers = []
+    @nodes = []
     @positions = []
 
     @element.innerHTML = ""
     for container in @createContainersForText(text)
       @element.appendChild(container)
-      @containers.push(container)
-      @positions.push(container.trixPosition)
+      for node in container.childNodes
+        @nodes.push(node)
+        @positions.push(node.trixPosition)
 
     @setSelectedRange(selectedRange)
 
@@ -54,16 +55,14 @@ class Trix.DOM
     selection.removeAllRanges()
     selection.addRange(range)
 
-  findPositionFromContainerAtOffset: (container, offset, textOffset) ->
-    return 0 unless container
-
-    if (position = container?.trixPosition)?
-      return position + textOffset
-
+  findPositionFromContainerAtOffset: (container, offset) ->
     if container.nodeType is Node.TEXT_NODE
-      @findPositionFromContainerAtOffset(container.parentNode, null, offset)
+      container.trixPosition + offset
     else
-      @findPositionFromContainerAtOffset(container.childNodes[offset], null, 0)
+      if container is @element and container.childNodes.length is 0
+        offset
+      else
+        container.childNodes[offset].trixPosition
 
   findContainerAndOffsetForPosition: (position) ->
     index = 0
@@ -71,19 +70,32 @@ class Trix.DOM
       break if position < currentPosition
       index = currentIndex
 
-    container = @containers[index]
-    [container.childNodes[0], position - container.trixPosition]
+    node = @nodes[index]
+
+    if node.nodeType is Node.TEXT_NODE
+      [node, position - node.trixPosition]
+    else
+      offset = (index for child, index in node.parentNode.childNodes when child is node)
+      [node.parentNode, offset]
 
   createContainer = (string, attributes, position) ->
     element = document.createElement("span")
-    textNode = document.createTextNode(string)
-    element.appendChild(textNode)
-
     element.style["font-weight"] = "bold" if attributes.bold
     element.style["font-style"] = "italic" if attributes.italic
     element.style["text-decoration"] = "underline" if attributes.underline
 
-    element.trixPosition = position
+    for substring, index in string.split("\n")
+      if index > 0
+        node = document.createElement("br")
+        node.trixPosition = position
+        position += 1
+        element.appendChild(node)
+
+      node = document.createTextNode(substring)
+      node.trixPosition = position
+      position += substring.length
+      element.appendChild(node)
+
     element
 
   isWithin = (ancestor, element) ->
