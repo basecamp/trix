@@ -11,6 +11,7 @@ class Trix.TextController
     @dom = new Trix.DOM @element
     @selectionObserver = new Trix.SelectionObserver
     @selectionObserver.delegate = this
+    @currentAttributes = {}
 
   # Text delegate
 
@@ -20,7 +21,7 @@ class Trix.TextController
   # Input responder
 
   insertString: (string) ->
-    text = new Trix.Text(string)
+    text = new Trix.Text(string, @currentAttributes)
 
     if selectedRange = @getSelectedRange()
       position = selectedRange[0]
@@ -48,7 +49,9 @@ class Trix.TextController
   # Selection observer delegate
 
   selectionDidChange: ->
-    console.log "selection changed: position =", @getPosition(), "selected range =", @getSelectedRange()
+    if selectedRange = @dom.getSelectedRange()
+      position = selectedRange[0] - 1
+      @currentAttributes = @text.getAttributesAtPosition(position)
 
   # Selection
 
