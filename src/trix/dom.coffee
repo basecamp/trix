@@ -88,12 +88,19 @@ class Trix.DOM
         position += 1
         element.appendChild(node)
 
-      node = document.createTextNode(substring)
+      node = document.createTextNode(preserveSpaces(substring))
       node.trixPosition = position
       position += substring.length
       element.appendChild(node)
 
     element
+
+  preserveSpaces = (string) ->
+    string
+      # Replace two spaces with a space and a non-breaking space
+      .replace(/\s{2}/g, " \u00a0")
+      # Replace leading space with a non-breaking space
+      .replace(/^\s{1}/, "\u00a0")
 
   isWithin = (ancestor, element) ->
     while element
