@@ -59,10 +59,7 @@ class Trix.DOM
     if container.nodeType is Node.TEXT_NODE
       container.trixPosition + offset
     else
-      if container is @element and container.childNodes.length is 0
-        offset
-      else
-        container.childNodes[offset].trixPosition
+      container.childNodes[offset]?.trixPosition ? offset
 
   findContainerAndOffsetForPosition: (position) ->
     index = 0
