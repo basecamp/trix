@@ -1,6 +1,7 @@
 #= require trix/text
 #= require trix/input
 #= require trix/dom
+#= require trix/selection_observer
 
 class Trix.Controller
   constructor: (@element) ->
@@ -8,6 +9,8 @@ class Trix.Controller
     @text.delegate = this
     @input = new Trix.Input @element, this
     @dom = new Trix.DOM @element
+    @selectionObserver = new Trix.SelectionObserver
+    @selectionObserver.delegate = this
 
   # Text delegate
 
@@ -42,15 +45,20 @@ class Trix.Controller
   render: ->
     @dom.render(@text)
 
+  # Selection observer delegate
+
+  selectionDidChange: ->
+    console.log "selection changed: position =", @getPosition(), "selected range =", @getSelectedRange()
+
   # Selection
 
   getSelectedRange: ->
-    selectedRange = @dom.getSelectedRange()
-    selectedRange unless rangeIsCollapsed(selectedRange)
+    if selectedRange = @dom.getSelectedRange()
+      selectedRange unless rangeIsCollapsed(selectedRange)
 
   getPosition: ->
-    selectedRange = @dom.getSelectedRange()
-    selectedRange[0] if rangeIsCollapsed(selectedRange)
+    if selectedRange = @dom.getSelectedRange()
+      selectedRange[0] if rangeIsCollapsed(selectedRange)
 
   setPosition: (position) ->
     @dom.setSelectedRange([position, position])
