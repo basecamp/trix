@@ -41,7 +41,10 @@ class Trix.Input
     @logAndCancel(event)
 
   backspace: (event) =>
-    @responder?.deleteBackward()
+    if event.altKey
+      @responder?.deleteWordBackwards()
+    else
+      @responder?.deleteBackward()
     event.preventDefault()
 
   return: (event) =>

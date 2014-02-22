@@ -90,6 +90,9 @@ class Trix.PieceList
     length += piece.length for piece in @pieces
     length
 
+  toString: ->
+    (piece.toString() for piece in @pieces).join("")
+
   inspect: ->
     result = []
     result.push(piece.inspect()) for piece in @pieces
