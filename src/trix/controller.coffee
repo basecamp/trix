@@ -48,7 +48,7 @@ class Trix.Controller
       positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
 
       @text.removeTextAtRange([positionBeforeLastWord, position])
-      @setPosition positionBeforeLastWord
+      @setPosition(positionBeforeLastWord)
 
   render: ->
     @dom.render(@text)
