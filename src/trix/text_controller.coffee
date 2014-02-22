@@ -56,17 +56,16 @@ class Trix.TextController
       delete @currentAttributes[attributeName]
     else
       @currentAttributes[attributeName] = true
-    @notifyDelegateOfCurrentAttributeChange()
+    @notifyDelegateOfCurrentAttributesChange()
 
   updateCurrentAttributes: ->
     if selectedRange = @textView.getSelectedRange()
       position = selectedRange[0] - 1
       @currentAttributes = @text.getAttributesAtPosition(position)
-      @notifyDelegateOfCurrentAttributeChange()
+      @notifyDelegateOfCurrentAttributesChange()
 
-  notifyDelegateOfCurrentAttributeChange: ->
+  notifyDelegateOfCurrentAttributesChange: ->
     @delegate?.textControllerDidChangeCurrentAttributes?(@currentAttributes)
-
 
   # Selection observer delegate
 
