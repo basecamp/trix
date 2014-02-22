@@ -14,7 +14,7 @@ class Trix.Input
         handler.call this, event
 
   keypress: (event) =>
-    return if event.metaKey
+    return if event.metaKey or event.ctrlKey or event.altKey
 
     if event.which is null
       character = String.fromCharCode event.keyCode
@@ -41,7 +41,10 @@ class Trix.Input
     @logAndCancel(event)
 
   backspace: (event) =>
-    @responder?.deleteBackward()
+    if event.altKey
+      @responder?.deleteWordBackwards()
+    else
+      @responder?.deleteBackward()
     event.preventDefault()
 
   return: (event) =>

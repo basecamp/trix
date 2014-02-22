@@ -43,6 +43,9 @@ class Trix.Text
   getLength: ->
     @pieceList.getLength()
 
+  getStringAtRange: (range) ->
+    @pieceList.getPieceListInRange(range).toString()
+
   eachRun: (callback) ->
     position = 0
     @pieceList.eachPiece (piece) ->

@@ -46,6 +46,17 @@ class Trix.TextController
         @text.removeTextAtRange([position - 1, position])
         @setPosition(position - 1)
 
+  deleteWordBackwards: ->
+    if @getSelectedRange()
+      @deleteBackward()
+    else
+      position = @getPosition()
+      stringBeforePosition = @text.getStringAtRange([0, position])
+      positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
+
+      @text.removeTextAtRange([positionBeforeLastWord, position])
+      @setPosition(positionBeforeLastWord)
+
   render: ->
     @textView.render()
 
