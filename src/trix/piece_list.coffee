@@ -22,8 +22,9 @@ class Trix.PieceList
     @pieces[index]
 
   getPieceListInRange: (range) ->
-    [leftIndex, rightIndex] = @splitPiecesAtRange(range)
-    new Trix.PieceList @pieces.slice(leftIndex, rightIndex + 1)
+    pieceList = new Trix.PieceList @pieces.slice(0)
+    [leftIndex, rightIndex] = pieceList.splitPiecesAtRange(range)
+    new Trix.PieceList pieceList.pieces.slice(leftIndex, rightIndex + 1)
 
   removePiecesInRange: (range) ->
     [leftIndex, rightIndex] = @splitPiecesAtRange(range)
