@@ -33,12 +33,15 @@ class Trix.TextView
     containers
 
   getSelectedRange: ->
-    range = window.getSelection().getRangeAt(0)
+    selection = window.getSelection()
+    return unless selection.rangeCount > 0
 
-    if isWithin(@element, range.startContainer) and isWithin(@element, range.endContainer)
-      startPosition = @findPositionFromContainerAtOffset(range.startContainer, range.startOffset)
-      endPosition = @findPositionFromContainerAtOffset(range.endContainer, range.endOffset)
-      [startPosition, endPosition]
+    range = selection.getRangeAt(0)
+    return unless isWithin(@element, range.startContainer) and isWithin(@element, range.endContainer)
+
+    startPosition = @findPositionFromContainerAtOffset(range.startContainer, range.startOffset)
+    endPosition = @findPositionFromContainerAtOffset(range.endContainer, range.endOffset)
+    [startPosition, endPosition]
 
   setSelectedRange: ([startPosition, endPosition]) ->
     return unless startPosition? and endPosition?
