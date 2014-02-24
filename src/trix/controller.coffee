@@ -39,7 +39,7 @@ class Trix.Controller
         @text.removeTextAtRange([position - 1, position])
         @setPosition(position - 1)
 
-  deleteWordBackwards: ->
+  deleteWordBackward: ->
     if @getSelectedRange()
       @deleteBackward()
     else

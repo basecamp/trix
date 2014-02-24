@@ -42,7 +42,7 @@ class Trix.Input
 
   backspace: (event) =>
     if event.altKey
-      @responder?.deleteWordBackwards()
+      @responder?.deleteWordBackward()
     else
       @responder?.deleteBackward()
     event.preventDefault()
