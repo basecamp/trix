@@ -28,16 +28,20 @@ class Trix.Controller
 
     @setPosition(position + (if updatePosition then string.length else 0))
 
-  deleteBackward: ->
-    if selectedRange = @getSelectedRange()
-      position = selectedRange[0]
-      @text.removeTextAtRange(selectedRange)
-      @setPosition(position)
-    else
+  deleteFromCurrentPosition: (distance = -1) ->
+    unless range = @getSelectedRange()
       position = @getPosition()
-      if position > 0
-        @text.removeTextAtRange([position - 1, position])
-        @setPosition(position - 1)
+      offset = position + distance
+      range = if distance < 0 then [offset, position] else [position, offset]
+
+    @text.removeTextAtRange(range)
+    @setPosition(range[0])
+
+  deleteBackward: ->
+    @deleteFromCurrentPosition(-1)
+
+  deleteForward: ->
+    @deleteFromCurrentPosition(1)
 
   deleteWordBackward: ->
     if @getSelectedRange()
@@ -46,17 +50,7 @@ class Trix.Controller
       position = @getPosition()
       stringBeforePosition = @text.getStringAtRange([0, position])
       positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
-
-      @text.removeTextAtRange([positionBeforeLastWord, position])
-      @setPosition(positionBeforeLastWord)
-
-  deleteForward: ->
-    if @getSelectedRange()
-      @deleteBackward()
-    else
-      position = @getPosition()
-      @text.removeTextAtRange([position, position + 1])
-      @setPosition(position)
+      @deleteFromCurrentPosition(positionBeforeLastWord - position)
 
   render: ->
     @dom.render(@text)
