@@ -15,6 +15,7 @@ class Trix.Input
     if keyName = @constructor.keys[event.keyCode]
       context = switch
         when event.ctrlKey then @control
+        when event.altKey then @alt
         else this
 
       context[keyName]?.call this, event
@@ -47,10 +48,7 @@ class Trix.Input
     @logAndCancel(event)
 
   backspace: (event) =>
-    if event.altKey
-      @responder?.deleteWordBackward()
-    else
-      @responder?.deleteBackward()
+    @responder?.deleteBackward()
     event.preventDefault()
 
   return: (event) =>
@@ -67,6 +65,11 @@ class Trix.Input
 
     o: (event) ->
       @responder?.insertString("\n", false)
+      event.preventDefault()
+
+  alt:
+    backspace: (event) ->
+      @responder?.deleteWordBackward()
       event.preventDefault()
 
   logAndCancel: (event) =>
