@@ -4,6 +4,7 @@ class Trix.Input
     0x08: "backspace"
     0x0D: "return"
     0x44: "d"
+    0x48: "h"
 
   constructor: (@element, @responder) ->
     for event in @constructor.events
@@ -59,6 +60,9 @@ class Trix.Input
     d: (event) ->
       @responder?.deleteForward()
       event.preventDefault()
+
+    h: (event) ->
+      @backspace(event)
 
   logAndCancel: (event) =>
     console.log "trapped event:", event
