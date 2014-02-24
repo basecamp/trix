@@ -47,11 +47,11 @@ class Trix.Input
     @responder?.render()
     @logAndCancel(event)
 
-  backspace: (event) =>
+  backspace: (event) ->
     @responder?.deleteBackward()
     event.preventDefault()
 
-  return: (event) =>
+  return: (event) ->
     @responder?.insertString("\n")
     event.preventDefault()
 
@@ -72,6 +72,6 @@ class Trix.Input
       @responder?.deleteWordBackward()
       event.preventDefault()
 
-  logAndCancel: (event) =>
+  logAndCancel: (event) ->
     console.log "trapped event:", event
     event.preventDefault()
