@@ -16,7 +16,7 @@ class Trix.Controller
 
   # Input responder
 
-  insertString: (string) ->
+  insertString: (string, updatePosition = true) ->
     text = new Trix.Text(string)
 
     if selectedRange = @getSelectedRange()
@@ -26,7 +26,7 @@ class Trix.Controller
       position = @getPosition()
       @text.insertTextAtPosition(text, position)
 
-    @setPosition(position + string.length)
+    @setPosition(position + (if updatePosition then string.length else 0))
 
   deleteBackward: ->
     if selectedRange = @getSelectedRange()
