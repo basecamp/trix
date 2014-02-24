@@ -50,6 +50,14 @@ class Trix.Controller
       @text.removeTextAtRange([positionBeforeLastWord, position])
       @setPosition(positionBeforeLastWord)
 
+  deleteForward: ->
+    if @getSelectedRange()
+      @deleteBackward()
+    else
+      position = @getPosition()
+      @text.removeTextAtRange([position, position + 1])
+      @setPosition(position)
+
   render: ->
     @dom.render(@text)
 
