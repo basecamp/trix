@@ -1,14 +1,10 @@
-require 'sprockets'
-require 'coffee-script'
+require 'bundler/setup'
+require 'rack/rewrite'
+require File.join(File.dirname(__FILE__) + '/lib/trix')
 
-Root = File.expand_path(File.dirname(__FILE__))
-
-Assets = Sprockets::Environment.new(Root) do |env|
-  env.append_path "src"
+map '/' do
+  run Trix.environment
+  use Rack::Rewrite do
+    rewrite '/', '/index.html'
+  end
 end
-
-map "/js" do
-  run Assets
-end
-
-map("/") { run Rack::File.new("#{Root}/src/trix.html") }

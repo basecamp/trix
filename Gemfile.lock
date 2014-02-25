@@ -10,6 +10,7 @@ GEM
     hike (1.2.3)
     multi_json (1.7.7)
     rack (1.5.2)
+    rack-rewrite (1.5.0)
     rake (10.0.4)
     sprockets (2.10.0)
       hike (~> 1.2)
@@ -24,5 +25,6 @@ PLATFORMS
 DEPENDENCIES
   coffee-script
   coffee-script-source
+  rack-rewrite
   rake
   sprockets
