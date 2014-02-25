@@ -60,7 +60,6 @@ class Trix.TextController
       @deleteFromCurrentPosition(positionBeforeLastWord - position)
 
   render: ->
-    console.log "rendering"
     @textView.render()
 
   # Current attributes
