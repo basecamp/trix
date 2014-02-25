@@ -92,7 +92,7 @@ class Trix.PieceList
     length
 
   toString: ->
-    (piece.toString() for piece in @pieces).join("")
+    @pieces.join("")
 
   inspect: ->
     result = []

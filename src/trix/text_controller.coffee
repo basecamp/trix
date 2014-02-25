@@ -23,7 +23,7 @@ class Trix.TextController
 
   # Input responder
 
-  insertString: (string) ->
+  insertString: (string, updatePosition = true) ->
     text = new Trix.Text(string, @currentAttributes)
 
     if selectedRange = @getSelectedRange()
@@ -33,29 +33,31 @@ class Trix.TextController
       position = @getPosition()
       @text.insertTextAtPosition(text, position)
 
-    @setPosition(position + string.length)
+    @setPosition(position + (if updatePosition then string.length else 0))
+
+  deleteFromCurrentPosition: (distance = -1) ->
+    unless range = @getSelectedRange()
+      position = @getPosition()
+      offset = position + distance
+      range = if distance < 0 then [offset, position] else [position, offset]
+
+    @text.removeTextAtRange(range)
+    @setPosition(range[0])
 
   deleteBackward: ->
-    if selectedRange = @getSelectedRange()
-      position = selectedRange[0]
-      @text.removeTextAtRange(selectedRange)
-      @setPosition(position)
-    else
-      position = @getPosition()
-      if position > 0
-        @text.removeTextAtRange([position - 1, position])
-        @setPosition(position - 1)
+    @deleteFromCurrentPosition(-1)
 
-  deleteWordBackwards: ->
+  deleteForward: ->
+    @deleteFromCurrentPosition(1)
+
+  deleteWordBackward: ->
     if @getSelectedRange()
       @deleteBackward()
     else
       position = @getPosition()
       stringBeforePosition = @text.getStringAtRange([0, position])
       positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
-
-      @text.removeTextAtRange([positionBeforeLastWord, position])
-      @setPosition(positionBeforeLastWord)
+      @deleteFromCurrentPosition(positionBeforeLastWord - position)
 
   render: ->
     @textView.render()

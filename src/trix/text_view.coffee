@@ -22,14 +22,19 @@ class Trix.TextView
   createContainersForText: ->
     containers = []
     length = 0
+    lastString = ""
 
     @text.eachRun (string, attributes, position) ->
       container = createContainer(string, attributes, position)
       containers.push(container)
       length += string.length
+      lastString = string
 
-    container = createContainer("\uFEFF", {}, length)
-    containers.push(container)
+    # Add an extra newline if the text ends with one. Without it, the cursor won't move down.
+    if lastString.match(/\n$/)
+      container = createContainer("\n", {}, length)
+      containers.push(container)
+
     containers
 
   getSelectedRange: ->
@@ -68,18 +73,21 @@ class Trix.TextView
       container.childNodes[offset]?.trixPosition ? offset
 
   findContainerAndOffsetForPosition: (position) ->
-    index = 0
-    for currentPosition, currentIndex in @positions
-      break if position < currentPosition
-      index = currentIndex
-
-    node = @nodes[index]
-
-    if node.nodeType is Node.TEXT_NODE
-      [node, position - node.trixPosition]
+    if @nodes.length is 0
+      [@element, 0]
     else
-      offset = [node.parentNode.childNodes...].indexOf(node)
-      [node.parentNode, offset]
+      index = 0
+      for currentPosition, currentIndex in @positions
+        break if position < currentPosition
+        index = currentIndex
+
+      node = @nodes[index]
+
+      if node.nodeType is Node.TEXT_NODE
+        [node, position - node.trixPosition]
+      else
+        offset = [node.parentNode.childNodes...].indexOf(node)
+        [node.parentNode, offset]
 
   createContainer = (string, attributes, position) ->
     element = document.createElement("span")
@@ -107,6 +115,8 @@ class Trix.TextView
       .replace(/\s{2}/g, " \u00a0")
       # Replace leading space with a non-breaking space
       .replace(/^\s{1}/, "\u00a0")
+      # Replace trailing space with a non-breaking space
+      .replace(/\s{1}$/, "\u00a0")
 
   isWithin = (ancestor, element) ->
     while element

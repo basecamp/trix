@@ -3,6 +3,9 @@ class Trix.Input
   @keys:
     0x08: "backspace"
     0x0D: "return"
+    0x44: "d"
+    0x48: "h"
+    0x4f: "o"
 
   constructor: (@element, @responder) ->
     for event in @constructor.events
@@ -10,8 +13,12 @@ class Trix.Input
 
   keydown: (event) =>
     if keyName = @constructor.keys[event.keyCode]
-      if handler = @[keyName]
-        handler.call this, event
+      context = switch
+        when event.ctrlKey then @control
+        when event.altKey then @alt
+        else this
+
+      context[keyName]?.call this, event
 
   keypress: (event) =>
     return if event.metaKey or event.ctrlKey or event.altKey
@@ -40,17 +47,31 @@ class Trix.Input
     @responder?.render()
     @logAndCancel(event)
 
-  backspace: (event) =>
-    if event.altKey
-      @responder?.deleteWordBackwards()
-    else
-      @responder?.deleteBackward()
+  backspace: (event) ->
+    @responder?.deleteBackward()
     event.preventDefault()
 
-  return: (event) =>
+  return: (event) ->
     @responder?.insertString("\n")
     event.preventDefault()
 
-  logAndCancel: (event) =>
+  control:
+    d: (event) ->
+      @responder?.deleteForward()
+      event.preventDefault()
+
+    h: (event) ->
+      @backspace(event)
+
+    o: (event) ->
+      @responder?.insertString("\n", false)
+      event.preventDefault()
+
+  alt:
+    backspace: (event) ->
+      @responder?.deleteWordBackward()
+      event.preventDefault()
+
+  logAndCancel: (event) ->
     console.log "trapped event:", event
     event.preventDefault()
