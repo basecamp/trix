@@ -1,6 +1,8 @@
 class Trix.TextView
   constructor: (@element, @text) ->
     @element.setAttribute("contenteditable", "true")
+    @element.setAttribute("autocorrect", "off")
+    @element.setAttribute("spellcheck", "false")
 
   focus: ->
     @element.focus()
