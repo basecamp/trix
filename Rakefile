@@ -21,7 +21,7 @@ end
 
 task :open do
   with_server do
-    sh "open", "http://localhost:9292/trix.html"
+    sh "open", "http://localhost:9292/"
   end
 end
 
