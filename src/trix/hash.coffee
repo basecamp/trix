@@ -13,6 +13,18 @@ class Trix.Hash
   merge: (values) ->
     new Trix.Hash merge(@values, unbox(values))
 
+  slice: (keys) ->
+    values = {}
+    values[key] = @values[key] for key in keys
+    new Trix.Hash values
+
+  getKeys: ->
+    Object.keys(@values)
+
+  getKeysCommonToHash: (hash) ->
+    hash = box(hash)
+    key for key in @getKeys() when @values[key] is hash.values[key]
+
   isEqualTo: (values) ->
     thisArray = @toArray()
     thatArray = box(values).toArray()

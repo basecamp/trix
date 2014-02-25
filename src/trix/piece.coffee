@@ -14,8 +14,22 @@ class Trix.Piece
   copyWithoutAttribute: (attribute) ->
     new Trix.Piece @string, @attributes.remove(attribute)
 
+  getAttributesHash: ->
+    @attributes
+
   getAttributes: ->
     @attributes.toObject()
+
+  getCommonAttributes: ->
+    return {} unless piece = pieceList.getPieceAtIndex(0)
+    attributes = piece.attributes
+    keys = attributes.getKeys()
+
+    pieceList.eachPiece (piece) ->
+      keys = attributes.getKeysCommonToHash(piece.attributes)
+      attributes = attributes.slice(keys)
+
+    attributes.toObject()
 
   hasSameAttributesAsPiece: (piece) ->
     piece? and (@attributes is piece.attributes or @attributes.isEqualTo(piece.attributes))

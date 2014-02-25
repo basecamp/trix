@@ -63,6 +63,17 @@ class Trix.PieceList
     else
       @pieces.length
 
+  getCommonAttributes: ->
+    return {} unless piece = @getPieceAtIndex(0)
+    attributesHash = piece.getAttributesHash()
+    keys = attributesHash.getKeys()
+
+    @eachPiece (piece) ->
+      keys = attributesHash.getKeysCommonToHash(piece.getAttributesHash())
+      attributesHash = attributesHash.slice(keys)
+
+    attributesHash.toObject()
+
   consolidate: ->
     pieces = []
     pendingPiece = @pieces[0]

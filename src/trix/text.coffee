@@ -46,20 +46,7 @@ class Trix.Text
     @pieceList.getPieceAtPosition(position)?.getAttributes() ? {}
 
   getCommonAttributesAtRange: (range) ->
-    pieceList = @pieceList.getPieceListInRange(range)
-    return {} unless firstPiece = pieceList.getPieceAtIndex(0)
-
-    firstAttributes = firstPiece.getAttributes()
-    keys = Object.keys(firstAttributes)
-    pieceList.removePieceAtIndex(0)
-
-    pieceList.eachPiece (piece) ->
-      attributes = piece.getAttributes()
-      keys = (key for key in keys when attributes[key] is firstAttributes[key])
-
-    attributes = {}
-    attributes[key] = firstAttributes[key] for key in keys
-    attributes
+    @pieceList.getPieceListInRange(range)?.getCommonAttributes() ? {}
 
   getLength: ->
     @pieceList.getLength()
