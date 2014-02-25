@@ -65,10 +65,17 @@ class Trix.TextController
   # Current attributes
 
   toggleCurrentAttribute: (attributeName) ->
-    if @currentAttributes[attributeName]
-      delete @currentAttributes[attributeName]
+    if selectedRange = @getSelectedRange()
+      if @currentAttributes[attributeName]
+        @text.removeAttributeAtRange(attributeName, selectedRange)
+      else
+        @text.addAttributeAtRange(attributeName, true, selectedRange)
     else
-      @currentAttributes[attributeName] = true
+      if @currentAttributes[attributeName]
+        delete @currentAttributes[attributeName]
+      else
+        @currentAttributes[attributeName] = true
+
     @notifyDelegateOfCurrentAttributesChange()
 
   updateCurrentAttributes: ->

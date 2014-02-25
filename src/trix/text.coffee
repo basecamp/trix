@@ -25,6 +25,11 @@ class Trix.Text
     @removeTextAtRange(range)
     @insertTextAtPosition(text, range[0])
 
+  addAttributeAtRange: (attribute, value, range) ->
+    attributes = {}
+    attributes[attribute] = value
+    @addAttributesAtRange(attributes, range)
+
   addAttributesAtRange: edit (attributes, range) ->
     @pieceList.transformPiecesInRange range, (piece) ->
       piece.copyWithAdditionalAttributes(attributes)
