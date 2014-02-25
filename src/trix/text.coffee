@@ -14,6 +14,7 @@ class Trix.Text
 
   beginEditing: ->
     @editDepth++
+    this
 
   endEditing: ->
     if --@editDepth is 0
