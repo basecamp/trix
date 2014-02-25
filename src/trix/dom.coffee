@@ -19,14 +19,19 @@ class Trix.DOM
   createContainersForText: (text) ->
     containers = []
     length = 0
+    lastString = ""
 
     text.eachRun (string, attributes, position) ->
       container = createContainer(string, attributes, position)
       containers.push(container)
       length += string.length
+      lastString = string
 
-    container = createContainer("\uFEFF", {}, length)
-    containers.push(container)
+    # Add an extra newline if the text ends with one. Without it, the cursor won't move down.
+    if lastString.match(/\n$/)
+      container = createContainer("\n", {}, length)
+      containers.push(container)
+
     containers
 
   getSelectedRange: ->
@@ -101,6 +106,8 @@ class Trix.DOM
       .replace(/\s{2}/g, " \u00a0")
       # Replace leading space with a non-breaking space
       .replace(/^\s{1}/, "\u00a0")
+      # Replace trailing space with a non-breaking space
+      .replace(/\s{1}$/, "\u00a0")
 
   isWithin = (ancestor, element) ->
     while element
