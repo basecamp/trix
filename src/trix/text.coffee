@@ -5,11 +5,20 @@ class Trix.Text
   constructor: (string = "", attributes) ->
     piece = new Trix.Piece string, attributes
     @pieceList = new Trix.PieceList [piece]
+    @editDepth = 0
 
   edit = (fn) -> ->
+    @beginEditing()
     fn.apply(this, arguments)
-    @pieceList.consolidate()
-    @delegate?.didEditText?(this)
+    @endEditing()
+
+  beginEditing: ->
+    @editDepth++
+
+  endEditing: ->
+    if --@editDepth is 0
+      @pieceList.consolidate()
+      @delegate?.didEditText?(this)
     this
 
   appendText: edit (text) ->
@@ -25,7 +34,7 @@ class Trix.Text
     @removeTextAtRange(range)
     @insertTextAtPosition(text, range[0])
 
-  addAttributeAtRange: (attribute, value, range) ->
+  addAttributeAtRange: edit (attribute, value, range) ->
     attributes = {}
     attributes[attribute] = value
     @addAttributesAtRange(attributes, range)
