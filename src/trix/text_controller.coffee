@@ -61,6 +61,7 @@ class Trix.TextController
 
   render: ->
     @textView.render()
+    @delegate?.textControllerDidRender?()
 
   # Current attributes
 
@@ -93,6 +94,7 @@ class Trix.TextController
 
   selectionDidChange: ->
     @updateCurrentAttributes()
+    @delegate?.textControllerDidChangeSelection?()
 
   # Selection
 

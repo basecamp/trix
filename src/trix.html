@@ -42,6 +42,10 @@
       #toolbar a.button[data-attribute=italic] {
         font-style: italic;
       }
+
+      #debug {
+        white-space: pre-wrap;
+      }
     </style>
   </head>
   <body>
@@ -50,11 +54,13 @@
       <a class="button" href="#" data-attribute="italic">Italic</a>
     </div>
     <div id="text"></div>
+    <pre id="debug"></pre>
     <script type="text/javascript">
       (function() {
         var textElement = document.getElementById("text");
         var toolbarElement = document.getElementById("toolbar");
-        window.controller = Trix.install(textElement, toolbarElement);
+        var debugElement = document.getElementById("debug");
+        window.controller = Trix.install(textElement, toolbarElement, debugElement);
         textElement.focus();
       })();
     </script>
