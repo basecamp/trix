@@ -67,18 +67,21 @@ class Trix.DOM
       container.childNodes[offset]?.trixPosition ? offset
 
   findContainerAndOffsetForPosition: (position) ->
-    index = 0
-    for currentPosition, currentIndex in @positions
-      break if position < currentPosition
-      index = currentIndex
-
-    node = @nodes[index]
-
-    if node.nodeType is Node.TEXT_NODE
-      [node, position - node.trixPosition]
+    if @nodes.length is 0
+      [@element, 0]
     else
-      offset = [node.parentNode.childNodes...].indexOf(node)
-      [node.parentNode, offset]
+      index = 0
+      for currentPosition, currentIndex in @positions
+        break if position < currentPosition
+        index = currentIndex
+
+      node = @nodes[index]
+
+      if node.nodeType is Node.TEXT_NODE
+        [node, position - node.trixPosition]
+      else
+        offset = [node.parentNode.childNodes...].indexOf(node)
+        [node.parentNode, offset]
 
   createContainer = (string, attributes, position) ->
     element = document.createElement("span")
