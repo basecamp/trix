@@ -72,9 +72,11 @@ class Trix.TextController
     @notifyDelegateOfCurrentAttributesChange()
 
   updateCurrentAttributes: ->
-    if selectedRange = @textView.getSelectedRange()
-      position = selectedRange[0] - 1
-      @currentAttributes = @text.getAttributesAtPosition(position)
+    if selectedRange = @getSelectedRange()
+      @currentAttributes = @text.getCommonAttributesAtRange(selectedRange)
+      @notifyDelegateOfCurrentAttributesChange()
+    else if position = @getPosition()
+      @currentAttributes = @text.getAttributesAtPosition(position - 1)
       @notifyDelegateOfCurrentAttributesChange()
 
   notifyDelegateOfCurrentAttributesChange: ->
