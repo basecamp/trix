@@ -127,10 +127,11 @@ class Trix.TextView
         position += 1
         element.appendChild(node)
 
-      node = document.createTextNode(preserveSpaces(substring))
-      node.trixPosition = position
-      position += substring.length
-      element.appendChild(node)
+      if substring.length
+        node = document.createTextNode(preserveSpaces(substring))
+        node.trixPosition = position
+        position += substring.length
+        element.appendChild(node)
 
     element
 
