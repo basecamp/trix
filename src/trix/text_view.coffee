@@ -12,12 +12,11 @@ class Trix.TextView
     @element.innerHTML = ""
     @element.appendChild(container) for container in @createContainersForText()
     @recordNodePositions()
+    @appendBRelement()
     @setSelectedRange(selectedRange)
 
   createContainersForText: ->
     containers = []
-    length = 0
-    lastString = ""
     previousAttributes = {}
 
     @text.eachRun (string, attributes, position) ->
@@ -37,15 +36,7 @@ class Trix.TextView
       else
         containers.push(container)
 
-      length += string.length
-      lastString = string
       previousAttributes = attributes
-
-    # Add an extra newline if the text ends with one. Without it, the cursor won't move down.
-    if lastString.match(/\n$/)
-      container = createContainer("\n", {}, length)
-      containers.push(container)
-
     containers
 
   recordNodePositions: ->
@@ -55,8 +46,20 @@ class Trix.TextView
     while walker.nextNode()
       if node = walker.currentNode
         if node.trixPosition?
-          @nodes.push(node)
-          @positions.push(node.trixPosition)
+          @recordNode(node)
+
+  recordNode: (node) ->
+    @nodes.push(node)
+    @positions.push(node.trixPosition)
+    node
+
+  # Add an extra BR if the last node is one. Without the extra, the cursor won't move down.
+  appendBRelement: ->
+    if node = @nodes[@nodes.length - 1]
+      if node.tagName?.toLowerCase() is "br"
+        br = node.cloneNode(false)
+        br.trixPosition = node.trixPosition + 1
+        @element.appendChild(@recordNode(br))
 
   getSelectedRange: ->
     selection = window.getSelection()
