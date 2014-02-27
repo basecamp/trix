@@ -23,11 +23,11 @@ class Trix.TextView
       parent = null
       container = createContainer(string, attributes, position)
 
-      if attributes.href
-        if attributes.href is previousAttributes.href
+      if href = attributes.href
+        if href is previousAttributes.href
           parent = containers[containers.length - 1]
         else
-          link = createContainer("", { href: attributes.href }, position, "a")
+          link = createContainer("", {href}, position, "a")
           link.appendChild(container)
           container = link
 
