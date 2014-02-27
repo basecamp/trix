@@ -25,12 +25,28 @@ class Trix.TextView
     containers = []
     length = 0
     lastString = ""
+    previousAttributes = {}
 
     @text.eachRun (string, attributes, position) ->
+      parent = null
       container = createContainer(string, attributes, position)
-      containers.push(container)
+
+      if attributes.href
+        if attributes.href is previousAttributes.href
+          parent = containers[containers.length - 1]
+        else
+          link = createContainer("", { href: attributes.href }, position, "a")
+          link.appendChild(container)
+          container = link
+
+      if parent
+        parent.appendChild(container)
+      else
+        containers.push(container)
+
       length += string.length
       lastString = string
+      previousAttributes = attributes
 
     # Add an extra newline if the text ends with one. Without it, the cursor won't move down.
     if lastString.match(/\n$/)
@@ -91,8 +107,12 @@ class Trix.TextView
         offset = [node.parentNode.childNodes...].indexOf(node)
         [node.parentNode, offset]
 
-  createContainer = (string, attributes, position) ->
-    element = document.createElement("span")
+  createContainer = (string, attributes, position, tagName = "span") ->
+    element = document.createElement(tagName)
+
+    if attributes.href and tagName is "a"
+      element.setAttribute("href", attributes.href)
+
     element.style["font-weight"] = "bold" if attributes.bold
     element.style["font-style"] = "italic" if attributes.italic
     element.style["text-decoration"] = "underline" if attributes.underline

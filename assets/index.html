@@ -16,6 +16,11 @@
         font-size: 16px;
       }
 
+      #text a,
+      #text a:visited {
+        color: blue;
+      }
+
       #toolbar {
         padding: 10px 0;
         white-space: collapse;
@@ -43,6 +48,10 @@
         font-style: italic;
       }
 
+      #toolbar a.button[data-attribute=href] {
+        text-decoration: underline;
+      }
+
       #debug {
         white-space: pre-wrap;
       }
@@ -52,6 +61,7 @@
     <div id="toolbar">
       <a class="button" href="#" data-attribute="bold">Bold</a>
       <a class="button" href="#" data-attribute="italic">Italic</a>
+      <a class="button" href="#" data-attribute="href">Link</a>
     </div>
     <div id="text"></div>
     <pre id="debug"></pre>
