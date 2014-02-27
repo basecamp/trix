@@ -44,9 +44,8 @@ class Trix.TextView
     @positions = []
     walker = document.createTreeWalker(@element)
     while walker.nextNode()
-      if node = walker.currentNode
-        if node.trixPosition?
-          @recordNode(node)
+      if walker.currentNode.trixPosition?
+        @recordNode(walker.currentNode)
 
   recordNode: (node) ->
     @nodes.push(node)
