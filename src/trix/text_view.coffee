@@ -9,16 +9,9 @@ class Trix.TextView
 
   render: ->
     selectedRange = @getSelectedRange()
-    @nodes = []
-    @positions = []
-
     @element.innerHTML = ""
-    for container in @createContainersForText()
-      @element.appendChild(container)
-      for node in container.childNodes
-        @nodes.push(node)
-        @positions.push(node.trixPosition)
-
+    @element.appendChild(container) for container in @createContainersForText()
+    @recordNodePositions()
     @setSelectedRange(selectedRange)
 
   createContainersForText: ->
@@ -54,6 +47,16 @@ class Trix.TextView
       containers.push(container)
 
     containers
+
+  recordNodePositions: ->
+    @nodes = []
+    @positions = []
+    walker = document.createTreeWalker(@element)
+    while walker.nextNode()
+      if node = walker.currentNode
+        if node.trixPosition?
+          @nodes.push(node)
+          @positions.push(node.trixPosition)
 
   getSelectedRange: ->
     selection = window.getSelection()
