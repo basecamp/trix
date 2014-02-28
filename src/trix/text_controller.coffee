@@ -138,13 +138,16 @@ class Trix.TextController
   lockSelection: ->
     if @currentAttributes["href"]
       @expandSelectedRangeAroundCommonAttribute("href")
-    @textView.lockSelection()
+
     if selectedRange = @getSelectedRange()
       @text.addAttributeAtRange("selected", true, selectedRange)
+
+    @textView.lockSelection()
 
   unlockSelection: ->
     if selectedRange = @getSelectedRange()
       @text.removeAttributeAtRange("selected", selectedRange)
+
     @textView.unlockSelection()
 
   rangeIsCollapsed = ([startPosition, endPosition]) ->
