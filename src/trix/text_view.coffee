@@ -130,6 +130,7 @@ class Trix.TextView
     element.style["font-weight"] = "bold" if attributes.bold
     element.style["font-style"] = "italic" if attributes.italic
     element.style["text-decoration"] = "underline" if attributes.underline
+    element.style["background-color"] = "#b2d3ff" if attributes.selected
 
     for substring, index in string.split("\n")
       if index > 0

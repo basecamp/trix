@@ -127,8 +127,12 @@ class Trix.TextController
 
   lockSelection: ->
     @textView.lockSelection()
+    if selectedRange = @getSelectedRange()
+      @text.addAttributeAtRange("selected", true, selectedRange)
 
   unlockSelection: ->
+    if selectedRange = @getSelectedRange()
+      @text.removeAttributeAtRange("selected", selectedRange)
     @textView.unlockSelection()
 
   rangeIsCollapsed = ([startPosition, endPosition]) ->
