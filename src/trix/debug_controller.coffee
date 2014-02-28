@@ -13,6 +13,7 @@ class Trix.DebugController
       position = @textController.getPosition() ? 0
       "Cursor position: #{position}"
 
+    positionOrRange += " (locked)" if @textController.textView.lockedRange?
     lines = [positionOrRange, ""]
 
     @textController.text.eachRun (string, attributes, position) ->

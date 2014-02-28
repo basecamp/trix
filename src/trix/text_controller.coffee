@@ -79,6 +79,22 @@ class Trix.TextController
 
     @notifyDelegateOfCurrentAttributesChange()
 
+  updateCurrentAttribute: (attributeName, value) ->
+    if selectedRange = @getSelectedRange()
+      if value
+        attributes = {}
+        attributes[attributeName] = value
+        @text.addAttributesAtRange(attributes, selectedRange)
+      else
+        @text.removeAttributeAtRange(attributeName, selectedRange)
+    else
+      if value
+        @currentAttributes[attributeName] = value
+      else
+        delete @currentAttributes[attributeName]
+
+    @notifyDelegateOfCurrentAttributesChange()
+
   updateCurrentAttributes: ->
     if selectedRange = @getSelectedRange()
       @currentAttributes = @text.getCommonAttributesAtRange(selectedRange)
@@ -108,6 +124,12 @@ class Trix.TextController
 
   setPosition: (position) ->
     @textView.setSelectedRange([position, position])
+
+  lockSelection: ->
+    @textView.lockSelection()
+
+  unlockSelection: ->
+    @textView.unlockSelection()
 
   rangeIsCollapsed = ([startPosition, endPosition]) ->
     startPosition is endPosition

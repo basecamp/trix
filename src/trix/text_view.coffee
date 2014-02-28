@@ -61,6 +61,8 @@ class Trix.TextView
         @element.appendChild(@recordNode(br))
 
   getSelectedRange: ->
+    return @lockedRange if @lockedRange
+
     selection = window.getSelection()
     return unless selection.rangeCount > 0
 
@@ -72,6 +74,7 @@ class Trix.TextView
     [startPosition, endPosition]
 
   setSelectedRange: ([startPosition, endPosition]) ->
+    return if @lockedRange
     return unless startPosition? and endPosition?
 
     range = document.createRange()
@@ -88,6 +91,12 @@ class Trix.TextView
     selection = window.getSelection()
     selection.removeAllRanges()
     selection.addRange(range)
+
+  lockSelection: ->
+    @lockedRange = @getSelectedRange()
+
+  unlockSelection: ->
+    delete @lockedRange
 
   findPositionFromContainerAtOffset: (container, offset) ->
     if container.nodeType is Node.TEXT_NODE

@@ -52,6 +52,15 @@
         text-decoration: underline;
       }
 
+      #toolbar .dialog {
+        display: none;
+        position: absolute;
+      }
+
+      #toolbar .dialog.active {
+        display: inline;
+      }
+
       #debug {
         white-space: pre-wrap;
       }
@@ -62,6 +71,7 @@
       <a class="button" href="#" data-attribute="bold">Bold</a>
       <a class="button" href="#" data-attribute="italic">Italic</a>
       <a class="button" href="#" data-attribute="href">Link</a>
+      <input type="text" class="dialog" data-attribute="href" placeholder="Enter a URL...">
     </div>
     <div id="text"></div>
     <pre id="debug"></pre>

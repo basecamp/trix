@@ -1,5 +1,5 @@
 Trix.DOM = dom =
-  on: (element, eventName, selector, callback) ->
+  on: (element, eventName, selector, callback, useCapture = false) ->
     unless callback?
       callback = selector
       selector = null
@@ -12,7 +12,7 @@ Trix.DOM = dom =
       handler = (event) ->
         callback.call(element, event, element)
 
-    element.addEventListener(eventName, handler, false)
+    element.addEventListener(eventName, handler, useCapture)
     handler
 
   match: (element, selector) ->
