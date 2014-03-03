@@ -7,24 +7,23 @@ class Trix.ToolbarController
   constructor: (@element) ->
     @attributes = {}
     Trix.DOM.on(@element, "click", buttonSelector, @didClickButton)
-    Trix.DOM.on(@element, "input", dialogSelector, @didChangeDialog)
-    Trix.DOM.on(@element, "blur", dialogSelector, @didBlurDialog, true)
+    Trix.DOM.on(@element, "submit", dialogSelector, @didSubmitDialog)
 
   didClickButton: (event, element) =>
     event.preventDefault()
     attributeName = getButtonAttributeName(element)
 
-    if element = @getDialogForAttributeName(attributeName)
-      @showDialog(element, @attributes[attributeName])
+    if @getDialogForAttributeName(attributeName)
+      @showDialog(attributeName)
     else
       @delegate?.didClickToolbarButtonForAttributeName?(attributeName)
 
-  didChangeDialog: (event, element) =>
+  didSubmitDialog: (event, element) =>
+    event.preventDefault()
     attributeName = getButtonAttributeName(element)
-    @delegate?.didUpdateAttribute(attributeName, element.value)
-
-  didBlurDialog: (event, element) =>
-    @hideDialog(element)
+    value = element.querySelector("input[name='#{attributeName}']").value
+    @delegate?.didUpdateAttribute(attributeName, value)
+    @hideDialog(attributeName)
 
   updateAttributes: (attributes) ->
     @attributes = attributes
@@ -38,14 +37,19 @@ class Trix.ToolbarController
     for element in @element.querySelectorAll(buttonSelector)
       callback(element, getButtonAttributeName(element))
 
-  showDialog: (element, attributeValue) ->
+  showDialog: (attributeName) ->
     @delegate?.didShowToolbarDialog()
-    element.classList.add("active")
-    element.value = attributeValue if attributeValue
-    element.select()
 
-  hideDialog: (element) ->
+    element = @getDialogForAttributeName(attributeName)
+    element.classList.add("active")
+
+    input = element.querySelector("input[name='#{attributeName}']")
+    input.value = @attributes[attributeName] ? ""
+    input.select()
+
+  hideDialog: (attributeName) ->
     @delegate?.didHideToolbarDialog()
+    element = @getDialogForAttributeName(attributeName)
     element.classList.remove("active")
 
   getDialogForAttributeName: (attributeName) ->
