@@ -67,9 +67,9 @@ class Trix.TextController
 
   toggleCurrentAttribute: (attributeName) ->
     value = not @currentAttributes[attributeName]
-    @updateCurrentAttribute(attributeName, value)
+    @setCurrentAttribute(attributeName, value)
 
-  updateCurrentAttribute: (attributeName, value) ->
+  setCurrentAttribute: (attributeName, value) ->
     if selectedRange = @getSelectedRange()
       if value
         attributes = {}

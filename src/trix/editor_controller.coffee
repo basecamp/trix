@@ -35,4 +35,4 @@ class Trix.EditorController
     @textController.unlockSelection()
 
   didUpdateAttribute: (attributeName, value) ->
-    @textController.updateCurrentAttribute(attributeName, value)
+    @textController.setCurrentAttribute(attributeName, value)
