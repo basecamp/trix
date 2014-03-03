@@ -11,6 +11,7 @@ class Trix.TextController
     @textView = new Trix.TextView @element, @text
     @selectionObserver = new Trix.SelectionObserver
     @selectionObserver.delegate = this
+
     @currentAttributes = {}
     @element.addEventListener("focus", @didFocus)
 
@@ -110,22 +111,30 @@ class Trix.TextController
 
   # Selection observer delegate
 
-  selectionDidChange: ->
+  selectionDidChange: (range) ->
+    @expireCachedSelectedRange()
     @updateCurrentAttributes()
     @delegate?.textControllerDidChangeSelection?()
 
   # Selection
 
+  getCachedSelectedRangeFromTextView: ->
+    @cachedSelectedRange ?= @textView.getSelectedRange()
+
+  expireCachedSelectedRange: ->
+    delete @cachedSelectedRange
+
   getSelectedRange: ->
-    if selectedRange = @textView.getSelectedRange()
+    if selectedRange = @getCachedSelectedRangeFromTextView()
       selectedRange unless rangeIsCollapsed(selectedRange)
 
   getPosition: ->
-    if selectedRange = @textView.getSelectedRange()
+    if selectedRange = @getCachedSelectedRangeFromTextView()
       selectedRange[0] if rangeIsCollapsed(selectedRange)
 
   setPosition: (position) ->
     @textView.setSelectedRange([position, position])
+    @expireCachedSelectedRange()
 
   expandSelectedRangeAroundCommonAttribute: (attributeName) ->
     [left, right] = @textView.getSelectedRange()
@@ -136,6 +145,7 @@ class Trix.TextController
     right++ while right < length and @text.getCommonAttributesAtRange([originalLeft, right + 1])[attributeName]
 
     @textView.setSelectedRange([left, right])
+    @expireCachedSelectedRange()
 
   lockSelection: ->
     @lockingSelection = true
