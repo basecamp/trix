@@ -16,6 +16,9 @@ class Trix.EditorController
   textControllerDidRender: ->
     @debugController.render()
 
+  textControllerDidFocus: ->
+    @toolbarController.hideDialogs()
+
   textControllerDidChangeCurrentAttributes: (currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
 
@@ -28,11 +31,9 @@ class Trix.EditorController
     @textController.toggleCurrentAttribute(attributeName)
     @textController.focus()
 
-  didShowToolbarDialog: ->
-    @textController.lockSelection()
-
-  didHideToolbarDialog: ->
-    @textController.focus()
-
   didUpdateAttribute: (attributeName, value) ->
     @textController.setCurrentAttribute(attributeName, value)
+    @textController.focus()
+
+  didShowToolbarDialog: ->
+    @textController.lockSelection()

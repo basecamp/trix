@@ -24,13 +24,11 @@ class Trix.ToolbarController
     attributeName = getButtonAttributeName(element)
     value = element.querySelector("input[name='#{attributeName}']").value
     @delegate?.didUpdateAttribute(attributeName, value)
-    @hideDialog(attributeName)
 
   didResetDialog: (event, element) =>
     event.preventDefault()
     attributeName = getButtonAttributeName(element)
     @delegate?.didUpdateAttribute(attributeName, null)
-    @hideDialog(attributeName)
 
   updateAttributes: (attributes) ->
     @attributes = attributes
@@ -54,10 +52,9 @@ class Trix.ToolbarController
     input.value = @attributes[attributeName] ? ""
     input.select()
 
-  hideDialog: (attributeName) ->
-    @delegate?.didHideToolbarDialog()
-    element = @getDialogForAttributeName(attributeName)
-    element.classList.remove("active")
+  hideDialogs: ->
+    for element in @element.querySelectorAll(dialogSelector)
+      element.classList.remove("active")
 
   getDialogForAttributeName: (attributeName) ->
     @element.querySelector(".dialog[data-attribute=#{attributeName}]")

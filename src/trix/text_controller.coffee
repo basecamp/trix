@@ -19,6 +19,7 @@ class Trix.TextController
 
   didFocus: =>
     @unlockSelection()
+    @delegate?.textControllerDidFocus?()
 
   # Text delegate
 
