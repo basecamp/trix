@@ -32,7 +32,6 @@ class Trix.EditorController
     @textController.lockSelection()
 
   didHideToolbarDialog: ->
-    @textController.unlockSelection()
     @textController.focus()
 
   didUpdateAttribute: (attributeName, value) ->
