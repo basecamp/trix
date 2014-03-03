@@ -101,7 +101,14 @@ class Trix.TextController
       @notifyDelegateOfCurrentAttributesChange()
     else if position = @getPosition()
       @currentAttributes = @text.getAttributesAtPosition(position - 1)
+      @adjustCurrentAttributesForPosition(position)
       @notifyDelegateOfCurrentAttributesChange()
+
+  adjustCurrentAttributesForPosition: (position) ->
+    # If the cursor is positioned after an href, don't consider it current.
+    if href = @currentAttributes["href"]
+      if href isnt @text.getAttributesAtPosition(position)["href"]
+        delete @currentAttributes["href"]
 
   notifyDelegateOfCurrentAttributesChange: ->
     @delegate?.textControllerDidChangeCurrentAttributes?(@currentAttributes)
