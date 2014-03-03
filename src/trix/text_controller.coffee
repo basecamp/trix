@@ -12,9 +12,13 @@ class Trix.TextController
     @selectionObserver = new Trix.SelectionObserver
     @selectionObserver.delegate = this
     @currentAttributes = {}
+    @element.addEventListener("focus", @didFocus)
 
   focus: ->
     @textView.focus()
+
+  didFocus: =>
+    @unlockSelection()
 
   # Text delegate
 
@@ -133,6 +137,7 @@ class Trix.TextController
     @textView.setSelectedRange([left, right])
 
   lockSelection: ->
+    @lockingSelection = true
     if @currentAttributes["href"]
       @expandSelectedRangeAroundCommonAttribute("href")
 
@@ -140,8 +145,10 @@ class Trix.TextController
       @text.addAttributeAtRange("selected", true, selectedRange)
 
     @textView.lockSelection()
+    delete @lockingSelection
 
   unlockSelection: ->
+    return if @lockingSelection
     if selectedRange = @getSelectedRange()
       @text.removeAttributeAtRange("selected", selectedRange)
 
