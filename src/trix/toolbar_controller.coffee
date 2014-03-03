@@ -8,6 +8,7 @@ class Trix.ToolbarController
     @attributes = {}
     Trix.DOM.on(@element, "click", buttonSelector, @didClickButton)
     Trix.DOM.on(@element, "submit", dialogSelector, @didSubmitDialog)
+    Trix.DOM.on(@element, "reset", dialogSelector, @didResetDialog)
 
   didClickButton: (event, element) =>
     event.preventDefault()
@@ -23,6 +24,12 @@ class Trix.ToolbarController
     attributeName = getButtonAttributeName(element)
     value = element.querySelector("input[name='#{attributeName}']").value
     @delegate?.didUpdateAttribute(attributeName, value)
+    @hideDialog(attributeName)
+
+  didResetDialog: (event, element) =>
+    event.preventDefault()
+    attributeName = getButtonAttributeName(element)
+    @delegate?.didUpdateAttribute(attributeName, null)
     @hideDialog(attributeName)
 
   updateAttributes: (attributes) ->
