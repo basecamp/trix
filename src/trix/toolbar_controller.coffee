@@ -43,7 +43,7 @@ class Trix.ToolbarController
       callback(element, getButtonAttributeName(element))
 
   showDialog: (attributeName) ->
-    @delegate?.didShowToolbarDialog()
+    @delegate?.willShowToolbarDialog()
 
     element = @getDialogForAttributeName(attributeName)
     element.classList.add("active")
