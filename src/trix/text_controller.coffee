@@ -19,7 +19,8 @@ class Trix.TextController
     @textView.focus()
 
   didFocus: =>
-    @unlockSelection()
+    if lockedRange = @unlockSelection()
+      @setPosition(lockedRange[1])
     @delegate?.textControllerDidFocus?()
 
   # Text delegate
@@ -95,7 +96,7 @@ class Trix.TextController
     if selectedRange = @getSelectedRange()
       @currentAttributes = @text.getCommonAttributesAtRange(selectedRange)
       @notifyDelegateOfCurrentAttributesChange()
-    else if position = @getPosition()
+    else if (position = @getPosition())?
       @currentAttributes = @text.getAttributesAtPosition(position - 1)
       @adjustCurrentAttributesForPosition(position)
       @notifyDelegateOfCurrentAttributesChange()

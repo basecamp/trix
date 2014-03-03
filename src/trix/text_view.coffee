@@ -96,7 +96,9 @@ class Trix.TextView
     @lockedRange = @getSelectedRange()
 
   unlockSelection: ->
-    delete @lockedRange
+    if lockedRange = @lockedRange
+      delete @lockedRange
+      lockedRange
 
   findPositionFromContainerAtOffset: (container, offset) ->
     if container.nodeType is Node.TEXT_NODE
