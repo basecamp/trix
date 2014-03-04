@@ -26,7 +26,7 @@ class Trix.ToolbarController
 
   setAttribute: (dialogElement) ->
     attributeName = getAttributeName(dialogElement)
-    value = getInputForDialog(dialogElement).value
+    value = getInputForDialog(dialogElement, attributeName).value
     @delegate?.toolbarDidUpdateAttribute(attributeName, value)
 
   removeAttribute: (dialogElement) ->
@@ -51,7 +51,7 @@ class Trix.ToolbarController
     element = @getDialogForAttributeName(attributeName)
     element.classList.add("active")
 
-    input = element.querySelector("input[name='#{attributeName}']")
+    input = getInputForDialog(element, attributeName)
     input.value = @attributes[attributeName] ? ""
     input.select()
 
@@ -65,6 +65,6 @@ class Trix.ToolbarController
   getAttributeName = (element) ->
     element.getAttribute("data-attribute")
 
-  getInputForDialog = (element) ->
-    attributeName = getAttributeName(element)
+  getInputForDialog = (element, attributeName) ->
+    attributeName ?= getAttributeName(element)
     element.querySelector("input[name='#{attributeName}']")
