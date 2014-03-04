@@ -12,7 +12,7 @@ class Trix.ToolbarController
 
   didClickButton: (event, element) =>
     event.preventDefault()
-    attributeName = getButtonAttributeName(element)
+    attributeName = getAttributeName(element)
 
     if @getDialogForAttributeName(attributeName)
       @showDialog(attributeName)
@@ -25,7 +25,7 @@ class Trix.ToolbarController
     @[method].call(this, dialogElement)
 
   setAttribute: (dialogElement) ->
-    attributeName = getButtonAttributeName(dialogElement)
+    attributeName = getAttributeName(dialogElement)
     value = getInputForDialog(dialogElement).value
     @delegate?.toolbarDidUpdateAttribute(attributeName, value)
 
@@ -43,7 +43,7 @@ class Trix.ToolbarController
 
   eachButton: (callback) ->
     for element in @element.querySelectorAll(buttonSelector)
-      callback(element, getButtonAttributeName(element))
+      callback(element, getAttributeName(element))
 
   showDialog: (attributeName) ->
     @delegate?.toolbarWillShowDialog()
@@ -62,9 +62,9 @@ class Trix.ToolbarController
   getDialogForAttributeName: (attributeName) ->
     @element.querySelector(".dialog[data-attribute=#{attributeName}]")
 
-  getButtonAttributeName = (element) ->
+  getAttributeName = (element) ->
     element.getAttribute("data-attribute")
 
   getInputForDialog = (element) ->
-    attributeName = getButtonAttributeName(element)
+    attributeName = getAttributeName(element)
     element.querySelector("input[name='#{attributeName}']")
