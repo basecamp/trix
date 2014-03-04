@@ -38,8 +38,8 @@ class Trix.TextView
 
     # Add an extra newline if the text ends with one. Otherwise, the cursor won't move down.
     if @text.endsWith("\n")
-     element = createElementsForString("\n", @text.getLength())[0]
-     containers.push(element)
+     node = createNodesForString("\n", @text.getLength())[0]
+     containers.push(node)
 
     containers
 
@@ -118,28 +118,28 @@ class Trix.TextView
       element.style["background-color"] = "highlight" if attributes.selected
 
     if string
-      for child in createElementsForString(string, position)
-        element.appendChild(child)
+      for node in createNodesForString(string, position)
+        element.appendChild(node)
 
     element
 
-  createElementsForString = (string, position) ->
-    elements = []
+  createNodesForString = (string, position) ->
+    nodes = []
 
     for substring, index in string.split("\n")
       if index > 0
         node = document.createElement("br")
         node.trixPosition = position
         position += 1
-        elements.push(node)
+        nodes.push(node)
 
       if substring.length
         node = document.createTextNode(preserveSpaces(substring))
         node.trixPosition = position
         position += substring.length
-        elements.push(node)
+        nodes.push(node)
 
-    elements
+    nodes
 
   preserveSpaces = (string) ->
     string
