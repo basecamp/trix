@@ -71,7 +71,9 @@ class Trix.Text
   eachRun: (callback) ->
     position = 0
     @pieceList.eachPiece (piece) ->
-      callback(piece.toString(), piece.getAttributes(), position)
+      string = piece.toString()
+      attributes = piece.getAttributes()
+      callback({string, attributes, position})
       position += piece.length
 
   inspect: ->

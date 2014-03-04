@@ -17,15 +17,15 @@ class Trix.TextView
     containers = []
     previousAttributes = {}
 
-    @text.eachRun (string, attributes, position) ->
+    @text.eachRun (run) ->
       parent = null
-      container = createContainer(string, attributes, position)
+      container = createContainer(run)
 
-      if href = attributes.href
+      if href = run.attributes.href
         if href is previousAttributes.href
           parent = containers[containers.length - 1]
         else
-          link = createContainer("", {href}, position, "a")
+          link = createContainer(tagName: "a", attributes: {href}, position: run.position)
           link.appendChild(container)
           container = link
 
@@ -34,10 +34,10 @@ class Trix.TextView
       else
         containers.push(container)
 
-      previousAttributes = attributes
+      previousAttributes = run.attributes
 
     # Add an extra newline if the text ends with one. Otherwise, the cursor won't move down.
-    containers.push(createContainer("\n", {}, @text.getLength())) if @text.endsWith("\n")
+    containers.push(createContainer(string: "\n", position: @text.getLength())) if @text.endsWith("\n")
     containers
 
   getSelectedRange: ->
@@ -102,29 +102,31 @@ class Trix.TextView
       offset = [node.parentNode.childNodes...].indexOf(node)
       [node.parentNode, offset]
 
-  createContainer = (string, attributes, position, tagName = "span") ->
-    element = document.createElement(tagName)
+  createContainer = ({string, attributes, position, tagName}) ->
+    element = document.createElement(tagName ? "span")
 
-    if attributes.href and tagName is "a"
-      element.setAttribute("href", attributes.href)
+    if attributes
+      if attributes.href and tagName is "a"
+        element.setAttribute("href", attributes.href)
 
-    element.style["font-weight"] = "bold" if attributes.bold
-    element.style["font-style"] = "italic" if attributes.italic
-    element.style["text-decoration"] = "underline" if attributes.underline
-    element.style["background-color"] = "highlight" if attributes.selected
+      element.style["font-weight"] = "bold" if attributes.bold
+      element.style["font-style"] = "italic" if attributes.italic
+      element.style["text-decoration"] = "underline" if attributes.underline
+      element.style["background-color"] = "highlight" if attributes.selected
 
-    for substring, index in string.split("\n")
-      if index > 0
-        node = document.createElement("br")
-        node.trixPosition = position
-        position += 1
-        element.appendChild(node)
+    if string
+      for substring, index in string.split("\n")
+        if index > 0
+          node = document.createElement("br")
+          node.trixPosition = position
+          position += 1
+          element.appendChild(node)
 
-      if substring.length
-        node = document.createTextNode(preserveSpaces(substring))
-        node.trixPosition = position
-        position += substring.length
-        element.appendChild(node)
+        if substring.length
+          node = document.createTextNode(preserveSpaces(substring))
+          node.trixPosition = position
+          position += substring.length
+          element.appendChild(node)
 
     element
 

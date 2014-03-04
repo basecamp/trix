@@ -16,10 +16,9 @@ class Trix.DebugController
     positionOrRange += " (locked)" if @textController.textView.lockedRange?
     lines = [positionOrRange, ""]
 
-    @textController.text.eachRun (string, attributes, position) ->
-      lines.push("Position: #{position}")
-      lines.push("String: #{JSON.stringify(string)}")
-      lines.push("Attributes: #{JSON.stringify(attributes)}")
+    @textController.text.eachRun (run) ->
+      for key, value of run
+        lines.push("#{key}: #{JSON.stringify(value)}")
       lines.push("")
 
     lines.join("\n")
