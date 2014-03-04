@@ -71,11 +71,11 @@
       <a class="button" href="#" data-attribute="bold">Bold</a>
       <a class="button" href="#" data-attribute="italic">Italic</a>
       <a class="button" href="#" data-attribute="href">Link</a>
-      <form class="dialog" data-attribute="href">
+      <div class="dialog" data-attribute="href">
         <input type="text" name="href" placeholder="Enter a URL...">
-        <input type="submit" value="Save link">
-        <input type="reset" value="Unlink">
-      </form>
+        <input type="button" value="Save link" data-method="setAttribute">
+        <input type="button" value="Unlink" data-method="removeAttribute">
+      </div>
     </div>
     <div id="text"></div>
     <pre id="debug"></pre>

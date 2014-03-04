@@ -3,12 +3,12 @@
 class Trix.ToolbarController
   buttonSelector = ".button[data-attribute]"
   dialogSelector = ".dialog[data-attribute]"
+  dialogButtonSelector = "#{dialogSelector} input[data-method]"
 
   constructor: (@element) ->
     @attributes = {}
     Trix.DOM.on(@element, "click", buttonSelector, @didClickButton)
-    Trix.DOM.on(@element, "submit", dialogSelector, @didSubmitDialog)
-    Trix.DOM.on(@element, "reset", dialogSelector, @didResetDialog)
+    Trix.DOM.on(@element, "click", dialogButtonSelector, @didClickDialogButton)
 
   didClickButton: (event, element) =>
     event.preventDefault()
@@ -19,16 +19,19 @@ class Trix.ToolbarController
     else
       @delegate?.toolbarDidToggleAttribute(attributeName)
 
-  didSubmitDialog: (event, element) =>
-    event.preventDefault()
-    attributeName = getButtonAttributeName(element)
-    value = element.querySelector("input[name='#{attributeName}']").value
+  didClickDialogButton: (event, element) =>
+    dialogElement = Trix.DOM.closest(element, dialogSelector)
+    method = element.getAttribute("data-method")
+    @[method].call(this, dialogElement)
+
+  setAttribute: (dialogElement) ->
+    attributeName = getButtonAttributeName(dialogElement)
+    value = getInputForDialog(dialogElement).value
     @delegate?.toolbarDidUpdateAttribute(attributeName, value)
 
-  didResetDialog: (event, element) =>
-    event.preventDefault()
-    attributeName = getButtonAttributeName(element)
-    @delegate?.toolbarDidUpdateAttribute(attributeName, null)
+  removeAttribute: (dialogElement) ->
+    getInputForDialog(dialogElement).value = null
+    @setAttribute(dialogElement)
 
   updateAttributes: (attributes) ->
     @attributes = attributes
@@ -61,3 +64,7 @@ class Trix.ToolbarController
 
   getButtonAttributeName = (element) ->
     element.getAttribute("data-attribute")
+
+  getInputForDialog = (element) ->
+    attributeName = getButtonAttributeName(element)
+    element.querySelector("input[name='#{attributeName}']")
