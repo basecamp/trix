@@ -11,8 +11,6 @@ class Trix.TextView
     selectedRange = @getSelectedRange()
     @element.innerHTML = ""
     @element.appendChild(container) for container in @createContainersForText()
-    @recordNodePositions()
-    @appendBRelement()
     @setSelectedRange(selectedRange)
 
   createContainersForText: ->
@@ -38,27 +36,6 @@ class Trix.TextView
 
       previousAttributes = attributes
     containers
-
-  recordNodePositions: ->
-    @nodes = []
-    @positions = []
-    walker = document.createTreeWalker(@element)
-    while walker.nextNode()
-      if walker.currentNode.trixPosition?
-        @recordNode(walker.currentNode)
-
-  recordNode: (node) ->
-    @nodes.push(node)
-    @positions.push(node.trixPosition)
-    node
-
-  # Add an extra BR if the last node is one. Without the extra, the cursor won't move down.
-  appendBRelement: ->
-    if node = @nodes[@nodes.length - 1]
-      if node.tagName?.toLowerCase() is "br"
-        br = node.cloneNode(false)
-        br.trixPosition = node.trixPosition + 1
-        @element.appendChild(@recordNode(br))
 
   getSelectedRange: ->
     return @lockedRange if @lockedRange
@@ -107,21 +84,20 @@ class Trix.TextView
       container.childNodes[offset]?.trixPosition ? offset
 
   findContainerAndOffsetForPosition: (position) ->
-    if @nodes.length is 0
-      [@element, 0]
+    return [@element, 0] if position < 1
+
+    walker = createTreeWalker(@element)
+    node = walker.currentNode
+
+    while walker.nextNode()
+      break if walker.currentNode.trixPosition > position
+      node = walker.currentNode
+
+    if node.nodeType is Node.TEXT_NODE
+      [node, position - node.trixPosition]
     else
-      index = 0
-      for currentPosition, currentIndex in @positions
-        break if position < currentPosition
-        index = currentIndex
-
-      node = @nodes[index]
-
-      if node.nodeType is Node.TEXT_NODE
-        [node, position - node.trixPosition]
-      else
-        offset = [node.parentNode.childNodes...].indexOf(node)
-        [node.parentNode, offset]
+      offset = [node.parentNode.childNodes...].indexOf(node)
+      [node.parentNode, offset]
 
   createContainer = (string, attributes, position, tagName = "span") ->
     element = document.createElement(tagName)
@@ -163,3 +139,14 @@ class Trix.TextView
       return true if element is ancestor
       element = element.parentNode
     false
+
+createTreeWalker = (element) ->
+  whatToShow = NodeFilter.SHOW_ELEMENT + NodeFilter.SHOW_TEXT
+
+  acceptNode = (node) ->
+    if node.trixPosition?
+      NodeFilter.FILTER_ACCEPT
+    else
+      NodeFilter.FILTER_SKIP
+
+  document.createTreeWalker(element, whatToShow, {acceptNode})
