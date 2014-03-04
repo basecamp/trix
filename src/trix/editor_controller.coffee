@@ -27,13 +27,13 @@ class Trix.EditorController
 
   # Toolbar controller delegate
 
-  didClickToolbarButtonForAttributeName: (attributeName) ->
+  toolbarDidToggleAttribute: (attributeName) ->
     @textController.toggleCurrentAttribute(attributeName)
     @textController.focus()
 
-  didUpdateAttribute: (attributeName, value) ->
+  toolbarDidUpdateAttribute: (attributeName, value) ->
     @textController.setCurrentAttribute(attributeName, value)
     @textController.focus()
 
-  willShowToolbarDialog: ->
+  toolbarWillShowDialog: ->
     @textController.lockSelection()

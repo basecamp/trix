@@ -17,18 +17,18 @@ class Trix.ToolbarController
     if @getDialogForAttributeName(attributeName)
       @showDialog(attributeName)
     else
-      @delegate?.didClickToolbarButtonForAttributeName?(attributeName)
+      @delegate?.toolbarDidToggleAttribute(attributeName)
 
   didSubmitDialog: (event, element) =>
     event.preventDefault()
     attributeName = getButtonAttributeName(element)
     value = element.querySelector("input[name='#{attributeName}']").value
-    @delegate?.didUpdateAttribute(attributeName, value)
+    @delegate?.toolbarDidUpdateAttribute(attributeName, value)
 
   didResetDialog: (event, element) =>
     event.preventDefault()
     attributeName = getButtonAttributeName(element)
-    @delegate?.didUpdateAttribute(attributeName, null)
+    @delegate?.toolbarDidUpdateAttribute(attributeName, null)
 
   updateAttributes: (attributes) ->
     @attributes = attributes
@@ -43,7 +43,7 @@ class Trix.ToolbarController
       callback(element, getButtonAttributeName(element))
 
   showDialog: (attributeName) ->
-    @delegate?.willShowToolbarDialog()
+    @delegate?.toolbarWillShowDialog()
 
     element = @getDialogForAttributeName(attributeName)
     element.classList.add("active")
