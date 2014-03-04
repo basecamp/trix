@@ -143,13 +143,13 @@ class Trix.TextView
       element = element.parentNode
     false
 
-createTreeWalker = (element) ->
-  whatToShow = NodeFilter.SHOW_ELEMENT + NodeFilter.SHOW_TEXT
+  createTreeWalker = (element) ->
+    whatToShow = NodeFilter.SHOW_ELEMENT + NodeFilter.SHOW_TEXT
 
-  acceptNode = (node) ->
-    if node.trixPosition?
-      NodeFilter.FILTER_ACCEPT
-    else
-      NodeFilter.FILTER_SKIP
+    acceptNode = (node) ->
+      if node.trixPosition?
+        NodeFilter.FILTER_ACCEPT
+      else
+        NodeFilter.FILTER_SKIP
 
-  document.createTreeWalker(element, whatToShow, {acceptNode})
+    document.createTreeWalker(element, whatToShow, {acceptNode})
