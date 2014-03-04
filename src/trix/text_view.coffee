@@ -10,22 +10,22 @@ class Trix.TextView
   render: ->
     selectedRange = @getSelectedRange()
     @element.innerHTML = ""
-    @element.appendChild(container) for container in @createContainersForText()
+    @element.appendChild(element) for element in @createElementsForText()
     @setSelectedRange(selectedRange)
 
-  createContainersForText: ->
+  createElementsForText: ->
     containers = []
     previousAttributes = {}
 
     @text.eachRun (run) ->
       parent = null
-      container = createContainer(run)
+      container = createElement(run)
 
       if href = run.attributes.href
         if href is previousAttributes.href
           parent = containers[containers.length - 1]
         else
-          link = createContainer(tagName: "a", attributes: {href}, position: run.position)
+          link = createElement(tagName: "a", attributes: {href}, position: run.position)
           link.appendChild(container)
           container = link
 
@@ -105,7 +105,7 @@ class Trix.TextView
       offset = [node.parentNode.childNodes...].indexOf(node)
       [node.parentNode, offset]
 
-  createContainer = ({string, attributes, position, tagName}) ->
+  createElement = ({string, attributes, position, tagName}) ->
     element = document.createElement(tagName ? "span")
 
     if attributes
