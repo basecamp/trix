@@ -99,23 +99,32 @@ class Trix.TextView
     return unless selection.rangeCount > 0
 
     range = selection.getRangeAt(0)
-    return unless isWithin(@element, range.startContainer) and isWithin(@element, range.endContainer)
 
-    startPosition = @findPositionFromContainerAtOffset(range.startContainer, range.startOffset)
-    endPosition = @findPositionFromContainerAtOffset(range.endContainer, range.endOffset)
-    [startPosition, endPosition]
+    if range.collapsed
+      if isWithin(@element, range.endContainer)
+        position = @findPositionFromContainerAtOffset(range.endContainer, range.endOffset)
+        [position, position]
+    else
+      if isWithin(@element, range.startContainer) and isWithin(@element, range.endContainer)
+        startPosition = @findPositionFromContainerAtOffset(range.startContainer, range.startOffset)
+        endPosition = @findPositionFromContainerAtOffset(range.endContainer, range.endOffset)
+        [startPosition, endPosition]
 
   setSelectedRange: ([startPosition, endPosition]) ->
     return if @lockedRange
     return unless startPosition? and endPosition?
 
-    range = document.createRange()
-    [startContainer, startOffset] = @findContainerAndOffsetForPosition(startPosition)
-    [endContainer, endOffset] = @findContainerAndOffsetForPosition(endPosition)
+    rangeStart = @findContainerAndOffsetForPosition(startPosition)
+    rangeEnd =
+      if startPosition is endPosition
+        rangeStart
+      else
+        @findContainerAndOffsetForPosition(endPosition)
 
+    range = document.createRange()
     try
-      range.setStart(startContainer, startOffset)
-      range.setEnd(endContainer, endOffset)
+      range.setStart(rangeStart...)
+      range.setEnd(rangeEnd...)
     catch err
       range.setStart(@element, 0)
       range.setEnd(@element, 0)
