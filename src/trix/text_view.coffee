@@ -7,6 +7,8 @@ class Trix.TextView
   focus: ->
     @element.focus()
 
+  # Rendering
+
   render: ->
     selectedRange = @getSelectedRange()
     @element.innerHTML = ""
@@ -42,6 +44,53 @@ class Trix.TextView
      elements.push(node)
 
     elements
+
+  createElement = ({string, attributes, position, tagName}) ->
+    element = document.createElement(tagName ? "span")
+
+    if attributes
+      if attributes.href and tagName is "a"
+        element.setAttribute("href", attributes.href)
+
+      element.style["font-weight"] = "bold" if attributes.bold
+      element.style["font-style"] = "italic" if attributes.italic
+      element.style["text-decoration"] = "underline" if attributes.underline
+      element.style["background-color"] = "highlight" if attributes.selected
+
+    if string
+      for node in createNodesForString(string, position)
+        element.appendChild(node)
+
+    element
+
+  createNodesForString = (string, position) ->
+    nodes = []
+
+    for substring, index in string.split("\n")
+      if index > 0
+        node = document.createElement("br")
+        node.trixPosition = position
+        position += 1
+        nodes.push(node)
+
+      if substring.length
+        node = document.createTextNode(preserveSpaces(substring))
+        node.trixPosition = position
+        position += substring.length
+        nodes.push(node)
+
+    nodes
+
+  preserveSpaces = (string) ->
+    string
+      # Replace two spaces with a space and a non-breaking space
+      .replace(/\s{2}/g, " \u00a0")
+      # Replace leading space with a non-breaking space
+      .replace(/^\s{1}/, "\u00a0")
+      # Replace trailing space with a non-breaking space
+      .replace(/\s{1}$/, "\u00a0")
+
+  # Selection
 
   getSelectedRange: ->
     return @lockedRange if @lockedRange
@@ -104,51 +153,6 @@ class Trix.TextView
     else
       offset = [node.parentNode.childNodes...].indexOf(node)
       [node.parentNode, offset]
-
-  createElement = ({string, attributes, position, tagName}) ->
-    element = document.createElement(tagName ? "span")
-
-    if attributes
-      if attributes.href and tagName is "a"
-        element.setAttribute("href", attributes.href)
-
-      element.style["font-weight"] = "bold" if attributes.bold
-      element.style["font-style"] = "italic" if attributes.italic
-      element.style["text-decoration"] = "underline" if attributes.underline
-      element.style["background-color"] = "highlight" if attributes.selected
-
-    if string
-      for node in createNodesForString(string, position)
-        element.appendChild(node)
-
-    element
-
-  createNodesForString = (string, position) ->
-    nodes = []
-
-    for substring, index in string.split("\n")
-      if index > 0
-        node = document.createElement("br")
-        node.trixPosition = position
-        position += 1
-        nodes.push(node)
-
-      if substring.length
-        node = document.createTextNode(preserveSpaces(substring))
-        node.trixPosition = position
-        position += substring.length
-        nodes.push(node)
-
-    nodes
-
-  preserveSpaces = (string) ->
-    string
-      # Replace two spaces with a space and a non-breaking space
-      .replace(/\s{2}/g, " \u00a0")
-      # Replace leading space with a non-breaking space
-      .replace(/^\s{1}/, "\u00a0")
-      # Replace trailing space with a non-breaking space
-      .replace(/\s{1}$/, "\u00a0")
 
   isWithin = (ancestor, element) ->
     while element
