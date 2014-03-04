@@ -14,34 +14,34 @@ class Trix.TextView
     @setSelectedRange(selectedRange)
 
   createElementsForText: ->
-    containers = []
+    elements = []
     previousAttributes = {}
 
     @text.eachRun (run) ->
       parent = null
-      container = createElement(run)
+      element = createElement(run)
 
       if href = run.attributes.href
         if href is previousAttributes.href
-          parent = containers[containers.length - 1]
+          parent = elements[elements.length - 1]
         else
           link = createElement(tagName: "a", attributes: {href}, position: run.position)
-          link.appendChild(container)
-          container = link
+          link.appendChild(element)
+          element = link
 
       if parent
-        parent.appendChild(container)
+        parent.appendChild(element)
       else
-        containers.push(container)
+        elements.push(element)
 
       previousAttributes = run.attributes
 
     # Add an extra newline if the text ends with one. Otherwise, the cursor won't move down.
     if @text.endsWith("\n")
      node = createNodesForString("\n", @text.getLength())[0]
-     containers.push(node)
+     elements.push(node)
 
-    containers
+    elements
 
   getSelectedRange: ->
     return @lockedRange if @lockedRange
