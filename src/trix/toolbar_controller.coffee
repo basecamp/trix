@@ -10,6 +10,8 @@ class Trix.ToolbarController
     Trix.DOM.on(@element, "click", buttonSelector, @didClickButton)
     Trix.DOM.on(@element, "click", dialogButtonSelector, @didClickDialogButton)
 
+  # Event handlers
+
   didClickButton: (event, element) =>
     event.preventDefault()
     attributeName = getAttributeName(element)
@@ -24,14 +26,7 @@ class Trix.ToolbarController
     method = element.getAttribute("data-method")
     @[method].call(this, dialogElement)
 
-  setAttribute: (dialogElement) ->
-    attributeName = getAttributeName(dialogElement)
-    value = getInputForDialog(dialogElement, attributeName).value
-    @delegate?.toolbarDidUpdateAttribute(attributeName, value)
-
-  removeAttribute: (dialogElement) ->
-    getInputForDialog(dialogElement).value = null
-    @setAttribute(dialogElement)
+  # Buttons
 
   updateAttributes: (attributes) ->
     @attributes = attributes
@@ -45,6 +40,8 @@ class Trix.ToolbarController
     for element in @element.querySelectorAll(buttonSelector)
       callback(element, getAttributeName(element))
 
+  # Dialogs
+
   showDialog: (attributeName) ->
     @delegate?.toolbarWillShowDialog()
 
@@ -55,6 +52,15 @@ class Trix.ToolbarController
     input.value = @attributes[attributeName] ? ""
     input.select()
 
+  setAttribute: (dialogElement) ->
+    attributeName = getAttributeName(dialogElement)
+    value = getInputForDialog(dialogElement, attributeName).value
+    @delegate?.toolbarDidUpdateAttribute(attributeName, value)
+
+  removeAttribute: (dialogElement) ->
+    getInputForDialog(dialogElement).value = null
+    @setAttribute(dialogElement)
+
   hideDialogs: ->
     for element in @element.querySelectorAll(dialogSelector)
       element.classList.remove("active")
@@ -62,9 +68,11 @@ class Trix.ToolbarController
   getDialogForAttributeName: (attributeName) ->
     @element.querySelector(".dialog[data-attribute=#{attributeName}]")
 
-  getAttributeName = (element) ->
-    element.getAttribute("data-attribute")
-
   getInputForDialog = (element, attributeName) ->
     attributeName ?= getAttributeName(element)
     element.querySelector("input[name='#{attributeName}']")
+
+  # General helpers
+
+  getAttributeName = (element) ->
+    element.getAttribute("data-attribute")
