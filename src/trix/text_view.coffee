@@ -35,6 +35,9 @@ class Trix.TextView
         containers.push(container)
 
       previousAttributes = attributes
+
+    # Add an extra newline if the text ends with one. Otherwise, the cursor won't move down.
+    containers.push(createContainer("\n", {}, @text.getLength())) if @text.endsWith("\n")
     containers
 
   getSelectedRange: ->
