@@ -34,11 +34,13 @@ class Trix.Input
 
   drop: (event) =>
     event.preventDefault()
+
     if id = event.dataTransfer.getData("id")
       element = document.getElementById(id)
       attachment = { type: "image" }
       attachment[key] = element[key] for key in ["src", "width", "height"]
 
+      @setSelectionToPointFromEvent(event)
       @responder?.insertAttachment(attachment)
 
   cut: (event) =>
@@ -82,7 +84,7 @@ class Trix.Input
     console.log "trapped event:", event
     event.preventDefault()
 
-  setSelectionToPointFromEvent = ({pageX, pageY}) ->
+  setSelectionToPointFromEvent: ({pageX, pageY}) ->
     if document.caretPositionFromPoint
       {offsetNode, offset} = document.caretPositionFromPoint(pageX, pageY)
       range = document.createRange()
@@ -92,6 +94,7 @@ class Trix.Input
       range = document.caretRangeFromPoint(pageX, pageY)
 
     if range
+      @responder?.unlockSelection()
       selection = window.getSelection()
       selection.removeAllRanges()
       selection.addRange(range)

@@ -171,6 +171,7 @@ class Trix.TextController
     if selectedRange = @getSelectedRange()
       @text.removeAttributeAtRange("selected", selectedRange)
 
+    @expireCachedSelectedRange()
     @textView.unlockSelection()
 
   rangeIsCollapsed = ([startPosition, endPosition]) ->
