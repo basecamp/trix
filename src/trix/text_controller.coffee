@@ -42,6 +42,13 @@ class Trix.TextController
 
     @setPosition(position + (if updatePosition then string.length else 0))
 
+  insertAttachment: (attachment) ->
+    text = new Trix.Text("\uFFFC", {attachment})
+
+    position = @getPosition()
+    @text.insertTextAtPosition(text, position)
+    @setPosition(position + 1)
+
   deleteFromCurrentPosition: (distance = -1) ->
     unless range = @getSelectedRange()
       position = @getPosition()

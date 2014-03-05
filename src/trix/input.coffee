@@ -33,9 +33,13 @@ class Trix.Input
       event.preventDefault()
 
   drop: (event) =>
-    if id = event.dataTransfer.getData("id")
-      console.log "Dropped attachment:", id
     event.preventDefault()
+    if id = event.dataTransfer.getData("id")
+      element = document.getElementById(id)
+      attachment = { type: "image" }
+      attachment[key] = element[key] for key in ["src", "width", "height"]
+
+      @responder?.insertAttachment(attachment)
 
   cut: (event) =>
     @responder?.deleteBackward()
