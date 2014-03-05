@@ -21,7 +21,11 @@ class Trix.TextView
 
     @text.eachRun (run) ->
       parent = null
-      element = createElement(run)
+      element =
+        if run.attributes?.attachment
+          createElementForAttachment(run)
+        else
+          createElement(run)
 
       if href = run.attributes.href
         if href is previousAttributes.href
@@ -62,6 +66,15 @@ class Trix.TextView
         element.appendChild(node)
 
     element
+
+  createElementForAttachment = ({attributes: {attachment}, position}) ->
+    switch attachment.type
+      when "image"
+        element = document.createElement("img")
+        element.trixPosition = position
+        for attribute, value of attachment when attribute isnt "type"
+          element.setAttribute(attribute, value)
+        element
 
   createNodesForString = (string, position) ->
     nodes = []
