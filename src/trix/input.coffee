@@ -33,7 +33,8 @@ class Trix.Input
       event.preventDefault()
 
   drop: (event) =>
-    setSelectionToPointFromEvent(event)
+    if id = event.dataTransfer.getData("id")
+      console.log "Dropped attachment:", id
     event.preventDefault()
 
   cut: (event) =>

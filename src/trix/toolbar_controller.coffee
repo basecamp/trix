@@ -4,11 +4,13 @@ class Trix.ToolbarController
   buttonSelector = ".button[data-attribute]"
   dialogSelector = ".dialog[data-attribute]"
   dialogButtonSelector = "#{dialogSelector} input[data-method]"
+  draggableSelector = "#{dialogSelector} [draggable]"
 
   constructor: (@element) ->
     @attributes = {}
     Trix.DOM.on(@element, "click", buttonSelector, @didClickButton)
     Trix.DOM.on(@element, "click", dialogButtonSelector, @didClickDialogButton)
+    Trix.DOM.on(@element, "dragstart", draggableSelector, @didStartDrag)
 
   # Event handlers
 
@@ -25,6 +27,9 @@ class Trix.ToolbarController
     dialogElement = Trix.DOM.closest(element, dialogSelector)
     method = element.getAttribute("data-method")
     @[method].call(this, dialogElement)
+
+  didStartDrag: (event, element) =>
+    event.dataTransfer.setData("id", element.getAttribute("id"))
 
   # Buttons
 
@@ -48,9 +53,9 @@ class Trix.ToolbarController
     element = @getDialogForAttributeName(attributeName)
     element.classList.add("active")
 
-    input = getInputForDialog(element, attributeName)
-    input.value = @attributes[attributeName] ? ""
-    input.select()
+    if input = getInputForDialog(element, attributeName)
+      input.value = @attributes[attributeName] ? ""
+      input.select()
 
   setAttribute: (dialogElement) ->
     attributeName = getAttributeName(dialogElement)
