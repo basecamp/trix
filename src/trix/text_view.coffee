@@ -40,8 +40,8 @@ class Trix.TextView
 
     # Add an extra newline if the text ends with one. Otherwise, the cursor won't move down.
     if @text.endsWith("\n")
-     node = createNodesForString("\n", @text.getLength())[0]
-     elements.push(node)
+      node = createNodesForString("\n", @text.getLength())[0]
+      elements.push(node)
 
     elements
 
