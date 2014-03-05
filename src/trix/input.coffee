@@ -33,7 +33,8 @@ class Trix.Input
       event.preventDefault()
 
   drop: (event) =>
-    @logAndCancel(event)
+    setSelectionToPointFromEvent(event)
+    event.preventDefault()
 
   cut: (event) =>
     @responder?.deleteBackward()
@@ -75,3 +76,17 @@ class Trix.Input
   logAndCancel: (event) ->
     console.log "trapped event:", event
     event.preventDefault()
+
+  setSelectionToPointFromEvent = ({pageX, pageY}) ->
+    if document.caretPositionFromPoint
+      {offsetNode, offset} = document.caretPositionFromPoint(pageX, pageY)
+      range = document.createRange()
+      range.setStart(offsetNode, offset)
+
+    else if document.caretRangeFromPoint
+      range = document.caretRangeFromPoint(pageX, pageY)
+
+    if range
+      selection = window.getSelection()
+      selection.removeAllRanges()
+      selection.addRange(range)
