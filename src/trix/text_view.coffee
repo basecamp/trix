@@ -51,6 +51,7 @@ class Trix.TextView
 
   createElement = ({string, attributes, position, tagName}) ->
     element = document.createElement(tagName ? "span")
+    element.trixPosition = position
 
     if attributes
       if attributes.href and tagName is "a"
