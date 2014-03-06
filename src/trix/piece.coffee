@@ -1,7 +1,10 @@
 #= require trix/hash
 
 class Trix.Piece
+  id = 0
+
   constructor: (@string, attributes = {}) ->
+    @id = ++id
     @attributes = Trix.Hash.box(attributes)
     @length = @string.length
 
