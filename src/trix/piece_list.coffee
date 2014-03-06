@@ -108,6 +108,9 @@ class Trix.PieceList
   toString: ->
     @pieces.join("")
 
+  toArray: ->
+    @pieces.slice(0)
+
   inspect: ->
     result = []
     result.push(piece.inspect()) for piece in @pieces

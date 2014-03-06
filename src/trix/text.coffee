@@ -2,10 +2,13 @@
 #= require trix/piece_list
 
 class Trix.Text
-  constructor: (string = "", attributes) ->
-    piece = new Trix.Piece string, attributes
-    @pieceList = new Trix.PieceList [piece]
+  constructor: (source = "", attributes) ->
     @editDepth = 0
+    if Array.isArray(source)
+      @pieceList = new Trix.PieceList source
+    else
+      piece = new Trix.Piece source, attributes
+      @pieceList = new Trix.PieceList [piece]
 
   edit = (fn) -> ->
     @beginEditing()
@@ -60,6 +63,9 @@ class Trix.Text
 
   getLength: ->
     @pieceList.getLength()
+
+  getTextAtRange: (range) ->
+    new @constructor @pieceList.getPieceListInRange(range).toArray()
 
   getStringAtRange: (range) ->
     @pieceList.getPieceListInRange(range).toString()
