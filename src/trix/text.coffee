@@ -3,13 +3,17 @@
 #= require trix/piece_list
 
 class Trix.Text
-  constructor: (source = "", attributes) ->
+  @textForAttachmentWithAttributes: (attachment, attributes) ->
+    piece = new Trix.AttachmentPiece attachment, attributes
+    new this [piece]
+
+  @textForStringWithAttributes: (string, attributes) ->
+    piece = new Trix.Piece string, attributes
+    new this [piece]
+
+  constructor: (pieces = []) ->
     @editDepth = 0
-    if Array.isArray(source)
-      @pieceList = new Trix.PieceList source
-    else
-      piece = new Trix.Piece source, attributes
-      @pieceList = new Trix.PieceList [piece]
+    @pieceList = new Trix.PieceList pieces
 
   edit = (fn) -> ->
     @beginEditing()
@@ -38,11 +42,6 @@ class Trix.Text
   replaceTextAtRange: edit (text, range) ->
     @removeTextAtRange(range)
     @insertTextAtPosition(text, range[0])
-
-  insertAttachmentAtPosition: edit (attachment, attributes, position) ->
-    attachmentPiece = new Trix.AttachmentPiece(attachment, attributes)
-    pieceList = new Trix.PieceList([attachmentPiece])
-    @pieceList.insertPieceListAtPosition(pieceList, position)
 
   addAttributeAtRange: edit (attribute, value, range) ->
     attributes = {}
