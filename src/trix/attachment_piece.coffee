@@ -7,5 +7,5 @@ class Trix.AttachmentPiece extends Trix.Piece
     @attachment = attributes
     super(objectReplacementCharacter, pieceAttributes)
 
-  isAppendable: ->
+  canBeConsolidatedWithPiece: (piece) ->
     false
