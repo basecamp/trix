@@ -35,5 +35,8 @@ class Trix.EditorController
     @textController.setCurrentAttribute(attributeName, value)
     @textController.focus()
 
+  toolbarDidHideDialog: ->
+    @textController.focus()
+
   toolbarWillShowDialog: ->
     @textController.lockSelection()

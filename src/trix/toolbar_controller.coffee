@@ -20,7 +20,7 @@ class Trix.ToolbarController
     attributeName = getAttributeName(element)
 
     if @getDialogForAttributeName(attributeName)
-      @showDialog(attributeName)
+      @toggleDialog(attributeName)
     else
       @delegate?.toolbarDidToggleAttribute(attributeName)
 
@@ -47,6 +47,14 @@ class Trix.ToolbarController
       callback(element, getAttributeName(element))
 
   # Dialogs
+
+  toggleDialog: (attributeName) ->
+    element = @getDialogForAttributeName(attributeName)
+    if element.classList.contains("active")
+      @hideDialog()
+      @delegate?.toolbarDidHideDialog()
+    else
+      @showDialog(attributeName)
 
   showDialog: (attributeName) ->
     @hideDialog()
