@@ -48,6 +48,7 @@ class Trix.ToolbarController
   # Dialogs
 
   showDialog: (attributeName) ->
+    @hideDialogs()
     @delegate?.toolbarWillShowDialog()
 
     element = @getDialogForAttributeName(attributeName)

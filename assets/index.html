@@ -54,10 +54,11 @@
 
       #toolbar .dialog {
         display: none;
+        padding-top: 10px;
       }
 
       #toolbar .dialog.active {
-        display: inline;
+        display: block;
       }
 
       #debug {
@@ -69,15 +70,14 @@
     <div id="toolbar">
       <a class="button" href="#" data-attribute="bold">Bold</a>
       <a class="button" href="#" data-attribute="italic">Italic</a>
-
       <a class="button" href="#" data-attribute="href">Link</a>
+      <a class="button" href="#" data-attribute="attachment">Image</a>
+
       <div class="dialog" data-attribute="href">
         <input type="text" name="href" placeholder="Enter a URL...">
         <input type="button" value="Save link" data-method="setAttribute">
         <input type="button" value="Unlink" data-method="removeAttribute">
       </div>
-
-      <a class="button" href="#" data-attribute="attachment">Image</a>
       <div class="dialog" data-attribute="attachment">
         <img src="/basecamp.png" id="attachment_1" draggable>
       </div>
