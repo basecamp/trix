@@ -3,6 +3,7 @@ class Trix.TextView
     @element.setAttribute("contenteditable", "true")
     @element.setAttribute("autocorrect", "off")
     @element.setAttribute("spellcheck", "false")
+    @element.trixPosition = 0
 
   focus: ->
     @element.focus()
@@ -159,7 +160,13 @@ class Trix.TextView
     if container.nodeType is Node.TEXT_NODE
       container.trixPosition + offset
     else
-      container.childNodes[offset]?.trixPosition ? offset
+      if container.hasChildNodes()
+        if container.childNodes.length is offset
+          container.lastChild.trixPosition + 1
+        else
+          container.childNodes[offset].trixPosition
+      else
+        container.trixPosition
 
   findContainerAndOffsetForPosition: (position) ->
     return [@element, 0] if position < 1
@@ -172,10 +179,17 @@ class Trix.TextView
       node = walker.currentNode
 
     if node.nodeType is Node.TEXT_NODE
-      [node, position - node.trixPosition]
+      container = node
+      offset = position - node.trixPosition
     else
-      offset = [node.parentNode.childNodes...].indexOf(node)
-      [node.parentNode, offset]
+      container = node.parentNode
+      offset =
+        if node.nextSibling
+          [node.parentNode.childNodes...].indexOf(node)
+        else
+          node.parentNode.childNodes.length
+
+    [container, offset]
 
   isWithin = (ancestor, element) ->
     while element
