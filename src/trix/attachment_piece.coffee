@@ -1,6 +1,6 @@
 #= require trix/piece
 
-class Trix.Attachment extends Trix.Piece
+class Trix.AttachmentPiece extends Trix.Piece
   objectReplacementCharacter = "\uFFFC"
 
   constructor: (attributes, pieceAttributes) ->

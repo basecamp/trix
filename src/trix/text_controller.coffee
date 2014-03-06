@@ -44,11 +44,9 @@ class Trix.TextController
     text = new Trix.Text(string, @currentAttributes)
     @insertText(text, updatePosition)
 
-  insertAttachment: (attributes) ->
-    attachment = new Trix.Attachment(attributes, @currentAttributes)
-
+  insertAttachment: (attachment) ->
     position = @getPosition()
-    @text.insertAttachmentAtPosition(attachment, position)
+    @text.insertAttachmentAtPosition(attachment, @currentAttributes, position)
     @setPosition(position + 1)
 
   deleteFromCurrentPosition: (distance = -1) ->
