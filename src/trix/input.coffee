@@ -1,5 +1,5 @@
 class Trix.Input
-  @events: "keydown keypress drop cut paste input".split(" ")
+  @events: "keydown keypress dragstart dragend drop cut paste input".split(" ")
   @keys:
     0x08: "backspace"
     0x0D: "return"
@@ -32,10 +32,22 @@ class Trix.Input
       @responder?.insertString(character)
       event.preventDefault()
 
+  dragstart: (event) =>
+    @draggedText = @responder?.getTextFromSelection()
+
+  dragend: (event) =>
+    delete @draggedText
+
   drop: (event) =>
     event.preventDefault()
 
-    if id = event.dataTransfer.getData("id")
+    if @draggedText
+      @responder?.deleteBackward()
+      @setSelectionToPointFromEvent(event)
+      @responder?.insertText(@draggedText)
+      delete @draggedText
+
+    else if id = event.dataTransfer.getData("id")
       element = document.getElementById(id)
       attachment = { type: "image" }
       attachment[key] = element[key] for key in ["src", "width", "height"]

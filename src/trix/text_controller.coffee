@@ -75,6 +75,10 @@ class Trix.TextController
       positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
       @deleteFromCurrentPosition(positionBeforeLastWord - position)
 
+  getTextFromSelection: ->
+    if selectedRange = @getSelectedRange()
+      @text.getTextAtRange(selectedRange)
+
   render: ->
     @textView.render()
     @delegate?.textControllerDidRender?()
