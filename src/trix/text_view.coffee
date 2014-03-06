@@ -23,7 +23,7 @@ class Trix.TextView
     @text.eachRun (run) ->
       parent = null
       element =
-        if run.attributes?.attachment
+        if run.attachment
           createElementForAttachment(run)
         else
           createElement(run)
@@ -69,7 +69,7 @@ class Trix.TextView
 
     element
 
-  createElementForAttachment = ({attributes: {attachment}, position}) ->
+  createElementForAttachment = ({attachment, position}) ->
     switch attachment.type
       when "image"
         element = document.createElement("img")
