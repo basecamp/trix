@@ -17,7 +17,7 @@ class Trix.EditorController
     @debugController.render()
 
   textControllerDidFocus: ->
-    @toolbarController.hideDialogs()
+    @toolbarController.hideDialogsThatFocus()
 
   textControllerDidChangeCurrentAttributes: (currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)

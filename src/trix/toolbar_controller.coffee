@@ -3,6 +3,7 @@
 class Trix.ToolbarController
   buttonSelector = ".button[data-attribute]"
   dialogSelector = ".dialog[data-attribute]"
+  activeDialogSelector = "#{dialogSelector}.active"
   dialogButtonSelector = "#{dialogSelector} input[data-method]"
   draggableSelector = "#{dialogSelector} [draggable]"
 
@@ -48,7 +49,7 @@ class Trix.ToolbarController
   # Dialogs
 
   showDialog: (attributeName) ->
-    @hideDialogs()
+    @hideDialog()
     @delegate?.toolbarWillShowDialog()
 
     element = @getDialogForAttributeName(attributeName)
@@ -67,9 +68,12 @@ class Trix.ToolbarController
     getInputForDialog(dialogElement).value = null
     @setAttribute(dialogElement)
 
-  hideDialogs: ->
-    for element in @element.querySelectorAll(dialogSelector)
-      element.classList.remove("active")
+  hideDialog: ->
+    @element.querySelector(activeDialogSelector)?.classList.remove("active")
+
+  hideDialogsThatFocus: ->
+    for element in @element.querySelectorAll(activeDialogSelector)
+      element.classList.remove("active") if element.querySelector("input")
 
   getDialogForAttributeName: (attributeName) ->
     @element.querySelector(".dialog[data-attribute=#{attributeName}]")
