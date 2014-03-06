@@ -30,9 +30,7 @@ class Trix.TextController
 
   # Input responder
 
-  insertString: (string, updatePosition = true) ->
-    text = new Trix.Text(string, @currentAttributes)
-
+  insertText: (text, updatePosition = true) ->
     if selectedRange = @getSelectedRange()
       position = selectedRange[0]
       @text.replaceTextAtRange(text, selectedRange)
@@ -40,7 +38,11 @@ class Trix.TextController
       position = @getPosition()
       @text.insertTextAtPosition(text, position)
 
-    @setPosition(position + (if updatePosition then string.length else 0))
+    @setPosition(position + (if updatePosition then text.getLength() else 0))
+
+  insertString: (string, updatePosition = true) ->
+    text = new Trix.Text(string, @currentAttributes)
+    @insertText(text, updatePosition)
 
   insertAttachment: (attachment) ->
     text = new Trix.Text("\uFFFC", {attachment})
