@@ -12,10 +12,10 @@ class Trix.Piece
     new Trix.Piece @string, attributes
 
   copyWithAdditionalAttributes: (attributes) ->
-    new Trix.Piece @string, @attributes.merge(attributes)
+    @copyWithAttributes(@attributes.merge(attributes))
 
   copyWithoutAttribute: (attribute) ->
-    new Trix.Piece @string, @attributes.remove(attribute)
+    @copyWithAttributes(@attributes.remove(attribute))
 
   getAttributesHash: ->
     @attributes
