@@ -1,4 +1,5 @@
 #= require trix/piece
+#= require trix/attachment
 #= require trix/piece_list
 
 class Trix.Text
@@ -37,6 +38,10 @@ class Trix.Text
   replaceTextAtRange: edit (text, range) ->
     @removeTextAtRange(range)
     @insertTextAtPosition(text, range[0])
+
+  insertAttachmentAtPosition: edit (attachment, position) ->
+    pieceList = new Trix.PieceList [attachment]
+    @pieceList.insertPieceListAtPosition(pieceList, position)
 
   addAttributeAtRange: edit (attribute, value, range) ->
     attributes = {}

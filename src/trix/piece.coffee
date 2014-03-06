@@ -32,7 +32,13 @@ class Trix.Piece
     attributes.toObject()
 
   hasSameAttributesAsPiece: (piece) ->
-    piece? and (@attributes is piece.attributes or @attributes.isEqualTo(piece.attributes))
+    @attributes is piece.attributes or @attributes.isEqualTo(piece.attributes)
+
+  isAppendable: ->
+    true
+
+  canAppendToPiece: (piece) ->
+    piece? and @isAppendable() and piece.isAppendable() and @hasSameAttributesAsPiece(piece)
 
   append: (piece) ->
     new Trix.Piece @string + piece, @attributes

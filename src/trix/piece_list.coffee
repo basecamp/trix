@@ -82,7 +82,7 @@ class Trix.PieceList
     pendingPiece = @pieces[0]
 
     for piece in @pieces[1..]
-      if pendingPiece.hasSameAttributesAsPiece(piece)
+      if pendingPiece.canAppendToPiece(piece)
         pendingPiece = pendingPiece.append(piece)
       else
         pieces.push(pendingPiece)
