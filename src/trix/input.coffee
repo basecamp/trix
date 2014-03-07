@@ -21,7 +21,7 @@ class Trix.Input
       context[keyName]?.call this, event
 
   keypress: (event) =>
-    return if event.metaKey or event.ctrlKey or event.altKey
+    return if (event.metaKey or event.ctrlKey) and not event.altKey
 
     if event.which is null
       character = String.fromCharCode event.keyCode
