@@ -66,6 +66,19 @@ class Trix.TextController
       positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
       @deleteFromCurrentPosition(positionBeforeLastWord - position)
 
+  beginComposing: ->
+    @textView.lockSelection()
+    @composing = true
+
+  isComposing: ->
+    @composing
+
+  endComposing: (composedString) ->
+    @render()
+    @textView.unlockSelection()
+    @insertString(composedString)
+    delete @composing
+
   render: ->
     @textView.render()
     @delegate?.textControllerDidRender?()

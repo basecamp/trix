@@ -1,5 +1,5 @@
 class Trix.Input
-  @events: "keydown keypress drop cut paste input".split(" ")
+  @events: "keydown keypress drop cut paste compositionstart compositionend input".split(" ")
   @keys:
     0x08: "backspace"
     0x0D: "return"
@@ -43,9 +43,20 @@ class Trix.Input
       @responder?.insertString(text)
     event.preventDefault()
 
+  compositionstart: (event) =>
+    @responder?.beginComposing()
+
+  compositionend: (event) =>
+    @composedString = event.data
+
   input: (event) =>
-    @responder?.render()
-    @logAndCancel(event)
+    if @responder?.isComposing()
+      if @composedString?
+        @responder?.endComposing(@composedString)
+        delete @composedString
+    else
+      @responder?.render()
+      @logAndCancel(event)
 
   backspace: (event) ->
     @responder?.deleteBackward()
@@ -73,5 +84,5 @@ class Trix.Input
       event.preventDefault()
 
   logAndCancel: (event) ->
-    console.log "trapped event:", event
+    console.log "trapped event", event.type, event
     event.preventDefault()
