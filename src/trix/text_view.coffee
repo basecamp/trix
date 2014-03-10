@@ -4,6 +4,7 @@ class Trix.TextView
     @element.setAttribute("autocorrect", "off")
     @element.setAttribute("spellcheck", "false")
     @element.trixPosition = 0
+    document.execCommand("enableObjectResizing", false, "false")
 
   focus: ->
     @element.focus()
