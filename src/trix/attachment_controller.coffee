@@ -3,14 +3,13 @@
 {DOM} = Trix
 
 class Trix.AttachmentController
-  events = "dragstart drag dragend".split(" ")
   imageEditorSelector = "div.image-editor"
   imageResizeHandleSelector = "#{imageEditorSelector} div.resize-handle"
 
   constructor: (@element, @responder) ->
     DOM.on(@element, "click", "img", @didClickImage)
-
-    for event in events
+    DOM.on(@element, "dragover", @dragover)
+    for event in ["dragstart", "dragend"]
       DOM.on(@element, event, imageResizeHandleSelector, @[event])
 
   didClickImage: (event, image) =>
@@ -21,6 +20,8 @@ class Trix.AttachmentController
 
   dragstart: (event, element) =>
     event.dataTransfer.effectAllowed = "none"
+    event.dataTransfer.setData("text/plain", "resize")
+
     @dragging =
       editor: editor = element.parentElement
       image: editor.firstChild
@@ -28,8 +29,10 @@ class Trix.AttachmentController
       maxWidth: parseInt(getDimensions(@element).width, 10)
       startX: event.clientX
 
-  drag: (event, element) =>
+  dragover: (event, element) =>
+    return unless @dragging
     width = @dragging.width + event.clientX - @dragging.startX
+
     unless width > @dragging.maxWidth
       width = "#{width}px"
       height = getDimensions(@dragging.image).height
