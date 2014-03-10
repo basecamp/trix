@@ -1,5 +1,5 @@
 class Trix.Input
-  @events: "keydown keypress dragstart dragend drop cut paste input".split(" ")
+  @events: "keydown keypress dragstart dragend drop cut paste compositionstart compositionend input".split(" ")
   @keys:
     0x08: "backspace"
     0x0D: "return"
@@ -21,7 +21,7 @@ class Trix.Input
       context[keyName]?.call this, event
 
   keypress: (event) =>
-    return if event.metaKey or event.ctrlKey or event.altKey
+    return if (event.metaKey or event.ctrlKey) and not event.altKey
 
     if event.which is null
       character = String.fromCharCode event.keyCode
@@ -63,9 +63,20 @@ class Trix.Input
       @responder?.insertString(text)
     event.preventDefault()
 
+  compositionstart: (event) =>
+    @responder?.beginComposing()
+
+  compositionend: (event) =>
+    @composedString = event.data
+
   input: (event) =>
-    @responder?.render()
-    @logAndCancel(event)
+    if @responder?.isComposing()
+      if @composedString?
+        @responder?.endComposing(@composedString)
+        delete @composedString
+    else
+      @responder?.render()
+      @logAndCancel(event)
 
   backspace: (event) ->
     @responder?.deleteBackward()
@@ -93,7 +104,7 @@ class Trix.Input
       event.preventDefault()
 
   logAndCancel: (event) ->
-    console.log "trapped event:", event
+    console.log "trapped event", event.type, event
     event.preventDefault()
 
   setSelectionToPointFromEvent: ({pageX, pageY}) ->

@@ -76,6 +76,19 @@ class Trix.TextController
     if selectedRange = @getSelectedRange()
       @text.getTextAtRange(selectedRange)
 
+  beginComposing: ->
+    @textView.lockSelection()
+    @composing = true
+
+  isComposing: ->
+    @composing
+
+  endComposing: (composedString) ->
+    @render()
+    @textView.unlockSelection()
+    @insertString(composedString)
+    delete @composing
+
   render: ->
     @textView.render()
     @delegate?.textControllerDidRender?()
