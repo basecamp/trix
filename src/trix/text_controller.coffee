@@ -2,6 +2,7 @@
 #= require trix/input
 #= require trix/text_view
 #= require trix/selection_observer
+#= require trix/attachment_controller
 
 class Trix.TextController
   constructor: (@element) ->
@@ -11,6 +12,7 @@ class Trix.TextController
     @textView = new Trix.TextView @element, @text
     @selectionObserver = new Trix.SelectionObserver
     @selectionObserver.delegate = this
+    @attachmentController = new Trix.AttachmentController @element
 
     @currentAttributes = {}
     @element.addEventListener("focus", @didFocus)
