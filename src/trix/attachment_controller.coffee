@@ -39,9 +39,11 @@ class Trix.AttachmentController
     @element.removeEventListener("mousemove", @didMoveMouseToResize)
     document.removeEventListener("mouseup", @didMouseUpToEndResize)
 
-    @delegate?.attachmentControllerDidChangeAttributesAtPosition(getDimensions(@resizing.image), @resizing.image.trixPosition)
-    uninstallImageEditor(@resizing.image)
+    {image} = @resizing
     delete @resizing
+
+    uninstallImageEditor(image)
+    @delegate?.attachmentControllerDidChangeAttributesAtPosition(getDimensions(image), image.trixPosition)
 
   installImageEditor = (image) ->
     editor = document.createElement("div")
