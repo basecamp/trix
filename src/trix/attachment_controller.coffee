@@ -43,7 +43,9 @@ class Trix.AttachmentController
     delete @resizing
 
     uninstallImageEditor(image)
-    @delegate?.attachmentControllerDidChangeAttributesAtPosition(getDimensions(image), image.trixPosition)
+    # Use offsets to avoid possible sub-pixel dimensions from the computed style
+    attributes = { width: image.offsetWidth, height: image.offsetHeight }
+    @delegate?.attachmentControllerDidChangeAttributesAtPosition(attributes, image.trixPosition)
 
   installImageEditor = (image) ->
     editor = document.createElement("div")

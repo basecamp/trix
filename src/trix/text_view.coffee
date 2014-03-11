@@ -76,7 +76,7 @@ class Trix.TextView
         element = document.createElement("img")
         element.trixPosition = position
         element.setAttribute(key, value) for key, value of attachment when key isnt "type"
-        element.style[key] = attributes[key] for key in ["width", "height"]
+        element.style[key] = attributes[key] + "px" for key in ["width", "height"] when attributes[key]?
         element
 
   createNodesForString = (string, position) ->
