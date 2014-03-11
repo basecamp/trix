@@ -72,6 +72,15 @@ class Trix.TextController
       positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
       @deleteFromCurrentPosition(positionBeforeLastWord - position)
 
+  positionAtPoint: (point) ->
+    position = @textView.getPositionAtPoint(point)
+    @setPosition(position)
+
+  moveTextFromRange: (range) ->
+    position = @getPosition()
+    @text.moveTextFromRangeToPosition(range, position)
+    @setPosition(position)
+
   getTextFromSelection: ->
     if selectedRange = @getSelectedRange()
       @text.getTextAtRange(selectedRange)
@@ -157,8 +166,12 @@ class Trix.TextController
       selectedRange[0] if rangeIsCollapsed(selectedRange)
 
   setPosition: (position) ->
+    @focus()
     @textView.setSelectedRange([position, position])
     @expireCachedSelectedRange()
+
+  getPositionAtPoint: (point) ->
+    @textView.findPositionAtPoint(point)
 
   expandSelectedRangeAroundCommonAttribute: (attributeName) ->
     [left, right] = @textView.getSelectedRange()

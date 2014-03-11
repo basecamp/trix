@@ -33,26 +33,24 @@ class Trix.Input
       event.preventDefault()
 
   dragstart: (event) =>
-    @draggedText = @responder?.getTextFromSelection()
+    @draggedRange = @responder?.getSelectedRange()
 
   dragend: (event) =>
-    delete @draggedText
+    delete @draggedRange
 
   drop: (event) =>
     event.preventDefault()
+    point = [event.pageX, event.pageY]
+    @responder?.positionAtPoint(point)
 
-    if @draggedText
-      @responder?.deleteBackward()
-      @setSelectionToPointFromEvent(event)
-      @responder?.insertText(@draggedText)
-      delete @draggedText
+    if @draggedRange
+      @responder?.moveTextFromRange(@draggedRange)
+      delete @draggedRange
 
     else if id = event.dataTransfer.getData("id")
       element = document.getElementById(id)
       attachment = { type: "image" }
       attachment[key] = element[key] for key in ["src", "width", "height"]
-
-      @setSelectionToPointFromEvent(event)
       @responder?.insertAttachment(attachment)
 
   cut: (event) =>
@@ -106,18 +104,3 @@ class Trix.Input
   logAndCancel: (event) ->
     console.log "trapped event", event.type, event
     event.preventDefault()
-
-  setSelectionToPointFromEvent: ({pageX, pageY}) ->
-    if document.caretPositionFromPoint
-      {offsetNode, offset} = document.caretPositionFromPoint(pageX, pageY)
-      range = document.createRange()
-      range.setStart(offsetNode, offset)
-
-    else if document.caretRangeFromPoint
-      range = document.caretRangeFromPoint(pageX, pageY)
-
-    if range
-      @responder?.unlockSelection()
-      selection = window.getSelection()
-      selection.removeAllRanges()
-      selection.addRange(range)

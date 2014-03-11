@@ -105,7 +105,20 @@ class Trix.TextView
       # Replace trailing space with a non-breaking space
       .replace(/\s{1}$/, "\u00a0")
 
-  # Selection
+  # Position & Selection
+
+  getPositionAtPoint: ([pageX, pageY]) ->
+    if document.caretPositionFromPoint
+      {offsetNode, offset} = document.caretPositionFromPoint(pageX, pageY)
+      domRange = document.createRange()
+      domRange.setStart(offsetNode, offset)
+
+    else if document.caretRangeFromPoint
+      domRange = document.caretRangeFromPoint(pageX, pageY)
+
+    if domRange
+      if range = @findRangeFromDOMRange(domRange)
+        range[0]
 
   getSelectedRange: ->
     return @lockedRange if @lockedRange
@@ -113,17 +126,8 @@ class Trix.TextView
     selection = window.getSelection()
     return unless selection.rangeCount > 0
 
-    range = selection.getRangeAt(0)
-
-    if range.collapsed
-      if isWithin(@element, range.endContainer)
-        position = @findPositionFromContainerAtOffset(range.endContainer, range.endOffset)
-        [position, position]
-    else
-      if isWithin(@element, range.startContainer) and isWithin(@element, range.endContainer)
-        startPosition = @findPositionFromContainerAtOffset(range.startContainer, range.startOffset)
-        endPosition = @findPositionFromContainerAtOffset(range.endContainer, range.endOffset)
-        [startPosition, endPosition]
+    domRange = selection.getRangeAt(0)
+    @findRangeFromDOMRange(domRange)
 
   setSelectedRange: ([startPosition, endPosition]) ->
     return if @lockedRange
@@ -155,6 +159,19 @@ class Trix.TextView
     if lockedRange = @lockedRange
       delete @lockedRange
       lockedRange
+
+  # Private
+
+  findRangeFromDOMRange: (range) ->
+    if range.collapsed
+      if isWithin(@element, range.endContainer)
+        position = @findPositionFromContainerAtOffset(range.endContainer, range.endOffset)
+        [position, position]
+    else
+      if isWithin(@element, range.startContainer) and isWithin(@element, range.endContainer)
+        startPosition = @findPositionFromContainerAtOffset(range.startContainer, range.startOffset)
+        endPosition = @findPositionFromContainerAtOffset(range.endContainer, range.endOffset)
+        [startPosition, endPosition]
 
   findPositionFromContainerAtOffset: (container, offset) ->
     if container.nodeType is Node.TEXT_NODE

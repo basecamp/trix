@@ -43,6 +43,13 @@ class Trix.Text
     @removeTextAtRange(range)
     @insertTextAtPosition(text, range[0])
 
+  moveTextFromRangeToPosition: edit (range, position) ->
+    text = @getTextAtRange(range)
+    length = text.getLength()
+    position -= length if range[0] < position
+    @removeTextAtRange(range)
+    @insertTextAtPosition(text, position)
+
   addAttributeAtRange: edit (attribute, value, range) ->
     attributes = {}
     attributes[attribute] = value
