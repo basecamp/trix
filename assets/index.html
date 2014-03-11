@@ -64,6 +64,29 @@
       #debug {
         white-space: pre-wrap;
       }
+
+      #text .image-editor {
+        position: relative;
+        display: inline-block;
+      }
+
+      #text .image-editor img {
+        outline: 1px dashed #333;
+      }
+
+      #text .image-editor .resize-handle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border: 1px solid #333;
+        background: white;
+      }
+
+      #text .image-editor .resize-handle.se {
+        bottom: -4px;
+        right: -4px;
+        cursor: nwse-resize;
+      }
     </style>
   </head>
   <body>

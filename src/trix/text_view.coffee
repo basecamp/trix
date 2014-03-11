@@ -4,6 +4,7 @@ class Trix.TextView
     @element.setAttribute("autocorrect", "off")
     @element.setAttribute("spellcheck", "false")
     @element.trixPosition = 0
+    document.execCommand("enableObjectResizing", false, "false")
 
   focus: ->
     @element.focus()
@@ -69,13 +70,13 @@ class Trix.TextView
 
     element
 
-  createElementForAttachment = ({attachment, position}) ->
+  createElementForAttachment = ({attachment, attributes, position}) ->
     switch attachment.type
       when "image"
         element = document.createElement("img")
         element.trixPosition = position
-        for attribute, value of attachment when attribute isnt "type"
-          element.setAttribute(attribute, value)
+        element.setAttribute(key, value) for key, value of attachment when key isnt "type"
+        element.style[key] = attributes[key] + "px" for key in ["width", "height"] when attributes[key]?
         element
 
   createNodesForString = (string, position) ->

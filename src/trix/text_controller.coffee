@@ -2,6 +2,7 @@
 #= require trix/input
 #= require trix/text_view
 #= require trix/selection_observer
+#= require trix/attachment_controller
 
 class Trix.TextController
   constructor: (@element) ->
@@ -11,6 +12,8 @@ class Trix.TextController
     @textView = new Trix.TextView @element, @text
     @selectionObserver = new Trix.SelectionObserver
     @selectionObserver.delegate = this
+    @attachmentController = new Trix.AttachmentController @element
+    @attachmentController.delegate = this
 
     @currentAttributes = {}
     @element.addEventListener("focus", @didFocus)
@@ -27,6 +30,11 @@ class Trix.TextController
 
   didEditText: (text) ->
     @render()
+
+  # Attachment controller delegate
+
+  attachmentControllerDidChangeAttributesAtPosition: (attributes, position) ->
+    @text.addAttributesAtRange(attributes, [position, position + 1])
 
   # Input responder
 
@@ -129,15 +137,17 @@ class Trix.TextController
       @currentAttributes = @text.getCommonAttributesAtRange(selectedRange)
       @notifyDelegateOfCurrentAttributesChange()
     else if (position = @getPosition())?
+      # TODO: Consider whitelisting allowed current attributes from previous position
       @currentAttributes = @text.getAttributesAtPosition(position - 1)
       @adjustCurrentAttributesForPosition(position)
       @notifyDelegateOfCurrentAttributesChange()
 
   adjustCurrentAttributesForPosition: (position) ->
-    # If the cursor is positioned after an href, don't consider it current.
-    if href = @currentAttributes["href"]
-      if href isnt @text.getAttributesAtPosition(position)["href"]
-        delete @currentAttributes["href"]
+    # Don't consider these attributes current when the cursor is positioned after them
+    for attribute in ["href", "width", "height"]
+      if currentAttribute = @currentAttributes[attribute]
+        if currentAttribute isnt @text.getAttributesAtPosition(position)[attribute]
+          delete @currentAttributes[attribute]
 
   notifyDelegateOfCurrentAttributesChange: ->
     @delegate?.textControllerDidChangeCurrentAttributes?(@currentAttributes)
