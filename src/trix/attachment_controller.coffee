@@ -8,9 +8,7 @@ class Trix.AttachmentController
 
   constructor: (@element, @responder) ->
     DOM.on(@element, "click", "img", @didClickImage)
-    DOM.on(@element, "dragover", @dragover)
-    for event in ["dragstart", "dragend"]
-      DOM.on(@element, event, imageResizeHandleSelector, @[event])
+    DOM.on(@element, "mousedown", imageResizeHandleSelector, @didMouseDownResizeHandle)
 
   didClickImage: (event, image) =>
     if DOM.closest(image, imageEditorSelector)
@@ -18,30 +16,36 @@ class Trix.AttachmentController
     else
       installImageEditor(image)
 
-  dragstart: (event, element) =>
-    event.dataTransfer.effectAllowed = "none"
-    event.dataTransfer.setData("text/plain", "resize")
+  didMouseDownResizeHandle: (event, handleElement) =>
+    event.preventDefault()
 
-    @dragging =
-      editor: editor = element.parentElement
+    @element.style["cursor"] = window.getComputedStyle(handleElement)["cursor"]
+    @element.addEventListener("mousemove", @didMoveMouseToResize)
+    document.addEventListener("mouseup", @didMouseUpToEndResize)
+
+    @resizing =
+      editor: editor = handleElement.parentElement
       image: editor.firstChild
       width: parseInt(getDimensions(editor).width, 10)
       maxWidth: parseInt(getDimensions(@element).width, 10)
       startX: event.clientX
 
-  dragover: (event, element) =>
-    return unless @dragging
-    width = @dragging.width + event.clientX - @dragging.startX
+  didMoveMouseToResize: (event) =>
+    width = @resizing.width + event.clientX - @resizing.startX
 
-    unless width > @dragging.maxWidth
+    unless width > @resizing.maxWidth
       width = "#{width}px"
-      height = getDimensions(@dragging.image).height
-      setStyle(@dragging.editor, {width, height})
+      height = getDimensions(@resizing.image).height
+      setStyle(@resizing.editor, {width, height})
 
-  dragend: (event, element) =>
-    console.log "Image resized to:", getDimensions(@dragging.image)
-    uninstallImageEditor(@dragging.image)
-    delete @dragging
+  didMouseUpToEndResize: (event) =>
+    @element.style["cursor"] = null
+    @element.removeEventListener("mousemove", @didMoveMouseToResize)
+    document.removeEventListener("mouseup", @didMouseUpToEndResize)
+
+    console.log "Image resized to:", getDimensions(@resizing.image)
+    uninstallImageEditor(@resizing.image)
+    delete @resizing
 
   installImageEditor = (image) ->
     editor = document.createElement("div")
@@ -50,7 +54,6 @@ class Trix.AttachmentController
     setStyle(editor, getDimensions(image))
 
     handle = document.createElement("div")
-    handle.setAttribute("draggable", true)
     handle.classList.add("resize-handle")
     handle.classList.add("se")
 
