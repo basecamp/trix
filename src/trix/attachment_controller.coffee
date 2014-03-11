@@ -6,7 +6,7 @@ class Trix.AttachmentController
   imageEditorSelector = "div.image-editor"
   imageResizeHandleSelector = "#{imageEditorSelector} div.resize-handle"
 
-  constructor: (@element, @responder) ->
+  constructor: (@element) ->
     DOM.on(@element, "click", "img", @didClickImage)
     DOM.on(@element, "mousedown", imageResizeHandleSelector, @didMouseDownResizeHandle)
 
