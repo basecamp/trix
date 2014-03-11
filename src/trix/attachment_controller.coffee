@@ -26,11 +26,11 @@ class Trix.AttachmentController
     @resizing =
       editor: editor = handleElement.parentElement
       image: editor.firstChild
-      width: parseInt(getDimensions(editor).width, 10)
-      startX: event.clientX
+      startWidth: parseInt(getDimensions(editor).width, 10)
+      startClientX: event.clientX
 
   didMoveMouseToResize: (event) =>
-    width = (@resizing.width + event.clientX - @resizing.startX) + "px"
+    width = (@resizing.startWidth + event.clientX - @resizing.startClientX) + "px"
     height = getDimensions(@resizing.image).height
     setStyle(@resizing.editor, {width, height})
 
