@@ -39,7 +39,7 @@ class Trix.AttachmentController
     @element.removeEventListener("mousemove", @didMoveMouseToResize)
     document.removeEventListener("mouseup", @didMouseUpToEndResize)
 
-    console.log "Image resized to:", getDimensions(@resizing.image)
+    @delegate?.attachmentControllerDidChangeAttributesAtPosition(getDimensions(@resizing.image), @resizing.image.trixPosition)
     uninstallImageEditor(@resizing.image)
     delete @resizing
 

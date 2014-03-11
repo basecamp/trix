@@ -13,6 +13,7 @@ class Trix.TextController
     @selectionObserver = new Trix.SelectionObserver
     @selectionObserver.delegate = this
     @attachmentController = new Trix.AttachmentController @element
+    @attachmentController.delegate = this
 
     @currentAttributes = {}
     @element.addEventListener("focus", @didFocus)
@@ -29,6 +30,11 @@ class Trix.TextController
 
   didEditText: (text) ->
     @render()
+
+  # Attachment controller delegate
+
+  attachmentControllerDidChangeAttributesAtPosition: (attributes, position) ->
+    @text.addAttributesAtRange(attributes, [position, position + 1])
 
   # Input responder
 
