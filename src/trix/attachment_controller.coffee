@@ -35,7 +35,7 @@ class Trix.AttachmentController
     setStyle(@resizing.editor, {width, height})
 
   didMouseUpToEndResize: (event) =>
-    @element.style["cursor"] = null
+    @element.style["cursor"] = "auto"
     @element.removeEventListener("mousemove", @didMoveMouseToResize)
     document.removeEventListener("mouseup", @didMouseUpToEndResize)
 
