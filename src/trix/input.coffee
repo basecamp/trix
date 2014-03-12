@@ -1,5 +1,5 @@
 class Trix.Input
-  @keys:
+  @keyNames:
     0x08: "backspace"
     0x0D: "return"
     0x44: "d"
@@ -12,7 +12,7 @@ class Trix.Input
 
   events:
     keydown: (event) ->
-      if keyName = @constructor.keys[event.keyCode]
+      if keyName = @constructor.keyNames[event.keyCode]
         context = switch
           when event.ctrlKey then @keys.control
           when event.altKey then @keys.alt
