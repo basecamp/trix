@@ -15,8 +15,9 @@ class Trix.TextView
 
   render: ->
     selectedRange = @getSelectedRange()
-    @element.innerHTML = ""
-    @element.appendChild(element) for element in @createElementsForText()
+    elements = @createElementsForText()
+    @element.removeChild(@element.lastChild) while @element.lastChild
+    @element.appendChild(element) for element in elements
     @setSelectedRange(selectedRange)
 
   createElementsForText: ->
