@@ -33,7 +33,12 @@ class Trix.Input
       event.preventDefault()
 
   dragstart: (event) =>
-    @draggedRange = @responder?.getSelectedRange()
+    target = event.target
+    if range = @responder?.getSelectedRange()
+      @draggedRange = range
+    else if Trix.DOM.within(@element, target) and target.trixPosition?
+      position = target.trixPosition
+      @draggedRange = [position, position + 1]
 
   dragend: (event) =>
     delete @draggedRange
