@@ -1,3 +1,5 @@
+#= require trix/dom
+
 class Trix.TextView
   constructor: (@element, @text) ->
     @element.setAttribute("contenteditable", "true")
@@ -165,11 +167,11 @@ class Trix.TextView
 
   findRangeFromDOMRange: (range) ->
     if range.collapsed
-      if isWithin(@element, range.endContainer)
+      if Trix.DOM.within(@element, range.endContainer)
         position = @findPositionFromContainerAtOffset(range.endContainer, range.endOffset)
         [position, position]
     else
-      if isWithin(@element, range.startContainer) and isWithin(@element, range.endContainer)
+      if Trix.DOM.within(@element, range.startContainer) and Trix.DOM.within(@element, range.endContainer)
         startPosition = @findPositionFromContainerAtOffset(range.startContainer, range.startOffset)
         endPosition = @findPositionFromContainerAtOffset(range.endContainer, range.endOffset)
         [startPosition, endPosition]
@@ -208,12 +210,6 @@ class Trix.TextView
           node.parentNode.childNodes.length
 
     [container, offset]
-
-  isWithin = (ancestor, element) ->
-    while element
-      return true if element is ancestor
-      element = element.parentNode
-    false
 
   createTreeWalker = (element) ->
     whatToShow = NodeFilter.SHOW_ELEMENT + NodeFilter.SHOW_TEXT
