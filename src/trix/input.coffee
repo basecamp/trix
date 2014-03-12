@@ -37,8 +37,10 @@ class Trix.Input
 
     dragstart: (event) ->
       target = event.target
+
       if range = @responder?.getSelectedRange()
         @draggedRange = range
+
       else if Trix.DOM.within(@element, target) and target.trixPosition?
         position = target.trixPosition
         @draggedRange = [position, position + 1]
