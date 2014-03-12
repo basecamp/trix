@@ -51,7 +51,7 @@ module Trix
     end
 
     def assets
-      %w( trix.js index.html )
+      %w( trix.js index.html basecamp.png )
     end
 
     def root
