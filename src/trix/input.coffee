@@ -1,5 +1,4 @@
 class Trix.Input
-  @events: "keydown keypress dragenter dragstart dragover dragend drop cut paste compositionstart compositionend input".split(" ")
   @keys:
     0x08: "backspace"
     0x0D: "return"
@@ -8,84 +7,85 @@ class Trix.Input
     0x4f: "o"
 
   constructor: (@element, @responder) ->
-    for event in @constructor.events
-      @element.addEventListener(event, @[event], true)
+    for event, handler of @events
+      @element.addEventListener(event, handler.bind(this), true)
 
-  keydown: (event) =>
-    if keyName = @constructor.keys[event.keyCode]
-      context = switch
-        when event.ctrlKey then @control
-        when event.altKey then @alt
-        else this
+  events:
+    keydown: (event) ->
+      if keyName = @constructor.keys[event.keyCode]
+        context = switch
+          when event.ctrlKey then @control
+          when event.altKey then @alt
+          else this
 
-      context[keyName]?.call this, event
+        context[keyName]?.call this, event
 
-  keypress: (event) =>
-    return if (event.metaKey or event.ctrlKey) and not event.altKey
+    keypress: (event) ->
+      return if (event.metaKey or event.ctrlKey) and not event.altKey
 
-    if event.which is null
-      character = String.fromCharCode event.keyCode
-    else if event.which isnt 0 and event.charCode isnt 0
-      character = String.fromCharCode event.charCode
+      if event.which is null
+        character = String.fromCharCode event.keyCode
+      else if event.which isnt 0 and event.charCode isnt 0
+        character = String.fromCharCode event.charCode
 
-    if character
-      @responder?.insertString(character)
+      if character
+        @responder?.insertString(character)
+        event.preventDefault()
+
+    dragenter: (event) ->
       event.preventDefault()
 
-  dragenter: (event) =>
-    event.preventDefault()
+    dragstart: (event) ->
+      target = event.target
+      if range = @responder?.getSelectedRange()
+        @draggedRange = range
+      else if Trix.DOM.within(@element, target) and target.trixPosition?
+        position = target.trixPosition
+        @draggedRange = [position, position + 1]
 
-  dragstart: (event) =>
-    target = event.target
-    if range = @responder?.getSelectedRange()
-      @draggedRange = range
-    else if Trix.DOM.within(@element, target) and target.trixPosition?
-      position = target.trixPosition
-      @draggedRange = [position, position + 1]
+    dragover: (event) ->
+      event.preventDefault() unless @draggedRange
 
-  dragover: (event) =>
-    event.preventDefault() unless @draggedRange
-
-  dragend: (event) =>
-    delete @draggedRange
-
-  drop: (event) =>
-    event.preventDefault()
-    point = [event.pageX, event.pageY]
-    @responder?.positionAtPoint(point)
-
-    if @draggedRange
-      @responder?.moveTextFromRange(@draggedRange)
+    dragend: (event) ->
       delete @draggedRange
 
-    else if id = event.dataTransfer.getData("id")
-      element = document.getElementById(id)
-      attachment = { type: "image" }
-      attachment[key] = element[key] for key in ["src", "width", "height"]
-      @responder?.insertAttachment(attachment)
+    drop: (event) ->
+      event.preventDefault()
+      point = [event.pageX, event.pageY]
+      @responder?.positionAtPoint(point)
 
-  cut: (event) =>
-    @responder?.deleteBackward()
+      if @draggedRange
+        @responder?.moveTextFromRange(@draggedRange)
+        delete @draggedRange
 
-  paste: (event) =>
-    if text = event.clipboardData.getData("text/plain")
-      @responder?.insertString(text)
-    event.preventDefault()
+      else if id = event.dataTransfer.getData("id")
+        element = document.getElementById(id)
+        attachment = { type: "image" }
+        attachment[key] = element[key] for key in ["src", "width", "height"]
+        @responder?.insertAttachment(attachment)
 
-  compositionstart: (event) =>
-    @responder?.beginComposing()
+    cut: (event) ->
+      @responder?.deleteBackward()
 
-  compositionend: (event) =>
-    @composedString = event.data
+    paste: (event) ->
+      if text = event.clipboardData.getData("text/plain")
+        @responder?.insertString(text)
+      event.preventDefault()
 
-  input: (event) =>
-    if @responder?.isComposing()
-      if @composedString?
-        @responder?.endComposing(@composedString)
-        delete @composedString
-    else
-      @responder?.render()
-      @logAndCancel(event)
+    compositionstart: (event) ->
+      @responder?.beginComposing()
+
+    compositionend: (event) ->
+      @composedString = event.data
+
+    input: (event) ->
+      if @responder?.isComposing()
+        if @composedString?
+          @responder?.endComposing(@composedString)
+          delete @composedString
+      else
+        @responder?.render()
+        @logAndCancel(event)
 
   backspace: (event) ->
     @responder?.deleteBackward()
