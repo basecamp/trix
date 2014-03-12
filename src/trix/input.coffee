@@ -1,5 +1,5 @@
 class Trix.Input
-  @events: "keydown keypress dragstart dragend drop cut paste compositionstart compositionend input".split(" ")
+  @events: "keydown keypress dragenter dragstart dragover dragend drop cut paste compositionstart compositionend input".split(" ")
   @keys:
     0x08: "backspace"
     0x0D: "return"
@@ -32,6 +32,9 @@ class Trix.Input
       @responder?.insertString(character)
       event.preventDefault()
 
+  dragenter: (event) =>
+    event.preventDefault()
+
   dragstart: (event) =>
     target = event.target
     if range = @responder?.getSelectedRange()
@@ -39,6 +42,9 @@ class Trix.Input
     else if Trix.DOM.within(@element, target) and target.trixPosition?
       position = target.trixPosition
       @draggedRange = [position, position + 1]
+
+  dragover: (event) =>
+    event.preventDefault() unless @draggedRange
 
   dragend: (event) =>
     delete @draggedRange
