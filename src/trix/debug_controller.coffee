@@ -6,6 +6,13 @@ class Trix.DebugController
     @element.appendChild(document.createTextNode(@renderDebugOutput()))
 
   renderDebugOutput: ->
+    output = []
+    for section in ["PositionOrRange", "Selections", "TextRuns"]
+      if result = @["render#{section}"].call(this)
+        output.push(result)
+    output.join("\n\n")
+
+  renderPositionOrRange: ->
     positionOrRange = if selectedRange = @textController.getSelectedRange()
       "Selected range: #{JSON.stringify(selectedRange)}"
     else
@@ -13,25 +20,23 @@ class Trix.DebugController
       "Cursor position: #{position}"
 
     positionOrRange += " (locked)" if @textController.textView.lockedRange?
-    lines = [positionOrRange, ""]
+    positionOrRange
 
-    if position?
-      [container, offset] = @textController.textView.findContainerAndOffsetForPosition(position)
-      lines.push("textView#findContainerAndOffsetForPosition:")
-      lines.push(indent(@renderSelection(container, offset)))
+  renderSelections: ->
+    position = @textController.getPosition()
+    return unless position?
+    lines = []
+
+    [container, offset] = @textController.textView.findContainerAndOffsetForPosition(position)
+    lines.push("textView#findContainerAndOffsetForPosition:")
+    lines.push(indent(@renderSelection(container, offset)))
+
+    selection = window.getSelection()
+    if selection.rangeCount > 0
+      {startContainer, startOffset} = selection.getRangeAt(0)
       lines.push("")
-
-      selection = window.getSelection()
-      if selection.rangeCount > 0
-        {startContainer, startOffset} = selection.getRangeAt(0)
-        lines.push("window#getSelection:")
-        lines.push(indent(@renderSelection(startContainer, startOffset)))
-        lines.push("")
-
-    @textController.text.eachRun (run) ->
-      for key, value of run
-        lines.push("#{key}: #{JSON.stringify(value)}")
-      lines.push("")
+      lines.push("window#getSelection:")
+      lines.push(indent(@renderSelection(startContainer, startOffset)))
 
     lines.join("\n")
 
@@ -49,6 +54,13 @@ class Trix.DebugController
     Container: #{containerContent}
     textView#findPositionFromContainerAtOffset: #{position}
     """
+
+  renderTextRuns: ->
+    string = ""
+    @textController.text.eachRun (run) ->
+      for key, value of run
+        string += "#{key}: #{JSON.stringify(value)}\n"
+    string
 
   indent = (string) ->
     string.replace(/^/mg, " ")
