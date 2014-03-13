@@ -195,21 +195,24 @@ class Trix.TextController
     @expireCachedSelectedRange()
 
   lockSelection: ->
-    @lockingSelection = true
     if @currentAttributes["href"]
       @expandSelectedRangeAroundCommonAttribute("href")
 
     if selectedRange = @getSelectedRange()
       @text.addAttributeAtRange("selected", true, selectedRange)
 
-    @textView.lockSelection()
-    delete @lockingSelection
+    @selectionLock = @textView.lockSelection()
+
+  selectionIsLocked: ->
+    @selectionLock
 
   unlockSelection: ->
-    return if @lockingSelection
+    return unless @selectionIsLocked()
+
     if selectedRange = @getSelectedRange()
       @text.removeAttributeAtRange("selected", selectedRange)
 
+    delete @selectionLock
     @expireCachedSelectedRange()
     @textView.unlockSelection()
 
