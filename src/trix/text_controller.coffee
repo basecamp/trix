@@ -112,6 +112,8 @@ class Trix.TextController
 
   # Current attributes
 
+  @inheritableAttributes = "bold italic underline".split(" ")
+
   toggleCurrentAttribute: (attributeName) ->
     value = not @currentAttributes[attributeName]
     @setCurrentAttribute(attributeName, value)
@@ -137,17 +139,15 @@ class Trix.TextController
       @currentAttributes = @text.getCommonAttributesAtRange(selectedRange)
       @notifyDelegateOfCurrentAttributesChange()
     else if (position = @getPosition())?
-      # TODO: Consider whitelisting allowed current attributes from previous position
-      @currentAttributes = @text.getAttributesAtPosition(position - 1)
-      @adjustCurrentAttributesForPosition(position)
-      @notifyDelegateOfCurrentAttributesChange()
+      @currentAttributes = {}
+      attributes = @text.getAttributesAtPosition(position)
+      attributesLeft = @text.getAttributesAtPosition(position - 1)
 
-  adjustCurrentAttributesForPosition: (position) ->
-    # Don't consider these attributes current when the cursor is positioned after them
-    for attribute in ["href", "width", "height"]
-      if currentAttribute = @currentAttributes[attribute]
-        if currentAttribute isnt @text.getAttributesAtPosition(position)[attribute]
-          delete @currentAttributes[attribute]
+      for key, value of attributesLeft
+        if value is attributes[key] or key in @constructor.inheritableAttributes
+          @currentAttributes[key] = value
+
+      @notifyDelegateOfCurrentAttributesChange()
 
   notifyDelegateOfCurrentAttributesChange: ->
     @delegate?.textControllerDidChangeCurrentAttributes?(@currentAttributes)
