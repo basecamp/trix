@@ -1,4 +1,6 @@
 class Trix.DebugController
+  @sections = "PositionOrRange Selections TextRuns".split(" ")
+
   constructor: (@element, @textController) ->
 
   render: ->
@@ -7,7 +9,7 @@ class Trix.DebugController
 
   renderDebugOutput: ->
     strings = []
-    for section in ["PositionOrRange", "Selections", "TextRuns"]
+    for section in @constructor.sections
       if result = @["render#{section}"].call(this)
         strings.push(result)
     strings.join("\n\n")
