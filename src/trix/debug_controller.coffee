@@ -6,39 +6,40 @@ class Trix.DebugController
     @element.appendChild(document.createTextNode(@renderDebugOutput()))
 
   renderDebugOutput: ->
-    output = []
+    strings = []
     for section in ["PositionOrRange", "Selections", "TextRuns"]
       if result = @["render#{section}"].call(this)
-        output.push(result)
-    output.join("\n\n")
+        strings.push(result)
+    strings.join("\n\n")
 
   renderPositionOrRange: ->
-    positionOrRange = if selectedRange = @textController.getSelectedRange()
+    string = if selectedRange = @textController.getSelectedRange()
       "Selected range: #{JSON.stringify(selectedRange)}"
     else
       position = @textController.getPosition() ? 0
       "Cursor position: #{position}"
 
-    positionOrRange += " (locked)" if @textController.textView.lockedRange?
-    positionOrRange
+    string += " (locked)" if @textController.textView.lockedRange?
+    string
 
   renderSelections: ->
     position = @textController.getPosition()
     return unless position?
-    lines = []
 
     [container, offset] = @textController.textView.findContainerAndOffsetForPosition(position)
-    lines.push("textView#findContainerAndOffsetForPosition:")
-    lines.push(indent(@renderSelection(container, offset)))
+    string = """
+    textView#findContainerAndOffsetForPosition:
+    #{indent(@renderSelection(container, offset))}
+    """
 
     selection = window.getSelection()
     if selection.rangeCount > 0
       {startContainer, startOffset} = selection.getRangeAt(0)
-      lines.push("")
-      lines.push("window#getSelection:")
-      lines.push(indent(@renderSelection(startContainer, startOffset)))
-
-    lines.join("\n")
+      string += """\n
+      window#getSelection:
+      #{indent(@renderSelection(startContainer, startOffset))}
+      """
+    string
 
   renderSelection: (container, offset) ->
     position = @textController.textView.findPositionFromContainerAtOffset(container, offset)
