@@ -60,6 +60,7 @@ class Trix.DebugController
     @textController.text.eachRun (run) ->
       for key, value of run
         string += "#{key}: #{JSON.stringify(value)}\n"
+      string += "\n"
     string
 
   indent = (string) ->
