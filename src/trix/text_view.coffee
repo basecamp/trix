@@ -82,6 +82,7 @@ class Trix.TextView
       when "image"
         element = document.createElement("img")
         element.trixPosition = position
+        element.trixLength = 1
         element.setAttribute(key, value) for key, value of attachment when key isnt "type"
         element.style[key] = attributes[key] + "px" for key in ["width", "height"] when attributes[key]?
         element
@@ -94,12 +95,14 @@ class Trix.TextView
         node = document.createElement("br")
         node.trixPosition = position
         position += 1
+        node.trixLength = 1
         nodes.push(node)
 
-      if substring.length
+      if length = substring.length
         node = document.createTextNode(preserveSpaces(substring))
         node.trixPosition = position
-        position += substring.length
+        position += length
+        node.trixLength = length
         nodes.push(node)
 
     nodes
@@ -185,42 +188,46 @@ class Trix.TextView
     if container.nodeType is Node.TEXT_NODE
       container.trixPosition + offset
     else
-      if container.hasChildNodes()
-        if container.childNodes.length is offset
-          container.lastChild.trixPosition + 1
-        else
-          container.childNodes[offset].trixPosition
-      else
+      if offset is 0
         container.trixPosition
+      else
+        node = container.childNodes[offset - 1]
+        walker = createTreeWalker(node)
+        walker.lastChild()
+        walker.currentNode.trixPosition + walker.currentNode.trixLength
 
   findContainerAndOffsetForPosition: (position) ->
     return [@element, 0] if position < 1
 
-    walker = createTreeWalker(@element)
-    node = walker.currentNode
-
-    while walker.nextNode()
-      break if walker.currentNode.trixPosition > position
-      node = walker.currentNode
+    node = @findNodeForPosition(position)
 
     if node.nodeType is Node.TEXT_NODE
       container = node
       offset = position - node.trixPosition
     else
       container = node.parentNode
-      offset =
-        if node.nextSibling
-          [node.parentNode.childNodes...].indexOf(node)
-        else
-          node.parentNode.childNodes.length
+      offset = [node.parentNode.childNodes...].indexOf(node) + 1
 
     [container, offset]
+
+  findNodeForPosition: (position) ->
+    walker = createTreeWalker(@element)
+    node = walker.currentNode
+
+    while walker.nextNode()
+      startPosition = walker.currentNode.trixPosition
+      endPosition = startPosition + walker.currentNode.trixLength
+
+      if startPosition <= position <= endPosition
+        node = walker.currentNode
+        break
+    node
 
   createTreeWalker = (element) ->
     whatToShow = NodeFilter.SHOW_ELEMENT + NodeFilter.SHOW_TEXT
 
     acceptNode = (node) ->
-      if node.trixPosition?
+      if node.trixPosition? and node.trixLength?
         NodeFilter.FILTER_ACCEPT
       else
         NodeFilter.FILTER_SKIP
