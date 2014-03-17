@@ -8,6 +8,7 @@ module Trix
       @environment ||= Sprockets::Environment.new do |env|
         env.append_path(source_path)
         env.append_path(assets_path)
+        env.append_path(test_path)
       end
     end
 
@@ -16,26 +17,32 @@ module Trix
     end
 
     def build
-      manifest.compile(assets)
+      manifest.compile(assets + test_assets)
     end
 
     def install
+      clean
       build
-      remove_dist_path
+
       assets.each do |logical_path|
-        install_asset(logical_path)
+        install_asset(logical_path, dist_path)
+      end
+
+      test_assets.each do |logical_path|
+        install_asset(logical_path, test_path)
       end
     end
 
-    def install_asset(logical_path)
+    def install_asset(logical_path, destination)
       create_dist_path
       fingerprint_path = manifest.assets[logical_path]
-      FileUtils.cp(build_path.join(fingerprint_path), dist_path.join(logical_path))
+      FileUtils.cp(build_path.join(fingerprint_path), destination.join(logical_path))
     end
 
     def clean
       remove_build_path
       remove_dist_path
+      remove_test_assets
     end
 
     def remove_build_path
@@ -50,8 +57,18 @@ module Trix
       FileUtils.rm_rf(dist_path)
     end
 
+    def remove_test_assets
+      test_assets.each do |logical_path|
+        FileUtils.rm_f(test_path.join(logical_path))
+      end
+    end
+
     def assets
       %w( trix.js index.html basecamp.png )
+    end
+
+    def test_assets
+      %w( tests.js )
     end
 
     def root
@@ -72,6 +89,10 @@ module Trix
 
     def dist_path
       root.join("dist")
+    end
+
+    def test_path
+      root.join("test")
     end
   end
 end
