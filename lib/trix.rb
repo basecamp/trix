@@ -8,6 +8,7 @@ module Trix
       @environment ||= Sprockets::Environment.new do |env|
         env.append_path(source_path)
         env.append_path(assets_path)
+        env.append_path(test_assets_path)
         env.append_path(test_path)
       end
     end
@@ -17,39 +18,35 @@ module Trix
     end
 
     def build
-      manifest.compile(assets + test_assets)
+      manifest.compile(all_assets)
     end
 
     def install
       clean
       build
 
-      assets.each do |logical_path|
-        install_asset(logical_path, dist_path)
-      end
-
-      test_assets.each do |logical_path|
-        install_asset(logical_path, test_path)
+      all_assets.each do |logical_path|
+        install_asset(logical_path)
       end
     end
 
-    def install_asset(logical_path, destination)
-      create_dist_path
+    def install_asset(logical_path)
+      create_dist_paths
       fingerprint_path = manifest.assets[logical_path]
+      destination = test_assets.include?(logical_path) ? test_dist_path : dist_path
       FileUtils.cp(build_path.join(fingerprint_path), destination.join(logical_path))
     end
 
     def clean
       remove_build_path
-      remove_dist_path
-      remove_test_assets
+      remove_dist_paths
     end
 
     def test
       install
 
       runner = test_path.join("vendor/runner-list.js").to_s
-      page = test_path.join("index.html").to_s
+      page = test_dist_path.join("tests.html").to_s
 
       puts "\n# Running:\n"
       system "phantomjs", runner, page
@@ -59,18 +56,16 @@ module Trix
       FileUtils.rm_rf(build_path)
     end
 
-    def create_dist_path
-      FileUtils.mkdir_p(dist_path)
+    def create_dist_paths
+      FileUtils.mkdir_p(dist_paths)
     end
 
-    def remove_dist_path
-      FileUtils.rm_rf(dist_path)
+    def remove_dist_paths
+      FileUtils.rm_rf(dist_paths)
     end
 
-    def remove_test_assets
-      test_assets.each do |logical_path|
-        FileUtils.rm_f(test_path.join(logical_path))
-      end
+    def dist_paths
+      [dist_path, test_dist_path]
     end
 
     def assets
@@ -78,7 +73,11 @@ module Trix
     end
 
     def test_assets
-      %w( tests.js )
+      %w( tests.js tests.html )
+    end
+
+    def all_assets
+      assets + test_assets
     end
 
     def root
@@ -103,6 +102,14 @@ module Trix
 
     def test_path
       root.join("test")
+    end
+
+    def test_assets_path
+      test_path.join("assets")
+    end
+
+    def test_dist_path
+      test_path.join("dist")
     end
   end
 end

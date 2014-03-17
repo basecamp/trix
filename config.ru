@@ -6,5 +6,6 @@ map '/' do
   run Trix.environment
   use Rack::Rewrite do
     rewrite '/', '/index.html'
+    rewrite '/tests', 'tests.html'
   end
 end
