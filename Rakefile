@@ -13,5 +13,9 @@ task :loc do
   puts `find src -name '*.coffee' -type f | xargs sed -n '/^ *\\(#.*\\)*\$/!p' | wc -l`
 end
 
-task :default => :dist
+task :test do
+  Trix.test
+end
+
+task :default => :test
 

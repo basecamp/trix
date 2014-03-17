@@ -45,6 +45,16 @@ module Trix
       remove_test_assets
     end
 
+    def test
+      install
+
+      runner = test_path.join("vendor/runner-list.js").to_s
+      page = test_path.join("index.html").to_s
+
+      puts "\n# Running:\n"
+      system "phantomjs", runner, page
+    end
+
     def remove_build_path
       FileUtils.rm_rf(build_path)
     end
