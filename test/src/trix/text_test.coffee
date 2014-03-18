@@ -1,3 +1,5 @@
+#= require trix/text
+
 module "Trix.Text"
 
 test "#getLength", ->
