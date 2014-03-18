@@ -11,6 +11,6 @@ map '/' do
   run environment.sprockets_environment
   use Rack::Rewrite do
     rewrite '/', '/index.html'
-    rewrite '/tests', 'tests.html'
+    rewrite '/test', 'test.html'
   end
 end
