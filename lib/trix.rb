@@ -11,8 +11,8 @@ module Trix
       @root = root
     end
 
-    def environment
-      @environment ||= Sprockets::Environment.new do |env|
+    def sprockets_environment
+      @sprockets_environment ||= Sprockets::Environment.new do |env|
         paths.each do |path|
           env.append_path(path)
         end
@@ -20,7 +20,7 @@ module Trix
     end
 
     def manifest
-      @manifest ||= Sprockets::Manifest.new(environment.index, build_path)
+      @manifest ||= Sprockets::Manifest.new(sprockets_environment.index, build_path)
     end
 
     def compile
