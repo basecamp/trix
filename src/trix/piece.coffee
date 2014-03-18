@@ -34,11 +34,24 @@ class Trix.Piece
 
     attributes.toObject()
 
+  isSameKindAsPiece: (piece) ->
+    piece? and @constructor piece.constructor
+
+  hasSameStringAsPiece: (piece) ->
+    piece? and @string is piece.string
+
   hasSameAttributesAsPiece: (piece) ->
-    @attributes is piece.attributes or @attributes.isEqualTo(piece.attributes)
+    piece? and (@attributes is piece.attributes or @attributes.isEqualTo(piece.attributes))
 
   canBeConsolidatedWithPiece: (piece) ->
     piece? and (@constructor is piece.constructor) and @hasSameAttributesAsPiece(piece)
+
+  isEqualTo: (piece) ->
+    this is piece or (
+      @isSameKindAsPiece(piece) and
+      @hasSameStringAsPiece(piece) and
+      @hasSameAttributesAsPiece(piece)
+    )
 
   append: (piece) ->
     new Trix.Piece @string + piece, @attributes

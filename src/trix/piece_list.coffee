@@ -111,6 +111,15 @@ class Trix.PieceList
   toArray: ->
     @pieces.slice(0)
 
+  isEqualTo: (pieceList) ->
+    this is pieceList or pieceArraysAreEqual(@pieces, pieceList?.pieces)
+
+  pieceArraysAreEqual = (left, right = []) ->
+    return false unless left.length is right.length
+    result = true
+    result = false for piece, index in left when result and not piece.isEqualTo(right[index])
+    result
+
   inspect: ->
     result = []
     result.push(piece.inspect()) for piece in @pieces

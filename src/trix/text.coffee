@@ -101,5 +101,8 @@ class Trix.Text
       callback(run)
       position += piece.length
 
+  isEqualTo: (text) ->
+    this is text or text?.pieceList?.isEqualTo(@pieceList)
+
   inspect: ->
     @pieceList.inspect()
