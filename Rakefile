@@ -1,6 +1,10 @@
 require 'bundler/setup'
 require File.join(File.dirname(__FILE__) + '/lib/trix')
 
+def has_phantomjs?
+  `which phantomjs` && $?.success?
+end
+
 namespace :trix do
   environment = Trix::Environment.new(".")
   environment.paths = %w( assets src )
@@ -47,9 +51,19 @@ namespace :test do
     runner = environment.path_for("vendor/runner-list.js")
     page = environment.dist_path_for("test.html")
 
-    puts "\n# Running:\n"
-    system "phantomjs", runner, page
+    if has_phantomjs?
+      puts "\n# Running:\n"
+      system "phantomjs", runner, page
+    else
+      abort "Please install PhantomJS"
+    end
+  end
+
+  if has_phantomjs?
+    task :auto => :phantomjs
+  else
+    task :auto => :browser
   end
 end
 
-task :default => "test:phantomjs"
+task :default => "test:auto"
