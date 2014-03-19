@@ -13,7 +13,7 @@ test "textForAttachmentWithAttributes", ->
 
   text = Trix.Text.textForAttachmentWithAttributes(attachment, bold: true)
   runsEqual text,
-    [{ attachment: attachment, string: undefined, attributes: { bold: true }}],
+    [{ attachment: attachment, string: undefined, attributes: { bold: true } }],
     "single-run text with attachment and attributes"
 
 
@@ -27,12 +27,220 @@ test "textForStringWithAttributes", ->
 
   text = Trix.Text.textForStringWithAttributes(string, italic: true)
   runsEqual text,
-    [{ string: string, attachment: undefined, attributes: { italic: true }}],
+    [{ string: string, attachment: undefined, attributes: { italic: true } }],
     "single-run text with string and attributes"
 
 
+test "#appendText", ->
+  text = fixture("plain")
+  text.appendText(Trix.Text.textForStringWithAttributes("!"))
+  runsEqual text,
+    [{ string: "Hello world!", attributes: {} }],
+    "text with identical attributes"
+
+  text = fixture("plain")
+  text.appendText(fixture("bold"))
+  runsEqual text, [
+      { string: "Hello world", attributes: {} },
+      { string: "Hello world", attributes: { bold: true } }
+    ],
+    "text with different attributes"
+
+
+test "#insertTextAtPosition", ->
+  text = fixture("plain")
+  insertedText = fixture("empty")
+  text.insertTextAtPosition(insertedText, 0)
+  ok fixture("plain").isEqualTo(text), "inserting empty text into plain text at the start position"
+
+  text = fixture("plain")
+  insertedText = fixture("empty")
+  text.insertTextAtPosition(insertedText, text.getLength())
+  ok fixture("plain").isEqualTo(text), "inserting empty text into plain text at the end position"
+
+  text = fixture("plain")
+  insertedText = fixture("empty")
+  text.insertTextAtPosition(insertedText, 5)
+  ok fixture("plain").isEqualTo(text), "inserting empty text into plain text at an interior position"
+
+  text = fixture("formatted")
+  insertedText = fixture("empty")
+  text.insertTextAtPosition(insertedText, 0)
+  ok fixture("formatted").isEqualTo(text), "inserting empty text into formatted text at the start position"
+
+  text = fixture("formatted")
+  insertedText = fixture("empty")
+  text.insertTextAtPosition(insertedText, text.getLength())
+  ok fixture("formatted").isEqualTo(text), "inserting empty text into formatted text at the end position"
+
+  text = fixture("formatted")
+  insertedText = fixture("empty")
+  text.insertTextAtPosition(insertedText, 10)
+  ok fixture("formatted").isEqualTo(text), "inserting empty text into formatted text inside a run"
+
+  text = fixture("formatted")
+  insertedText = fixture("empty")
+  text.insertTextAtPosition(insertedText, 12)
+  ok fixture("formatted").isEqualTo(text), "inserting empty text into formatted text between runs"
+
+  text = fixture("plain")
+  insertedText = fixture("plain")
+  text.insertTextAtPosition(insertedText, 0)
+  runsEqual text,
+    [{ string: "Hello worldHello world", attributes: {} }],
+    "inserting plain text into plain text at the start position"
+
+  text = fixture("plain")
+  insertedText = fixture("plain")
+  text.insertTextAtPosition(insertedText, text.getLength())
+  runsEqual text,
+    [{ string: "Hello worldHello world", attributes: {} }],
+    "inserting plain text into plain text at the end position"
+
+  text = fixture("plain")
+  insertedText = fixture("plain")
+  text.insertTextAtPosition(insertedText, 5)
+  runsEqual text,
+    [{ string: "HelloHello world world", attributes: {} }],
+    "inserting plain text into plain text at an interior position"
+
+  text = fixture("formatted")
+  insertedText = fixture("plain")
+  text.insertTextAtPosition(insertedText, 0)
+  runsEqual text, [
+      { string: "Hello worldHello, ", attributes: {} },
+      { string: "rich ", attributes: { bold: true, italic: true } },
+      { string: "text", attributes: { italic: true } },
+      { string: "!", attributes: {} }
+    ],
+    "inserting plain text into formatted text at the start position"
+
+  text = fixture("formatted")
+  insertedText = fixture("plain")
+  text.insertTextAtPosition(insertedText, text.getLength())
+  runsEqual text, [
+      { string: "Hello, ", attributes: {} },
+      { string: "rich ", attributes: { bold: true, italic: true } },
+      { string: "text", attributes: { italic: true } },
+      { string: "!Hello world", attributes: {} }
+    ],
+    "inserting plain text into formatted text at the end position"
+
+  text = fixture("formatted")
+  insertedText = fixture("plain")
+  text.insertTextAtPosition(insertedText, 10)
+  runsEqual text, [
+      { string: "Hello, ", attributes: {} },
+      { string: "ric", attributes: { bold: true, italic: true } },
+      { string: "Hello world", attributes: {} },
+      { string: "h ", attributes: { bold: true, italic: true } },
+      { string: "text", attributes: { italic: true } },
+      { string: "!", attributes: {} }
+    ],
+    "inserting plain text into formatted text inside a run"
+
+  text = fixture("formatted")
+  insertedText = fixture("plain")
+  text.insertTextAtPosition(insertedText, 12)
+  runsEqual text, [
+      { string: "Hello, ", attributes: {} },
+      { string: "rich ", attributes: { bold: true, italic: true } },
+      { string: "Hello world", attributes: {} },
+      { string: "text", attributes: { italic: true } },
+      { string: "!", attributes: {} }
+    ],
+    "inserting plain text into formatted text between runs"
+
+  text = fixture("plain")
+  insertedText = fixture("italic")
+  text.insertTextAtPosition(insertedText, 0)
+  runsEqual text, [
+      { string: "Hello world", attributes: { italic: true } },
+      { string: "Hello world", attributes: {} }
+    ],
+    "inserting formatted text into plain text at the start position"
+
+  text = fixture("plain")
+  insertedText = fixture("italic")
+  text.insertTextAtPosition(insertedText, text.getLength())
+  runsEqual text, [
+      { string: "Hello world", attributes: {} },
+      { string: "Hello world", attributes: { italic: true } }
+    ],
+    "inserting formatted text into plain text at the end position"
+
+  text = fixture("plain")
+  insertedText = fixture("italic")
+  text.insertTextAtPosition(insertedText, 5)
+  runsEqual text, [
+      { string: "Hello", attributes: {} },
+      { string: "Hello world", attributes: { italic: true } },
+      { string: " world", attributes: {} }
+    ],
+    "inserting formatted text into plain text at an interior position"
+
+  text = fixture("formatted")
+  insertedText = fixture("italic")
+  text.insertTextAtPosition(insertedText, 0)
+  runsEqual text, [
+      { string: "Hello world", attributes: { italic: true } },
+      { string: "Hello, ", attributes: {} },
+      { string: "rich ", attributes: { bold: true, italic: true } },
+      { string: "text", attributes: { italic: true } },
+      { string: "!", attributes: {} }
+    ],
+    "inserting formatted text into formatted text at the start position"
+
+  text = fixture("formatted")
+  insertedText = fixture("italic")
+  text.insertTextAtPosition(insertedText, text.getLength())
+  runsEqual text, [
+      { string: "Hello, ", attributes: {} },
+      { string: "rich ", attributes: { bold: true, italic: true } },
+      { string: "text", attributes: { italic: true } },
+      { string: "!", attributes: {} },
+      { string: "Hello world", attributes: { italic: true } }
+    ],
+    "inserting formatted text into formatted text at the end position"
+
+  text = fixture("formatted")
+  insertedText = fixture("italic")
+  text.insertTextAtPosition(insertedText, 14)
+  runsEqual text, [
+      { string: "Hello, ", attributes: {} },
+      { string: "rich ", attributes: { bold: true, italic: true } },
+      { string: "teHello worldxt", attributes: { italic: true } },
+      { string: "!", attributes: {} }
+    ],
+    "inserting formatted text into formatted text inside a run with identical attributes"
+
+  text = fixture("formatted")
+  insertedText = fixture("italic")
+  text.insertTextAtPosition(insertedText, 11)
+  runsEqual text, [
+      { string: "Hello, ", attributes: {} },
+      { string: "rich", attributes: { bold: true, italic: true } },
+      { string: "Hello world", attributes: { italic: true } },
+      { string: " ", attributes: { bold: true, italic: true } },
+      { string: "text", attributes: { italic: true } },
+      { string: "!", attributes: {} }
+    ],
+    "inserting formatted text into formatted text inside a run with different attributes"
+
+  text = fixture("formatted")
+  insertedText = fixture("italic")
+  text.insertTextAtPosition(insertedText, 12)
+  runsEqual text, [
+      { string: "Hello, ", attributes: {} },
+      { string: "rich ", attributes: { bold: true, italic: true } },
+      { string: "Hello worldtext", attributes: { italic: true } },
+      { string: "!", attributes: {} }
+    ],
+    "inserting formatted text into formatted text between runs"
+
+
 test "#isEqualTo", ->
-  text = fixture("multipleRun")
+  text = fixture("formatted")
   ok text.isEqualTo(text), "text is equal to itself"
 
   copy = text.getTextAtRange([0, 17])
@@ -53,11 +261,11 @@ test "#getLength", ->
   empty = fixture("empty")
   equal empty.getLength(), 0, "empty text length is 0"
 
-  text = fixture("singleRun")
-  equal text.getLength(), 11, "single-run text length"
+  text = fixture("plain")
+  equal text.getLength(), 11, "plain text length"
 
-  text = fixture("multipleRun")
-  equal text.getLength(), 17, "multiple-run text length"
+  text = fixture("formatted")
+  equal text.getLength(), 17, "formatted text length"
 
 
 # Fixtures
@@ -65,14 +273,22 @@ test "#getLength", ->
 fixtures =
   empty: []
 
-  singleRun: [
+  plain: [
     new Trix.Piece("Hello world")
   ]
 
-  multipleRun: [
+  bold: [
+    new Trix.Piece("Hello world", bold: true)
+  ]
+
+  italic: [
+    new Trix.Piece("Hello world", italic: true)
+  ]
+
+  formatted: [
     new Trix.Piece("Hello, "),
-    new Trix.Piece("rich ", { bold: true, italic: true }),
-    new Trix.Piece("text", { italic: true }),
+    new Trix.Piece("rich ", bold: true, italic: true),
+    new Trix.Piece("text", italic: true),
     new Trix.Piece("!")
   ]
 
