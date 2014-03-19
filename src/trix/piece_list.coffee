@@ -1,5 +1,6 @@
 class Trix.PieceList
-  constructor: (@pieces = []) ->
+  constructor: (pieces = []) ->
+    @pieces = pieces.slice(0)
 
   eachPiece: (callback) ->
     callback(piece, index) for piece, index in @pieces
