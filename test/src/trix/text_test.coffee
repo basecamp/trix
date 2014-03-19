@@ -44,6 +44,10 @@ test "#isEqualTo", ->
   slice = text.getTextAtRange([0, 16])
   ok !text.isEqualTo(slice) and !slice.isEqualTo(text), "text is not equal to subslice of text"
 
+  a = Trix.Text.textForStringWithAttributes("Hello")
+  b = Trix.Text.textForStringWithAttributes("Hello")
+  ok a.isEqualTo(b) and b.isEqualTo(a), "two texts from the same string are equal"
+
 
 test "#getLength", ->
   empty = fixture("empty")

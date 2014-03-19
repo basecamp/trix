@@ -35,7 +35,7 @@ class Trix.Piece
     attributes.toObject()
 
   isSameKindAsPiece: (piece) ->
-    piece? and @constructor piece.constructor
+    piece? and @constructor is piece.constructor
 
   hasSameStringAsPiece: (piece) ->
     piece? and @string is piece.string
