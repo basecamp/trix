@@ -346,6 +346,106 @@ test "#moveTextFromRangeToPosition", ->
   equal text.toString(), "He worldllo", "moving text to the end position"
 
 
+test "#addAttributeAtRange", ->
+  text = fixture("plain")
+  text.addAttributeAtRange("bold", true, [0, 5])
+  runsEqual text, [
+      { string: "Hello", attributes: { bold: true } },
+      { string: " world", attributes: {} }
+    ],
+    "adding an attribute"
+
+
+test "#addAttributesAtRange", ->
+  attributes = { bold: true, italic: true }
+
+  text = fixture("plain")
+  text.addAttributesAtRange(attributes, [1, 1])
+  ok text.isEqualTo(fixture("plain")), "adding attributes to nothing"
+
+  text = fixture("plain")
+  text.addAttributesAtRange(attributes, [1, 5])
+  runsEqual text, [
+      { string: "H", attributes: {} },
+      { string: "ello", attributes: attributes },
+      { string: " world", attributes: {} }
+    ],
+    "adding attributes to an interior range"
+
+  text = fixture("plain")
+  text.addAttributesAtRange(attributes, [0, text.getLength()])
+  runsEqual text, [{ string: "Hello world", attributes: attributes }],
+    "adding attributes to the entire text"
+
+  text = fixture("formatted")
+  text.addAttributesAtRange(attributes, [10, text.getLength()])
+  runsEqual text, [
+      { string: "Hello, ", attributes: {} },
+      { string: "rich text!", attributes: attributes }
+    ],
+    "adding attributes across ranges"
+
+
+test "#removeAttributeAtRange", ->
+  text = fixture("italic")
+  text.removeAttributeAtRange("italic", [1, 1])
+  ok text.isEqualTo(fixture("italic")), "removing an attribute from nothing"
+
+  text = fixture("italic")
+  text.removeAttributeAtRange("italic", [1, 5])
+  runsEqual text, [
+      { string: "H", attributes: { italic: true } },
+      { string: "ello", attributes: {} },
+      { string: " world", attributes: { italic: true } }
+    ],
+    "removing an attribute from an interior range"
+
+  text = fixture("italic")
+  text.removeAttributeAtRange("italic", [0, text.getLength()])
+  ok text.isEqualTo(fixture("plain")), "removing an attribute from the entire text"
+
+  text = fixture("formatted")
+  text.removeAttributeAtRange("italic", [0, 14])
+  runsEqual text, [
+      { string: "Hello, ", attributes: {} },
+      { string: "rich ", attributes: { bold: true } },
+      { string: "te", attributes: {} },
+      { string: "xt", attributes: { italic: true } },
+      { string: "!", attributes: {} }
+    ],
+    "removing an attribute across runs"
+
+
+test "#setAttributesAtRange", ->
+  attributes = { italic: true }
+
+  text = fixture("bold")
+  text.setAttributesAtRange(attributes, [1, 1])
+  ok text.isEqualTo(fixture("bold")), "setting attributes on nothing"
+
+  text = fixture("bold")
+  text.setAttributesAtRange(attributes, [1, 5])
+  runsEqual text, [
+      { string: "H", attributes: { bold: true } },
+      { string: "ello", attributes: { italic: true } },
+      { string: " world", attributes: { bold: true } }
+    ],
+    "setting attributes on an interior range"
+
+  text = fixture("bold")
+  text.setAttributesAtRange(attributes, [0, text.getLength()])
+  ok text.isEqualTo(fixture("italic")), "setting attributes on the entire text"
+
+  text = fixture("formatted")
+  text.setAttributesAtRange(attributes, [10, text.getLength()])
+  runsEqual text, [
+      { string: "Hello, ", attributes: {} },
+      { string: "ric", attributes: { bold: true, italic: true } },
+      { string: "h text!", attributes: { italic: true } }
+    ],
+    "setting attributes across runs"
+
+
 test "#isEqualTo", ->
   text = fixture("formatted")
   ok text.isEqualTo(text), "text is equal to itself"
