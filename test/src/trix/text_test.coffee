@@ -239,6 +239,54 @@ test "#insertTextAtPosition", ->
     "inserting formatted text into formatted text between runs"
 
 
+test "#removeTextAtRange", ->
+  text = fixture("formatted")
+  text.removeTextAtRange([0, 0])
+  ok text.isEqualTo(fixture("formatted")), "removing nothing"
+
+  text = fixture("formatted")
+  text.removeTextAtRange([0, text.getLength()])
+  ok text.isEqualTo(fixture("empty")), "removing the entire text"
+
+  text = fixture("formatted")
+  text.removeTextAtRange([0, 2])
+  runsEqual text, [
+      { string: "llo, ", attributes: {} },
+      { string: "rich ", attributes: { bold: true, italic: true } },
+      { string: "text", attributes: { italic: true } },
+      { string: "!", attributes: {} }
+    ],
+    "removing text at the start position"
+
+  text = fixture("formatted")
+  text.removeTextAtRange([text.getLength() - 1, text.getLength()])
+  runsEqual text, [
+      { string: "Hello, ", attributes: {} },
+      { string: "rich ", attributes: { bold: true, italic: true } },
+      { string: "text", attributes: { italic: true } }
+    ],
+    "removing text at the end position"
+
+  text = fixture("formatted")
+  text.removeTextAtRange([1, 3])
+  runsEqual text, [
+      { string: "Hlo, ", attributes: {} },
+      { string: "rich ", attributes: { bold: true, italic: true } },
+      { string: "text", attributes: { italic: true } },
+      { string: "!", attributes: {} }
+    ],
+    "removing text inside a run"
+
+  text = fixture("formatted")
+  text.removeTextAtRange([1, 13])
+  runsEqual text, [
+      { string: "H", attributes: {} },
+      { string: "ext", attributes: { italic: true } },
+      { string: "!", attributes: {} }
+    ],
+    "removing text across runs"
+
+
 test "#isEqualTo", ->
   text = fixture("formatted")
   ok text.isEqualTo(text), "text is equal to itself"
