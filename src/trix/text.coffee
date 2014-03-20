@@ -74,14 +74,17 @@ class Trix.Text
   getCommonAttributesAtRange: (range) ->
     @pieceList.getPieceListInRange(range)?.getCommonAttributes() ? {}
 
-  getLength: ->
-    @pieceList.getLength()
-
   getTextAtRange: (range) ->
     new @constructor @pieceList.getPieceListInRange(range).toArray()
 
   getStringAtRange: (range) ->
     @pieceList.getPieceListInRange(range).toString()
+
+  getLength: ->
+    @pieceList.getLength()
+
+  isEqualTo: (text) ->
+    this is text or text?.pieceList?.isEqualTo(@pieceList)
 
   endsWith: (string) ->
     if end = @pieceList.getLastPiece()?.toString()
@@ -101,9 +104,6 @@ class Trix.Text
 
       callback(run)
       position += piece.length
-
-  isEqualTo: (text) ->
-    this is text or text?.pieceList?.isEqualTo(@pieceList)
 
   inspect: ->
     @pieceList.inspect()

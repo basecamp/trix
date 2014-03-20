@@ -478,6 +478,16 @@ test "#getCommonAttributesAtRange", ->
     commonAttributes = text.getCommonAttributesAtRange(range)
     hashEqual commonAttributes, expectedCommonAttributes, "range #{JSON.stringify(range)}"
 
+test "#getLength", ->
+  empty = fixture("empty")
+  equal empty.getLength(), 0, "empty text length is 0"
+
+  text = fixture("plain")
+  equal text.getLength(), 11, "plain text length"
+
+  text = fixture("formatted")
+  equal text.getLength(), 17, "formatted text length"
+
 
 test "#isEqualTo", ->
   text = fixture("formatted")
@@ -495,17 +505,6 @@ test "#isEqualTo", ->
   a = Trix.Text.textForStringWithAttributes("Hello")
   b = Trix.Text.textForStringWithAttributes("Hello")
   ok a.isEqualTo(b) and b.isEqualTo(a), "two texts from the same string are equal"
-
-
-test "#getLength", ->
-  empty = fixture("empty")
-  equal empty.getLength(), 0, "empty text length is 0"
-
-  text = fixture("plain")
-  equal text.getLength(), 11, "plain text length"
-
-  text = fixture("formatted")
-  equal text.getLength(), 17, "formatted text length"
 
 
 # Fixtures
