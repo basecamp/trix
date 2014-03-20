@@ -446,6 +446,39 @@ test "#setAttributesAtRange", ->
     "setting attributes across runs"
 
 
+test "#getAttributesAtPosition", ->
+  text = fixture("formatted")
+  tests =
+    0:  {}
+    6:  {}
+    7:  { bold: true, italic: true }
+    11: { bold: true, italic: true }
+    12: { italic: true }
+    15: { italic: true }
+    16: {}
+    17: {}
+
+  for position, expectedAttributes of tests
+    attributes = text.getAttributesAtPosition(position)
+    hashEqual attributes, expectedAttributes, "position #{position}"
+
+
+test "#getCommonAttributesAtRange", ->
+  text = fixture("formatted")
+  tests = [
+    [[0, 17],  {}],
+    [[7, 11],  { bold: true, italic: true }],
+    [[7, 13],  { italic: true }],
+    [[7, 15],  { italic: true }],
+    [[13, 15], { italic: true }],
+    [[13, 17], {}]
+  ]
+
+  for [range, expectedCommonAttributes] in tests
+    commonAttributes = text.getCommonAttributesAtRange(range)
+    hashEqual commonAttributes, expectedCommonAttributes, "range #{JSON.stringify(range)}"
+
+
 test "#isEqualTo", ->
   text = fixture("formatted")
   ok text.isEqualTo(text), "text is equal to itself"
@@ -504,6 +537,11 @@ fixture = (name) ->
 
 
 # Test helpers
+
+hashEqual = (actual, expected, message) ->
+  actual = Trix.Hash.box(actual)
+  expected = Trix.Hash.box(expected)
+  QUnit.push actual.isEqualTo(expected), actual.inspect(), expected.inspect(), message
 
 runsEqual = (text, expectedRuns, message) ->
   actualRuns = getRunsForText(text)
