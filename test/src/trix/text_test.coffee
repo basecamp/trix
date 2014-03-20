@@ -316,6 +316,36 @@ test "#replaceTextAtRange", ->
     "replacing text across runs"
 
 
+test "#moveTextFromRangeToPosition", ->
+  text = fixture("plain")
+  text.moveTextFromRangeToPosition([2, 5], 0)
+  equal text.toString(), "lloHe world", "moving text to the start position"
+
+  text = fixture("plain")
+  text.moveTextFromRangeToPosition([2, 5], 1)
+  equal text.toString(), "Hlloe world", "moving text to a position before the source range"
+
+  text = fixture("plain")
+  text.moveTextFromRangeToPosition([2, 5], 2)
+  equal text.toString(), "Hello world", "moving text to the start position of the source range"
+
+  text = fixture("plain")
+  text.moveTextFromRangeToPosition([2, 5], 4)
+  equal text.toString(), "Hello world", "moving text to a position within the source range"
+
+  text = fixture("plain")
+  text.moveTextFromRangeToPosition([2, 5], 5)
+  equal text.toString(), "Hello world", "moving text to the end position of the source range"
+
+  text = fixture("plain")
+  text.moveTextFromRangeToPosition([2, 5], 6)
+  equal text.toString(), "He lloworld", "moving text to a position after the source range"
+
+  text = fixture("plain")
+  text.moveTextFromRangeToPosition([2, 5], text.getLength())
+  equal text.toString(), "He worldllo", "moving text to the end position"
+
+
 test "#isEqualTo", ->
   text = fixture("formatted")
   ok text.isEqualTo(text), "text is equal to itself"

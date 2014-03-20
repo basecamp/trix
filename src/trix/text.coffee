@@ -44,6 +44,7 @@ class Trix.Text
     @insertTextAtPosition(text, range[0])
 
   moveTextFromRangeToPosition: edit (range, position) ->
+    return if range[0] <= position <= range[1]
     text = @getTextAtRange(range)
     length = text.getLength()
     position -= length if range[0] < position
@@ -106,3 +107,6 @@ class Trix.Text
 
   inspect: ->
     @pieceList.inspect()
+
+  toString: ->
+    @pieceList.toString()
