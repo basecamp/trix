@@ -287,6 +287,35 @@ test "#removeTextAtRange", ->
     "removing text across runs"
 
 
+test "#replaceTextAtRange", ->
+  text = fixture("formatted")
+  text.replaceTextAtRange(fixture("empty"), [1, 1])
+  ok text.isEqualTo(fixture("formatted")), "replacing nothing with empty text"
+
+  text = fixture("formatted")
+  text.replaceTextAtRange(fixture("plain"), [1, 1])
+  runsEqual text, [
+      { string: "HHello worldello, ", attributes: {} },
+      { string: "rich ", attributes: { bold: true, italic: true } },
+      { string: "text", attributes: { italic: true } },
+      { string: "!", attributes: {} }
+    ],
+    "replacing nothing with text is equivalent to inserting it"
+
+  text = fixture("formatted")
+  text.replaceTextAtRange(fixture("plain"), [0, text.getLength()])
+  ok text.isEqualTo(fixture("plain")), "replacing the entire text"
+
+  text = fixture("formatted")
+  text.replaceTextAtRange(fixture("italic"), [1, 13])
+  runsEqual text, [
+      { string: "H", attributes: {} },
+      { string: "Hello worldext", attributes: { italic: true } },
+      { string: "!", attributes: {} }
+    ],
+    "replacing text across runs"
+
+
 test "#isEqualTo", ->
   text = fixture("formatted")
   ok text.isEqualTo(text), "text is equal to itself"
