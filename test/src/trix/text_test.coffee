@@ -478,6 +478,41 @@ test "#getCommonAttributesAtRange", ->
     commonAttributes = text.getCommonAttributesAtRange(range)
     hashEqual commonAttributes, expectedCommonAttributes, "range #{JSON.stringify(range)}"
 
+
+test "#getTextAtRange", ->
+  text = fixture("formatted").getTextAtRange([1, 1])
+  ok text.isEqualTo(fixture("empty")), "extracting nothing as text"
+
+  text = fixture("formatted").getTextAtRange([0, 17])
+  ok text.isEqualTo(fixture("formatted")), "extracting the entire text as text"
+
+  text = fixture("formatted").getTextAtRange([7, 11])
+  runsEqual text, [{ string: "rich", attributes: { bold: true, italic: true } }],
+    "extracting from a single run as text"
+
+  text = fixture("formatted").getTextAtRange([1, 15])
+  runsEqual text, [
+      { string: "ello, ", attributes: {} },
+      { string: "rich ", attributes: { bold: true, italic: true } },
+      { string: "tex", attributes: { italic: true } }
+    ],
+    "extracting across multiple runs as text"
+
+
+test "#getStringAtRange", ->
+  string = fixture("formatted").getStringAtRange([1, 1])
+  equal string, "", "extracting nothing as a string"
+
+  string = fixture("formatted").getStringAtRange([0, 17])
+  equal string, "Hello, rich text!", "extracting the entire text as a string"
+
+  string = fixture("formatted").getStringAtRange([7, 11])
+  equal string, "rich", "extracting from a single run as a string"
+
+  string = fixture("formatted").getStringAtRange([1, 15])
+  equal string, "ello, rich tex", "extracting across multiple runs as a string"
+
+
 test "#getLength", ->
   empty = fixture("empty")
   equal empty.getLength(), 0, "empty text length is 0"
