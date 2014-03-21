@@ -31,6 +31,34 @@ test "textForStringWithAttributes", ->
     "single-run text with string and attributes"
 
 
+test "#beginEditing and #endEditing", ->
+  count = (text) ->
+    counter = value: 0, text: text
+    delegate = didEditText: (text) -> counter.value++ if text is counter.text
+    text.delegate = delegate
+    counter
+
+  {text} = counter = count(fixture("formatted"))
+  text.replaceTextAtRange(fixture("plain"), [1, 2])
+  equal counter.value, 1, "one delegate call after text manipulation"
+
+  {text} = counter = count(fixture("formatted"))
+  text.beginEditing()
+  text.replaceTextAtRange(fixture("plain"), [1, 2])
+  text.removeTextAtRange([1, 2])
+  equal counter.value, 0, "no delegate calls during editing"
+  text.endEditing()
+  equal counter.value, 1, "one delegate call after editing"
+
+  {text} = counter = count(fixture("formatted"))
+  text.beginEditing().beginEditing()
+  text.removeTextAtRange([1, 2])
+  text.endEditing()
+  equal counter.value, 0, "no delegate calls during nested editing"
+  text.endEditing()
+  equal counter.value, 1, "one delegate call after nested editing"
+
+
 test "#appendText", ->
   text = fixture("plain")
   text.appendText(Trix.Text.textForStringWithAttributes("!"))
