@@ -1,4 +1,4 @@
-class Trix.Input
+class Trix.InputController
   @keyNames:
     0x08: "backspace"
     0x0D: "return"
@@ -6,7 +6,7 @@ class Trix.Input
     0x48: "h"
     0x4f: "o"
 
-  constructor: (@element, @responder) ->
+  constructor: (@element) ->
     for event, handler of @events
       @element.addEventListener(event, handler.bind(this), true)
 

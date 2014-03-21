@@ -1,19 +1,24 @@
-#= require trix/text
-#= require trix/input
-#= require trix/text_view
+#= require trix/models/text
+#= require trix/views/text_view
+#= require trix/controllers/attachment_controller
+#= require trix/controllers/input_controller
 #= require trix/selection_observer
-#= require trix/attachment_controller
 
 class Trix.TextController
   constructor: (@element) ->
     @text = new Trix.Text
     @text.delegate = this
-    @input = new Trix.Input @element, this
+
     @textView = new Trix.TextView @element, @text
-    @selectionObserver = new Trix.SelectionObserver
-    @selectionObserver.delegate = this
+
     @attachmentController = new Trix.AttachmentController @element
     @attachmentController.delegate = this
+
+    @inputController = new Trix.InputController @element
+    @inputController.responder = this
+
+    @selectionObserver = new Trix.SelectionObserver
+    @selectionObserver.delegate = this
 
     @currentAttributes = {}
     @element.addEventListener("focus", @didFocus)

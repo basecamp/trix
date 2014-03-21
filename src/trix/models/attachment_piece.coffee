@@ -1,4 +1,4 @@
-#= require trix/piece
+#= require trix/models/piece
 
 class Trix.AttachmentPiece extends Trix.Piece
   objectReplacementCharacter = "\uFFFC"

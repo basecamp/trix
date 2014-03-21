@@ -1,5 +1,5 @@
 #= require_self
-#= require trix/editor_controller
+#= require trix/controllers/editor_controller
 
 @Trix =
   install: (textElement, toolbarElement, debugElement) ->

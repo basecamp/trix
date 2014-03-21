@@ -1,6 +1,6 @@
-#= require trix/text_controller
-#= require trix/toolbar_controller
-#= require trix/debug_controller
+#= require trix/controllers/text_controller
+#= require trix/controllers/toolbar_controller
+#= require trix/controllers/debug_controller
 
 class Trix.EditorController
   constructor: (textElement, toolbarElement, debugElement) ->

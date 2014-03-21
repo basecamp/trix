@@ -1,4 +1,4 @@
-#= require trix/text
+#= require trix/models/text
 
 module "Trix.Text"
 

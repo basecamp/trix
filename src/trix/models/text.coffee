@@ -1,6 +1,6 @@
-#= require trix/piece
-#= require trix/attachment_piece
-#= require trix/piece_list
+#= require trix/models/piece
+#= require trix/models/attachment_piece
+#= require trix/models/piece_list
 
 class Trix.Text
   @textForAttachmentWithAttributes: (attachment, attributes) ->
