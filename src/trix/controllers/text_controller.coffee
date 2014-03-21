@@ -2,7 +2,7 @@
 #= require trix/views/text_view
 #= require trix/controllers/attachment_controller
 #= require trix/controllers/input_controller
-#= require trix/selection_observer
+#= require trix/observers/selection_observer
 
 class Trix.TextController
   constructor: (@element) ->
