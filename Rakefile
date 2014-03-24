@@ -61,6 +61,20 @@ namespace :test do
 
   if has_phantomjs?
     task :auto => :phantomjs
+
+    desc "Listen for file changes and run Trix tests in PhantomJS"
+    task :listen do
+      require "listen"
+
+      Listen.to("src/", "test/src", "lib") do |modified, added, removed|
+        files = modified + added + removed
+        puts "\nModified: #{files.join(', ')}"
+        puts "Starting tests..."
+        system "bin/rake test:auto"
+      end.start
+
+      sleep
+    end
   else
     task :auto => :browser
   end
