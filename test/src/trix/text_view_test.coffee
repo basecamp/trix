@@ -26,9 +26,25 @@ test "#createElementsForText", ->
   equal elements[0].lastChild.tagName.toLowerCase(), "br", "container element's last child is a BR"
   equal elements[1].tagName.toLowerCase(), "br", "last element is an extra BR"
 
+  elements = getElementsForText(createText(".", bold: true))
+  equal elements[0].style["font-weight"], "bold", "font weight is bold"
+
+  elements = getElementsForText(createText(".", italic: true))
+  equal elements[0].style["font-style"], "italic", "font style is italic"
+
+  elements = getElementsForText(createText(".", underline: true))
+  equal elements[0].style["text-decoration"], "underline", "text decoration is underline"
+
+  elements = getElementsForText(createText(".", selected: true))
+  equal elements[0].style["background-color"], "highlight", "background color is highlight"
+
+
 # Helpers
 
 getElementsForText = (text) ->
   element = document.createElement("div")
   textView = new Trix.TextView element, text
   textView.createElementsForText()
+
+createText = (string, attributes) ->
+  Trix.Text.textForStringWithAttributes(string, attributes)
