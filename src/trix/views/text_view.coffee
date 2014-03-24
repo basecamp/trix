@@ -26,7 +26,7 @@ class Trix.TextView
 
   createElementsForText: ->
     elements = []
-    previousAttributes = {}
+    previousRun = null
 
     @text.eachRun (run) ->
       parent = null
@@ -37,7 +37,7 @@ class Trix.TextView
           createElement(run)
 
       if href = run.attributes.href
-        if href is previousAttributes.href
+        if href is previousRun?.attributes.href
           parent = elements[elements.length - 1]
         else
           link = createElement(tagName: "a", attributes: {href}, position: run.position)
@@ -49,10 +49,10 @@ class Trix.TextView
       else
         elements.push(element)
 
-      previousAttributes = run.attributes
+      previousRun = run
 
     # Add an extra newline if the text ends with one. Otherwise, the cursor won't move down.
-    if @text.endsWith("\n")
+    if /\n$/.test(previousRun.string)
       node = createNodesForString("\n", @text.getLength())[0]
       elements.push(node)
 

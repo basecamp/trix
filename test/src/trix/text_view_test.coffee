@@ -21,6 +21,12 @@ test "#createElementsForText", ->
   equal node.trixLength, text.getLength(), "child node has a trixLength property"
 
 
+  text = Trix.Text.textForStringWithAttributes(text.toString() + "\n")
+  elements = getElementsForText(text)
+  equal elements.length, 2, "two elements for string ending with a newline"
+  equal elements[0].lastChild.tagName.toLowerCase(), "br", "container element's last child is a BR"
+  equal elements[1].tagName.toLowerCase(), "br", "last element is an extra BR"
+
 # Helpers
 
 getElementsForText = (text) ->

@@ -22,9 +22,6 @@ class Trix.PieceList
   getPieceAtIndex: (index) ->
     @pieces[index]
 
-  getLastPiece: ->
-    @getPieceAtIndex(@pieces.length - 1)
-
   getPieceListInRange: (range) ->
     pieceList = new Trix.PieceList @pieces.slice(0)
     [leftIndex, rightIndex] = pieceList.splitPiecesAtRange(range)

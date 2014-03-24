@@ -86,10 +86,6 @@ class Trix.Text
   isEqualTo: (text) ->
     this is text or text?.pieceList?.isEqualTo(@pieceList)
 
-  endsWith: (string) ->
-    if end = @pieceList.getLastPiece()?.toString()
-      ///#{string}$///.test(end)
-
   eachRun: (callback) ->
     position = 0
     @pieceList.eachPiece (piece) ->
