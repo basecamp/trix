@@ -20,8 +20,7 @@ test "#createElementsForText", ->
   equal node.trixPosition, 0, "child node has a trixPosition property"
   equal node.trixLength, text.getLength(), "child node has a trixLength property"
 
-  text = Trix.Text.textForStringWithAttributes(fixture("plain").toString() + "\n")
-  elements = getElementsForText(text)
+  elements = getElementsForText(createText("Hello\n"))
   equal elements.length, 2, "two elements for string ending with a newline"
   equal elements[0].lastChild.tagName.toLowerCase(), "br", "container element's last child is a BR"
   equal elements[1].tagName.toLowerCase(), "br", "last element is an extra BR"
