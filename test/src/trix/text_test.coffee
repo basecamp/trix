@@ -32,6 +32,12 @@ test "textForStringWithAttributes", ->
     "single-run text with string and attributes"
 
 
+test "fromJSON", ->
+  textA = fixture("formatted")
+  textB = Trix.Text.fromJSON(textA.asJSON())
+  ok textB.isEqualTo(textA), "serializing and deserializing creates equal copy"
+
+
 test "#beginEditing and #endEditing", ->
   count = (text) ->
     counter = value: 0, text: text
@@ -569,6 +575,23 @@ test "#isEqualTo", ->
   a = Trix.Text.textForStringWithAttributes("Hello")
   b = Trix.Text.textForStringWithAttributes("Hello")
   ok a.isEqualTo(b) and b.isEqualTo(a), "two texts from the same string are equal"
+
+
+test "#toJSON", ->
+  text = fixture("formatted")
+  result = text.toJSON()
+
+  index = 0
+  text.eachRun (run) ->
+    equal result[index].string, run.string, "strings are equal"
+    propEqual result[index].attributes, run.attributes, "attributes are equal"
+    index++
+
+
+test "asJSON", ->
+  equal fixture("bold").asJSON(),
+    """[{"string":"Hello world","attributes":{"bold":true}}]""",
+    "text is serialized as JSON"
 
 
 # Test helpers

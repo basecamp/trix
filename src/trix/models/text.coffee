@@ -11,6 +11,12 @@ class Trix.Text
     piece = new Trix.Piece string, attributes
     new this [piece]
 
+  @fromJSON: (json) ->
+    pieces = []
+    for {string, attributes} in JSON.parse(json)
+      pieces.push new Trix.Piece string, attributes
+    new this pieces
+
   constructor: (pieces = []) ->
     @editDepth = 0
     @pieceList = new Trix.PieceList pieces
@@ -106,3 +112,9 @@ class Trix.Text
 
   toString: ->
     @pieceList.toString()
+
+  toJSON: ->
+    @pieceList.toJSON()
+
+  asJSON: ->
+    JSON.stringify(@toJSON())
