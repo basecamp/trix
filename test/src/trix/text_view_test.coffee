@@ -84,6 +84,34 @@ test "#createElementsForText", ->
   ok !b.getAttribute("href"), "second child element has no href attribute"
 
 
+test "#getSelectedRange", ->
+  view = installTextView(fixture("formatted"))
+  element = view.element
+
+  setRangeInNode(element.childNodes[0].firstChild, [1, 5], "ello")
+  deepEqual view.getSelectedRange(), [1, 5], "range is positions in text"
+
+  setRangeInNode(element.childNodes[1].firstChild, [0, 2], "ri")
+  deepEqual view.getSelectedRange(), [7, 9], "range is positions in text"
+
+  setRangeInNode(element.childNodes[2].firstChild, [2, 3], "x")
+  deepEqual view.getSelectedRange(), [14, 15], "range is positions in text"
+
+
+test "#setSelectedRange", ->
+  view = installTextView(fixture("formatted"))
+  element = view.element
+
+  view.setSelectedRange([1, 5])
+  rangeInNodeAroundString(element.childNodes[0].firstChild, "ello")
+
+  view.setSelectedRange([7, 9])
+  rangeInNodeAroundString(element.childNodes[1].firstChild, "ri")
+
+  view.setSelectedRange([14, 15])
+  rangeInNodeAroundString(element.childNodes[2].firstChild, "x")
+
+
 # Helpers
 
 getElementsForText = (text) ->
@@ -93,3 +121,27 @@ getElementsForText = (text) ->
 
 createText = (string, attributes) ->
   Trix.Text.textForStringWithAttributes(string, attributes)
+
+installTextView = (text) ->
+  element = document.createElement("div")
+  document.body.appendChild(element)
+  view = new Trix.TextView element, text
+  view.render()
+  view
+
+setRangeInNode = (node, [startOffset, endOffset], expectedString) ->
+  range = document.createRange()
+  range.setStart(node, startOffset)
+  range.setEnd(node, endOffset)
+
+  selection = window.getSelection()
+  selection.removeAllRanges()
+  selection.addRange(range)
+
+  equal range.toString(), expectedString, "range set around expected string"
+
+rangeInNodeAroundString = (node, string) ->
+  range = window.getSelection().getRangeAt(0)
+  equal range.startContainer, node, "range starts in correct node"
+  equal range.toString(), string, "range set around expected string"
+
