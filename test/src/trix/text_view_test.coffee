@@ -37,6 +37,20 @@ test "#createElementsForText", ->
   elements = getElementsForText(createText(".", selected: true))
   equal elements[0].style["background-color"], "highlight", "background color is highlight"
 
+  elements = getElementsForText(fixture("linkWithFormatting"))
+  equal elements.length, 1, "one element for a link with formatting"
+
+  el = elements[0]
+  equal el.tagName.toLowerCase(), "a", "container element is an A"
+  equal el.getAttribute("href"), "http://basecamp.com", "element has href attribute"
+  ok !el.style["font-weight"], "container isn't styled"
+
+  [a, b] = el.childNodes
+  equal a.style["font-weight"], "bold", "child element is styled"
+  ok !a.getAttribute("href"), "child element has no href attribute"
+  ok !b.style["font-weight"], "second child element is not styled"
+  ok !b.getAttribute("href"), "second child element has no href attribute"
+
 
 # Helpers
 
