@@ -1,8 +1,14 @@
 class Trix.Composition
   constructor: (@text) ->
+    @text.delegate = this
     @currentAttributes = {}
-    @invalidated = false
-    @selectedRange = 0
+
+  # Text delegate
+
+  didEditText: (text) ->
+    @delegate?.compositionDidChangeText?(this, @text)
+
+  # Responder protocol
 
   insertText: (text, updatePosition = true) ->
     if selectedRange = @getSelectedRange()

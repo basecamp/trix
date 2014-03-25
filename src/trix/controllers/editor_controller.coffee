@@ -32,6 +32,9 @@ class Trix.EditorController
 
   # Composition controller delegate
 
+  compositionDidChangeText: (composition, text) ->
+    @textController.render()
+
   compositionDidChangeCurrentAttributes: (composition, currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
 

@@ -3,12 +3,10 @@
 
 class Trix.TextController
   constructor: (@element, @text) ->
-    @text.delegate = this
-
-    @textView = new Trix.TextView @element, @text
-
     @attachmentController = new Trix.AttachmentController @element
     @attachmentController.delegate = this
+
+    @textView = new Trix.TextView @element, @text
 
     @selectionLockCount = 0
 
@@ -23,11 +21,6 @@ class Trix.TextController
   render: ->
     @textView.render()
     @delegate?.textControllerDidRender?()
-
-  # Text delegate
-
-  didEditText: (text) ->
-    @render()
 
   # Attachment controller delegate
 
