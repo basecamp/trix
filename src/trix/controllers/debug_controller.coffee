@@ -1,7 +1,7 @@
 class Trix.DebugController
   @sections = "PositionOrRange Selections TextRuns".split(" ")
 
-  constructor: (@element, @textController) ->
+  constructor: (@element, @textView, @composition) ->
 
   render: ->
     @element.innerHTML = ""
@@ -15,20 +15,20 @@ class Trix.DebugController
     strings.join("\n\n")
 
   renderPositionOrRange: ->
-    string = if selectedRange = @textController.getSelectedRange()
+    string = if selectedRange = @composition.getSelectedRange()
       "Selected range: #{JSON.stringify(selectedRange)}"
     else
-      position = @textController.getPosition() ? 0
+      position = @composition.getPosition() ? 0
       "Cursor position: #{position}"
 
-    string += " (locked)" if @textController.textView.lockedRange?
+    # string += " (locked)" if @textController.textView.lockedRange?
     string
 
   renderSelections: ->
-    position = @textController.getPosition()
+    position = @composition.getPosition()
     return unless position?
 
-    [container, offset] = @textController.textView.findContainerAndOffsetForPosition(position)
+    [container, offset] = @textView.findContainerAndOffsetForPosition(position)
     string = """
     textView#findContainerAndOffsetForPosition:
     #{indent(@renderSelection(container, offset))}
@@ -44,7 +44,7 @@ class Trix.DebugController
     string
 
   renderSelection: (container, offset) ->
-    position = @textController.textView.findPositionFromContainerAtOffset(container, offset)
+    position = @textView.findPositionFromContainerAtOffset(container, offset)
 
     containerContent =
       if container.nodeType is Node.TEXT_NODE
@@ -60,7 +60,7 @@ class Trix.DebugController
 
   renderTextRuns: ->
     string = ""
-    @textController.text.eachRun (run) ->
+    @composition.text.eachRun (run) ->
       for key, value of run
         string += "#{key}: #{JSON.stringify(value)}\n"
       string += "\n"
