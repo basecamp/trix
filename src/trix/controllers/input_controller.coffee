@@ -54,7 +54,7 @@ class Trix.InputController
     drop: (event) ->
       event.preventDefault()
       point = [event.pageX, event.pageY]
-      @responder?.positionAtPoint(point)
+      @responder?.requestPositionAtPoint(point)
 
       if @draggedRange
         @responder?.moveTextFromRange(@draggedRange)

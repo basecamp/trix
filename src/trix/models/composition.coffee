@@ -106,15 +106,19 @@ class Trix.Composition
   # Position and selected range
 
   getPosition: ->
-    if range = @selectionDelegate?.getSelectedRangeForComposition?(this)
+    if range = @selectionDelegate?.getSelectedRangeOfComposition?(this)
       [start, end] = range
       start if start is end
 
   requestPosition: (position) ->
     @requestSelectedRange([position, position])
 
+  requestPositionAtPoint: (point) ->
+    if range = @selectionDelegate?.getRangeOfCompositionAtPoint?(this, point)
+      @requestSelectedRange(range)
+
   getSelectedRange: ->
-    if range = @selectionDelegate?.getSelectedRangeForComposition?(this)
+    if range = @selectionDelegate?.getSelectedRangeOfComposition?(this)
       [start, end] = range
       range unless start is end
 

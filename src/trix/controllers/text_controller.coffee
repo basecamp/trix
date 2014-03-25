@@ -34,8 +34,12 @@ class Trix.TextController
 
   # Composition selection delegate
 
-  getSelectedRangeForComposition: (composition) ->
+  getSelectedRangeOfComposition: (composition) ->
     @getCachedSelectedRangeFromTextView()
+
+  getRangeOfCompositionAtPoint: (composition, point) ->
+    position = @getPositionAtPoint(point)
+    [position, position] if position?
 
   compositionDidRequestSelectionOfRange: (composition, range) ->
     @focus()
@@ -62,4 +66,4 @@ class Trix.TextController
     delete @cachedSelectedRange
 
   getPositionAtPoint: (point) ->
-    @textView.findPositionAtPoint(point)
+    @textView.getPositionAtPoint(point)
