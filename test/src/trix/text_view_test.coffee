@@ -4,6 +4,16 @@
 module "Trix.TextView"
 
 
+test "#constructor", ->
+  element = document.createElement("div")
+  new Trix.TextView element, fixture("plain")
+
+  equal element.getAttribute("contenteditable"), "true", "element is contenteditable"
+  equal element.getAttribute("autocorrect"), "off", "element has autocorrect off"
+  equal element.getAttribute("spellcheck"), "false", "element has spellcheck off"
+  equal element.trixPosition, 0, "element has a trixPosition property"
+
+
 test "#createElementsForText", ->
   text = fixture("plain")
   elements = getElementsForText(text)
