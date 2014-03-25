@@ -14,6 +14,19 @@ test "#constructor", ->
   equal element.trixPosition, 0, "element has a trixPosition property"
 
 
+test "#render", ->
+  element = document.createElement("div")
+  view = new Trix.TextView element
+
+  view.text = createText("a")
+  view.render()
+  equal element.textContent, "a", "rendered text"
+
+  view.text = createText("b")
+  view.render()
+  equal element.textContent, "b", "replaced contents with text"
+
+
 test "#createElementsForText", ->
   text = fixture("plain")
   elements = getElementsForText(text)

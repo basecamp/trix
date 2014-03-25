@@ -22,7 +22,7 @@ class Trix.TextView
     elements = @createElementsForText()
     @element.removeChild(@element.lastChild) while @element.lastChild
     @element.appendChild(element) for element in elements
-    @setSelectedRange(selectedRange)
+    @setSelectedRange(selectedRange) if selectedRange
 
   createElementsForText: ->
     elements = []
