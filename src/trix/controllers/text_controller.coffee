@@ -5,8 +5,7 @@
 #= require trix/selection_observer
 
 class Trix.TextController
-  constructor: (@element) ->
-    @text = new Trix.Text
+  constructor: (@element, @text) ->
     @text.delegate = this
 
     @textView = new Trix.TextView @element, @text
@@ -22,6 +21,8 @@ class Trix.TextController
 
     @currentAttributes = {}
     @element.addEventListener("focus", @didFocus)
+
+    @render()
 
   focus: ->
     @textView.focus()

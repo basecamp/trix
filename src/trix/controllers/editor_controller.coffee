@@ -3,13 +3,19 @@
 #= require trix/controllers/debug_controller
 
 class Trix.EditorController
-  constructor: (textElement, toolbarElement, debugElement) ->
-    @textController = new Trix.TextController textElement
+  constructor: (textElement, toolbarElement, inputElement, debugElement) ->
+    @textController = new Trix.TextController textElement, createText(inputElement)
     @textController.delegate = this
     @toolbarController = new Trix.ToolbarController toolbarElement
     @toolbarController.delegate = this
     @debugController = new Trix.DebugController debugElement, @textController
     @debugController.render()
+
+  createText = (inputElement) ->
+    if inputElement?.value
+      Trix.Text.fromJSON(inputElement.value)
+    else
+      new Trix.Text
 
   # Text controller delegate
 
