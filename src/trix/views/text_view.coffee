@@ -52,7 +52,7 @@ class Trix.TextView
       previousRun = run
 
     # Add an extra newline if the text ends with one. Otherwise, the cursor won't move down.
-    if /\n$/.test(previousRun.string)
+    if /\n$/.test(previousRun?.string)
       node = createNodesForString("\n", @text.getLength())[0]
       elements.push(node)
 
