@@ -75,18 +75,20 @@ class Trix.InputController
       event.preventDefault()
 
     compositionstart: (event) ->
-      @responder?.beginComposing()
+      @delegate?.inputControllerWillComposeCharacters?()
+      @composing = true
 
     compositionend: (event) ->
       @composedString = event.data
 
     input: (event) ->
-      if @responder?.isComposing()
+      if @composing
         if @composedString?
-          @responder?.endComposing(@composedString)
+          @delegate?.inputControllerDidComposeCharacters?(@composedString)
           delete @composedString
+          delete @composing
       else
-        @responder?.render()
+        @delegate?.inputControllerDidInvalidateElement?(@element)
         @logAndCancel(event)
 
   keys:

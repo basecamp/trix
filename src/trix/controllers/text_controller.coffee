@@ -10,6 +10,8 @@ class Trix.TextController
     @attachmentController = new Trix.AttachmentController @element
     @attachmentController.delegate = this
 
+    @selectionLockCount = 0
+
     @element.addEventListener("focus", @didFocus)
 
   focus: ->
@@ -48,6 +50,17 @@ class Trix.TextController
     @expireCachedSelectedRange()
 
   # Selection
+
+  lockSelection: ->
+    if @selectionLockCount++ is 0
+      @textView.lockSelection()
+      @delegate?.textControllerDidLockSelection?()
+
+  unlockSelection: ->
+    if --@selectionLockCount is 0
+      selectedRange = @textView.unlockSelection()
+      @textView.setSelectedRange(selectedRange)
+      @delegate?.textControllerDidUnlockSelection?()
 
   getCachedSelectedRangeFromTextView: ->
     @cachedSelectedRange ?= @textView.getSelectedRange()

@@ -18,6 +18,7 @@ class Trix.EditorController
     @composition.selectionDelegate = @textController
 
     @inputController = new Trix.InputController textElement
+    @inputController.delegate = this
     @inputController.responder = @composition
 
     @selectionObserver = new Trix.SelectionObserver
@@ -44,6 +45,19 @@ class Trix.EditorController
 
   textControllerDidChangeSelection: ->
     @debugController.render()
+
+  # Input controller delegate
+
+  inputControllerWillComposeCharacters: ->
+    @textController.lockSelection()
+
+  inputControllerDidComposeCharacters: (composedString) ->
+    @textController.render()
+    @textController.unlockSelection()
+    @composition.insertString(composedString)
+
+  inputControllerDidInvalidateElement: (element) ->
+    @textController.render()
 
   # Selection observer delegate
 
