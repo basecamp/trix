@@ -20,6 +20,15 @@ test "#createElementsForText", ->
   equal node.trixPosition, 0, "child node has a trixPosition property"
   equal node.trixLength, text.getLength(), "child node has a trixLength property"
 
+  elements = getElementsForText(createText(" !"))
+  equal elements[0].firstChild.data, "\u00a0!", "leading space replaced with non-breaking space"
+
+  elements = getElementsForText(createText("! "))
+  equal elements[0].firstChild.data, "!\u00a0", "trailing space replaced with non-breaking space"
+
+  elements = getElementsForText(createText("!   !"))
+  equal elements[0].firstChild.data, "! \u00a0 !", "multiple spaces preserved with non-breaking spaces"
+
   elements = getElementsForText(createText("Hello\n"))
   equal elements.length, 2, "two elements for string ending with a newline"
   equal elements[0].lastChild.tagName.toLowerCase(), "br", "container element's last child is a BR"
