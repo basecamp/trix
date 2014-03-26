@@ -65,6 +65,9 @@ class Trix.Composition
 
   inheritableAttributes = "bold italic underline".split(" ")
 
+  hasCurrentAttribute: (attributeName) ->
+    @currentAttributes[attributeName]?
+
   toggleCurrentAttribute: (attributeName) ->
     value = not @currentAttributes[attributeName]
     @setCurrentAttribute(attributeName, value)

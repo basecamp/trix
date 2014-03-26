@@ -81,6 +81,7 @@ class Trix.EditorController
 
   toolbarWillShowDialog: (wantsFocus) ->
     @dialogWantsFocus = wantsFocus
+    @expandSelectionForEditing()
     @freezeSelection() if wantsFocus
 
   toolbarDidHideDialog: ->
@@ -88,7 +89,7 @@ class Trix.EditorController
     @thawSelection()
     delete @dialogWantsFocus
 
-  # Selection freezing
+  # Selection management
 
   freezeSelection: ->
     unless @selectionFrozen
@@ -101,3 +102,7 @@ class Trix.EditorController
       @textController.unlockSelection()
       @composition.thawSelection()
       delete @selectionFrozen
+
+  expandSelectionForEditing: ->
+    if @composition.hasCurrentAttribute("href")
+      @textController.expandSelectedRangeAroundCommonAttribute("href")

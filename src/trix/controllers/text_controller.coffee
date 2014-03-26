@@ -59,6 +59,17 @@ class Trix.TextController
       @textView.setSelectedRange(selectedRange)
       @delegate?.textControllerDidUnlockSelection?()
 
+  expandSelectedRangeAroundCommonAttribute: (attributeName) ->
+    [left, right] = @textView.getSelectedRange()
+    originalLeft = left
+    length = @text.getLength()
+
+    left-- while left > 0 and @text.getCommonAttributesAtRange([left - 1, right])[attributeName]
+    right++ while right < length and @text.getCommonAttributesAtRange([originalLeft, right + 1])[attributeName]
+
+    @textView.setSelectedRange([left, right])
+    @expireCachedSelectedRange()
+
   getCachedSelectedRangeFromTextView: ->
     @cachedSelectedRange ?= @textView.getSelectedRange()
 
