@@ -117,4 +117,4 @@ class Trix.Text
     @pieceList.toJSON()
 
   asJSON: ->
-    JSON.stringify(@toJSON())
+    JSON.stringify(this)

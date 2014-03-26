@@ -579,13 +579,7 @@ test "#isEqualTo", ->
 
 test "#toJSON", ->
   text = fixture("formatted")
-  result = text.toJSON()
-
-  index = 0
-  text.eachRun (run) ->
-    equal result[index].string, run.string, "strings are equal"
-    propEqual result[index].attributes, run.attributes, "attributes are equal"
-    index++
+  runsEqual text, text.toJSON(), "JSON equal to text runs"
 
 
 test "asJSON", ->
