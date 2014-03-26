@@ -114,6 +114,9 @@ class Trix.Composition
   thawSelection: ->
     @setCurrentAttribute("frozen", false)
 
+  hasFrozenSelection: ->
+    @hasCurrentAttribute("frozen")
+
   # Position and selected range
 
   getPosition: ->

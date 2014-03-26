@@ -21,7 +21,7 @@ class Trix.DebugController
       position = @composition.getPosition() ? 0
       "Cursor position: #{position}"
 
-    # string += " (locked)" if @textController.textView.lockedRange?
+    string += " (frozen)" if @composition.hasFrozenSelection()
     string
 
   renderSelections: ->
