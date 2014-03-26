@@ -19,6 +19,11 @@ test "#parse", ->
   htmlEqual "Hello world", fixture("plain")
   htmlEqual "<div>Hello world</div>", fixture("plain")
 
+  htmlEqual " Hello  world ", fixture("plain")
+  htmlEqual "Hello   world", fixture("plain")
+  htmlEqual "\nHello\nworld\n", fixture("plain")
+  htmlEqual " \n  Hello \nworld", fixture("plain")
+
   htmlEqual "<strong>Hello world</strong>", fixture("bold")
   htmlEqual "<span style='font-weight: bold;'>Hello world</span>", fixture("bold")
   htmlEqual "<b>Hello world</b>", fixture("bold")

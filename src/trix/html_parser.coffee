@@ -9,7 +9,7 @@ class Trix.HTMLParser
   @createTextFrom: (htmlOrElement) ->
     html =
       if htmlOrElement instanceof Node
-        htmlOrElement.innerHTML.trim()
+        htmlOrElement.innerHTML
       else
         htmlOrElement
 
@@ -20,7 +20,7 @@ class Trix.HTMLParser
   constructor: (html) ->
     @container = document.createElement("div")
     @container.style["display"] = "none"
-    @container.innerHTML = html
+    @container.innerHTML = squish(html)
     @text = new Trix.Text
 
   parse: ->
@@ -63,3 +63,6 @@ class Trix.HTMLParser
       attributes["href"] = link.getAttribute("href")
 
     attributes
+
+  squish = (string) ->
+    string.trim().replace(/\n/g, " ").replace(/\s{2,}/g, " ")
