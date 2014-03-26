@@ -52,20 +52,20 @@ class Trix.ToolbarController
     element = @getDialogForAttributeName(attributeName)
     if element.classList.contains("active")
       @hideDialog()
-      @delegate?.toolbarDidHideDialog()
     else
       @showDialog(attributeName)
 
   showDialog: (attributeName) ->
     @hideDialog()
-    @delegate?.toolbarWillShowDialog()
 
     element = @getDialogForAttributeName(attributeName)
-    element.classList.add("active")
+    input = getInputForDialog(element, attributeName)
 
-    if input = getInputForDialog(element, attributeName)
-      input.value = @attributes[attributeName] ? ""
-      input.select()
+    @delegate?.toolbarWillShowDialog(input?)
+
+    element.classList.add("active")
+    input?.value = @attributes[attributeName] ? ""
+    input?.select()
 
   setAttribute: (dialogElement) ->
     attributeName = getAttributeName(dialogElement)
@@ -78,10 +78,7 @@ class Trix.ToolbarController
 
   hideDialog: ->
     @element.querySelector(activeDialogSelector)?.classList.remove("active")
-
-  hideDialogsThatFocus: ->
-    for element in @element.querySelectorAll(activeDialogSelector)
-      element.classList.remove("active") if element.querySelector("input")
+    @delegate?.toolbarDidHideDialog()
 
   getDialogForAttributeName: (attributeName) ->
     @element.querySelector(".dialog[data-attribute=#{attributeName}]")

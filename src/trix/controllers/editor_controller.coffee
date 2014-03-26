@@ -1,16 +1,34 @@
+#= require trix/controllers/input_controller
 #= require trix/controllers/text_controller
 #= require trix/controllers/toolbar_controller
 #= require trix/controllers/debug_controller
+#= require trix/models/composition
+#= require trix/models/text
+#= require trix/observers/selection_observer
 #= require trix/html_parser
 
 class Trix.EditorController
   constructor: (@textElement, toolbarElement, @inputElement, debugElement) ->
     @text = @createText()
+
     @textController = new Trix.TextController textElement, @text
     @textController.delegate = this
+
+    @composition = new Trix.Composition @text
+    @composition.delegate = this
+    @composition.selectionDelegate = @textController
+
+    @inputController = new Trix.InputController textElement
+    @inputController.delegate = this
+    @inputController.responder = @composition
+
+    @selectionObserver = new Trix.SelectionObserver
+    @selectionObserver.delegate = this
+
     @toolbarController = new Trix.ToolbarController toolbarElement
     @toolbarController.delegate = this
-    @debugController = new Trix.DebugController debugElement, @textController
+
+    @debugController = new Trix.DebugController debugElement, @textController.textView, @composition
     @debugController.render()
 
   createText: ->
@@ -24,6 +42,14 @@ class Trix.EditorController
   saveSerializedText: ->
     @inputElement?.value = @text.asJSON()
 
+  # Composition controller delegate
+
+  compositionDidChangeText: (composition, text) ->
+    @textController.render()
+
+  compositionDidChangeCurrentAttributes: (composition, currentAttributes) ->
+    @toolbarController.updateAttributes(currentAttributes)
+
   # Text controller delegate
 
   textControllerDidRender: ->
@@ -31,26 +57,65 @@ class Trix.EditorController
     @debugController.render()
 
   textControllerDidFocus: ->
-    @toolbarController.hideDialogsThatFocus()
-
-  textControllerDidChangeCurrentAttributes: (currentAttributes) ->
-    @toolbarController.updateAttributes(currentAttributes)
+    @toolbarController.hideDialog() if @dialogWantsFocus
 
   textControllerDidChangeSelection: ->
+    @debugController.render()
+
+  # Input controller delegate
+
+  inputControllerWillComposeCharacters: ->
+    @textController.lockSelection()
+
+  inputControllerDidComposeCharacters: (composedString) ->
+    @textController.render()
+    @textController.unlockSelection()
+    @composition.insertString(composedString)
+
+  inputControllerDidInvalidateElement: (element) ->
+    @textController.render()
+
+  # Selection observer delegate
+
+  selectionDidChange: (range) ->
+    @textController.selectionDidChange(range)
+    @composition.updateCurrentAttributes()
     @debugController.render()
 
   # Toolbar controller delegate
 
   toolbarDidToggleAttribute: (attributeName) ->
-    @textController.toggleCurrentAttribute(attributeName)
+    @composition.toggleCurrentAttribute(attributeName)
     @textController.focus()
 
   toolbarDidUpdateAttribute: (attributeName, value) ->
-    @textController.setCurrentAttribute(attributeName, value)
+    @composition.setCurrentAttribute(attributeName, value)
     @textController.focus()
+
+  toolbarWillShowDialog: (wantsFocus) ->
+    @dialogWantsFocus = wantsFocus
+    @expandSelectionForEditing()
+    @freezeSelection() if wantsFocus
 
   toolbarDidHideDialog: ->
     @textController.focus()
+    @thawSelection()
+    delete @dialogWantsFocus
 
-  toolbarWillShowDialog: ->
-    @textController.lockSelection()
+  # Selection management
+
+  freezeSelection: ->
+    unless @selectionFrozen
+      @textController.lockSelection()
+      @composition.freezeSelection()
+      @selectionFrozen = true
+
+  thawSelection: ->
+    if @selectionFrozen
+      @textController.unlockSelection()
+      @composition.thawSelection()
+      delete @selectionFrozen
+
+  expandSelectionForEditing: ->
+    if @composition.hasCurrentAttribute("href")
+      @textController.expandSelectedRangeAroundCommonAttribute("href")

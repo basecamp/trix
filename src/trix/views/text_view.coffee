@@ -69,7 +69,7 @@ class Trix.TextView
       element.style["font-weight"] = "bold" if attributes.bold
       element.style["font-style"] = "italic" if attributes.italic
       element.style["text-decoration"] = "underline" if attributes.underline
-      element.style["background-color"] = "highlight" if attributes.selected
+      element.style["background-color"] = "highlight" if attributes.frozen
 
     if string
       for node in createNodesForString(string, position)
