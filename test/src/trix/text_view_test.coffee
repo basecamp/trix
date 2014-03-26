@@ -66,7 +66,7 @@ test "#createElementsForText", ->
   elements = getElementsForText(createText(".", underline: true))
   equal elements[0].style["text-decoration"], "underline", "text decoration is underline"
 
-  elements = getElementsForText(createText(".", selected: true))
+  elements = getElementsForText(createText(".", frozen: true))
   equal elements[0].style["background-color"], "highlight", "background color is highlight"
 
   elements = getElementsForText(fixture("linkWithFormatting"))
