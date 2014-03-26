@@ -1,9 +1,10 @@
 #= require trix/controllers/text_controller
 #= require trix/controllers/toolbar_controller
 #= require trix/controllers/debug_controller
+#= require trix/html_parser
 
 class Trix.EditorController
-  constructor: (textElement, toolbarElement, @inputElement, debugElement) ->
+  constructor: (@textElement, toolbarElement, @inputElement, debugElement) ->
     @text = @createText()
     @textController = new Trix.TextController textElement, @text
     @textController.delegate = this
@@ -13,7 +14,9 @@ class Trix.EditorController
     @debugController.render()
 
   createText: ->
-    if @inputElement?.value
+    if @textElement.textContent.trim()
+      Trix.HTMLParser.createTextFrom(@textElement)
+    else if @inputElement?.value
       Trix.Text.fromJSON(@inputElement.value)
     else
       new Trix.Text
