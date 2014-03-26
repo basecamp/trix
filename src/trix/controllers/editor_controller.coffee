@@ -44,7 +44,7 @@ class Trix.EditorController
     @debugController.render()
 
   textControllerDidFocus: ->
-    @toolbarController.hideDialogsThatFocus()
+    @toolbarController.hideDialog() if @dialogWantsFocus
 
   textControllerDidChangeSelection: ->
     @debugController.render()
@@ -79,8 +79,25 @@ class Trix.EditorController
     @composition.setCurrentAttribute(attributeName, value)
     @textController.focus()
 
+  toolbarWillShowDialog: (wantsFocus) ->
+    @dialogWantsFocus = wantsFocus
+    @freezeSelection() if wantsFocus
+
   toolbarDidHideDialog: ->
     @textController.focus()
+    @thawSelection()
+    delete @dialogWantsFocus
 
-  toolbarWillShowDialog: ->
-    @textController.lockSelection()
+  # Selection freezing
+
+  freezeSelection: ->
+    unless @selectionFrozen
+      @textController.lockSelection()
+      @composition.freezeSelection()
+      @selectionFrozen = true
+
+  thawSelection: ->
+    if @selectionFrozen
+      @textController.unlockSelection()
+      @composition.thawSelection()
+      delete @selectionFrozen

@@ -103,6 +103,14 @@ class Trix.Composition
   notifyDelegateOfCurrentAttributesChange: ->
     @delegate?.compositionDidChangeCurrentAttributes?(this, @currentAttributes)
 
+  # Selection freezing
+
+  freezeSelection: ->
+    @setCurrentAttribute("frozen", true)
+
+  thawSelection: ->
+    @setCurrentAttribute("frozen", false)
+
   # Position and selected range
 
   getPosition: ->
