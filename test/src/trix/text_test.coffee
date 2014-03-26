@@ -37,6 +37,10 @@ test "fromJSON", ->
   textB = Trix.Text.fromJSON(textA.asJSON())
   ok textB.isEqualTo(textA), "serializing and deserializing creates equal copy"
 
+  textA = Trix.Text.textForAttachmentWithAttributes(id: 1)
+  textB = Trix.Text.fromJSON(textA.asJSON())
+  ok textB.isEqualTo(textA), "serializing and deserializing creates equal copy"
+
 
 test "#beginEditing and #endEditing", ->
   count = (text) ->
@@ -585,6 +589,11 @@ test "#toJSON", ->
 test "asJSON", ->
   equal fixture("bold").asJSON(),
     """[{"string":"Hello world","attributes":{"bold":true}}]""",
+    "text is serialized as JSON"
+
+  text = Trix.Text.textForAttachmentWithAttributes({ id: 1 }, { width: 10 })
+  equal text.asJSON(),
+    """[{"attachment":{"id":1},"attributes":{"width":10}}]""",
     "text is serialized as JSON"
 
 

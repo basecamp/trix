@@ -12,10 +12,12 @@ class Trix.Text
     new this [piece]
 
   @fromJSON: (json) ->
-    pieces = []
-    for {string, attributes} in JSON.parse(json)
-      pieces.push new Trix.Piece string, attributes
-    new this pieces
+    new this do ->
+      for {string, attachment, attributes} in JSON.parse(json)
+        if attachment
+          new Trix.AttachmentPiece attachment, attributes
+        else
+          new Trix.Piece string, attributes
 
   constructor: (pieces = []) ->
     @editDepth = 0
