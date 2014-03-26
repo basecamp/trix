@@ -24,7 +24,7 @@ fixtures =
 
   linkWithFormatting: [
     new Trix.Piece("Hello", href: "http://basecamp.com", bold: true)
-    new Trix.Piece("Basecamp", href: "http://basecamp.com")
+    new Trix.Piece(" Basecamp", href: "http://basecamp.com")
   ]
 
 @fixture = (name) ->
