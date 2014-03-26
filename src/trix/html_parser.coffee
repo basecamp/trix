@@ -6,6 +6,17 @@ class Trix.HTMLParser
     bold: ["font-weight", "bold"]
     italic: ["font-style", "italic"]
 
+  @createTextFrom: (htmlOrElement) ->
+    html =
+      if htmlOrElement instanceof Node
+        htmlOrElement.innerHTML.trim()
+      else
+        htmlOrElement
+
+    parser = new this html
+    parser.parse()
+    parser.text
+
   constructor: (html) ->
     @container = document.createElement("div")
     @container.style["display"] = "none"
