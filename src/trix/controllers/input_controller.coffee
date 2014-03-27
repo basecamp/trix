@@ -69,9 +69,11 @@ class Trix.InputController
       @responder?.deleteBackward()
 
     paste: (event) ->
-      if text = event.clipboardData.getData("text/plain")
-        @responder?.insertString(text)
       event.preventDefault()
+      if html = event.clipboardData.getData("text/html")
+        @responder?.insertText(Trix.Text.fromHTML(html))
+      else if string = event.clipboardData.getData("text/plain")
+        @responder?.insertString(string)
 
     compositionstart: (event) ->
       @delegate?.inputControllerWillComposeCharacters?()
