@@ -62,8 +62,7 @@ class Trix.InputController
 
       else if id = event.dataTransfer.getData("id")
         element = document.getElementById(id)
-        attachment = { type: "image" }
-        attachment[key] = element[key] for key in ["src", "width", "height"]
+        attachment = Trix.Text.fromHTML(element.outerHTML).getAttachmentAtPosition(0)
         @responder?.insertAttachment(attachment)
 
     cut: (event) ->

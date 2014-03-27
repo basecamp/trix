@@ -91,6 +91,9 @@ class Trix.Text
   getStringAtRange: (range) ->
     @pieceList.getPieceListInRange(range).toString()
 
+  getAttachmentAtPosition: (position) ->
+    @pieceList.getPieceAtPosition(position)?.attachment
+
   getLength: ->
     @pieceList.getLength()
 
