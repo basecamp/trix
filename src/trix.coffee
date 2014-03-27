@@ -2,5 +2,5 @@
 #= require trix/controllers/editor_controller
 
 @Trix =
-  install: (textElement, toolbarElement, inputElement, debugElement) ->
-    new Trix.EditorController textElement, toolbarElement, inputElement, debugElement
+  install: (config = {}) ->
+    new Trix.EditorController config

@@ -8,7 +8,7 @@ end
 namespace :trix do
   environment = Trix::Environment.new(".")
   environment.paths = %w( assets src )
-  environment.assets = %w( basecamp.png index.html trix.js )
+  environment.assets = %w( basecamp.png index.html trix.js install.js )
 
   desc "Clean Trix distribution"
   task :clean do

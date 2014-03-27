@@ -8,28 +8,29 @@
 #= require trix/html_parser
 
 class Trix.EditorController
-  constructor: (@textElement, toolbarElement, @inputElement, debugElement) ->
+  constructor: ({@textElement, @toolbarElement, @inputElement, @debugElement}) ->
     @text = @createText()
 
-    @textController = new Trix.TextController textElement, @text
+    @textController = new Trix.TextController @textElement, @text
     @textController.delegate = this
 
     @composition = new Trix.Composition @text
     @composition.delegate = this
     @composition.selectionDelegate = @textController
 
-    @inputController = new Trix.InputController textElement
+    @inputController = new Trix.InputController @textElement
     @inputController.delegate = this
     @inputController.responder = @composition
 
     @selectionObserver = new Trix.SelectionObserver
     @selectionObserver.delegate = this
 
-    @toolbarController = new Trix.ToolbarController toolbarElement
+    @toolbarController = new Trix.ToolbarController @toolbarElement
     @toolbarController.delegate = this
 
-    @debugController = new Trix.DebugController debugElement, @textController.textView, @composition
-    @debugController.render()
+    if @debugElement
+      @debugController = new Trix.DebugController @debugElement, @textController.textView, @composition
+      @debugController.render()
 
   createText: ->
     if @textElement.textContent.trim()

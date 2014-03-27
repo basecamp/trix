@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <script type="text/javascript" src="trix.js"></script>
+    <script type="text/javascript" src="install.js"></script>
     <style type="text/css">
       #text {
         width: 90%;
@@ -118,15 +119,5 @@
     <div id="text"></div>
     <pre id="debug"></pre>
     <textarea id="data" class="debug">[{"string":"Hello, ","attributes":{}},{"string":"rich","attributes":{"bold":true,"italic":true}},{"string":" ","attributes":{"italic":true}},{"string":"tex","attributes":{"italic":true,"href":"http://basecamp.com"}},{"string":"t","attributes":{"href":"http://basecamp.com"}},{"string":"!","attributes":{}}]</textarea>
-    <script type="text/javascript">
-      (function() {
-        var textElement = document.getElementById("text");
-        var toolbarElement = document.getElementById("toolbar");
-        var inputElement = document.getElementById("data");
-        var debugElement = document.getElementById("debug");
-        window.controller = Trix.install(textElement, toolbarElement, inputElement, debugElement);
-        textElement.focus();
-      })();
-    </script>
   </body>
 </html>
