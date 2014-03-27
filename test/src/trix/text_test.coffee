@@ -42,6 +42,11 @@ test "fromJSON", ->
   ok textB.isEqualTo(textA), "serializing and deserializing creates equal copy"
 
 
+test "fromHTML", ->
+  text = Trix.Text.fromHTML("<strong>Hello world</strong>")
+  ok text.isEqualTo(fixture("bold")), "text from HTML is equal copy"
+
+
 test "#beginEditing and #endEditing", ->
   count = (text) ->
     counter = value: 0, text: text

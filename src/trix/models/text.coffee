@@ -19,6 +19,9 @@ class Trix.Text
         else
           new Trix.Piece string, attributes
 
+  @fromHTML: (html) ->
+    Trix.HTMLParser.parse(html).getText()
+
   constructor: (pieces = []) ->
     @editDepth = 0
     @pieceList = new Trix.PieceList pieces

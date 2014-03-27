@@ -6,31 +6,29 @@ class Trix.HTMLParser
     bold: ["font-weight", "bold"]
     italic: ["font-style", "italic"]
 
-  @createTextFrom: (htmlOrElement) ->
-    html =
-      if htmlOrElement instanceof Node
-        htmlOrElement.innerHTML
-      else
-        htmlOrElement
-
+  @parse: (html) ->
     parser = new this html
     parser.parse()
-    parser.text
+    parser
 
-  constructor: (html) ->
-    @container = document.createElement("div")
-    @container.style["display"] = "none"
-    @container.innerHTML = squish(html)
+  constructor: (@html) ->
     @text = new Trix.Text
 
-  parse: ->
+  createContainer: ->
+    @container = document.createElement("div")
+    @container.style["display"] = "none"
+    @container.innerHTML = squish(@html)
     # TODO: Don't append potentially unsafe HTML to the body
     document.body.appendChild(@container)
 
+  removeContainer: ->
+    document.body.removeChild(@container)
+
+  parse: ->
+    @createContainer()
     walker = document.createTreeWalker(@container, NodeFilter.SHOW_ALL)
     @processNode(walker.currentNode) while walker.nextNode()
-
-    document.body.removeChild(@container)
+    @removeContainer()
 
   processNode: (node) ->
     switch node.nodeType
@@ -50,6 +48,9 @@ class Trix.HTMLParser
   appendString: (string, attributes) ->
     text = Trix.Text.textForStringWithAttributes(string, attributes)
     @text.appendText(text)
+
+  getText: ->
+    @text
 
   getAttributes = (element) ->
     attributes = {}

@@ -4,18 +4,7 @@
 module "Trix.HTMLParser"
 
 
-test "createTextFrom", ->
-  html = "<strong>Hello world</strong>"
-  text = Trix.HTMLParser.createTextFrom(html)
-  ok text.isEqualTo(fixture("bold")), "parsed text is equal"
-
-  element = document.createElement("div")
-  element.innerHTML = html
-  text = Trix.HTMLParser.createTextFrom(element)
-  ok text.isEqualTo(fixture("bold")), "parsed text is equal"
-
-
-test "#parse", ->
+test "parse", ->
   htmlEqual "Hello world", fixture("plain")
   htmlEqual "<div>Hello world</div>", fixture("plain")
 
@@ -44,5 +33,5 @@ test "#parse", ->
 
 
 htmlEqual = (html, text) ->
-  parsedText = Trix.HTMLParser.createTextFrom(html)
+  parsedText = Trix.HTMLParser.parse(html).getText()
   QUnit.push parsedText.isEqualTo(text), parsedText.inspect(), text.inspect(), "parsed text is equal"

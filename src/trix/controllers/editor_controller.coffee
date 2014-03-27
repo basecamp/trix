@@ -33,7 +33,7 @@ class Trix.EditorController
 
   createText: ->
     if @textElement.textContent.trim()
-      Trix.HTMLParser.createTextFrom(@textElement)
+      Trix.Text.fromHTML(@textElement.innerHTML)
     else if @inputElement?.value
       Trix.Text.fromJSON(@inputElement.value)
     else
