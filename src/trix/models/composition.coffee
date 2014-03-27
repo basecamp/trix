@@ -28,6 +28,10 @@ class Trix.Composition
     text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
     @insertText(text, updatePosition)
 
+  insertHTML: (html, updatePosition = true) ->
+    text = Trix.Text.fromHTML(html)
+    @insertText(text, updatePosition)
+
   deleteFromCurrentPosition: (distance = -1) ->
     unless range = @getSelectedRange()
       position = @getPosition()

@@ -71,7 +71,7 @@ class Trix.InputController
     paste: (event) ->
       event.preventDefault()
       if html = event.clipboardData.getData("text/html")
-        @responder?.insertText(Trix.Text.fromHTML(html))
+        @responder?.insertHTML(html)
       else if string = event.clipboardData.getData("text/plain")
         @responder?.insertString(string)
 
