@@ -44,9 +44,17 @@ class Trix.HTMLParser
     switch node.tagName.toLowerCase()
       when "br"
         @appendString("\n", getAttributes(node))
+      when "img"
+        attachment = { type: "image" }
+        attachment[key] = node[key] for key in ["src", "width", "height"]
+        @appendAttachment(attachment, getAttributes(node))
 
   appendString: (string, attributes) ->
     text = Trix.Text.textForStringWithAttributes(string, attributes)
+    @text.appendText(text)
+
+  appendAttachment: (attachment, attributes) ->
+    text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
     @text.appendText(text)
 
   getText: ->

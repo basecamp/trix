@@ -31,6 +31,11 @@ test "parse", ->
   text = Trix.Text.textForStringWithAttributes("a \n b")
   htmlEqual "a <br> b", text
 
+  attachment = { type: "image", src: "basecamp.png", width: 10, height: 20 }
+  html = """<img src="#{attachment.src}" width="#{attachment.width}" height="#{attachment.height}">"""
+  text = Trix.Text.textForAttachmentWithAttributes(attachment)
+  htmlEqual html, text
+
 
 htmlEqual = (html, text) ->
   parsedText = Trix.HTMLParser.parse(html).getText()
