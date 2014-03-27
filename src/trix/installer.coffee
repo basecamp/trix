@@ -56,6 +56,6 @@ class Trix.Installer
     if element instanceof FocusEvent
       event = element
       document.execCommand("enableObjectResizing", false, "false")
-      event.target.removeEventListener("focus", disableObjectResizing)
+      event.target.removeEventListener("focus", disableObjectResizingOnFocus)
     else
-      element.addEventListener("focus", disableObjectResizing)
+      element.addEventListener("focus", disableObjectResizingOnFocus)
