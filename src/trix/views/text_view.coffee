@@ -2,15 +2,7 @@
 
 class Trix.TextView
   constructor: (@element, @text) ->
-    @element.setAttribute("contenteditable", "true")
-    @element.setAttribute("autocorrect", "off")
-    @element.setAttribute("spellcheck", "false")
-    @element.addEventListener("focus", @didFocus)
     @element.trixPosition = 0
-
-  didFocus: (event) =>
-    document.execCommand("enableObjectResizing", false, "false")
-    @element.removeEventListener("focus", @didFocus)
 
   focus: ->
     @element.focus()

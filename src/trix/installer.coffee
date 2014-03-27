@@ -32,6 +32,10 @@ class Trix.Installer
 
     element = document.createElement("div")
     element.innerHTML = textarea.value
+    element.setAttribute("contenteditable", "true")
+    element.setAttribute("autocorrect", "off")
+    element.setAttribute("spellcheck", "false")
+    disableObjectResizingOnFocus(element)
 
     textareaStyle = window.getComputedStyle(textarea)
     element.style[style] = textareaStyle[style] for style in textareaStylesToCopy
@@ -47,3 +51,11 @@ class Trix.Installer
       document.getElementById(elementOrId)
     else
       elementOrId
+
+  disableObjectResizingOnFocus = (element) ->
+    if element instanceof FocusEvent
+      event = element
+      document.execCommand("enableObjectResizing", false, "false")
+      event.target.removeEventListener("focus", disableObjectResizing)
+    else
+      element.addEventListener("focus", disableObjectResizing)
