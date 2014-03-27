@@ -28,9 +28,8 @@ class Trix.EditorController
     @toolbarController = new Trix.ToolbarController @toolbarElement
     @toolbarController.delegate = this
 
-    if @debugElement
-      @debugController = new Trix.DebugController @debugElement, @textController.textView, @composition
-      @debugController.render()
+    @debugController = new Trix.DebugController @debugElement, @textController.textView, @composition
+    @debugController.render()
 
   createText: ->
     if @textElement.textContent.trim()
