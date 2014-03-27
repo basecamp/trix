@@ -8,7 +8,7 @@
 #= require trix/html_parser
 
 class Trix.EditorController
-  constructor: ({@textElement, @toolbarElement, @inputElement, @debugElement}) ->
+  constructor: ({@textElement, @toolbarElement, @textareaElement, @inputElement, @debugElement}) ->
     @text = @createText()
 
     @textController = new Trix.TextController @textElement, @text
@@ -41,6 +41,7 @@ class Trix.EditorController
       new Trix.Text
 
   saveSerializedText: ->
+    @textareaElement.value = @textElement.innerHTML
     @inputElement?.value = @text.asJSON()
 
   # Composition controller delegate

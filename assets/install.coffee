@@ -1,6 +1,6 @@
 document.addEventListener "DOMContentLoaded", ->
   config =
-    text: "text"
+    textarea: "text"
     toolbar: "toolbar"
     input: "data"
     debug: "debug"
