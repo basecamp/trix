@@ -4,8 +4,9 @@
 @Trix =
   install: (config = {}) ->
     for key in "text toolbar input debug".split(" ")
-      config["#{key}Element"] = getElement(key)
+      value = config[key]
       delete config[key]
+      config["#{key}Element"] = getElement(value)
 
     new Trix.EditorController config
 
