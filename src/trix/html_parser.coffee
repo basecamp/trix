@@ -83,7 +83,8 @@ class Trix.HTMLParser
 
     while walker.nextNode()
       element = walker.currentNode
-      for {name} in element.attributes
-        element.removeAttribute(name) unless name in allowedAttributes
+      for attribute in element.attributes
+        do ({name}) ->
+          element.removeAttribute(name) unless name in allowedAttributes
 
     container
