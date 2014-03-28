@@ -8,10 +8,12 @@
 #= require trix/html_parser
 
 class Trix.EditorController
-  constructor: ({@textElement, @toolbarElement, @textareaElement, @inputElement, @debugElement}) ->
+  constructor: (@config) ->
+    {@textElement, @toolbarElement, @textareaElement, @inputElement, @debugElement} = @config
+
     @text = @createText()
 
-    @textController = new Trix.TextController @textElement, @text
+    @textController = new Trix.TextController @textElement, @text, @config
     @textController.delegate = this
 
     @composition = new Trix.Composition @text

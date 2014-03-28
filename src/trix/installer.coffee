@@ -5,6 +5,7 @@ class Trix.Installer
     if @browserIsSupported()
       @setConfigElements()
       @createTextElement()
+      @config.focus ?= @config.textareaElement.hasAttribute("autofocus")
       new Trix.EditorController @config
     else
       @unsupportedBrowser()
