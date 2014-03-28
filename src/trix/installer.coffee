@@ -2,26 +2,19 @@
 
 class Trix.Installer
   constructor: (@config = {}) ->
+    for key in "textarea toolbar input debug".split(" ")
+      @config["#{key}Element"] = getElement(@config[key])
+      delete @config[key]
+
+    @config.focus ?= @config.textareaElement.hasAttribute("autofocus")
+
+  createEditor: ->
     if @browserIsSupported()
-      @setConfigElements()
       @createTextElement()
-      @config.focus ?= @config.textareaElement.hasAttribute("autofocus")
       new Trix.EditorController @config
-    else
-      @unsupportedBrowser()
 
   browserIsSupported: ->
     true
-
-  unsupportedBrowser: ->
-    console?.warn("Sorry, Trix doesn't support this browser.")
-
-  elementKeys = "textarea toolbar input debug".split(" ")
-
-  setConfigElements: ->
-    for key in elementKeys
-      @config["#{key}Element"] = getElement(@config[key])
-      delete @config[key]
 
   textareaStylesToCopy = "
     width margin padding border border-radius

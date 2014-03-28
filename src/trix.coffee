@@ -3,4 +3,5 @@
 
 @Trix =
   install: (config) ->
-    new Trix.Installer config
+    installer = new Trix.Installer config
+    installer.createEditor()
