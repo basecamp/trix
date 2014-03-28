@@ -6,6 +6,8 @@ class Trix.HTMLParser
     bold: ["font-weight", "bold"]
     italic: ["font-style", "italic"]
 
+  allowedAttributes = "style href src width height".split(" ")
+
   @parse: (html) ->
     parser = new this html
     parser.parse()
@@ -14,21 +16,19 @@ class Trix.HTMLParser
   constructor: (@html) ->
     @text = new Trix.Text
 
-  createContainer: ->
-    @container = document.createElement("div")
+  createHiddenContainer: ->
+    @container = sanitizeHTML(squish(@html))
     @container.style["display"] = "none"
-    @container.innerHTML = squish(@html)
-    # TODO: Don't append potentially unsafe HTML to the body
     document.body.appendChild(@container)
 
-  removeContainer: ->
+  removeHiddenContainer: ->
     document.body.removeChild(@container)
 
   parse: ->
-    @createContainer()
+    @createHiddenContainer()
     walker = document.createTreeWalker(@container, NodeFilter.SHOW_ALL)
     @processNode(walker.currentNode) while walker.nextNode()
-    @removeContainer()
+    @removeHiddenContainer()
 
   processNode: (node) ->
     switch node.nodeType
@@ -75,3 +75,15 @@ class Trix.HTMLParser
 
   squish = (string) ->
     string.trim().replace(/\n/g, " ").replace(/\s{2,}/g, " ")
+
+  sanitizeHTML = (html) ->
+    container = document.createElement("div")
+    container.innerHTML = html
+    walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT)
+
+    while walker.nextNode()
+      element = walker.currentNode
+      for {name} in element.attributes
+        element.removeAttribute(name) unless name in allowedAttributes
+
+    container

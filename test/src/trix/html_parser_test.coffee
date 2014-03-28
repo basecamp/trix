@@ -37,6 +37,13 @@ test "parse", ->
   htmlEqual html, text
 
 
+asyncTest "Prevent executing JavaScript", ->
+  expect(1)
+  png = "data:image/png;base64,$ Invalid base64 that will cause a load error $"
+  ok Trix.HTMLParser.parse("""<img src="#{png}" onerror="throw('Eeep!')">""")
+  start()
+
+
 htmlEqual = (html, text) ->
   parsedText = Trix.HTMLParser.parse(html).getText()
-  QUnit.push parsedText.isEqualTo(text), parsedText.inspect(), text.inspect(), "parsed text is equal"
+  QUnit.push parsedText.isEqualTo(text), parsedText.inspect(), text.inspect(), "parsed HTML: #{html}"
