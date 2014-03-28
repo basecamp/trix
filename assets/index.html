@@ -98,6 +98,11 @@
         right: -4px;
         cursor: nwse-resize;
       }
+
+      .trix-editor[contenteditable=true]:empty:before {
+        content: attr(data-placeholder);
+        color: graytext;
+      }
     </style>
   </head>
   <body>
@@ -116,7 +121,7 @@
         <img src="basecamp.png" id="attachment_1" draggable>
       </div>
     </div>
-    <textarea id="text"></textarea>
+    <textarea id="text" placeholder="Type some rich text!"></textarea>
     <pre id="debug"></pre>
     <textarea id="data" class="debug">[{"string":"Hello, ","attributes":{}},{"string":"rich","attributes":{"bold":true,"italic":true}},{"string":" ","attributes":{"italic":true}},{"string":"tex","attributes":{"italic":true,"href":"http://basecamp.com"}},{"string":"t","attributes":{"href":"http://basecamp.com"}},{"string":"!","attributes":{}}]</textarea>
   </body>

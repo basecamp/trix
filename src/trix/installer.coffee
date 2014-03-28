@@ -32,6 +32,8 @@ class Trix.Installer
 
     element = document.createElement("div")
     element.innerHTML = textarea.value
+    element.classList.add("trix-editor")
+    element.setAttribute("data-placeholder", textarea.getAttribute("placeholder"))
     element.setAttribute("contenteditable", "true")
     element.setAttribute("autocorrect", "off")
     element.setAttribute("spellcheck", "false")
