@@ -37,11 +37,14 @@ class Trix.Installer
 
     element = document.createElement("div")
     element.innerHTML = textarea.value
-    element.classList.add("trix-editor")
     element.setAttribute("data-placeholder", textarea.getAttribute("placeholder"))
     element.setAttribute("contenteditable", "true")
     element.setAttribute("autocorrect", "off")
     element.setAttribute("spellcheck", "false")
+
+    for name in @classNames()
+      element.classList.add(name)
+
     disableObjectResizingOnFocus(element)
 
     textareaStyle = window.getComputedStyle(textarea)
@@ -52,6 +55,13 @@ class Trix.Installer
     textarea.parentElement.insertBefore(element, textarea)
 
     @config.textElement = element
+
+  classNames: ->
+    result = ["trix-editor"]
+    if @config.className
+      for name in @config.className.split(" ")
+        result.push(name)
+    result
 
   getElement = (elementOrId) ->
     if typeof(elementOrId) is "string"
