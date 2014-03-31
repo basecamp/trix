@@ -10,7 +10,7 @@ class Trix.Composition
 
   # Responder protocol
 
-  insertText: (text, updatePosition = true) ->
+  insertText: (text, {updatePosition} = updatePosition: true) ->
     if selectedRange = @getSelectedRange()
       position = selectedRange[0]
       @text.replaceTextAtRange(text, selectedRange)
@@ -20,13 +20,13 @@ class Trix.Composition
 
     @requestPosition(position + (if updatePosition then text.getLength() else 0))
 
-  insertString: (string, updatePosition = true) ->
+  insertString: (string, options) ->
     text = Trix.Text.textForStringWithAttributes(string, @currentAttributes)
-    @insertText(text, updatePosition)
+    @insertText(text, options)
 
-  insertAttachment: (attachment, updatePosition = true) ->
+  insertAttachment: (attachment, options) ->
     text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
-    @insertText(text, updatePosition)
+    @insertText(text, options)
 
   deleteFromCurrentPosition: (distance = -1) ->
     unless range = @getSelectedRange()
