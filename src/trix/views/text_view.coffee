@@ -51,23 +51,41 @@ class Trix.TextView
     elements
 
   createElement = ({string, attributes, position, tagName}) ->
-    element = document.createElement(tagName ? "span")
-    element.trixPosition = position
+    elements = []
+
+    if tagName
+      elements.push(document.createElement(tagName))
+
+    if attributes.bold
+      elements.push(document.createElement("strong"))
+
+    if attributes.italic
+      elements.push(document.createElement("em"))
+
+    if elements.length is 0
+      elements.push(document.createElement("span"))
+
+    outerElement = innerElement = elements[0]
+    outerElement.trixPosition = position
+
+    if elements.length > 1
+      for element in elements.slice(1)
+        innerElement.appendChild(element)
+        innerElement = element
+        innerElement.trixPosition = position
 
     if attributes
       if attributes.href and tagName is "a"
-        element.setAttribute("href", attributes.href)
+        outerElement.setAttribute("href", attributes.href)
 
-      element.style["font-weight"] = "bold" if attributes.bold
-      element.style["font-style"] = "italic" if attributes.italic
-      element.style["text-decoration"] = "underline" if attributes.underline
-      element.style["background-color"] = "highlight" if attributes.frozen
+      outerElement.style["text-decoration"] = "underline" if attributes.underline
+      outerElement.style["background-color"] = "highlight" if attributes.frozen
 
     if string
       for node in createNodesForString(string, position)
-        element.appendChild(node)
+        innerElement.appendChild(node)
 
-    element
+    outerElement
 
   createElementForAttachment = ({attachment, attributes, position}) ->
     switch attachment.type

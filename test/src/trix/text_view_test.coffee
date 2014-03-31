@@ -54,10 +54,10 @@ test "#createElementsForText", ->
   equal elements[1].tagName.toLowerCase(), "br", "last element is an extra BR"
 
   elements = getElementsForText(createText(".", bold: true))
-  equal elements[0].style["font-weight"], "bold", "font weight is bold"
+  equal elements[0].tagName.toLowerCase(), "strong", "element is strong"
 
   elements = getElementsForText(createText(".", italic: true))
-  equal elements[0].style["font-style"], "italic", "font style is italic"
+  equal elements[0].tagName.toLowerCase(), "em", "element is em"
 
   elements = getElementsForText(createText(".", underline: true))
   equal elements[0].style["text-decoration"], "underline", "text decoration is underline"
@@ -71,12 +71,11 @@ test "#createElementsForText", ->
   el = elements[0]
   equal el.tagName.toLowerCase(), "a", "container element is an A"
   equal el.getAttribute("href"), "http://basecamp.com", "element has href attribute"
-  ok !el.style["font-weight"], "container isn't styled"
 
   [a, b] = el.childNodes
-  equal a.style["font-weight"], "bold", "child element is styled"
+  equal a.tagName.toLowerCase(), "strong", "child element is strong"
   ok !a.getAttribute("href"), "child element has no href attribute"
-  ok !b.style["font-weight"], "second child element is not styled"
+  equal b.tagName.toLowerCase(), "span", "second child element is not styled"
   ok !b.getAttribute("href"), "second child element has no href attribute"
 
 
@@ -87,7 +86,7 @@ test "#getSelectedRange", ->
   setRangeInNode(element.childNodes[0].firstChild, [1, 5], "ello")
   deepEqual view.getSelectedRange(), [1, 5], "range is positions in text"
 
-  setRangeInNode(element.childNodes[1].firstChild, [0, 2], "ri")
+  setRangeInNode(element.childNodes[1].firstChild.firstChild, [0, 2], "ri")
   deepEqual view.getSelectedRange(), [7, 9], "range is positions in text"
 
   setRangeInNode(element.childNodes[2].firstChild, [2, 3], "x")
@@ -102,7 +101,7 @@ test "#setSelectedRange", ->
   rangeInNodeAroundString(element.childNodes[0].firstChild, "ello")
 
   view.setSelectedRange([7, 9])
-  rangeInNodeAroundString(element.childNodes[1].firstChild, "ri")
+  rangeInNodeAroundString(element.childNodes[1].firstChild.firstChild, "ri")
 
   view.setSelectedRange([14, 15])
   rangeInNodeAroundString(element.childNodes[2].firstChild, "x")
