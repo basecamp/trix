@@ -30,6 +30,7 @@ class Trix.Installer
   textareaStylesToCopy = "
     width margin padding border border-radius
     outline position top left right bottom z-index
+    color background
   ".split(" ")
 
   createTextElement: ->
