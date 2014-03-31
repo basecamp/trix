@@ -1,4 +1,5 @@
 #= require trix/controllers/editor_controller
+#= require trix/controllers/input_controller
 
 class Trix.Installer
   constructor: (@config = {}) ->
@@ -47,6 +48,7 @@ class Trix.Installer
       element.classList.add(name)
 
     disableObjectResizingOnFocus(element)
+    proxyInputEvents(element, textarea)
 
     textareaStyle = window.getComputedStyle(textarea)
     element.style[style] = textareaStyle[style] for style in textareaStylesToCopy
@@ -77,3 +79,14 @@ class Trix.Installer
       event.target.removeEventListener("focus", disableObjectResizingOnFocus)
     else
       element.addEventListener("focus", disableObjectResizingOnFocus)
+
+  proxyInputEvents = (from, to) ->
+    controller = new Trix.InputController
+    eventNames = Object.keys(controller.events)
+
+    for eventName in eventNames
+      from.addEventListener eventName, (event) ->
+        copy = new event.constructor event.type
+        setTimeout ->
+          to.dispatchEvent(copy)
+        , 1

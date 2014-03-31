@@ -7,8 +7,9 @@ class Trix.InputController
     0x4f: "o"
 
   constructor: (@element) ->
-    for event, handler of @events
-      @element.addEventListener(event, handler.bind(this), true)
+    if @element
+      for event, handler of @events
+        @element.addEventListener(event, handler.bind(this), true)
 
   events:
     keydown: (event) ->
