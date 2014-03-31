@@ -58,8 +58,9 @@ class Trix.Composition
     @requestPosition(position)
 
   getTextFromSelection: ->
-    if selectedRange = @getSelectedRange()
-      @text.getTextAtRange(selectedRange)
+    selectedRange = @getSelectedRange() ? [0, 0]
+    @text.getTextAtRange(selectedRange)
+
 
   # Current attributes
 
@@ -136,5 +137,10 @@ class Trix.Composition
       [start, end] = range
       range unless start is end
 
-  requestSelectedRange: (range) ->
+  requestSelectedRange: ([start, end]) ->
+    length = @text.getLength()
+    range = [clamp(start, 0, length), clamp(end, 0, length)]
     @selectionDelegate?.compositionDidRequestSelectionOfRange?(this, range)
+
+  clamp = (value, floor, ceiling) ->
+    Math.max(floor, Math.min(ceiling, value))
