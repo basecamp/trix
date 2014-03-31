@@ -21,20 +21,15 @@ class Trix.TextView
     previousRun = null
 
     @text.eachRun (run) ->
-      parent = null
+      if href = run.attributes.href
+        if href is previousRun?.attributes.href
+          parent = elements[elements.length - 1]
+
       element =
         if run.attachment
           createElementForAttachment(run)
         else
-          createElement(run)
-
-      if href = run.attributes.href
-        if href is previousRun?.attributes.href
-          parent = elements[elements.length - 1]
-        else
-          link = createElement(tagName: "a", attributes: {href}, position: run.position)
-          link.appendChild(element)
-          element = link
+          createElement(run, parent)
 
       if parent
         parent.appendChild(element)
@@ -50,11 +45,13 @@ class Trix.TextView
 
     elements
 
-  createElement = ({string, attributes, position, tagName}) ->
+  createElement = ({string, attributes, position}, parent) ->
     elements = []
 
-    if tagName
-      elements.push(document.createElement(tagName))
+    if attributes.href and parent?.tagName.toLowerCase() isnt "a"
+      a = document.createElement("a")
+      a.setAttribute("href", attributes.href)
+      elements.push(a)
 
     if attributes.bold
       elements.push(document.createElement("strong"))
@@ -74,12 +71,8 @@ class Trix.TextView
         innerElement = element
         innerElement.trixPosition = position
 
-    if attributes
-      if attributes.href and tagName is "a"
-        outerElement.setAttribute("href", attributes.href)
-
-      outerElement.style["text-decoration"] = "underline" if attributes.underline
-      outerElement.style["background-color"] = "highlight" if attributes.frozen
+    outerElement.style["text-decoration"] = "underline" if attributes.underline
+    outerElement.style["background-color"] = "highlight" if attributes.frozen
 
     if string
       for node in createNodesForString(string, position)
