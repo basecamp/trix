@@ -10,11 +10,22 @@ class Trix.Installer
 
   createEditor: ->
     if @browserIsSupported()
+      @createStyleSheet()
       @createTextElement()
       new Trix.EditorController @config
 
   browserIsSupported: ->
     true
+
+  styleSheetId = "trix-styles"
+
+  createStyleSheet: ->
+    if !document.getElementById(styleSheetId) and css = Trix.config.editorCSS
+      element = document.createElement("style")
+      element.setAttribute("type", "text/css")
+      element.setAttribute("id", styleSheetId)
+      element.appendChild(document.createTextNode(css))
+      document.querySelector("head").appendChild(element)
 
   textareaStylesToCopy = "
     width margin padding border border-radius
