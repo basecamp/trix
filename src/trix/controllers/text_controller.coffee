@@ -13,7 +13,7 @@ class Trix.TextController
     @element.addEventListener("focus", @didFocus)
 
     @render()
-    @focus() if @config.focus
+    @focus() if @config.autofocus
 
   focus: ->
     @textView.focus()

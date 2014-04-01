@@ -8,7 +8,7 @@ class Trix.Installer
     if @browserIsSupported()
       @getConfigElements()
       @config.textElement = @createTextElement()
-      @config.focus ?= @config.textareaElement.hasAttribute("autofocus")
+      @config.autofocus ?= @config.textareaElement.hasAttribute("autofocus")
       @createStyleSheet()
 
       new Trix.EditorController @config
