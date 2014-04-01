@@ -81,10 +81,7 @@ class Trix.Installer
       element.addEventListener("focus", disableObjectResizingOnFocus)
 
   proxyInputEvents = (from, to) ->
-    controller = new Trix.InputController
-    eventNames = Object.keys(controller.events)
-
-    for eventName in eventNames
+    for eventName in Trix.InputController.eventNames()
       from.addEventListener eventName, (event) ->
         copy = new event.constructor event.type
         setTimeout ->
