@@ -114,7 +114,7 @@ class Trix.InputController
         @backspace(event)
 
       o: (event) ->
-        @responder?.insertString("\n", false)
+        @responder?.insertString("\n", updatePosition: false)
         event.preventDefault()
 
     alt:

@@ -1,5 +1,7 @@
+#= require trix/models/text
+
 class Trix.Composition
-  constructor: (@text) ->
+  constructor: (@text = new Trix.Text) ->
     @text.delegate = this
     @currentAttributes = {}
 
@@ -10,7 +12,7 @@ class Trix.Composition
 
   # Responder protocol
 
-  insertText: (text, updatePosition = true) ->
+  insertText: (text, {updatePosition} = updatePosition: true) ->
     if selectedRange = @getSelectedRange()
       position = selectedRange[0]
       @text.replaceTextAtRange(text, selectedRange)
@@ -20,13 +22,13 @@ class Trix.Composition
 
     @requestPosition(position + (if updatePosition then text.getLength() else 0))
 
-  insertString: (string, updatePosition = true) ->
+  insertString: (string, options) ->
     text = Trix.Text.textForStringWithAttributes(string, @currentAttributes)
-    @insertText(text, updatePosition)
+    @insertText(text, options)
 
-  insertAttachment: (attachment, updatePosition = true) ->
+  insertAttachment: (attachment, options) ->
     text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
-    @insertText(text, updatePosition)
+    @insertText(text, options)
 
   insertHTML: (html, updatePosition = true) ->
     text = Trix.Text.fromHTML(html)
@@ -62,8 +64,9 @@ class Trix.Composition
     @requestPosition(position)
 
   getTextFromSelection: ->
-    if selectedRange = @getSelectedRange()
-      @text.getTextAtRange(selectedRange)
+    selectedRange = @getSelectedRange() ? [0, 0]
+    @text.getTextAtRange(selectedRange)
+
 
   # Current attributes
 
@@ -96,6 +99,7 @@ class Trix.Composition
     if selectedRange = @getSelectedRange()
       @currentAttributes = @text.getCommonAttributesAtRange(selectedRange)
       @notifyDelegateOfCurrentAttributesChange()
+
     else if (position = @getPosition())?
       @currentAttributes = {}
       attributes = @text.getAttributesAtPosition(position)
@@ -140,5 +144,10 @@ class Trix.Composition
       [start, end] = range
       range unless start is end
 
-  requestSelectedRange: (range) ->
+  requestSelectedRange: ([start, end]) ->
+    length = @text.getLength()
+    range = [clamp(start, 0, length), clamp(end, 0, length)]
     @selectionDelegate?.compositionDidRequestSelectionOfRange?(this, range)
+
+  clamp = (value, floor, ceiling) ->
+    Math.max(floor, Math.min(ceiling, value))

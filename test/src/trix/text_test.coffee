@@ -1,4 +1,5 @@
 #= require trix/models/text
+#= require helpers
 #= require fixtures
 
 module "Trix.Text"
@@ -504,7 +505,7 @@ test "#getAttributesAtPosition", ->
 
   for position, expectedAttributes of tests
     attributes = text.getAttributesAtPosition(position)
-    hashEqual attributes, expectedAttributes, "position #{position}"
+    hashesEqual attributes, expectedAttributes, "position #{position}"
 
 
 test "#getCommonAttributesAtRange", ->
@@ -520,7 +521,7 @@ test "#getCommonAttributesAtRange", ->
 
   for [range, expectedCommonAttributes] in tests
     commonAttributes = text.getCommonAttributesAtRange(range)
-    hashEqual commonAttributes, expectedCommonAttributes, "range #{JSON.stringify(range)}"
+    hashesEqual commonAttributes, expectedCommonAttributes, "range #{JSON.stringify(range)}"
 
 
 test "#getTextAtRange", ->
@@ -610,35 +611,3 @@ test "asJSON", ->
     """[{"attachment":{"id":1},"attributes":{"width":10}}]""",
     "text is serialized as JSON"
 
-
-# Test helpers
-
-hashEqual = (actual, expected, message) ->
-  actual = Trix.Hash.box(actual)
-  expected = Trix.Hash.box(expected)
-  QUnit.push actual.isEqualTo(expected), actual.inspect(), expected.inspect(), message
-
-runsEqual = (text, expectedRuns, message) ->
-  actualRuns = getRunsForText(text)
-
-  if expectedRuns.length isnt actualRuns.length
-    return QUnit.push(false, actualRuns.length, expectedRuns.length, "#{message} (run length mismatch)")
-
-  for actualRun, index in actualRuns
-    expectedRun = expectedRuns[index]
-
-    if expectedRun.attachment? and expectedRun.attachment isnt actualRun.attachment
-      return QUnit.push(false, actualRun.attachment, expectedRun.attachment, "#{message} (attachment mismatch in run #{index + 1})")
-
-    if expectedRun.attributes? and not Trix.Hash.box(expectedRun.attributes).isEqualTo(actualRun.attributes)
-      return QUnit.push(false, actualRun.attributes, expectedRun.attributes, "#{message} (attributes mismatch in run #{index + 1})")
-
-    if expectedRun.string? and expectedRun.string isnt actualRun.string
-      return QUnit.push(false, actualRun.string, expectedRun.string, "#{message} (string mismatch in run #{index + 1})")
-
-  QUnit.push(true, actualRuns, expectedRuns, message)
-
-getRunsForText = (text) ->
-  result = []
-  text.eachRun (run) -> result.push(run)
-  result
