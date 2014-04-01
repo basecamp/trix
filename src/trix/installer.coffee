@@ -3,20 +3,23 @@
 
 class Trix.Installer
   constructor: (@config = {}) ->
-    for key in "textarea toolbar input debug".split(" ")
-      @config["#{key}Element"] = getElement(@config[key])
-      delete @config[key]
-
-    @config.focus ?= @config.textareaElement.hasAttribute("autofocus")
 
   createEditor: ->
     if @browserIsSupported()
-      @createStyleSheet()
+      @getConfigElements()
       @config.textElement = @createTextElement()
+      @config.focus ?= @config.textareaElement.hasAttribute("autofocus")
+      @createStyleSheet()
+
       new Trix.EditorController @config
 
   browserIsSupported: ->
     true
+
+  getConfigElements: ->
+    for key in "textarea toolbar input debug".split(" ")
+      @config["#{key}Element"] = getElement(@config[key])
+      delete @config[key]
 
   styleSheetId = "trix-styles"
 
