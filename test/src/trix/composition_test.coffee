@@ -218,21 +218,125 @@ test "#getTextFromSelection", ->
     deepEqual composition.selectionDelegate.lastRange, [3, 8], "selection is unchanged"
 
 
-# test "#hasCurrentAttribute", ->
-#   ok true
+test "#hasCurrentAttribute/#updateCurrentAttributes", ->
+  composition = makeComposition(fixture("formatted"))
+  tests = [
+    [[0, 0],   bold: false, italic: false]
+    [[7, 7],   bold: false, italic: false]
+    [[8, 8],   bold: true,  italic: true]
+    [[12, 12], bold: true,  italic: true]
+    [[13, 13], bold: false, italic: true]
+    [[16, 16], bold: false, italic: true]
+    [[17, 17], bold: false, italic: false]
+    [[8, 12],  bold: true,  italic: true]
+    [[8, 16],  bold: false, italic: true]
+    [[8, 17],  bold: false, italic: false]
+  ]
+
+  for [range, attributes] in tests
+    composition.requestSelectedRange(range)
+    composition.updateCurrentAttributes()
+    for name, value of attributes
+      equal composition.hasCurrentAttribute(name), value, "#{name} is #{value} at #{JSON.stringify(range)}"
 
 
-# test "#toggleCurrentAttribute", ->
-#   ok true
+test "#toggleCurrentAttribute", ->
+  testGroup "at position", ->
+    composition = makeComposition(fixture("empty"))
+    composition.toggleCurrentAttribute("bold")
+    equal composition.delegate.changes.length, 1, "delegate change count is 1 after first toggle"
+    equal composition.delegate.lastChange.type, "currentAttributes", "delegate notified of initial toggle"
+
+    composition.insertString("Hello")
+    composition.toggleCurrentAttribute("bold")
+    equal composition.delegate.changes.length, 3, "delegate change count is 3 after second toggle"
+    equal composition.delegate.lastChange.type, "currentAttributes", "delegate notified of second toggle"
+
+    composition.insertString(", world!")
+    runsEqual composition.text, [
+        { string: "Hello", attributes: { bold: true } },
+        { string: ", world!", attributes: { } }
+      ],
+      "toggling an attribute during typing"
+
+  testGroup "with selected range", ->
+    composition = makeComposition(fixture("formatted"), [7, 16])
+    composition.updateCurrentAttributes()
+    changeCount = composition.delegate.changes.length
+
+    composition.toggleCurrentAttribute("italic")
+    equal composition.delegate.changes.length - changeCount, 2, "delegate change count increments by 2 after toggle"
+    equal composition.delegate.lastChange.type, "currentAttributes", "delegate notified of toggle"
+
+    runsEqual composition.text, [
+        { string: "Hello, ", attributes: { } },
+        { string: "rich ", attributes: { bold: true } },
+        { string: "text!", attributes: { } }
+      ],
+      "italic is removed from the selected range"
 
 
-# test "#setCurrentAttribute", ->
-#   ok true
+test "#setCurrentAttribute", ->
+  testGroup "turning on attribute at position", ->
+    composition = makeComposition(fixture("plain"), [11, 11])
+    composition.setCurrentAttribute("italic", true)
+    equal composition.delegate.changes.length, 1, "delegate change count is 1 after first set"
+    equal composition.delegate.lastChange.type, "currentAttributes", "delegate notified of initial attribute change"
 
+    composition.insertString("!")
+    runsEqual composition.text, [
+        { string: "Hello world", attributes: { } },
+        { string: "!", attributes: { italic: true } }
+      ],
+      "text is appended with attribute"
 
-# test "#updateCurrentAttributes", ->
-#   ok true
+  testGroup "turning off attribute at position", ->
+    composition = makeComposition(fixture("italic"), [11, 11])
+    composition.updateCurrentAttributes()
+    changeCount = composition.delegate.changes.length
 
+    composition.setCurrentAttribute("italic", false)
+    equal composition.delegate.changes.length - changeCount, 1, "delegate change count increases by 1 after first set"
+    equal composition.delegate.lastChange.type, "currentAttributes", "delegate notified of initial attribute change"
+
+    composition.insertString("!")
+    runsEqual composition.text, [
+        { string: "Hello world", attributes: { italic: true } },
+        { string: "!", attributes: { } }
+      ],
+      "text is appended without attribute"
+
+  testGroup "adding attribute to selected range", ->
+    composition = makeComposition(fixture("formatted"), [7, 16])
+    composition.updateCurrentAttributes()
+    changeCount = composition.delegate.changes.length
+
+    composition.setCurrentAttribute("bold", true)
+    equal composition.delegate.changes.length - changeCount, 2, "delegate change count increments by 2 after first set"
+    equal composition.delegate.lastChange.type, "currentAttributes", "delegate notified of initial attribute change"
+
+    runsEqual composition.text, [
+        { string: "Hello, ", attributes: { } },
+        { string: "rich text", attributes: { bold: true, italic: true } },
+        { string: "!", attributes: { } }
+      ],
+      "bold is added to the selected range"
+
+  testGroup "removing attribute from selected range", ->
+    composition = makeComposition(fixture("formatted"), [7, 16])
+    composition.updateCurrentAttributes()
+    changeCount = composition.delegate.changes.length
+
+    composition.setCurrentAttribute("italic", false)
+    equal composition.delegate.changes.length - changeCount, 2, "delegate change count increments by 2 after first set"
+    equal composition.delegate.lastChange.type, "currentAttributes", "delegate notified of initial attribute change"
+
+    runsEqual composition.text, [
+        { string: "Hello, ", attributes: { } },
+        { string: "rich ", attributes: { bold: true } },
+        { string: "text!", attributes: { } }
+      ],
+      "italic is removed from the selected range"
 
 
 # test "#freezeSelection", ->

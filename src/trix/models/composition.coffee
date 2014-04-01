@@ -95,6 +95,7 @@ class Trix.Composition
     if selectedRange = @getSelectedRange()
       @currentAttributes = @text.getCommonAttributesAtRange(selectedRange)
       @notifyDelegateOfCurrentAttributesChange()
+
     else if (position = @getPosition())?
       @currentAttributes = {}
       attributes = @text.getAttributesAtPosition(position)
