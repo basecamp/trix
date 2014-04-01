@@ -2,10 +2,6 @@
 #= require trix/dom
 
 class Trix.HTMLParser
-  styleMap =
-    bold: ["font-weight", "bold"]
-    italic: ["font-style", "italic"]
-
   allowedAttributes = "style href src width height".split(" ")
 
   @parse: (html) ->
@@ -64,9 +60,11 @@ class Trix.HTMLParser
     attributes = {}
     style = window.getComputedStyle(element)
 
-    for attribute, [property, value] of styleMap
-      if style[property] is value
-        attributes[attribute] = true
+    if style["fontWeight"] is "bold" or style["fontWeight"] >= 700
+      attributes["bold"] = true
+
+    if style["fontStyle"] is "italic"
+      attributes["italic"] = true
 
     if link = Trix.DOM.closest(element, "a")
       attributes["href"] = link.getAttribute("href")
