@@ -1,5 +1,7 @@
+#= require trix/models/text
+
 class Trix.Composition
-  constructor: (@text) ->
+  constructor: (@text = new Trix.Text) ->
     @text.delegate = this
     @currentAttributes = {}
 
