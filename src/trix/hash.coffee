@@ -68,7 +68,7 @@ class Trix.Hash
     if object instanceof Trix.Hash
       object
     else
-      new Trix.Hash object
+      new Trix.Hash copy(object)
 
   unbox = (object) ->
     if object instanceof Trix.Hash
