@@ -12,7 +12,7 @@ class Trix.Installer
   createEditor: ->
     if @browserIsSupported()
       @createStyleSheet()
-      @createTextElement()
+      @config.textElement = @createTextElement()
       new Trix.EditorController @config
 
   browserIsSupported: ->
@@ -39,25 +39,26 @@ class Trix.Installer
 
     element = document.createElement("div")
     element.innerHTML = textarea.value
-    element.setAttribute("data-placeholder", textarea.getAttribute("placeholder"))
+    element.classList.add(name) for name in @classNames()
+
     element.setAttribute("contenteditable", "true")
     element.setAttribute("autocorrect", "off")
     element.setAttribute("spellcheck", "false")
 
-    for name in @classNames()
-      element.classList.add(name)
-
-    disableObjectResizingOnFocus(element)
-    proxyInputEvents(element, textarea)
+    if placeholder = textarea.getAttribute("placeholder")
+      element.setAttribute("data-placeholder", placeholder)
 
     textareaStyle = window.getComputedStyle(textarea)
     element.style[style] = textareaStyle[style] for style in textareaStylesToCopy
     element.style["min-height"] = textareaStyle["height"]
 
+    disableObjectResizingOnFocus(element)
+    proxyInputEvents(element, textarea)
+
     textarea.style["display"] = "none"
     textarea.parentElement.insertBefore(element, textarea)
 
-    @config.textElement = element
+    element
 
   classNames: ->
     result = ["trix-editor"]
