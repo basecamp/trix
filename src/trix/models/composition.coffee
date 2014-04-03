@@ -30,7 +30,7 @@ class Trix.Composition
     text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
     @insertText(text, options)
 
-  insertHTML: (html, updatePosition = true) ->
+  insertHTML: (html, options) ->
     text = Trix.Text.fromHTML(html)
     @insertText(text, updatePosition)
 
