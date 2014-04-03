@@ -50,6 +50,7 @@ class Trix.EditorController
 
   compositionDidChangeText: (composition, text) ->
     @textController.render()
+    @saveSerializedText()
 
   compositionDidChangeCurrentAttributes: (composition, currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
@@ -57,7 +58,6 @@ class Trix.EditorController
   # Text controller delegate
 
   textControllerDidRender: ->
-    @saveSerializedText()
     @debugController.render()
 
   textControllerDidFocus: ->
