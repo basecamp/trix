@@ -60,9 +60,14 @@ class Trix.TextView
       elements.push(document.createElement("em"))
 
     if elements.length is 0
-      elements.push(document.createElement("span"))
+      if attributes.underline or attributes.frozen
+        elements.push(document.createElement("span"))
+      else
+        elements.push(document.createDocumentFragment())
 
     outerElement = innerElement = elements[0]
+    outerElement.style["text-decoration"] = "underline" if attributes.underline
+    outerElement.style["background-color"] = "highlight" if attributes.frozen
     outerElement.trixPosition = position
 
     if elements.length > 1
@@ -70,9 +75,6 @@ class Trix.TextView
         innerElement.appendChild(element)
         innerElement = element
         innerElement.trixPosition = position
-
-    outerElement.style["text-decoration"] = "underline" if attributes.underline
-    outerElement.style["background-color"] = "highlight" if attributes.frozen
 
     if string
       for node in createNodesForString(string, position)

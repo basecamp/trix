@@ -29,7 +29,7 @@ test "#createElementsForText", ->
   equal elements.length, 1, "one element for plain string"
 
   el = elements[0]
-  equal el.tagName.toLowerCase(), "span", "container element is a span"
+  equal el.nodeType, Node.DOCUMENT_FRAGMENT_NODE, "container element is a document fragment"
   equal el.trixPosition, 0, "container element has a trixPosition"
   equal el.childNodes.length, 1, "container element has one child node"
 
@@ -75,15 +75,14 @@ test "#createElementsForText", ->
   [a, b] = el.childNodes
   equal a.tagName.toLowerCase(), "strong", "child element is strong"
   ok !a.getAttribute("href"), "child element has no href attribute"
-  equal b.tagName.toLowerCase(), "span", "second child element is not styled"
-  ok !b.getAttribute("href"), "second child element has no href attribute"
+  equal b.nodeType, Node.TEXT_NODE, "second child is a document fragment"
 
 
 test "#getSelectedRange", ->
   view = installTextView(fixture("formatted"))
   element = view.element
 
-  setRangeInNode(element.childNodes[0].firstChild, [1, 5], "ello")
+  setRangeInNode(element.childNodes[0], [1, 5], "ello")
   deepEqual view.getSelectedRange(), [1, 5], "range is positions in text"
 
   setRangeInNode(element.childNodes[1].firstChild.firstChild, [0, 2], "ri")
@@ -98,7 +97,7 @@ test "#setSelectedRange", ->
   element = view.element
 
   view.setSelectedRange([1, 5])
-  rangeInNodeAroundString(element.childNodes[0].firstChild, "ello")
+  rangeInNodeAroundString(element.childNodes[0], "ello")
 
   view.setSelectedRange([7, 9])
   rangeInNodeAroundString(element.childNodes[1].firstChild.firstChild, "ri")
