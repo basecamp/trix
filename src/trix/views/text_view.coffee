@@ -46,28 +46,29 @@ class Trix.TextView
     elements
 
   createElement = ({string, attributes, position}, parent) ->
+    {bold, italic, href, underline, frozen} = attributes
     elements = []
 
-    if attributes.href and parent?.tagName.toLowerCase() isnt "a"
+    if href and parent?.tagName.toLowerCase() isnt "a"
       a = document.createElement("a")
-      a.setAttribute("href", attributes.href)
+      a.setAttribute("href", href)
       elements.push(a)
 
-    if attributes.bold
+    if bold
       elements.push(document.createElement("strong"))
 
-    if attributes.italic
+    if italic
       elements.push(document.createElement("em"))
 
     if elements.length is 0
-      if attributes.underline or attributes.frozen
+      if underline or frozen
         elements.push(document.createElement("span"))
       else
         elements.push(document.createDocumentFragment())
 
     outerElement = innerElement = elements[0]
-    outerElement.style["text-decoration"] = "underline" if attributes.underline
-    outerElement.style["background-color"] = "highlight" if attributes.frozen
+    outerElement.style["text-decoration"] = "underline" if underline
+    outerElement.style["background-color"] = "highlight" if frozen
     outerElement.trixPosition = position
 
     if elements.length > 1
