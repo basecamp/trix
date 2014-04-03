@@ -38,10 +38,14 @@ test "parse", ->
 
 
 asyncTest "Prevent executing JavaScript", ->
-  expect(1)
+  window.trixTest = "pass"
   png = "data:image/png;base64,$ Invalid base64 that will cause a load error $"
-  ok Trix.HTMLParser.parse("""<img src="#{png}" onerror="throw('Eeep!')">""")
-  start()
+  Trix.HTMLParser.parse("""<img src="#{png}" onerror="window.trixTest = 'fail'">""")
+
+  setTimeout ->
+    equal window.trixTest, "pass"
+    start()
+  , 20
 
 
 htmlEqual = (html, text) ->
