@@ -6,13 +6,9 @@ class Trix.InputController
     0x48: "h"
     0x4f: "o"
 
-  @eventNames: ->
-    Object.keys(new this().events)
-
   constructor: (@element) ->
-    if @element
-      for event, handler of @events
-        @element.addEventListener(event, handler.bind(this), true)
+    for event, handler of @events
+      @element.addEventListener(event, handler.bind(this), true)
 
   events:
     keydown: (event) ->

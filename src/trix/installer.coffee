@@ -56,7 +56,6 @@ class Trix.Installer
     element.style["min-height"] = textareaStyle["height"]
 
     disableObjectResizingOnFocus(element)
-    proxyInputEvents(element, textarea)
 
     textarea.style["display"] = "none"
     textarea.parentElement.insertBefore(element, textarea)
@@ -83,11 +82,3 @@ class Trix.Installer
       event.target.removeEventListener("focus", disableObjectResizingOnFocus)
     else
       element.addEventListener("focus", disableObjectResizingOnFocus)
-
-  proxyInputEvents = (from, to) ->
-    for eventName in Trix.InputController.eventNames()
-      from.addEventListener eventName, (event) ->
-        copy = new event.constructor event.type
-        setTimeout ->
-          to.dispatchEvent(copy)
-        , 1

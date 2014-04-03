@@ -43,6 +43,7 @@ class Trix.EditorController
 
   saveSerializedText: ->
     @textareaElement.value = @textElement.innerHTML
+    @textareaElement.dispatchEvent new Event "input"
     @inputElement?.value = @text.asJSON()
 
   # Composition controller delegate
