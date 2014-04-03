@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <script type="text/javascript" src="trix.js"></script>
+    <script type="text/javascript" src="install.js"></script>
     <style type="text/css">
       #text {
         width: 90%;
@@ -21,76 +22,62 @@
         color: blue;
       }
 
-      #toolbar {
+      #debug {
+        white-space: pre-wrap;
+      }
+
+      .trix-toolbar {
         padding: 10px 0;
         white-space: collapse;
       }
 
-      #toolbar a.button {
+      .trix-toolbar a.button {
         border: 1px solid #aaa;
         border-radius: 3px;
         padding: 3px 10px;
         color: #333;
         text-decoration: none;
-        font-family: Georgia;
         font-size: 12px;
       }
 
-      #toolbar a.button.active {
+      .trix-toolbar a.button.active {
         background: #d3e6fd;
       }
 
-      #toolbar a.button[data-attribute=bold] {
+      .trix-toolbar a.button[data-attribute=bold] {
         font-weight: bold;
       }
 
-      #toolbar a.button[data-attribute=italic] {
+      .trix-toolbar a.button[data-attribute=italic] {
         font-style: italic;
       }
 
-      #toolbar a.button[data-attribute=href] {
+      .trix-toolbar a.button[data-attribute=href] {
         text-decoration: underline;
       }
 
-      #toolbar .dialog {
+      .trix-toolbar .dialog {
         display: none;
         padding-top: 10px;
       }
 
-      #toolbar .dialog.active {
+      .trix-toolbar .dialog.active {
         display: block;
       }
 
-      #debug {
-        white-space: pre-wrap;
-      }
-
-      #text .image-editor {
-        position: relative;
-        display: inline-block;
-      }
-
-      #text .image-editor img {
-        outline: 1px dashed #333;
-      }
-
-      #text .image-editor .resize-handle {
-        position: absolute;
-        width: 8px;
-        height: 8px;
-        border: 1px solid #333;
-        background: white;
-      }
-
-      #text .image-editor .resize-handle.se {
-        bottom: -4px;
-        right: -4px;
-        cursor: nwse-resize;
+      textarea.debug {
+        width: 90%;
+        max-width: 450px;
+        min-height: 150px;
+        border: 1px solid #aaa;
+        padding: 5px 10px;
+        outline: 0;
+        font-size: 12px;
       }
     </style>
   </head>
   <body>
-    <div id="toolbar">
+    <div class="trix-toolbar" id="toolbar">
       <a class="button" href="#" data-attribute="bold">Bold</a>
       <a class="button" href="#" data-attribute="italic">Italic</a>
       <a class="button" href="#" data-attribute="href">Link</a>
@@ -105,16 +92,8 @@
         <img src="basecamp.png" id="attachment_1" draggable>
       </div>
     </div>
-    <div id="text"></div>
+    <textarea id="text" placeholder="Type some rich text!" autofocus></textarea>
     <pre id="debug"></pre>
-    <script type="text/javascript">
-      (function() {
-        var textElement = document.getElementById("text");
-        var toolbarElement = document.getElementById("toolbar");
-        var debugElement = document.getElementById("debug");
-        window.controller = Trix.install(textElement, toolbarElement, debugElement);
-        textElement.focus();
-      })();
-    </script>
+    <textarea id="data" class="debug">[{"string":"Hello, ","attributes":{}},{"string":"rich","attributes":{"bold":true,"italic":true}},{"string":" ","attributes":{"italic":true}},{"string":"tex","attributes":{"italic":true,"href":"http://basecamp.com"}},{"string":"t","attributes":{"href":"http://basecamp.com"}},{"string":"!","attributes":{}}]</textarea>
   </body>
 </html>

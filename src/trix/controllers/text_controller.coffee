@@ -2,7 +2,7 @@
 #= require trix/views/text_view
 
 class Trix.TextController
-  constructor: (@element, @text) ->
+  constructor: (@element, @text, @config) ->
     @attachmentController = new Trix.AttachmentController @element
     @attachmentController.delegate = this
 
@@ -11,6 +11,9 @@ class Trix.TextController
     @selectionLockCount = 0
 
     @element.addEventListener("focus", @didFocus)
+
+    @render()
+    @focus() if @config.autofocus
 
   focus: ->
     @textView.focus()

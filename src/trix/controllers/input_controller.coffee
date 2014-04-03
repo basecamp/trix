@@ -62,17 +62,18 @@ class Trix.InputController
 
       else if id = event.dataTransfer.getData("id")
         element = document.getElementById(id)
-        attachment = { type: "image" }
-        attachment[key] = element[key] for key in ["src", "width", "height"]
+        attachment = Trix.Text.fromHTML(element.outerHTML).getAttachmentAtPosition(0)
         @responder?.insertAttachment(attachment)
 
     cut: (event) ->
       @responder?.deleteBackward()
 
     paste: (event) ->
-      if text = event.clipboardData.getData("text/plain")
-        @responder?.insertString(text)
       event.preventDefault()
+      if html = event.clipboardData.getData("text/html")
+        @responder?.insertHTML(html)
+      else if string = event.clipboardData.getData("text/plain")
+        @responder?.insertString(string)
 
     compositionstart: (event) ->
       @delegate?.inputControllerWillComposeCharacters?()

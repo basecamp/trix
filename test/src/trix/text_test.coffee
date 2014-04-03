@@ -33,6 +33,21 @@ test "textForStringWithAttributes", ->
     "single-run text with string and attributes"
 
 
+test "fromJSON", ->
+  textA = fixture("formatted")
+  textB = Trix.Text.fromJSON(textA.asJSON())
+  ok textB.isEqualTo(textA), "serializing and deserializing creates equal copy"
+
+  textA = Trix.Text.textForAttachmentWithAttributes(id: 1)
+  textB = Trix.Text.fromJSON(textA.asJSON())
+  ok textB.isEqualTo(textA), "serializing and deserializing creates equal copy"
+
+
+test "fromHTML", ->
+  text = Trix.Text.fromHTML("<strong>Hello world</strong>")
+  ok text.isEqualTo(fixture("bold")), "text from HTML is equal copy"
+
+
 test "#beginEditing and #endEditing", ->
   count = (text) ->
     counter = value: 0, text: text
@@ -543,6 +558,15 @@ test "#getStringAtRange", ->
   equal string, "ello, rich tex", "extracting across multiple runs as a string"
 
 
+test "#getAttachmentAtPosition", ->
+  text = Trix.Text.textForAttachmentWithAttributes(type: "image")
+  text.appendText(Trix.Text.textForStringWithAttributes(".."))
+  text.appendText(Trix.Text.textForAttachmentWithAttributes(type: "file"))
+
+  equal "image", text.getAttachmentAtPosition(0).type, "get attachment"
+  equal "file", text.getAttachmentAtPosition(3).type, "get attachment"
+
+
 test "#getLength", ->
   empty = fixture("empty")
   equal empty.getLength(), 0, "empty text length is 0"
@@ -570,3 +594,20 @@ test "#isEqualTo", ->
   a = Trix.Text.textForStringWithAttributes("Hello")
   b = Trix.Text.textForStringWithAttributes("Hello")
   ok a.isEqualTo(b) and b.isEqualTo(a), "two texts from the same string are equal"
+
+
+test "#toJSON", ->
+  text = fixture("formatted")
+  runsEqual text, text.toJSON(), "JSON equal to text runs"
+
+
+test "asJSON", ->
+  equal fixture("bold").asJSON(),
+    """[{"string":"Hello world","attributes":{"bold":true}}]""",
+    "text is serialized as JSON"
+
+  text = Trix.Text.textForAttachmentWithAttributes({ id: 1 }, { width: 10 })
+  equal text.asJSON(),
+    """[{"attachment":{"id":1},"attributes":{"width":10}}]""",
+    "text is serialized as JSON"
+

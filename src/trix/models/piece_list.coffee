@@ -109,6 +109,9 @@ class Trix.PieceList
   toArray: ->
     @pieces.slice(0)
 
+  toJSON: ->
+    @toArray()
+
   isEqualTo: (pieceList) ->
     this is pieceList or pieceArraysAreEqual(@pieces, pieceList?.pieces)
 

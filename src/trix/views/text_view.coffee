@@ -2,15 +2,7 @@
 
 class Trix.TextView
   constructor: (@element, @text) ->
-    @element.setAttribute("contenteditable", "true")
-    @element.setAttribute("autocorrect", "off")
-    @element.setAttribute("spellcheck", "false")
-    @element.addEventListener("focus", @didFocus)
     @element.trixPosition = 0
-
-  didFocus: (event) =>
-    document.execCommand("enableObjectResizing", false, "false")
-    @element.removeEventListener("focus", @didFocus)
 
   focus: ->
     @element.focus()
@@ -29,20 +21,15 @@ class Trix.TextView
     previousRun = null
 
     @text.eachRun (run) ->
-      parent = null
+      if href = run.attributes.href
+        if href is previousRun?.attributes.href
+          parent = elements[elements.length - 1]
+
       element =
         if run.attachment
           createElementForAttachment(run)
         else
-          createElement(run)
-
-      if href = run.attributes.href
-        if href is previousRun?.attributes.href
-          parent = elements[elements.length - 1]
-        else
-          link = createElement(tagName: "a", attributes: {href}, position: run.position)
-          link.appendChild(element)
-          element = link
+          createElement(run, parent)
 
       if parent
         parent.appendChild(element)
@@ -58,24 +45,40 @@ class Trix.TextView
 
     elements
 
-  createElement = ({string, attributes, position, tagName}) ->
-    element = document.createElement(tagName ? "span")
-    element.trixPosition = position
+  createElement = ({string, attributes, position}, parent) ->
+    elements = []
 
-    if attributes
-      if attributes.href and tagName is "a"
-        element.setAttribute("href", attributes.href)
+    if attributes.href and parent?.tagName.toLowerCase() isnt "a"
+      a = document.createElement("a")
+      a.setAttribute("href", attributes.href)
+      elements.push(a)
 
-      element.style["font-weight"] = "bold" if attributes.bold
-      element.style["font-style"] = "italic" if attributes.italic
-      element.style["text-decoration"] = "underline" if attributes.underline
-      element.style["background-color"] = "highlight" if attributes.frozen
+    if attributes.bold
+      elements.push(document.createElement("strong"))
+
+    if attributes.italic
+      elements.push(document.createElement("em"))
+
+    if elements.length is 0
+      elements.push(document.createElement("span"))
+
+    outerElement = innerElement = elements[0]
+    outerElement.trixPosition = position
+
+    if elements.length > 1
+      for element in elements.slice(1)
+        innerElement.appendChild(element)
+        innerElement = element
+        innerElement.trixPosition = position
+
+    outerElement.style["text-decoration"] = "underline" if attributes.underline
+    outerElement.style["background-color"] = "highlight" if attributes.frozen
 
     if string
       for node in createNodesForString(string, position)
-        element.appendChild(node)
+        innerElement.appendChild(node)
 
-    element
+    outerElement
 
   createElementForAttachment = ({attachment, attributes, position}) ->
     switch attachment.type

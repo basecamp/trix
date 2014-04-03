@@ -5,35 +5,52 @@
 #= require trix/models/composition
 #= require trix/models/text
 #= require trix/observers/selection_observer
+#= require trix/html_parser
 
 class Trix.EditorController
-  constructor: (textElement, toolbarElement, debugElement) ->
-    @text = new Trix.Text
+  constructor: (@config) ->
+    {@textElement, @toolbarElement, @textareaElement, @inputElement, @debugElement} = @config
 
-    @textController = new Trix.TextController textElement, @text
+    @text = @createText()
+
+    @textController = new Trix.TextController @textElement, @text, @config
     @textController.delegate = this
 
     @composition = new Trix.Composition @text
     @composition.delegate = this
     @composition.selectionDelegate = @textController
 
-    @inputController = new Trix.InputController textElement
+    @inputController = new Trix.InputController @textElement
     @inputController.delegate = this
     @inputController.responder = @composition
 
     @selectionObserver = new Trix.SelectionObserver
     @selectionObserver.delegate = this
 
-    @toolbarController = new Trix.ToolbarController toolbarElement
+    @toolbarController = new Trix.ToolbarController @toolbarElement
     @toolbarController.delegate = this
 
-    @debugController = new Trix.DebugController debugElement, @textController.textView, @composition
+    @debugController = new Trix.DebugController @debugElement, @textController.textView, @composition
     @debugController.render()
+
+  createText: ->
+    if @textElement.textContent.trim()
+      Trix.Text.fromHTML(@textElement.innerHTML)
+    else if @inputElement?.value
+      Trix.Text.fromJSON(@inputElement.value)
+    else
+      new Trix.Text
+
+  saveSerializedText: ->
+    @textareaElement.value = @textElement.innerHTML
+    @textareaElement.dispatchEvent new Event "input"
+    @inputElement?.value = @text.asJSON()
 
   # Composition controller delegate
 
   compositionDidChangeText: (composition, text) ->
     @textController.render()
+    @saveSerializedText()
 
   compositionDidChangeCurrentAttributes: (composition, currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)

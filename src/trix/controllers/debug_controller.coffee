@@ -4,8 +4,9 @@ class Trix.DebugController
   constructor: (@element, @textView, @composition) ->
 
   render: ->
-    @element.innerHTML = ""
-    @element.appendChild(document.createTextNode(@renderDebugOutput()))
+    if @element
+      @element.innerHTML = ""
+      @element.appendChild(document.createTextNode(@renderDebugOutput()))
 
   renderDebugOutput: ->
     strings = []

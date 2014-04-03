@@ -11,6 +11,17 @@ class Trix.Text
     piece = new Trix.Piece string, attributes
     new this [piece]
 
+  @fromJSON: (json) ->
+    new this do ->
+      for {string, attachment, attributes} in JSON.parse(json)
+        if attachment
+          new Trix.AttachmentPiece attachment, attributes
+        else
+          new Trix.Piece string, attributes
+
+  @fromHTML: (html) ->
+    Trix.HTMLParser.parse(html).getText()
+
   constructor: (pieces = []) ->
     @editDepth = 0
     @pieceList = new Trix.PieceList pieces
@@ -80,6 +91,9 @@ class Trix.Text
   getStringAtRange: (range) ->
     @pieceList.getPieceListInRange(range).toString()
 
+  getAttachmentAtPosition: (position) ->
+    @pieceList.getPieceAtPosition(position)?.attachment
+
   getLength: ->
     @pieceList.getLength()
 
@@ -106,3 +120,9 @@ class Trix.Text
 
   toString: ->
     @pieceList.toString()
+
+  toJSON: ->
+    @pieceList.toJSON()
+
+  asJSON: ->
+    JSON.stringify(this)

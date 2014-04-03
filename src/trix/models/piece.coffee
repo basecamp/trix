@@ -71,5 +71,9 @@ class Trix.Piece
   toString: ->
     @string
 
+  toJSON: ->
+    string: @toString()
+    attributes: @getAttributes()
+
   inspect: ->
     "#<Piece string=#{JSON.stringify(@string)}, attributes=#{@attributes.inspect()}>"
