@@ -10,7 +10,7 @@ environment.paths = %w( assets src test/assets test/src test/vendor )
 map '/' do
   run environment.sprockets_environment
   use Rack::Rewrite do
-    rewrite '/', '/index.html'
+    rewrite '/', '/demo.html'
     rewrite '/test', 'test.html'
   end
 end
