@@ -121,5 +121,7 @@ class Trix.EditorController
       delete @selectionFrozen
 
   expandSelectionForEditing: ->
-    if @composition.hasCurrentAttribute("href")
-      @textController.expandSelectedRangeAroundCommonAttribute("href")
+    for key, value of Trix.config.attributes when value.parent
+      if @composition.hasCurrentAttribute(key)
+        @textController.expandSelectedRangeAroundCommonAttribute(key)
+        break

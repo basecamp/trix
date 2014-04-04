@@ -7,6 +7,22 @@
     installer.createEditor()
 
   config:
+    attributes:
+      bold:
+        tagName: "strong"
+        inheritable: true
+      italic:
+        tagName: "em"
+        inheritable: true
+      href:
+        tagName: "a"
+        parent: true
+      underline:
+        style: { "text-decoration": "underline" }
+        inheritable: true
+      frozen:
+        style: { "background-color": "highlight" }
+
     editorCSS: """
       .trix-editor[contenteditable=true]:empty:before {
         content: attr(data-placeholder);

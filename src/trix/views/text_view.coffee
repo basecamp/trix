@@ -21,18 +21,20 @@ class Trix.TextView
     previousRun = null
 
     @text.eachRun (run) ->
-      if href = run.attributes.href
-        if href is previousRun?.attributes.href
-          parent = elements[elements.length - 1]
+      if previousRun
+        for key, value of run.attributes when Trix.config.attributes[key].parent
+          if value is previousRun.attributes[key]
+            parentKey = key
+            break
 
       element =
         if run.attachment
           createElementForAttachment(run)
         else
-          createElement(run, parent)
+          createElement(run, parentKey)
 
-      if parent
-        parent.appendChild(element)
+      if parentKey
+        elements[elements.length - 1].appendChild(element)
       else
         elements.push(element)
 
@@ -45,31 +47,40 @@ class Trix.TextView
 
     elements
 
-  createElement = ({string, attributes, position}, parent) ->
-    {bold, italic, href, underline, frozen} = attributes
-    elements = []
+  createElement = ({string, attributes, position}, parentKey) ->
+    head = []
+    tail = []
+    styles = []
 
-    if href and parent?.tagName.toLowerCase() isnt "a"
-      a = document.createElement("a")
-      a.setAttribute("href", href)
-      elements.push(a)
+    for key, value of attributes
+      config = Trix.config.attributes[key]
 
-    if bold
-      elements.push(document.createElement("strong"))
+      if config.tagName
+        unless config.parent and parentKey is key
+          element = document.createElement(config.tagName)
+          element.setAttribute(key, value) unless typeof(value) is "boolean"
 
-    if italic
-      elements.push(document.createElement("em"))
+          if config.parent
+            head.push(element)
+          else
+            tail.push(element)
+
+      if config.style
+        styles.push(config.style)
+
+    elements = head.concat(tail)
 
     if elements.length is 0
-      if underline or frozen
+      if styles.length > 0
         elements.push(document.createElement("span"))
       else
         elements.push(document.createDocumentFragment())
 
     outerElement = innerElement = elements[0]
-    outerElement.style["text-decoration"] = "underline" if underline
-    outerElement.style["background-color"] = "highlight" if frozen
     outerElement.trixPosition = position
+
+    for style in styles
+      outerElement.style[key] = value for key, value of style
 
     if elements.length > 1
       for element in elements.slice(1)

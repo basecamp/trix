@@ -70,7 +70,9 @@ class Trix.Composition
 
   # Current attributes
 
-  inheritableAttributes = "bold italic underline".split(" ")
+  inheritableAttributes =
+    for key, value of Trix.config.attributes when value.inheritable
+      key
 
   hasCurrentAttribute: (attributeName) ->
     @currentAttributes[attributeName]?
