@@ -22,7 +22,7 @@ class Trix.TextView
 
     @text.eachRun (run) ->
       if previousRun
-        for key, value of run.attributes when Trix.config.attributes[key].parent
+        for key, value of run.attributes when Trix.attributes[key].parent
           if value is previousRun.attributes[key]
             parentKey = key
             break
@@ -53,7 +53,7 @@ class Trix.TextView
     styles = []
 
     for key, value of attributes
-      config = Trix.config.attributes[key]
+      config = Trix.attributes[key]
 
       if config.tagName
         unless config.parent and parentKey is key

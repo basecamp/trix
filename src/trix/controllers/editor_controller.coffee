@@ -121,7 +121,7 @@ class Trix.EditorController
       delete @selectionFrozen
 
   expandSelectionForEditing: ->
-    for key, value of Trix.config.attributes when value.parent
+    for key, value of Trix.attributes when value.parent
       if @composition.hasCurrentAttribute(key)
         @textController.expandSelectedRangeAroundCommonAttribute(key)
         break

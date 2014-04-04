@@ -71,7 +71,7 @@ class Trix.Composition
   # Current attributes
 
   inheritableAttributes =
-    for key, value of Trix.config.attributes when value.inheritable
+    for key, value of Trix.attributes when value.inheritable
       key
 
   hasCurrentAttribute: (attributeName) ->
