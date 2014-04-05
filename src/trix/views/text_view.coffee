@@ -48,8 +48,7 @@ class Trix.TextView
     elements
 
   createElement = ({string, attributes, position}, parentKey) ->
-    head = []
-    tail = []
+    elements = []
     styles = []
 
     for key, value of attributes
@@ -61,14 +60,12 @@ class Trix.TextView
           element.setAttribute(key, value) unless typeof(value) is "boolean"
 
           if config.parent
-            head.push(element)
+            elements.unshift(element)
           else
-            tail.push(element)
+            elements.push(element)
 
       if config.style
         styles.push(config.style)
-
-    elements = head.concat(tail)
 
     if elements.length is 0
       if styles.length > 0
