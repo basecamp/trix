@@ -22,6 +22,11 @@ test "#render", ->
   view.render()
   equal element.textContent, "b", "replaced contents with text"
 
+  view.text = createText("Hello\n")
+  view.render()
+  equal element.childNodes[1].tagName.toLowerCase(), "br", "first BR"
+  equal element.childNodes[2].tagName.toLowerCase(), "br", "extra BR"
+
 
 test "#createElementsForText", ->
   text = fixture("plain")
@@ -47,11 +52,6 @@ test "#createElementsForText", ->
 
   elements = getElementsForText(createText("!   !"))
   equal elements[0].firstChild.data, "! \u00a0 !", "multiple spaces preserved with non-breaking spaces"
-
-  elements = getElementsForText(createText("Hello\n"))
-  equal elements.length, 2, "two elements for string ending with a newline"
-  equal elements[0].lastChild.tagName.toLowerCase(), "br", "container element's last child is a BR"
-  equal elements[1].tagName.toLowerCase(), "br", "last element is an extra BR"
 
   elements = getElementsForText(createText(".", bold: true))
   equal elements[0].tagName.toLowerCase(), "strong", "element is strong"
@@ -112,6 +112,7 @@ getElementsForText = (text) ->
   element = document.createElement("div")
   textView = new Trix.TextView element, text
   textView.createElementsForText()
+  textView.elements
 
 createText = (string, attributes) ->
   Trix.Text.textForStringWithAttributes(string, attributes)

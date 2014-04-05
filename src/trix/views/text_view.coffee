@@ -3,6 +3,7 @@
 class Trix.TextView
   constructor: (@element, @text) ->
     @element.trixPosition = 0
+    @elements = []
 
   focus: ->
     @element.focus()
@@ -11,51 +12,66 @@ class Trix.TextView
 
   render: ->
     selectedRange = @getSelectedRange()
-    elements = @createElementsForText()
+    @elements = []
+    @createElementsForText()
+    @createExtraNewlineElement()
     @element.removeChild(@element.lastChild) while @element.lastChild
-    @element.appendChild(element) for element in elements
+    @element.appendChild(element) for element in @elements
     @setSelectedRange(selectedRange) if selectedRange
 
   createElementsForText: ->
-    elements = []
-    previousRun = null
+    @text.eachRun (run) =>
+      @previousRun = @currentRun
+      @currentRun = run
+      @createElementForCurrentRun()
 
-    @text.eachRun (run) ->
-      if previousRun
-        for key, value of run.attributes when Trix.attributes[key].parent
-          if value is previousRun.attributes[key]
-            parentKey = key
-            break
+  createElementForCurrentRun: ->
+    {attributes, position, string} = @currentRun
 
-      element =
-        if run.attachment
-          createElementForAttachment(run)
-        else
-          createElement(run, parentKey)
+    parentAttribute = @getParentAttribute()
+    elements = createElementsForAttributes(attributes, parentAttribute)
 
-      if parentKey
-        elements[elements.length - 1].appendChild(element)
-      else
-        elements.push(element)
+    element = innerElement = elements[0]
+    element.trixPosition = position
 
-      previousRun = run
+    for child in elements[1..]
+      innerElement.appendChild(child)
+      innerElement = child
+      innerElement.trixPosition = position
 
-    # Add an extra newline if the text ends with one. Otherwise, the cursor won't move down.
-    if /\n$/.test(previousRun?.string)
-      node = createNodesForString("\n", @text.getLength())[0]
-      elements.push(node)
+    if string
+      for node in createNodesForString(string, position)
+        innerElement.appendChild(node)
 
-    elements
+    if parentAttribute
+      @elements[@elements.length - 1].appendChild(element)
+    else
+      @elements.push(element)
 
-  createElement = ({string, attributes, position}, parentKey) ->
+  getParentAttribute: ->
+    if @previousRun
+      for key, value of @currentRun.attributes when Trix.attributes[key].parent
+        return key if value is @previousRun.attributes[key]
+
+  # Add an extra newline if the text ends with one. Otherwise, the cursor won't move down.
+  createExtraNewlineElement: ->
+    if string = @currentRun?.string
+      if /\n$/.test(string)
+        node = createNodesForString("\n", @text.getLength())[0]
+        @elements.push(node)
+
+  createElementsForAttributes = (attributes, parentAttribute) ->
     elements = []
     styles = []
 
     for key, value of attributes
       config = Trix.attributes[key]
 
+      if config.style
+        styles.push(config.style)
+
       if config.tagName
-        unless config.parent and parentKey is key
+        unless config.parent and key is parentAttribute
           element = document.createElement(config.tagName)
           element.setAttribute(key, value) unless typeof(value) is "boolean"
 
@@ -64,32 +80,16 @@ class Trix.TextView
           else
             elements.push(element)
 
-      if config.style
-        styles.push(config.style)
-
-    if elements.length is 0
-      if styles.length > 0
+    unless elements.length
+      if styles.length
         elements.push(document.createElement("span"))
       else
         elements.push(document.createDocumentFragment())
 
-    outerElement = innerElement = elements[0]
-    outerElement.trixPosition = position
-
     for style in styles
-      outerElement.style[key] = value for key, value of style
+      elements[0].style[key] = value for key, value of style
 
-    if elements.length > 1
-      for element in elements.slice(1)
-        innerElement.appendChild(element)
-        innerElement = element
-        innerElement.trixPosition = position
-
-    if string
-      for node in createNodesForString(string, position)
-        innerElement.appendChild(node)
-
-    outerElement
+    elements
 
   createElementForAttachment = ({attachment, attributes, position}) ->
     switch attachment.type
