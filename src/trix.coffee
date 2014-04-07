@@ -1,5 +1,6 @@
 #= require_self
 #= require trix/installer
+#= require trix/dom
 
 @Trix =
   install: (config) ->
@@ -10,12 +11,19 @@
     bold:
       tagName: "strong"
       inheritable: true
+      parser: ({style}) ->
+        style["fontWeight"] is "bold" or style["fontWeight"] >= 700
     italic:
       tagName: "em"
       inheritable: true
+      parser: ({style}) ->
+        style["fontStyle"] is "italic"
     href:
       tagName: "a"
       parent: true
+      parser: ({element}) ->
+        if link = Trix.DOM.closest(element, "a")
+          link.getAttribute("href")
     underline:
       style: { "text-decoration": "underline" }
       inheritable: true

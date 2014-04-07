@@ -60,14 +60,9 @@ class Trix.HTMLParser
     attributes = {}
     style = window.getComputedStyle(element)
 
-    if style["fontWeight"] is "bold" or style["fontWeight"] >= 700
-      attributes["bold"] = true
-
-    if style["fontStyle"] is "italic"
-      attributes["italic"] = true
-
-    if link = Trix.DOM.closest(element, "a")
-      attributes["href"] = link.getAttribute("href")
+    for attribute, config of Trix.attributes when config.parser
+      if value = config.parser({element, style})
+        attributes[attribute] = value
 
     attributes
 
