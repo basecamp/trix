@@ -26,7 +26,7 @@ class Trix.TextView
       @createElementForCurrentRun()
 
   createElementForCurrentRun: ->
-    {attributes, position, string} = @currentRun
+    {attributes, position} = @currentRun
 
     parentAttribute = @getParentAttribute()
     elements = createElementsForAttributes(attributes, parentAttribute)
@@ -41,8 +41,8 @@ class Trix.TextView
 
     if @currentRun.attachment
       innerElement.appendChild(@createAttachmentElementForCurrentRun())
-    else if string
-      for node in createNodesForString(string, position)
+    else if @currentRun.string
+      for node in @createStringNodesForCurrentRun()
         innerElement.appendChild(node)
 
     if parentAttribute
@@ -59,8 +59,42 @@ class Trix.TextView
   createExtraNewlineElement: ->
     if string = @currentRun?.string
       if /\n$/.test(string)
-        node = createNodesForString("\n", @text.getLength())[0]
+        @currentRun = { string: "\n", position: @text.getLength() }
+        node = @createStringNodesForCurrentRun()[0]
         @elements.push(node)
+
+  createAttachmentElementForCurrentRun: ->
+    {attachment, attributes, position} = @currentRun
+
+    switch attachment.type
+      when "image"
+        element = document.createElement("img")
+        element.trixPosition = position
+        element.trixLength = 1
+        element.setAttribute(key, value) for key, value of attachment when key isnt "type"
+        element.style[key] = attributes[key] + "px" for key in ["width", "height"] when attributes[key]?
+        element
+
+  createStringNodesForCurrentRun: ->
+    {string, position} = @currentRun
+    nodes = []
+
+    for substring, index in string.split("\n")
+      if index > 0
+        node = document.createElement("br")
+        node.trixPosition = position
+        position += 1
+        node.trixLength = 1
+        nodes.push(node)
+
+      if length = substring.length
+        node = document.createTextNode(preserveSpaces(substring))
+        node.trixPosition = position
+        position += length
+        node.trixLength = length
+        nodes.push(node)
+
+    nodes
 
   createElementsForAttributes = (attributes, parentAttribute) ->
     elements = []
@@ -90,38 +124,6 @@ class Trix.TextView
       elements[0].style[key] = value for key, value of style
 
     elements
-
-  createAttachmentElementForCurrentRun: ->
-    {attachment, attributes, position} = @currentRun
-
-    switch attachment.type
-      when "image"
-        element = document.createElement("img")
-        element.trixPosition = position
-        element.trixLength = 1
-        element.setAttribute(key, value) for key, value of attachment when key isnt "type"
-        element.style[key] = attributes[key] + "px" for key in ["width", "height"] when attributes[key]?
-        element
-
-  createNodesForString = (string, position) ->
-    nodes = []
-
-    for substring, index in string.split("\n")
-      if index > 0
-        node = document.createElement("br")
-        node.trixPosition = position
-        position += 1
-        node.trixLength = 1
-        nodes.push(node)
-
-      if length = substring.length
-        node = document.createTextNode(preserveSpaces(substring))
-        node.trixPosition = position
-        position += length
-        node.trixLength = length
-        nodes.push(node)
-
-    nodes
 
   preserveSpaces = (string) ->
     string
