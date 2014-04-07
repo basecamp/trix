@@ -39,7 +39,9 @@ class Trix.TextView
       innerElement = child
       innerElement.trixPosition = position
 
-    if string
+    if @currentRun.attachment
+      innerElement.appendChild(@createAttachmentElementForCurrentRun())
+    else if string
       for node in createNodesForString(string, position)
         innerElement.appendChild(node)
 
@@ -50,7 +52,7 @@ class Trix.TextView
 
   getParentAttribute: ->
     if @previousRun
-      for key, value of @currentRun.attributes when Trix.attributes[key].parent
+      for key, value of @currentRun.attributes when Trix.attributes[key]?.parent
         return key if value is @previousRun.attributes[key]
 
   # Add an extra newline if the text ends with one. Otherwise, the cursor won't move down.
@@ -64,9 +66,7 @@ class Trix.TextView
     elements = []
     styles = []
 
-    for key, value of attributes
-      config = Trix.attributes[key]
-
+    for key, value of attributes when config = Trix.attributes[key]
       if config.style
         styles.push(config.style)
 
@@ -91,7 +91,9 @@ class Trix.TextView
 
     elements
 
-  createElementForAttachment = ({attachment, attributes, position}) ->
+  createAttachmentElementForCurrentRun: ->
+    {attachment, attributes, position} = @currentRun
+
     switch attachment.type
       when "image"
         element = document.createElement("img")
