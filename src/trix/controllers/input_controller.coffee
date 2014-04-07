@@ -1,3 +1,5 @@
+#= require trix/models/attachment
+
 class Trix.InputController
   @keyNames:
     0x08: "backspace"
@@ -60,10 +62,11 @@ class Trix.InputController
         @responder?.moveTextFromRange(@draggedRange)
         delete @draggedRange
 
-      else if id = event.dataTransfer.getData("id")
-        element = document.getElementById(id)
-        attachment = Trix.Text.fromHTML(element.outerHTML).getAttachmentAtPosition(0)
-        @responder?.insertAttachment(attachment)
+      else if files = event.dataTransfer.files
+        for file in files
+          attachment = new Trix.Attachment {file}
+          if @delegate?.inputControllerDidReceiveAttachment?(attachment) isnt false
+            @responder?.insertAttachment(attachment.attributes)
 
     cut: (event) ->
       @responder?.deleteBackward()

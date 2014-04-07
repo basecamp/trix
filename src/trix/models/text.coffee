@@ -3,7 +3,8 @@
 #= require trix/models/piece_list
 
 class Trix.Text
-  @textForAttachmentWithAttributes: (attachment, attributes) ->
+  @textForAttachmentWithAttributes: (attachmentAttributes, attributes) ->
+    attachment = new Trix.Attachment attachmentAttributes
     piece = new Trix.AttachmentPiece attachment, attributes
     new this [piece]
 
@@ -91,8 +92,23 @@ class Trix.Text
   getStringAtRange: (range) ->
     @pieceList.getPieceListInRange(range).toString()
 
-  getAttachmentAtPosition: (position) ->
-    @pieceList.getPieceAtPosition(position)?.attachment
+  getAttachment: (id) ->
+    position = 0
+    for piece in @pieceList.pieces
+      if piece instanceof Trix.AttachmentPiece
+        if piece.attachment.id is id
+          attachment = piece.attachment
+          return {attachment, position}
+      position += piece.length
+
+  updateAttachment: (attachmentAttributes) ->
+    {attachment, position} = @getAttachment(attachmentAttributes.id)
+    newAttributes = attachment.attributes
+    for key, value of attachmentAttributes
+      newAttributes[key] = value
+    delete newAttributes.file
+    text = @constructor.textForAttachmentWithAttributes(newAttributes)
+    @replaceTextAtRange(text, [position, position + 1])
 
   getLength: ->
     @pieceList.getLength()

@@ -40,7 +40,8 @@ class Trix.TextView
       innerElement.trixPosition = position
 
     if @currentRun.attachment
-      innerElement.appendChild(@createAttachmentElementForCurrentRun())
+      if attachmentElement = @createAttachmentElementForCurrentRun()
+        innerElement.appendChild(attachmentElement)
     else if @currentRun.string
       for node in @createStringNodesForCurrentRun()
         innerElement.appendChild(node)
@@ -66,14 +67,13 @@ class Trix.TextView
   createAttachmentElementForCurrentRun: ->
     {attachment, attributes, position} = @currentRun
 
-    switch attachment.type
-      when "image"
-        element = document.createElement("img")
-        element.trixPosition = position
-        element.trixLength = 1
-        element.setAttribute(key, value) for key, value of attachment when key isnt "type"
-        element.style[key] = attributes[key] + "px" for key in ["width", "height"] when attributes[key]?
-        element
+    if attachment.isImage()
+      element = document.createElement("img")
+      element.trixPosition = position
+      element.trixLength = 1
+      element.setAttribute("src", attachment.attributes.src)
+      element.style[key] = attributes[key] + "px" for key in ["width", "height"] when attributes[key]?
+      element
 
   createStringNodesForCurrentRun: ->
     {string, position} = @currentRun

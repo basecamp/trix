@@ -9,7 +9,7 @@
 
 class Trix.EditorController
   constructor: (@config) ->
-    {@textElement, @toolbarElement, @textareaElement, @inputElement, @debugElement} = @config
+    {@textElement, @toolbarElement, @textareaElement, @inputElement, @attachmentHandler, @debugElement} = @config
 
     @text = @createText()
 
@@ -78,6 +78,13 @@ class Trix.EditorController
 
   inputControllerDidInvalidateElement: (element) ->
     @textController.render()
+
+  inputControllerDidReceiveAttachment: (attachment) ->
+    return false unless @attachmentHandler
+    @attachmentHandler(attachment.toJSON(), @attachmentHandlerDidUpdateAttachment)
+
+  attachmentHandlerDidUpdateAttachment: (attachmentAttributes) =>
+    @text.updateAttachment(attachmentAttributes)
 
   # Selection observer delegate
 
