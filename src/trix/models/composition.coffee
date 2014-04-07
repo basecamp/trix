@@ -32,7 +32,7 @@ class Trix.Composition
 
   insertHTML: (html, options) ->
     text = Trix.Text.fromHTML(html)
-    @insertText(text, updatePosition)
+    @insertText(text, options)
 
   deleteFromCurrentPosition: (distance = -1) ->
     unless range = @getSelectedRange()
