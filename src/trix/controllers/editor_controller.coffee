@@ -81,10 +81,9 @@ class Trix.EditorController
 
   inputControllerDidReceiveAttachment: (attachment) ->
     return false unless @attachmentHandler
-    @attachmentHandler(attachment.toJSON(), @attachmentHandlerDidUpdateAttachment)
-
-  attachmentHandlerDidUpdateAttachment: (attachmentAttributes) =>
-    @text.updateAttachment(attachmentAttributes)
+    @attachmentHandler attachment.attributes.file, (attributes) =>
+      attributes.id = attachment.id
+      @text.updateAttachment(attributes)
 
   # Selection observer delegate
 

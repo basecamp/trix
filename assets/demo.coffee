@@ -5,9 +5,9 @@ document.addEventListener "DOMContentLoaded", ->
     input: "data"
     debug: "debug"
     className: "formatted"
-    attachmentHandler: (attachment, callback) ->
+    attachmentHandler: (file, callback) ->
       setTimeout ->
-        callback({ id: attachment.id, src: "basecamp.png" })
+        callback(src: "basecamp.png")
       , 500
 
   window.controller = Trix.install(config)
