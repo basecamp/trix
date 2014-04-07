@@ -7,7 +7,10 @@ document.addEventListener "DOMContentLoaded", ->
     className: "formatted"
     attachmentHandler: (file, callback) ->
       setTimeout ->
-        callback(src: "basecamp.png")
-      , 500
+        reader = new FileReader
+        reader.onload = (event) =>
+          callback(src: event.target.result)
+        reader.readAsDataURL(file)
+      , 1000
 
   window.controller = Trix.install(config)
