@@ -64,9 +64,7 @@ class Trix.InputController
 
       else if files = event.dataTransfer.files
         for file in files
-          attachment = new Trix.Attachment {file}
-          if @delegate?.inputControllerDidReceiveAttachment?(attachment) isnt false
-            @responder?.insertAttachment(attachment.attributes)
+          @responder?.insertFile(file)
 
     cut: (event) ->
       @responder?.deleteBackward()

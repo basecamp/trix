@@ -79,12 +79,6 @@ class Trix.EditorController
   inputControllerDidInvalidateElement: (element) ->
     @textController.render()
 
-  inputControllerDidReceiveAttachment: (attachment) ->
-    return false unless @attachmentHandler
-    @attachmentHandler attachment.attributes.file, (attributes) =>
-      attributes.id = attachment.id
-      @text.updateAttachment(attributes)
-
   # Selection observer delegate
 
   selectionDidChange: (range) ->

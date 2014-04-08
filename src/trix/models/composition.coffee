@@ -34,6 +34,17 @@ class Trix.Composition
     text = Trix.Text.fromHTML(html)
     @insertText(text, options)
 
+  insertFile: (file, options) ->
+    if handler = @delegate?.attachmentHandler
+      attachment = new Trix.Attachment {file}
+
+      callback = (attributes) =>
+        attributes.id = attachment.id
+        @text.updateAttachment(attributes)
+
+      unless handler(attachment.attributes.file, callback) is false
+        @insertAttachment(attachment, options)
+
   deleteFromCurrentPosition: (distance = -1) ->
     unless range = @getSelectedRange()
       position = @getPosition()

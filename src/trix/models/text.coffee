@@ -3,8 +3,7 @@
 #= require trix/models/piece_list
 
 class Trix.Text
-  @textForAttachmentWithAttributes: (attachmentAttributes, attributes) ->
-    attachment = new Trix.Attachment attachmentAttributes
+  @textForAttachmentWithAttributes: (attachment, attributes) ->
     piece = new Trix.AttachmentPiece attachment, attributes
     new this [piece]
 
@@ -107,7 +106,8 @@ class Trix.Text
     for key, value of attachmentAttributes
       newAttributes[key] = value
     delete newAttributes.file
-    text = @constructor.textForAttachmentWithAttributes(newAttributes)
+    newAttachment = new Trix.Attachment newAttributes
+    text = @constructor.textForAttachmentWithAttributes(attachment)
     @replaceTextAtRange(text, [position, position + 1])
 
   getLength: ->
