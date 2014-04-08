@@ -2,14 +2,14 @@ id = 0
 
 class Trix.Attachment
   @forFile: (file) ->
-    mimeType = file.type
-    new this {mimeType}, file
+    contentType = file.type
+    new this {contentType}, file
 
   constructor: (@attributes = {}, @file) ->
     @id = ++id
 
   isImage: ->
-    /image/.test(@attributes.mimeType) and @attributes.url
+    /image/.test(@attributes.contentType) and @attributes.url
 
   toJSON: ->
     @attributes
