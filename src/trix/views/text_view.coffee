@@ -69,10 +69,19 @@ class Trix.TextView
 
     if attachment.isImage()
       element = document.createElement("img")
+
+      if attachment.isPending()
+        reader = new FileReader
+        reader.onload = (event) ->
+          element.setAttribute("src", event.target.result)
+        reader.readAsDataURL(attachment.file)
+      else
+        element.setAttribute("src", attachment.attributes.url)
+        element.style[key] = attributes[key] + "px" for key in ["width", "height"] when attributes[key]?
+
+    if element
       element.trixPosition = position
       element.trixLength = 1
-      element.setAttribute("src", attachment.attributes.url)
-      element.style[key] = attributes[key] + "px" for key in ["width", "height"] when attributes[key]?
       element
 
   createStringNodesForCurrentRun: ->

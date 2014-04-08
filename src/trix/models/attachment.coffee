@@ -8,8 +8,11 @@ class Trix.Attachment
   constructor: (@attributes = {}, @file) ->
     @id = ++id
 
+  isPending: ->
+    @file and not @attributes.url
+
   isImage: ->
-    /image/.test(@attributes.contentType) and @attributes.url
+    /image/.test(@attributes.contentType)
 
   toJSON: ->
     @attributes
