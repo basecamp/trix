@@ -37,7 +37,8 @@
         color: graytext;
       }
 
-      .trix-editor .image-editor {
+      .trix-editor .image-editor,
+      .trix-editor .pending-attachment {
         position: relative;
         display: inline-block;
       }
