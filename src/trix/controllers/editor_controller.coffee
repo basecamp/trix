@@ -9,7 +9,7 @@
 
 class Trix.EditorController
   constructor: (@config) ->
-    {@textElement, @toolbarElement, @textareaElement, @inputElement, @attachmentHandler, @debugElement} = @config
+    {@textElement, @toolbarElement, @textareaElement, @inputElement, @fileHandler, @debugElement} = @config
 
     @text = @createText()
 

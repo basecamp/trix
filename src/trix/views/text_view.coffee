@@ -71,7 +71,7 @@ class Trix.TextView
       element = document.createElement("img")
       element.trixPosition = position
       element.trixLength = 1
-      element.setAttribute("src", attachment.attributes.src)
+      element.setAttribute("src", attachment.attributes.url)
       element.style[key] = attributes[key] + "px" for key in ["width", "height"] when attributes[key]?
       element
 

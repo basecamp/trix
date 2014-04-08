@@ -5,11 +5,11 @@ document.addEventListener "DOMContentLoaded", ->
     input: "data"
     debug: "debug"
     className: "formatted"
-    attachmentHandler: (file, callback) ->
+    fileHandler: (file, callback) ->
       setTimeout ->
         reader = new FileReader
         reader.onload = (event) =>
-          callback(src: event.target.result)
+          callback(url: event.target.result)
         reader.readAsDataURL(file)
       , 1000
 

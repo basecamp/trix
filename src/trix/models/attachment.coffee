@@ -9,7 +9,7 @@ class Trix.Attachment
     @id = ++id
 
   isImage: ->
-    /image/.test(@attributes.mimeType) and @attributes.src
+    /image/.test(@attributes.mimeType) and @attributes.url
 
   toJSON: ->
     @attributes
