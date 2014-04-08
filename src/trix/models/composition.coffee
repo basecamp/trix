@@ -39,8 +39,9 @@ class Trix.Composition
       attachment = Trix.Attachment.forFile(file)
 
       callback = (attributes) =>
-        attributes.id = attachment.id
-        @text.updateAttachment(attributes)
+        attributes[key] = value for key, value of attachment.attributes when not attributes[key]
+        newAttachment = new Trix.Attachment attributes
+        @text.replaceAttachment(attachment.id, newAttachment)
 
       unless handler(attachment.file, callback) is false
         @insertAttachment(attachment, options)

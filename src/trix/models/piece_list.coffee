@@ -64,6 +64,15 @@ class Trix.PieceList
     else
       @pieces.length
 
+  getAttachmentAndPosition: (id) ->
+    position = 0
+    for piece in @pieces
+      if piece.attachment?.id is id
+        attachment = piece.attachment
+        break
+      position += piece.length
+    {attachment, position}
+
   getCommonAttributes: ->
     return {} unless piece = @getPieceAtIndex(0)
     attributesHash = piece.getAttributesHash()
