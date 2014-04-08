@@ -1,12 +1,12 @@
 id = 0
 
 class Trix.Attachment
-  constructor: (@attributes) ->
-    @id = @attributes.id ? ++id
-    @attributes.id = @id
+  @forFile: (file) ->
+    mimeType = file.type
+    new this {mimeType}, file
 
-    if @attributes.file
-      @attributes.mimeType = @attributes.file.type
+  constructor: (@attributes = {}, @file) ->
+    @id = ++id
 
   isImage: ->
     /image/.test(@attributes.mimeType) and @attributes.src

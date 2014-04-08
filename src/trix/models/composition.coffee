@@ -36,13 +36,13 @@ class Trix.Composition
 
   insertFile: (file, options) ->
     if handler = @delegate?.attachmentHandler
-      attachment = new Trix.Attachment {file}
+      attachment = Trix.Attachment.forFile(file)
 
       callback = (attributes) =>
         attributes.id = attachment.id
         @text.updateAttachment(attributes)
 
-      unless handler(attachment.attributes.file, callback) is false
+      unless handler(attachment.file, callback) is false
         @insertAttachment(attachment, options)
 
   deleteFromCurrentPosition: (distance = -1) ->
