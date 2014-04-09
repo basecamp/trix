@@ -40,7 +40,6 @@ class Trix.Composition
 
       callback = (attributes) =>
         Trix.Attachment.get(attachment.id).update(attributes)
-        @didEditText()
 
       unless fileHandler(attachment.file, callback) is false
         @insertAttachment(attachment, options)

@@ -9,6 +9,6 @@ document.addEventListener "DOMContentLoaded", ->
       setTimeout ->
         console.log "File handler calling back"
         callback(url: "basecamp.png")
-      , 5000
+      , 3000
 
   window.controller = Trix.install(config)

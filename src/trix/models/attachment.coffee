@@ -18,6 +18,10 @@ class Trix.Attachment
     for key, value of attributes
       @attributes[key] = value
 
+    delete @file if @attributes.url
+
+    @delegate?.attachmentDidUpdate(this)
+
   isPending: ->
     @file and not @attributes.url
 

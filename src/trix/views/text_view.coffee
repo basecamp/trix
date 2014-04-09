@@ -1,4 +1,5 @@
 #= require trix/dom
+#= require trix/views/image_attachment_view
 
 class Trix.TextView
   constructor: (@element, @text) ->
@@ -67,27 +68,12 @@ class Trix.TextView
   createAttachmentElementForCurrentRun: ->
     {attachment, attributes, position} = @currentRun
 
-    if attachment.isImage()
-      if attachment.isPending()
-        image = document.createElement("img")
+    view = new Trix.ImageAttachmentView attachment
+    element = view.render()
 
-        reader = new FileReader
-        reader.onload = (event) ->
-          image.setAttribute("src", event.target.result)
-        reader.readAsDataURL(attachment.file)
-
-        element = document.createElement("div")
-        element.classList.add("pending-attachment")
-        element.appendChild(image)
-      else
-        element = document.createElement("img")
-        element.setAttribute("src", attachment.attributes.url)
-        element.style[key] = attributes[key] + "px" for key in ["width", "height"] when attributes[key]?
-
-    if element
-      element.trixPosition = position
-      element.trixLength = 1
-      element
+    element.trixPosition = position
+    element.trixLength = 1
+    element
 
   createStringNodesForCurrentRun: ->
     {string, position} = @currentRun
