@@ -91,12 +91,6 @@ class Trix.Text
   getStringAtRange: (range) ->
     @pieceList.getPieceListInRange(range).toString()
 
-  replaceAttachment: (id, newAttachment) ->
-    {attachment, position} = @pieceList.getAttachmentAndPosition(id)
-    if attachment
-      text = @constructor.textForAttachmentWithAttributes(newAttachment)
-      @replaceTextAtRange(text, [position, position + 1])
-
   getLength: ->
     @pieceList.getLength()
 
