@@ -4,31 +4,40 @@ class Trix.ImageAttachmentView
     @image = document.createElement("img")
 
   render: ->
-    @loadPreview() if @attachment.isPending()
+    @loadFile() if @attachment.isPending()
     @updateImageAttributes()
     @image
 
-  loadPreview: ->
+  loadFile: ->
     reader = new FileReader
     reader.onload = (event) =>
-      @image.setAttribute("src", event.target.result)
+      if @attachment.isPending()
+        @image.setAttribute("src", event.target.result)
+        @attachment.update(width: @image.offsetWidth, height: @image.offsetHeight)
     reader.readAsDataURL(@attachment.file)
 
-  attributeNames = "src width height class".split(" ")
+  attributeNames = "url width height class".split(" ")
 
   updateImageAttributes: ->
     attributes = {}
-    attributes[key] = value for key, value of @attachment.attributes
-    attributes.src = attributes.url
-    attributes.class = "pending-attachment" if @attachment.isPending()
 
     for key in attributeNames
-      if value = attributes[key]
+      attributes[key] = @attachment.attributes[key]
+
+    if attributes.url
+      attributes.src = attributes.url
+      delete attributes.url
+
+    if @attachment.isPending()
+      attributes.class = "pending-attachment"
+
+    for key, value of attributes
+      if value?
         @image.setAttribute(key, value)
       else
         @image.removeAttribute(key)
 
   # Attachment delegate
 
-  attachmentDidUpdate: (@attachment) ->
+  attachmentDidUpdate: ->
     @updateImageAttributes()
