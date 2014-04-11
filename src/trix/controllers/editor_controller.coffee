@@ -138,10 +138,10 @@ class Trix.EditorController
       callback = (attributes) =>
         Trix.Attachment.get(attachment.id).setAttributes(attributes)
 
-      unless handler(attachment.file, callback) is false
+      unless handler.call(@textElement, attachment.file, callback) is false
         attachment
 
   attachmentWasRemoved: (attachment) ->
     if handler = @fileHandler?.onRemove
-      handler(attachment.toJSON())
+      handler.call(@textElement, attachment.toJSON())
 
