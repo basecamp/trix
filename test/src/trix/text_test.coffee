@@ -559,15 +559,6 @@ test "#getStringAtRange", ->
   equal string, "ello, rich tex", "extracting across multiple runs as a string"
 
 
-test "#getAttachmentAtPosition", ->
-  text = Trix.Text.textForAttachmentWithAttributes(type: "image")
-  text.appendText(Trix.Text.textForStringWithAttributes(".."))
-  text.appendText(Trix.Text.textForAttachmentWithAttributes(type: "file"))
-
-  equal "image", text.getAttachmentAtPosition(0).type, "get attachment"
-  equal "file", text.getAttachmentAtPosition(3).type, "get attachment"
-
-
 test "#getLength", ->
   empty = fixture("empty")
   equal empty.getLength(), 0, "empty text length is 0"
