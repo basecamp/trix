@@ -38,7 +38,8 @@ test "fromJSON", ->
   textB = Trix.Text.fromJSON(textA.asJSON())
   ok textB.isEqualTo(textA), "serializing and deserializing creates equal copy"
 
-  textA = Trix.Text.textForAttachmentWithAttributes(id: 1)
+  attachment = new Trix.Attachment(url: "/basecamp.png")
+  textA = Trix.Text.textForAttachmentWithAttributes(attachment)
   textB = Trix.Text.fromJSON(textA.asJSON())
   ok textB.isEqualTo(textA), "serializing and deserializing creates equal copy"
 

@@ -15,6 +15,7 @@ class Trix.Text
     new this do ->
       for {string, attachment, attributes} in JSON.parse(json)
         if attachment
+          attachment = new Trix.Attachment attachment
           new Trix.AttachmentPiece attachment, attributes
         else
           new Trix.Piece string, attributes
