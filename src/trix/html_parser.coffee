@@ -41,15 +41,19 @@ class Trix.HTMLParser
       when "br"
         @appendString("\n", getAttributes(node))
       when "img"
-        attachment = { type: "image" }
-        attachment[key] = node[key] for key in ["src", "width", "height"]
-        @appendAttachment(attachment, getAttributes(node))
+        attributes = { contentType: "image", url: node.getAttribute("src") }
+
+        for key in ["width", "height"] when value = node.getAttribute(key)
+          attributes[key] = value
+
+        @appendAttachment(attributes, getAttributes(node))
 
   appendString: (string, attributes) ->
     text = Trix.Text.textForStringWithAttributes(string, attributes)
     @text.appendText(text)
 
-  appendAttachment: (attachment, attributes) ->
+  appendAttachment: (attachmentAttributes, attributes) ->
+    attachment = new Trix.Attachment attachmentAttributes
     text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
     @text.appendText(text)
 
