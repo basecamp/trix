@@ -10,6 +10,11 @@ class Trix.Composition
   didEditText: (text) ->
     @delegate?.compositionDidChangeText?(this, @text)
 
+  # Attachment delegate
+
+  attachmentWasRemoved: (attachment) ->
+    @delegate?.fileRemoved?(attachment.toJSON())
+
   # Responder protocol
 
   insertText: (text, {updatePosition} = updatePosition: true) ->

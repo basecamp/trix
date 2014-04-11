@@ -17,7 +17,9 @@ class Trix.PieceList
     @insertPieceListAtIndex(pieceList, index)
 
   removePieceAtIndex: (index) ->
+    piece = @getPieceAtIndex(index)
     @pieces.splice(index, 1)
+    piece.afterRemove?()
 
   getPieceAtIndex: (index) ->
     @pieces[index]

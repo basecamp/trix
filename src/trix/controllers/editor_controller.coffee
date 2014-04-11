@@ -9,7 +9,7 @@
 
 class Trix.EditorController
   constructor: (@config) ->
-    {@textElement, @toolbarElement, @textareaElement, @inputElement, @fileHandler, @debugElement} = @config
+    {@textElement, @toolbarElement, @textareaElement, @inputElement, @fileHandler, @fileRemoved, @debugElement} = @config
 
     @text = @createText()
 
@@ -19,6 +19,7 @@ class Trix.EditorController
     @composition = new Trix.Composition @text
     @composition.delegate = this
     @composition.selectionDelegate = @textController
+    Trix.Attachment.delegate = @composition
 
     @inputController = new Trix.InputController @textElement
     @inputController.delegate = this

@@ -10,5 +10,7 @@ document.addEventListener "DOMContentLoaded", ->
         console.log "File handler calling back"
         callback(url: "basecamp.png")
       , 3000
+    fileRemoved: (attributes) ->
+      console.log "File was removed:", attributes
 
   window.controller = Trix.install(config)

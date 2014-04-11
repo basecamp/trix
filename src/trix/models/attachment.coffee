@@ -6,6 +6,10 @@ class Trix.Attachment
   @get: (id) ->
     @attachments[id]
 
+  @remove: (attachment) ->
+    delete @attachments[attachment.id]
+    @delegate?.attachmentWasRemoved?(attachment)
+
   @forFile: (file) ->
     contentType = file.type
     new this {contentType}, file
