@@ -3,14 +3,12 @@
 
 class Trix.TextController
   constructor: (@element, @text, @config) ->
-    @attachmentController = new Trix.AttachmentController @element
-    @attachmentController.delegate = this
-
     @textView = new Trix.TextView @element, @text
 
     @selectionLockCount = 0
 
     @element.addEventListener("focus", @didFocus)
+    @element.addEventListener("click", @didClick)
 
     @render()
     @focus() if @config.autofocus
@@ -21,14 +19,13 @@ class Trix.TextController
   didFocus: =>
     @delegate?.textControllerDidFocus?()
 
+  didClick: (event) =>
+    if id = event.target.trixAttachmentId
+      new Trix.AttachmentController event.target, @element
+
   render: ->
     @textView.render()
     @delegate?.textControllerDidRender?()
-
-  # Attachment controller delegate
-
-  attachmentControllerDidChangeAttributesAtPosition: (attributes, position) ->
-    @text.addAttributesAtRange(attributes, [position, position + 1])
 
   # Selection observer delegate
 

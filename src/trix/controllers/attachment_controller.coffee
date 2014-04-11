@@ -1,71 +1,63 @@
+#= require trix/models/attachment
 #= require trix/dom
-
-{DOM} = Trix
 
 class Trix.AttachmentController
   imageEditorSelector = "div.image-editor"
   imageResizeHandleSelector = "#{imageEditorSelector} div.resize-handle"
 
-  constructor: (@element) ->
-    DOM.on(@element, "click", "img", @didClickImage)
-    DOM.on(@element, "mousedown", imageResizeHandleSelector, @didMouseDownResizeHandle)
-
-  didClickImage: (event, image) =>
-    if DOM.closest(image, imageEditorSelector)
-      uninstallImageEditor(image)
+  constructor: (@element, @container) ->
+    if @editor = Trix.DOM.closest(@element, imageEditorSelector)
+      @uninstall()
     else
-      installImageEditor(image)
+      @attachment = Trix.Attachment.get(@element.trixAttachmentId)
+      @install()
 
-  didMouseDownResizeHandle: (event, handleElement) =>
+  install: ->
+    @editor = document.createElement("div")
+    @editor.setAttribute("contenteditable", false)
+    @editor.classList.add("image-editor")
+    setStyle(@editor, getDimensions(@element))
+
+    @handleElement = document.createElement("div")
+    @handleElement.classList.add("resize-handle")
+    @handleElement.classList.add("se")
+    @handleElement.addEventListener("mousedown", @didMouseDownResizeHandle)
+
+    @element.parentElement.insertBefore(@editor, @element)
+    @editor.appendChild(@element)
+    @editor.appendChild(@handleElement)
+    setStyle(@element, width: "100%", height: "auto")
+
+  uninstall: =>
+    setStyle(@element, getDimensions(@element))
+    @editor.parentElement.replaceChild(@element, @editor)
+
+  didMouseDownResizeHandle: =>
     event.preventDefault()
 
-    @element.style["cursor"] = window.getComputedStyle(handleElement)["cursor"]
-    @element.addEventListener("mousemove", @didMoveMouseToResize)
+    @container.style["cursor"] = window.getComputedStyle(@handleElement)["cursor"]
+    @container.addEventListener("mousemove", @didMoveMouseToResize)
     document.addEventListener("mouseup", @didMouseUpToEndResize)
 
     @resizing =
-      editor: editor = handleElement.parentElement
-      image: editor.firstChild
-      startWidth: parseInt(getDimensions(editor).width, 10)
+      startWidth: parseInt(getDimensions(@editor).width, 10)
       startClientX: event.clientX
 
   didMoveMouseToResize: (event) =>
     width = (@resizing.startWidth + event.clientX - @resizing.startClientX) + "px"
-    height = getDimensions(@resizing.image).height
-    setStyle(@resizing.editor, {width, height})
+    height = getDimensions(@element).height
+    setStyle(@editor, {width, height})
 
-  didMouseUpToEndResize: (event) =>
-    @element.style["cursor"] = "auto"
-    @element.removeEventListener("mousemove", @didMoveMouseToResize)
+  didMouseUpToEndResize: =>
+    @container.style["cursor"] = "auto"
+    @container.removeEventListener("mousemove", @didMoveMouseToResize)
     document.removeEventListener("mouseup", @didMouseUpToEndResize)
 
-    {image} = @resizing
-    delete @resizing
-
-    uninstallImageEditor(image)
     # Use offsets to avoid possible sub-pixel dimensions from the computed style
-    attributes = { width: image.offsetWidth, height: image.offsetHeight }
-    @delegate?.attachmentControllerDidChangeAttributesAtPosition(attributes, image.trixPosition)
+    attributes = { width: @element.offsetWidth, height: @element.offsetHeight }
+    @attachment.setAttributes(attributes)
 
-  installImageEditor = (image) ->
-    editor = document.createElement("div")
-    editor.setAttribute("contenteditable", false)
-    editor.classList.add("image-editor")
-    setStyle(editor, getDimensions(image))
-
-    handle = document.createElement("div")
-    handle.classList.add("resize-handle")
-    handle.classList.add("se")
-
-    image.parentElement.insertBefore(editor, image)
-    editor.appendChild(image)
-    editor.appendChild(handle)
-    setStyle(image, width: "100%", height: "auto")
-
-  uninstallImageEditor = (image) ->
-    setStyle(image, getDimensions(image))
-    editor = DOM.closest(image, imageEditorSelector)
-    editor.parentElement.replaceChild(image, editor)
+    @uninstall()
 
   getDimensions = (element) ->
     style = window.getComputedStyle(element)
