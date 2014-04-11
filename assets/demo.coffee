@@ -4,13 +4,18 @@ document.addEventListener "DOMContentLoaded", ->
     toolbar: "toolbar"
     input: "data"
     debug: "debug"
+
     className: "formatted"
-    fileHandler: (file, callback) ->
-      setTimeout ->
-        console.log "File handler calling back"
-        callback(url: "basecamp.png")
-      , 3000
-    fileRemoved: (attributes) ->
-      console.log "File was removed:", attributes
+
+    fileHandler:
+      onAdd: (file, callback) ->
+        console.log "onAdd:", file
+        setTimeout ->
+          console.log "File handler calling back"
+          callback(url: "basecamp.png")
+        , 1000
+
+      onRemove: (fileAttributes) ->
+        console.log "onRemove:", fileAttributes
 
   window.controller = Trix.install(config)
