@@ -13,7 +13,7 @@ class Trix.ImageAttachmentView
     reader.onload = (event) =>
       if @attachment.isPending()
         @image.setAttribute("src", event.target.result)
-        @attachment.update(width: @image.offsetWidth, height: @image.offsetHeight)
+        @attachment.setAttributes(width: @image.offsetWidth, height: @image.offsetHeight)
     reader.readAsDataURL(@attachment.file)
 
   attributeNames = "url width height class".split(" ")
@@ -39,5 +39,5 @@ class Trix.ImageAttachmentView
 
   # Attachment delegate
 
-  attachmentDidUpdate: ->
+  attachmentDidChange: ->
     @updateImageAttributes()

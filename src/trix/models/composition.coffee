@@ -39,7 +39,7 @@ class Trix.Composition
       attachment = Trix.Attachment.forFile(file)
 
       callback = (attributes) =>
-        Trix.Attachment.get(attachment.id).update(attributes)
+        Trix.Attachment.get(attachment.id).setAttributes(attributes)
 
       unless fileHandler(attachment.file, callback) is false
         @insertAttachment(attachment, options)
