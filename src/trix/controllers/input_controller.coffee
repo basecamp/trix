@@ -1,5 +1,3 @@
-#= require trix/models/attachment
-
 class Trix.InputController
   @keyNames:
     0x08: "backspace"

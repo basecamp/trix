@@ -10,11 +10,6 @@ class Trix.Composition
   didEditText: (text) ->
     @delegate?.compositionDidChangeText?(this, @text)
 
-  # Attachment delegate
-
-  attachmentWasRemoved: (attachment) ->
-    @delegate?.fileHandler?.onRemove?(attachment.toJSON())
-
   # Responder protocol
 
   insertText: (text, {updatePosition} = updatePosition: true) ->
@@ -40,14 +35,8 @@ class Trix.Composition
     @insertText(text, options)
 
   insertFile: (file, options) ->
-    if handler = @delegate?.fileHandler?.onAdd
-      attachment = Trix.Attachment.forFile(file)
-
-      callback = (attributes) =>
-        Trix.Attachment.get(attachment.id).setAttributes(attributes)
-
-      unless handler(attachment.file, callback) is false
-        @insertAttachment(attachment, options)
+    if attachment = @delegate?.createAttachmentForFile?(file)
+      @insertAttachment(attachment, options)
 
   deleteFromCurrentPosition: (distance = -1) ->
     unless range = @getSelectedRange()
