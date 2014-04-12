@@ -6,11 +6,8 @@ class Trix.AttachmentController
   imageResizeHandleSelector = "#{imageEditorSelector} div.resize-handle"
 
   constructor: (@element, @container) ->
-    if @editor = Trix.DOM.closest(@element, imageEditorSelector)
-      @uninstall()
-    else
-      @attachment = Trix.Attachment.get(@element.trixAttachmentId)
-      @install()
+    @attachment = Trix.Attachment.get(@element.trixAttachmentId)
+    @install()
 
   install: ->
     @editor = document.createElement("div")
@@ -31,6 +28,7 @@ class Trix.AttachmentController
   uninstall: =>
     setStyle(@element, getDimensions(@element))
     @editor.parentElement.replaceChild(@element, @editor)
+    @delegate?.attachmentControllerDidUninstall()
 
   didMouseDownResizeHandle: =>
     event.preventDefault()

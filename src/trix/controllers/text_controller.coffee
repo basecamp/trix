@@ -20,12 +20,25 @@ class Trix.TextController
     @delegate?.textControllerDidFocus?()
 
   didClick: (event) =>
-    if id = event.target.trixAttachmentId
-      new Trix.AttachmentController event.target, @element
+    @setupAttachmentController(event.target)
 
   render: ->
     @textView.render()
     @delegate?.textControllerDidRender?()
+
+  setupAttachmentController: (element) ->
+    if id = element.trixAttachmentId
+      unless @attachmentController?.attachment.id is id
+        @attachmentController?.uninstall()
+        @attachmentController = new Trix.AttachmentController element, @element
+        @attachmentController.delegate = this
+    else
+      @attachmentController?.uninstall()
+
+  # Attachment delegate
+
+  attachmentControllerDidUninstall: ->
+    delete @attachmentController
 
   # Selection observer delegate
 
