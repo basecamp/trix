@@ -1,6 +1,6 @@
 class Trix.ImageAttachmentView
   constructor: (@attachment) ->
-    @attachment.delegate = this
+    @attachment.save().delegate = this
     @image = document.createElement("img")
 
   render: ->

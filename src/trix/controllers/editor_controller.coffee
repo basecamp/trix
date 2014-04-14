@@ -136,7 +136,7 @@ class Trix.EditorController
       attachment = Trix.Attachment.forFile(file)
 
       callback = (attributes) =>
-        Trix.Attachment.get(attachment.id).setAttributes(attributes)
+        attachment.setAttributes(attributes)
 
       unless handler.call(@textElement, attachment.file, callback) is false
         attachment

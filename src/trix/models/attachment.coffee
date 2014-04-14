@@ -11,8 +11,12 @@ class Trix.Attachment
     new this {contentType}, file
 
   constructor: (@attributes = {}, @file) ->
+
+  save: ->
+    return this if @id
     @id = ++id
     @constructor.attachments[@id] = this
+    this
 
   remove: ->
     delete @constructor.attachments[@id]
