@@ -1,4 +1,5 @@
 #= require trix/controllers/attachment_controller
+#= require trix/controllers/image_attachment_controller
 #= require trix/views/text_view
 
 class Trix.TextController
@@ -27,10 +28,10 @@ class Trix.TextController
     @delegate?.textControllerDidRender?()
 
   setupAttachmentController: (element) ->
-    if id = element.trixAttachmentId
-      unless @attachmentController?.attachment.id is id
+    if attachment = Trix.Attachment.get(element.trixAttachmentId)
+      unless @attachmentController?.attachment is attachment
         @attachmentController?.uninstall()
-        @attachmentController = new Trix.AttachmentController element, @element
+        @attachmentController = Trix.AttachmentController.create({attachment, element, container: @element})
         @attachmentController.delegate = this
     else
       @attachmentController?.uninstall()
