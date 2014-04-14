@@ -7,13 +7,12 @@ class Trix.Attachment
     @attachments[id]
 
   @forFile: (file) ->
-    attachment = new this {}, file
+    attachment = new this { contentType: file.type }
+    attachment.file = file
     attachment.dispatchAdd()
 
-  constructor: (@attributes = {}, @file) ->
+  constructor: (@attributes = {}) ->
     @fileHandler = @constructor.delegate ? {}
-    if @file
-      @attributes.contentType ?= @file.type
 
   save: ->
     return this if @id
