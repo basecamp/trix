@@ -14,10 +14,8 @@ class Trix.AttachmentController
     @delegate?.attachmentControllerDidUninstall()
 
   getDimensions: (element) ->
-    style = window.getComputedStyle(element)
-    dimensions = {}
-    dimensions[key] = style[key] for key in ["width", "height"]
-    dimensions
+    {width, height} = window.getComputedStyle(element)
+    {width, height}
 
   setStyle: (element, attributes) ->
     element.style[key] = value for key, value of attributes
