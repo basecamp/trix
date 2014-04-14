@@ -26,7 +26,7 @@ class Trix.AttachmentController
     setStyle(@element, width: "100%", height: "auto")
 
   uninstall: =>
-    setStyle(@element, getDimensions(@element))
+    setStyle(@element, width: null, height: null)
     @editor.parentElement.replaceChild(@element, @editor)
     @delegate?.attachmentControllerDidUninstall()
 
