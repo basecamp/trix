@@ -10,7 +10,9 @@
 
 class Trix.EditorController
   constructor: (@config) ->
-    {@textElement, @toolbarElement, @textareaElement, @inputElement, @fileHandler, @debugElement} = @config
+    {@textElement, @toolbarElement, @textareaElement, @inputElement, @debugElement} = @config
+
+    Trix.Attachment.delegate = @config.fileHandler
 
     @text = @createText()
 
@@ -33,8 +35,6 @@ class Trix.EditorController
 
     @debugController = new Trix.DebugController @debugElement, @textController.textView, @composition
     @debugController.render()
-
-    Trix.Attachment.delegate = this
 
   createText: ->
     if @textElement.textContent.trim()
@@ -128,20 +128,3 @@ class Trix.EditorController
       if @composition.hasCurrentAttribute(key)
         @textController.expandSelectedRangeAroundCommonAttribute(key)
         break
-
-  # Attachment API
-
-  createAttachmentForFile: (file) ->
-    if handler = @fileHandler?.onAdd
-      attachment = Trix.Attachment.forFile(file)
-
-      callback = (attributes) =>
-        attachment.setAttributes(attributes)
-
-      unless handler.call(@textElement, attachment.file, callback) is false
-        attachment
-
-  attachmentWasRemoved: (attachment) ->
-    if handler = @fileHandler?.onRemove
-      handler.call(@textElement, attachment.toJSON())
-

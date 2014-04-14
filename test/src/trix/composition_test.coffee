@@ -61,11 +61,14 @@ test "#insertString", ->
   deepEqual composition.selectionDelegate.lastRange, [7, 7], "position is incremented"
 
 
-test "#insertAttachment", ->
-  composition = makeComposition(fixture("plain"), [2, 2])
-  composition.insertAttachment(insertedAttachment = url: "about:blank")
+test "#insertFile", ->
+  file = { type: "image/png" }
+  attachment = Trix.Attachment.forFile(file)
 
-  insertedText = Trix.Text.textForAttachmentWithAttributes(insertedAttachment)
+  composition = makeComposition(fixture("plain"), [2, 2])
+  composition.insertFile(file)
+
+  insertedText = Trix.Text.textForAttachmentWithAttributes(attachment)
   expectedText = fixture("plain").insertTextAtPosition(insertedText, 2)
   textsEqual composition.text, expectedText, "attachment is inserted at the current position"
   equal composition.delegate.changes.length, 1, "change count is one"

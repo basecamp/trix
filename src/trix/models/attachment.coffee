@@ -7,10 +7,20 @@ class Trix.Attachment
     @attachments[id]
 
   @forFile: (file) ->
-    contentType = file.type
-    new this {contentType}, file
+    attachment = new this {}, file
+
+    if handler = @delegate?.onAdd
+      callback = (attributes) =>
+        attachment.setAttributes(attributes)
+
+      unless handler(file, callback) is false
+        attachment
+    else
+      attachment
 
   constructor: (@attributes = {}, @file) ->
+    if @file
+      @attributes.contentType ?= @file.type
 
   save: ->
     return this if @id
@@ -20,7 +30,7 @@ class Trix.Attachment
 
   remove: ->
     delete @constructor.attachments[@id]
-    @constructor.delegate?.attachmentWasRemoved?(this)
+    @constructor.delegate?.onRemove?(@toJSON())
 
   setAttributes: (attributes) ->
     for key, value of attributes

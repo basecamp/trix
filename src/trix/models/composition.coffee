@@ -1,4 +1,5 @@
 #= require trix/models/text
+#= require trix/models/attachment
 
 class Trix.Composition
   constructor: (@text = new Trix.Text) ->
@@ -26,17 +27,14 @@ class Trix.Composition
     text = Trix.Text.textForStringWithAttributes(string, @currentAttributes)
     @insertText(text, options)
 
-  insertAttachment: (attachment, options) ->
-    text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
-    @insertText(text, options)
-
   insertHTML: (html, options) ->
     text = Trix.Text.fromHTML(html)
     @insertText(text, options)
 
   insertFile: (file, options) ->
-    if attachment = @delegate?.createAttachmentForFile?(file)
-      @insertAttachment(attachment, options)
+    if attachment = Trix.Attachment.forFile(file)
+      text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
+      @insertText(text, options)
 
   deleteFromCurrentPosition: (distance = -1) ->
     unless range = @getSelectedRange()
