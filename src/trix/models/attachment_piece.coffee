@@ -13,7 +13,7 @@ class Trix.AttachmentPiece extends Trix.Piece
     false
 
   afterRemove: ->
-    Trix.Attachment.remove(@attachment)
+    @attachment.remove()
 
   toJSON: ->
     attachment: @attachment
