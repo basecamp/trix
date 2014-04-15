@@ -31,10 +31,11 @@ class Trix.Composition
     text = Trix.Text.fromHTML(html)
     @insertText(text, options)
 
-  insertFile: (file, options) ->
-    if attachment = Trix.Attachment.forFile(file, context: @delegate?.textElement)
+  insertFile: (file, targetElement) ->
+    attachment = Trix.Attachment.forFile(file)
+    unless attachment.notifyHostDelegateOfFileAdded(targetElement) is false
       text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
-      @insertText(text, options)
+      @insertText(text)
 
   deleteFromCurrentPosition: (distance = -1) ->
     unless range = @getSelectedRange()

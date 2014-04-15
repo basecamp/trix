@@ -62,7 +62,7 @@ class Trix.InputController
 
       else if files = event.dataTransfer.files
         for file in files
-          @responder?.insertFile(file)
+          @responder?.insertFile(file, event.target)
 
     cut: (event) ->
       @responder?.deleteBackward()
