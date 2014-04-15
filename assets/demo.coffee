@@ -14,11 +14,15 @@ Trix.delegate =
     console.log "Host delegate context:"
     console.dir this
 
-    setTimeout ->
-      attributes = { url: "basecamp.png" }
-      console.log "Host delegate calling back with attributes:", attributes
-      callback(attributes)
-    , 1000
+    if /image/.test(file.type)
+      setTimeout ->
+        attributes = { url: "basecamp.png" }
+        console.log "Host delegate calling back with attributes:", attributes
+        callback(attributes)
+      , 1000
+    else
+      console.log "Host delegate rejected non-image"
+      false
 
   fileRemoved: (attributes) ->
     console.log "Host delegate received removed file attributes:", attributes
