@@ -1,3 +1,5 @@
+Trix.attributes["code"] = { tagName: "code", inheritable: true }
+
 document.addEventListener "DOMContentLoaded", ->
   config =
     textarea: "text"
