@@ -6,13 +6,14 @@ class Trix.Attachment
   @get: (id) ->
     @attachments[id]
 
-  @forFile: (file) ->
+  @forFile: (file, {context} = {}) ->
     attachment = new this { contentType: file.type }
     attachment.file = file
-    attachment.dispatchAdd()
+    attachment.context = context
+    if attachment.notifyHostDelegateOfFileAdded()
+      attachment
 
   constructor: (@attributes = {}) ->
-    @fileHandler = @constructor.delegate ? {}
 
   save: ->
     return this if @id
@@ -22,7 +23,7 @@ class Trix.Attachment
 
   remove: ->
     delete @constructor.attachments[@id]
-    @dispatchRemove()
+    @notifyHostDelegate("fileRemoved", @toJSON())
 
   setAttributes: (attributes) =>
     for key, value of attributes
@@ -41,10 +42,10 @@ class Trix.Attachment
   toJSON: ->
     @attributes
 
-  # API
+  # Host delegate
 
-  dispatchAdd: ->
-    this unless @fileHandler.onAdd?(@file, @setAttributes) is false
+  notifyHostDelegate: (message, args...) ->
+    Trix.delegate?[message]?.apply(@context, args)
 
-  dispatchRemove: ->
-    @fileHandler.onRemove?(@toJSON())
+  notifyHostDelegateOfFileAdded: ->
+    @notifyHostDelegate("fileAdded", @file, @setAttributes) isnt false

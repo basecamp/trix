@@ -32,7 +32,7 @@ class Trix.Composition
     @insertText(text, options)
 
   insertFile: (file, options) ->
-    if attachment = Trix.Attachment.forFile(file)
+    if attachment = Trix.Attachment.forFile(file, context: @delegate?.textElement)
       text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
       @insertText(text, options)
 

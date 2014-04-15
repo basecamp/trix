@@ -12,8 +12,6 @@ class Trix.EditorController
   constructor: (@config) ->
     {@textElement, @toolbarElement, @textareaElement, @inputElement, @debugElement} = @config
 
-    Trix.Attachment.delegate = @config.fileHandler
-
     @text = @createText()
 
     @textController = new Trix.TextController @textElement, @text, @config
