@@ -14,9 +14,6 @@ class Trix.TextController
     @render()
     @focus() if @config.autofocus
 
-  focus: ->
-    @textView.focus()
-
   didFocus: =>
     @delegate?.textControllerDidFocus?()
 
@@ -30,19 +27,22 @@ class Trix.TextController
     @textView.render()
     @delegate?.textControllerDidRender?()
 
-  # Attachment management
+  focus: ->
+    @textView.focus()
+
+  # Attachment controller management
 
   installAttachmentController: (element) ->
     attachment = Trix.Attachment.get(element.trixAttachmentId)
     unless @attachmentController?.attachment is attachment
       @uninstallAttachmentController()
-      @attachmentController = Trix.AttachmentController.create({attachment, element, container: @element})
+      @attachmentController = Trix.AttachmentController.create(attachment, element, @element)
       @attachmentController.delegate = this
 
   uninstallAttachmentController: ->
     @attachmentController?.uninstall()
 
-  # Attachment delegate
+  # Attachment controller delegate
 
   attachmentControllerDidUninstall: ->
     delete @attachmentController

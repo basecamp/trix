@@ -1,7 +1,7 @@
 #= require trix/models/attachment
 
 class Trix.AttachmentController
-  @create = ({attachment, element, container}) ->
+  @create = (attachment, element, container) ->
     if attachment.isImage()
       new Trix.ImageAttachmentController attachment, element, container
 
