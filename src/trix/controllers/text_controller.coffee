@@ -21,20 +21,26 @@ class Trix.TextController
     @delegate?.textControllerDidFocus?()
 
   didClick: (event) =>
-    @setupAttachmentController(event.target)
+    if event.target.trixAttachmentId
+      @installAttachmentController(event.target)
+    else
+      @uninstallAttachmentController()
 
   render: ->
     @textView.render()
     @delegate?.textControllerDidRender?()
 
-  setupAttachmentController: (element) ->
-    if attachment = Trix.Attachment.get(element.trixAttachmentId)
-      unless @attachmentController?.attachment is attachment
-        @attachmentController?.uninstall()
-        @attachmentController = Trix.AttachmentController.create({attachment, element, container: @element})
-        @attachmentController.delegate = this
-    else
-      @attachmentController?.uninstall()
+  # Attachment management
+
+  installAttachmentController: (element) ->
+    attachment = Trix.Attachment.get(element.trixAttachmentId)
+    unless @attachmentController?.attachment is attachment
+      @uninstallAttachmentController()
+      @attachmentController = Trix.AttachmentController.create({attachment, element, container: @element})
+      @attachmentController.delegate = this
+
+  uninstallAttachmentController: ->
+    @attachmentController?.uninstall()
 
   # Attachment delegate
 
