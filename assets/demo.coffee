@@ -10,14 +10,12 @@ document.addEventListener "DOMContentLoaded", ->
 
 Trix.delegate =
   fileAdded: (file, callback) ->
-    console.log "Host delegate received file:", file
-    console.log "Host delegate context:"
-    console.dir this
+    console.log "Host delegate received #{file.name}: %O in context: %O", file, this
 
     if /image/.test(file.type)
       setTimeout ->
         attributes = { url: "basecamp.png" }
-        console.log "Host delegate calling back with attributes:", attributes
+        console.log "Host delegate calling back with attributes for #{file.name}:", attributes
         callback(attributes)
       , 1000
     else
