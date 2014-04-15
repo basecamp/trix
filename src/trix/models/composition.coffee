@@ -73,10 +73,6 @@ class Trix.Composition
 
   # Current attributes
 
-  inheritableAttributes =
-    for key, value of Trix.attributes when value.inheritable
-      key
-
   hasCurrentAttribute: (attributeName) ->
     @currentAttributes[attributeName]?
 
@@ -111,10 +107,14 @@ class Trix.Composition
       attributesLeft = @text.getAttributesAtPosition(position - 1)
 
       for key, value of attributesLeft
-        if value is attributes[key] or key in inheritableAttributes
+        if value is attributes[key] or key in inheritableAttributes()
           @currentAttributes[key] = value
 
       @notifyDelegateOfCurrentAttributesChange()
+
+  inheritableAttributes = ->
+    for key, value of Trix.attributes when value.inheritable
+      key
 
   notifyDelegateOfCurrentAttributesChange: ->
     @delegate?.compositionDidChangeCurrentAttributes?(this, @currentAttributes)
