@@ -1,15 +1,5 @@
 Trix.attributes["code"] = { tagName: "code", inheritable: true }
 
-document.addEventListener "DOMContentLoaded", ->
-  config =
-    textarea: "text"
-    toolbar: "toolbar"
-    input: "data"
-    debug: "debug"
-    className: "formatted"
-
-  window.controller = Trix.install(config)
-
 Trix.delegate =
   fileAdded: (file, callback) ->
     console.log "Host delegate received #{file.name}: %O in context: %O", file, this
@@ -26,3 +16,14 @@ Trix.delegate =
 
   fileRemoved: (attributes) ->
     console.log "Host delegate received removed file attributes:", attributes
+
+
+document.addEventListener "DOMContentLoaded", ->
+  config =
+    textarea: "text"
+    toolbar: "toolbar"
+    input: "data"
+    debug: "debug"
+    className: "formatted"
+
+  window.controller = Trix.install(config)
