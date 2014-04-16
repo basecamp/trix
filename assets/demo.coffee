@@ -1,21 +1,22 @@
 Trix.attributes["code"] = { tagName: "code", inheritable: true }
 
 delegate =
-  fileAdded: (file, callback) ->
-    console.log "Host delegate received #{file.name}: %O in context: %O", file, this
+  attachmentAdded: (attachment) ->
+    file = attachment.file
+    console.log "Host delegate received attachment: %O in context: %O", attachment, this
 
     if /image/.test(file.type)
       setTimeout ->
         attributes = { url: "basecamp.png" }
-        console.log "Host delegate calling back with attributes for #{file.name}:", attributes
-        callback(attributes)
+        console.log "Host delegate setting attributes for attachment:", attachment, attributes
+        attachment.setAttributes(attributes)
       , 1000
     else
-      console.log "Host delegate rejected non-image"
+      console.log "Host delegate rejected non-image:", file.name, file.type
       false
 
-  fileRemoved: (attributes) ->
-    console.log "Host delegate received removed file attributes:", attributes
+  attachmentRemoved: (attachment) ->
+    console.log "Host delegate received removed attachment:", attachment
 
 
 document.addEventListener "DOMContentLoaded", ->

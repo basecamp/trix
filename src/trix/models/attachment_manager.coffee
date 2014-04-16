@@ -6,7 +6,7 @@ class Trix.AttachmentManager
     @saveAttachments(attachments)
 
   addAttachment: (attachment) ->
-    unless @notifyHost("fileAdded", attachment.file, attachment.setAttributes) is false
+    unless @notifyHost("attachmentAdded", attachment) is false
       @saveAttachment(attachment)
 
   replaceAttachments: (newAttachments) ->
@@ -24,7 +24,7 @@ class Trix.AttachmentManager
 
   removeAttachment: (attachment) ->
     delete @attachments[attachment.id]
-    @notifyHost("fileRemoved", attachment.toJSON())
+    @notifyHost("attachmentRemoved", attachment)
 
   notifyHost: (message, args...) ->
     @host?[message]?.apply(@context, args)
