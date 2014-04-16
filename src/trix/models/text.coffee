@@ -95,6 +95,9 @@ class Trix.Text
   getLength: ->
     @pieceList.getLength()
 
+  getAttachments: ->
+    @pieceList.getAttachments()
+
   isEqualTo: (text) ->
     this is text or text?.pieceList?.isEqualTo(@pieceList)
 

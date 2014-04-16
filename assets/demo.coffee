@@ -1,6 +1,6 @@
 Trix.attributes["code"] = { tagName: "code", inheritable: true }
 
-Trix.delegate =
+delegate =
   fileAdded: (file, callback) ->
     console.log "Host delegate received #{file.name}: %O in context: %O", file, this
 
@@ -25,5 +25,6 @@ document.addEventListener "DOMContentLoaded", ->
     input: "data"
     debug: "debug"
     className: "formatted"
+    delegate: delegate
 
   window.controller = Trix.install(config)

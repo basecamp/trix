@@ -17,9 +17,7 @@ class Trix.PieceList
     @insertPieceListAtIndex(pieceList, index)
 
   removePieceAtIndex: (index) ->
-    piece = @getPieceAtIndex(index)
     @pieces.splice(index, 1)
-    piece.afterRemove?()
 
   getPieceAtIndex: (index) ->
     @pieces[index]
@@ -104,6 +102,10 @@ class Trix.PieceList
     length = 0
     length += piece.length for piece in @pieces
     length
+
+  getAttachments: ->
+    for piece in @pieces when piece.attachment
+      piece.attachment
 
   toString: ->
     @pieces.join("")

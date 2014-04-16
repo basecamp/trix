@@ -73,7 +73,7 @@ class Trix.TextView
 
     element.trixPosition = position
     element.trixLength = 1
-    element.trixAttachmentId = attachment.save().id
+    element.trixAttachmentId = attachment.id
     element
 
   createStringNodesForCurrentRun: ->

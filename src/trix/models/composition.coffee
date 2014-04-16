@@ -2,14 +2,16 @@
 #= require trix/models/attachment
 
 class Trix.Composition
-  constructor: (@text = new Trix.Text) ->
+  constructor: (@text = new Trix.Text, @config) ->
     @text.delegate = this
+    @attachmentManager = new Trix.AttachmentManager @text.getAttachments(), @config
     @currentAttributes = {}
 
   # Text delegate
 
   didEditText: (text) ->
     @delegate?.compositionDidChangeText?(this, @text)
+    @attachmentManager.replaceAttachments(@text.getAttachments())
 
   # Responder protocol
 
@@ -33,7 +35,7 @@ class Trix.Composition
 
   insertFile: (file, targetElement) ->
     attachment = Trix.Attachment.forFile(file)
-    unless attachment.notifyHostDelegateOfFileAdded(targetElement) is false
+    if @attachmentManager.addAttachment(attachment)
       text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
       @insertText(text)
 

@@ -12,9 +12,6 @@ class Trix.AttachmentPiece extends Trix.Piece
   canBeConsolidatedWithPiece: (piece) ->
     false
 
-  afterRemove: ->
-    @attachment.remove()
-
   toJSON: ->
     attachment: @attachment
     attributes: @getAttributes()

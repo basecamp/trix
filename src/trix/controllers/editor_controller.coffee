@@ -5,6 +5,7 @@
 #= require trix/models/composition
 #= require trix/models/text
 #= require trix/models/attachment
+#= require trix/models/attachment_manager
 #= require trix/observers/selection_observer
 #= require trix/html_parser
 
@@ -17,7 +18,7 @@ class Trix.EditorController
     @textController = new Trix.TextController @textElement, @text, @config
     @textController.delegate = this
 
-    @composition = new Trix.Composition @text
+    @composition = new Trix.Composition @text, @config
     @composition.delegate = this
     @composition.selectionDelegate = @textController
 
