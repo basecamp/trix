@@ -98,6 +98,9 @@ class Trix.Text
   getAttachments: ->
     @pieceList.getAttachments()
 
+  getPositionOfAttachment: (id) ->
+    @pieceList.getPositionOfAttachment(id)
+
   isEqualTo: (text) ->
     this is text or text?.pieceList?.isEqualTo(@pieceList)
 
