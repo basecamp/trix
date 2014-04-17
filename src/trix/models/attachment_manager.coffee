@@ -2,7 +2,6 @@ class Trix.AttachmentManager
   constructor: (attachments = [], config) ->
     @attachments = {}
     @host = config?.delegate
-    @context = config?.textElement
     @saveAttachments(attachments)
 
   addAttachment: (attachment) ->
@@ -27,4 +26,4 @@ class Trix.AttachmentManager
     @notifyHost("attachmentRemoved", attachment)
 
   notifyHost: (message, args...) ->
-    @host?[message]?.apply(@context, args)
+    @host?[message]?(args...)
