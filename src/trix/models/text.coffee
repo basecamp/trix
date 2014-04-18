@@ -105,8 +105,9 @@ class Trix.Text
 
   getAttachments: ->
     for attachment in @pieceList.getAttachments()
-      attachment.remove = => @removeAttachment(attachment)
-      attachment
+      do (attachment) =>
+        attachment.remove = => @removeAttachment(attachment)
+        attachment
 
   isEqualTo: (text) ->
     this is text or text?.pieceList?.isEqualTo(@pieceList)
