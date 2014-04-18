@@ -1,7 +1,6 @@
 class Trix.AttachmentManager
-  constructor: (attachments = [], config) ->
+  constructor: (attachments = []) ->
     @attachments = {}
-    @host = config?.delegate
     @saveAttachments(attachments)
 
   addAttachment: (attachment) ->

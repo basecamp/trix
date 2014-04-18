@@ -1,6 +1,7 @@
 #= require trix/models/piece
 #= require trix/models/attachment_piece
 #= require trix/models/piece_list
+#= require trix/models/attachment_manager
 
 class Trix.Text
   @textForAttachmentWithAttributes: (attachment, attributes) ->
@@ -26,6 +27,7 @@ class Trix.Text
   constructor: (pieces = []) ->
     @editDepth = 0
     @pieceList = new Trix.PieceList pieces
+    @attachments = new Trix.AttachmentManager @pieceList.getAttachments()
 
   edit = (fn) -> ->
     @beginEditing()
@@ -39,6 +41,7 @@ class Trix.Text
   endEditing: ->
     if --@editDepth is 0
       @pieceList.consolidate()
+      @attachments.replaceAttachments(@pieceList.getAttachments())
       @delegate?.didEditText?(this)
     this
 
@@ -94,9 +97,6 @@ class Trix.Text
 
   getLength: ->
     @pieceList.getLength()
-
-  getAttachments: ->
-    @pieceList.getAttachments()
 
   getPositionOfAttachment: (id) ->
     @pieceList.getPositionOfAttachment(id)
