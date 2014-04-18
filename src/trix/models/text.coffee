@@ -84,8 +84,9 @@ class Trix.Text
       piece.copyWithAttributes(attributes)
 
   removeAttachment: edit (attachment) ->
-    position = @pieceList.getPositionOfAttachment(attachment)
-    @removeTextAtRange([position, position + 1])
+    if @attachments.get(attachment.id)
+      position = @pieceList.getPositionOfAttachment(attachment)
+      @removeTextAtRange([position, position + 1])
 
   getAttributesAtPosition: (position) ->
     @pieceList.getPieceAtPosition(position)?.getAttributes() ? {}
