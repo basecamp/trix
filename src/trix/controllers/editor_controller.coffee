@@ -18,7 +18,7 @@ class Trix.EditorController
     @textController = new Trix.TextController @textElement, @text, @config
     @textController.delegate = this
 
-    @composition = new Trix.Composition @text, @config
+    @composition = new Trix.Composition @text
     @composition.delegate = this
     @composition.selectionDelegate = @textController
 
