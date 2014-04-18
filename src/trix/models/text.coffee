@@ -1,7 +1,7 @@
 #= require trix/models/piece
 #= require trix/models/attachment_piece
 #= require trix/models/piece_list
-#= require trix/models/attachment_manager
+#= require trix/models/collection
 
 class Trix.Text
   @textForAttachmentWithAttributes: (attachment, attributes) ->
@@ -27,7 +27,7 @@ class Trix.Text
   constructor: (pieces = []) ->
     @editDepth = 0
     @pieceList = new Trix.PieceList pieces
-    @attachments = new Trix.AttachmentManager @pieceList.getAttachments()
+    @attachments = new Trix.Collection @pieceList.getAttachments()
 
   edit = (fn) -> ->
     @beginEditing()

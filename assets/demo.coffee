@@ -8,7 +8,7 @@ document.addEventListener "DOMContentLoaded", ->
     debug: "debug"
     className: "formatted"
     delegate:
-      attachmentAdded: (attachment) ->
+      addAttachment: (attachment) ->
         file = attachment.file
         console.log "Host delegate received attachment:", attachment
 
@@ -22,7 +22,7 @@ document.addEventListener "DOMContentLoaded", ->
           console.log "Host delegate rejected non-image:", file.name, file.type
           false
 
-      attachmentRemoved: (attachment) ->
+      removeAttachment: (attachment) ->
         console.log "Host delegate received removed attachment:", attachment
 
   window.controller = Trix.install(config)
