@@ -1,28 +1,27 @@
 class Trix.AttachmentManager
   constructor: (attachments = []) ->
     @attachments = {}
-    @saveAttachments(attachments)
+    @reset(attachments)
 
-  addAttachment: (attachment) ->
-    unless @notifyHost("attachmentAdded", attachment) is false
-      @saveAttachment(attachment)
+  add: (attachment) ->
+    unless @get(attachment.id)
+      unless @notifyDelegate("attachmentAdded", attachment) is false
+        @attachments[attachment.id] = attachment
 
-  replaceAttachments: (newAttachments) ->
-    for id, attachment of @attachments when attachment not in newAttachments
-      @removeAttachment(attachment)
-    @saveAttachments(newAttachments)
+  remove: (attachment) ->
+    if @get(attachment.id)
+      delete @attachments[attachment.id]
+      @notifyDelegate("attachmentRemoved", attachment)
 
-  # Private
+  get: (id) ->
+    @attachments[id]
 
-  saveAttachments: (attachments) ->
-    @saveAttachment(attachment) for attachment in attachments
+  reset: (attachments = []) ->
+    for id, attachment of @attachments when attachment not in attachments
+      @remove(attachment)
 
-  saveAttachment: (attachment) ->
-    @attachments[attachment.id] = attachment
+    for attachment in attachments
+      @add(attachment)
 
-  removeAttachment: (attachment) ->
-    delete @attachments[attachment.id]
-    @notifyHost("attachmentRemoved", attachment)
-
-  notifyHost: (message, args...) ->
-    @host?[message]?(args...)
+  notifyDelegate: (message, args...) ->
+    @delegate?[message]?(args...)

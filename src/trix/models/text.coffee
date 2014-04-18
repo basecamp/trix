@@ -41,7 +41,7 @@ class Trix.Text
   endEditing: ->
     if --@editDepth is 0
       @pieceList.consolidate()
-      @attachments.replaceAttachments(@pieceList.getAttachments())
+      @attachments.reset(@pieceList.getAttachments())
       @delegate?.didEditText?(this)
     this
 

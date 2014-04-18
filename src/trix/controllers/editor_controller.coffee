@@ -13,7 +13,7 @@ class Trix.EditorController
     {@textElement, @toolbarElement, @textareaElement, @inputElement, @debugElement} = @config
 
     @text = @createText()
-    @text.attachments.host = @config.delegate
+    @text.attachments.delegate = @config.delegate
 
     @textController = new Trix.TextController @textElement, @text, @config
     @textController.delegate = this
