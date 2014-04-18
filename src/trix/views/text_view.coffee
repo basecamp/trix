@@ -68,8 +68,8 @@ class Trix.TextView
   createAttachmentElementForCurrentRun: ->
     {attachment, attributes, position} = @currentRun
 
-    view = new Trix.ImageAttachmentView attachment
-    element = view.render()
+    attachment.element ?= new Trix.ImageAttachmentView(attachment).render()
+    element = attachment.element
 
     element.trixPosition = position
     element.trixLength = 1
