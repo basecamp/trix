@@ -61,12 +61,6 @@ class Trix.Composition
       positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
       @deleteFromCurrentPosition(positionBeforeLastWord - position)
 
-  deleteAttachment: (id) ->
-    if attachment = @attachmentManager.attachments[id]
-      position = @text.getPositionOfAttachment(id)
-      @text.removeTextAtRange([position, position + 1])
-      attachment
-
   moveTextFromRange: (range) ->
     position = @getPosition()
     @text.moveTextFromRangeToPosition(range, position)

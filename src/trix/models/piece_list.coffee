@@ -107,10 +107,10 @@ class Trix.PieceList
     for piece in @pieces when piece.attachment
       piece.attachment
 
-  getPositionOfAttachment: (id) ->
+  getPositionOfAttachment: (attachment) ->
     position = 0
     for piece in @pieces
-      return position if piece.attachment?.id is id
+      return position if piece.attachment?.id is attachment.id
       position += piece.length
     null
 

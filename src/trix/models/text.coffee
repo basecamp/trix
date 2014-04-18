@@ -27,7 +27,7 @@ class Trix.Text
   constructor: (pieces = []) ->
     @editDepth = 0
     @pieceList = new Trix.PieceList pieces
-    @attachments = new Trix.Collection @pieceList.getAttachments()
+    @attachments = new Trix.Collection @getAttachments()
 
   edit = (fn) -> ->
     @beginEditing()
@@ -41,7 +41,7 @@ class Trix.Text
   endEditing: ->
     if --@editDepth is 0
       @pieceList.consolidate()
-      @attachments.reset(@pieceList.getAttachments())
+      @attachments.reset(@getAttachments())
       @delegate?.didEditText?(this)
     this
 
@@ -83,6 +83,10 @@ class Trix.Text
     @pieceList.transformPiecesInRange range, (piece) ->
       piece.copyWithAttributes(attributes)
 
+  removeAttachment: edit (attachment) ->
+    position = @pieceList.getPositionOfAttachment(attachment)
+    @removeTextAtRange([position, position + 1])
+
   getAttributesAtPosition: (position) ->
     @pieceList.getPieceAtPosition(position)?.getAttributes() ? {}
 
@@ -98,8 +102,10 @@ class Trix.Text
   getLength: ->
     @pieceList.getLength()
 
-  getPositionOfAttachment: (id) ->
-    @pieceList.getPositionOfAttachment(id)
+  getAttachments: ->
+    for attachment in @pieceList.getAttachments()
+      attachment.remove = => @removeAttachment(attachment)
+      attachment
 
   isEqualTo: (text) ->
     this is text or text?.pieceList?.isEqualTo(@pieceList)
