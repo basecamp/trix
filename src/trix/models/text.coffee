@@ -1,7 +1,6 @@
 #= require trix/models/piece
 #= require trix/models/attachment_piece
 #= require trix/models/piece_list
-#= require trix/models/collection
 
 class Trix.Text
   @textForAttachmentWithAttributes: (attachment, attributes) ->
@@ -27,7 +26,6 @@ class Trix.Text
   constructor: (pieces = []) ->
     @editDepth = 0
     @pieceList = new Trix.PieceList pieces
-    @attachments = new Trix.Collection @getAttachments()
 
   edit = (fn) -> ->
     @beginEditing()
@@ -41,7 +39,7 @@ class Trix.Text
   endEditing: ->
     if --@editDepth is 0
       @pieceList.consolidate()
-      @attachments.reset(@getAttachments())
+      @attachments?.reset()
       @delegate?.didEditText?(this)
     this
 
@@ -83,11 +81,6 @@ class Trix.Text
     @pieceList.transformPiecesInRange range, (piece) ->
       piece.copyWithAttributes(attributes)
 
-  removeAttachment: edit (attachment) ->
-    if @attachments.get(attachment.id)
-      position = @pieceList.getPositionOfAttachment(attachment)
-      @removeTextAtRange([position, position + 1])
-
   getAttributesAtPosition: (position) ->
     @pieceList.getPieceAtPosition(position)?.getAttributes() ? {}
 
@@ -100,14 +93,11 @@ class Trix.Text
   getStringAtRange: (range) ->
     @pieceList.getPieceListInRange(range).toString()
 
+  getAttachments: ->
+    @pieceList.getAttachments()
+
   getLength: ->
     @pieceList.getLength()
-
-  getAttachments: ->
-    for attachment in @pieceList.getAttachments()
-      do (attachment) =>
-        attachment.remove = => @removeAttachment(attachment)
-        attachment
 
   isEqualTo: (text) ->
     this is text or text?.pieceList?.isEqualTo(@pieceList)

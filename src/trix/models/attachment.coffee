@@ -27,3 +27,6 @@ class Trix.Attachment
 
   toJSON: ->
     @attributes
+
+  toObject: ->
+    {@id, @file, @attributes}

@@ -16,7 +16,7 @@ document.addEventListener "DOMContentLoaded", ->
             setTimeout ->
               attributes = { url: "basecamp.png" }
               console.log "Host delegate setting attributes for attachment:", attachment, attributes
-              attachment.setAttributes(attributes)
+              attachment.update(attributes)
 
               #setTimeout ->
               #  console.log "Host delegate removing attachment:", attachment

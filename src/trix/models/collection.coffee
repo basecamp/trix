@@ -1,27 +1,25 @@
 class Trix.Collection
   constructor: (models) ->
-    @models = {}
     @reset(models)
-
-  add: (model) ->
-    unless @get(model.id)
-      unless @notifyDelegate("add", model) is false
-        @models[model.id] = model
-
-  remove: (model) ->
-    if @get(model.id)
-      delete @models[model.id]
-      @notifyDelegate("remove", model)
 
   get: (id) ->
     @models[id]
 
+  has: (id) ->
+    id of @models
+
+  add: (model) ->
+    unless @has(model.id)
+      @models[model.id] = model
+
+  remove: (id) ->
+    if model = @get(id)
+      delete @models[id]
+      model
+
   reset: (models = []) ->
-    for id, model of @models when model not in models
-      @remove(model)
+    @models = {}
+    @add(model) for model in models
 
-    for model in models
-      @add(model)
-
-  notifyDelegate: (message, model) ->
-    @delegate?[message + model.modelName]?(model)
+  toArray: ->
+    model for id, model of @models
