@@ -21,5 +21,8 @@ class Trix.Collection
     @models = {}
     @add(model) for model in models
 
+  difference: (otherModels = []) ->
+    model for model in @toArray() when model not in otherModels
+
   toArray: ->
     model for id, model of @models

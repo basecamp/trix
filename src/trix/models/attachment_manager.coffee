@@ -22,7 +22,7 @@ class Trix.AttachmentManager
   reset: ->
     attachments = @text.getAttachments()
 
-    for attachment in @collection.toArray() when attachment not in attachments
+    for attachment in @collection.difference(attachments)
       @remove(attachment.id)
 
     for attachment in attachments
