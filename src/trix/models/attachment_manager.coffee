@@ -6,6 +6,9 @@ class Trix.AttachmentManager
     @collection = new Trix.Collection
     @reset()
 
+  get: (id) ->
+    @collection.get(id)
+
   add: (attachment) ->
     unless @collection.has(attachment.id)
       object = @attachmentObjectWithCallbacks(attachment)
@@ -29,11 +32,9 @@ class Trix.AttachmentManager
     object = attachment.toObject()
 
     object.update = (attributes) =>
-      attachment.setAttributes(attributes)
-      @text.delegate?.didEditText?(@text)
+      @text.setAttachmentAttributes(attachment.id, attributes)
 
     object.remove = =>
-      position = @text.pieceList.getPositionOfAttachment(attachment)
-      @text.removeTextAtRange([position, position + 1])
+      @text.removeAttachment(attachment.id)
 
     object
