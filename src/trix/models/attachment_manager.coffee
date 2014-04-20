@@ -2,7 +2,6 @@
 
 class Trix.AttachmentManager
   constructor: (@text, @responder) ->
-    @text.attachments = this
     @collection = new Trix.Collection
     @reset()
 
