@@ -1,4 +1,5 @@
 #= require trix/models/collection
+#= require trix/models/attachment
 
 class Trix.AttachmentManager
   constructor: (@text, @responder) ->
@@ -11,12 +12,16 @@ class Trix.AttachmentManager
   add: (attachment) ->
     unless @collection.has(attachment.id)
       object = @attachmentObjectWithCallbacks(attachment)
-      unless @responder.addAttachment?(object) is false
+      unless @responder?.addAttachment?(object) is false
         @collection.add(attachment)
+
+  create: (file) ->
+    if @responder
+      @add(Trix.Attachment.forFile(file))
 
   remove: (id) ->
     if attachment = @collection.remove(id)
-      @responder.removeAttachment?(attachment.toObject())
+      @responder?.removeAttachment?(attachment.toObject())
 
   reset: ->
     attachments = @text.getAttachments()
