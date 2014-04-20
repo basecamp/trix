@@ -15,7 +15,7 @@ class Trix.EditorController
 
     @text = @createText()
 
-    @attachmentManager = new Trix.AttachmentManager @text, @config.delegate
+    @attachmentManager = new Trix.AttachmentManager @text, @config.responder
     @text.attachments = @attachmentManager
 
     @textController = new Trix.TextController @textElement, @text, @config

@@ -7,7 +7,7 @@ document.addEventListener "DOMContentLoaded", ->
     input: "data"
     debug: "debug"
     className: "formatted"
-    delegate:
+    responder:
       addAttachment: (attachment) ->
         console.log "Host delegate received attachment:", attachment
 
