@@ -1,5 +1,7 @@
 #= require trix/dom
-#= require trix/views/image_attachment_view
+#= require_self
+#= require_tree .
+
 
 class Trix.TextView
   constructor: (@element, @text) ->
@@ -68,7 +70,7 @@ class Trix.TextView
   createAttachmentElementForCurrentRun: ->
     {attachment, attributes, position} = @currentRun
 
-    attachment.element ?= new Trix.ImageAttachmentView(attachment).render()
+    attachment.element ?= Trix.AttachmentView.for(attachment).render()
     element = attachment.element
 
     element.trixPosition = position

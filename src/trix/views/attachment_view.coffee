@@ -1,0 +1,37 @@
+class Trix.AttachmentView
+  @for: (attachment) ->
+    if attachment.isImage()
+      new Trix.ImageAttachmentView attachment
+    else
+      new this attachment
+
+  constructor: (@attachment) ->
+    @attachment.delegate = this
+
+  render: ->
+    @element = document.createElement("figure")
+    @element.setAttribute("contenteditable", false)
+    @element.classList.add("attachment")
+
+    @extension = document.createElement("div")
+    @extension.classList.add("extension")
+    @extension.textContent = @attachment.getExtension()
+
+    @caption = document.createElement("figcaption")
+
+    @updateAttributes()
+
+    @element.appendChild(@extension)
+    @element.appendChild(@caption)
+
+    @element
+
+  updateAttributes: ->
+    @extension.textContent = @attachment.getExtension()
+    @caption.textContent = @attachment.attributes.filename
+    @caption.setAttribute("title", @attachment.attributes.filename)
+
+  # Attachment delegate
+
+  attachmentDidChange: ->
+    @updateAttributes()

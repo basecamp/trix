@@ -1,11 +1,10 @@
-class Trix.ImageAttachmentView
-  constructor: (@attachment) ->
-    @attachment.delegate = this
-    @image = document.createElement("img")
+#= require trix/views/attachment_view
 
+class Trix.ImageAttachmentView extends Trix.AttachmentView
   render: ->
+    @image = document.createElement("img")
     @loadFile() if @attachment.isPending()
-    @updateImageAttributes()
+    @updateAttributes()
     @image
 
   loadFile: ->
@@ -18,7 +17,7 @@ class Trix.ImageAttachmentView
 
   attributeNames = "url width height class".split(" ")
 
-  updateImageAttributes: ->
+  updateAttributes: ->
     attributes = {}
 
     for key in attributeNames
@@ -36,8 +35,3 @@ class Trix.ImageAttachmentView
         @image.setAttribute(key, value)
       else
         @image.removeAttribute(key)
-
-  # Attachment delegate
-
-  attachmentDidChange: ->
-    @updateImageAttributes()

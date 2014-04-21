@@ -4,7 +4,7 @@ class Trix.Attachment
   modelName: "Attachment"
 
   @forFile: (file) ->
-    attachment = new this { contentType: file.type }
+    attachment = new this { contentType: file.type, filename: file.name }
     attachment.file = file
     attachment
 
@@ -24,6 +24,9 @@ class Trix.Attachment
 
   isImage: ->
     /image/.test(@attributes.contentType)
+
+  getExtension: ->
+    @attributes.filename.match(/\.(\w+)$/)?[1]
 
   toJSON: ->
     @attributes
