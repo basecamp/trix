@@ -13,6 +13,7 @@ document.addEventListener "DOMContentLoaded", ->
 
       didAddAttachment: (attachment) ->
         console.log "Host received attachment:", attachment
+        saveAttachment(attachment)
 
         if file = attachment.file
           setTimeout ->
@@ -28,5 +29,26 @@ document.addEventListener "DOMContentLoaded", ->
 
       didRemoveAttachment: (attachment) ->
         console.log "Host received removed attachment:", attachment
+        removeAttachment(attachment)
 
   window.controller = Trix.install(config)
+
+
+saveAttachment = (attachment) ->
+  item = document.createElement("li")
+  item.setAttribute("id", "attachment_#{attachment.id}")
+  item.textContent = "#{attachment.attributes.filename ? attachment.attributes.url} "
+
+  link = document.createElement("a")
+  link.setAttribute("href", "#")
+  link.textContent = "(remove)"
+  link.addEventListener "click", ->
+    attachment.remove()
+    removeAttachment(attachment)
+
+  item.appendChild(link)
+  document.getElementById("attachments").appendChild(item)
+
+removeAttachment = (attachment) ->
+  if item = document.getElementById("attachment_#{attachment.id}")
+    item.parentElement.removeChild(item)
