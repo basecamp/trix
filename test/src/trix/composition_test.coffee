@@ -1,4 +1,5 @@
 #= require trix/models/composition
+#= require trix/models/attachment_manager
 #= require helpers
 #= require fixtures
 
@@ -378,6 +379,11 @@ test "#setCurrentAttribute", ->
 # Helpers
 
 makeComposition = (text, selectedRange = [0, 0]) ->
+  attachmentManager = new Trix.AttachmentManager text
+  attachmentManager.delegate = shouldAcceptFile: -> true
+  attachmentManager.reset()
+  text.attachments = attachmentManager
+
   composition = new Trix.Composition text
 
   composition.selectionDelegate =
