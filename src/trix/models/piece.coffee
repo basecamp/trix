@@ -2,6 +2,12 @@
 
 class Trix.Piece
   id = 0
+  objectReplacementCharacter = "\uFFFC"
+
+  @forAttachment: (attachment, attributes) ->
+    piece = new this objectReplacementCharacter, attributes
+    piece.attachment = attachment
+    piece
 
   constructor: (@string, attributes = {}) ->
     @id = ++id
@@ -9,7 +15,9 @@ class Trix.Piece
     @length = @string.length
 
   copyWithAttributes: (attributes) ->
-    new Trix.Piece @string, attributes
+    piece = new Trix.Piece @string, attributes
+    piece.attachment = @attachment
+    piece
 
   copyWithAdditionalAttributes: (attributes) ->
     @copyWithAttributes(@attributes.merge(attributes))
@@ -44,7 +52,7 @@ class Trix.Piece
     piece? and (@attributes is piece.attributes or @attributes.isEqualTo(piece.attributes))
 
   canBeConsolidatedWithPiece: (piece) ->
-    piece? and (@constructor is piece.constructor) and @hasSameAttributesAsPiece(piece)
+    piece? and not (@attachment or piece.attachment) and @hasSameAttributesAsPiece(piece)
 
   isEqualTo: (piece) ->
     this is piece or (
@@ -72,8 +80,13 @@ class Trix.Piece
     @string
 
   toJSON: ->
-    string: @toString()
-    attributes: @getAttributes()
+    attributes = @getAttributes()
+    string = @toString()
+
+    if @attachment
+      {@attachment, attributes}
+    else
+      {@string, attributes}
 
   inspect: ->
     "#<Piece string=#{JSON.stringify(@string)}, attributes=#{@attributes.inspect()}>"

@@ -1,10 +1,9 @@
 #= require trix/models/piece
-#= require trix/models/attachment_piece
 #= require trix/models/piece_list
 
 class Trix.Text
   @textForAttachmentWithAttributes: (attachment, attributes) ->
-    piece = new Trix.AttachmentPiece attachment, attributes
+    piece = Trix.Piece.forAttachment(attachment, attributes)
     new this [piece]
 
   @textForStringWithAttributes: (string, attributes) ->
@@ -16,7 +15,7 @@ class Trix.Text
       for {string, attachment, attributes} in JSON.parse(json)
         if attachment
           attachment = new Trix.Attachment attachment
-          new Trix.AttachmentPiece attachment, attributes
+          Trix.Piece.forAttachment(attachment, attributes)
         else
           new Trix.Piece string, attributes
 
@@ -117,7 +116,7 @@ class Trix.Text
       attributes = piece.getAttributes()
       run = {id, attributes, position}
 
-      if piece instanceof Trix.AttachmentPiece
+      if piece.attachment
         run.attachment = piece.attachment
       else
         run.string = piece.toString()
