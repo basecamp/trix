@@ -90,7 +90,11 @@ class Trix.PieceList
       if attachment = pendingPiece.attachment
         attachments.push(attachment)
 
-    pieces.push(pendingPiece) if pendingPiece?
+    if pendingPiece?
+      pieces.push(pendingPiece)
+      if attachment = pendingPiece.attachment
+        attachments.push(attachment)
+
     @setCachedAttachments(attachments)
     @pieces = pieces
 
