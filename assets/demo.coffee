@@ -7,9 +7,12 @@ document.addEventListener "DOMContentLoaded", ->
     input: "data"
     debug: "debug"
     className: "formatted"
-    responder:
-      addAttachment: (attachment) ->
-        console.log "Host responder received attachment:", attachment
+    delegate:
+      shouldAcceptFile: (file) ->
+        true
+
+      didAddAttachment: (attachment) ->
+        console.log "Host received attachment:", attachment
 
         if file = attachment.file
           setTimeout ->
@@ -19,11 +22,11 @@ document.addEventListener "DOMContentLoaded", ->
               filename = "basecamp-#{file.name}.rb"
               attributes = { url: filename, filename }
 
-            console.log "Host responder setting attributes for attachment:", attachment, attributes
+            console.log "Host setting attributes for attachment:", attachment, attributes
             attachment.update(attributes)
           , 1000
 
-      removeAttachment: (attachment) ->
-        console.log "Host responder received removed attachment:", attachment
+      didRemoveAttachment: (attachment) ->
+        console.log "Host received removed attachment:", attachment
 
   window.controller = Trix.install(config)

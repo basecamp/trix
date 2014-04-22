@@ -2,26 +2,26 @@
 #= require trix/models/attachment
 
 class Trix.AttachmentManager
-  constructor: (@text, @responder) ->
+  constructor: (@text) ->
     @collection = new Trix.Collection
-    @reset()
 
   get: (id) ->
     @collection.get(id)
 
   add: (attachment) ->
     unless @collection.has(attachment.id)
+      @collection.add(attachment)
       object = @attachmentObjectWithCallbacks(attachment)
-      unless @responder?.addAttachment?(object) is false
-        @collection.add(attachment)
+      @delegate?.didAddAttachment?(object)
+      attachment
 
   create: (file) ->
-    if @responder
+    if @delegate?.shouldAcceptFile?(file)
       @add(Trix.Attachment.forFile(file))
 
   remove: (id) ->
     if attachment = @collection.remove(id)
-      @responder?.removeAttachment?(attachment.toObject())
+      @delegate?.didRemoveAttachment?(attachment.toObject())
 
   reset: ->
     attachments = @text.getAttachments()
