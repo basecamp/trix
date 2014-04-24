@@ -81,12 +81,11 @@ class Trix.Piece
 
   toJSON: ->
     attributes = @getAttributes()
-    string = @toString()
 
     if @attachment
-      {@attachment, attributes}
+      {attributes, @attachment}
     else
-      {@string, attributes}
+      {attributes, @string}
 
   inspect: ->
     "#<Piece string=#{JSON.stringify(@string)}, attributes=#{@attributes.inspect()}>"
