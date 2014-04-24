@@ -78,7 +78,6 @@ class Trix.PieceList
   consolidate: ->
     pieces = []
     pendingPiece = @pieces[0]
-    attachments = []
 
     for piece in @pieces[1..]
       if pendingPiece.canBeConsolidatedWithPiece(piece)
@@ -87,15 +86,9 @@ class Trix.PieceList
         pieces.push(pendingPiece)
         pendingPiece = piece
 
-      if attachment = pendingPiece.attachment
-        attachments.push(attachment)
-
     if pendingPiece?
       pieces.push(pendingPiece)
-      if attachment = pendingPiece.attachment
-        attachments.push(attachment)
 
-    @setCachedAttachments(attachments)
     @pieces = pieces
 
   findIndexAndOffsetAtPosition: (position) ->
@@ -113,12 +106,6 @@ class Trix.PieceList
     length
 
   getAttachments: ->
-    @attachmentCache or @setCachedAttachments(@extractAttachments())
-
-  setCachedAttachments: (attachments = []) ->
-    @attachmentCache = attachments
-
-  extractAttachments: ->
     for piece in @pieces when piece.attachment
       piece.attachment
 

@@ -38,7 +38,7 @@ class Trix.Text
   endEditing: ->
     if --@editDepth is 0
       @pieceList.consolidate()
-      @attachments?.reset()
+      defer => @attachments?.reset()
       @delegate?.didEditText?(this)
     this
 
@@ -135,3 +135,6 @@ class Trix.Text
 
   asJSON: ->
     JSON.stringify(this)
+
+  defer = (fn) ->
+    setTimeout fn, 1
