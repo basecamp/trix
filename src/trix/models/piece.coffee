@@ -83,9 +83,9 @@ class Trix.Piece
     attributes = @getAttributes()
 
     if @attachment
-      {attributes, @attachment}
+      {@attachment, attributes}
     else
-      {attributes, @string}
+      {@string, attributes}
 
   inspect: ->
     "#<Piece string=#{JSON.stringify(@string)}, attributes=#{@attributes.inspect()}>"

@@ -1,4 +1,5 @@
 #= require trix/models/text
+#= require trix/models/attachment
 #= require helpers
 #= require fixtures
 
@@ -6,7 +7,7 @@ module "Trix.Text"
 
 
 test "textForAttachmentWithAttributes", ->
-  attachment = id: 1
+  attachment = new Trix.Attachment url: "/basecamp.png"
 
   text = Trix.Text.textForAttachmentWithAttributes(attachment)
   runsEqual text,
@@ -598,8 +599,9 @@ test "asJSON", ->
     """[{"string":"Hello world","attributes":{"bold":true}}]""",
     "text is serialized as JSON"
 
-  text = Trix.Text.textForAttachmentWithAttributes({ id: 1 }, { width: 10 })
+  attachment = new Trix.Attachment url: "/basecamp.png"
+  text = Trix.Text.textForAttachmentWithAttributes(attachment)
   equal text.asJSON(),
-    """[{"attachment":{"id":1},"attributes":{"width":10}}]""",
+    """[{"attachment":{"url":"/basecamp.png"},"attributes":{}}]""",
     "text is serialized as JSON"
 
