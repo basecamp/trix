@@ -1,7 +1,5 @@
-id = 0
-
 class Trix.Attachment
-  modelName: "Attachment"
+  id = 0
 
   @forFile: (file) ->
     attachment = new this { contentType: file.type, filename: file.name }
