@@ -65,7 +65,9 @@ class Trix.InputController
         delete @draggedRange
 
       else if files = event.dataTransfer.files
-        @responder?.insertFile(file) for file in files
+        for file in files
+          if @responder?.insertFile(file)
+            file.trixInserted = true
 
     cut: (event) ->
       defer => @responder?.deleteBackward()
