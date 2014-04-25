@@ -1,4 +1,4 @@
-#= require trix/hash
+#= require trix/lib/hash
 
 class Trix.Piece
   id = 0

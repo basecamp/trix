@@ -1,4 +1,4 @@
-#= require trix/models/collection
+#= require trix/lib/collection
 #= require trix/models/attachment
 
 class Trix.AttachmentManager

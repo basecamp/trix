@@ -6,8 +6,8 @@
 #= require trix/models/text
 #= require trix/models/attachment
 #= require trix/models/attachment_manager
-#= require trix/observers/selection_observer
-#= require trix/html_parser
+#= require trix/lib/selection_observer
+#= require trix/lib/html_parser
 
 class Trix.EditorController
   constructor: (@config) ->

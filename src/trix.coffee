@@ -1,6 +1,6 @@
 #= require_self
-#= require trix/installer
-#= require trix/dom
+#= require trix/lib/installer
+#= require trix/lib/dom
 
 @Trix =
   install: (config) ->

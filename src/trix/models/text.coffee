@@ -1,6 +1,6 @@
 #= require trix/models/piece
 #= require trix/models/piece_list
-#= require trix/helpers
+#= require trix/lib/helpers
 
 {defer} = Trix.Helpers
 

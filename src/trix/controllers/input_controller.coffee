@@ -1,4 +1,4 @@
-#= require trix/helpers
+#= require trix/lib/helpers
 
 {defer} = Trix.Helpers
 

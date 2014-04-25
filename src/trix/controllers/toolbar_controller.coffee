@@ -1,4 +1,4 @@
-#= require trix/dom
+#= require trix/lib/dom
 
 class Trix.ToolbarController
   buttonSelector = ".button[data-attribute]"
