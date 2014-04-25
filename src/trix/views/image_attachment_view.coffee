@@ -1,4 +1,7 @@
 #= require trix/views/attachment_view
+#= require trix/lib/helpers
+
+{defer} = Trix.Helpers
 
 class Trix.ImageAttachmentView extends Trix.AttachmentView
   render: ->
@@ -12,7 +15,7 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
     reader.onload = (event) =>
       if @attachment.isPending()
         @image.setAttribute("src", event.target.result)
-        @attachment.setAttributes(width: @image.offsetWidth, height: @image.offsetHeight)
+        defer => @attachment.setAttributes(width: @image.offsetWidth, height: @image.offsetHeight)
     reader.readAsDataURL(@attachment.file)
 
   attributeNames = "url width height class".split(" ")
