@@ -1,4 +1,5 @@
 #= require trix/views/attachment_view
+#= require trix/lib/dom
 #= require trix/lib/helpers
 
 {defer} = Trix.Helpers
@@ -17,7 +18,7 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
   setInitialAttributes: (src) =>
     if @attachment.isPending()
       @image.setAttribute("src", src)
-      defer => @attachment.setAttributes(@getImageDimensions())
+      defer => @attachment.setAttributes(Trix.DOM.getDimensions(@image))
 
   attributeNames = "url width height class".split(" ")
 
@@ -39,10 +40,6 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
         @image.setAttribute(key, value)
       else
         @image.removeAttribute(key)
-
-  getImageDimensions: ->
-    width:  @image.offsetWidth
-    height: @image.offsetHeight
 
   getDataURL = (file, callback) ->
     reader = new FileReader

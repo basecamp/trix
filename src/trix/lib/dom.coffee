@@ -29,5 +29,9 @@ Trix.DOM = dom =
       return true if element is ancestor
       element = element.parentNode
 
+  getDimensions: (element) ->
+    width:  element.offsetWidth
+    height: element.offsetHeight
+
 html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector

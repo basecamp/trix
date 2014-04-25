@@ -1,4 +1,5 @@
 #= require trix/controllers/attachment_controller
+#= require trix/lib/dom
 
 class Trix.ImageAttachmentController extends Trix.AttachmentController
   install: ->
@@ -15,7 +16,9 @@ class Trix.ImageAttachmentController extends Trix.AttachmentController
     @editor.appendChild(@element)
     @editor.appendChild(@handle)
 
-    @setStyle(@editor, @getDimensions(@element))
+    {width, height} = Trix.DOM.getDimensions(@element)
+
+    @setStyle(@editor, width: "#{width}px", height: "#{height}px")
     @setStyle(@element, width: "100%", height: "auto")
 
   uninstall: ->
