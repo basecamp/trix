@@ -1,5 +1,8 @@
 #= require trix/models/piece
 #= require trix/models/piece_list
+#= require trix/helpers
+
+{defer} = Trix.Helpers
 
 class Trix.Text
   @textForAttachmentWithAttributes: (attachment, attributes) ->
@@ -135,6 +138,3 @@ class Trix.Text
 
   asJSON: ->
     JSON.stringify(this)
-
-  defer = (fn) ->
-    setTimeout fn, 1

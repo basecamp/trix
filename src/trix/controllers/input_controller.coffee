@@ -1,3 +1,7 @@
+#= require trix/helpers
+
+{defer} = Trix.Helpers
+
 class Trix.InputController
   @keyNames:
     0x08: "backspace"
@@ -64,7 +68,7 @@ class Trix.InputController
         @responder?.insertFile(file) for file in files
 
     cut: (event) ->
-      @responder?.deleteBackward()
+      defer => @responder?.deleteBackward()
 
     paste: (event) ->
       event.preventDefault()
