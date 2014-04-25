@@ -31,11 +31,8 @@ class Trix.Installer
       element.appendChild(document.createTextNode(css))
       document.querySelector("head").appendChild(element)
 
-  textareaStylesToCopy = "
-    width margin padding border border-radius
-    outline position top left right bottom z-index
-    color background
-  ".split(" ")
+  textareaStylesToCopy = "width position top left right bottom zIndex color".split(" ")
+  textareaStylePatternToCopy = /(border|outline|padding|margin|background)[A-Z]+/
 
   createTextElement: ->
     textarea = @config.textareaElement
@@ -52,8 +49,14 @@ class Trix.Installer
       element.setAttribute("data-placeholder", placeholder)
 
     textareaStyle = window.getComputedStyle(textarea)
-    element.style[style] = textareaStyle[style] for style in textareaStylesToCopy
-    element.style["min-height"] = textareaStyle["height"]
+
+    for style in textareaStylesToCopy
+      element.style[style] = textareaStyle[style]
+
+    for key, value of textareaStyle when value and textareaStylePatternToCopy.test(key)
+      element.style[key] = value
+
+    element.style["minHeight"] = textareaStyle["height"]
 
     disableObjectResizingOnFocus(element)
 
