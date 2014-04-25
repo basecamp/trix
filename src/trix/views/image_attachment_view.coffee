@@ -6,17 +6,18 @@
 class Trix.ImageAttachmentView extends Trix.AttachmentView
   render: ->
     @image = document.createElement("img")
-    @loadFile() if @attachment.isPending()
+    @loadImagePreview()
     @updateAttributes()
     @image
 
-  loadFile: ->
-    reader = new FileReader
-    reader.onload = (event) =>
-      if @attachment.isPending()
-        @image.setAttribute("src", event.target.result)
-        defer => @attachment.setAttributes(width: @image.offsetWidth, height: @image.offsetHeight)
-    reader.readAsDataURL(@attachment.file)
+  loadImagePreview: ->
+    if @attachment.isPending()
+      getDataURL @attachment.file, @setInitialAttributes
+
+  setInitialAttributes: (src) =>
+    if @attachment.isPending()
+      @image.setAttribute("src", src)
+      defer => @attachment.setAttributes(@getImageDimensions())
 
   attributeNames = "url width height class".split(" ")
 
@@ -38,3 +39,12 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
         @image.setAttribute(key, value)
       else
         @image.removeAttribute(key)
+
+  getImageDimensions: ->
+    width:  @image.offsetWidth
+    height: @image.offsetHeight
+
+  getDataURL = (file, callback) ->
+    reader = new FileReader
+    reader.onload = (event) -> callback(event.target.result)
+    reader.readAsDataURL(file)
