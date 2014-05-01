@@ -83,9 +83,6 @@ class Trix.EditorController
     @textController.unlockSelection()
     @composition.insertString(composedString)
 
-  inputControllerDidInvalidateElement: (element) ->
-    @textController.render()
-
   # Selection observer delegate
 
   selectionDidChange: (range) ->

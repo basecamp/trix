@@ -25,6 +25,9 @@ class Trix.Piece
   copyWithoutAttribute: (attribute) ->
     @copyWithAttributes(@attributes.remove(attribute))
 
+  copy: ->
+    @copyWithAttributes(@attributes)
+
   getAttributesHash: ->
     @attributes
 

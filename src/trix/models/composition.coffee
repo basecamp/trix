@@ -31,6 +31,10 @@ class Trix.Composition
     text = Trix.Text.fromHTML(html)
     @insertText(text, options)
 
+  mergeHTML: (html) ->
+    text = Trix.Text.fromHTML(html)
+    @text.mergeText(text)
+
   insertFile: (file) ->
     if attachment = @text.attachments?.create(file)
       text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)

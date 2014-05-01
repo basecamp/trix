@@ -16,6 +16,13 @@ class Trix.PieceList
     index = @splitPieceAtPosition(position)
     @insertPieceListAtIndex(pieceList, index)
 
+  mergePieceList: (pieceList) ->
+    @eachPiece (piece, index) =>
+      otherPiece = pieceList.getPieceAtIndex(index)
+      unless piece.isEqualTo(otherPiece)
+        @removePieceAtIndex(index)
+        @insertPieceAtIndex(otherPiece.copy(), index)
+
   removePieceAtIndex: (index) ->
     @pieces.splice(index, 1)
 

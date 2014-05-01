@@ -43,7 +43,6 @@ class Trix.Installer
 
     element.setAttribute("contenteditable", "true")
     element.setAttribute("autocorrect", "off")
-    element.setAttribute("spellcheck", "false")
 
     if placeholder = textarea.getAttribute("placeholder")
       element.setAttribute("data-placeholder", placeholder)
