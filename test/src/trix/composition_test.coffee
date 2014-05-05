@@ -97,6 +97,16 @@ test "#deleteBackward", ->
     equal composition.delegate.lastChange.type, "text", "change type is text"
     deepEqual composition.selectionDelegate.lastRange, [5, 5], "position is decremented"
 
+  testGroup "from position after grapheme cluster", ->
+    text = Trix.Text.textForStringWithAttributes("oṇ̇ff")
+    composition = makeComposition(text, [4, 4])
+    composition.deleteBackward()
+
+    equal composition.text.toString(), "off", "entire grapheme cluster is removed"
+    equal composition.delegate.changes.length, 1, "change count is one"
+    equal composition.delegate.lastChange.type, "text", "change type is text"
+    deepEqual composition.selectionDelegate.lastRange, [1, 1], "position is decremented"
+
   testGroup "with selected range", ->
     composition = makeComposition(fixture("plain"), [4, 6])
     composition.deleteBackward()
@@ -127,6 +137,16 @@ test "#deleteForward", ->
     equal composition.delegate.changes.length, 1, "change count is one"
     equal composition.delegate.lastChange.type, "text", "change type is text"
     deepEqual composition.selectionDelegate.lastRange, [6, 6], "position is unchanged"
+
+  testGroup "from position before grapheme cluster", ->
+    text = Trix.Text.textForStringWithAttributes("oṇ̇ff")
+    composition = makeComposition(text, [1, 1])
+    composition.deleteForward()
+
+    equal composition.text.toString(), "off", "entire grapheme cluster is removed"
+    equal composition.delegate.changes.length, 1, "change count is one"
+    equal composition.delegate.lastChange.type, "text", "change type is text"
+    deepEqual composition.selectionDelegate.lastRange, [1, 1], "position is unchanged"
 
   testGroup "with selected range", ->
     composition = makeComposition(fixture("plain"), [4, 6])

@@ -1,5 +1,8 @@
 #= require trix/models/text
 #= require trix/models/attachment
+#= require trix/lib/helpers
+
+{countGraphemeClusters} = Trix.Helpers
 
 class Trix.Composition
   constructor: (@text = new Trix.Text) ->
@@ -46,10 +49,30 @@ class Trix.Composition
     @requestPosition(range[0])
 
   deleteBackward: ->
-    @deleteFromCurrentPosition(-1)
+    distance = 1
+
+    if (position = @getPosition())?
+      while (leftPosition = position - distance - 1) >= 0
+        string = @text.getStringAtRange([leftPosition, position])
+        if countGraphemeClusters(string) is 1 or countGraphemeClusters("n#{string}") is 1
+          distance++
+        else
+          break
+
+    @deleteFromCurrentPosition(distance * -1)
 
   deleteForward: ->
-    @deleteFromCurrentPosition(1)
+    distance = 1
+
+    if (position = @getPosition())?
+      while (rightPosition = position + distance + 1) <= @text.getLength()
+        string = @text.getStringAtRange([position, rightPosition])
+        if countGraphemeClusters(string) is 1
+          distance++
+        else
+          break
+
+    @deleteFromCurrentPosition(distance)
 
   deleteWordBackward: ->
     if @getSelectedRange()
