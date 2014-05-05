@@ -34,7 +34,8 @@ class Trix.HTMLParser
         @processElementNode(node)
 
   processTextNode: (node) ->
-    @appendString(node.textContent, getAttributes(node.parentNode))
+    string = node.textContent.replace(/\s/, " ")
+    @appendString(string, getAttributes(node.parentNode))
 
   processElementNode: (node) ->
     switch node.tagName.toLowerCase()

@@ -66,6 +66,9 @@ class Trix.Text
     @removeTextAtRange(range)
     @insertTextAtPosition(text, position)
 
+  mergeText: edit (text) ->
+    @pieceList.mergePieceList(text.pieceList)
+
   addAttributeAtRange: edit (attribute, value, range) ->
     attributes = {}
     attributes[attribute] = value

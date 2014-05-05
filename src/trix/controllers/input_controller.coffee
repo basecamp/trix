@@ -93,8 +93,7 @@ class Trix.InputController
           delete @composedString
           delete @composing
       else
-        @delegate?.inputControllerDidInvalidateElement?(@element)
-        @logAndCancel(event)
+        @responder?.mergeHTML(@element.innerHTML)
 
   keys:
     backspace: (event) ->
