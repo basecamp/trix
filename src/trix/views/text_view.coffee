@@ -152,6 +152,17 @@ class Trix.TextView
       if range = @findRangeFromDOMRange(domRange)
         range[0]
 
+  getPointAtEndOfSelection: ->
+    selection = window.getSelection()
+    if selection.rangeCount > 0
+      rects = selection.getRangeAt(0).getClientRects()
+      rect = rects[rects.length - 1]
+
+      pageX = rect.right
+      pageY = rect.top + rect.height / 2
+
+      [pageX, pageY]
+
   getSelectedRange: ->
     return @lockedRange if @lockedRange
 

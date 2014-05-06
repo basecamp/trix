@@ -35,8 +35,9 @@ class Trix.Composition
     @insertText(text, options)
 
   replaceHTML: (html) ->
-    text = Trix.Text.fromHTML(html)
-    @text.replaceText(text)
+    @preserveSelectionEndPoint =>
+      text = Trix.Text.fromHTML(html)
+      @text.replaceText(text)
 
   insertFile: (file) ->
     if attachment = @text.attachments?.create(file)
@@ -165,6 +166,11 @@ class Trix.Composition
 
   requestPosition: (position) ->
     @requestSelectedRange([position, position])
+
+  preserveSelectionEndPoint: (block) ->
+    point = @selectionDelegate?.getPointAtEndOfCompositionSelection?(this)
+    block()
+    @requestPositionAtPoint(point) if point?
 
   requestPositionAtPoint: (point) ->
     if range = @selectionDelegate?.getRangeOfCompositionAtPoint?(this, point)

@@ -61,6 +61,9 @@ class Trix.TextController
     position = @getPositionAtPoint(point)
     [position, position] if position?
 
+  getPointAtEndOfCompositionSelection: (composition) ->
+    @textView.getPointAtEndOfSelection()
+
   compositionDidRequestSelectionOfRange: (composition, range) ->
     @focus()
     @textView.setSelectedRange(range)
