@@ -393,7 +393,7 @@ test "#moveTextFromRangeToPosition", ->
   equal text.toString(), "He worldllo", "moving text to the end position"
 
 
-test "#mergeText", ->
+test "#replaceText", ->
   text = new Trix.Text [
     new Trix.Piece "Hello "
     new Trix.Piece "creul", bold: true
@@ -407,8 +407,8 @@ test "#mergeText", ->
     new Trix.Piece " world"
   ]
 
-  text.mergeText(text2)
-  equal text.toString(), "Hello strange, cruel world", "text merged"
+  text.replaceText(text2)
+  equal text.toString(), "Hello strange, cruel world", "text replaced"
 
 
 test "#addAttributeAtRange", ->

@@ -93,7 +93,7 @@ class Trix.InputController
           delete @composedString
           delete @composing
       else
-        @responder?.mergeHTML(@element.innerHTML)
+        @responder?.replaceHTML(@element.innerHTML)
 
   keys:
     backspace: (event) ->

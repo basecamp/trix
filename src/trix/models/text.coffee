@@ -58,6 +58,9 @@ class Trix.Text
     @removeTextAtRange(range)
     @insertTextAtPosition(text, range[0])
 
+  replaceText: edit (text) ->
+    @pieceList.mergePieceList(text.pieceList)
+
   moveTextFromRangeToPosition: edit (range, position) ->
     return if range[0] <= position <= range[1]
     text = @getTextAtRange(range)
@@ -65,9 +68,6 @@ class Trix.Text
     position -= length if range[0] < position
     @removeTextAtRange(range)
     @insertTextAtPosition(text, position)
-
-  mergeText: edit (text) ->
-    @pieceList.mergePieceList(text.pieceList)
 
   addAttributeAtRange: edit (attribute, value, range) ->
     attributes = {}
