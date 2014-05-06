@@ -17,11 +17,27 @@ class Trix.PieceList
     @insertPieceListAtIndex(pieceList, index)
 
   mergePieceList: (pieceList) ->
-    @eachPiece (piece, index) =>
-      otherPiece = pieceList.getPieceAtIndex(index)
-      unless piece.isEqualTo(otherPiece)
-        @removePieceAtIndex(index)
-        @insertPieceAtIndex(otherPiece.copy(), index)
+    return if @isEqualTo(pieceList)
+
+    piecesAreEqual = (index, otherIndex) =>
+      @getPieceAtIndex(index).isEqualTo(pieceList.getPieceAtIndex(otherIndex ? index))
+
+    leftIndex = 0
+    leftIndex++ while piecesAreEqual(leftIndex)
+
+    rightIndex = @pieces.length - 1
+    otherRightIndex = pieceList.pieces.length - 1
+
+    while otherRightIndex > leftIndex and piecesAreEqual(rightIndex, otherRightIndex)
+      rightIndex--
+      otherRightIndex--
+
+    while rightIndex >= leftIndex
+      @removePieceAtIndex(rightIndex--)
+
+    while otherRightIndex >= leftIndex
+      otherPiece = pieceList.getPieceAtIndex(otherRightIndex--)
+      @insertPieceAtIndex(otherPiece, leftIndex)
 
   removePieceAtIndex: (index) ->
     @pieces.splice(index, 1)

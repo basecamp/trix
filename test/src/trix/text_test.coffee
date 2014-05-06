@@ -393,6 +393,24 @@ test "#moveTextFromRangeToPosition", ->
   equal text.toString(), "He worldllo", "moving text to the end position"
 
 
+test "#mergeText", ->
+  text = new Trix.Text [
+    new Trix.Piece "Hello "
+    new Trix.Piece "creul", bold: true
+    new Trix.Piece " world"
+  ]
+
+  text2 = new Trix.Text [
+    new Trix.Piece "Hello "
+    new Trix.Piece "strange, ", italic: true
+    new Trix.Piece "cruel", bold: true
+    new Trix.Piece " world"
+  ]
+
+  text.mergeText(text2)
+  equal text.toString(), "Hello strange, cruel world", "text merged"
+
+
 test "#addAttributeAtRange", ->
   text = fixture("plain")
   text.addAttributeAtRange("bold", true, [0, 5])
