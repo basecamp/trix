@@ -37,7 +37,7 @@ class Trix.PieceList
 
     while otherRightIndex >= leftIndex
       otherPiece = pieceList.getPieceAtIndex(otherRightIndex--)
-      @insertPieceAtIndex(otherPiece, leftIndex)
+      @insertPieceAtIndex(otherPiece.copy(), leftIndex)
 
   removePieceAtIndex: (index) ->
     @pieces.splice(index, 1)
