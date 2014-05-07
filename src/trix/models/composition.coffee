@@ -167,14 +167,14 @@ class Trix.Composition
   requestPosition: (position) ->
     @requestSelectedRange([position, position])
 
+  requestPositionAtPoint: (point) ->
+    if range = @selectionDelegate?.getRangeOfCompositionAtPoint?(this, point)
+      @requestSelectedRange(range)
+
   preserveSelectionEndPoint: (block) ->
     point = @selectionDelegate?.getPointAtEndOfCompositionSelection?(this)
     block()
     @requestPositionAtPoint(point) if point?
-
-  requestPositionAtPoint: (point) ->
-    if range = @selectionDelegate?.getRangeOfCompositionAtPoint?(this, point)
-      @requestSelectedRange(range)
 
   getSelectedRange: ->
     if range = @selectionDelegate?.getSelectedRangeOfComposition?(this)
