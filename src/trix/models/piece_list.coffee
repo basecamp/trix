@@ -20,7 +20,7 @@ class Trix.PieceList
     return if @isEqualTo(pieceList)
 
     piecesAreEqual = (index, otherIndex) =>
-      @getPieceAtIndex(index).isEqualTo(pieceList.getPieceAtIndex(otherIndex ? index))
+      @getPieceAtIndex(index)?.isEqualTo(pieceList.getPieceAtIndex(otherIndex ? index))
 
     leftIndex = 0
     leftIndex++ while piecesAreEqual(leftIndex)
