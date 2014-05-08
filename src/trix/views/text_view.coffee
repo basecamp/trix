@@ -7,6 +7,7 @@ class Trix.TextView
   constructor: (@element, @text) ->
     @element.trixPosition = 0
     @elements = []
+    @resetNodeCache()
 
   focus: ->
     @element.focus()
@@ -15,12 +16,22 @@ class Trix.TextView
 
   render: ->
     selectedRange = @getSelectedRange()
+    @resetNodeCache()
     @elements = []
     @createElementsForText()
     @createExtraNewlineElement()
     @element.removeChild(@element.lastChild) while @element.lastChild
     @element.appendChild(element) for element in @elements
     @setSelectedRange(selectedRange) if selectedRange
+
+  resetNodeCache: ->
+    @nodeCache = []
+
+  # Hold a reference to every node we create to prevent IE from losing
+  # their expando properties like trixPosition. IE will otherwise occasionally
+  # replace the nodes or remove the properties (uncertain which one).
+  cacheNode: (node) ->
+    @nodeCache.push(node)
 
   createElementsForText: ->
     @text.eachRun (run) =>
@@ -36,17 +47,21 @@ class Trix.TextView
 
     element = innerElement = elements[0]
     element.trixPosition = position
+    @cacheNode(element)
 
     for child in elements[1..]
+      @cacheNode(child)
       innerElement.appendChild(child)
       innerElement = child
       innerElement.trixPosition = position
 
     if @currentRun.attachment
       if attachmentElement = @createAttachmentElementForCurrentRun()
+        @cacheNode(attachmentElement)
         innerElement.appendChild(attachmentElement)
     else if @currentRun.string
       for node in @createStringNodesForCurrentRun()
+        @cacheNode(node)
         innerElement.appendChild(node)
 
     if parentAttribute
@@ -65,6 +80,7 @@ class Trix.TextView
       if /\n$/.test(string)
         @currentRun = { string: "\n", position: @text.getLength() }
         node = @createStringNodesForCurrentRun()[0]
+        @cacheNode(node)
         @elements.push(node)
 
   createAttachmentElementForCurrentRun: ->
