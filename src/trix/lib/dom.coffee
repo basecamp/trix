@@ -33,6 +33,11 @@ Trix.DOM = dom =
     width:  element.offsetWidth
     height: element.offsetHeight
 
+  trigger: (element, eventName) ->
+    event = document.createEvent("Events")
+    event.initEvent(eventName, true, true)
+    element.dispatchEvent(event)
+
   createTreeWalker: (root, whatToShow = NodeFilter.SHOW_ALL, filter = null, entityReferenceExpansion = false) ->
     document.createTreeWalker(root, whatToShow, filter, entityReferenceExpansion)
 

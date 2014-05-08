@@ -6,6 +6,7 @@
 #= require trix/models/text
 #= require trix/models/attachment
 #= require trix/models/attachment_manager
+#= require trix/lib/dom
 #= require trix/lib/selection_observer
 #= require trix/lib/html_parser
 
@@ -50,7 +51,7 @@ class Trix.EditorController
 
   saveSerializedText: ->
     @textareaElement.value = @textElement.innerHTML
-    @textareaElement.dispatchEvent new Event "input"
+    Trix.DOM.trigger(@textareaElement, "input")
     @inputElement?.value = @text.asJSON()
 
   # Composition controller delegate
