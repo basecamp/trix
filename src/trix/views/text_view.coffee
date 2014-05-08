@@ -224,7 +224,7 @@ class Trix.TextView
         container.trixPosition
       else
         node = container.childNodes[offset - 1]
-        walker = createTreeWalker(node)
+        walker = Trix.DOM.createTreeWalker(node)
         walker.lastChild()
         walker.currentNode.trixPosition + walker.currentNode.trixLength
 
@@ -243,7 +243,7 @@ class Trix.TextView
     [container, offset]
 
   findNodeForPosition: (position) ->
-    walker = createTreeWalker(@element)
+    walker = Trix.DOM.createTreeWalker(@element, null, nodeFilterForPosition)
     node = walker.currentNode
 
     while walker.nextNode()
@@ -255,13 +255,8 @@ class Trix.TextView
         break
     node
 
-  createTreeWalker = (element) ->
-    whatToShow = NodeFilter.SHOW_ELEMENT + NodeFilter.SHOW_TEXT
-
-    acceptNode = (node) ->
-      if node.trixPosition? and node.trixLength?
-        NodeFilter.FILTER_ACCEPT
-      else
-        NodeFilter.FILTER_SKIP
-
-    document.createTreeWalker(element, whatToShow, {acceptNode})
+  nodeFilterForPosition = (node) ->
+    if node.trixPosition? and node.trixLength?
+      NodeFilter.FILTER_ACCEPT
+    else
+      NodeFilter.FILTER_SKIP

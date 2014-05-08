@@ -33,5 +33,8 @@ Trix.DOM = dom =
     width:  element.offsetWidth
     height: element.offsetHeight
 
+  createTreeWalker: (root, whatToShow = NodeFilter.SHOW_ALL, filter = null, entityReferenceExpansion = false) ->
+    document.createTreeWalker(root, whatToShow, filter, entityReferenceExpansion)
+
 html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector
