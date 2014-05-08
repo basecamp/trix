@@ -136,6 +136,9 @@ class Trix.Text
   toString: ->
     @pieceList.toString()
 
+  toArray: ->
+    @pieceList.toArray()
+
   toJSON: ->
     @pieceList.toJSON()
 

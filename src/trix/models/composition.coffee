@@ -9,6 +9,16 @@ class Trix.Composition
     @text.delegate = this
     @currentAttributes = {}
 
+  # Snapshots
+
+  createSnapshot: ->
+    textContents: @getTextContents()
+    selectedRange: @getInternalSelectedRange()
+
+  restoreSnapshot: ({textContents, selectedRange}) ->
+    @text.replaceText(new Trix.Text textContents)
+    @requestSelectedRange(selectedRange)
+
   # Text delegate
 
   didEditText: (text) ->
@@ -160,7 +170,7 @@ class Trix.Composition
   # Position and selected range
 
   getPosition: ->
-    if range = @selectionDelegate?.getSelectedRangeOfComposition?(this)
+    if range = @getInternalSelectedRange()
       [start, end] = range
       start if start is end
 
@@ -177,7 +187,7 @@ class Trix.Composition
     @requestPositionAtPoint(point) if point?
 
   getSelectedRange: ->
-    if range = @selectionDelegate?.getSelectedRangeOfComposition?(this)
+    if range = @getInternalSelectedRange()
       [start, end] = range
       range unless start is end
 
@@ -185,6 +195,14 @@ class Trix.Composition
     length = @text.getLength()
     range = [clamp(start, 0, length), clamp(end, 0, length)]
     @selectionDelegate?.compositionDidRequestSelectionOfRange?(this, range)
+
+  # Private
+
+  getTextContents: ->
+    @text.toArray()
+
+  getInternalSelectedRange: ->
+    @selectionDelegate?.getSelectedRangeOfComposition?(this)
 
   clamp = (value, floor, ceiling) ->
     Math.max(floor, Math.min(ceiling, value))
