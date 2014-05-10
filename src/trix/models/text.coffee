@@ -133,11 +133,11 @@ class Trix.Text
   inspect: ->
     @pieceList.inspect()
 
+  copy: ->
+    new @constructor @pieceList.toArray()
+
   toString: ->
     @pieceList.toString()
-
-  toArray: ->
-    @pieceList.toArray()
 
   toJSON: ->
     @pieceList.toJSON()

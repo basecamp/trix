@@ -12,11 +12,11 @@ class Trix.Composition
   # Snapshots
 
   createSnapshot: ->
-    textContents: @getTextContents()
+    text: @getText()
     selectedRange: @getInternalSelectedRange()
 
-  restoreSnapshot: ({textContents, selectedRange}) ->
-    @text.replaceText(new Trix.Text textContents)
+  restoreSnapshot: ({text, selectedRange}) ->
+    @text.replaceText(text)
     @requestSelectedRange(selectedRange)
 
   # Text delegate
@@ -198,8 +198,8 @@ class Trix.Composition
 
   # Private
 
-  getTextContents: ->
-    @text.toArray()
+  getText: ->
+    @text.copy()
 
   getInternalSelectedRange: ->
     @selectionDelegate?.getSelectedRangeOfComposition?(this)
