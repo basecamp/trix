@@ -33,18 +33,14 @@ document.addEventListener "DOMContentLoaded", ->
 
   window.controller = Trix.install(config)
 
-  saveButton = document.getElementById('save')
-  restoreButton = document.getElementById('restore')
-  snapshot = null
+  undoButton = document.getElementById('undo')
+  redoButton = document.getElementById('redo')
 
-  saveButton.onclick = ->
-    snapshot = window.controller.composition.createSnapshot()
-    restoreButton.disabled = false
+  undoButton.onclick = ->
+    window.controller.composition.undo()
 
-  restoreButton.onclick = ->
-    window.controller.composition.restoreSnapshot(snapshot) if snapshot
-    restoreButton.disabled = true
-    snapshot = null
+  redoButton.onclick = ->
+    window.controller.composition.redo()
 
 
 saveAttachment = (attachment) ->

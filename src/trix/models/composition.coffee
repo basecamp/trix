@@ -8,6 +8,8 @@ class Trix.Composition
   constructor: (@text = new Trix.Text) ->
     @text.delegate = this
     @currentAttributes = {}
+    @undoEntries = []
+    @redoEntries = []
 
   # Snapshots
 
@@ -18,6 +20,34 @@ class Trix.Composition
   restoreSnapshot: ({text, selectedRange}) ->
     @text.replaceText(text)
     @requestSelectedRange(selectedRange)
+
+  # Undo/redo
+
+  recordUndoEntry: (description, {consolidatable} = {}) ->
+    previousEntry = @undoEntries[-1..][0]
+
+    unless consolidatable and previousEntry?.description is description
+      undoEntry =
+        description: description
+        snapshot: @createSnapshot()
+      @undoEntries.push(undoEntry)
+      @redoEntries = []
+
+  undo: ->
+    if undoEntry = @undoEntries.pop()
+      redoEntry =
+        description: undoEntry.description
+        snapshot: @createSnapshot()
+      @redoEntries.push(redoEntry)
+      @restoreSnapshot(undoEntry.snapshot)
+
+  redo: ->
+    if redoEntry = @redoEntries.pop()
+      undoEntry =
+        description: redoEntry.description
+        snapshot: @createSnapshot()
+      @undoEntries.push(undoEntry)
+      @restoreSnapshot(redoEntry.snapshot)
 
   # Text delegate
 

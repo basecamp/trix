@@ -81,6 +81,7 @@ class Trix.EditorController
   inputControllerDidComposeCharacters: (composedString) ->
     @textController.render()
     @textController.unlockSelection()
+    @composition.recordUndoEntry("Typing", consolidatable: true)
     @composition.insertString(composedString)
 
   # Selection observer delegate
@@ -93,10 +94,12 @@ class Trix.EditorController
   # Toolbar controller delegate
 
   toolbarDidToggleAttribute: (attributeName) ->
+    @composition.recordUndoEntry("Formatting", consolidatable: true)
     @composition.toggleCurrentAttribute(attributeName)
     @textController.focus()
 
   toolbarDidUpdateAttribute: (attributeName, value) ->
+    @composition.recordUndoEntry("Formatting", consolidatable: true)
     @composition.setCurrentAttribute(attributeName, value)
     @textController.focus()
 
