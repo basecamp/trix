@@ -75,6 +75,21 @@ class Trix.EditorController
 
   # Input controller delegate
 
+  inputControllerWillPerformTyping: ->
+    @composition.recordUndoEntry("Typing", consolidatable: true)
+
+  inputControllerWillCutText: ->
+    @composition.recordUndoEntry("Cut")
+
+  inputControllerWillPasteText: ->
+    @composition.recordUndoEntry("Paste")
+
+  inputControllerWillMoveText: ->
+    @composition.recordUndoEntry("Move")
+
+  inputControllerWillAttachFiles: ->
+    @composition.recordUndoEntry("Drop Files")
+
   inputControllerWillComposeCharacters: ->
     @textController.lockSelection()
 

@@ -33,7 +33,7 @@ class Trix.InputController
         character = String.fromCharCode event.charCode
 
       if character?
-        @responder?.recordUndoEntry("Typing", consolidatable: true)
+        @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(character)
         event.preventDefault()
 
@@ -62,27 +62,27 @@ class Trix.InputController
       @responder?.requestPositionAtPoint(point)
 
       if @draggedRange
-        @responder?.recordUndoEntry("Move")
+        @delegate?.inputControllerWillMoveText()
         @responder?.moveTextFromRange(@draggedRange)
         delete @draggedRange
 
       else if files = event.dataTransfer.files
-        @responder?.recordUndoEntry("Drop Files")
+        @delegate?.inputControllerWillAttachFiles()
         for file in files
           if @responder?.insertFile(file)
             file.trixInserted = true
 
     cut: (event) ->
-      @responder?.recordUndoEntry("Cut")
+      @delegate?.inputControllerWillCutText()
       defer => @responder?.deleteBackward()
 
     paste: (event) ->
       event.preventDefault()
       if html = event.clipboardData.getData("text/html")
-        @responder?.recordUndoEntry("Paste")
+        @delegate?.inputControllerWillPasteText()
         @responder?.insertHTML(html)
       else if string = event.clipboardData.getData("text/plain")
-        @responder?.recordUndoEntry("Paste")
+        @delegate?.inputControllerWillPasteText()
         @responder?.insertString(string)
 
     compositionstart: (event) ->
@@ -103,33 +103,33 @@ class Trix.InputController
 
   keys:
     backspace: (event) ->
-      @responder?.recordUndoEntry("Typing", consolidatable: true)
+      @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteBackward()
       event.preventDefault()
 
     return: (event) ->
-      @responder?.recordUndoEntry("Typing", consolidatable: true)
+      @delegate?.inputControllerWillPerformTyping()
       @responder?.insertString("\n")
       event.preventDefault()
 
     control:
       d: (event) ->
-        @responder?.recordUndoEntry("Typing", consolidatable: true)
+        @delegate?.inputControllerWillPerformTyping()
         @responder?.deleteForward()
         event.preventDefault()
 
       h: (event) ->
-        @responder?.recordUndoEntry("Typing", consolidatable: true)
+        @delegate?.inputControllerWillPerformTyping()
         @backspace(event)
 
       o: (event) ->
-        @responder?.recordUndoEntry("Typing", consolidatable: true)
+        @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString("\n", updatePosition: false)
         event.preventDefault()
 
     alt:
       backspace: (event) ->
-        @responder?.recordUndoEntry("Typing", consolidatable: true)
+        @delegate?.inputControllerWillPerformTyping()
         @responder?.deleteWordBackward()
         event.preventDefault()
 
