@@ -1,8 +1,5 @@
 #= require trix/models/piece
 #= require trix/models/piece_list
-#= require trix/lib/helpers
-
-{defer} = Trix.Helpers
 
 class Trix.Text
   @textForAttachmentWithAttributes: (attachment, attributes) ->
