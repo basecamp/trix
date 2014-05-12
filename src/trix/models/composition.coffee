@@ -1,15 +1,19 @@
 #= require trix/models/text
-#= require trix/models/attachment
+#= require trix/models/attachment_manager
 #= require trix/lib/helpers
 
-{countGraphemeClusters} = Trix.Helpers
+{countGraphemeClusters, defer} = Trix.Helpers
 
 class Trix.Composition
-  constructor: (@text = new Trix.Text) ->
+  constructor: (@text = new Trix.Text, config) ->
     @text.delegate = this
     @currentAttributes = {}
     @undoEntries = []
     @redoEntries = []
+
+    @attachments = new Trix.AttachmentManager this
+    @attachments.delegate = config?.delegate
+    @attachments.reset()
 
   # Snapshots
 
@@ -53,6 +57,7 @@ class Trix.Composition
 
   didEditText: (text) ->
     @delegate?.compositionDidChangeText?(this, @text)
+    defer => @attachments.reset()
 
   # Responder protocol
 
@@ -80,7 +85,7 @@ class Trix.Composition
       @text.replaceText(text)
 
   insertFile: (file) ->
-    if attachment = @text.attachments?.create(file)
+    if attachment = @attachments.create(file)
       text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
       @insertText(text)
 
@@ -137,6 +142,19 @@ class Trix.Composition
     selectedRange = @getSelectedRange() ? [0, 0]
     @text.getTextAtRange(selectedRange)
 
+  # Attachment owner protocol
+
+  getAttachments: ->
+    @text.getAttachments()
+
+  updateAttachment: (id, attributes) ->
+    if attachment = @attachments.get(id)
+      @text.edit -> attachment.setAttributes(attributes)
+
+  removeAttachment: (id) ->
+    if attachment = @attachments.get(id)
+      {position} = @text.getAttachmentAndPosition(id)
+      @text.removeTextAtRange([position, position + 1])
 
   # Current attributes
 

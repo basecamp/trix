@@ -33,7 +33,7 @@ class Trix.TextController
   # Attachment controller management
 
   installAttachmentController: (element) ->
-    attachment = @text.attachments.get(element.trixAttachmentId)
+    {attachment} = @text.getAttachmentAndPosition(element.trixAttachmentId)
     unless @attachmentController?.attachment is attachment
       @uninstallAttachmentController()
       @attachmentController = Trix.AttachmentController.create(attachment, element, @element)
