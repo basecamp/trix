@@ -99,8 +99,8 @@ class Trix.Text
   getAttachments: ->
     @pieceList.getAttachments()
 
-  getPositionOfAttachment: (attachment) ->
-    @pieceList.getPositionOfAttachment(attachment)
+  getAttachmentAndPosition: (attachmentId) ->
+    @pieceList.getAttachmentAndPosition(attachmentId)
 
   getLength: ->
     @pieceList.getLength()

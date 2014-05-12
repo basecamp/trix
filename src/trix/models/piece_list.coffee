@@ -132,12 +132,13 @@ class Trix.PieceList
     for piece in @pieces when piece.attachment
       piece.attachment
 
-  getPositionOfAttachment: (attachment) ->
+  getAttachmentAndPosition: (attachmentId) ->
     position = 0
     for piece in @pieces
-      return position if piece.attachment?.id is attachment.id
+      if piece.attachment?.id is attachmentId
+        return { attachment: piece.attachment, position }
       position += piece.length
-    null
+    attachment: null, position: null
 
   toString: ->
     @pieces.join("")
