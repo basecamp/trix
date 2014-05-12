@@ -41,9 +41,10 @@ class Trix.Text
   endEditing: ->
     if --@editDepth is 0
       @pieceList.consolidate()
-      defer => @attachments?.reset()
       @delegate?.didEditText?(this)
     this
+
+  edit: edit (fn) -> fn()
 
   appendText: edit (text) ->
     @insertTextAtPosition(text, @getLength())
@@ -86,14 +87,6 @@ class Trix.Text
     @pieceList.transformPiecesInRange range, (piece) ->
       piece.copyWithAttributes(attributes)
 
-  setAttachmentAttributes: edit (id, attributes) ->
-    @attachments.get(id)?.setAttributes(attributes)
-
-  removeAttachment: edit (id) ->
-    if attachment = @attachments.get(id)
-      position = @pieceList.getPositionOfAttachment(attachment)
-      @removeTextAtRange([position, position + 1])
-
   getAttributesAtPosition: (position) ->
     @pieceList.getPieceAtPosition(position)?.getAttributes() ? {}
 
@@ -108,6 +101,9 @@ class Trix.Text
 
   getAttachments: ->
     @pieceList.getAttachments()
+
+  getPositionOfAttachment: (attachment) ->
+    @pieceList.getPositionOfAttachment(attachment)
 
   getLength: ->
     @pieceList.getLength()

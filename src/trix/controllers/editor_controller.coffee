@@ -4,8 +4,6 @@
 #= require trix/controllers/debug_controller
 #= require trix/models/composition
 #= require trix/models/text
-#= require trix/models/attachment
-#= require trix/models/attachment_manager
 #= require trix/lib/dom
 #= require trix/lib/selection_observer
 #= require trix/lib/html_parser
@@ -16,15 +14,10 @@ class Trix.EditorController
 
     @text = @createText()
 
-    @attachmentManager = new Trix.AttachmentManager @text
-    @attachmentManager.delegate = @config.delegate
-    @attachmentManager.reset()
-    @text.attachments = @attachmentManager
-
     @textController = new Trix.TextController @textElement, @text, @config
     @textController.delegate = this
 
-    @composition = new Trix.Composition @text
+    @composition = new Trix.Composition @text, @config
     @composition.delegate = this
     @composition.selectionDelegate = @textController
 

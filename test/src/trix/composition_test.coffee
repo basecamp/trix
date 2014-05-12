@@ -399,12 +399,8 @@ test "#setCurrentAttribute", ->
 # Helpers
 
 makeComposition = (text, selectedRange = [0, 0]) ->
-  attachmentManager = new Trix.AttachmentManager text
-  attachmentManager.delegate = shouldAcceptFile: -> true
-  attachmentManager.reset()
-  text.attachments = attachmentManager
-
-  composition = new Trix.Composition text
+  config = { delegate: shouldAcceptFile: -> true }
+  composition = new Trix.Composition text, config
 
   composition.selectionDelegate =
     selectedRanges: [selectedRange]
