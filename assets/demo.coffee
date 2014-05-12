@@ -37,10 +37,10 @@ document.addEventListener "DOMContentLoaded", ->
   redoButton = document.getElementById('redo')
 
   undoButton.onclick = ->
-    window.controller.composition.undo()
+    window.controller.undo()
 
   redoButton.onclick = ->
-    window.controller.composition.redo()
+    window.controller.redo()
 
 
 saveAttachment = (attachment) ->

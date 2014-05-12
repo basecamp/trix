@@ -4,6 +4,7 @@
 #= require trix/controllers/debug_controller
 #= require trix/models/composition
 #= require trix/models/text
+#= require trix/models/undo_manager
 #= require trix/lib/dom
 #= require trix/lib/selection_observer
 #= require trix/lib/html_parser
@@ -20,6 +21,8 @@ class Trix.EditorController
     @composition = new Trix.Composition @text, @config
     @composition.delegate = this
     @composition.selectionDelegate = @textController
+
+    @undoManager = new Trix.UndoManager @composition
 
     @inputController = new Trix.InputController @textElement
     @inputController.delegate = this
@@ -70,19 +73,19 @@ class Trix.EditorController
   # Input controller delegate
 
   inputControllerWillPerformTyping: ->
-    @composition.recordUndoEntry("Typing", consolidatable: true)
+    @undoManager.recordUndoEntry("Typing", consolidatable: true)
 
   inputControllerWillCutText: ->
-    @composition.recordUndoEntry("Cut")
+    @undoManager.recordUndoEntry("Cut")
 
   inputControllerWillPasteText: ->
-    @composition.recordUndoEntry("Paste")
+    @undoManager.recordUndoEntry("Paste")
 
   inputControllerWillMoveText: ->
-    @composition.recordUndoEntry("Move")
+    @undoManager.recordUndoEntry("Move")
 
   inputControllerWillAttachFiles: ->
-    @composition.recordUndoEntry("Drop Files")
+    @undoManager.recordUndoEntry("Drop Files")
 
   inputControllerWillComposeCharacters: ->
     @textController.lockSelection()
@@ -90,7 +93,7 @@ class Trix.EditorController
   inputControllerDidComposeCharacters: (composedString) ->
     @textController.render()
     @textController.unlockSelection()
-    @composition.recordUndoEntry("Typing", consolidatable: true)
+    @undoManager.recordUndoEntry("Typing", consolidatable: true)
     @composition.insertString(composedString)
 
   # Selection observer delegate
@@ -103,12 +106,12 @@ class Trix.EditorController
   # Toolbar controller delegate
 
   toolbarDidToggleAttribute: (attributeName) ->
-    @composition.recordUndoEntry("Formatting", consolidatable: true)
+    @undoManager.recordUndoEntry("Formatting", consolidatable: true)
     @composition.toggleCurrentAttribute(attributeName)
     @textController.focus()
 
   toolbarDidUpdateAttribute: (attributeName, value) ->
-    @composition.recordUndoEntry("Formatting", consolidatable: true)
+    @undoManager.recordUndoEntry("Formatting", consolidatable: true)
     @composition.setCurrentAttribute(attributeName, value)
     @textController.focus()
 
@@ -141,3 +144,11 @@ class Trix.EditorController
       if @composition.hasCurrentAttribute(key)
         @textController.expandSelectedRangeAroundCommonAttribute(key)
         break
+
+  # Undo/redo
+
+  undo: ->
+    @undoManager.undo()
+
+  redo: ->
+    @undoManager.redo()
