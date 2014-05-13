@@ -1,4 +1,5 @@
 #= require trix/lib/helpers
+#= require trix/lib/mutation_observer
 
 {defer} = Trix.Helpers
 
@@ -14,6 +15,17 @@ class Trix.InputController
     for event, handler of @events
       @element.addEventListener(event, handler.bind(this), true)
 
+    @mutationObserver = new Trix.MutationObserver @element
+    @mutationObserver.delegate = this
+
+  # Mutation observer delegate
+
+  elementDidMutate: (mutations) ->
+    @mutationObserver.pause =>
+      @responder?.replaceHTML(@element.innerHTML)
+
+  # Input handlers
+
   events:
     keydown: (event) ->
       if keyName = @constructor.keyNames[event.keyCode]
@@ -22,7 +34,8 @@ class Trix.InputController
           when event.altKey then @keys.alt
           else @keys
 
-        context[keyName]?.call(this, event)
+        @mutationObserver.pause =>
+          context[keyName]?.call(this, event)
 
     keypress: (event) ->
       return if (event.metaKey or event.ctrlKey) and not event.altKey
@@ -33,8 +46,9 @@ class Trix.InputController
         character = String.fromCharCode event.charCode
 
       if character
-        @responder?.insertString(character)
         event.preventDefault()
+        @mutationObserver.pause =>
+          @responder?.insertString(character)
 
     dragenter: (event) ->
       event.preventDefault()
@@ -61,13 +75,15 @@ class Trix.InputController
       @responder?.requestPositionAtPoint(point)
 
       if @draggedRange
-        @responder?.moveTextFromRange(@draggedRange)
+        @mutationObserver.pause =>
+          @responder?.moveTextFromRange(@draggedRange)
         delete @draggedRange
 
       else if files = event.dataTransfer.files
-        for file in files
-          if @responder?.insertFile(file)
-            file.trixInserted = true
+        @mutationObserver.pause =>
+          for file in files
+            if @responder?.insertFile(file)
+              file.trixInserted = true
 
     cut: (event) ->
       defer => @responder?.deleteBackward()
@@ -89,11 +105,10 @@ class Trix.InputController
     input: (event) ->
       if @composing
         if @composedString?
-          @delegate?.inputControllerDidComposeCharacters?(@composedString)
+          @mutationObserver.pause =>
+            @delegate?.inputControllerDidComposeCharacters?(@composedString)
           delete @composedString
           delete @composing
-      else
-        @responder?.replaceHTML(@element.innerHTML)
 
   keys:
     backspace: (event) ->
