@@ -24,6 +24,7 @@ class Trix.TextController
       @uninstallAttachmentController()
 
   render: ->
+    @delegate?.textControllerWillRender?()
     @textView.render()
     @delegate?.textControllerDidRender?()
 

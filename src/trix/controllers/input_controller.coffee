@@ -1,5 +1,4 @@
 #= require trix/lib/helpers
-#= require trix/lib/mutation_observer
 
 {defer} = Trix.Helpers
 
@@ -15,15 +14,6 @@ class Trix.InputController
     for event, handler of @events
       @element.addEventListener(event, handler.bind(this), true)
 
-    @mutationObserver = new Trix.MutationObserver @element
-    @mutationObserver.delegate = this
-
-  # Mutation observer delegate
-
-  elementDidMutate: (mutations) ->
-    @mutationObserver.pause =>
-      @responder?.replaceHTML(@element.innerHTML)
-
   # Input handlers
 
   events:
@@ -34,8 +24,7 @@ class Trix.InputController
           when event.altKey then @keys.alt
           else @keys
 
-        @mutationObserver.pause =>
-          context[keyName]?.call(this, event)
+        context[keyName]?.call(this, event)
 
     keypress: (event) ->
       return if (event.metaKey or event.ctrlKey) and not event.altKey
@@ -47,8 +36,7 @@ class Trix.InputController
 
       if character
         event.preventDefault()
-        @mutationObserver.pause =>
-          @responder?.insertString(character)
+        @responder?.insertString(character)
 
     dragenter: (event) ->
       event.preventDefault()
@@ -75,15 +63,13 @@ class Trix.InputController
       @responder?.requestPositionAtPoint(point)
 
       if @draggedRange
-        @mutationObserver.pause =>
-          @responder?.moveTextFromRange(@draggedRange)
+        @responder?.moveTextFromRange(@draggedRange)
         delete @draggedRange
 
       else if files = event.dataTransfer.files
-        @mutationObserver.pause =>
-          for file in files
-            if @responder?.insertFile(file)
-              file.trixInserted = true
+        for file in files
+          if @responder?.insertFile(file)
+            file.trixInserted = true
 
     cut: (event) ->
       defer => @responder?.deleteBackward()
@@ -105,8 +91,7 @@ class Trix.InputController
     input: (event) ->
       if @composing
         if @composedString?
-          @mutationObserver.pause =>
-            @delegate?.inputControllerDidComposeCharacters?(@composedString)
+          @delegate?.inputControllerDidComposeCharacters?(@composedString)
           delete @composedString
           delete @composing
 

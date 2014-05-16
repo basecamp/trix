@@ -6,6 +6,7 @@
 #= require trix/models/text
 #= require trix/lib/dom
 #= require trix/lib/selection_observer
+#= require trix/lib/mutation_observer
 #= require trix/lib/html_parser
 
 class Trix.EditorController
@@ -27,6 +28,9 @@ class Trix.EditorController
 
     @selectionObserver = new Trix.SelectionObserver
     @selectionObserver.delegate = this
+
+    @mutationObserver = new Trix.MutationObserver @textElement
+    @mutationObserver.delegate = this
 
     @toolbarController = new Trix.ToolbarController @toolbarElement
     @toolbarController.delegate = this
@@ -58,8 +62,12 @@ class Trix.EditorController
 
   # Text controller delegate
 
+  textControllerWillRender: ->
+    @mutationObserver.stop()
+
   textControllerDidRender: ->
     @debugController.render()
+    @mutationObserver.start()
 
   textControllerDidFocus: ->
     @toolbarController.hideDialog() if @dialogWantsFocus
@@ -83,6 +91,11 @@ class Trix.EditorController
     @textController.selectionDidChange(range)
     @composition.updateCurrentAttributes()
     @debugController.render()
+
+  # Mutation observer delegate
+
+  elementDidMutate: (mutations) ->
+    @composition.replaceHTML(@textElement.innerHTML)
 
   # Toolbar controller delegate
 

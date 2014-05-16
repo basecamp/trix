@@ -9,7 +9,7 @@ class Trix.MutationObserver
     characterData: true
     subtree: true
 
-  constructor: (@element, @callback) ->
+  constructor: (@element) ->
     @observer = new window.MutationObserver @didMutate
     @start()
 
@@ -21,8 +21,3 @@ class Trix.MutationObserver
 
   stop: ->
     @observer.disconnect()
-
-  pause: (block) ->
-    @stop()
-    block()
-    @start()
