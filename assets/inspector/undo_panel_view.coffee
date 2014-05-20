@@ -6,7 +6,7 @@ class Trix.UndoPanelView extends Trix.InspectorPanelView
     {@undoManager} = @editorController
 
   getUndoEntries: ->
-    [@undoManager.undoEntries...].reverse()
+    @undoManager.undoEntries
 
   getRedoEntries: ->
     @undoManager.redoEntries
@@ -27,7 +27,7 @@ class Trix.UndoPanelView extends Trix.InspectorPanelView
     titleElement.textContent = title
     element.appendChild(titleElement)
 
-    for entry in entries
+    for entry in entries by -1
       entryElement = @renderEntry(entry)
       element.appendChild(entryElement)
 
