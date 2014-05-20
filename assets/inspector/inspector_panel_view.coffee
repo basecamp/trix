@@ -9,3 +9,6 @@ class Trix.InspectorPanelView
 
   hide: ->
     @element.style.display = ""
+
+  clear: ->
+    @element.removeChild(@element.firstChild) while @element.firstChild

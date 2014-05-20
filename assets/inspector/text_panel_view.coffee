@@ -12,7 +12,7 @@ class Trix.TextPanelView extends Trix.InspectorPanelView
       runElement = @renderRun(run)
       element.appendChild(runElement)
 
-    @element.removeChild(@element.firstChild) while @element.firstChild
+    @clear()
     @element.appendChild(element)
 
   renderRun: (run) ->
