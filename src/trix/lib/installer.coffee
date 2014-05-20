@@ -57,7 +57,7 @@ class Trix.Installer
 
     element.style["minHeight"] = textareaStyle["height"]
 
-    disableObjectResizingOnFocus(element)
+    disableObjectResizing(element)
 
     textarea.style["display"] = "none"
     textarea.parentElement.insertBefore(element, textarea)
@@ -77,10 +77,14 @@ class Trix.Installer
     else
       elementOrId
 
-  disableObjectResizingOnFocus = (element) ->
+  disableObjectResizing = (element) ->
     if element instanceof FocusEvent
       event = element
-      document.execCommand("enableObjectResizing", false, "false")
-      event.target.removeEventListener("focus", disableObjectResizingOnFocus)
+      document.execCommand("enableObjectResizing", false, false)
+      event.target.removeEventListener("focus", disableObjectResizing)
     else
-      element.addEventListener("focus", disableObjectResizingOnFocus)
+      element.addEventListener("focus", disableObjectResizing, true)
+      element.addEventListener("mscontrolselect", cancelEvent, true)
+
+  cancelEvent = (event) ->
+    event.preventDefault()
