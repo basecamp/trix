@@ -1,3 +1,4 @@
+#= require ./selection_view
 #= require ./inspector_panel_view
 #= require ./composition_panel_view
 #= require ./undo_panel_view
@@ -7,8 +8,12 @@ class Trix.InspectorController
     @toolbarElement = @element.querySelector(".trix-inspector-toolbar")
     @toolbarElement.addEventListener("change", @didClickToolbarButton)
 
+    selectionElement = @element.querySelector(".trix-inspector-selection-view")
+    @selectionView = new Trix.SelectionView selectionElement, @editorController
+
     @activePanelView = null
     @activatePanel("attachments")
+    @render()
 
   didClickToolbarButton: (event) =>
     @activatePanel(event.target.value)
@@ -33,4 +38,5 @@ class Trix.InspectorController
     @element.querySelector("[data-inspector-panel-name=#{name}]")
 
   render: ->
+    @selectionView.render()
     @activePanelView?.render()

@@ -126,6 +126,8 @@
         padding: 5px 10px;
         font-family: Lucida Grande, sans-serif;
         font-size: 11px;
+        color: #333;
+        text-shadow: 0px 1px #ddd;
       }
 
       .trix-inspector-toolbar input {
@@ -138,14 +140,18 @@
         padding: 2px 8px;
         height: 14px;
         border-radius: 10px;
-        color: #333;
-        text-shadow: 0px 1px #ddd;
       }
 
       .trix-inspector-toolbar input:checked + label {
         background: #808080;
         color: #fff;
         text-shadow: 0px -1px #444;
+      }
+
+      .trix-inspector-selection-view {
+        display: inline-block;
+        margin-left: 15px;
+        padding-left: 15px;
       }
 
       .trix-inspector-panel {
@@ -187,6 +193,7 @@
         <input type="radio" name="inspector-panel" id="inspect-composition" value="composition"><label for="inspect-composition">Composition</label>
         <input type="radio" name="inspector-panel" id="inspect-undo" value="undo"><label for="inspect-undo">Undo/Redo</label>
         <input type="radio" name="inspector-panel" id="inspect-source" value="source"><label for="inspect-source">Source</label>
+        <div class="trix-inspector-selection-view"></div>
       </div>
       <div class="trix-inspector-panel" data-inspector-panel-name="attachments">
         <ul id="attachments"></ul>
