@@ -1,14 +1,14 @@
 #= require ./inspector_panel_view
 
-class Trix.CompositionPanelView extends Trix.InspectorPanelView
+class Trix.TextPanelView extends Trix.InspectorPanelView
   constructor: ->
     super
-    @composition = @editorController.composition
+    @text = @editorController.composition.text
 
   render: ->
     element = document.createElement("div")
 
-    @composition.text.eachRun (run) =>
+    @text.eachRun (run) =>
       runElement = @renderRun(run)
       element.appendChild(runElement)
 
