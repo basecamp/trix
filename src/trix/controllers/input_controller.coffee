@@ -14,6 +14,8 @@ class Trix.InputController
     for event, handler of @events
       @element.addEventListener(event, handler.bind(this), true)
 
+  # Input handlers
+
   events:
     keydown: (event) ->
       if keyName = @constructor.keyNames[event.keyCode]
@@ -33,8 +35,8 @@ class Trix.InputController
         character = String.fromCharCode event.charCode
 
       if character
-        @responder?.insertString(character)
         event.preventDefault()
+        @responder?.insertString(character)
 
     dragenter: (event) ->
       event.preventDefault()
@@ -92,8 +94,6 @@ class Trix.InputController
           @delegate?.inputControllerDidComposeCharacters?(@composedString)
           delete @composedString
           delete @composing
-      else
-        @responder?.replaceHTML(@element.innerHTML)
 
   keys:
     backspace: (event) ->
