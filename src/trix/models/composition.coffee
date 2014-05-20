@@ -209,10 +209,12 @@ class Trix.Composition
       [start, end] = range
       range unless start is end
 
-  requestSelectedRange: ([start, end]) ->
-    length = @text.getLength()
-    range = [clamp(start, 0, length), clamp(end, 0, length)]
-    @selectionDelegate?.compositionDidRequestSelectionOfRange?(this, range)
+  requestSelectedRange: (range) ->
+    if range?
+      [start, end] = range
+      length = @text.getLength()
+      range = [clamp(start, 0, length), clamp(end, 0, length)]
+      @selectionDelegate?.compositionDidRequestSelectionOfRange?(this, range)
 
   # Private
 
