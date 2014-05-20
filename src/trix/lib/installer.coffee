@@ -2,10 +2,38 @@
 #= require trix/controllers/simple_editor_controller
 
 class Trix.Installer
+  requiredFeatures =
+    simple:
+      "addEventListener": document
+      "createTreeWalker": document
+      "getComputedStyle": window
+      "getSelection": window
+
+    full:
+      "MutationObserver": window
+
+  @getSupportedModes: ->
+    simple = true
+
+    for feature, element of requiredFeatures.simple when feature not of element
+      simple = false
+      break
+
+    if full = simple
+      for feature, element of requiredFeatures.full when feature not of element
+        full = false
+        break
+
+    {simple, full}
+
   constructor: (@config = {}) ->
+    @config.mode ?= "full"
+
+  browserHasRequiredFeatures: ->
+    @constructor.getSupportedModes()[@config.mode]
 
   createEditor: ->
-    if @browserIsSupported()
+    if @browserHasRequiredFeatures()
       @getConfigElements()
       @config.textElement = @createTextElement()
       @config.autofocus ?= @config.textareaElement.hasAttribute("autofocus")
@@ -15,9 +43,6 @@ class Trix.Installer
         new Trix.SimpleEditorController @config
       else
         new Trix.EditorController @config
-
-  browserIsSupported: ->
-    true
 
   getConfigElements: ->
     for key in "textarea toolbar input debug".split(" ")

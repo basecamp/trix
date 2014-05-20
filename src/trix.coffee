@@ -7,6 +7,9 @@
     installer = new Trix.Installer config
     installer.createEditor()
 
+  getSupportedModes: ->
+    Trix.Installer.getSupportedModes()
+
   attributes:
     bold:
       tagName: "strong"
