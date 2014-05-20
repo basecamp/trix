@@ -1,5 +1,5 @@
 #= require trix/controllers/editor_controller
-#= require trix/controllers/input_controller
+#= require trix/controllers/simple_editor_controller
 
 class Trix.Installer
   constructor: (@config = {}) ->
@@ -11,7 +11,10 @@ class Trix.Installer
       @config.autofocus ?= @config.textareaElement.hasAttribute("autofocus")
       @createStyleSheet()
 
-      new Trix.EditorController @config
+      if @config.mode is "simple"
+        new Trix.SimpleEditorController @config
+      else
+        new Trix.EditorController @config
 
   browserIsSupported: ->
     true

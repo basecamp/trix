@@ -1,20 +1,14 @@
+#= require trix/controllers/abstract_editor_controller
 #= require trix/controllers/input_controller
 #= require trix/controllers/text_controller
 #= require trix/controllers/toolbar_controller
 #= require trix/controllers/debug_controller
 #= require trix/models/composition
-#= require trix/models/text
-#= require trix/lib/dom
 #= require trix/lib/selection_observer
 #= require trix/lib/mutation_observer
-#= require trix/lib/html_parser
 
-class Trix.EditorController
-  constructor: (@config) ->
-    {@textElement, @toolbarElement, @textareaElement, @inputElement, @debugElement} = @config
-
-    @text = @createText()
-
+class Trix.EditorController extends Trix.AbstractEditorController
+  initialize: ->
     @textController = new Trix.TextController @textElement, @text, @config
     @textController.delegate = this
 
@@ -37,19 +31,6 @@ class Trix.EditorController
 
     @debugController = new Trix.DebugController @debugElement, @textController.textView, @composition
     @debugController.render()
-
-  createText: ->
-    if @textElement.textContent.trim()
-      Trix.Text.fromHTML(@textElement.innerHTML)
-    else if @inputElement?.value
-      Trix.Text.fromJSON(@inputElement.value)
-    else
-      new Trix.Text
-
-  saveSerializedText: ->
-    @textareaElement.value = @textElement.innerHTML
-    Trix.DOM.trigger(@textareaElement, "input")
-    @inputElement?.value = @text.asJSON()
 
   # Composition controller delegate
 
