@@ -46,11 +46,13 @@ document.addEventListener "DOMContentLoaded", ->
   undoButton = document.getElementById('undo')
   redoButton = document.getElementById('redo')
 
-  undoButton.onclick = ->
+  undoButton.onclick = (event) ->
     window.controller.undo()
+    event.preventDefault()
 
-  redoButton.onclick = ->
+  redoButton.onclick = (event) ->
     window.controller.redo()
+    event.preventDefault()
 
 
 saveAttachment = (attachment) ->
