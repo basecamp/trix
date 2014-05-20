@@ -107,6 +107,57 @@
         outline: 0;
         font-size: 12px;
       }
+
+      .trix-inspector {
+        position: fixed;
+        overflow: hidden;
+        height: 300px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #fff;
+      }
+
+      .trix-inspector-toolbar {
+        height: 14px;
+        border-top: 1px solid #444;
+        border-bottom: 1px solid #444;
+        background: linear-gradient(to bottom, rgba(211,211,211,1) 0%,rgba(206,206,206,1) 2%,rgba(172,172,172,1) 98%,rgba(172,172,172,1) 100%);
+        padding: 5px 10px;
+        font-family: Lucida Grande, sans-serif;
+        font-size: 11px;
+      }
+
+      .trix-inspector-toolbar input {
+        display: none;
+      }
+
+      .trix-inspector-toolbar input + label {
+        display: inline-block;
+        margin: -2px;
+        padding: 2px 8px;
+        height: 14px;
+        border-radius: 10px;
+        color: #333;
+        text-shadow: 0px 1px #ddd;
+      }
+
+      .trix-inspector-toolbar input:checked + label {
+        background: #808080;
+        color: #fff;
+        text-shadow: 0px -1px #444;
+      }
+
+      .trix-inspector-panel {
+        display: none;
+        position: absolute;
+        overflow: auto;
+        top: 26px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 0 10px;
+      }
     </style>
   </head>
   <body>
@@ -127,9 +178,28 @@
         <input type="button" value="Unlink" data-method="removeAttribute">
       </div>
     </div>
+
     <textarea id="text" placeholder="Type some rich text!" autofocus></textarea>
-    <ul id="attachments"></ul>
-    <pre id="debug"></pre>
-    <textarea id="data" class="debug">[{"string":"Hello, ","attributes":{}},{"string":"rich","attributes":{"bold":true,"italic":true}},{"string":" ","attributes":{"italic":true}},{"string":"tex","attributes":{"italic":true,"href":"http://basecamp.com"}},{"string":"t","attributes":{"href":"http://basecamp.com"}},{"string":"!\n\n","attributes":{}},{"attachment":{"contentType":"image/png","url":"basecamp.png","filename":"basecamp.png"},"attributes":{}}]</textarea>
+
+    <div id="inspector" class="trix-inspector">
+      <div class="trix-inspector-toolbar">
+        <input type="radio" name="inspector-panel" id="inspect-attachments" value="attachments"><label for="inspect-attachments">Attachments</label>
+        <input type="radio" name="inspector-panel" id="inspect-composition" value="composition"><label for="inspect-composition">Composition</label>
+        <input type="radio" name="inspector-panel" id="inspect-undo" value="undo"><label for="inspect-undo">Undo/Redo</label>
+        <input type="radio" name="inspector-panel" id="inspect-source" value="source"><label for="inspect-source">Source</label>
+      </div>
+      <div class="trix-inspector-panel" data-inspector-panel-name="attachments">
+        <ul id="attachments"></ul>
+      </div>
+      <div class="trix-inspector-panel" data-inspector-panel-name="composition" data-inspector-panel-view="CompositionPanelView">
+        <pre id="debug"></pre>
+      </div>
+      <div class="trix-inspector-panel" data-inspector-panel-name="undo">
+      </div>
+      <div class="trix-inspector-panel" data-inspector-panel-name="source">
+        <textarea id="data" class="debug">[{"string":"Hello, ","attributes":{}},{"string":"rich","attributes":{"bold":true,"italic":true}},{"string":" ","attributes":{"italic":true}},{"string":"tex","attributes":{"italic":true,"href":"http://basecamp.com"}},{"string":"t","attributes":{"href":"http://basecamp.com"}},{"string":"!\n\n","attributes":{}},{"attachment":{"contentType":"image/png","url":"basecamp.png","filename":"basecamp.png"},"attributes":{}}]</textarea>
+      </div>
+    </div>
+
   </body>
 </html>

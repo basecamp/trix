@@ -1,7 +1,6 @@
 #= require trix/controllers/input_controller
 #= require trix/controllers/text_controller
 #= require trix/controllers/toolbar_controller
-#= require trix/controllers/debug_controller
 #= require trix/models/composition
 #= require trix/models/text
 #= require trix/models/undo_manager
@@ -11,7 +10,7 @@
 
 class Trix.EditorController
   constructor: (@config) ->
-    {@textElement, @toolbarElement, @textareaElement, @inputElement, @debugElement} = @config
+    {@textElement, @toolbarElement, @textareaElement, @inputElement, @delegate} = @config
 
     @text = @createText()
 
@@ -33,9 +32,6 @@ class Trix.EditorController
 
     @toolbarController = new Trix.ToolbarController @toolbarElement
     @toolbarController.delegate = this
-
-    @debugController = new Trix.DebugController @debugElement, @textController.textView, @composition
-    @debugController.render()
 
   createText: ->
     if @textElement.textContent.trim()
@@ -62,13 +58,13 @@ class Trix.EditorController
   # Text controller delegate
 
   textControllerDidRender: ->
-    @debugController.render()
+    @delegate?.didRenderText?()
 
   textControllerDidFocus: ->
     @toolbarController.hideDialog() if @dialogWantsFocus
 
   textControllerDidChangeSelection: ->
-    @debugController.render()
+    @delegate?.didChangeSelection?()
 
   # Input controller delegate
 
@@ -101,7 +97,7 @@ class Trix.EditorController
   selectionDidChange: (range) ->
     @textController.selectionDidChange(range)
     @composition.updateCurrentAttributes()
-    @debugController.render()
+    @delegate?.didChangeSelection?()
 
   # Toolbar controller delegate
 
