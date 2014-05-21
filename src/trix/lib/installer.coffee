@@ -2,36 +2,22 @@
 #= require trix/controllers/simple_editor_controller
 
 class Trix.Installer
-  requiredFeatures =
-    simple:
-      "addEventListener": document
-      "createTreeWalker": document
-      "getComputedStyle": window
-      "getSelection": window
+  simpleSupport =
+    "addEventListener" of document and
+    "createTreeWalker" of document and
+    "getComputedStyle" of window and
+    "getSelection"     of window
 
-    full:
-      "MutationObserver": window
+  fullSupport = simpleSupport and
+    "MutationObserver" of window
 
-  @getSupportedModes: ->
-    simple = true
-
-    for feature, element of requiredFeatures.simple when feature not of element
-      simple = false
-      break
-
-    if full = simple
-      for feature, element of requiredFeatures.full when feature not of element
-        full = false
-        break
-
-    {simple, full}
+  @supportedModes = []
+  @supportedModes.push("full") if fullSupport
+  @supportedModes.push("simple") if simpleSupport
 
   constructor: (@config = {}) ->
-    @config.mode ?= "full"
+    @config.mode ?= @constructor.supportedModes[0]
     @config.useInputEvents = @deviceSupportsCanceledInputEvents()
-
-  browserHasRequiredFeatures: ->
-    @constructor.getSupportedModes()[@config.mode]
 
   # Devices with a virtual keyboard don't respond well to canceled input events.
   # On iOS for example, the shift key remains active and autocorrect doesn't work.
@@ -39,8 +25,11 @@ class Trix.Installer
   deviceSupportsCanceledInputEvents: ->
     not "ontouchstart" of window
 
+  modeIsSupported: ->
+    @config.mode in @constructor.supportedModes
+
   createEditor: ->
-    if @browserHasRequiredFeatures()
+    if @modeIsSupported()
       @getConfigElements()
       @config.textElement = @createTextElement()
       @config.autofocus ?= @config.textareaElement.hasAttribute("autofocus")

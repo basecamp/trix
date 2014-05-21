@@ -8,7 +8,7 @@
     installer.createEditor()
 
   getSupportedModes: ->
-    Trix.Installer.getSupportedModes()
+    Trix.Installer.supportedModes
 
   attributes:
     bold:
