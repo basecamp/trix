@@ -9,7 +9,10 @@ class Trix.Installer
     "getSelection"     of window
 
   fullSupport = simpleSupport and
-    "MutationObserver" of window
+    "MutationObserver" of window and
+    ("caretPositionFromPoint" of document or
+     "caretRangeFromPoint" of document or
+     "createTextRange" of document.createElement("body"))
 
   @supportedModes = []
   @supportedModes.push("full") if fullSupport

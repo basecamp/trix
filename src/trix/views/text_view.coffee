@@ -164,6 +164,12 @@ class Trix.TextView
     else if document.caretRangeFromPoint
       domRange = document.caretRangeFromPoint(pageX, pageY)
 
+    else if document.body.createTextRange
+      range = document.body.createTextRange()
+      range.moveToPoint(pageX, pageY)
+      range.select()
+      return @getSelectedRange()?[0]
+
     if domRange
       if range = @findRangeFromDOMRange(domRange)
         range[0]
