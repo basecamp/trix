@@ -100,7 +100,8 @@ class Trix.Installer
       document.execCommand("enableObjectResizing", false, false)
       event.target.removeEventListener("focus", disableObjectResizing)
     else
-      element.addEventListener("focus", disableObjectResizing, true)
+      if document.queryCommandSupported?("enableObjectResizing")
+        element.addEventListener("focus", disableObjectResizing, true)
       element.addEventListener("mscontrolselect", cancelEvent, true)
 
   cancelEvent = (event) ->
