@@ -16,10 +16,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @composition.delegate = this
     @composition.selectionDelegate = @textController
 
-    if @config.useInputEvents
-      @inputController = new Trix.InputController @textElement
-      @inputController.delegate = this
-      @inputController.responder = @composition
+    @inputController = new Trix.InputController @textElement
+    @inputController.delegate = this
+    @inputController.responder = @composition
 
     @selectionObserver = new Trix.SelectionObserver
     @selectionObserver.delegate = this

@@ -17,6 +17,12 @@ class Trix.InputController
   # Input handlers
 
   events:
+    focus: (event) ->
+      @cacheCanceledInputEventSupport()
+
+    blur: (event) ->
+      @expireCanceledInputEventSupportCache()
+
     keydown: (event) ->
       if keyName = @constructor.keyNames[event.keyCode]
         context = switch
@@ -34,7 +40,7 @@ class Trix.InputController
       else if event.which isnt 0 and event.charCode isnt 0
         character = String.fromCharCode event.charCode
 
-      if character
+      if character and @deviceSupportsCanceledInputEvents()
         event.preventDefault()
         @responder?.insertString(character)
 
@@ -124,3 +130,30 @@ class Trix.InputController
   logAndCancel: (event) ->
     console.log "trapped event", event.type, event
     event.preventDefault()
+
+  # Devices with a virtual keyboard don't respond well to canceled input events.
+  # On iOS for example, the shift key remains active and autocorrect doesn't work.
+  deviceSupportsCanceledInputEvents: ->
+    @cacheCanceledInputEventSupport()
+
+  cacheCanceledInputEventSupport: ->
+    @canceledEventSuppport ?= virtualKeyboardHeight() is 0
+
+  expireCanceledInputEventSupportCache: ->
+    delete @canceledEventSuppport
+
+  virtualKeyboardHeight = ->
+    return 0 unless "ontouchstart" of window
+
+    startLeft = document.body.scrollLeft
+    startTop = document.body.scrollTop
+    startHeight = window.innerHeight
+
+    # When a keyboard is present, a different innerHeight
+    # is revealed after scrolling to the bottom of the document
+    # and the difference in height is the keyboard's height.
+    window.scrollTo(startTop, document.body.scrollHeight)
+    keyboardHeight = startHeight - window.innerHeight
+    window.scrollTo(startLeft, startTop)
+
+    keyboardHeight

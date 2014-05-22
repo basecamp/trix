@@ -17,13 +17,6 @@ class Trix.Installer
 
   constructor: (@config = {}) ->
     @config.mode ?= @constructor.supportedModes[0]
-    @config.useInputEvents = @deviceSupportsCanceledInputEvents()
-
-  # Devices with a virtual keyboard don't respond well to canceled input events.
-  # On iOS for example, the shift key remains active and autocorrect doesn't work.
-  # There's no easy way to detect these devices so this may need revisiting.
-  deviceSupportsCanceledInputEvents: ->
-    not "ontouchstart" of window
 
   modeIsSupported: ->
     @config.mode in @constructor.supportedModes
