@@ -48,22 +48,36 @@ class Trix.Installer
       element.appendChild(document.createTextNode(css))
       document.querySelector("head").appendChild(element)
 
-  textareaStylesToCopy = "width position top left right bottom zIndex color".split(" ")
-  textareaStylePatternToCopy = /(border|outline|padding|margin|background)[A-Z]+/
+  textElementAttributes =
+    contenteditable: "true"
+    autocorrect: "off"
 
   createTextElement: ->
     textarea = @config.textareaElement
 
     element = document.createElement("div")
     element.innerHTML = textarea.value
-    element.classList.add(name) for name in @classNames()
-
-    element.setAttribute("contenteditable", "true")
-    element.setAttribute("autocorrect", "off")
+    element.setAttribute(key, value) for key, value of textElementAttributes
 
     if placeholder = textarea.getAttribute("placeholder")
       element.setAttribute("data-placeholder", placeholder)
 
+    classNames = (@config.className?.split(" ") ? []).concat("trix-editor")
+    element.classList.add(name) for name in classNames
+
+    visiblyReplaceTextAreaWithElement(textarea, element)
+    disableObjectResizing(element)
+    element
+
+  visiblyReplaceTextAreaWithElement = (textarea, element) ->
+    copyTextAreaStylesToElement(textarea, element)
+    textarea.style["display"] = "none"
+    textarea.parentElement.insertBefore(element, textarea)
+
+  textareaStylesToCopy = "width position top left right bottom zIndex color".split(" ")
+  textareaStylePatternToCopy = /(border|outline|padding|margin|background)[A-Z]+/
+
+  copyTextAreaStylesToElement = (textarea, element) ->
     textareaStyle = window.getComputedStyle(textarea)
 
     for style in textareaStylesToCopy
@@ -73,20 +87,6 @@ class Trix.Installer
       element.style[key] = value
 
     element.style["minHeight"] = textareaStyle["height"]
-
-    disableObjectResizing(element)
-
-    textarea.style["display"] = "none"
-    textarea.parentElement.insertBefore(element, textarea)
-
-    element
-
-  classNames: ->
-    result = ["trix-editor"]
-    if @config.className
-      for name in @config.className.split(" ")
-        result.push(name)
-    result
 
   getElement = (elementOrId) ->
     if typeof(elementOrId) is "string"
