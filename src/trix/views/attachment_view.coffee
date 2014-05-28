@@ -31,6 +31,10 @@ class Trix.AttachmentView
     @caption.textContent = @attachment.attributes.filename
     @caption.setAttribute("title", @attachment.attributes.filename)
 
+  resize: ({width, height} = {}) ->
+    @element.style.width = "#{width}px" if width?
+    @element.style.height = "#{height}px" if height?
+
   # Attachment delegate
 
   attachmentDidChange: ->

@@ -1,9 +1,9 @@
 #= require trix/controllers/input_controller
 #= require trix/controllers/text_controller
 #= require trix/controllers/toolbar_controller
-#= require trix/controllers/debug_controller
 #= require trix/models/composition
 #= require trix/models/text
+#= require trix/models/undo_manager
 #= require trix/lib/dom
 #= require trix/lib/selection_observer
 #= require trix/lib/mutation_observer
@@ -11,7 +11,7 @@
 
 class Trix.EditorController
   constructor: (@config) ->
-    {@textElement, @toolbarElement, @textareaElement, @inputElement, @debugElement} = @config
+    {@textElement, @toolbarElement, @textareaElement, @inputElement, @delegate} = @config
 
     @text = @createText()
 
@@ -21,6 +21,8 @@ class Trix.EditorController
     @composition = new Trix.Composition @text, @config
     @composition.delegate = this
     @composition.selectionDelegate = @textController
+
+    @undoManager = new Trix.UndoManager @composition
 
     @inputController = new Trix.InputController @textElement
     @inputController.delegate = this
@@ -34,9 +36,7 @@ class Trix.EditorController
 
     @toolbarController = new Trix.ToolbarController @toolbarElement
     @toolbarController.delegate = this
-
-    @debugController = new Trix.DebugController @debugElement, @textController.textView, @composition
-    @debugController.render()
+    @toolbarController.updateActions()
 
   createText: ->
     if @textElement.textContent.trim()
@@ -56,6 +56,7 @@ class Trix.EditorController
   compositionDidChangeText: (composition, text) ->
     @textController.render()
     @saveSerializedText()
+    @toolbarController.updateActions()
 
   compositionDidChangeCurrentAttributes: (composition, currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
@@ -66,16 +67,34 @@ class Trix.EditorController
     @mutationObserver.stop()
 
   textControllerDidRender: ->
-    @debugController.render()
     @mutationObserver.start()
+    @delegate?.didRenderText?()
 
   textControllerDidFocus: ->
     @toolbarController.hideDialog() if @dialogWantsFocus
 
   textControllerDidChangeSelection: ->
-    @debugController.render()
+    @delegate?.didChangeSelection?()
+
+  textControllerWillResizeAttachment: ->
+    @undoManager.recordUndoEntry("Resize", consolidatable: true)
 
   # Input controller delegate
+
+  inputControllerWillPerformTyping: ->
+    @undoManager.recordUndoEntry("Typing", consolidatable: true)
+
+  inputControllerWillCutText: ->
+    @undoManager.recordUndoEntry("Cut")
+
+  inputControllerWillPasteText: ->
+    @undoManager.recordUndoEntry("Paste")
+
+  inputControllerWillMoveText: ->
+    @undoManager.recordUndoEntry("Move")
+
+  inputControllerWillAttachFiles: ->
+    @undoManager.recordUndoEntry("Drop Files")
 
   inputControllerWillComposeCharacters: ->
     @textController.lockSelection()
@@ -83,6 +102,7 @@ class Trix.EditorController
   inputControllerDidComposeCharacters: (composedString) ->
     @textController.render()
     @textController.unlockSelection()
+    @undoManager.recordUndoEntry("Typing", consolidatable: true)
     @composition.insertString(composedString)
 
   # Selection observer delegate
@@ -90,7 +110,7 @@ class Trix.EditorController
   selectionDidChange: (range) ->
     @textController.selectionDidChange(range)
     @composition.updateCurrentAttributes()
-    @debugController.render()
+    @delegate?.didChangeSelection?()
 
   # Mutation observer delegate
 
@@ -99,11 +119,27 @@ class Trix.EditorController
 
   # Toolbar controller delegate
 
+  toolbarActions:
+    undo:
+      test: -> @undoManager.canUndo()
+      perform: -> @undoManager.undo()
+    redo:
+      test: -> @undoManager.canRedo()
+      perform: -> @undoManager.redo()
+
+  toolbarCanInvokeAction: (actionName) ->
+    @toolbarActions[actionName]?.test.call(this)
+
+  toolbarDidInvokeAction: (actionName) ->
+    @toolbarActions[actionName]?.perform.call(this)
+
   toolbarDidToggleAttribute: (attributeName) ->
+    @undoManager.recordUndoEntry("Formatting", consolidatable: true)
     @composition.toggleCurrentAttribute(attributeName)
     @textController.focus()
 
   toolbarDidUpdateAttribute: (attributeName, value) ->
+    @undoManager.recordUndoEntry("Formatting", consolidatable: true)
     @composition.setCurrentAttribute(attributeName, value)
     @textController.focus()
 

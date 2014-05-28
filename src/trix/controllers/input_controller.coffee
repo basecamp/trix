@@ -34,8 +34,9 @@ class Trix.InputController
       else if event.which isnt 0 and event.charCode isnt 0
         character = String.fromCharCode event.charCode
 
-      if character
+      if character?
         event.preventDefault()
+        @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(character)
 
     dragenter: (event) ->
@@ -63,22 +64,27 @@ class Trix.InputController
       @responder?.requestPositionAtPoint(point)
 
       if @draggedRange
+        @delegate?.inputControllerWillMoveText()
         @responder?.moveTextFromRange(@draggedRange)
         delete @draggedRange
 
       else if files = event.dataTransfer.files
+        @delegate?.inputControllerWillAttachFiles()
         for file in files
           if @responder?.insertFile(file)
             file.trixInserted = true
 
     cut: (event) ->
+      @delegate?.inputControllerWillCutText()
       defer => @responder?.deleteBackward()
 
     paste: (event) ->
       event.preventDefault()
       if html = event.clipboardData.getData("text/html")
+        @delegate?.inputControllerWillPasteText()
         @responder?.insertHTML(html)
       else if string = event.clipboardData.getData("text/plain")
+        @delegate?.inputControllerWillPasteText()
         @responder?.insertString(string)
 
     compositionstart: (event) ->
@@ -97,27 +103,33 @@ class Trix.InputController
 
   keys:
     backspace: (event) ->
+      @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteBackward()
       event.preventDefault()
 
     return: (event) ->
+      @delegate?.inputControllerWillPerformTyping()
       @responder?.insertString("\n")
       event.preventDefault()
 
     control:
       d: (event) ->
+        @delegate?.inputControllerWillPerformTyping()
         @responder?.deleteForward()
         event.preventDefault()
 
       h: (event) ->
+        @delegate?.inputControllerWillPerformTyping()
         @backspace(event)
 
       o: (event) ->
+        @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString("\n", updatePosition: false)
         event.preventDefault()
 
     alt:
       backspace: (event) ->
+        @delegate?.inputControllerWillPerformTyping()
         @responder?.deleteWordBackward()
         event.preventDefault()
 
