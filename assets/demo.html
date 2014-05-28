@@ -60,6 +60,11 @@
         font-family: monospace;
       }
 
+      .trix-toolbar a.button[disabled] {
+        color: #ccc;
+        cursor: default;
+      }
+
       .trix-toolbar > span {
         margin-right: 15px;
       }
@@ -180,8 +185,8 @@
       </span>
 
       <span>
-        <a class="button" href="#" id="undo">Undo</a>
-        <a class="button" href="#" id="redo">Redo</a>
+        <a class="button" href="#" data-action="undo">Undo</a>
+        <a class="button" href="#" data-action="redo">Redo</a>
       </span>
 
       <div class="dialog" data-attribute="href">

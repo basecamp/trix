@@ -23,6 +23,12 @@ class Trix.UndoManager
       @undoEntries.push(undoEntry)
       @composition.restoreSnapshot(redoEntry.snapshot)
 
+  canUndo: ->
+    @undoEntries.length > 0
+
+  canRedo: ->
+    @redoEntries.length > 0
+
   # Private
 
   createEntryWithDescription: (description) ->

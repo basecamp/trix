@@ -1,19 +1,26 @@
 #= require trix/lib/dom
 
 class Trix.ToolbarController
-  buttonSelector = ".button[data-attribute]"
+  actionButtonSelector = ".button[data-action]"
+  attributeButtonSelector = ".button[data-attribute]"
   dialogSelector = ".dialog[data-attribute]"
   activeDialogSelector = "#{dialogSelector}.active"
   dialogButtonSelector = "#{dialogSelector} input[data-method]"
 
   constructor: (@element) ->
     @attributes = {}
-    Trix.DOM.on(@element, "click", buttonSelector, @didClickButton)
+    Trix.DOM.on(@element, "click", actionButtonSelector, @didClickActionButton)
+    Trix.DOM.on(@element, "click", attributeButtonSelector, @didClickAttributeButton)
     Trix.DOM.on(@element, "click", dialogButtonSelector, @didClickDialogButton)
 
   # Event handlers
 
-  didClickButton: (event, element) =>
+  didClickActionButton: (event, element) =>
+    event.preventDefault()
+    actionName = getActionName(element)
+    @delegate?.toolbarDidInvokeAction(actionName)
+
+  didClickAttributeButton: (event, element) =>
     event.preventDefault()
     attributeName = getAttributeName(element)
 
@@ -27,18 +34,31 @@ class Trix.ToolbarController
     method = element.getAttribute("data-method")
     @[method].call(this, dialogElement)
 
-  # Buttons
+  # Action buttons
+
+  updateActions: ->
+    @eachActionButton (element, actionName) =>
+      if @delegate?.toolbarCanInvokeAction(actionName)
+        element.removeAttribute("disabled")
+      else
+        element.setAttribute("disabled", "disabled")
+
+  eachActionButton: (callback) ->
+    for element in @element.querySelectorAll(actionButtonSelector)
+      callback(element, getActionName(element))
+
+  # Attribute buttons
 
   updateAttributes: (attributes) ->
     @attributes = attributes
-    @eachButton (element, attributeName) ->
+    @eachAttributeButton (element, attributeName) ->
       if attributes[attributeName]
         element.classList.add("active")
       else
         element.classList.remove("active")
 
-  eachButton: (callback) ->
-    for element in @element.querySelectorAll(buttonSelector)
+  eachAttributeButton: (callback) ->
+    for element in @element.querySelectorAll(attributeButtonSelector)
       callback(element, getAttributeName(element))
 
   # Dialogs
@@ -83,6 +103,9 @@ class Trix.ToolbarController
     element.querySelector("input[name='#{attributeName}']")
 
   # General helpers
+
+  getActionName = (element) ->
+    element.getAttribute("data-action")
 
   getAttributeName = (element) ->
     element.getAttribute("data-attribute")

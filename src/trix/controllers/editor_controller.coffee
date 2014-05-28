@@ -32,6 +32,7 @@ class Trix.EditorController
 
     @toolbarController = new Trix.ToolbarController @toolbarElement
     @toolbarController.delegate = this
+    @toolbarController.updateActions()
 
   createText: ->
     if @textElement.textContent.trim()
@@ -51,6 +52,7 @@ class Trix.EditorController
   compositionDidChangeText: (composition, text) ->
     @textController.render()
     @saveSerializedText()
+    @toolbarController.updateActions()
 
   compositionDidChangeCurrentAttributes: (composition, currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
@@ -104,6 +106,20 @@ class Trix.EditorController
 
   # Toolbar controller delegate
 
+  toolbarActions:
+    undo:
+      test: -> @undoManager.canUndo()
+      perform: -> @undoManager.undo()
+    redo:
+      test: -> @undoManager.canRedo()
+      perform: -> @undoManager.redo()
+
+  toolbarCanInvokeAction: (actionName) ->
+    @toolbarActions[actionName]?.test.call(this)
+
+  toolbarDidInvokeAction: (actionName) ->
+    @toolbarActions[actionName]?.perform.call(this)
+
   toolbarDidToggleAttribute: (attributeName) ->
     @undoManager.recordUndoEntry("Formatting", consolidatable: true)
     @composition.toggleCurrentAttribute(attributeName)
@@ -143,11 +159,3 @@ class Trix.EditorController
       if @composition.hasCurrentAttribute(key)
         @textController.expandSelectedRangeAroundCommonAttribute(key)
         break
-
-  # Undo/redo
-
-  undo: ->
-    @undoManager.undo()
-
-  redo: ->
-    @undoManager.redo()

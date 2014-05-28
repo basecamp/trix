@@ -43,17 +43,6 @@ document.addEventListener "DOMContentLoaded", ->
   inspectorElement = document.getElementById("inspector")
   inspectorController = new Trix.InspectorController inspectorElement, window.controller
 
-  undoButton = document.getElementById('undo')
-  redoButton = document.getElementById('redo')
-
-  undoButton.onclick = (event) ->
-    window.controller.undo()
-    event.preventDefault()
-
-  redoButton.onclick = (event) ->
-    window.controller.redo()
-    event.preventDefault()
-
 
 saveAttachment = (attachment) ->
   item = document.createElement("li")
