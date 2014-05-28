@@ -27,7 +27,7 @@ class Trix.Attachment
     @attributes.filename.match(/\.(\w+)$/)?[1]
 
   toJSON: ->
-    {@id, @attributes}
+    @attributes
 
   toObject: ->
     {@id, @file, @attributes}
