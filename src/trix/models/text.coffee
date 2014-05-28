@@ -99,8 +99,17 @@ class Trix.Text
   getAttachments: ->
     @pieceList.getAttachments()
 
-  getAttachmentAndPosition: (attachmentId) ->
-    @pieceList.getAttachmentAndPosition(attachmentId)
+  getAttachmentById: (attachmentId) ->
+    {attachment, position} = @pieceList.getAttachmentAndPositionById(attachmentId)
+    attachment
+
+  getRangeOfAttachment: (attachment) ->
+    {attachment, position} = @pieceList.getAttachmentAndPositionById(attachment.id)
+    [position, position + 1] if attachment?
+
+  resizeAttachmentToDimensions: (attachment, {width, height} = {}) ->
+    if range = @getRangeOfAttachment(attachment)
+      @addAttributesAtRange({width, height}, range)
 
   getLength: ->
     @pieceList.getLength()

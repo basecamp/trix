@@ -86,9 +86,11 @@ class Trix.TextView
   createAttachmentElementForCurrentRun: ->
     {attachment, attributes, position} = @currentRun
 
-    attachment.element ?= Trix.AttachmentView.for(attachment).render()
-    element = attachment.element
+    attachment.view ?= Trix.AttachmentView.for(attachment)
+    attachment.element ?= attachment.view.render()
+    attachment.view.resize(width: attributes.width, height: attributes.height)
 
+    element = attachment.element
     element.trixPosition = position
     element.trixLength = 1
     element.trixAttachmentId = attachment.id

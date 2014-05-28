@@ -132,7 +132,7 @@ class Trix.PieceList
     for piece in @pieces when piece.attachment
       piece.attachment
 
-  getAttachmentAndPosition: (attachmentId) ->
+  getAttachmentAndPositionById: (attachmentId) ->
     position = 0
     for piece in @pieces
       if piece.attachment?.id is attachmentId

@@ -33,7 +33,7 @@ class Trix.TextController
   # Attachment controller management
 
   installAttachmentController: (element) ->
-    {attachment} = @text.getAttachmentAndPosition(element.trixAttachmentId)
+    attachment = @text.getAttachmentById(element.trixAttachmentId)
     unless @attachmentController?.attachment is attachment
       @uninstallAttachmentController()
       @attachmentController = Trix.AttachmentController.create(attachment, element, @element)
@@ -44,8 +44,12 @@ class Trix.TextController
 
   # Attachment controller delegate
 
-  attachmentControllerDidUninstall: ->
+  didUninstallAttachmentController: ->
     delete @attachmentController
+
+  attachmentControllerDidResizeAttachmentToDimensions: (attachment, dimensions) ->
+    @delegate?.textControllerWillResizeAttachment?(attachment)
+    @text.resizeAttachmentToDimensions(attachment, dimensions)
 
   # Selection observer delegate
 

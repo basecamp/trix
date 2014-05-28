@@ -66,6 +66,9 @@ class Trix.EditorController
   textControllerDidChangeSelection: ->
     @delegate?.didChangeSelection?()
 
+  textControllerWillResizeAttachment: ->
+    @undoManager.recordUndoEntry("Resize", consolidatable: true)
+
   # Input controller delegate
 
   inputControllerWillPerformTyping: ->

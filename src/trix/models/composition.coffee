@@ -123,8 +123,8 @@ class Trix.Composition
 
   removeAttachment: (id) ->
     if attachment = @attachments.get(id)
-      {position} = @text.getAttachmentAndPosition(id)
-      @text.removeTextAtRange([position, position + 1])
+      range = @text.getRangeOfAttachment(attachment)
+      @text.removeTextAtRange(range)
 
   # Current attributes
 
