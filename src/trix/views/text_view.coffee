@@ -174,12 +174,13 @@ class Trix.TextView
     selection = window.getSelection()
     if selection.rangeCount > 0
       rects = selection.getRangeAt(0).getClientRects()
-      rect = rects[rects.length - 1]
+      if rects.length > 0
+        rect = rects[rects.length - 1]
 
-      pageX = rect.right
-      pageY = rect.top + rect.height / 2
+        pageX = rect.right
+        pageY = rect.top + rect.height / 2
 
-      [pageX, pageY]
+        [pageX, pageY]
 
   getSelectedRange: ->
     return @lockedRange if @lockedRange
