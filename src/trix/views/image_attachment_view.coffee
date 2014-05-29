@@ -7,6 +7,7 @@
 class Trix.ImageAttachmentView extends Trix.AttachmentView
   render: ->
     @image = document.createElement("img")
+    @image.onload = @recordOriginalDimensions
     @loadImagePreview()
     @updateAttributes()
     @image
@@ -18,28 +19,30 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
   setInitialAttributes: (src) =>
     if @attachment.isPending()
       @image.setAttribute("src", src)
-      defer => @attachment.setAttributes(Trix.DOM.getDimensions(@image))
 
-  attributeNames = "url width height class".split(" ")
+  recordOriginalDimensions: =>
+    dimensions = Trix.DOM.getDimensions(@image)
+    @attachment.setAttributes(dimensions)
 
   updateAttributes: ->
-    attributes = {}
+    klass = if @attachment.isPending() then "pending-attachment" else @attachment.attributes.class
+    updateAttribute(@image, "class", klass)
 
-    for key in attributeNames
-      attributes[key] = @attachment.attributes[key]
+    url = @attachment.attributes.url
+    updateAttribute(@image, "src", url)
 
-    if attributes.url
-      attributes.src = attributes.url
-      delete attributes.url
+  updateAttribute = (element, attribute, value) ->
+    if value?
+      if element.getAttribute(attribute) isnt value
+        element.setAttribute(attribute, value)
+    else if element.hasAttribute(attribute)
+      element.removeAttribute(attribute, value)
 
-    if @attachment.isPending()
-      attributes.class = "pending-attachment"
-
-    for key, value of attributes
-      if value?
-        @image.setAttribute(key, value)
-      else
-        @image.removeAttribute(key)
+  resize: ({width, height} = {}) ->
+    width ?= @attachment.attributes.width
+    height ?= @attachment.attributes.height
+    @image.width = width if width?
+    @image.height = height if height?
 
   getDataURL = (file, callback) ->
     reader = new FileReader

@@ -11,7 +11,7 @@ class Trix.AttachmentController
   install: ->
 
   uninstall: ->
-    @delegate?.attachmentControllerDidUninstall()
+    @delegate?.didUninstallAttachmentController(this)
 
   setStyle: (element, attributes) ->
     element.style[key] = value for key, value of attributes

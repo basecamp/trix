@@ -86,9 +86,11 @@ class Trix.TextView
   createAttachmentElementForCurrentRun: ->
     {attachment, attributes, position} = @currentRun
 
-    attachment.element ?= Trix.AttachmentView.for(attachment).render()
-    element = attachment.element
+    attachment.view ?= Trix.AttachmentView.for(attachment)
+    attachment.element ?= attachment.view.render()
+    attachment.view.resize(width: attributes.width, height: attributes.height)
 
+    element = attachment.element
     element.trixPosition = position
     element.trixLength = 1
     element.trixAttachmentId = attachment.id
@@ -178,12 +180,13 @@ class Trix.TextView
     selection = window.getSelection()
     if selection.rangeCount > 0
       rects = selection.getRangeAt(0).getClientRects()
-      rect = rects[rects.length - 1]
+      if rects.length > 0
+        rect = rects[rects.length - 1]
 
-      pageX = rect.right
-      pageY = rect.top + rect.height / 2
+        pageX = rect.right
+        pageY = rect.top + rect.height / 2
 
-      [pageX, pageY]
+        [pageX, pageY]
 
   getSelectedRange: ->
     return @lockedRange if @lockedRange

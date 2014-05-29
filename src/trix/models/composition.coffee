@@ -13,6 +13,16 @@ class Trix.Composition
     @attachments.delegate = config?.delegate
     @attachments.reset()
 
+  # Snapshots
+
+  createSnapshot: ->
+    text: @getText()
+    selectedRange: @getInternalSelectedRange()
+
+  restoreSnapshot: ({text, selectedRange}) ->
+    @text.replaceText(text)
+    @requestSelectedRange(selectedRange)
+
   # Text delegate
 
   didEditText: (text) ->
@@ -113,8 +123,8 @@ class Trix.Composition
 
   removeAttachment: (id) ->
     if attachment = @attachments.get(id)
-      {position} = @text.getAttachmentAndPosition(id)
-      @text.removeTextAtRange([position, position + 1])
+      range = @text.getRangeOfAttachment(attachment)
+      @text.removeTextAtRange(range)
 
   # Current attributes
 
@@ -178,7 +188,7 @@ class Trix.Composition
   # Position and selected range
 
   getPosition: ->
-    if range = @selectionDelegate?.getSelectedRangeOfComposition?(this)
+    if range = @getInternalSelectedRange()
       [start, end] = range
       start if start is end
 
@@ -195,14 +205,24 @@ class Trix.Composition
     @requestPositionAtPoint(point) if point?
 
   getSelectedRange: ->
-    if range = @selectionDelegate?.getSelectedRangeOfComposition?(this)
+    if range = @getInternalSelectedRange()
       [start, end] = range
       range unless start is end
 
-  requestSelectedRange: ([start, end]) ->
-    length = @text.getLength()
-    range = [clamp(start, 0, length), clamp(end, 0, length)]
-    @selectionDelegate?.compositionDidRequestSelectionOfRange?(this, range)
+  requestSelectedRange: (range) ->
+    if range?
+      [start, end] = range
+      length = @text.getLength()
+      range = [clamp(start, 0, length), clamp(end, 0, length)]
+      @selectionDelegate?.compositionDidRequestSelectionOfRange?(this, range)
+
+  # Private
+
+  getText: ->
+    @text.copy()
+
+  getInternalSelectedRange: ->
+    @selectionDelegate?.getSelectedRangeOfComposition?(this)
 
   clamp = (value, floor, ceiling) ->
     Math.max(floor, Math.min(ceiling, value))

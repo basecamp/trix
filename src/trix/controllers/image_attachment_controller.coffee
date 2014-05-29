@@ -43,7 +43,7 @@ class Trix.ImageAttachmentController extends Trix.AttachmentController
     @setStyle(@editor, {width, height})
 
   endResize: (event) =>
-    @attachment.setAttributes({ width: @element.offsetWidth, height: @element.offsetHeight })
+    dimensions = width: @element.offsetWidth, height: @element.offsetHeight
 
     @container.style["cursor"] = "auto"
     @container.removeEventListener("mousemove", @resize)
@@ -51,3 +51,5 @@ class Trix.ImageAttachmentController extends Trix.AttachmentController
 
     delete @resizing
     @uninstall()
+
+    @delegate?.attachmentControllerDidResizeAttachmentToDimensions(@attachment, dimensions)

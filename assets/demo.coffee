@@ -1,3 +1,5 @@
+#= require ./inspector/inspector_controller
+
 Trix.attributes["code"] = { tagName: "code", inheritable: true }
 
 document.addEventListener "DOMContentLoaded", ->
@@ -5,7 +7,6 @@ document.addEventListener "DOMContentLoaded", ->
     textarea: "text"
     toolbar: "toolbar"
     input: "data"
-    debug: "debug"
     className: "formatted"
     delegate:
       shouldAcceptFile: (file) ->
@@ -31,7 +32,16 @@ document.addEventListener "DOMContentLoaded", ->
         console.log "Host received removed attachment:", attachment
         removeAttachment(attachment)
 
+      didChangeSelection: ->
+        inspectorController.render()
+
+      didRenderText: ->
+        inspectorController.render()
+
   window.controller = Trix.install(config)
+
+  inspectorElement = document.getElementById("inspector")
+  inspectorController = new Trix.InspectorController inspectorElement, window.controller
 
 
 saveAttachment = (attachment) ->
