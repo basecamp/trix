@@ -1,3 +1,4 @@
+#= require trix/lib/device_observer
 #= require trix/lib/helpers
 
 {defer} = Trix.Helpers
@@ -11,18 +12,25 @@ class Trix.InputController
     0x4f: "o"
 
   constructor: (@element) ->
+    @canceledInputEventsSupported = true
+
+    @deviceObserver = new Trix.DeviceObserver @element
+    @deviceObserver.delegate = this
+
     for event, handler of @events
       @element.addEventListener(event, handler.bind(this), true)
+
+  # Device observer delegate
+        
+  deviceDidActivateVirtualKeyboard: ->
+    @canceledInputEventsSupported = false
+
+  deviceDidDeactivateVirtualKeyboard: ->
+    @canceledInputEventsSupported = true
 
   # Input handlers
 
   events:
-    focus: (event) ->
-      @cacheCanceledInputEventSupport()
-
-    blur: (event) ->
-      @expireCanceledInputEventSupportCache()
-
     keydown: (event) ->
       if keyName = @constructor.keyNames[event.keyCode]
         context = switch
@@ -40,8 +48,7 @@ class Trix.InputController
       else if event.which isnt 0 and event.charCode isnt 0
         character = String.fromCharCode event.charCode
 
-      if character? and @deviceSupportsCanceledInputEvents()
-        event.preventDefault()
+      if character? and @cancelInputEvent(event)
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(character)
 
@@ -139,33 +146,7 @@ class Trix.InputController
         @responder?.deleteWordBackward()
         event.preventDefault()
 
-  logAndCancel: (event) ->
-    console.log "trapped event", event.type, event
-    event.preventDefault()
-
-  # Devices with a virtual keyboard don't respond well to canceled input events.
-  # On iOS for example, the shift key remains active and autocorrect doesn't work.
-  deviceSupportsCanceledInputEvents: ->
-    @cacheCanceledInputEventSupport()
-
-  cacheCanceledInputEventSupport: ->
-    @canceledEventSuppport ?= virtualKeyboardHeight() is 0
-
-  expireCanceledInputEventSupportCache: ->
-    delete @canceledEventSuppport
-
-  virtualKeyboardHeight = ->
-    return 0 unless "ontouchstart" of window
-
-    startLeft = document.body.scrollLeft
-    startTop = document.body.scrollTop
-    startHeight = window.innerHeight
-
-    # When a keyboard is present, a different innerHeight
-    # is revealed after scrolling to the bottom of the document
-    # and the difference in height is the keyboard's height.
-    window.scrollTo(startTop, document.body.scrollHeight)
-    keyboardHeight = startHeight - window.innerHeight
-    window.scrollTo(startLeft, startTop)
-
-    keyboardHeight
+  cancelInputEvent: (event) ->
+    if @canceledInputEventsSupported
+      event.preventDefault()
+      true
