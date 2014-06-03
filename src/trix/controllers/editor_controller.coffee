@@ -90,12 +90,16 @@ class Trix.EditorController extends Trix.AbstractEditorController
   inputControllerWillAttachFiles: ->
     @undoManager.recordUndoEntry("Drop Files")
 
-  inputControllerWillComposeCharacters: ->
+  inputControllerWillStartComposition: ->
+    @mutationObserver.stop()
     @textController.lockSelection()
+
+  inputControllerWillEndComposition: ->
+    @textController.unlockSelection()
+    @mutationObserver.start()
 
   inputControllerDidComposeCharacters: (composedString) ->
     @textController.render()
-    @textController.unlockSelection()
     @undoManager.recordUndoEntry("Typing", consolidatable: true)
     @composition.insertString(composedString)
 

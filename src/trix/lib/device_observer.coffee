@@ -1,22 +1,27 @@
 class Trix.DeviceObserver
   constructor: (@element) ->
+    @originalInnerHeight = window.innerHeight
+
     for event in ["focus", "blur"]
       @element.addEventListener(event, @detectVirtualKeyboard, true)
 
-    @element.addEventListener "touchend", => 
+    @element.addEventListener "touchend", =>
       setTimeout(@detectVirtualKeyboard, 500)
 
   detectVirtualKeyboard: =>
     previousKeyboardHeight = @virtualKeyboardHeight
-    @virtualKeyboardHeight = getVirtualKeyboardHeight()
-    
+    @virtualKeyboardHeight = @getVirtualKeyboardHeight()
+
     if not previousKeyboardHeight and @virtualKeyboardHeight > 0
       @delegate?.deviceDidActivateVirtualKeyboard?()
     else if previousKeyboardHeight > 0 and @virtualKeyboardHeight is 0
       @delegate?.deviceDidDeactivateVirtualKeyboard?()
 
-  getVirtualKeyboardHeight = ->
+  getVirtualKeyboardHeight: ->
     return 0 unless "ontouchstart" of window
+
+    keyboardHeight = @originalInnerHeight - window.innerHeight
+    return keyboardHeight unless keyboardHeight is 0
 
     startLeft = document.body.scrollLeft
     startTop = document.body.scrollTop

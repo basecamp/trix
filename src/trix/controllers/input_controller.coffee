@@ -21,7 +21,7 @@ class Trix.InputController
       @element.addEventListener(event, handler.bind(this), true)
 
   # Device observer delegate
-        
+
   deviceDidActivateVirtualKeyboard: ->
     @canceledInputEventsSupported = false
 
@@ -101,18 +101,18 @@ class Trix.InputController
         @responder?.insertString(string)
 
     compositionstart: (event) ->
-      @delegate?.inputControllerWillComposeCharacters?()
+      @delegate?.inputControllerWillStartComposition?()
       @composing = true
 
     compositionend: (event) ->
+      @delegate?.inputControllerWillEndComposition?()
       @composedString = event.data
 
     input: (event) ->
-      if @composing
-        if @composedString?
-          @delegate?.inputControllerDidComposeCharacters?(@composedString)
-          delete @composedString
-          delete @composing
+      if @composing and @composedString?
+        @delegate?.inputControllerDidComposeCharacters?(@composedString) if @composedString
+        delete @composedString
+        delete @composing
 
   keys:
     backspace: (event) ->
