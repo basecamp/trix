@@ -4,7 +4,7 @@
 
 class Trix.AbstractEditorController
   constructor: (@config) ->
-    {@textElement, @toolbarElement, @textareaElement, @inputElement, @debugElement} = @config
+    {@textElement, @toolbarElement, @textareaElement, @inputElement, @delegate} = @config
     @text = @createText()
     @initialize()
 
