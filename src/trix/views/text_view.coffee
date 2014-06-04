@@ -186,6 +186,14 @@ class Trix.TextView
         pageX = rect.right
         pageY = rect.top + rect.height / 2
 
+        # All browsers except mobile Safari correctly return ClientRect
+        # position properties that are relative to the viewport. Mobile
+        # Safari's properties are relative to the body, so adjust them.
+        if /mobile.*safari/i.test(navigator.userAgent)
+          pageX -= document.body.scrollLeft
+          pageY -= document.body.scrollTop
+
+
         [pageX, pageY]
 
   getSelectedRange: ->
