@@ -79,6 +79,7 @@ class Trix.TextController
   lockSelection: ->
     if @selectionLockCount++ is 0
       @textView.lockSelection()
+      @expireCachedSelectedRange()
       @delegate?.textControllerDidLockSelection?()
 
   unlockSelection: ->

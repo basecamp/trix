@@ -95,11 +95,11 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @textController.lockSelection()
 
   inputControllerWillEndComposition: ->
+    @textController.render()
     @textController.unlockSelection()
     @mutationObserver.start()
 
   inputControllerDidComposeCharacters: (composedString) ->
-    @textController.render()
     @undoManager.recordUndoEntry("Typing", consolidatable: true)
     @composition.insertString(composedString)
 
