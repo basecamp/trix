@@ -2,30 +2,30 @@
 #= require trix/controllers/simple_editor_controller
 
 class Trix.Installer
-  simpleSupport =
+  caretPositionSupport =
+    "caretPositionFromPoint" of document or
+    "caretRangeFromPoint"    of document or
+    "createTextRange"        of document.createElement("body")
+
+  simpleTrixSupport =
     "addEventListener" of document and
     "createTreeWalker" of document and
     "getComputedStyle" of window and
     "getSelection"     of window
 
-  fullSupport = simpleSupport and
-    "MutationObserver" of window and
-    ("caretPositionFromPoint" of document or
-     "caretRangeFromPoint" of document or
-     "createTextRange" of document.createElement("body"))
+  fullTrixSupport =
+    simpleTrixSupport and caretPositionSupport
 
   @supportedModes = []
-  @supportedModes.push("full") if fullSupport
-  @supportedModes.push("simple") if simpleSupport
+  @supportedModes.push("full")   if fullTrixSupport
+  @supportedModes.push("simple") if simpleTrixSupport
 
   constructor: (@config = {}) ->
-    @config.mode ?= @constructor.supportedModes[0]
-
-  modeIsSupported: ->
-    @config.mode in @constructor.supportedModes
+    @supportedModes = @constructor.supportedModes
+    @config.mode ?= @supportedModes[0]
 
   createEditor: ->
-    if @modeIsSupported()
+    if @config.mode in @supportedModes
       @getConfigElements()
       @config.textElement = @createTextElement()
       @config.autofocus ?= @config.textareaElement.hasAttribute("autofocus")
