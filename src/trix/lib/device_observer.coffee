@@ -1,37 +1,35 @@
 class Trix.DeviceObserver
+  deviceMayHaveVirtualKeyboard = "ontouchstart" of window
+  originalWindowHeight = window.innerHeight
+
   constructor: (@element) ->
-    @originalInnerHeight = window.innerHeight
+    if deviceMayHaveVirtualKeyboard
+      for event in ["focus", "blur"]
+        @element.addEventListener(event, @detectVirtualKeyboard, true)
 
-    for event in ["focus", "blur"]
-      @element.addEventListener(event, @detectVirtualKeyboard, true)
-
-    @element.addEventListener "touchend", =>
-      setTimeout(@detectVirtualKeyboard, 500)
+      @element.addEventListener "touchend", =>
+        setTimeout(@detectVirtualKeyboard, 500)
 
   detectVirtualKeyboard: =>
     previousKeyboardHeight = @virtualKeyboardHeight
-    @virtualKeyboardHeight = @getVirtualKeyboardHeight()
+    @virtualKeyboardHeight = getVirtualKeyboardHeight()
 
-    if not previousKeyboardHeight and @virtualKeyboardHeight > 0
+    if @virtualKeyboardHeight > 0 and not previousKeyboardHeight
       @delegate?.deviceDidActivateVirtualKeyboard?()
-    else if previousKeyboardHeight > 0 and @virtualKeyboardHeight is 0
+    else if @virtualKeyboardHeight is 0 and previousKeyboardHeight > 0
       @delegate?.deviceDidDeactivateVirtualKeyboard?()
 
-  getVirtualKeyboardHeight: ->
-    return 0 unless "ontouchstart" of window
-
-    keyboardHeight = @originalInnerHeight - window.innerHeight
+  getVirtualKeyboardHeight = ->
+    keyboardHeight = originalWindowHeight - window.innerHeight
     return keyboardHeight unless keyboardHeight is 0
-
-    startLeft = document.body.scrollLeft
-    startTop = document.body.scrollTop
-    startHeight = window.innerHeight
 
     # When a keyboard is present on iOS, a different innerHeight
     # is revealed after scrolling to the bottom of the document
     # and the difference in height is the keyboard's height.
-    window.scrollTo(startTop, document.body.scrollHeight)
-    keyboardHeight = startHeight - window.innerHeight
-    window.scrollTo(startLeft, startTop)
+    {scrollLeft, scrollTop, scrollHeight} = document.body
+
+    window.scrollTo(scrollLeft, scrollHeight)
+    keyboardHeight = originalWindowHeight - window.innerHeight
+    window.scrollTo(scrollLeft, scrollTop)
 
     keyboardHeight
