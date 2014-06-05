@@ -26,7 +26,7 @@ class Trix.Installer
 
   createEditor: ->
     if @config.mode in @supportedModes
-      @getConfigElements()
+      @setConfigElements()
       @config.textElement = @createTextElement()
       @config.autofocus ?= @config.textareaElement.hasAttribute("autofocus")
       @createStyleSheet()
@@ -36,8 +36,8 @@ class Trix.Installer
       else
         new Trix.EditorController @config
 
-  getConfigElements: ->
-    for key in "textarea toolbar input debug".split(" ")
+  setConfigElements: ->
+    for key in "textarea toolbar input".split(" ")
       @config["#{key}Element"] = getElement(@config[key])
       delete @config[key]
 
