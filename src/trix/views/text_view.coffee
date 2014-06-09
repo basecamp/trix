@@ -1,4 +1,4 @@
-#= require trix/lib/dom
+#= require trix/utilities/dom
 #= require_self
 #= require_tree .
 

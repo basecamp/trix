@@ -1,6 +1,6 @@
 #= require trix/models/text
-#= require trix/lib/dom
-#= require trix/lib/html_parser
+#= require trix/utilities/dom
+#= require trix/utilities/html_parser
 
 class Trix.AbstractEditorController
   constructor: (@config) ->

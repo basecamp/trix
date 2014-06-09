@@ -1,6 +1,6 @@
 #= require trix/models/text
 #= require trix/models/attachment_manager
-#= require trix/lib/helpers
+#= require trix/utilities/helpers
 
 {countGraphemeClusters, defer} = Trix.Helpers
 

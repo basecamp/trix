@@ -4,8 +4,8 @@
 #= require trix/controllers/toolbar_controller
 #= require trix/models/composition
 #= require trix/models/undo_manager
-#= require trix/lib/selection_observer
-#= require trix/lib/mutation_observer
+#= require trix/observers/selection_observer
+#= require trix/observers/mutation_observer
 
 class Trix.EditorController extends Trix.AbstractEditorController
   initialize: ->
