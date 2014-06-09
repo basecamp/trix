@@ -12,8 +12,6 @@ class Trix.InputController
     0x4f: "o"
 
   constructor: (@element) ->
-    @canceledInputEventsSupported = true
-
     @deviceObserver = new Trix.DeviceObserver @element
     @deviceObserver.delegate = this
 
@@ -23,10 +21,10 @@ class Trix.InputController
   # Device observer delegate
 
   deviceDidActivateVirtualKeyboard: ->
-    @canceledInputEventsSupported = false
+    @virtualKeyboardIsActive = true
 
   deviceDidDeactivateVirtualKeyboard: ->
-    @canceledInputEventsSupported = true
+    delete @virtualKeyboardIsActive
 
   # Input handlers
 
@@ -41,6 +39,7 @@ class Trix.InputController
         context[keyName]?.call(this, event)
 
     keypress: (event) ->
+      return if @virtualKeyboardIsActive
       return if (event.metaKey or event.ctrlKey) and not event.altKey
 
       if event.which is null
@@ -48,7 +47,8 @@ class Trix.InputController
       else if event.which isnt 0 and event.charCode isnt 0
         character = String.fromCharCode event.charCode
 
-      if character? and @cancelInputEvent(event)
+      if character?
+        event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(character)
 
@@ -145,8 +145,3 @@ class Trix.InputController
         @delegate?.inputControllerWillPerformTyping()
         @responder?.deleteWordBackward()
         event.preventDefault()
-
-  cancelInputEvent: (event) ->
-    if @canceledInputEventsSupported
-      event.preventDefault()
-      true
