@@ -1,14 +1,15 @@
 #= require_self
-#= require installer
 #= require trix/utilities/dom
+#= require trix/controllers/editor_controller
+#= require trix/controllers/simple_editor_controller
 
 @Trix =
   install: (config) ->
-    installer = new Trix.Installer config
+    installer = new Installer config
     installer.createEditor()
 
   getSupportedModes: ->
-    Trix.Installer.supportedModes.slice(0)
+    Installer.supportedModes.slice(0)
 
   attributes:
     bold:
@@ -64,3 +65,113 @@
         cursor: nwse-resize;
       }
     """
+
+
+class Installer
+  caretPositionSupport =
+    "caretPositionFromPoint" of document or
+    "caretRangeFromPoint"    of document or
+    "createTextRange"        of document.createElement("body")
+
+  simpleTrixSupport =
+    "addEventListener" of document and
+    "createTreeWalker" of document and
+    "getComputedStyle" of window and
+    "getSelection"     of window
+
+  fullTrixSupport =
+    simpleTrixSupport and caretPositionSupport
+
+  @supportedModes = []
+  @supportedModes.push("full")   if fullTrixSupport
+  @supportedModes.push("simple") if simpleTrixSupport
+
+  constructor: (@config = {}) ->
+    @supportedModes = @constructor.supportedModes
+    @config.mode ?= @supportedModes[0]
+
+  createEditor: ->
+    if @config.mode in @supportedModes
+      @setConfigElements()
+      @config.textElement = @createTextElement()
+      @config.autofocus ?= @config.textareaElement.hasAttribute("autofocus")
+      @createStyleSheet()
+
+      if @config.mode is "simple"
+        new Trix.SimpleEditorController @config
+      else
+        new Trix.EditorController @config
+
+  setConfigElements: ->
+    for key in "textarea toolbar input".split(" ")
+      @config["#{key}Element"] = getElement(@config[key])
+      delete @config[key]
+
+  styleSheetId = "trix-styles"
+
+  createStyleSheet: ->
+    if !document.getElementById(styleSheetId) and css = Trix.config.editorCSS
+      element = document.createElement("style")
+      element.setAttribute("type", "text/css")
+      element.setAttribute("id", styleSheetId)
+      element.appendChild(document.createTextNode(css))
+      document.querySelector("head").appendChild(element)
+
+  textElementAttributes =
+    contenteditable: "true"
+    autocorrect: "off"
+
+  createTextElement: ->
+    textarea = @config.textareaElement
+
+    element = document.createElement("div")
+    element.innerHTML = textarea.value
+    element.setAttribute(key, value) for key, value of textElementAttributes
+
+    if placeholder = textarea.getAttribute("placeholder")
+      element.setAttribute("data-placeholder", placeholder)
+
+    classNames = (@config.className?.split(" ") ? []).concat("trix-editor")
+    element.classList.add(name) for name in classNames
+
+    visiblyReplaceTextAreaWithElement(textarea, element)
+    disableObjectResizing(element)
+    element
+
+  visiblyReplaceTextAreaWithElement = (textarea, element) ->
+    copyTextAreaStylesToElement(textarea, element)
+    textarea.style["display"] = "none"
+    textarea.parentElement.insertBefore(element, textarea)
+
+  textareaStylesToCopy = "width position top left right bottom zIndex color".split(" ")
+  textareaStylePatternToCopy = /(border|outline|padding|margin|background)[A-Z]+/
+
+  copyTextAreaStylesToElement = (textarea, element) ->
+    textareaStyle = window.getComputedStyle(textarea)
+
+    for style in textareaStylesToCopy
+      element.style[style] = textareaStyle[style]
+
+    for key, value of textareaStyle when value and textareaStylePatternToCopy.test(key)
+      element.style[key] = value
+
+    element.style["minHeight"] = textareaStyle["height"]
+
+  getElement = (elementOrId) ->
+    if typeof(elementOrId) is "string"
+      document.getElementById(elementOrId)
+    else
+      elementOrId
+
+  disableObjectResizing = (element) ->
+    if element instanceof FocusEvent
+      event = element
+      document.execCommand("enableObjectResizing", false, false)
+      event.target.removeEventListener("focus", disableObjectResizing)
+    else
+      if document.queryCommandSupported?("enableObjectResizing")
+        element.addEventListener("focus", disableObjectResizing, true)
+      element.addEventListener("mscontrolselect", cancelEvent, true)
+
+  cancelEvent = (event) ->
+    event.preventDefault()
