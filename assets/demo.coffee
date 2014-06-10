@@ -40,8 +40,13 @@ document.addEventListener "DOMContentLoaded", ->
 
   window.controller = Trix.install(config)
 
+
   inspectorElement = document.getElementById("inspector")
-  inspectorController = new Trix.InspectorController inspectorElement, window.controller
+
+  if window.controller and config.mode isnt "simple"
+    inspectorController = new Trix.InspectorController inspectorElement, window.controller
+  else
+    inspectorElement.style.display = "none"
 
 
 saveAttachment = (attachment) ->
