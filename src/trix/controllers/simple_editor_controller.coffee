@@ -3,7 +3,6 @@
 
 class Trix.SimpleEditorController extends Trix.AbstractEditorController
   initialize: ->
-    @toolbarElement?.style["display"] = "none"
     @render()
     @textElement.addEventListener("blur", @didBlur)
 

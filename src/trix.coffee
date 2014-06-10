@@ -87,20 +87,20 @@ class Installer
   @supportedModes.push("simple") if simpleTrixSupport
 
   constructor: (@config = {}) ->
-    @supportedModes = @constructor.supportedModes
-    @config.mode ?= @supportedModes[0]
+    @config.mode ?= "full"
 
   createEditor: ->
-    if @config.mode in @supportedModes
+    if @config.mode in @constructor.supportedModes
       @setConfigElements()
       @config.textElement = @createTextElement()
       @config.autofocus ?= @config.textareaElement.hasAttribute("autofocus")
       @createStyleSheet()
 
-      if @config.mode is "simple"
-        new Trix.SimpleEditorController @config
-      else
-        new Trix.EditorController @config
+      switch @config.mode
+        when "full"
+          new Trix.EditorController @config
+        when "simple"
+          new Trix.SimpleEditorController @config
 
   setConfigElements: ->
     for key in "textarea toolbar input".split(" ")
