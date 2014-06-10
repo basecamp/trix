@@ -1,20 +1,14 @@
+#= require trix/controllers/abstract_editor_controller
 #= require trix/controllers/input_controller
 #= require trix/controllers/text_controller
 #= require trix/controllers/toolbar_controller
 #= require trix/models/composition
-#= require trix/models/text
 #= require trix/models/undo_manager
-#= require trix/lib/dom
-#= require trix/lib/selection_observer
-#= require trix/lib/mutation_observer
-#= require trix/lib/html_parser
+#= require trix/observers/selection_observer
+#= require trix/observers/mutation_observer
 
-class Trix.EditorController
-  constructor: (@config) ->
-    {@textElement, @toolbarElement, @textareaElement, @inputElement, @delegate} = @config
-
-    @text = @createText()
-
+class Trix.EditorController extends Trix.AbstractEditorController
+  initialize: ->
     @textController = new Trix.TextController @textElement, @text, @config
     @textController.delegate = this
 
@@ -96,12 +90,16 @@ class Trix.EditorController
   inputControllerWillAttachFiles: ->
     @undoManager.recordUndoEntry("Drop Files")
 
-  inputControllerWillComposeCharacters: ->
+  inputControllerWillStartComposition: ->
+    @mutationObserver.stop()
     @textController.lockSelection()
 
-  inputControllerDidComposeCharacters: (composedString) ->
+  inputControllerWillEndComposition: ->
     @textController.render()
     @textController.unlockSelection()
+    @mutationObserver.start()
+
+  inputControllerDidComposeCharacters: (composedString) ->
     @undoManager.recordUndoEntry("Typing", consolidatable: true)
     @composition.insertString(composedString)
 

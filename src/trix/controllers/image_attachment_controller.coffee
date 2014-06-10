@@ -1,5 +1,5 @@
 #= require trix/controllers/attachment_controller
-#= require trix/lib/dom
+#= require trix/utilities/dom
 
 class Trix.ImageAttachmentController extends Trix.AttachmentController
   install: ->

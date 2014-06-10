@@ -1,4 +1,5 @@
-#= require trix/lib/helpers
+#= require trix/observers/device_observer
+#= require trix/utilities/helpers
 
 {defer} = Trix.Helpers
 
@@ -11,8 +12,19 @@ class Trix.InputController
     0x4f: "o"
 
   constructor: (@element) ->
+    @deviceObserver = new Trix.DeviceObserver @element
+    @deviceObserver.delegate = this
+
     for event, handler of @events
       @element.addEventListener(event, handler.bind(this), true)
+
+  # Device observer delegate
+
+  deviceDidActivateVirtualKeyboard: ->
+    @virtualKeyboardIsActive = true
+
+  deviceDidDeactivateVirtualKeyboard: ->
+    delete @virtualKeyboardIsActive
 
   # Input handlers
 
@@ -27,6 +39,7 @@ class Trix.InputController
         context[keyName]?.call(this, event)
 
     keypress: (event) ->
+      return if @virtualKeyboardIsActive
       return if (event.metaKey or event.ctrlKey) and not event.altKey
 
       if event.which is null
@@ -88,18 +101,18 @@ class Trix.InputController
         @responder?.insertString(string)
 
     compositionstart: (event) ->
-      @delegate?.inputControllerWillComposeCharacters?()
+      @delegate?.inputControllerWillStartComposition?()
       @composing = true
 
     compositionend: (event) ->
+      @delegate?.inputControllerWillEndComposition?()
       @composedString = event.data
 
     input: (event) ->
-      if @composing
-        if @composedString?
-          @delegate?.inputControllerDidComposeCharacters?(@composedString)
-          delete @composedString
-          delete @composing
+      if @composing and @composedString?
+        @delegate?.inputControllerDidComposeCharacters?(@composedString) if @composedString
+        delete @composedString
+        delete @composing
 
   keys:
     backspace: (event) ->
@@ -132,7 +145,3 @@ class Trix.InputController
         @delegate?.inputControllerWillPerformTyping()
         @responder?.deleteWordBackward()
         event.preventDefault()
-
-  logAndCancel: (event) ->
-    console.log "trapped event", event.type, event
-    event.preventDefault()

@@ -118,13 +118,18 @@
       }
 
       .trix-inspector {
-        position: fixed;
+        position: absolute;
         overflow: hidden;
         height: 300px;
-        bottom: 0;
+        bottom: -275px;
         left: 0;
         right: 0;
         background: #fff;
+        transition: bottom 0.1s ease;
+      }
+
+      .trix-inspector:hover {
+        bottom: 0;
       }
 
       .trix-inspector-toolbar {

@@ -1,6 +1,6 @@
 #= require trix/views/attachment_view
-#= require trix/lib/dom
-#= require trix/lib/helpers
+#= require trix/utilities/dom
+#= require trix/utilities/helpers
 
 {defer} = Trix.Helpers
 

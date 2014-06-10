@@ -1,4 +1,4 @@
-#= require trix/lib/dom
+#= require trix/utilities/dom
 
 class Trix.ToolbarController
   actionButtonSelector = ".button[data-action]"

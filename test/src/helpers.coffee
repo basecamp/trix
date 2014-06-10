@@ -1,5 +1,5 @@
 #= require qunit
-#= require trix/lib/hash
+#= require trix/utilities/hash
 
 
 # QUnit extensions

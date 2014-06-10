@@ -1,5 +1,5 @@
 #= require trix/models/text
-#= require trix/lib/dom
+#= require trix/utilities/dom
 
 class Trix.HTMLParser
   allowedAttributes = "style href src width height".split(" ")
