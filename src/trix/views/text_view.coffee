@@ -1,7 +1,9 @@
 #= require trix/utilities/dom
+#= require trix/utilities/helpers
 #= require_self
 #= require_tree .
 
+{memoize} = Trix.Helpers
 
 class Trix.TextView
   constructor: (@element, @text) ->
@@ -186,13 +188,9 @@ class Trix.TextView
         pageX = rect.right
         pageY = rect.top + rect.height / 2
 
-        # All browsers except mobile Safari correctly return ClientRect
-        # position properties that are relative to the viewport. Mobile
-        # Safari's properties are relative to the body, so adjust them.
-        if /mobile.*safari/i.test(navigator.userAgent)
+        if @clientRectIsRelativeToBody()
           pageX -= document.body.scrollLeft
           pageY -= document.body.scrollTop
-
 
         [pageX, pageY]
 
@@ -293,3 +291,15 @@ class Trix.TextView
       NodeFilter.FILTER_ACCEPT
     else
       NodeFilter.FILTER_SKIP
+
+  # ClientRect position properties should be relative to the viewport,
+  # but in some browsers (like mobile Safari), they're relative to the body.
+  clientRectIsRelativeToBody: memoize ->
+    getRectTop = -> window.getSelection().getRangeAt(0).getClientRects()[0].top
+    originalTop = getRectTop()
+
+    window.scrollBy(0, 1)
+    result = originalTop is getRectTop()
+    window.scrollBy(0, -1)
+
+    result
