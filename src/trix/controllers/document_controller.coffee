@@ -1,10 +1,10 @@
 #= require trix/controllers/attachment_controller
 #= require trix/controllers/image_attachment_controller
-#= require trix/views/text_view
+#= require trix/views/document_view
 
-class Trix.TextController
-  constructor: (@element, @text, @config) ->
-    @textView = new Trix.TextView @element, @text
+class Trix.DocumentController
+  constructor: (@element, @document, @config) ->
+    @documentView = new Trix.DocumentView @element, @document
 
     @selectionLockCount = 0
 
@@ -25,11 +25,11 @@ class Trix.TextController
 
   render: ->
     @delegate?.textControllerWillRender?()
-    @textView.render()
+    @documentView.render()
     @delegate?.textControllerDidRender?()
 
   focus: ->
-    @textView.focus()
+    @documentView.focus()
 
   # Attachment controller management
 
@@ -67,43 +67,43 @@ class Trix.TextController
     [position, position] if position?
 
   getPointAtEndOfCompositionSelection: (composition) ->
-    @textView.getPointAtEndOfSelection()
+    @documentView.getPointAtEndOfSelection()
 
   compositionDidRequestSelectionOfRange: (composition, range) ->
     @focus()
-    @textView.setSelectedRange(range)
+    @documentView.setSelectedRange(range)
     @expireCachedSelectedRange()
 
   # Selection
 
   lockSelection: ->
     if @selectionLockCount++ is 0
-      @textView.lockSelection()
+      @documentView.lockSelection()
       @expireCachedSelectedRange()
       @delegate?.textControllerDidLockSelection?()
 
   unlockSelection: ->
     if --@selectionLockCount is 0
-      selectedRange = @textView.unlockSelection()
-      @textView.setSelectedRange(selectedRange)
+      selectedRange = @documentView.unlockSelection()
+      @documentView.setSelectedRange(selectedRange)
       @delegate?.textControllerDidUnlockSelection?()
 
   expandSelectedRangeAroundCommonAttribute: (attributeName) ->
-    [left, right] = @textView.getSelectedRange()
+    [left, right] = @documentView.getSelectedRange()
     originalLeft = left
     length = @text.getLength()
 
     left-- while left > 0 and @text.getCommonAttributesAtRange([left - 1, right])[attributeName]
     right++ while right < length and @text.getCommonAttributesAtRange([originalLeft, right + 1])[attributeName]
 
-    @textView.setSelectedRange([left, right])
+    @documentView.setSelectedRange([left, right])
     @expireCachedSelectedRange()
 
   getCachedSelectedRangeFromTextView: ->
-    @cachedSelectedRange ?= @textView.getSelectedRange()
+    @cachedSelectedRange ?= @documentView.getSelectedRange()
 
   expireCachedSelectedRange: ->
     delete @cachedSelectedRange
 
   getPositionAtPoint: (point) ->
-    @textView.getPositionAtPoint(point)
+    @documentView.getPositionAtPoint(point)
