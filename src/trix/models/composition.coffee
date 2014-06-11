@@ -1,12 +1,14 @@
-#= require trix/models/text
+#= require trix/models/document
 #= require trix/models/attachment_manager
 #= require trix/utilities/helpers
 
 {countGraphemeClusters, defer} = Trix.Helpers
 
 class Trix.Composition
-  constructor: (@text = new Trix.Text, config) ->
-    @text.delegate = this
+  constructor: (@document = new Trix.Document, config) ->
+    @document.delegate = this
+    @text = @document.textList.texts[0]
+
     @currentAttributes = {}
 
     @attachments = new Trix.AttachmentManager this
@@ -23,10 +25,10 @@ class Trix.Composition
     @text.replaceText(text)
     @requestSelectedRange(selectedRange)
 
-  # Text delegate
+  # Document delegate
 
-  didEditText: (text) ->
-    @delegate?.compositionDidChangeText?(this, @text)
+  didEditDocument: (document) ->
+    @delegate?.compositionDidChangeDocument?(this, @document)
     defer => @attachments.reset()
 
   # Responder protocol

@@ -12,7 +12,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @textController = new Trix.TextController @textElement, @text, @config
     @textController.delegate = this
 
-    @composition = new Trix.Composition @text, @config
+    @composition = new Trix.Composition @document, @config
     @composition.delegate = this
     @composition.selectionDelegate = @textController
 
@@ -47,7 +47,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   # Composition controller delegate
 
-  compositionDidChangeText: (composition, text) ->
+  compositionDidChangeDocument: (composition, document) ->
     @textController.render()
     @saveSerializedText()
     @toolbarController.updateActions()

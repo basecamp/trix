@@ -1,5 +1,6 @@
 #= require trix/models/piece
 #= require trix/models/piece_list
+#= require trix/utilities/hash
 
 class Trix.Text
   @textForAttachmentWithAttributes: (attachment, attributes) ->
@@ -22,9 +23,10 @@ class Trix.Text
   @fromHTML: (html) ->
     Trix.HTMLParser.parse(html).getText()
 
-  constructor: (pieces = []) ->
+  constructor: (pieces = [], attributes = {}) ->
     @editDepth = 0
     @pieceList = new Trix.PieceList pieces
+    @attributes = Trix.Hash.box(attributes)
 
   edit = (fn) -> ->
     @beginEditing()
