@@ -11,8 +11,8 @@ class Trix.DocumentView
     selectedRange = @getSelectedRange()
 
     @element.removeChild(@element.lastChild) while @element.lastChild
-    @document.eachText (text) =>
-      textView = new Trix.TextView text
+    @document.eachText (text, position) =>
+      textView = new Trix.TextView text, position
       @element.appendChild(textView.render())
 
     @setSelectedRange(selectedRange) if selectedRange

@@ -1,7 +1,7 @@
 #= require trix/utilities/dom
 
 class Trix.TextView
-  constructor: (@text) ->
+  constructor: (@text, @position) ->
     @textAttributes = @text.getAttributes()
 
   # Rendering
@@ -31,7 +31,7 @@ class Trix.TextView
     @nodeCache.push(node)
 
   createElementsForText: ->
-    @text.eachRun (run) =>
+    @text.eachRun @position, (run) =>
       @previousRun = @currentRun
       @currentRun = run
       @createElementForCurrentRun()

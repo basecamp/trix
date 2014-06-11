@@ -122,8 +122,11 @@ class Trix.Text
   isEqualTo: (text) ->
     this is text or text?.pieceList?.isEqualTo(@pieceList)
 
-  eachRun: (callback) ->
-    position = 0
+  eachRun: (position, callback) ->
+    unless callback?
+      callback = position
+      position = 0
+
     @pieceList.eachPiece (piece) ->
       id = piece.id
       attributes = piece.getAttributes()

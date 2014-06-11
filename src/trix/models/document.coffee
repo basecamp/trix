@@ -6,7 +6,10 @@ class Trix.Document
     @textList.delegate = this
 
   eachText: (callback) ->
-    callback(text) for text in @textList.texts
+    position = 0
+    for text in @textList.texts
+      callback(text, position)
+      position += text.getLength() + 1
 
   # TextList delegate
 
