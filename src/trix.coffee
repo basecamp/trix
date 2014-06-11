@@ -1,15 +1,23 @@
 #= require_self
 #= require trix/utilities/dom
 #= require trix/controllers/editor_controller
-#= require trix/controllers/simple_editor_controller
+#= require trix/controllers/degraded_editor_controller
 
 @Trix =
-  install: (config) ->
-    installer = new Installer config
-    installer.createEditor()
+  isSupported: (config = {}) ->
+    trixSupport = new BrowserSupport().getTrixSupport()
 
-  getSupportedModes: ->
-    Installer.supportedModes.slice(0)
+    switch config.mode ? "full"
+      when "full"
+        trixSupport.fullEditor
+      when "degraded"
+        trixSupport.degradedEditor
+      else
+        false
+
+  install: (config) ->
+    if @isSupported(config)
+      new Installer(config).run()
 
   attributes:
     bold:
@@ -67,40 +75,39 @@
     """
 
 
-class Installer
-  caretPositionSupport =
-    "caretPositionFromPoint" of document or
-    "caretRangeFromPoint"    of document or
-    "createTextRange"        of document.createElement("body")
-
-  simpleTrixSupport =
+class BrowserSupport
+  required:
     "addEventListener" of document and
     "createTreeWalker" of document and
     "getComputedStyle" of window and
     "getSelection"     of window
 
-  fullTrixSupport =
-    simpleTrixSupport and caretPositionSupport
+  caretPosition:
+    "caretPositionFromPoint" of document or
+    "caretRangeFromPoint"    of document or
+    "createTextRange"        of document.createElement("body")
 
-  @supportedModes = []
-  @supportedModes.push("full")   if fullTrixSupport
-  @supportedModes.push("simple") if simpleTrixSupport
+  getTrixSupport: ->
+    degradedEditor: @required
+    fullEditor: @required and @caretPosition
 
+
+class Installer
   constructor: (@config = {}) ->
-    @config.mode ?= "full"
+    @setConfigElements()
+    @config.autofocus ?= @config.textareaElement.hasAttribute("autofocus")
+
+  run: ->
+    @config.textElement = @createTextElement()
+    @createStyleSheet()
+    @createEditor()
 
   createEditor: ->
-    if @config.mode in @constructor.supportedModes
-      @setConfigElements()
-      @config.textElement = @createTextElement()
-      @config.autofocus ?= @config.textareaElement.hasAttribute("autofocus")
-      @createStyleSheet()
-
-      switch @config.mode
-        when "full"
-          new Trix.EditorController @config
-        when "simple"
-          new Trix.SimpleEditorController @config
+    switch @config.mode ? "full"
+      when "full"
+        new Trix.EditorController @config
+      when "degraded"
+        new Trix.DegradedEditorController @config
 
   setConfigElements: ->
     for key in "textarea toolbar input".split(" ")
