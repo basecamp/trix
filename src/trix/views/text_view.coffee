@@ -2,6 +2,7 @@
 
 class Trix.TextView
   constructor: (@text) ->
+    @textAttributes = @text.getAttributes()
 
   # Rendering
 
@@ -11,9 +12,14 @@ class Trix.TextView
     @createElementsForText()
     @createExtraNewlineElement()
 
-    fragment = document.createDocumentFragment()
-    fragment.appendChild(element) for element in @elements
-    fragment
+    container = switch
+      when @textAttributes.quote
+        document.createElement("blockquote")
+      else
+        document.createDocumentFragment()
+
+    container.appendChild(element) for element in @elements
+    container
 
   resetNodeCache: ->
     @nodeCache = []

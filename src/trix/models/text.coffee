@@ -86,6 +86,9 @@ class Trix.Text
     @pieceList.transformPiecesInRange range, (piece) ->
       piece.copyWithAttributes(attributes)
 
+  getAttributes: ->
+    @attributes.toObject()
+
   getAttributesAtPosition: (position) ->
     @pieceList.getPieceAtPosition(position)?.getAttributes() ? {}
 

@@ -6,8 +6,13 @@
 class Trix.AbstractEditorController
   constructor: (@config) ->
     {@textElement, @toolbarElement, @textareaElement, @inputElement, @delegate} = @config
-    @text = @createText()
-    @document = new Trix.Document [@text]
+
+    texts = for i in [1..3]
+      text = @createText()
+      text.attributes = text.attributes.add("quote", true) if i is 2
+      text
+
+    @document = new Trix.Document texts
     @initialize()
 
   initialize: ->
