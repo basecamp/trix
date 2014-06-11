@@ -17,7 +17,9 @@
 
   install: (config) ->
     if @isSupported(config)
-      new Installer(config).run()
+      installer = new Installer config
+      installer.run()
+      installer.editor
 
   attributes:
     bold:
@@ -100,7 +102,7 @@ class Installer
   run: ->
     @config.textElement = @createTextElement()
     @createStyleSheet()
-    @createEditor()
+    @editor = @createEditor()
 
   createEditor: ->
     switch @config.mode ? "full"
