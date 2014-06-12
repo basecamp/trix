@@ -6,6 +6,12 @@ class Trix.TextList
   getTextAtIndex: (index) ->
     @texts[index]
 
+  removeText: (textToRemove) ->
+    return @removeTextAtIndex(index) for text, index in @texts when text is textToRemove
+
+  removeTextAtIndex: (index) ->
+    @texts.splice(index, 1)
+
   # Text delegate
 
   didEditText: (text) ->

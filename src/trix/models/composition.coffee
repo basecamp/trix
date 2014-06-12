@@ -35,8 +35,8 @@ class Trix.Composition
 
   insertText: (text, {updatePosition} = updatePosition: true) ->
     if selectedRange = @getSelectedRange()
-      position = selectedRange[0]
-      @text.replaceTextAtRange(text, selectedRange)
+      location = selectedRange[0]
+      @document.replaceTextAtLocationRange(text, selectedRange)
     else
       location = @getPosition()
       @document.insertTextAtLocation(text, location)
