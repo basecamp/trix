@@ -64,15 +64,23 @@ class Trix.Composition
 
   deleteFromCurrentPosition: (distance = -1) ->
     unless range = @getSelectedRange()
-      location = @getLocation()
-      offset = location.position + distance
+      {block, position} = location = @getLocation()
+      position += distance
 
       if distance < 0
-        startLocation = { block: location.block, position: offset }
+        if position < 0
+          block--
+          position += @document.getTextAtIndex(block).getLength() + 1
+
+        startLocation = {block, position}
         endLocation = location
       else
+        if position > (textLength = @document.getTextAtIndex(block).getLength())
+          block++
+          position -= textLength + 1
+
         startLocation = location
-        endLocation = { block: location.block, position: offset }
+        endLocation = {block, position}
 
       range = [startLocation, endLocation]
 
@@ -96,9 +104,11 @@ class Trix.Composition
   deleteForward: ->
     distance = 1
 
-    if (position = @getLocation())?
-      while (rightPosition = position + distance + 1) <= @text.getLength()
-        string = @text.getStringAtRange([position, rightPosition])
+    if location = @getLocation()
+      text = @document.getTextAtIndex(location.block)
+      textLength = text.getLength()
+      while (rightPosition = location.position + distance + 1) <= textLength
+        string = text.getStringAtRange([location.position, rightPosition])
         if countGraphemeClusters(string) is 1
           distance++
         else
