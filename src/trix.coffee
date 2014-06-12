@@ -43,6 +43,8 @@
       inheritable: true
     frozen:
       style: { "background-color": "highlight" }
+    quote:
+      block: true
 
   config:
     editorCSS: """

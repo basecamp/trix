@@ -158,18 +158,25 @@ class Trix.Composition
     @setCurrentAttribute(attributeName, value)
 
   setCurrentAttribute: (attributeName, value) ->
-    if selectedRange = @getSelectedRange()
-      if value
-        attributes = {}
-        attributes[attributeName] = value
-        @text.addAttributesAtRange(attributes, selectedRange)
-      else
-        @text.removeAttributeAtRange(attributeName, selectedRange)
+    if Trix.attributes[attributeName].block
+      location = @getLocation()
+
+      attributes = {}
+      attributes[attributeName] = value
+      @document.setAttributesAtLocationRange(attributes, [location, location])
     else
-      if value
-        @currentAttributes[attributeName] = value
+      if selectedRange = @getSelectedRange()
+        if value
+          attributes = {}
+          attributes[attributeName] = value
+          @text.addAttributesAtRange(attributes, selectedRange)
+        else
+          @text.removeAttributeAtRange(attributeName, selectedRange)
       else
-        delete @currentAttributes[attributeName]
+        if value
+          @currentAttributes[attributeName] = value
+        else
+          delete @currentAttributes[attributeName]
 
     @notifyDelegateOfCurrentAttributesChange()
 

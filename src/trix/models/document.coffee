@@ -51,6 +51,9 @@ class Trix.Document
     @removeTextAtLocationRange(range)
     @insertTextAtLocation(text, range[0])
 
+  setAttributesAtLocationRange: (attributes, [startLocation, endLocation]) ->
+    @getTextAtIndex(startLocation.block).setTextAttributes(attributes)
+
   # TextList delegate
 
   didEditTextList: (textList) ->

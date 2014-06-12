@@ -85,6 +85,9 @@ class Trix.Text
     @pieceList.transformPiecesInRange range, (piece) ->
       piece.copyWithAttributes(attributes)
 
+  setTextAttributes: edit (attributes) ->
+    @attributes = @attributes.merge(attributes)
+
   getAttributes: ->
     @attributes.toObject()
 
