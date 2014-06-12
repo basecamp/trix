@@ -134,7 +134,7 @@ class Trix.DocumentView
 
     if node.nodeType is Node.TEXT_NODE
       container = node
-      offset = position - node.trixPosition
+      offset = location.position - node.trixPosition
     else
       container = node.parentNode
       offset = [node.parentNode.childNodes...].indexOf(node) + 1
@@ -142,20 +142,21 @@ class Trix.DocumentView
     [container, offset]
 
   findNodeForLocation: (location) ->
-    walker = Trix.DOM.createTreeWalker(@element, null, nodeFilterForLocation(location))
+    walker = Trix.DOM.createTreeWalker(@element, null, nodeFilterForLocation)
     node = walker.currentNode
 
     while walker.nextNode()
-      startPosition = walker.currentNode.trixPosition
-      endPosition = startPosition + walker.currentNode.trixLength
+      if walker.currentNode.trixBlock is location.block
+        startPosition = walker.currentNode.trixPosition
+        endPosition = startPosition + walker.currentNode.trixLength
 
-      if startPosition <= location.position <= endPosition
-        node = walker.currentNode
-        break
+        if startPosition <= location.position <= endPosition
+          node = walker.currentNode
+          break
     node
 
-  nodeFilterForLocation = (location) -> (node) ->
-    if node.trixPosition? and node.trixLength? and node.trixBock is location.block
+  nodeFilterForLocation = (node) ->
+    if node.trixPosition? and node.trixLength?
       NodeFilter.FILTER_ACCEPT
     else
       NodeFilter.FILTER_SKIP

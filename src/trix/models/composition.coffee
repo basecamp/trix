@@ -38,10 +38,11 @@ class Trix.Composition
       position = selectedRange[0]
       @text.replaceTextAtRange(text, selectedRange)
     else
-      position = @getPosition()
-      @text.insertTextAtPosition(text, position)
+      location = @getPosition()
+      @document.insertTextAtLocation(text, location)
 
-    @requestPosition(position + (if updatePosition then text.getLength() else 0))
+    location.position += text.getLength() if updatePosition
+    @requestPosition(location)
 
   insertString: (string, options) ->
     text = Trix.Text.textForStringWithAttributes(string, @currentAttributes)
@@ -213,9 +214,9 @@ class Trix.Composition
 
   requestSelectedRange: (range) ->
     if range?
-      [start, end] = range
-      length = @text.getLength()
-      range = [clamp(start, 0, length), clamp(end, 0, length)]
+      #[start, end] = range
+      #length = @text.getLength()
+      #range = [clamp(start, 0, length), clamp(end, 0, length)]
       @selectionDelegate?.compositionDidRequestSelectionOfRange?(this, range)
 
   # Private
