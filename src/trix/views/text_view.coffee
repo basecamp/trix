@@ -1,8 +1,9 @@
 #= require trix/utilities/dom
 
 class Trix.TextView
-  constructor: (@text, @blockPosition) ->
-    @textAttributes = @text.getAttributes()
+  constructor: (@block, @blockPosition) ->
+    @text = @block.text
+    @blockAttributes = @block.getAttributes()
 
   # Rendering
 
@@ -13,7 +14,7 @@ class Trix.TextView
     @createExtraNewlineElement()
 
     container = switch
-      when @textAttributes.quote
+      when @blockAttributes.quote
         document.createElement("blockquote")
       else
         document.createDocumentFragment()

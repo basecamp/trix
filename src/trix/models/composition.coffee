@@ -7,7 +7,9 @@
 class Trix.Composition
   constructor: (@document = new Trix.Document, config) ->
     @document.delegate = this
-    @text = @document.textList.texts[0]
+
+    # REMOVE ME
+    @text = @document.blockList.blocks[0].text
 
     @currentAttributes = {}
 

@@ -15,7 +15,7 @@ class Trix.Text
     @fromJSON JSON.parse(string)
 
   @fromJSON: (textJSON) ->
-    pieces = for pieceJSON in textJSON.pieces
+    pieces = for pieceJSON in textJSON
       Trix.Piece.fromJSON pieceJSON
     new this pieces, textJSON.attributes
 
@@ -25,7 +25,6 @@ class Trix.Text
   constructor: (pieces = [], attributes = {}) ->
     @editDepth = 0
     @pieceList = new Trix.PieceList pieces
-    @attributes = Trix.Hash.box(attributes)
 
   edit = (fn) -> ->
     @beginEditing()
@@ -85,12 +84,6 @@ class Trix.Text
     @pieceList.transformPiecesInRange range, (piece) ->
       piece.copyWithAttributes(attributes)
 
-  setTextAttributes: edit (attributes) ->
-    @attributes = @attributes.merge(attributes)
-
-  getAttributes: ->
-    @attributes.toObject()
-
   getAttributesAtPosition: (position) ->
     @pieceList.getPieceAtPosition(position)?.getAttributes() ? {}
 
@@ -149,8 +142,7 @@ class Trix.Text
     @pieceList.toString()
 
   toJSON: ->
-    pieces: @pieceList.toJSON()
-    attributes: @attributes.toJSON()
+    @pieceList
 
   asJSON: ->
     JSON.stringify(this)

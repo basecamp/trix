@@ -1,24 +1,24 @@
-#= require trix/models/text
-#= require trix/models/text_list
+#= require trix/models/block
+#= require trix/models/block_list
 
 class Trix.Document
   @fromJSONString: (string) ->
     @fromJSON JSON.parse(string)
 
   @fromJSON: (documentJSON) ->
-    texts = for textJSON in documentJSON
-      Trix.Text.fromJSON textJSON
-    new this texts
+    blocks = for blockJSON in documentJSON
+      Trix.Block.fromJSON blockJSON
+    new this blocks
 
-  constructor: (texts = []) ->
-    @textList = new Trix.TextList texts
-    @textList.delegate = this
+  constructor: (blocks = []) ->
+    @blockList = new Trix.BlockList blocks
+    @blockList.delegate = this
 
   getTextAtIndex: (index) ->
-    @textList.getTextAtIndex(index)
+    @blockList.getBlockAtIndex(index)?.text
 
-  eachText: (callback) ->
-    callback(text, index) for text, index in @textList.texts
+  eachBlock: (callback) ->
+    callback(text, index) for text, index in @blockList.blocks
 
   insertTextAtLocation: (text, location) ->
     @getTextAtIndex(location.block).insertTextAtPosition(text, location.position)
@@ -30,7 +30,7 @@ class Trix.Document
       textsToRemove = []
 
       for block in [endLocation.block..startLocation.block]
-        currentText = @textList.getTextAtIndex(block)
+        currentText = @getTextAtIndex(block)
 
         switch block
           when endLocation.block
@@ -44,7 +44,7 @@ class Trix.Document
             textsToRemove.push(currentText)
 
       if textsToRemove.length
-        @textList.removeText(textToRemove) for textToRemove in textsToRemove
+        @blockList.removeText(textToRemove) for textToRemove in textsToRemove
         @delegate?.didEditDocument?(this)
 
   replaceTextAtLocationRange: (text, range) ->
@@ -52,15 +52,15 @@ class Trix.Document
     @insertTextAtLocation(text, range[0])
 
   setAttributesAtLocationRange: (attributes, [startLocation, endLocation]) ->
-    @getTextAtIndex(startLocation.block).setTextAttributes(attributes)
+    @blockList.getBlockAtIndex(startLocation.block).setAttributes(attributes)
 
-  # TextList delegate
+  # BlockList delegate
 
-  didEditTextList: (textList) ->
+  didEditBlockList: (blockList) ->
     @delegate?.didEditDocument?(this)
 
   toJSON: ->
-    @textList.toJSON()
+    @blockList.toJSON()
 
   asJSON: ->
     JSON.stringify(this)
