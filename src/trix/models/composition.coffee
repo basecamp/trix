@@ -38,7 +38,7 @@ class Trix.Composition
       location = selectedRange[0]
       @document.replaceTextAtLocationRange(text, selectedRange)
     else
-      location = @getPosition()
+      location = @getLocation()
       @document.insertTextAtLocation(text, location)
 
     location.position += text.getLength() if updatePosition
@@ -64,7 +64,7 @@ class Trix.Composition
 
   deleteFromCurrentPosition: (distance = -1) ->
     unless range = @getSelectedRange()
-      position = @getPosition()
+      position = @getLocation()
       offset = position + distance
       range = if distance < 0 then [offset, position] else [position, offset]
 
@@ -74,7 +74,7 @@ class Trix.Composition
   deleteBackward: ->
     distance = 1
 
-    if (position = @getPosition())?
+    if (position = @getLocation())?
       while (leftPosition = position - distance - 1) >= 0
         string = @text.getStringAtRange([leftPosition, position])
         if countGraphemeClusters(string) is 1 or countGraphemeClusters("n#{string}") is 1
@@ -87,7 +87,7 @@ class Trix.Composition
   deleteForward: ->
     distance = 1
 
-    if (position = @getPosition())?
+    if (position = @getLocation())?
       while (rightPosition = position + distance + 1) <= @text.getLength()
         string = @text.getStringAtRange([position, rightPosition])
         if countGraphemeClusters(string) is 1
@@ -101,13 +101,13 @@ class Trix.Composition
     if @getSelectedRange()
       @deleteBackward()
     else
-      position = @getPosition()
+      position = @getLocation()
       stringBeforePosition = @text.getStringAtRange([0, position])
       positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
       @deleteFromCurrentPosition(positionBeforeLastWord - position)
 
   moveTextFromRange: (range) ->
-    position = @getPosition()
+    position = @getLocation()
     @text.moveTextFromRangeToPosition(range, position)
     @requestPosition(position)
 
@@ -159,7 +159,7 @@ class Trix.Composition
       @currentAttributes = @text.getCommonAttributesAtRange(selectedRange)
       @notifyDelegateOfCurrentAttributesChange()
 
-    else if (position = @getPosition())?
+    else if (position = @getLocation())?
       @currentAttributes = {}
       attributes = @text.getAttributesAtPosition(position)
       attributesLeft = @text.getAttributesAtPosition(position - 1)
@@ -190,7 +190,7 @@ class Trix.Composition
 
   # Position and selected range
 
-  getPosition: ->
+  getLocation: ->
     if range = @getInternalSelectedRange()
       [start, end] = range
       start if start is end
