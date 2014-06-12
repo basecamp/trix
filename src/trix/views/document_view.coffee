@@ -11,8 +11,8 @@ class Trix.DocumentView
     selectedRange = @getSelectedRange()
 
     @element.removeChild(@element.lastChild) while @element.lastChild
-    @document.eachText (text, position) =>
-      textView = new Trix.TextView text, position
+    @document.eachText (text, index) =>
+      textView = new Trix.TextView text, index
       @element.appendChild(textView.render())
 
     @setSelectedRange(selectedRange) if selectedRange
@@ -20,9 +20,9 @@ class Trix.DocumentView
   focus: ->
     @element.focus()
 
-  # Position & Selection
+  # Location & Selection
 
-  getPositionAtPoint: ([pageX, pageY]) ->
+  getLocationAtPoint: ([pageX, pageY]) ->
     if document.caretPositionFromPoint
       {offsetNode, offset} = document.caretPositionFromPoint(pageX, pageY)
       domRange = document.createRange()
@@ -66,16 +66,16 @@ class Trix.DocumentView
     domRange = selection.getRangeAt(0)
     @findRangeFromDOMRange(domRange)
 
-  setSelectedRange: ([startPosition, endPosition]) ->
+  setSelectedRange: ([startLocation, endLocation]) ->
     return if @lockedRange
-    return unless startPosition? and endPosition?
+    return unless startLocation? and endLocation?
 
-    rangeStart = @findContainerAndOffsetForPosition(startPosition)
+    rangeStart = @findContainerAndOffsetForLocation(startLocation)
     rangeEnd =
-      if startPosition is endPosition
+      if startLocation is endLocation
         rangeStart
       else
-        @findContainerAndOffsetForPosition(endPosition)
+        @findContainerAndOffsetForLocation(endLocation)
 
     range = document.createRange()
     try
@@ -102,30 +102,35 @@ class Trix.DocumentView
   findRangeFromDOMRange: (range) ->
     if range.collapsed
       if Trix.DOM.within(@element, range.endContainer)
-        position = @findPositionFromContainerAtOffset(range.endContainer, range.endOffset)
-        [position, position]
+        location = @findLocationFromContainerAtOffset(range.endContainer, range.endOffset)
+        [location, location]
     else
       if Trix.DOM.within(@element, range.startContainer) and Trix.DOM.within(@element, range.endContainer)
-        startPosition = @findPositionFromContainerAtOffset(range.startContainer, range.startOffset)
-        endPosition = @findPositionFromContainerAtOffset(range.endContainer, range.endOffset)
-        [startPosition, endPosition]
+        startLocation = @findLocationFromContainerAtOffset(range.startContainer, range.startOffset)
+        endLocation = @findLocationFromContainerAtOffset(range.endContainer, range.endOffset)
+        [startLocation, endLocation]
 
-  findPositionFromContainerAtOffset: (container, offset) ->
+  findLocationFromContainerAtOffset: (container, offset) ->
     if container.nodeType is Node.TEXT_NODE
-      container.trixPosition + offset
+      block = container.trixBlock
+      position = container.trixPosition + offset
     else
       if offset is 0
-        container.trixPosition
+        block = container.trixBlock
+        position = container.trixPosition
       else
         node = container.childNodes[offset - 1]
         walker = Trix.DOM.createTreeWalker(node)
         walker.lastChild()
-        walker.currentNode.trixPosition + walker.currentNode.trixLength
+        block = walker.currentNode.trixBlock
+        position = walker.currentNode.trixPosition + walker.currentNode.trixLength
 
-  findContainerAndOffsetForPosition: (position) ->
-    return [@element, 0] if position < 1
+    {block, position}
 
-    node = @findNodeForPosition(position)
+  findContainerAndOffsetForLocation: (location) ->
+    return [@element, 0] if location.block is 0 and location.position < 1
+
+    node = @findNodeForLocation(location)
 
     if node.nodeType is Node.TEXT_NODE
       container = node
@@ -136,21 +141,21 @@ class Trix.DocumentView
 
     [container, offset]
 
-  findNodeForPosition: (position) ->
-    walker = Trix.DOM.createTreeWalker(@element, null, nodeFilterForPosition)
+  findNodeForLocation: (location) ->
+    walker = Trix.DOM.createTreeWalker(@element, null, nodeFilterForLocation(location))
     node = walker.currentNode
 
     while walker.nextNode()
       startPosition = walker.currentNode.trixPosition
       endPosition = startPosition + walker.currentNode.trixLength
 
-      if startPosition <= position <= endPosition
+      if startPosition <= location.position <= endPosition
         node = walker.currentNode
         break
     node
 
-  nodeFilterForPosition = (node) ->
-    if node.trixPosition? and node.trixLength?
+  nodeFilterForLocation = (location) -> (node) ->
+    if node.trixPosition? and node.trixLength? and node.trixBock is location.block
       NodeFilter.FILTER_ACCEPT
     else
       NodeFilter.FILTER_SKIP

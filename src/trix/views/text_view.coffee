@@ -1,7 +1,7 @@
 #= require trix/utilities/dom
 
 class Trix.TextView
-  constructor: (@text, @position) ->
+  constructor: (@text, @blockPosition) ->
     @textAttributes = @text.getAttributes()
 
   # Rendering
@@ -31,7 +31,7 @@ class Trix.TextView
     @nodeCache.push(node)
 
   createElementsForText: ->
-    @text.eachRun @position, (run) =>
+    @text.eachRun (run) =>
       @previousRun = @currentRun
       @currentRun = run
       @createElementForCurrentRun()
@@ -44,6 +44,7 @@ class Trix.TextView
 
     element = innerElement = elements[0]
     element.trixPosition = position
+    element.trixBlock = @blockPosition
     @cacheNode(element)
 
     for child in elements[1..]
@@ -51,6 +52,7 @@ class Trix.TextView
       innerElement.appendChild(child)
       innerElement = child
       innerElement.trixPosition = position
+      innerElement.trixBlock = @blockPosition
 
     if @currentRun.attachment
       if attachmentElement = @createAttachmentElementForCurrentRun()
@@ -101,6 +103,7 @@ class Trix.TextView
       if index > 0
         node = document.createElement("br")
         node.trixPosition = position
+        node.trixBlock = @blockPosition
         position += 1
         node.trixLength = 1
         nodes.push(node)
@@ -108,6 +111,7 @@ class Trix.TextView
       if length = substring.length
         node = document.createTextNode(preserveSpaces(substring))
         node.trixPosition = position
+        node.trixBlock = @blockPosition
         position += length
         node.trixLength = length
         nodes.push(node)

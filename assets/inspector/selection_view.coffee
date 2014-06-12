@@ -6,9 +6,9 @@ class Trix.SelectionView
     frozen = @composition.hasFrozenSelection()
 
     if selectedRange = @composition.getSelectedRange()
-      @element.innerHTML = "Selection: [#{selectedRange.join(", ")}]"
+      @element.innerHTML = "Selection: #{JSON.stringify(selectedRange)}"
       @element.innerHTML += " (Frozen)" if frozen
     else if (position = @composition.getPosition())?
-      @element.innerHTML = "Position: #{position}"
+      @element.innerHTML = "Position: #{JSON.stringify(position)}"
     else
       @element.innerHTML = "(No Selection)"
