@@ -4,6 +4,17 @@ class Trix.Piece
   id = 0
   objectReplacementCharacter = "\uFFFC"
 
+  @fromJSONString: (string) ->
+    @fromJSON JSON.parse(string)
+
+  @fromJSON: (pieceJSON) ->
+    attributes = pieceJSON.attributes
+    if attachmentJSON = pieceJSON.attachment
+      attachment = new Trix.Attachment attachmentJSON
+      @forAttachment attachment, attributes
+    else
+      new this pieceJSON.string, attributes
+
   @forAttachment: (attachment, attributes) ->
     piece = new this objectReplacementCharacter, attributes
     piece.attachment = attachment

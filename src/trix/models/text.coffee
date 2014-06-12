@@ -11,14 +11,13 @@ class Trix.Text
     piece = new Trix.Piece string, attributes
     new this [piece]
 
-  @fromJSON: (json) ->
-    new this do ->
-      for {string, attachment, attributes} in JSON.parse(json)
-        if attachment
-          attachment = new Trix.Attachment attachment
-          Trix.Piece.forAttachment(attachment, attributes)
-        else
-          new Trix.Piece string, attributes
+  @fromJSONString: (string) ->
+    @fromJSON JSON.parse(string)
+
+  @fromJSON: (textJSON) ->
+    pieces = for pieceJSON in textJSON.pieces
+      Trix.Piece.fromJSON pieceJSON
+    new this pieces, textJSON.attributes
 
   @fromHTML: (html) ->
     Trix.HTMLParser.parse(html).getText()
@@ -147,7 +146,8 @@ class Trix.Text
     @pieceList.toString()
 
   toJSON: ->
-    @pieceList.toJSON()
+    pieces: @pieceList.toJSON()
+    attributes: @attributes.toJSON()
 
   asJSON: ->
     JSON.stringify(this)

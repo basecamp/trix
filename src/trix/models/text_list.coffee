@@ -16,3 +16,9 @@ class Trix.TextList
 
   didEditText: (text) ->
     @delegate?.didEditTextList?(this)
+
+  toArray: ->
+    @texts.slice(0)
+
+  toJSON: ->
+    @toArray()

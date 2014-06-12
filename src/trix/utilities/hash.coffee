@@ -44,6 +44,9 @@ class Trix.Hash
   toObject: ->
     copy(@values)
 
+  toJSON: ->
+    @toObject()
+
   inspect: ->
     JSON.stringify(@values)
 

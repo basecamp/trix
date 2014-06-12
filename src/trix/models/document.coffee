@@ -1,6 +1,15 @@
+#= require trix/models/text
 #= require trix/models/text_list
 
 class Trix.Document
+  @fromJSONString: (string) ->
+    @fromJSON JSON.parse(string)
+
+  @fromJSON: (documentJSON) ->
+    texts = for textJSON in documentJSON
+      Trix.Text.fromJSON textJSON
+    new this texts
+
   constructor: (texts = []) ->
     @textList = new Trix.TextList texts
     @textList.delegate = this
@@ -46,3 +55,9 @@ class Trix.Document
 
   didEditTextList: (textList) ->
     @delegate?.didEditDocument?(this)
+
+  toJSON: ->
+    @textList.toJSON()
+
+  asJSON: ->
+    JSON.stringify(this)
