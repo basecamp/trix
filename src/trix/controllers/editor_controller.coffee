@@ -32,19 +32,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @toolbarController.delegate = this
     @toolbarController.updateActions()
 
-  createText: ->
-    if @textElement.textContent.trim()
-      Trix.Text.fromHTML(@textElement.innerHTML)
-    else if @inputElement?.value
-      Trix.Text.fromJSON(@inputElement.value)
-    else
-      new Trix.Text
-
-  saveSerializedText: ->
-    @textareaElement.value = @textElement.innerHTML
-    Trix.DOM.trigger(@textareaElement, "input")
-    @inputElement?.value = @text.asJSON()
-
   # Composition controller delegate
 
   compositionDidChangeDocument: (composition, document) ->
