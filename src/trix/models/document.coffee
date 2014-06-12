@@ -5,15 +5,18 @@ class Trix.Document
     @textList = new Trix.TextList texts
     @textList.delegate = this
 
+  getTextAtIndex: (index) ->
+    @textList.getTextAtIndex(index)
+
   eachText: (callback) ->
     callback(text, index) for text, index in @textList.texts
 
   insertTextAtLocation: (text, location) ->
-    @textList.getTextAtIndex(location.block).insertTextAtPosition(text, location.position)
+    @getTextAtIndex(location.block).insertTextAtPosition(text, location.position)
 
-  replaceTextAtLocationRange: (text, [startLocation, endLocation]) ->
+  removeTextAtLocationRange: ([startLocation, endLocation]) ->
     if startLocation.block is endLocation.block
-      @textList.getTextAtIndex(startLocation.block).replaceTextAtRange(text, [startLocation.position, endLocation.position])
+      @getTextAtIndex(startLocation.block).removeTextAtRange([startLocation.position, endLocation.position])
     else
       textsToRemove = []
 
@@ -25,7 +28,7 @@ class Trix.Document
             currentText.removeTextAtRange([0, endLocation.position])
             endText = currentText
           when startLocation.block
-            currentText.replaceTextAtRange(text, [startLocation.position, currentText.getLength()])
+            currentText.removeTextAtRange([startLocation.position, currentText.getLength()])
             currentText.appendText(endText)
             textsToRemove.push(endText)
           else
@@ -34,6 +37,10 @@ class Trix.Document
       if textsToRemove.length
         @textList.removeText(textToRemove) for textToRemove in textsToRemove
         @delegate?.didEditDocument?(this)
+
+  replaceTextAtLocationRange: (text, range) ->
+    @removeTextAtLocationRange(range)
+    @insertTextAtLocation(text, range[0])
 
   # TextList delegate
 
