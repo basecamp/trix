@@ -24,10 +24,10 @@ class Trix.Document
           when endLocation.block
             currentText.removeTextAtRange([0, endLocation.position])
             endText = currentText
-            textsToRemove.push(endText)
           when startLocation.block
-            text.appendText(endText)
             currentText.replaceTextAtRange(text, [startLocation.position, currentText.getLength()])
+            currentText.appendText(endText)
+            textsToRemove.push(endText)
           else
             textsToRemove.push(currentText)
 
