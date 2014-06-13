@@ -24,17 +24,17 @@ class Trix.Document
     callback(text, index) for text, index in @blockList.blocks
 
   eachBlockInLocationRange: ([startLocation, endLocation], callback) ->
-    if startLocation.block is endLocation.block
-      block = @getBlockAtIndex(startLocation.block)
+    if startLocation.index is endLocation.index
+      block = @getBlockAtIndex(startLocation.index)
       callback(block, [startLocation.position, endLocation.position])
     else
-      for index in [startLocation.block..endLocation.block]
+      for index in [startLocation.index..endLocation.index]
         block = @getBlockAtIndex(index)
 
         range = switch index
-          when startLocation.block
+          when startLocation.index
             [startLocation.position, block.text.getLength()]
-          when endLocation.block
+          when endLocation.index
             [0, endLocation.position]
           else
             [0, block.text.getLength()]
@@ -42,22 +42,22 @@ class Trix.Document
         callback(block, range)
 
   insertTextAtLocation: (text, location) ->
-    @getTextAtIndex(location.block).insertTextAtPosition(text, location.position)
+    @getTextAtIndex(location.index).insertTextAtPosition(text, location.position)
 
   removeTextAtLocationRange: ([startLocation, endLocation]) ->
-    if startLocation.block is endLocation.block
-      @getTextAtIndex(startLocation.block).removeTextAtRange([startLocation.position, endLocation.position])
+    if startLocation.index is endLocation.index
+      @getTextAtIndex(startLocation.index).removeTextAtRange([startLocation.position, endLocation.position])
     else
       textsToRemove = []
 
-      for block in [endLocation.block..startLocation.block]
-        currentText = @getTextAtIndex(block)
+      for index in [endLocation.index..startLocation.index]
+        currentText = @getTextAtIndex(index)
 
-        switch block
-          when endLocation.block
+        switch index
+          when endLocation.index
             currentText.removeTextAtRange([0, endLocation.position])
             endText = currentText
-          when startLocation.block
+          when startLocation.index
             currentText.removeTextAtRange([startLocation.position, currentText.getLength()])
             currentText.appendText(endText)
             textsToRemove.push(endText)

@@ -88,7 +88,7 @@ class Trix.PieceList
       @pieces.length
 
   getCommonAttributes: ->
-    objects = piece.getAttributes() for piece in @pieces
+    objects = for piece in @pieces
     Trix.Hash.fromCommonAttributesOfObjects(objects).toObject()
 
   consolidate: ->

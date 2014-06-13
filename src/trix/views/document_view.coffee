@@ -112,23 +112,23 @@ class Trix.DocumentView
 
   findLocationFromContainerAtOffset: (container, offset) ->
     if container.nodeType is Node.TEXT_NODE
-      block = container.trixBlock
+      index = container.trixIndex
       position = container.trixPosition + offset
     else
       if offset is 0
-        block = container.trixBlock
+        index = container.trixIndex
         position = container.trixPosition
       else
         node = container.childNodes[offset - 1]
         walker = Trix.DOM.createTreeWalker(node)
         walker.lastChild()
-        block = walker.currentNode.trixBlock
+        index = walker.currentNode.trixIndex
         position = walker.currentNode.trixPosition + walker.currentNode.trixLength
 
-    {block, position}
+    {index, position}
 
   findContainerAndOffsetForLocation: (location) ->
-    return [@element, 0] if location.block is 0 and location.position < 1
+    return [@element, 0] if location.index is 0 and location.position < 1
 
     node = @findNodeForLocation(location)
 
@@ -146,7 +146,7 @@ class Trix.DocumentView
     node = walker.currentNode
 
     while walker.nextNode()
-      if walker.currentNode.trixBlock is location.block
+      if walker.currentNode.trixIndex is location.index
         startPosition = walker.currentNode.trixPosition
         endPosition = startPosition + walker.currentNode.trixLength
 

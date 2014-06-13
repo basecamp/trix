@@ -66,23 +66,23 @@ class Trix.Composition
 
   deleteFromCurrentPosition: (distance = -1) ->
     unless range = @getSelectedRange()
-      {block, position} = location = @getLocation()
+      {index, position} = location = @getLocation()
       position += distance
 
       if distance < 0
         if position < 0
-          block--
-          position += @document.getTextAtIndex(block).getLength() + 1
+          index--
+          position += @document.getTextAtIndex(index).getLength() + 1
 
-        startLocation = {block, position}
+        startLocation = {index, position}
         endLocation = location
       else
-        if position > (textLength = @document.getTextAtIndex(block).getLength())
-          block++
+        if position > (textLength = @document.getTextAtIndex(index).getLength())
+          index++
           position -= textLength + 1
 
         startLocation = location
-        endLocation = {block, position}
+        endLocation = {index, position}
 
       range = [startLocation, endLocation]
 
@@ -95,7 +95,7 @@ class Trix.Composition
     if location = @getLocation()
       if location.position > 0
         while (leftPosition = location.position - distance - 1) >= 0
-          string = @document.getTextAtIndex(location.block).getStringAtRange([leftPosition, location.position])
+          string = @document.getTextAtIndex(location.index).getStringAtRange([leftPosition, location.position])
           if countGraphemeClusters(string) is 1 or countGraphemeClusters("n#{string}") is 1
             distance++
           else
@@ -107,7 +107,7 @@ class Trix.Composition
     distance = 1
 
     if location = @getLocation()
-      text = @document.getTextAtIndex(location.block)
+      text = @document.getTextAtIndex(location.index)
       textLength = text.getLength()
       while (rightPosition = location.position + distance + 1) <= textLength
         string = text.getStringAtRange([location.position, rightPosition])
@@ -178,7 +178,7 @@ class Trix.Composition
       @currentAttributes = @document.getCommonAttributesAtLocationRange(locationRange)
 
     else if location = @getLocation()
-      block = @document.getBlockAtIndex(location.block)
+      block = @document.getBlockAtIndex(location.index)
       @currentAttributes = block.getAttributes()
 
       attributes = block.text.getAttributesAtPosition(location.position)
