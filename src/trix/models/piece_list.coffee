@@ -88,15 +88,8 @@ class Trix.PieceList
       @pieces.length
 
   getCommonAttributes: ->
-    return {} unless piece = @getPieceAtIndex(0)
-    attributesHash = piece.getAttributesHash()
-    keys = attributesHash.getKeys()
-
-    @eachPiece (piece) ->
-      keys = attributesHash.getKeysCommonToHash(piece.getAttributesHash())
-      attributesHash = attributesHash.slice(keys)
-
-    attributesHash.toObject()
+    objects = piece.getAttributes() for piece in @pieces
+    Trix.Hash.fromCommonAttributesOfObjects(objects).toObject()
 
   consolidate: ->
     pieces = []

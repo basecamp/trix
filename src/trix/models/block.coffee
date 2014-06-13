@@ -10,8 +10,12 @@ class Trix.Block
     @attributes = Trix.Hash.box(attributes)
     @text.delegate = this
 
-  setAttributes: (attributes) ->
-    @attributes = @attributes.merge(attributes)
+  addAttribute: (attribute, value) ->
+    @attributes = @attributes.add(attribute, value)
+    @delegate?.didEditBlock?(this)
+
+  removeAttribute: (attribute) ->
+    @attributes = @attributes.remove(attribute)
     @delegate?.didEditBlock?(this)
 
   getAttributes: ->

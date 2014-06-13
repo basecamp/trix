@@ -160,43 +160,35 @@ class Trix.Composition
     @setCurrentAttribute(attributeName, value)
 
   setCurrentAttribute: (attributeName, value) ->
-    if Trix.attributes[attributeName].block
+    unless locationRange = @getSelectedRange()
       location = @getLocation()
+      locationRange = [location, location]
 
-      attributes = {}
-      attributes[attributeName] = value
-      @document.setAttributesAtLocationRange(attributes, [location, location])
+    if value
+      @document.addAttributeAtLocationRange(attributeName, value, locationRange)
+      @currentAttributes[attributeName] = value
     else
-      if selectedRange = @getSelectedRange()
-        if value
-          attributes = {}
-          attributes[attributeName] = value
-          @text.addAttributesAtRange(attributes, selectedRange)
-        else
-          @text.removeAttributeAtRange(attributeName, selectedRange)
-      else
-        if value
-          @currentAttributes[attributeName] = value
-        else
-          delete @currentAttributes[attributeName]
+      @document.removeAttributeAtLocationRange(attributeName, locationRange)
+      delete @currentAttributes[attributeName]
 
     @notifyDelegateOfCurrentAttributesChange()
 
   updateCurrentAttributes: ->
-    if selectedRange = @getSelectedRange()
-      @currentAttributes = @text.getCommonAttributesAtRange(selectedRange)
-      @notifyDelegateOfCurrentAttributesChange()
+    if locationRange = @getSelectedRange()
+      @currentAttributes = @document.getCommonAttributesAtLocationRange(locationRange)
 
-    else if (position = @getLocation())?
-      @currentAttributes = {}
-      attributes = @text.getAttributesAtPosition(position)
-      attributesLeft = @text.getAttributesAtPosition(position - 1)
+    else if location = @getLocation()
+      block = @document.getBlockAtIndex(location.block)
+      @currentAttributes = block.getAttributes()
+
+      attributes = block.text.getAttributesAtPosition(location.position)
+      attributesLeft = block.text.getAttributesAtPosition(location.position - 1)
 
       for key, value of attributesLeft
         if value is attributes[key] or key in inheritableAttributes()
           @currentAttributes[key] = value
 
-      @notifyDelegateOfCurrentAttributesChange()
+    @notifyDelegateOfCurrentAttributesChange()
 
   inheritableAttributes = ->
     for key, value of Trix.attributes when value.inheritable

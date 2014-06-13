@@ -1,4 +1,14 @@
 class Trix.Hash
+  @fromCommonAttributesOfObjects: (objects = []) ->
+    return new this unless objects.length
+    hash = box(objects[0])
+    keys = hash.getKeys()
+
+    for object in objects[1..]
+      keys = hash.getKeysCommonToHash(box(object))
+      hash = hash.slice(keys)
+    hash
+
   @box: (values) ->
     box(values)
 
