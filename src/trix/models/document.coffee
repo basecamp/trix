@@ -44,29 +44,23 @@ class Trix.Document
   insertTextAtLocation: (text, location) ->
     @getTextAtIndex(location.index).insertTextAtPosition(text, location.position)
 
-  removeTextAtLocationRange: ([startLocation, endLocation]) ->
-    if startLocation.index is endLocation.index
-      @getTextAtIndex(startLocation.index).removeTextAtRange([startLocation.position, endLocation.position])
+  removeTextAtLocationRange: (locationRange) ->
+    textRuns = []
+    @eachBlockInLocationRange locationRange, ({text}, range) ->
+      textRuns.push({text, range})
+
+    if textRuns.length is 1
+      textRuns[0].text.removeTextAtRange(textRuns[0].range)
     else
-      textsToRemove = []
+      [first, ..., last] = textRuns
 
-      for index in [endLocation.index..startLocation.index]
-        currentText = @getTextAtIndex(index)
+      last.text.removeTextAtRange([0, locationRange[1].position])
+      first.text.removeTextAtRange([locationRange[0].position, first.text.getLength()])
+      first.text.appendText(last.text)
 
-        switch index
-          when endLocation.index
-            currentText.removeTextAtRange([0, endLocation.position])
-            endText = currentText
-          when startLocation.index
-            currentText.removeTextAtRange([startLocation.position, currentText.getLength()])
-            currentText.appendText(endText)
-            textsToRemove.push(endText)
-          else
-            textsToRemove.push(currentText)
+      @blockList.removeText(text) for {text} in textRuns[1..]
 
-      if textsToRemove.length
-        @blockList.removeText(textToRemove) for textToRemove in textsToRemove
-        @delegate?.didEditDocument?(this)
+    @delegate?.didEditDocument?(this)
 
   replaceTextAtLocationRange: (text, range) ->
     @removeTextAtLocationRange(range)
