@@ -7,10 +7,6 @@
 class Trix.Composition
   constructor: (@document = new Trix.Document, config) ->
     @document.delegate = this
-
-    # REMOVE ME
-    @text = @document.blockList.blocks[0].text
-
     @currentAttributes = {}
 
     @attachments = new Trix.AttachmentManager this
@@ -20,11 +16,12 @@ class Trix.Composition
   # Snapshots
 
   createSnapshot: ->
-    text: @getText()
+    text: @getDocument()
     selectedRange: @getInternalSelectedRange()
 
-  restoreSnapshot: ({text, selectedRange}) ->
-    @text.replaceText(text)
+  restoreSnapshot: ({document, selectedRange}) ->
+    # TODO
+    @document.replaceDocument(document)
     @requestSelectedRange(selectedRange)
 
   # Document delegate
@@ -56,8 +53,9 @@ class Trix.Composition
 
   replaceHTML: (html) ->
     @preserveSelectionEndPoint =>
-      text = Trix.Text.fromHTML(html)
-      @text.replaceText(text)
+      # TODO
+      document = Trix.Document.fromHTML(html)
+      @document.replaceDocument(document)
 
   insertFile: (file) ->
     if attachment = @attachments.create(file)
@@ -122,19 +120,27 @@ class Trix.Composition
     if @getSelectedRange()
       @deleteBackward()
     else
-      position = @getLocation()
-      stringBeforePosition = @text.getStringAtRange([0, position])
+      location = @getLocation()
+      text = @getTextAtIndex(location.index)
+      # TODO: delete across blocks
+      stringBeforePosition = text.getStringAtRange([0, location.position])
+      # TODO: \b is not unicode compatible
       positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
       @deleteFromCurrentPosition(positionBeforeLastWord - position)
 
   moveTextFromRange: (range) ->
-    position = @getLocation()
-    @text.moveTextFromRangeToPosition(range, position)
+    location = @getLocation()
+    # TODO: move selection spanning blocks
+    text = @getTextAtIndex(index)
+    text.moveTextFromRangeToPosition(range, position)
     @requestPosition(position)
 
   getTextFromSelection: ->
-    selectedRange = @getSelectedRange() ? [0, 0]
-    @text.getTextAtRange(selectedRange)
+    # TODO: get text(s) spanning blocks
+    if locationRange = @getSelectedRange()
+      if locationRange[0].index is locationRange[1].index
+        text = @getTextAtIndex(locationRange[0].index)
+        text.getTextAtRange([locationRange[0].position, locationRange[1].position])
 
   # Attachment owner protocol
 
@@ -242,8 +248,9 @@ class Trix.Composition
 
   # Private
 
-  getText: ->
-    @text.copy()
+  getDocument: ->
+    # TODO
+    @document.copy()
 
   getInternalSelectedRange: ->
     @selectionDelegate?.getSelectedRangeOfComposition?(this)
