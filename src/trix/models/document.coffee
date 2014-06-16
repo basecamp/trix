@@ -105,6 +105,11 @@ class Trix.Document
       if range = text.getRangeOfAttachment(attachment)
         return {text, range}
 
+  getAttachmentById: (id) ->
+    for {text} in @blockList.blocks
+      if attachment = text.getAttachmentById(id)
+        return attachment
+
   # BlockList delegate
 
   didEditBlockList: (blockList) ->
