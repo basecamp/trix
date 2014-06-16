@@ -139,16 +139,17 @@ class Trix.Composition
   # Attachment owner protocol
 
   getAttachments: ->
-    @text.getAttachments()
+    @document.getAttachments()
 
   updateAttachment: (id, attributes) ->
     if attachment = @attachments.get(id)
-      @text.edit -> attachment.setAttributes(attributes)
+      {text} = @document.getTextAndRangeOfAttachment(attachment)
+      text.edit -> attachment.setAttributes(attributes)
 
   removeAttachment: (id) ->
     if attachment = @attachments.get(id)
-      range = @text.getRangeOfAttachment(attachment)
-      @text.removeTextAtRange(range)
+      {text, range} = @document.getTextAndRangeOfAttachment(attachment)
+      text.removeTextAtRange(range)
 
   # Current attributes
 

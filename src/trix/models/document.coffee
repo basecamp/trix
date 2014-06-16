@@ -94,6 +94,17 @@ class Trix.Document
       .merge(Trix.Hash.fromCommonAttributesOfObjects(blockAttributes))
       .toObject()
 
+  getAttachments: ->
+    attachments = []
+    for {text} in @blockList.blocks
+      attachments = attachments.concat(text.getAttachments())
+    attachments
+
+  getTextAndRangeOfAttachment: (attachment) ->
+    for {text} in @blockList.blocks
+      if range = text.getRangeOfAttachment(attachment)
+        return {text, range}
+
   # BlockList delegate
 
   didEditBlockList: (blockList) ->
