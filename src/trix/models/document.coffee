@@ -1,16 +1,15 @@
+#= require trix/models/object
 #= require trix/models/block
 #= require trix/models/block_list
 
-class Trix.Document
-  @fromJSONString: (string) ->
-    @fromJSON JSON.parse(string)
-
+class Trix.Document extends Trix.Object
   @fromJSON: (documentJSON) ->
     blocks = for blockJSON in documentJSON
       Trix.Block.fromJSON blockJSON
     new this blocks
 
   constructor: (blocks = []) ->
+    super
     @blockList = new Trix.BlockList blocks
     @blockList.delegate = this
 
@@ -117,6 +116,3 @@ class Trix.Document
 
   toJSON: ->
     @blockList.toJSON()
-
-  asJSON: ->
-    JSON.stringify(this)

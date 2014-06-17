@@ -22,4 +22,4 @@ class Trix.AbstractEditorController
   saveSerializedText: ->
     @textareaElement.value = @textElement.innerHTML
     Trix.DOM.trigger(@textareaElement, "input")
-    @inputElement?.value = @document.asJSON()
+    @inputElement?.value = @document.toJSONString()

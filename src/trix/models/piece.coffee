@@ -1,11 +1,8 @@
+#= require trix/models/object
 #= require trix/utilities/hash
 
-class Trix.Piece
-  id = 0
+class Trix.Piece extends Trix.Object
   objectReplacementCharacter = "\uFFFC"
-
-  @fromJSONString: (string) ->
-    @fromJSON JSON.parse(string)
 
   @fromJSON: (pieceJSON) ->
     attributes = pieceJSON.attributes
@@ -21,7 +18,7 @@ class Trix.Piece
     piece
 
   constructor: (@string, attributes = {}) ->
-    @id = ++id
+    super
     @attributes = Trix.Hash.box(attributes)
     @length = @string.length
 
@@ -69,7 +66,7 @@ class Trix.Piece
     piece? and not (@attachment or piece.attachment) and @hasSameAttributesAsPiece(piece)
 
   isEqualTo: (piece) ->
-    this is piece or (
+    super or (
       @isSameKindAsPiece(piece) and
       @hasSameStringAsPiece(piece) and
       @hasSameAttributesAsPiece(piece)

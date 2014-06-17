@@ -1,8 +1,9 @@
+#= require trix/models/object
 #= require trix/models/piece
 #= require trix/models/piece_list
 #= require trix/utilities/hash
 
-class Trix.Text
+class Trix.Text extends Trix.Object
   @textForAttachmentWithAttributes: (attachment, attributes) ->
     piece = Trix.Piece.forAttachment(attachment, attributes)
     new this [piece]
@@ -10,9 +11,6 @@ class Trix.Text
   @textForStringWithAttributes: (string, attributes) ->
     piece = new Trix.Piece string, attributes
     new this [piece]
-
-  @fromJSONString: (string) ->
-    @fromJSON JSON.parse(string)
 
   @fromJSON: (textJSON) ->
     pieces = for pieceJSON in textJSON
@@ -23,6 +21,7 @@ class Trix.Text
     Trix.HTMLParser.parse(html).getText()
 
   constructor: (pieces = []) ->
+    super
     @pieceList = new Trix.PieceList pieces
 
   copy: ->
@@ -100,7 +99,7 @@ class Trix.Text
     @pieceList.getLength()
 
   isEqualTo: (text) ->
-    this is text or text?.pieceList?.isEqualTo(@pieceList)
+    super or text?.pieceList?.isEqualTo(@pieceList)
 
   eachRun: (callback) ->
     position = 0
@@ -124,7 +123,4 @@ class Trix.Text
     @pieceList.toString()
 
   toJSON: ->
-    @pieceList
-
-  asJSON: ->
-    JSON.stringify(this)
+    @pieceList.toJSON()

@@ -1,13 +1,13 @@
-class Trix.Attachment
-  id = 0
+#= require trix/models/object
 
+class Trix.Attachment extends Trix.Object
   @forFile: (file) ->
     attachment = new this { contentType: file.type, filename: file.name }
     attachment.file = file
     attachment
 
   constructor: (@attributes = {}) ->
-    @id = ++id
+    super
 
   setAttributes: (attributes) =>
     for key, value of attributes

@@ -1,5 +1,8 @@
-class Trix.BlockList
+#= require trix/models/object
+
+class Trix.BlockList extends Trix.Object
   constructor: (blocks = []) ->
+    super
     @blocks = blocks.slice(0)
     block.delegate = this for block in @blocks
 

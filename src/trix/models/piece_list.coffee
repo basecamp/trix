@@ -1,5 +1,8 @@
-class Trix.PieceList
+#= require trix/models/object
+
+class Trix.PieceList extends Trix.Object
   constructor: (pieces = []) ->
+    super
     @pieces = pieces.slice(0)
 
   eachPiece: (callback) ->
@@ -127,7 +130,7 @@ class Trix.PieceList
     @toArray()
 
   isEqualTo: (pieceList) ->
-    this is pieceList or pieceArraysAreEqual(@pieces, pieceList?.pieces)
+    super or pieceArraysAreEqual(@pieces, pieceList?.pieces)
 
   pieceArraysAreEqual = (left, right = []) ->
     return false unless left.length is right.length
