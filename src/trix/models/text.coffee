@@ -17,71 +17,54 @@ class Trix.Text
   @fromJSON: (textJSON) ->
     pieces = for pieceJSON in textJSON
       Trix.Piece.fromJSON pieceJSON
-    new this pieces, textJSON.attributes
+    new this pieces
 
   @fromHTML: (html) ->
     Trix.HTMLParser.parse(html).getText()
 
-  constructor: (pieces = [], attributes = {}) ->
-    @editDepth = 0
+  constructor: (pieces = []) ->
     @pieceList = new Trix.PieceList pieces
 
-  edit = (fn) -> ->
-    @beginEditing()
-    fn.apply(this, arguments)
-    @endEditing()
+  copy: ->
+    @copyWithPieceList @pieceList
 
-  beginEditing: ->
-    @editDepth++
-    this
+  copyWithPieceList: (pieceList) ->
+    new @constructor pieceList.consolidate().toArray(), @attributes
 
-  endEditing: ->
-    if --@editDepth is 0
-      @pieceList.consolidate()
-      @delegate?.didEditText?(this)
-    this
-
-  edit: edit (fn) -> fn()
-
-  appendText: edit (text) ->
+  appendText: (text) ->
     @insertTextAtPosition(text, @getLength())
 
-  insertTextAtPosition: edit (text, position) ->
-    @pieceList.insertPieceListAtPosition(text.pieceList, position)
+  insertTextAtPosition: (text, position) ->
+    @copyWithPieceList @pieceList.insertPieceListAtPosition(text.pieceList, position)
 
-  removeTextAtRange: edit (range) ->
-    @pieceList.removePiecesInRange(range)
+  removeTextAtRange: (range) ->
+    @copyWithPieceList @pieceList.removePiecesInRange(range)
 
-  replaceTextAtRange: edit (text, range) ->
-    @removeTextAtRange(range)
-    @insertTextAtPosition(text, range[0])
+  replaceTextAtRange: (text, range) ->
+    @removeTextAtRange(range).insertTextAtPosition(text, range[0])
 
-  replaceText: edit (text) ->
-    @pieceList.mergePieceList(text.pieceList)
-
-  moveTextFromRangeToPosition: edit (range, position) ->
+  moveTextFromRangeToPosition: (range, position) ->
     return if range[0] <= position <= range[1]
     text = @getTextAtRange(range)
     length = text.getLength()
     position -= length if range[0] < position
-    @removeTextAtRange(range)
-    @insertTextAtPosition(text, position)
+    @removeTextAtRange(range).insertTextAtPosition(text, position)
 
-  addAttributeAtRange: edit (attribute, value, range) ->
+  addAttributeAtRange: (attribute, value, range) ->
     attributes = {}
     attributes[attribute] = value
     @addAttributesAtRange(attributes, range)
 
-  addAttributesAtRange: edit (attributes, range) ->
-    @pieceList.transformPiecesInRange range, (piece) ->
+  addAttributesAtRange: (attributes, range) ->
+    @copyWithPieceList @pieceList.transformPiecesInRange range, (piece) ->
       piece.copyWithAdditionalAttributes(attributes)
 
-  removeAttributeAtRange: edit (attribute, range) ->
-    @pieceList.transformPiecesInRange range, (piece) ->
+  removeAttributeAtRange: (attribute, range) ->
+    @copyWithPieceList @pieceList.transformPiecesInRange range, (piece) ->
       piece.copyWithoutAttribute(attribute)
 
-  setAttributesAtRange: edit (attributes, range) ->
-    @pieceList.transformPiecesInRange range, (piece) ->
+  setAttributesAtRange: (attributes, range) ->
+    @copyWithPieceList @pieceList.transformPiecesInRange range, (piece) ->
       piece.copyWithAttributes(attributes)
 
   getAttributesAtPosition: (position) ->
@@ -91,7 +74,7 @@ class Trix.Text
     @pieceList.getPieceListInRange(range)?.getCommonAttributes() ? {}
 
   getTextAtRange: (range) ->
-    new @constructor @pieceList.getPieceListInRange(range).toArray()
+    @copyWithPieceList @pieceList.getPieceListInRange(range)
 
   getStringAtRange: (range) ->
     @pieceList.getPieceListInRange(range).toString()
@@ -110,6 +93,8 @@ class Trix.Text
   resizeAttachmentToDimensions: (attachment, {width, height} = {}) ->
     if range = @getRangeOfAttachment(attachment)
       @addAttributesAtRange({width, height}, range)
+    else
+      this
 
   getLength: ->
     @pieceList.getLength()
@@ -134,9 +119,6 @@ class Trix.Text
 
   inspect: ->
     @pieceList.inspect()
-
-  copy: ->
-    new @constructor @pieceList.toArray()
 
   toString: ->
     @pieceList.toString()
