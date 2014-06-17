@@ -47,6 +47,13 @@ class Trix.Document
   insertTextAtLocation: (text, location) ->
     @getTextAtIndex(location.index).insertTextAtPosition(text, location.position)
 
+  insertDocumentAtLocationRange: (document, locationRange) ->
+    unless locationRange[0] is locationRange[1]
+      @removeTextAtLocationRange(locationRange)
+
+    @blockList.insertBlockListAtLocation(document.blockList, locationRange[0])
+    @delegate?.didEditDocument?(this)
+
   removeTextAtLocationRange: (locationRange) ->
     textRuns = []
     @eachBlockInLocationRange locationRange, ({text}, range) ->

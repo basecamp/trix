@@ -43,14 +43,26 @@ class Trix.Composition
     location.position += text.getLength() if updatePosition
     @requestPosition(location)
 
+  insertDocument: (document) ->
+    unless locationRange = @getSelectedRange()
+      location = @getLocation()
+      locationRange = [location, location]
+    @document.insertDocumentAtLocationRange(document, locationRange)
+
+    blockLength = document.blockList.blocks.length
+    lastText = document.blockList.getBlockAtIndex(blockLength - 1).text
+    newLocation =
+      index: locationRange[1].index + blockLength
+      position: lastText.getLength()
+    @requestPosition(newLocation)
+
   insertString: (string, options) ->
     text = Trix.Text.textForStringWithAttributes(string, @currentAttributes)
     @insertText(text, options)
 
-  insertHTML: (html, options) ->
+  insertHTML: (html) ->
     document = Trix.Document.fromHTML(html)
-    # TODO
-    @insertDocument(document, options)
+    @insertDocument(document)
 
   replaceHTML: (html) ->
     @preserveSelectionEndPoint =>
