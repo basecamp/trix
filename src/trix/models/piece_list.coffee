@@ -6,69 +6,50 @@ class Trix.PieceList
     callback(piece, index) for piece, index in @pieces
 
   insertPieceAtIndex: (piece, index) ->
-    @pieces.splice(index, 0, piece)
+    pieces = @pieces.slice(0)
+    pieces.splice(index, 0, piece)
+    new @constructor pieces
 
   insertPieceListAtIndex: (pieceList, index) ->
-    for piece, offset in pieceList.pieces
-      @insertPieceAtIndex(piece, index + offset)
+    pieces = @pieces.slice(0)
+    pieces.splice(index, 0, pieceList.pieces...)
+    new @constructor pieces
 
   insertPieceListAtPosition: (pieceList, position) ->
-    index = @splitPieceAtPosition(position)
-    @insertPieceListAtIndex(pieceList, index)
-
-  mergePieceList: (pieceList) ->
-    return if @isEqualTo(pieceList)
-
-    piecesAreEqual = (index, otherIndex) =>
-      @getPieceAtIndex(index)?.isEqualTo(pieceList.getPieceAtIndex(otherIndex ? index))
-
-    leftIndex = 0
-    leftIndex++ while piecesAreEqual(leftIndex)
-
-    rightIndex = @pieces.length - 1
-    otherRightIndex = pieceList.pieces.length - 1
-
-    while otherRightIndex > leftIndex and piecesAreEqual(rightIndex, otherRightIndex)
-      rightIndex--
-      otherRightIndex--
-
-    while rightIndex >= leftIndex
-      @removePieceAtIndex(rightIndex--)
-
-    while otherRightIndex >= leftIndex
-      otherPiece = pieceList.getPieceAtIndex(otherRightIndex--)
-      @insertPieceAtIndex(otherPiece.copy(), leftIndex)
+    [pieces, index] = @splitPieceAtPosition(position)
+    new @constructor(pieces).insertPieceListAtIndex(pieceList, index)
 
   removePieceAtIndex: (index) ->
-    @pieces.splice(index, 1)
+    pieces = @pieces.slice(0)
+    pieces.splice(index, 1)
+    new @constructor pieces
 
   getPieceAtIndex: (index) ->
     @pieces[index]
 
   getPieceListInRange: (range) ->
-    pieceList = new Trix.PieceList @pieces.slice(0)
-    [leftIndex, rightIndex] = pieceList.splitPiecesAtRange(range)
-    new Trix.PieceList pieceList.pieces.slice(leftIndex, rightIndex + 1)
+    [pieces, leftIndex, rightIndex] = @splitPiecesAtRange(range)
+    new @constructor pieces.slice(leftIndex, rightIndex + 1)
 
   removePiecesInRange: (range) ->
-    [leftIndex, rightIndex] = @splitPiecesAtRange(range)
-    while rightIndex >= leftIndex
-      @removePieceAtIndex(rightIndex)
-      rightIndex--
+    [pieces, leftIndex, rightIndex] = @splitPiecesAtRange(range)
+    pieces.splice(leftIndex, rightIndex - leftIndex + 1)
+    new @constructor pieces
 
   transformPiecesInRange: (range, transform) ->
-    [leftIndex, rightIndex] = @splitPiecesAtRange(range)
-    pieces = @pieces.slice(leftIndex, rightIndex + 1)
+    [pieces, leftIndex, rightIndex] = @splitPiecesAtRange(range)
+    pieces = pieces.slice(leftIndex, rightIndex + 1)
     newPieces = (transform(piece) for piece in pieces)
     index = leftIndex
     while index <= rightIndex
-      @pieces[index] = newPieces[index - leftIndex]
+      pieces[index] = newPieces[index - leftIndex]
       index++
+    new @constructor pieces
 
   splitPiecesAtRange: (range) ->
-    leftInnerIndex = @splitPieceAtPosition(startOfRange(range))
-    rightOuterIndex = @splitPieceAtPosition(endOfRange(range))
-    [leftInnerIndex, rightOuterIndex - 1]
+    [pieces, leftInnerIndex] = @splitPieceAtPosition(startOfRange(range))
+    [pieces, rightOuterIndex] = new @constructor(pieces).splitPieceAtPosition(endOfRange(range))
+    [pieces, leftInnerIndex, rightOuterIndex - 1]
 
   getPieceAtPosition: (position) ->
     {index, offset} = @findIndexAndOffsetAtPosition(position)
@@ -76,20 +57,22 @@ class Trix.PieceList
 
   splitPieceAtPosition: (position) ->
     {index, offset} = @findIndexAndOffsetAtPosition(position)
-    if index?
+    pieces = @pieces.slice(0)
+    result = if index?
       if offset is 0
         index
       else
         piece = @getPieceAtIndex(index)
         [leftPiece, rightPiece] = piece.splitAtOffset(offset)
-        @pieces.splice(index, 1, leftPiece, rightPiece)
+        pieces.splice(index, 1, leftPiece, rightPiece)
         index + 1
     else
-      @pieces.length
+      pieces.length
+
+    [pieces, result]
 
   getCommonAttributes: ->
-    objects = for piece in @pieces
-      piece.getAttributes()
+    objects = (piece.getAttributes() for piece in @pieces)
     Trix.Hash.fromCommonAttributesOfObjects(objects).toObject()
 
   consolidate: ->
@@ -106,7 +89,7 @@ class Trix.PieceList
     if pendingPiece?
       pieces.push(pendingPiece)
 
-    @pieces = pieces
+    new @constructor pieces
 
   findIndexAndOffsetAtPosition: (position) ->
     currentPosition = 0
