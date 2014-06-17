@@ -26,37 +26,36 @@ class Trix.Document
   eachBlock: (callback) ->
     callback(text, index) for text, index in @blockList.blocks
 
-  eachBlockInLocationRange: ([startLocation, endLocation], callback) ->
-    if startLocation.index is endLocation.index
-      block = @getBlockAtIndex(startLocation.index)
-      callback(block, [startLocation.position, endLocation.position])
+  eachBlockAtLocation: (location, callback) ->
+    if location.isRangeWithinIndex()
+      block = @getBlockAtIndex(location.index)
+      callback(block, location.getPositionRange())
     else
-      for index in [startLocation.index..endLocation.index]
+      location.eachIndex (index) =>
         block = @getBlockAtIndex(index)
 
         range = switch index
-          when startLocation.index
-            [startLocation.position, block.text.getLength()]
-          when endLocation.index
-            [0, endLocation.position]
+          when location.start.index
+            [location.start.position, block.text.getLength()]
+          when location.end.index
+            [0, location.end.position]
           else
             [0, block.text.getLength()]
 
         callback(block, range)
 
   insertTextAtLocation: (text, location) ->
+    @removeTextAtLocation(location) if location.isRange()
     @getTextAtIndex(location.index).insertTextAtPosition(text, location.position)
 
-  insertDocumentAtLocationRange: (document, locationRange) ->
-    unless locationRange[0] is locationRange[1]
-      @removeTextAtLocationRange(locationRange)
-
-    @blockList.insertBlockListAtLocation(document.blockList, locationRange[0])
+  insertDocumentAtLocation: (document, location) ->
+    @removeTextAtLocation(location) if location.isRange()
+    @blockList.insertBlockListAtLocation(document.blockList, location)
     @delegate?.didEditDocument?(this)
 
-  removeTextAtLocationRange: (locationRange) ->
+  removeTextAtLocation: (location) ->
     textRuns = []
-    @eachBlockInLocationRange locationRange, ({text}, range) ->
+    @eachBlockAtLocation location, ({text}, range) ->
       textRuns.push({text, range})
 
     if textRuns.length is 1
@@ -64,28 +63,24 @@ class Trix.Document
     else
       [first, ..., last] = textRuns
 
-      last.text.removeTextAtRange([0, locationRange[1].position])
-      first.text.removeTextAtRange([locationRange[0].position, first.text.getLength()])
+      last.text.removeTextAtRange([0, location.end.position])
+      first.text.removeTextAtRange([location.start.position, first.text.getLength()])
       first.text.appendText(last.text)
 
       @blockList.removeText(text) for {text} in textRuns[1..]
 
     @delegate?.didEditDocument?(this)
 
-  replaceTextAtLocationRange: (text, range) ->
-    @removeTextAtLocationRange(range)
-    @insertTextAtLocation(text, range[0])
-
-  addAttributeAtLocationRange: (attribute, value, locationRange) ->
-    @eachBlockInLocationRange locationRange, (block, range) ->
+  addAttributeAtLocation: (attribute, value, location) ->
+    @eachBlockAtLocation location, (block, range) ->
       if Trix.attributes[attribute]?.block
         block.addAttribute(attribute, value)
       else
         unless range[0] is range[1]
           block.text.addAttributeAtRange(attribute, value, range)
 
-  removeAttributeAtLocationRange: (attribute, locationRange) ->
-    @eachBlockInLocationRange locationRange, (block, range) ->
+  removeAttributeAtLocation: (attribute, location) ->
+    @eachBlockAtLocation location, (block, range) ->
       if Trix.attributes[attribute]?.block
         block.removeAttribute(attribute)
       else
@@ -96,11 +91,11 @@ class Trix.Document
     @blockList.replaceBlockList(document.blockList)
     @delegate?.didEditDocument?(this)
 
-  getCommonAttributesAtLocationRange: (locationRange) ->
+  getCommonAttributesAtLocation: (location) ->
     textAttributes = []
     blockAttributes = []
 
-    @eachBlockInLocationRange locationRange, (block, range) ->
+    @eachBlockAtLocation location, (block, range) ->
       textAttributes.push(block.text.getCommonAttributesAtRange(range))
       blockAttributes.push(block.getAttributes())
 

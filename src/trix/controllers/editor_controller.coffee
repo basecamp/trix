@@ -92,7 +92,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   # Selection observer delegate
 
-  locationRangeDidChange: (locationRange) ->
+  locationDidChange: (locationRange) ->
     @documentController.selectionDidChange?(locationRange)
     @composition.updateCurrentAttributes()
     @delegate?.didChangeSelection?()
