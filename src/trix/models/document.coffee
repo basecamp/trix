@@ -10,6 +10,9 @@ class Trix.Document
       Trix.Block.fromJSON blockJSON
     new this blocks
 
+  @fromHTML: (html) ->
+    Trix.HTMLParser.parse(html).getDocument()
+
   constructor: (blocks = []) ->
     @blockList = new Trix.BlockList blocks
     @blockList.delegate = this
@@ -81,6 +84,10 @@ class Trix.Document
       else
         unless range[0] is range[1]
           block.text.removeAttributeAtRange(attribute, range)
+
+  replaceDocument: (document) ->
+    @blockList.replaceBlockList(document.blockList)
+    @delegate?.didEditDocument?(this)
 
   getCommonAttributesAtLocationRange: (locationRange) ->
     textAttributes = []

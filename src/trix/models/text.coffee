@@ -19,9 +19,6 @@ class Trix.Text
       Trix.Piece.fromJSON pieceJSON
     new this pieces, textJSON.attributes
 
-  @fromHTML: (html) ->
-    Trix.HTMLParser.parse(html).getText()
-
   constructor: (pieces = [], attributes = {}) ->
     @editDepth = 0
     @pieceList = new Trix.PieceList pieces

@@ -1,7 +1,6 @@
 class Trix.BlockList
   constructor: (blocks = []) ->
-    @blocks = blocks.slice(0)
-    block.delegate = this for block in @blocks
+    @replaceBlocks(blocks)
 
   getBlockAtIndex: (index) ->
     @blocks[index]
@@ -11,6 +10,13 @@ class Trix.BlockList
 
   removeBlockAtIndex: (index) ->
     @blocks.splice(index, 1)
+
+  replaceBlockList: (blockList) ->
+    @replaceBlocks(blockList.toArray())
+
+  replaceBlocks: (blocks = []) ->
+    @blocks = blocks.slice(0)
+    block.delegate = this for block in @blocks
 
   # Block delegate
 

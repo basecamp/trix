@@ -1,4 +1,4 @@
-#= require trix/models/text
+#= require trix/models/document
 #= require trix/utilities/dom
 
 class Trix.HTMLParser
@@ -10,7 +10,7 @@ class Trix.HTMLParser
     parser
 
   constructor: (@html) ->
-    @text = new Trix.Text
+    @document = new Trix.Document
 
   createHiddenContainer: ->
     @container = sanitizeHTML(squish(@html))
@@ -27,11 +27,28 @@ class Trix.HTMLParser
     @removeHiddenContainer()
 
   processNode: (node) ->
+    @appendBlockForNode(node)
     switch node.nodeType
       when Node.TEXT_NODE
         @processTextNode(node)
       when Node.ELEMENT_NODE
         @processElementNode(node)
+
+  appendBlockForNode: (node) ->
+    if @currentBlockElement?
+      unless Trix.DOM.within(@currentBlockElement, node)
+        @appendBlock()
+        delete @currentBlockElement
+
+    if node.nodeType is Node.ELEMENT_NODE
+      if window.getComputedStyle(node).display is "block"
+        switch node.tagName.toLowerCase()
+          when "blockquote"
+            @appendBlock(quote: true)
+            @currentBlockElement = node
+
+    unless @block?
+      @appendBlock()
 
   processTextNode: (node) ->
     string = node.textContent.replace(/\s/, " ")
@@ -49,6 +66,12 @@ class Trix.HTMLParser
 
         @appendAttachment(attributes, getAttributes(node))
 
+  appendBlock: (attributes = {}) ->
+    text = new Trix.Text
+    @block = new Trix.Block text, attributes
+    @text = @block.text
+    @document.blockList.blocks.push(@block)
+
   appendString: (string, attributes) ->
     text = Trix.Text.textForStringWithAttributes(string, attributes)
     @text.appendText(text)
@@ -58,8 +81,8 @@ class Trix.HTMLParser
     text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
     @text.appendText(text)
 
-  getText: ->
-    @text
+  getDocument: ->
+    @document
 
   getAttributes = (element) ->
     attributes = {}

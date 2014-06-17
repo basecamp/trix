@@ -48,12 +48,12 @@ class Trix.Composition
     @insertText(text, options)
 
   insertHTML: (html, options) ->
-    text = Trix.Text.fromHTML(html)
-    @insertText(text, options)
+    document = Trix.Document.fromHTML(html)
+    # TODO
+    @insertDocument(document, options)
 
   replaceHTML: (html) ->
     @preserveSelectionEndPoint =>
-      # TODO
       document = Trix.Document.fromHTML(html)
       @document.replaceDocument(document)
 
@@ -250,7 +250,7 @@ class Trix.Composition
 
   getDocument: ->
     # TODO
-    @document.copy()
+    @document.copy?()
 
   getInternalSelectedRange: ->
     @selectionDelegate?.getSelectedRangeOfComposition?(this)
