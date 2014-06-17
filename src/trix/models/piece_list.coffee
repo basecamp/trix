@@ -41,13 +41,12 @@ class Trix.PieceList extends Trix.Object
 
   transformPiecesInRange: (range, transform) ->
     [pieces, leftIndex, rightIndex] = @splitPiecesAtRange(range)
-    pieces = pieces.slice(leftIndex, rightIndex + 1)
-    newPieces = (transform(piece) for piece in pieces)
-    index = leftIndex
-    while index <= rightIndex
-      pieces[index] = newPieces[index - leftIndex]
-      index++
-    new @constructor pieces
+    transformedPieces = for piece, index in pieces
+      if leftIndex <= index <= rightIndex
+        transform(piece)
+      else
+        piece
+    new @constructor transformedPieces
 
   splitPiecesAtRange: (range) ->
     [pieces, leftInnerIndex] = @splitPieceAtPosition(startOfRange(range))
