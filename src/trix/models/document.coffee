@@ -10,8 +10,27 @@ class Trix.Document extends Trix.Object
 
   constructor: (blocks = []) ->
     super
+    @editDepth = 0
     @blockList = new Trix.BlockList blocks
-    @blockList.delegate = this
+
+  edit = (fn) -> ->
+    @beginEditing()
+    fn.apply(this, arguments)
+    @endEditing()
+
+  edit: edit (fn) -> fn()
+
+  beginEditing: ->
+    @editDepth++
+    this
+
+  endEditing: ->
+    if --@editDepth is 0
+      @delegate?.didEditDocument?(this)
+    this
+
+  replaceDocument: edit (document) ->
+    @blockList = document.blockList.copy()
 
   getBlockAtIndex: (index) ->
     @blockList.getBlockAtIndex(index)
@@ -19,13 +38,16 @@ class Trix.Document extends Trix.Object
   getTextAtIndex: (index) ->
     @getBlockAtIndex(index)?.text
 
+  findIndexForText: (text) ->
+    return index for block, index in @blockList.blocks when block.text is text
+
   eachBlock: (callback) ->
-    callback(text, index) for text, index in @blockList.blocks
+    callback(block, index) for block, index in @blockList.blocks
 
   eachBlockInLocationRange: ([startLocation, endLocation], callback) ->
     if startLocation.index is endLocation.index
       block = @getBlockAtIndex(startLocation.index)
-      callback(block, [startLocation.position, endLocation.position])
+      callback(block, [startLocation.position, endLocation.position], startLocation.index)
     else
       for index in [startLocation.index..endLocation.index]
         block = @getBlockAtIndex(index)
@@ -38,48 +60,40 @@ class Trix.Document extends Trix.Object
           else
             [0, block.text.getLength()]
 
-        callback(block, range)
+        callback(block, range, index)
 
-  insertTextAtLocation: (text, location) ->
-    @getTextAtIndex(location.index).insertTextAtPosition(text, location.position)
+  insertTextAtLocation: edit (text, location) ->
+    @blockList.editBlockAtIndex location.index, (block) ->
+      block.copyWithText(block.text.insertTextAtPosition(text, location.position))
 
-  removeTextAtLocationRange: (locationRange) ->
-    textRuns = []
-    @eachBlockInLocationRange locationRange, ({text}, range) ->
-      textRuns.push({text, range})
+  removeTextAtLocationRange: edit (locationRange) ->
+    # FIXME
 
-    if textRuns.length is 1
-      textRuns[0].text.removeTextAtRange(textRuns[0].range)
-    else
-      [first, ..., last] = textRuns
-
-      last.text.removeTextAtRange([0, locationRange[1].position])
-      first.text.removeTextAtRange([locationRange[0].position, first.text.getLength()])
-      first.text.appendText(last.text)
-
-      @blockList.removeText(text) for {text} in textRuns[1..]
-
-    @delegate?.didEditDocument?(this)
-
-  replaceTextAtLocationRange: (text, range) ->
+  replaceTextAtLocationRange: edit (text, range) ->
     @removeTextAtLocationRange(range)
     @insertTextAtLocation(text, range[0])
 
-  addAttributeAtLocationRange: (attribute, value, locationRange) ->
-    @eachBlockInLocationRange locationRange, (block, range) ->
+  addAttributeAtLocationRange: edit (attribute, value, locationRange) ->
+    @eachBlockInLocationRange locationRange, (block, range, index) =>
       if Trix.attributes[attribute]?.block
-        block.addAttribute(attribute, value)
+        @blockList.editBlockAtIndex index, ->
+          block.addAttribute(attribute, value)
+      else if range[0] isnt range[1]
+        @blockList.editBlockAtIndex index, ->
+          block.copyWithText(block.text.addAttributeAtRange(attribute, value, range))
       else
-        unless range[0] is range[1]
-          block.text.addAttributeAtRange(attribute, value, range)
+        block
 
-  removeAttributeAtLocationRange: (attribute, locationRange) ->
-    @eachBlockInLocationRange locationRange, (block, range) ->
+  removeAttributeAtLocationRange: edit (attribute, locationRange) ->
+    @eachBlockInLocationRange locationRange, (block, range, index) =>
       if Trix.attributes[attribute]?.block
-        block.removeAttribute(attribute)
+        @blockList.editBlockAtIndex index, ->
+          block.removeAttribute(attribute)
+      else if range[0] isnt range[1]
+        @blockList.editBlockAtIndex index, ->
+          block.copyWithText(block.text.removeAttributeAtRange(attribute, range))
       else
-        unless range[0] is range[1]
-          block.text.removeAttributeAtRange(attribute, range)
+        block
 
   getCommonAttributesAtLocationRange: (locationRange) ->
     textAttributes = []
@@ -104,15 +118,25 @@ class Trix.Document extends Trix.Object
       if range = text.getRangeOfAttachment(attachment)
         return {text, range}
 
+  getLocationRangeOfAttachment: (attachment) ->
+    {text, range} = @getTextAndRangeOfAttachment(attachment) ? {}
+    if text
+      index = @findIndexForText(text)
+      [{index, position: range[0]}, {index, position: range[1]}]
+
   getAttachmentById: (id) ->
     for {text} in @blockList.blocks
       if attachment = text.getAttachmentById(id)
         return attachment
 
-  # BlockList delegate
+  resizeAttachmentToDimensions: (attachment) ->
+    {text} = @getTextAndRangeOfAttachment(attachment)
+    if index = @findIndexForText(text)
+      @blockList.editBlockAtIndex index, (block) ->
+        block.copyWithText(text.resizeAttachmentToDimensions(attachment, dimensions))
 
-  didEditBlockList: (blockList) ->
-    @delegate?.didEditDocument?(this)
+  copy: ->
+    new @constructor @blockList.toArray()
 
   toJSON: ->
     @blockList.toJSON()

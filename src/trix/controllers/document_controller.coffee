@@ -50,8 +50,7 @@ class Trix.DocumentController
 
   attachmentControllerDidResizeAttachmentToDimensions: (attachment, dimensions) ->
     @delegate?.textControllerWillResizeAttachment?(attachment)
-    {text} = @document.getTextAndRangeOfAttachment(attachment)
-    text.resizeAttachmentToDimensions(attachment, dimensions)
+    @document.resizeAttachmentToDimensions(attachment, dimensions)
 
   # Selection observer delegate
 

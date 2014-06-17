@@ -1,10 +1,12 @@
 #= require trix/models/object
 
 class Trix.BlockList extends Trix.Object
-  constructor: (blocks = []) ->
+  constructor: (blocks) ->
     super
+    @replaceBlocks(blocks)
+
+  replaceBlocks: (blocks = []) ->
     @blocks = blocks.slice(0)
-    block.delegate = this for block in @blocks
 
   getBlockAtIndex: (index) ->
     @blocks[index]
@@ -12,13 +14,20 @@ class Trix.BlockList extends Trix.Object
   removeText: (textToRemove) ->
     return @removeBlockAtIndex(index) for block, index in @blocks when block.text is textToRemove
 
+  insertBlockAtIndex: (block, index) ->
+    @blocks.splice(index, 0, block)
+
+  editBlockAtIndex: (index, callback) ->
+    @replaceBlockAtIndex(callback(@blocks[index]), index)
+
+  replaceBlockAtIndex: (block, index) ->
+    @blocks.splice(index, 1, block)
+
   removeBlockAtIndex: (index) ->
     @blocks.splice(index, 1)
 
-  # Block delegate
-
-  didEditBlock: (block) ->
-    @delegate?.didEditBlockList?(this)
+  copy: ->
+    new @constructor @toArray()
 
   toArray: ->
     @blocks.slice(0)

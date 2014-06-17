@@ -9,13 +9,17 @@ class Trix.Block extends Trix.Object
     super
     @attributes = Trix.Hash.box(attributes)
 
+  copyWithText: (text) ->
+    new @constructor text, @attributes
+
+  copyWithAttributes: (attributes) ->
+    new @constructor @text, attributes
+
   addAttribute: (attribute, value) ->
-    @attributes = @attributes.add(attribute, value)
-    @delegate?.didEditBlock?(this)
+    @copyWithAttributes @attributes.add(attribute, value)
 
   removeAttribute: (attribute) ->
-    @attributes = @attributes.remove(attribute)
-    @delegate?.didEditBlock?(this)
+    @copyWithAttributes @attributes.remove(attribute)
 
   getAttributes: ->
     @attributes.toObject()

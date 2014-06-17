@@ -16,7 +16,7 @@ class Trix.Composition
   # Snapshots
 
   createSnapshot: ->
-    text: @getDocument()
+    document: @getDocument()
     selectedRange: @getInternalSelectedRange()
 
   restoreSnapshot: ({document, selectedRange}) ->
@@ -149,13 +149,12 @@ class Trix.Composition
 
   updateAttachment: (id, attributes) ->
     if attachment = @attachments.get(id)
-      {text} = @document.getTextAndRangeOfAttachment(attachment)
-      text.edit -> attachment.setAttributes(attributes)
+      @document.edit -> attachment.setAttributes(attributes)
 
   removeAttachment: (id) ->
     if attachment = @attachments.get(id)
-      {text, range} = @document.getTextAndRangeOfAttachment(attachment)
-      text.removeTextAtRange(range)
+      locationRange = @document.getLocationRangeOfAttachment(attachment)
+      @document.removeTextAtLocationRange(locationRange)
 
   # Current attributes
 
@@ -249,7 +248,6 @@ class Trix.Composition
   # Private
 
   getDocument: ->
-    # TODO
     @document.copy()
 
   getInternalSelectedRange: ->
