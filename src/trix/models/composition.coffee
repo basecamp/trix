@@ -17,12 +17,11 @@ class Trix.Composition
 
   createSnapshot: ->
     text: @getDocument()
-    selectedRange: @getInternalSelectedRange()
+    selectedRange: @getLocationRange()
 
   restoreSnapshot: ({document, selectedRange}) ->
-    # TODO
     @document.replaceDocument(document)
-    @requestSelectedRange(selectedRange)
+    @setLocationRange(selectedRange)
 
   # Document delegate
 
@@ -33,7 +32,7 @@ class Trix.Composition
   # Responder protocol
 
   insertText: (text, {updatePosition} = updatePosition: true) ->
-    if selectedRange = @getSelectedRange()
+    if selectedRange = @getLocationRange()
       location = selectedRange[0]
       @document.replaceTextAtLocationRange(text, selectedRange)
     else
@@ -41,10 +40,10 @@ class Trix.Composition
       @document.insertTextAtLocation(text, location)
 
     location.position += text.getLength() if updatePosition
-    @requestPosition(location)
+    @setLocationRange([location, location])
 
   insertDocument: (document) ->
-    unless locationRange = @getSelectedRange()
+    unless locationRange = @getLocationRange()
       location = @getLocation()
       locationRange = [location, location]
     @document.insertDocumentAtLocationRange(document, locationRange)
@@ -75,7 +74,7 @@ class Trix.Composition
       @insertText(text)
 
   deleteFromCurrentPosition: (distance = -1) ->
-    unless range = @getSelectedRange()
+    unless range = @getLocationRange()
       {index, position} = location = @getLocation()
       position += distance
 
@@ -129,7 +128,7 @@ class Trix.Composition
     @deleteFromCurrentPosition(distance)
 
   deleteWordBackward: ->
-    if @getSelectedRange()
+    if @getLocationRange()
       @deleteBackward()
     else
       location = @getLocation()
@@ -149,7 +148,7 @@ class Trix.Composition
 
   getTextFromSelection: ->
     # TODO: get text(s) spanning blocks
-    if locationRange = @getSelectedRange()
+    if locationRange = @getLocationRange()
       if locationRange[0].index is locationRange[1].index
         text = @getTextAtIndex(locationRange[0].index)
         text.getTextAtRange([locationRange[0].position, locationRange[1].position])
@@ -179,7 +178,7 @@ class Trix.Composition
     @setCurrentAttribute(attributeName, value)
 
   setCurrentAttribute: (attributeName, value) ->
-    unless locationRange = @getSelectedRange()
+    unless locationRange = @getLocationRange()
       location = @getLocation()
       locationRange = [location, location]
 
@@ -193,7 +192,7 @@ class Trix.Composition
     @notifyDelegateOfCurrentAttributesChange()
 
   updateCurrentAttributes: ->
-    if locationRange = @getSelectedRange()
+    if locationRange = @getLocationRange()
       @currentAttributes = @document.getCommonAttributesAtLocationRange(locationRange)
 
     else if location = @getLocation()
@@ -227,15 +226,13 @@ class Trix.Composition
   hasFrozenSelection: ->
     @hasCurrentAttribute("frozen")
 
-  # Position and selected range
+  # Location range
 
-  getLocation: ->
-    if range = @getInternalSelectedRange()
-      [start, end] = range
-      start if start is end
+  getLocationRange: ->
+    @selectionDelegate?.getLocationRange?()
 
-  requestPosition: (position) ->
-    @requestSelectedRange([position, position])
+  setLocationRange: (locationRange) ->
+    @selectionDelegate?.setLocationRange?(locationRange)
 
   requestPositionAtPoint: (point) ->
     if range = @selectionDelegate?.getRangeOfCompositionAtPoint?(this, point)
@@ -246,26 +243,24 @@ class Trix.Composition
     block()
     @requestPositionAtPoint(point) if point?
 
-  getSelectedRange: ->
-    if range = @getInternalSelectedRange()
-      [start, end] = range
-      range unless start is end
+  expandSelectionForEditing: ->
+    for key, value of Trix.attributes when value.parent
+      if @hasCurrentAttribute(key)
+        @expandLocationRangeAroundCommonAttribute(key)
+        break
 
-  requestSelectedRange: (range) ->
-    if range?
-      #[start, end] = range
-      #length = @text.getLength()
-      #range = [clamp(start, 0, length), clamp(end, 0, length)]
-      @selectionDelegate?.compositionDidRequestSelectionOfRange?(this, range)
+  expandLocationRangeAroundCommonAttribute: (attributeName) ->
+    [left, right] = @documentView.getSelectedRange()
+    originalLeft = left
+    length = @text.getLength()
+
+    left-- while left > 0 and @text.getCommonAttributesAtRange([left - 1, right])[attributeName]
+    right++ while right < length and @text.getCommonAttributesAtRange([originalLeft, right + 1])[attributeName]
+
+    @documentView.setSelectedRange([left, right])
 
   # Private
 
   getDocument: ->
     # TODO
     @document.copy?()
-
-  getInternalSelectedRange: ->
-    @selectionDelegate?.getSelectedRangeOfComposition?(this)
-
-  clamp = (value, floor, ceiling) ->
-    Math.max(floor, Math.min(ceiling, value))

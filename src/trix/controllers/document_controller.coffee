@@ -6,8 +6,6 @@ class Trix.DocumentController
   constructor: (@element, @document, @config) ->
     @documentView = new Trix.DocumentView @element, @document
 
-    @selectionLockCount = 0
-
     @element.addEventListener("focus", @didFocus)
     @element.addEventListener("click", @didClick)
 
@@ -52,59 +50,3 @@ class Trix.DocumentController
     @delegate?.textControllerWillResizeAttachment?(attachment)
     {text} = @document.getTextAndRangeOfAttachment(attachment)
     text.resizeAttachmentToDimensions(attachment, dimensions)
-
-  # Selection observer delegate
-
-  selectionDidChange: (range) ->
-    @expireCachedSelectedRange()
-
-  # Composition selection delegate
-
-  getSelectedRangeOfComposition: (composition) ->
-    @getCachedSelectedRangeFromTextView()
-
-  getRangeOfCompositionAtPoint: (composition, point) ->
-    position = @getPositionAtPoint(point)
-    [position, position] if position?
-
-  getPointAtEndOfCompositionSelection: (composition) ->
-    @documentView.getPointAtEndOfSelection()
-
-  compositionDidRequestSelectionOfRange: (composition, range) ->
-    @focus()
-    @documentView.setSelectedRange(range)
-    @expireCachedSelectedRange()
-
-  # Selection
-
-  lockSelection: ->
-    if @selectionLockCount++ is 0
-      @documentView.lockSelection()
-      @expireCachedSelectedRange()
-      @delegate?.textControllerDidLockSelection?()
-
-  unlockSelection: ->
-    if --@selectionLockCount is 0
-      selectedRange = @documentView.unlockSelection()
-      @documentView.setSelectedRange(selectedRange)
-      @delegate?.textControllerDidUnlockSelection?()
-
-  expandSelectedRangeAroundCommonAttribute: (attributeName) ->
-    [left, right] = @documentView.getSelectedRange()
-    originalLeft = left
-    length = @text.getLength()
-
-    left-- while left > 0 and @text.getCommonAttributesAtRange([left - 1, right])[attributeName]
-    right++ while right < length and @text.getCommonAttributesAtRange([originalLeft, right + 1])[attributeName]
-
-    @documentView.setSelectedRange([left, right])
-    @expireCachedSelectedRange()
-
-  getCachedSelectedRangeFromTextView: ->
-    @cachedSelectedRange ?= @documentView.getSelectedRange()
-
-  expireCachedSelectedRange: ->
-    delete @cachedSelectedRange
-
-  getPositionAtPoint: (point) ->
-    @documentView.getPositionAtPoint(point)

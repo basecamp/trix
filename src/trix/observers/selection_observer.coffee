@@ -7,7 +7,7 @@ class Trix.SelectionObserver
     requestAnimationFrame(@tick)
     range = getRange()
     unless rangesAreEqual(range, @range)
-      @delegate?.selectionDidChange?()
+      @delegate?.selectionDidChange?(range)
       @range = range
 
   getRange = ->
