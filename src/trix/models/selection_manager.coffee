@@ -10,14 +10,6 @@ class Trix.SelectionManager
     @selectionObserver = new Trix.SelectionObserver
     @selectionObserver.delegate = this
 
-  selectionDidChange: (domRange) ->
-    @updateCurrentLocationRange(domRange)
-    @delegate?.locationDidChange?(@currentLocationRange)
-
-  updateCurrentLocationRange: (domRange) ->
-    domRange ?= @getDOMRange()
-    @currentLocationRange = @createLocationRangeFromDOMRange(domRange)
-
   getLocationRange: ->
     @lockedLocationRange ? @currentLocationRange
 
@@ -42,38 +34,17 @@ class Trix.SelectionManager
     @setDOMRange(range)
     range
 
-  getLocationRangeAtPoint: ([pageX, pageY]) ->
-    if document.caretPositionFromPoint
-      {offsetNode, offset} = document.caretPositionFromPoint(pageX, pageY)
-      domRange = document.createRange()
-      domRange.setStart(offsetNode, offset)
+  # Selection observer delegate
 
-    else if document.caretRangeFromPoint
-      domRange = document.caretRangeFromPoint(pageX, pageY)
+  selectionDidChange: (domRange) ->
+    @updateCurrentLocationRange(domRange)
+    @delegate?.locationDidChange?(@currentLocationRange)
 
-    else if document.body.createTextRange
-      range = document.body.createTextRange()
-      range.moveToPoint(pageX, pageY)
-      range.select()
-      return @updateCurrentLocationRange()
+  # Private
 
-    if domRange
-      @createLocationRangeFromDOMRange(domRange)
-
-  getPointAtEndOfSelection: ->
-    if range = @getDOMRange()
-      rects = range.getClientRects()
-      if rects.length > 0
-        rect = rects[rects.length - 1]
-
-        pageX = rect.right
-        pageY = rect.top + rect.height / 2
-
-        if @clientRectIsRelativeToBody()
-          pageX -= document.body.scrollLeft
-          pageY -= document.body.scrollTop
-
-        [pageX, pageY]
+  updateCurrentLocationRange: (domRange) ->
+    domRange ?= @getDOMRange()
+    @currentLocationRange = @createLocationRangeFromDOMRange(domRange)
 
   getDOMRange: ->
     selection = window.getSelection()
@@ -99,8 +70,6 @@ class Trix.SelectionManager
     selection = window.getSelection()
     selection.removeAllRanges()
     selection.addRange(range)
-
-  # Private
 
   createLocationRangeFromDOMRange: (range) ->
     return unless range?
@@ -164,6 +133,39 @@ class Trix.SelectionManager
       NodeFilter.FILTER_ACCEPT
     else
       NodeFilter.FILTER_SKIP
+
+  getLocationRangeAtPoint: ([pageX, pageY]) ->
+    if document.caretPositionFromPoint
+      {offsetNode, offset} = document.caretPositionFromPoint(pageX, pageY)
+      domRange = document.createRange()
+      domRange.setStart(offsetNode, offset)
+
+    else if document.caretRangeFromPoint
+      domRange = document.caretRangeFromPoint(pageX, pageY)
+
+    else if document.body.createTextRange
+      range = document.body.createTextRange()
+      range.moveToPoint(pageX, pageY)
+      range.select()
+      return @updateCurrentLocationRange()
+
+    if domRange
+      @createLocationRangeFromDOMRange(domRange)
+
+  getPointAtEndOfSelection: ->
+    if range = @getDOMRange()
+      rects = range.getClientRects()
+      if rects.length > 0
+        rect = rects[rects.length - 1]
+
+        pageX = rect.right
+        pageY = rect.top + rect.height / 2
+
+        if @clientRectIsRelativeToBody()
+          pageX -= document.body.scrollLeft
+          pageY -= document.body.scrollTop
+
+        [pageX, pageY]
 
   # ClientRect position properties should be relative to the viewport,
   # but in some browsers (like mobile Safari), they're relative to the body.
