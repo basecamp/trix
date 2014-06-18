@@ -73,12 +73,12 @@ class Trix.Document
     @delegate?.didEditDocument?(this)
 
   addAttributeAtLocationRange: (attribute, value, range) ->
-    @eachBlockAtLocationRange range, (block, range) ->
+    @eachBlockAtLocationRange range, (block, textRange) ->
       if Trix.attributes[attribute]?.block
         block.addAttribute(attribute, value)
       else
-        unless range[0] is range[1]
-          block.text.addAttributeAtRange(attribute, value, range)
+        unless textRange[0] is textRange[1]
+          block.text.addAttributeAtRange(attribute, value, textRange)
 
   removeAttributeAtLocationRange: (attribute, range) ->
     @eachBlockAtLocationRange range, (block, textRange) ->
