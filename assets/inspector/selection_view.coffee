@@ -5,8 +5,8 @@ class Trix.SelectionView
   render: ->
     frozen = @composition.hasFrozenSelection()
 
-    if location = @composition.getLocation()
-      @element.innerHTML = "Selection: #{JSON.stringify(location)}"
+    if range = @composition.getLocationRange()
+      @element.innerHTML = "Range: #{JSON.stringify(range)}"
       @element.innerHTML += " (Frozen)" if frozen
     else
       @element.innerHTML = "(No Selection)"

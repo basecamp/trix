@@ -1,5 +1,5 @@
 #= require trix/observers/selection_observer
-#= require trix/models/location
+#= require trix/models/location_range
 #= require trix/utilities/dom
 #= require trix/utilities/helpers
 
@@ -10,33 +10,33 @@ class Trix.SelectionManager
     @selectionObserver = new Trix.SelectionObserver
     @selectionObserver.delegate = this
 
-    @currentLocation = {}
+    @currentLocationRange = {}
 
   selectionDidChange: (domRange) ->
-    delete @currentLocation
-    @updateCurrentLocation(domRange)
-    @delegate?.locationDidChange?(@currentLocation)
+    delete @currentLocationRange
+    @updateCurrentLocationRange(domRange)
+    @delegate?.locationDidChange?(@currentLocationRange)
 
-  updateCurrentLocation: (domRange) ->
+  updateCurrentLocationRange: (domRange) ->
     domRange ?= @getDOMRange()
-    @currentLocation = @createLocationFromDOMRange(domRange)
+    @currentLocationRange = @createLocationRangeFromDOMRange(domRange)
 
-  getLocation: ->
-    @lockedLocation ? @currentLocation
+  getLocationRange: ->
+    @lockedLocationRange ? @currentLocationRange
 
-  setLocation: (location) ->
-    unless @lockedLocation?
-      @setDOMRange(location)
+  setLocationRange: (locationRange) ->
+    unless @lockedLocationRange?
+      @setDOMRange(locationRange)
 
   lock: ->
-    @lockedLocation ?= @getLocation()
+    @lockedLocationRange ?= @getLocationRange()
 
   unlock: ->
-    if lockedLocation = @lockedLocation
-      delete @lockedLocation
-      lockedLocation
+    if lockedLocationRange = @lockedLocationRange
+      delete @lockedLocationRange
+      lockedLocationRange
 
-  getLocationAtPoint: ([pageX, pageY]) ->
+  getLocationRangeAtPoint: ([pageX, pageY]) ->
     if document.caretPositionFromPoint
       {offsetNode, offset} = document.caretPositionFromPoint(pageX, pageY)
       domRange = document.createRange()
@@ -76,13 +76,13 @@ class Trix.SelectionManager
     if selection.rangeCount > 0
       selection.getRangeAt(0)
 
-  setDOMRange: (location) ->
-    rangeStart = @findContainerAndOffsetForLocation(location.start)
+  setDOMRange: (locationRange) ->
+    rangeStart = @findContainerAndOffsetForLocationRange(locationRange.start)
     rangeEnd =
-      if location.isCollapsed()
+      if locationRange.isCollapsed()
         rangeStart
       else
-        @findContainerAndOffsetForLocation(location.end)
+        @findContainerAndOffsetForLocationRange(locationRange.end)
 
     range = document.createRange()
     try
@@ -98,18 +98,18 @@ class Trix.SelectionManager
 
   # Private
 
-  createLocationFromDOMRange: (range) ->
+  createLocationRangeFromDOMRange: (range) ->
     if range.collapsed
       if Trix.DOM.within(@element, range.endContainer)
-        start = @findLocationAttributesFromContainerAtOffset(range.endContainer, range.endOffset)
-        new Trix.Location start
+        start = @findLocationRangeAttributesFromContainerAtOffset(range.endContainer, range.endOffset)
+        new Trix.LocationRange start
     else
       if Trix.DOM.within(@element, range.startContainer) and Trix.DOM.within(@element, range.endContainer)
-        start = @findLocationAttributesFromContainerAtOffset(range.startContainer, range.startOffset)
-        end = @findLocationAttributesFromContainerAtOffset(range.endContainer, range.endOffset)
-        new Trix.Location start, end
+        start = @findLocationRangeAttributesFromContainerAtOffset(range.startContainer, range.startOffset)
+        end = @findLocationRangeAttributesFromContainerAtOffset(range.endContainer, range.endOffset)
+        new Trix.LocationRange start, end
 
-  findLocationAttributesFromContainerAtOffset: (container, offset) ->
+  findLocationRangeAttributesFromContainerAtOffset: (container, offset) ->
     if container.nodeType is Node.TEXT_NODE
       index = container.trixIndex
       position = container.trixPosition + offset
@@ -126,35 +126,35 @@ class Trix.SelectionManager
 
     {index, position}
 
-  findContainerAndOffsetForLocation: (location) ->
-    return [@element, 0] if location.index is 0 and location.position < 1
+  findContainerAndOffsetForLocationRange: (loactionRange) ->
+    return [@element, 0] if loactionRange.index is 0 and loactionRange.position < 1
 
-    node = @findNodeForLocation(location)
+    node = @findNodeForLocationRange(loactionRange)
 
     if node.nodeType is Node.TEXT_NODE
       container = node
-      offset = location.position - node.trixPosition
+      offset = loactionRange.position - node.trixPosition
     else
       container = node.parentNode
       offset = [node.parentNode.childNodes...].indexOf(node) + 1
 
     [container, offset]
 
-  findNodeForLocation: (location) ->
-    walker = Trix.DOM.createTreeWalker(@element, null, nodeFilterForLocation)
+  findNodeForLocationRange: (range) ->
+    walker = Trix.DOM.createTreeWalker(@element, null, nodeFilterForLocationRange)
     node = walker.currentNode
 
     while walker.nextNode()
-      if walker.currentNode.trixIndex is location.index
+      if walker.currentNode.trixIndex is range.index
         startPosition = walker.currentNode.trixPosition
         endPosition = startPosition + walker.currentNode.trixLength
 
-        if startPosition <= location.position <= endPosition
+        if startPosition <= range.position <= endPosition
           node = walker.currentNode
           break
     node
 
-  nodeFilterForLocation = (node) ->
+  nodeFilterForLocationRange = (node) ->
     if node.trixPosition? and node.trixLength?
       NodeFilter.FILTER_ACCEPT
     else

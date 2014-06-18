@@ -26,77 +26,77 @@ class Trix.Document
   eachBlock: (callback) ->
     callback(text, index) for text, index in @blockList.blocks
 
-  eachBlockAtLocation: (location, callback) ->
-    if location.isRangeWithinIndex()
-      block = @getBlockAtIndex(location.index)
-      callback(block, location.getPositionRange())
+  eachBlockAtLocationRange: (range, callback) ->
+    if range.isRangeWithinIndex()
+      block = @getBlockAtIndex(range.index)
+      callback(block, range.getPositionRange())
     else
-      location.eachIndex (index) =>
+      range.eachIndex (index) =>
         block = @getBlockAtIndex(index)
 
-        range = switch index
-          when location.start.index
-            [location.start.position, block.text.getLength()]
-          when location.end.index
-            [0, location.end.position]
+        textRange = switch index
+          when range.start.index
+            [range.start.position, block.text.getLength()]
+          when range.end.index
+            [0, range.end.position]
           else
             [0, block.text.getLength()]
 
-        callback(block, range)
+        callback(block, textRange)
 
-  insertTextAtLocation: (text, location) ->
-    @removeTextAtLocation(location) if location.isRange()
-    @getTextAtIndex(location.index).insertTextAtPosition(text, location.position)
+  insertTextAtLocationRange: (text, range) ->
+    @removeTextAtLocationRange(range) if range.isRange()
+    @getTextAtIndex(range.index).insertTextAtPosition(text, range.position)
 
-  insertDocumentAtLocation: (document, location) ->
-    @removeTextAtLocation(location) if location.isRange()
-    @blockList.insertBlockListAtLocation(document.blockList, location)
+  insertDocumentAtLocationRange: (document, range) ->
+    @removeTextAtLocationRange(range) if range.isRange()
+    @blockList.insertBlockListAtLocationRange(document.blockList, range)
     @delegate?.didEditDocument?(this)
 
-  removeTextAtLocation: (location) ->
+  removeTextAtLocationRange: (range) ->
     textRuns = []
-    @eachBlockAtLocation location, ({text}, range) ->
-      textRuns.push({text, range})
+    @eachBlockAtLocationRange range, ({text}, textRange) ->
+      textRuns.push({text, textRange})
 
     if textRuns.length is 1
-      textRuns[0].text.removeTextAtRange(textRuns[0].range)
+      textRuns[0].text.removeTextAtRange(textRuns[0].textRange)
     else
       [first, ..., last] = textRuns
 
-      last.text.removeTextAtRange([0, location.end.position])
-      first.text.removeTextAtRange([location.start.position, first.text.getLength()])
+      last.text.removeTextAtRange([0, range.end.position])
+      first.text.removeTextAtRange([range.start.position, first.text.getLength()])
       first.text.appendText(last.text)
 
       @blockList.removeText(text) for {text} in textRuns[1..]
 
     @delegate?.didEditDocument?(this)
 
-  addAttributeAtLocation: (attribute, value, location) ->
-    @eachBlockAtLocation location, (block, range) ->
+  addAttributeAtLocationRange: (attribute, value, range) ->
+    @eachBlockAtLocationRange range, (block, range) ->
       if Trix.attributes[attribute]?.block
         block.addAttribute(attribute, value)
       else
         unless range[0] is range[1]
           block.text.addAttributeAtRange(attribute, value, range)
 
-  removeAttributeAtLocation: (attribute, location) ->
-    @eachBlockAtLocation location, (block, range) ->
+  removeAttributeAtLocationRange: (attribute, range) ->
+    @eachBlockAtLocationRange range, (block, textRange) ->
       if Trix.attributes[attribute]?.block
         block.removeAttribute(attribute)
       else
-        unless range[0] is range[1]
-          block.text.removeAttributeAtRange(attribute, range)
+        unless textRange[0] is textRange[1]
+          block.text.removeAttributeAtRange(attribute, textRange)
 
   replaceDocument: (document) ->
     @blockList.replaceBlockList(document.blockList)
     @delegate?.didEditDocument?(this)
 
-  getCommonAttributesAtLocation: (location) ->
+  getCommonAttributesAtLocationRange: (range) ->
     textAttributes = []
     blockAttributes = []
 
-    @eachBlockAtLocation location, (block, range) ->
-      textAttributes.push(block.text.getCommonAttributesAtRange(range))
+    @eachBlockAtLocationRange range, (block, textRange) ->
+      textAttributes.push(block.text.getCommonAttributesAtRange(textRange))
       blockAttributes.push(block.getAttributes())
 
     Trix.Hash.fromCommonAttributesOfObjects(textAttributes)

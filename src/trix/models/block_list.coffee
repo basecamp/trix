@@ -18,15 +18,15 @@ class Trix.BlockList
     @blocks = blocks.slice(0)
     block.delegate = this for block in @blocks
 
-  splitBlockAtLocation: (location) ->
-    block = @getBlockAtIndex(location.index)
-    range = [location.position, block.text.getLength()]
+  splitBlockAtLocationRange: (range) ->
+    block = @getBlockAtIndex(range.index)
+    textRange = [range.position, block.text.getLength()]
 
-    newText = block.text.getTextAtRange(range)
+    newText = block.text.getTextAtRange(textRange)
     newBlock = new Trix.Block newText, block.attributes.toObject()
-    block.text.removeTextAtRange(range)
+    block.text.removeTextAtRange(textRange)
 
-    index = location.index + 1
+    index = range.index + 1
     @insertBlockAtIndex(newBlock, index)
     index
 
@@ -37,8 +37,8 @@ class Trix.BlockList
     for block, offset in blockList.blocks
       @insertBlockAtIndex(block, index + offset)
 
-  insertBlockListAtLocation: (blockList, location) ->
-    index = @splitBlockAtLocation(location)
+  insertBlockListAtLocationRange: (blockList, range) ->
+    index = @splitBlockAtLocationRange(range)
     @insertBlockListAtIndex(blockList, index)
 
   # Block delegate

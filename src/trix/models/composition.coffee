@@ -17,11 +17,11 @@ class Trix.Composition
 
   createSnapshot: ->
     text: @getDocument()
-    selectedRange: @getLocation()
+    selectedRange: @getLocationRange()
 
   restoreSnapshot: ({document, selectedRange}) ->
     @document.replaceDocument(document)
-    @setLocation(selectedRange)
+    @setLocationRange(selectedRange)
 
   # Document delegate
 
@@ -32,23 +32,23 @@ class Trix.Composition
   # Responder protocol
 
   insertText: (text, {updatePosition} = updatePosition: true) ->
-    location = @getLocation()
-    @document.insertTextAtLocation(text, location)
+    range = @getLocationRange()
+    @document.insertTextAtLocationRange(text, range)
 
-    {index, position} = location.start
+    {index, position} = range.start
     position += text.getLength() if updatePosition
-    @setLocation(new Trix.Location {index, position})
+    @setLocationRange(new Trix.LocationRange {index, position})
 
   insertDocument: (document) ->
-    location = @getLocation()
-    @document.insertDocumentAtLocation(document, location)
+    range = @getLocationRange()
+    @document.insertDocumentAtLocationRange(document, range)
 
     blockLength = document.blockList.blocks.length
     lastText = document.blockList.getBlockAtIndex(blockLength - 1).text
 
-    index = location.index + blockLength
+    index = range.index + blockLength
     position = lastText.getLength()
-    @setLocation(new Trix.Location {index, position})
+    @setLocationRange(new Trix.LocationRange {index, position})
 
   insertString: (string, options) ->
     text = Trix.Text.textForStringWithAttributes(string, @currentAttributes)
@@ -69,10 +69,10 @@ class Trix.Composition
       @insertText(text)
 
   deleteFromCurrentPosition: (distance = -1) ->
-    location = @getLocation()
+    range = @getLocationRange()
 
-    if location.isCollapsed()
-      {index, position} = location
+    if range.isCollapsed()
+      {index, position} = range
       position += distance
 
       if distance < 0
@@ -81,27 +81,27 @@ class Trix.Composition
           position += @document.getTextAtIndex(index).getLength() + 1
 
         start = {index, position}
-        end = location.start
+        end = range.start
       else
         if position > (textLength = @document.getTextAtIndex(index).getLength())
           index++
           position -= textLength + 1
 
-        start = location.start
+        start = range.start
         end = {index, position}
 
-      location = new Trix.Location start, end
+      range = new Trix.LocationRange start, end
 
-    @document.removeTextAtLocation(location)
-    @setLocation(location.collapse())
+    @document.removeTextAtLocationRange(range)
+    @setLocationRange(range.collapse())
 
   deleteBackward: ->
     distance = 1
-    location = @getLocation()
+    range = @getLocationRange()
 
-    if location.isCollapsed() and location.position > 0
-      while (leftPosition = location.position - distance - 1) >= 0
-        string = @document.getTextAtIndex(location.index).getStringAtRange([leftPosition, location.position])
+    if range.isCollapsed() and range.position > 0
+      while (leftPosition = range.position - distance - 1) >= 0
+        string = @document.getTextAtIndex(range.index).getStringAtRange([leftPosition, range.position])
         if countGraphemeClusters(string) is 1 or countGraphemeClusters("n#{string}") is 1
           distance++
         else
@@ -111,13 +111,13 @@ class Trix.Composition
 
   deleteForward: ->
     distance = 1
-    location = @getLocation()
+    range = @getLocationRange()
 
-    if location.isCollapsed()
-      text = @document.getTextAtIndex(location.index)
+    if range.isCollapsed()
+      text = @document.getTextAtIndex(range.index)
       textLength = text.getLength()
-      while (rightPosition = location.position + distance + 1) <= textLength
-        string = text.getStringAtRange([location.position, rightPosition])
+      while (rightPosition = range.position + distance + 1) <= textLength
+        string = text.getStringAtRange([range.position, rightPosition])
         if countGraphemeClusters(string) is 1
           distance++
         else
@@ -126,19 +126,19 @@ class Trix.Composition
     @deleteFromCurrentPosition(distance)
 
   deleteWordBackward: ->
-    if @getLocation()
+    if @getLocationRange()
       @deleteBackward()
     else
-      location = @getLocation()
-      text = @getTextAtIndex(location.index)
+      range = @getLocationRange()
+      text = @getTextAtIndex(range.index)
       # TODO: delete across blocks
-      stringBeforePosition = text.getStringAtRange([0, location.position])
+      stringBeforePosition = text.getStringAtRange([0, range.position])
       # TODO: \b is not unicode compatible
       positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
       @deleteFromCurrentPosition(positionBeforeLastWord - position)
 
   moveTextFromRange: (range) ->
-    location = @getLocation()
+    range = @getLocationRange()
     # TODO: move selection spanning blocks
     text = @getTextAtIndex(index)
     text.moveTextFromRangeToPosition(range, position)
@@ -146,10 +146,10 @@ class Trix.Composition
 
   getTextFromSelection: ->
     # TODO: get text(s) spanning blocks
-    if location = @getLocation()
-      if location[0].index is location[1].index
-        text = @getTextAtIndex(location[0].index)
-        text.getTextAtRange([location[0].position, location[1].position])
+    if range = @getLocationRange()
+      if range[0].index is range[1].index
+        text = @getTextAtIndex(range[0].index)
+        text.getTextAtRange([range[0].position, range[1].position])
 
   # Attachment owner protocol
 
@@ -176,29 +176,27 @@ class Trix.Composition
     @setCurrentAttribute(attributeName, value)
 
   setCurrentAttribute: (attributeName, value) ->
-    unless location = @getLocation()
-      location = @getLocation()
-      location = [location, location]
+    range = @getLocationRange()
 
     if value
-      @document.addAttributeAtLocation(attributeName, value, location)
+      @document.addAttributeAtLocationRange(attributeName, value, range)
       @currentAttributes[attributeName] = value
     else
-      @document.removeAttributeAtLocation(attributeName, location)
+      @document.removeAttributeAtLocationRange(attributeName, range)
       delete @currentAttributes[attributeName]
 
     @notifyDelegateOfCurrentAttributesChange()
 
   updateCurrentAttributes: ->
-    if location = @getLocation()
-      @currentAttributes = @document.getCommonAttributesAtLocation(location)
+    if range = @getLocationRange()
+      @currentAttributes = @document.getCommonAttributesAtLocationRange(range)
 
-    else if location = @getLocation()
-      block = @document.getBlockAtIndex(location.index)
+    else if range = @getLocationRange()
+      block = @document.getBlockAtIndex(range.index)
       @currentAttributes = block.getAttributes()
 
-      attributes = block.text.getAttributesAtPosition(location.position)
-      attributesLeft = block.text.getAttributesAtPosition(location.position - 1)
+      attributes = block.text.getAttributesAtPosition(range.position)
+      attributesLeft = block.text.getAttributesAtPosition(range.position - 1)
 
       for key, value of attributesLeft
         if value is attributes[key] or key in inheritableAttributes()
@@ -224,13 +222,13 @@ class Trix.Composition
   hasFrozenSelection: ->
     @hasCurrentAttribute("frozen")
 
-  # Location
+  # LocationRange
 
-  getLocation: ->
-    @selectionDelegate?.getLocation?()
+  getLocationRange: ->
+    @selectionDelegate?.getLocationRange?()
 
-  setLocation: (location) ->
-    @selectionDelegate?.setLocation?(location)
+  setLocationRange: (range) ->
+    @selectionDelegate?.setLocationRange?(range)
 
   requestPositionAtPoint: (point) ->
     if range = @selectionDelegate?.getRangeOfCompositionAtPoint?(this, point)
@@ -244,10 +242,10 @@ class Trix.Composition
   expandSelectionForEditing: ->
     for key, value of Trix.attributes when value.parent
       if @hasCurrentAttribute(key)
-        @expandLocationAroundCommonAttribute(key)
+        @expandLocationRangeAroundCommonAttribute(key)
         break
 
-  expandLocationAroundCommonAttribute: (attributeName) ->
+  expandLocationRangeAroundCommonAttribute: (attributeName) ->
     [left, right] = @documentView.getSelectedRange()
     originalLeft = left
     length = @text.getLength()
