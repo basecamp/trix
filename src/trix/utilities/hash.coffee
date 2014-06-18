@@ -1,4 +1,6 @@
-class Trix.Hash
+#= require trix/utilities/object
+
+class Trix.Hash extends Trix.Object
   @fromCommonAttributesOfObjects: (objects = []) ->
     return new this unless objects.length
     hash = box(objects[0])
@@ -13,6 +15,7 @@ class Trix.Hash
     box(values)
 
   constructor: (@values = {}) ->
+    super
 
   add: (key, value) ->
     @merge(object(key, value))
@@ -57,8 +60,8 @@ class Trix.Hash
   toJSON: ->
     @toObject()
 
-  inspect: ->
-    JSON.stringify(@values)
+  contentsForInspection: ->
+    values: JSON.stringify(@values)
 
   object = (key, value) ->
     result = {}
