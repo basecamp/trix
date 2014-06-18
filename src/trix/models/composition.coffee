@@ -185,8 +185,12 @@ class Trix.Composition
     @notifyDelegateOfCurrentAttributesChange()
 
   updateCurrentAttributes: ->
-    range = @getLocationRange()
-    @currentAttributes = @document.getCommonAttributesAtLocationRange(range)
+    @currentAttributes =
+      if range = @getLocationRange()
+        @document.getCommonAttributesAtLocationRange(range)
+      else
+        {}
+
     @notifyDelegateOfCurrentAttributesChange()
 
   notifyDelegateOfCurrentAttributesChange: ->
@@ -221,14 +225,15 @@ class Trix.Composition
         break
 
   expandLocationRangeAroundCommonAttribute: (attributeName) ->
-    [left, right] = @documentView.getSelectedRange()
-    originalLeft = left
-    length = @text.getLength()
+    range = @getLocationRange()
 
-    left-- while left > 0 and @text.getCommonAttributesAtRange([left - 1, right])[attributeName]
-    right++ while right < length and @text.getCommonAttributesAtRange([originalLeft, right + 1])[attributeName]
+    if range.isInSingleIndex()
+      {index} = range
+      text = @document.getTextAtIndex(index)
+      textRange = [range.start.position, range.end.position]
+      [left, right] = text.getExpandedRangeForAttributeAtRange(attributeName, textRange)
 
-    @documentView.setSelectedRange([left, right])
+      @setLocationRange({position: left, index}, {position: right, index})
 
   # Private
 

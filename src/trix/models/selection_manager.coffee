@@ -11,7 +11,6 @@ class Trix.SelectionManager
     @selectionObserver.delegate = this
 
   selectionDidChange: (domRange) ->
-    delete @currentLocationRange
     @updateCurrentLocationRange(domRange)
     @delegate?.locationDidChange?(@currentLocationRange)
 
@@ -26,6 +25,7 @@ class Trix.SelectionManager
     unless @lockedLocationRange?
       locationRange = Trix.LocationRange.create(locationRangeOrStart, end)
       @setDOMRange(locationRange)
+      @updateCurrentLocationRange()
 
   lock: ->
     @lockedLocationRange ?= @getLocationRange()
@@ -104,6 +104,7 @@ class Trix.SelectionManager
   # Private
 
   createLocationRangeFromDOMRange: (range) ->
+    return unless range?
     if range.collapsed
       if Trix.DOM.within(@element, range.endContainer)
         start = @findLocationRangeAttributesFromContainerAtOffset(range.endContainer, range.endOffset)

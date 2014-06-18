@@ -148,6 +148,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   thawSelection: ->
     if @selectionFrozen
-      @selectionManager.unlock()
       @composition.thawSelection()
+      @selectionManager.unlock()
       delete @selectionFrozen
