@@ -37,18 +37,15 @@ class Trix.Composition
 
     {index, position} = range.start
     position += text.getLength() if updatePosition
-    @setLocationRange(new Trix.LocationRange {index, position})
+    @setLocationRange({index, position})
 
   insertDocument: (document) ->
     range = @getLocationRange()
     @document.insertDocumentAtLocationRange(document, range)
 
-    blockLength = document.blockList.blocks.length
-    lastText = document.blockList.getBlockAtIndex(blockLength - 1).text
-
-    index = range.index + blockLength
-    position = lastText.getLength()
-    @setLocationRange(new Trix.LocationRange {index, position})
+    index = range.index + (blockLength = document.blockList.blocks.length)
+    position = document.getBlockAtIndex(blockLength - 1).text.getLength()
+    @setLocationRange({index, position})
 
   insertString: (string, options) ->
     text = Trix.Text.textForStringWithAttributes(string, @currentAttributes)
@@ -227,8 +224,8 @@ class Trix.Composition
   getLocationRange: ->
     @selectionDelegate?.getLocationRange?()
 
-  setLocationRange: (range) ->
-    @selectionDelegate?.setLocationRange?(range)
+  setLocationRange: (locationRangeOrStart, end) ->
+    @selectionDelegate?.setLocationRange?(locationRangeOrStart, end)
 
   requestPositionAtPoint: (point) ->
     if range = @selectionDelegate?.getRangeOfCompositionAtPoint?(this, point)

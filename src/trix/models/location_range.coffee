@@ -1,4 +1,10 @@
 class Trix.LocationRange
+  @create: (start, end) ->
+    if start instanceof this
+      start
+    else
+      new this start, end
+
   constructor: (@start, @end) ->
     @end ?= @start
     {@index, @position} = @start
