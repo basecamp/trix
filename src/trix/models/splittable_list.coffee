@@ -109,6 +109,16 @@ class Trix.SplittableList extends Trix.Object
       currentPosition = nextPosition
     index: null, offset: null
 
+  findPositionAtIndexAndOffset: (index, offset) ->
+    position = 0
+    for object, currentIndex in @objects
+      if currentIndex < index
+        position += object.getLength()
+      else if currentIndex is index
+        position += offset
+        break
+    position
+
   getLength: ->
     length = 0
     length += object.getLength() for object in @objects
