@@ -27,3 +27,13 @@ class Trix.Block extends Trix.Object
   toJSON: ->
     text: @text
     attributes: @getAttributes()
+
+  # Splittable
+
+  getLength: ->
+    @text.getLength()
+
+  canBeConsolidatedWith: (block) ->
+    false
+
+  splitAtOffset: (offset) ->

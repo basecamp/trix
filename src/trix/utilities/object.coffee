@@ -7,6 +7,9 @@ class Trix.Object
   constructor: ->
     @id = ++id
 
+  hasSameConstructorAs: (object) ->
+    @constructor is object?.constructor
+
   isEqualTo: (object) ->
     this is object
 

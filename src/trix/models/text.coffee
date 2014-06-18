@@ -1,7 +1,7 @@
 #= require trix/utilities/object
 #= require trix/utilities/hash
 #= require trix/models/piece
-#= require trix/models/piece_list
+#= require trix/models/splittable_list
 
 class Trix.Text extends Trix.Object
   @textForAttachmentWithAttributes: (attachment, attributes) ->
@@ -22,7 +22,7 @@ class Trix.Text extends Trix.Object
 
   constructor: (pieces = []) ->
     super
-    @pieceList = new Trix.PieceList pieces
+    @pieceList = new Trix.SplittableList pieces
 
   copy: ->
     @copyWithPieceList @pieceList
@@ -34,7 +34,7 @@ class Trix.Text extends Trix.Object
     @insertTextAtPosition(text, @getLength())
 
   insertTextAtPosition: (text, position) ->
-    @copyWithPieceList @pieceList.insertPieceListAtPosition(text.pieceList, position)
+    @copyWithPieceList @pieceList.insertSplittableListAtPosition(text.pieceList, position)
 
   removeTextAtRange: (range) ->
     @copyWithPieceList @pieceList.removePiecesInRange(range)
@@ -55,38 +55,50 @@ class Trix.Text extends Trix.Object
     @addAttributesAtRange(attributes, range)
 
   addAttributesAtRange: (attributes, range) ->
-    @copyWithPieceList @pieceList.transformPiecesInRange range, (piece) ->
+    @copyWithPieceList @pieceList.transformObjectsInRange range, (piece) ->
       piece.copyWithAdditionalAttributes(attributes)
 
   removeAttributeAtRange: (attribute, range) ->
-    @copyWithPieceList @pieceList.transformPiecesInRange range, (piece) ->
+    @copyWithPieceList @pieceList.transformObjectsInRange range, (piece) ->
       piece.copyWithoutAttribute(attribute)
 
   setAttributesAtRange: (attributes, range) ->
-    @copyWithPieceList @pieceList.transformPiecesInRange range, (piece) ->
+    @copyWithPieceList @pieceList.transformObjectsInRange range, (piece) ->
       piece.copyWithAttributes(attributes)
 
   getAttributesAtPosition: (position) ->
-    @pieceList.getPieceAtPosition(position)?.getAttributes() ? {}
+    @pieceList.getObjectAtPosition(position)?.getAttributes() ? {}
+
+  getCommonAttributes: ->
+    objects = (piece.getAttributes() for piece in @pieceList.toArray())
+    Trix.Hash.fromCommonAttributesOfObjects(objects).toObject()
 
   getCommonAttributesAtRange: (range) ->
-    @pieceList.getPieceListInRange(range)?.getCommonAttributes() ? {}
+    @getTextAtRange(range).getCommonAttributes() ? {}
 
   getTextAtRange: (range) ->
-    @copyWithPieceList @pieceList.getPieceListInRange(range)
+    @copyWithPieceList @pieceList.getSplittableListInRange(range)
 
   getStringAtRange: (range) ->
-    @pieceList.getPieceListInRange(range).toString()
+    @pieceList.getSplittableListInRange(range).toString()
 
   getAttachments: ->
-    @pieceList.getAttachments()
+    piece.attachment for piece in @pieceList.toArray() when piece.attachment?
+
+  getAttachmentAndPositionById: (attachmentId) ->
+    position = 0
+    for piece in @pieceList.toArray()
+      if piece.attachment?.id is attachmentId
+        return { attachment: piece.attachment, position }
+      position += piece.length
+    attachment: null, position: null
 
   getAttachmentById: (attachmentId) ->
-    {attachment, position} = @pieceList.getAttachmentAndPositionById(attachmentId)
+    {attachment, position} = @getAttachmentAndPositionById(attachmentId)
     attachment
 
   getRangeOfAttachment: (attachment) ->
-    {attachment, position} = @pieceList.getAttachmentAndPositionById(attachment.id)
+    {attachment, position} = @getAttachmentAndPositionById(attachment.id)
     [position, position + 1] if attachment?
 
   resizeAttachmentToDimensions: (attachment, {width, height} = {}) ->
@@ -103,7 +115,7 @@ class Trix.Text extends Trix.Object
 
   eachRun: (callback) ->
     position = 0
-    @pieceList.eachPiece (piece) ->
+    @pieceList.eachObject (piece) ->
       id = piece.id
       attributes = piece.getAttributes()
       run = {id, attributes, position}

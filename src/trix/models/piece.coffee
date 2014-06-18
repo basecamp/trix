@@ -53,39 +53,18 @@ class Trix.Piece extends Trix.Object
 
     attributes.toObject()
 
-  isSameKindAsPiece: (piece) ->
-    piece? and @constructor is piece.constructor
-
   hasSameStringAsPiece: (piece) ->
     piece? and @string is piece.string
 
   hasSameAttributesAsPiece: (piece) ->
     piece? and (@attributes is piece.attributes or @attributes.isEqualTo(piece.attributes))
 
-  canBeConsolidatedWithPiece: (piece) ->
-    piece? and not (@attachment or piece.attachment) and @hasSameAttributesAsPiece(piece)
-
   isEqualTo: (piece) ->
     super or (
-      @isSameKindAsPiece(piece) and
+      @hasSameConstructorAs(piece) and
       @hasSameStringAsPiece(piece) and
       @hasSameAttributesAsPiece(piece)
     )
-
-  append: (piece) ->
-    new Trix.Piece @string + piece, @attributes
-
-  splitAtOffset: (offset) ->
-    if offset is 0
-      left = null
-      right = this
-    else if offset is @length
-      left = this
-      right = null
-    else
-      left = new Trix.Piece @string.slice(0, offset), @attributes
-      right = new Trix.Piece @string.slice(offset), @attributes
-    [left, right]
 
   toString: ->
     @string
@@ -101,3 +80,26 @@ class Trix.Piece extends Trix.Object
   contentsForInspection: ->
     string: JSON.stringify(@string)
     attributes: @attributes.inspect()
+
+  # Splittable
+
+  getLength: ->
+    @length
+
+  canBeConsolidatedWith: (piece) ->
+    piece? and not (@attachment or piece.attachment) and @hasSameAttributesAsPiece(piece)
+
+  consolidateWith: (piece) ->
+    new Trix.Piece @string + piece, @attributes
+
+  splitAtOffset: (offset) ->
+    if offset is 0
+      left = null
+      right = this
+    else if offset is @length
+      left = this
+      right = null
+    else
+      left = new @constructor @string.slice(0, offset), @attributes
+      right = new @constructor @string.slice(offset), @attributes
+    [left, right]
