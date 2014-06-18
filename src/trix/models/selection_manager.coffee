@@ -61,9 +61,8 @@ class Trix.SelectionManager
       @createLocationRangeFromDOMRange(domRange)
 
   getPointAtEndOfSelection: ->
-    selection = window.getSelection()
-    if selection.rangeCount > 0
-      rects = selection.getRangeAt(0).getClientRects()
+    if range = @getDOMRange()
+      rects = range.getClientRects()
       if rects.length > 0
         rect = rects[rects.length - 1]
 
