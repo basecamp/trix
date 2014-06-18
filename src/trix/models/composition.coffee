@@ -185,25 +185,9 @@ class Trix.Composition
     @notifyDelegateOfCurrentAttributesChange()
 
   updateCurrentAttributes: ->
-    if range = @getLocationRange()
-      @currentAttributes = @document.getCommonAttributesAtLocationRange(range)
-
-    else if range = @getLocationRange()
-      block = @document.getBlockAtIndex(range.index)
-      @currentAttributes = block.getAttributes()
-
-      attributes = block.text.getAttributesAtPosition(range.position)
-      attributesLeft = block.text.getAttributesAtPosition(range.position - 1)
-
-      for key, value of attributesLeft
-        if value is attributes[key] or key in inheritableAttributes()
-          @currentAttributes[key] = value
-
+    range = @getLocationRange()
+    @currentAttributes = @document.getCommonAttributesAtLocationRange(range)
     @notifyDelegateOfCurrentAttributesChange()
-
-  inheritableAttributes = ->
-    for key, value of Trix.attributes when value.inheritable
-      key
 
   notifyDelegateOfCurrentAttributesChange: ->
     @delegate?.compositionDidChangeCurrentAttributes?(this, @currentAttributes)

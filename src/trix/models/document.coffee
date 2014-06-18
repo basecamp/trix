@@ -93,16 +93,33 @@ class Trix.Document
     @delegate?.didEditDocument?(this)
 
   getCommonAttributesAtLocationRange: (range) ->
-    textAttributes = []
-    blockAttributes = []
+    if range.isCollapsed()
+      @getCommonAttributesAtLocation(range.start)
+    else
+      textAttributes = []
+      blockAttributes = []
 
-    @eachBlockAtLocationRange range, (block, textRange) ->
-      textAttributes.push(block.text.getCommonAttributesAtRange(textRange))
-      blockAttributes.push(block.getAttributes())
+      @eachBlockAtLocationRange range, (block, textRange) ->
+        textAttributes.push(block.text.getCommonAttributesAtRange(textRange))
+        blockAttributes.push(block.getAttributes())
 
-    Trix.Hash.fromCommonAttributesOfObjects(textAttributes)
-      .merge(Trix.Hash.fromCommonAttributesOfObjects(blockAttributes))
-      .toObject()
+      Trix.Hash.fromCommonAttributesOfObjects(textAttributes)
+        .merge(Trix.Hash.fromCommonAttributesOfObjects(blockAttributes))
+        .toObject()
+
+  getCommonAttributesAtLocation: ({index, position}) ->
+    block = @getBlockAtIndex(index)
+    commonAttributes = block.getAttributes()
+
+    attributes = block.text.getAttributesAtPosition(position)
+    attributesLeft = block.text.getAttributesAtPosition(position - 1)
+    inheritableAttributes = (key for key, value of Trix.attributes when value.inheritable)
+
+    for key, value of attributesLeft
+      if value is attributes[key] or key in inheritableAttributes
+        commonAttributes[key] = value
+
+    commonAttributes
 
   getAttachments: ->
     attachments = []
