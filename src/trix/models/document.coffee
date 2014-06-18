@@ -13,6 +13,9 @@ class Trix.Document extends Trix.Object
     @editDepth = 0
     @blockList = new Trix.SplittableList blocks
 
+  copy: ->
+    new @constructor @blockList.toArray()
+
   edit = (fn) -> ->
     @beginEditing()
     fn.apply(this, arguments)
@@ -67,7 +70,11 @@ class Trix.Document extends Trix.Object
       block.copyWithText(block.text.insertTextAtPosition(text, location.position))
 
   removeTextAtLocationRange: edit (locationRange) ->
-    # FIXME
+    if locationRange[0].index is locationRange[1].index
+      @blockList = @blockList.editObjectAtIndex locationRange[0].index, (block) ->
+        range = [locationRange[0].position, locationRange[1].position]
+        text = block.text.removeTextAtRange(range)
+        block.copyWithText(text)
 
   replaceTextAtLocationRange: edit (text, range) ->
     @removeTextAtLocationRange(range)
@@ -131,8 +138,10 @@ class Trix.Document extends Trix.Object
       @blockList = @blockList.editObjectAtIndex index, (block) ->
         block.copyWithText(text.resizeAttachmentToDimensions(attachment, dimensions))
 
-  copy: ->
-    new @constructor @blockList.toArray()
+  rangeFromLocationRange: (locationRange) ->
+    leftPosition = @blockList.findPositionAtIndexAndOffset(locationRange[0].index, locationRange[0].position)
+    rightPosition = @blockList.findPositionAtIndexAndOffset(locationRange[1].index, locationRange[1].position)
+    [leftPosition, rightPosition]
 
   toJSON: ->
     @blockList.toJSON()

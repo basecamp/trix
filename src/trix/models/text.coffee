@@ -37,7 +37,7 @@ class Trix.Text extends Trix.Object
     @copyWithPieceList @pieceList.insertSplittableListAtPosition(text.pieceList, position)
 
   removeTextAtRange: (range) ->
-    @copyWithPieceList @pieceList.removePiecesInRange(range)
+    @copyWithPieceList @pieceList.removeObjectsInRange(range)
 
   replaceTextAtRange: (text, range) ->
     @removeTextAtRange(range).insertTextAtPosition(text, range[0])
