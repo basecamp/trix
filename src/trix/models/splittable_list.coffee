@@ -5,6 +5,9 @@ class Trix.SplittableList extends Trix.Object
     super
     @objects = objects.slice(0)
 
+  copy: ->
+    new @constructor @objects
+
   eachObject: (callback) ->
     callback(object, index) for object, index in @objects
 
@@ -21,6 +24,14 @@ class Trix.SplittableList extends Trix.Object
   insertSplittableListAtPosition: (splittableList, position) ->
     [objects, index] = @splitObjectAtPosition(position)
     new @constructor(objects).insertSplittableListAtIndex(splittableList, index)
+
+  editObjectAtIndex: (index, callback) ->
+    @replaceObjectAtIndex(callback(@objects[index]), index)
+
+  replaceObjectAtIndex: (object, index) ->
+    objects = @objects.slice(0)
+    objects.splice(index, 1, object)
+    new @constructor objects
 
   removeObjectAtIndex: (index) ->
     objects = @objects.slice(0)

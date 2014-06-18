@@ -1,6 +1,6 @@
 #= require trix/utilities/object
 #= require trix/models/block
-#= require trix/models/block_list
+#= require trix/models/splittable_list
 
 class Trix.Document extends Trix.Object
   @fromJSON: (documentJSON) ->
@@ -11,7 +11,7 @@ class Trix.Document extends Trix.Object
   constructor: (blocks = []) ->
     super
     @editDepth = 0
-    @blockList = new Trix.BlockList blocks
+    @blockList = new Trix.SplittableList blocks
 
   edit = (fn) -> ->
     @beginEditing()
@@ -33,16 +33,16 @@ class Trix.Document extends Trix.Object
     @blockList = document.blockList.copy()
 
   getBlockAtIndex: (index) ->
-    @blockList.getBlockAtIndex(index)
+    @blockList.getObjectAtIndex(index)
 
   getTextAtIndex: (index) ->
     @getBlockAtIndex(index)?.text
 
   findIndexForText: (text) ->
-    return index for block, index in @blockList.blocks when block.text is text
+    return index for block, index in @blockList.toArray() when block.text is text
 
   eachBlock: (callback) ->
-    callback(block, index) for block, index in @blockList.blocks
+    callback(block, index) for block, index in @blockList.toArray()
 
   eachBlockInLocationRange: ([startLocation, endLocation], callback) ->
     if startLocation.index is endLocation.index
@@ -63,7 +63,7 @@ class Trix.Document extends Trix.Object
         callback(block, range, index)
 
   insertTextAtLocation: edit (text, location) ->
-    @blockList.editBlockAtIndex location.index, (block) ->
+    @blockList = @blockList.editObjectAtIndex location.index, (block) ->
       block.copyWithText(block.text.insertTextAtPosition(text, location.position))
 
   removeTextAtLocationRange: edit (locationRange) ->
@@ -76,24 +76,20 @@ class Trix.Document extends Trix.Object
   addAttributeAtLocationRange: edit (attribute, value, locationRange) ->
     @eachBlockInLocationRange locationRange, (block, range, index) =>
       if Trix.attributes[attribute]?.block
-        @blockList.editBlockAtIndex index, ->
+        @blockList = @blockList.editObjectAtIndex index, ->
           block.addAttribute(attribute, value)
       else if range[0] isnt range[1]
-        @blockList.editBlockAtIndex index, ->
+        @blockList = @blockList.editObjectAtIndex index, ->
           block.copyWithText(block.text.addAttributeAtRange(attribute, value, range))
-      else
-        block
 
   removeAttributeAtLocationRange: edit (attribute, locationRange) ->
     @eachBlockInLocationRange locationRange, (block, range, index) =>
       if Trix.attributes[attribute]?.block
-        @blockList.editBlockAtIndex index, ->
+        @blockList = @blockList.editObjectAtIndex index, ->
           block.removeAttribute(attribute)
       else if range[0] isnt range[1]
-        @blockList.editBlockAtIndex index, ->
+        @blockList = @blockList.editObjectAtIndex index, ->
           block.copyWithText(block.text.removeAttributeAtRange(attribute, range))
-      else
-        block
 
   getCommonAttributesAtLocationRange: (locationRange) ->
     textAttributes = []
@@ -109,12 +105,12 @@ class Trix.Document extends Trix.Object
 
   getAttachments: ->
     attachments = []
-    for {text} in @blockList.blocks
+    @blockList.eachObject ({text}) ->
       attachments = attachments.concat(text.getAttachments())
     attachments
 
   getTextAndRangeOfAttachment: (attachment) ->
-    for {text} in @blockList.blocks
+    @blockList.eachObject ({text}) ->
       if range = text.getRangeOfAttachment(attachment)
         return {text, range}
 
@@ -125,14 +121,14 @@ class Trix.Document extends Trix.Object
       [{index, position: range[0]}, {index, position: range[1]}]
 
   getAttachmentById: (id) ->
-    for {text} in @blockList.blocks
+    @blockList.eachObject ({text}) ->
       if attachment = text.getAttachmentById(id)
         return attachment
 
   resizeAttachmentToDimensions: (attachment) ->
     {text} = @getTextAndRangeOfAttachment(attachment)
     if index = @findIndexForText(text)
-      @blockList.editBlockAtIndex index, (block) ->
+      @blockList = @blockList.editObjectAtIndex index, (block) ->
         block.copyWithText(text.resizeAttachmentToDimensions(attachment, dimensions))
 
   copy: ->

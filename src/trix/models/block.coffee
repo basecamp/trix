@@ -37,3 +37,13 @@ class Trix.Block extends Trix.Object
     false
 
   splitAtOffset: (offset) ->
+    if offset is 0
+      left = null
+      right = this
+    else if offset is @getLength()
+      left = this
+      right = null
+    else
+      left = @copyWithText(@text.getTextAtRange([0, offset - 1]))
+      right = @copyWithText(@text.getTextAtRange([offset, @getLength()]))
+    [left, right]
