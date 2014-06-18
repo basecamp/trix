@@ -103,7 +103,7 @@ class Trix.SplittableList extends Trix.Object
   findIndexAndOffsetAtPosition: (position) ->
     currentPosition = 0
     for object, index in @objects
-      nextPosition = currentPosition + object.length
+      nextPosition = currentPosition + object.getLength()
       if currentPosition <= position < nextPosition
         return index: index, offset: position - currentPosition
       currentPosition = nextPosition
@@ -111,7 +111,7 @@ class Trix.SplittableList extends Trix.Object
 
   getLength: ->
     length = 0
-    length += object.length for object in @objects
+    length += object.getLength() for object in @objects
     length
 
   toString: ->
