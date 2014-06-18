@@ -116,8 +116,8 @@ class Trix.Text extends Trix.Object
       callback(run)
       position += piece.length
 
-  inspect: ->
-    @pieceList.inspect()
+  contentsForInspection: ->
+    pieceList: @pieceList.inspect()
 
   toString: ->
     @pieceList.toString()

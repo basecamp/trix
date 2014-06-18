@@ -137,10 +137,8 @@ class Trix.PieceList extends Trix.Object
     result = false for piece, index in left when result and not piece.isEqualTo(right[index])
     result
 
-  inspect: ->
-    result = []
-    result.push(piece.inspect()) for piece in @pieces
-    "#<PieceList pieces=#{result.join(", ")}>"
+  contentsForInspection: ->
+    pieces: "[#{(piece.inspect() for piece in @pieces).join(", ")}]"
 
   startOfRange = (range) ->
     range[0]

@@ -98,5 +98,6 @@ class Trix.Piece extends Trix.Object
     else
       {@string, attributes}
 
-  inspect: ->
-    "#<Piece string=#{JSON.stringify(@string)}, attributes=#{@attributes.inspect()}>"
+  contentsForInspection: ->
+    string: JSON.stringify(@string)
+    attributes: @attributes.inspect()
