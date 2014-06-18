@@ -90,7 +90,7 @@ class Trix.Piece extends Trix.Object
     piece? and not (@attachment or piece.attachment) and @hasSameAttributesAsPiece(piece)
 
   consolidateWith: (piece) ->
-    new Trix.Piece @string + piece, @attributes
+    new @constructor @string + piece.string, @attributes
 
   splitAtOffset: (offset) ->
     if offset is 0
