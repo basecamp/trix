@@ -55,7 +55,7 @@ class Trix.SelectionManager
       range = document.body.createTextRange()
       range.moveToPoint(pageX, pageY)
       range.select()
-      return @getSelectedRange()?[0]
+      return @updateCurrentLocationRange()
 
     if domRange
       @createLocationRangeFromDOMRange(domRange)
