@@ -3,18 +3,11 @@ class Trix.LocationRange
     @end ?= @start
     {@index, @position} = @start
 
-  isRange: ->
-    @start? and @start isnt @end
-
-  isRangeWithinIndex: ->
-    @isRange() and @start.index is @end.index
-
   isCollapsed: ->
-    not @isRange()
+    @start is @end
 
-  getPositionRange: ->
-    if @isRangeWithinIndex()
-      [@start.position, @end.position]
+  isInSingleIndex: ->
+    @start.index is @end.index
 
   eachIndex: (callback) ->
     callback(index) for index in [@start.index..@end.index]

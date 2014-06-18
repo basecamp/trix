@@ -10,8 +10,6 @@ class Trix.SelectionManager
     @selectionObserver = new Trix.SelectionObserver
     @selectionObserver.delegate = this
 
-    @currentLocationRange = {}
-
   selectionDidChange: (domRange) ->
     delete @currentLocationRange
     @updateCurrentLocationRange(domRange)

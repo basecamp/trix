@@ -27,9 +27,10 @@ class Trix.Document
     callback(text, index) for text, index in @blockList.blocks
 
   eachBlockAtLocationRange: (range, callback) ->
-    if range.isRangeWithinIndex()
+    if range.isInSingleIndex()
       block = @getBlockAtIndex(range.index)
-      callback(block, range.getPositionRange())
+      textRange = [range.start.position, range.end.position]
+      callback(block, textRange)
     else
       range.eachIndex (index) =>
         block = @getBlockAtIndex(index)
@@ -45,11 +46,11 @@ class Trix.Document
         callback(block, textRange)
 
   insertTextAtLocationRange: (text, range) ->
-    @removeTextAtLocationRange(range) if range.isRange()
+    @removeTextAtLocationRange(range) unless range.isCollapsed()
     @getTextAtIndex(range.index).insertTextAtPosition(text, range.position)
 
   insertDocumentAtLocationRange: (document, range) ->
-    @removeTextAtLocationRange(range) if range.isRange()
+    @removeTextAtLocationRange(range) unless range.isCollapsed()
     @blockList.insertBlockListAtLocationRange(document.blockList, range)
     @delegate?.didEditDocument?(this)
 
