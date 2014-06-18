@@ -56,7 +56,7 @@ class Trix.Composition
     @insertDocument(document)
 
   replaceHTML: (html) ->
-    @preserveSelectionEndPoint =>
+    @preserveSelection =>
       document = Trix.Document.fromHTML(html)
       @document.replaceDocument(document)
 
@@ -227,14 +227,8 @@ class Trix.Composition
   setLocationRange: (locationRangeOrStart, end) ->
     @selectionDelegate?.setLocationRange?(locationRangeOrStart, end)
 
-  requestPositionAtPoint: (point) ->
-    if range = @selectionDelegate?.getRangeOfCompositionAtPoint?(this, point)
-      @requestSelectedRange(range)
-
-  preserveSelectionEndPoint: (block) ->
-    point = @selectionDelegate?.getPointAtEndOfCompositionSelection?(this)
-    block()
-    @requestPositionAtPoint(point) if point?
+  preserveSelection: (block) ->
+    @selectionDelegate?.preserveSelection?(block) ? block()
 
   expandSelectionForEditing: ->
     for key, value of Trix.attributes when value.parent

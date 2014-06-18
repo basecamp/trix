@@ -35,6 +35,13 @@ class Trix.SelectionManager
       delete @lockedLocationRange
       lockedLocationRange
 
+  preserveSelection: (block) ->
+    point = @getPointAtEndOfSelection()
+    block()
+    range = @getLocationRangeAtPoint(point)
+    @setDOMRange(range)
+    range
+
   getLocationRangeAtPoint: ([pageX, pageY]) ->
     if document.caretPositionFromPoint
       {offsetNode, offset} = document.caretPositionFromPoint(pageX, pageY)
@@ -51,8 +58,7 @@ class Trix.SelectionManager
       return @getSelectedRange()?[0]
 
     if domRange
-      if range = @findRangeFromDOMRange(domRange)
-        range[0]
+      @createLocationRangeFromDOMRange(domRange)
 
   getPointAtEndOfSelection: ->
     selection = window.getSelection()
