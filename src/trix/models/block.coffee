@@ -1,4 +1,4 @@
-#= require trix/models/object
+#= require trix/utilities/object
 
 class Trix.Block extends Trix.Object
   @fromJSON: (blockJSON) ->

@@ -1,7 +1,7 @@
-#= require trix/models/object
+#= require trix/utilities/object
+#= require trix/utilities/hash
 #= require trix/models/piece
 #= require trix/models/piece_list
-#= require trix/utilities/hash
 
 class Trix.Text extends Trix.Object
   @textForAttachmentWithAttributes: (attachment, attributes) ->

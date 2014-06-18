@@ -1,4 +1,4 @@
-#= require trix/models/object
+#= require trix/utilities/object
 #= require trix/models/block
 #= require trix/models/block_list
 

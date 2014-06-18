@@ -1,4 +1,4 @@
-#= require trix/models/object
+#= require trix/utilities/object
 
 class Trix.PieceList extends Trix.Object
   constructor: (pieces = []) ->
