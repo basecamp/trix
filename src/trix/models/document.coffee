@@ -155,7 +155,7 @@ class Trix.Document extends Trix.Object
     {text, range} = @getTextAndRangeOfAttachment(attachment) ? {}
     if text
       index = @findIndexForText(text)
-      [{index, position: range[0]}, {index, position: range[1]}]
+      new Trix.LocationRange {index, position: range[0]}, {index, position: range[1]}
 
   getAttachmentById: (id) ->
     for {text} in @blockList.toArray()
