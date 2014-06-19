@@ -157,8 +157,10 @@ class Trix.Document extends Trix.Object
       index = @findIndexForText(text)
       [{index, position: range[0]}, {index, position: range[1]}]
 
-  getAttachmentAtIndexById: (index, id) ->
-    @getTextAtIndex(index).getAttachmentById(id)
+  getAttachmentById: (id) ->
+    for {text} in @blockList.toArray()
+      if attachment = text.getAttachmentById(id)
+        return attachment
 
   resizeAttachmentToDimensions: edit (attachment, dimensions) ->
     {text} = @getTextAndRangeOfAttachment(attachment)

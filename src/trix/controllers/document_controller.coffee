@@ -32,7 +32,7 @@ class Trix.DocumentController
   # Attachment controller management
 
   installAttachmentController: (element) ->
-    attachment = @document.getAttachmentAtIndexById(element.trixIndex, element.trixAttachmentId)
+    attachment = @document.getAttachmentById(element.trixAttachmentId)
     unless @attachmentController?.attachment is attachment
       @uninstallAttachmentController()
       @attachmentController = Trix.AttachmentController.create(attachment, element, @element)
