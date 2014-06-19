@@ -93,6 +93,7 @@ class Trix.TextView
     element = attachment.element
     element.trixPosition = position
     element.trixLength = 1
+    element.trixIndex = @blockIndex
     element.trixAttachmentId = attachment.id
     element
 
