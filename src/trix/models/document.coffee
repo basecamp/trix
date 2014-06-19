@@ -111,10 +111,6 @@ class Trix.Document extends Trix.Object
         @blockList = @blockList.editObjectAtIndex index, ->
           block.copyWithText(block.text.removeAttributeAtRange(attribute, range))
 
-  replaceDocument: (document) ->
-    @blockList.replaceBlockList(document.blockList)
-    @delegate?.didEditDocument?(this)
-
   getCommonAttributesAtLocationRange: (locationRange) ->
     if locationRange.isCollapsed()
       @getCommonAttributesAtLocation(locationRange.start)
