@@ -44,9 +44,6 @@ class Trix.Document extends Trix.Object
   getTextAtIndex: (index) ->
     @getBlockAtIndex(index)?.text
 
-  findIndexForText: (text) ->
-    return index for block, index in @blockList.toArray() when block.text is text
-
   eachBlock: (callback) ->
     callback(block, index) for block, index in @blockList.toArray()
 
@@ -146,16 +143,10 @@ class Trix.Document extends Trix.Object
       attachments = attachments.concat(text.getAttachments())
     attachments
 
-  getTextAndRangeOfAttachment: (attachment) ->
-    for {text} in @blockList.toArray()
-      if range = text.getRangeOfAttachment(attachment)
-        return {text, range}
-
   getLocationRangeOfAttachment: (attachment) ->
-    {text, range} = @getTextAndRangeOfAttachment(attachment) ? {}
-    if text
-      index = @findIndexForText(text)
-      new Trix.LocationRange {index, position: range[0]}, {index, position: range[1]}
+    for {text}, index in @blockList.toArray()
+      if range = text.getRangeOfAttachment(attachment)
+        return new Trix.LocationRange {index, position: range[0]}, {index, position: range[1]}
 
   getAttachmentById: (id) ->
     for {text} in @blockList.toArray()
@@ -163,9 +154,9 @@ class Trix.Document extends Trix.Object
         return attachment
 
   resizeAttachmentToDimensions: edit (attachment, dimensions) ->
-    {text} = @getTextAndRangeOfAttachment(attachment)
-    index = @findIndexForText(text)
-    @blockList = @blockList.editObjectAtIndex index, (block) ->
+    locationRange = @getLocationRangeOfAttachment(attachment)
+    text = @getTextAtIndex(locationRange.index)
+    @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
       block.copyWithText(text.resizeAttachmentToDimensions(attachment, dimensions))
 
   rangeFromLocationRange: (locationRange) ->
