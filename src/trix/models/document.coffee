@@ -147,7 +147,7 @@ class Trix.Document extends Trix.Object
     attachments
 
   getTextAndRangeOfAttachment: (attachment) ->
-    @blockList.eachObject ({text}) ->
+    for {text} in @blockList.toArray()
       if range = text.getRangeOfAttachment(attachment)
         return {text, range}
 
@@ -160,11 +160,11 @@ class Trix.Document extends Trix.Object
   getAttachmentAtIndexById: (index, id) ->
     @getTextAtIndex(index).getAttachmentById(id)
 
-  resizeAttachmentToDimensions: (attachment) ->
+  resizeAttachmentToDimensions: edit (attachment, dimensions) ->
     {text} = @getTextAndRangeOfAttachment(attachment)
-    if index = @findIndexForText(text)
-      @blockList = @blockList.editObjectAtIndex index, (block) ->
-        block.copyWithText(text.resizeAttachmentToDimensions(attachment, dimensions))
+    index = @findIndexForText(text)
+    @blockList = @blockList.editObjectAtIndex index, (block) ->
+      block.copyWithText(text.resizeAttachmentToDimensions(attachment, dimensions))
 
   rangeFromLocationRange: (locationRange) ->
     leftPosition = @blockList.findPositionAtIndexAndOffset(locationRange.start.index, locationRange.start.position)
