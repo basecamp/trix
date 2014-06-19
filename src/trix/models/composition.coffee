@@ -207,7 +207,7 @@ class Trix.Composition
   hasFrozenSelection: ->
     @hasCurrentAttribute("frozen")
 
-  # LocationRange
+  # Location range and selection
 
   getLocationRange: ->
     @selectionDelegate?.getLocationRange?()
