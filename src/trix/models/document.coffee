@@ -94,7 +94,7 @@ class Trix.Document extends Trix.Object
     @insertTextAtLocationRange(text, locationRange)
 
   addAttributeAtLocationRange: edit (attribute, value, locationRange) ->
-    @eachBlockInLocationRange locationRange, (block, range, index) =>
+    @eachBlockAtLocationRange locationRange, (block, range, index) =>
       if Trix.attributes[attribute]?.block
         @blockList = @blockList.editObjectAtIndex index, ->
           block.addAttribute(attribute, value)
@@ -103,7 +103,7 @@ class Trix.Document extends Trix.Object
           block.copyWithText(block.text.addAttributeAtRange(attribute, value, range))
 
   removeAttributeAtLocationRange: edit (attribute, locationRange) ->
-    @eachBlockInLocationRange locationRange, (block, range, index) =>
+    @eachBlockAtLocationRange locationRange, (block, range, index) =>
       if Trix.attributes[attribute]?.block
         @blockList = @blockList.editObjectAtIndex index, ->
           block.removeAttribute(attribute)
