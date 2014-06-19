@@ -214,6 +214,9 @@ class Trix.Composition
   setLocationRange: (locationRangeOrStart, end) ->
     @selectionDelegate?.setLocationRange?(locationRangeOrStart, end)
 
+  setLocationRangeFromPoint: (point) ->
+    @selectionDelegate?.setLocationRangeFromPoint?(point)
+
   preserveSelection: (block) ->
     @selectionDelegate?.preserveSelection?(block) ? block()
 

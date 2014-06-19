@@ -20,6 +20,10 @@ class Trix.SelectionManager
       @setDOMRange(locationRange)
       @updateCurrentLocationRange()
 
+  setLocationRangeFromPoint: (point) ->
+    locationRange = @getLocationRangeAtPoint(point)
+    @setLocationRange(locationRange)
+
   lock: ->
     @lockedLocationRange ?= @getLocationRange()
 
