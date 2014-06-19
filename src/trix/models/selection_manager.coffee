@@ -72,18 +72,18 @@ class Trix.SelectionManager
     selection.addRange(range)
 
   createLocationRangeFromDOMRange: (range) ->
-    return unless range?
-    if range.collapsed
-      if Trix.DOM.within(@element, range.endContainer)
-        start = @findLocationRangeAttributesFromContainerAtOffset(range.endContainer, range.endOffset)
-        new Trix.LocationRange start
-    else
-      if Trix.DOM.within(@element, range.startContainer) and Trix.DOM.within(@element, range.endContainer)
-        start = @findLocationRangeAttributesFromContainerAtOffset(range.startContainer, range.startOffset)
-        end = @findLocationRangeAttributesFromContainerAtOffset(range.endContainer, range.endOffset)
-        new Trix.LocationRange start, end
+    return unless range? and @rangeWithinElement(range)
+    start = @findLocationFromContainerAtOffset(range.startContainer, range.startOffset)
+    end = @findLocationFromContainerAtOffset(range.endContainer, range.endOffset) unless range.collapsed
+    new Trix.LocationRange start, end
 
-  findLocationRangeAttributesFromContainerAtOffset: (container, offset) ->
+  rangeWithinElement: (range) ->
+    if range.collapsed
+      Trix.DOM.within(@element, range.startContainer)
+    else
+      Trix.DOM.within(@element, range.startContainer) and Trix.DOM.within(@element, range.endContainer)
+
+  findLocationFromContainerAtOffset: (container, offset) ->
     if container.nodeType is Node.TEXT_NODE
       index = container.trixIndex
       position = container.trixPosition + offset
