@@ -13,7 +13,7 @@ class Trix.DocumentController
     @focus() if @config.autofocus
 
   didFocus: =>
-    @delegate?.textControllerDidFocus?()
+    @delegate?.documentControllerDidFocus?()
 
   didClick: (event) =>
     if event.target.trixAttachmentId
@@ -22,9 +22,9 @@ class Trix.DocumentController
       @uninstallAttachmentController()
 
   render: ->
-    @delegate?.textControllerWillRender?()
+    @delegate?.documentControllerWillRender?()
     @documentView.render()
-    @delegate?.textControllerDidRender?()
+    @delegate?.documentControllerDidRender?()
 
   focus: ->
     @documentView.focus()
@@ -47,5 +47,5 @@ class Trix.DocumentController
     delete @attachmentController
 
   attachmentControllerDidResizeAttachmentToDimensions: (attachment, dimensions) ->
-    @delegate?.textControllerWillResizeAttachment?(attachment)
+    @delegate?.documentControllerWillResizeAttachment?(attachment)
     @document.resizeAttachmentToDimensions(attachment, dimensions)

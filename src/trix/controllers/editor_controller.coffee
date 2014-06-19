@@ -44,20 +44,20 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   # Text controller delegate
 
-  textControllerWillRender: ->
+  documentControllerWillRender: ->
     @mutationObserver.stop()
 
-  textControllerDidRender: ->
+  documentControllerDidRender: ->
     @mutationObserver.start()
     @delegate?.didRenderText?()
 
-  textControllerDidFocus: ->
+  documentControllerDidFocus: ->
     @toolbarController.hideDialog() if @dialogWantsFocus
 
-  textControllerDidChangeSelection: ->
+  documentControllerDidChangeSelection: ->
     @delegate?.didChangeSelection?()
 
-  textControllerWillResizeAttachment: ->
+  documentControllerWillResizeAttachment: ->
     @undoManager.recordUndoEntry("Resize", consolidatable: true)
 
   # Input controller delegate
