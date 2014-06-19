@@ -3,6 +3,7 @@
 #= require trix/utilities/dom
 #= require trix/utilities/helpers
 
+{DOM} = Trix
 {memoize} = Trix.Helpers
 
 class Trix.SelectionManager
@@ -79,9 +80,9 @@ class Trix.SelectionManager
 
   rangeWithinElement: (range) ->
     if range.collapsed
-      Trix.DOM.within(@element, range.startContainer)
+      DOM.within(@element, range.startContainer)
     else
-      Trix.DOM.within(@element, range.startContainer) and Trix.DOM.within(@element, range.endContainer)
+      DOM.within(@element, range.startContainer) and DOM.within(@element, range.endContainer)
 
   findLocationFromContainerAtOffset: (container, offset) ->
     if container.nodeType is Node.TEXT_NODE
@@ -93,7 +94,7 @@ class Trix.SelectionManager
         position = container.trixPosition
       else
         node = container.childNodes[offset - 1]
-        walker = Trix.DOM.createTreeWalker(node)
+        walker = DOM.createTreeWalker(node)
         walker.lastChild()
         index = walker.currentNode.trixIndex
         position = walker.currentNode.trixPosition + walker.currentNode.trixLength
@@ -115,7 +116,7 @@ class Trix.SelectionManager
     [container, offset]
 
   findNodeForLocationRange: (range) ->
-    walker = Trix.DOM.createTreeWalker(@element, null, nodeFilterForLocationRange)
+    walker = DOM.createTreeWalker(@element, null, nodeFilterForLocationRange)
     node = walker.currentNode
 
     while walker.nextNode()
