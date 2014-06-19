@@ -8,6 +8,9 @@ class Trix.Document extends Trix.Object
       Trix.Block.fromJSON blockJSON
     new this blocks
 
+  @fromHTML: (html) ->
+    Trix.HTMLParser.parse(html).getDocument()
+
   constructor: (blocks = []) ->
     super
     @editDepth = 0

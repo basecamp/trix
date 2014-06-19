@@ -53,7 +53,6 @@ class Trix.Composition
 
   replaceHTML: (html) ->
     @preserveSelectionEndPoint =>
-      # TODO
       document = Trix.Document.fromHTML(html)
       @document.replaceDocument(document)
 

@@ -17,9 +17,6 @@ class Trix.Text extends Trix.Object
       Trix.Piece.fromJSON pieceJSON
     new this pieces
 
-  @fromHTML: (html) ->
-    Trix.HTMLParser.parse(html).getText()
-
   constructor: (pieces = []) ->
     super
     @pieceList = new Trix.SplittableList pieces
