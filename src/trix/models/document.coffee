@@ -69,15 +69,15 @@ class Trix.Document extends Trix.Object
 
         callback(block, textRange, index)
 
-  insertTextAtLocationRange: edit (text, range) ->
-    @blockList = @blockList.editObjectAtIndex range.index, (block) ->
-      block.copyWithText(block.text.insertTextAtPosition(text, range.position))
+  insertTextAtLocationRange: edit (text, locationRange) ->
+    @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
+      block.copyWithText(block.text.insertTextAtPosition(text, locationRange.position))
 
   removeTextAtLocationRange: edit (locationRange) ->
     range = @rangeFromLocationRange(locationRange)
     blockList = @blockList.removeObjectsInRange(range)
 
-    leftIndex = locationRange[0].index
+    leftIndex = locationRange.index
     rightIndex = leftIndex + 1
     leftBlock = blockList.getObjectAtIndex(leftIndex)
     rightBlock = blockList.getObjectAtIndex(rightIndex)
@@ -89,9 +89,9 @@ class Trix.Document extends Trix.Object
 
     @blockList = blockList
 
-  replaceTextAtLocationRange: edit (text, range) ->
-    @removeTextAtLocationRange(range)
-    @insertTextAtLocation(text, range[0])
+  replaceTextAtLocationRange: edit (text, locationRange) ->
+    @removeTextAtLocationRange(locationRange)
+    @insertTextAtLocationRange(text, locationRange)
 
   addAttributeAtLocationRange: edit (attribute, value, locationRange) ->
     @eachBlockInLocationRange locationRange, (block, range, index) =>
@@ -115,14 +115,14 @@ class Trix.Document extends Trix.Object
     @blockList.replaceBlockList(document.blockList)
     @delegate?.didEditDocument?(this)
 
-  getCommonAttributesAtLocationRange: (range) ->
-    if range.isCollapsed()
-      @getCommonAttributesAtLocation(range.start)
+  getCommonAttributesAtLocationRange: (locationRange) ->
+    if locationRange.isCollapsed()
+      @getCommonAttributesAtLocation(locationRange.start)
     else
       textAttributes = []
       blockAttributes = []
 
-      @eachBlockAtLocationRange range, (block, textRange) ->
+      @eachBlockAtLocationRange locationRange, (block, textRange) ->
         textAttributes.push(block.text.getCommonAttributesAtRange(textRange))
         blockAttributes.push(block.getAttributes())
 
@@ -173,8 +173,8 @@ class Trix.Document extends Trix.Object
         block.copyWithText(text.resizeAttachmentToDimensions(attachment, dimensions))
 
   rangeFromLocationRange: (locationRange) ->
-    leftPosition = @blockList.findPositionAtIndexAndOffset(locationRange[0].index, locationRange[0].position)
-    rightPosition = @blockList.findPositionAtIndexAndOffset(locationRange[1].index, locationRange[1].position)
+    leftPosition = @blockList.findPositionAtIndexAndOffset(locationRange.start.index, locationRange.start.position)
+    rightPosition = @blockList.findPositionAtIndexAndOffset(locationRange.end.index, locationRange.end.position)
     [leftPosition, rightPosition]
 
   toJSON: ->
