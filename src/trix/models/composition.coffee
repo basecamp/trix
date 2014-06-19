@@ -17,12 +17,11 @@ class Trix.Composition
 
   createSnapshot: ->
     document: @getDocument()
-    selectedRange: @getInternalSelectedRange()
+    selectedRange: @getLocationRange()
 
   restoreSnapshot: ({document, selectedRange}) ->
-    # TODO
     @document.replaceDocument(document)
-    @requestSelectedRange(selectedRange)
+    @setLocationRange(selectedRange)
 
   # Document delegate
 
@@ -33,26 +32,31 @@ class Trix.Composition
   # Responder protocol
 
   insertText: (text, {updatePosition} = updatePosition: true) ->
-    if selectedRange = @getSelectedRange()
-      location = selectedRange[0]
-      @document.replaceTextAtLocationRange(text, selectedRange)
-    else
-      location = @getLocation()
-      @document.insertTextAtLocation(text, location)
+    range = @getLocationRange()
+    @document.insertTextAtLocationRange(text, range)
 
-    location.position += text.getLength() if updatePosition
-    @requestPosition(location)
+    {index, position} = range.start
+    position += text.getLength() if updatePosition
+    @setLocationRange({index, position})
+
+  insertDocument: (document) ->
+    range = @getLocationRange()
+    @document.insertDocumentAtLocationRange(document, range)
+
+    index = range.index + (blockLength = document.blockList.blocks.length)
+    position = document.getBlockAtIndex(blockLength - 1).text.getLength()
+    @setLocationRange({index, position})
 
   insertString: (string, options) ->
     text = Trix.Text.textForStringWithAttributes(string, @currentAttributes)
     @insertText(text, options)
 
-  insertHTML: (html, options) ->
-    text = Trix.Text.fromHTML(html)
-    @insertText(text, options)
+  insertHTML: (html) ->
+    document = Trix.Document.fromHTML(html)
+    @insertDocument(document)
 
   replaceHTML: (html) ->
-    @preserveSelectionEndPoint =>
+    @preserveSelection =>
       document = Trix.Document.fromHTML(html)
       @document.replaceDocument(document)
 
@@ -62,8 +66,10 @@ class Trix.Composition
       @insertText(text)
 
   deleteFromCurrentPosition: (distance = -1) ->
-    unless range = @getSelectedRange()
-      {index, position} = location = @getLocation()
+    range = @getLocationRange()
+
+    if range.isCollapsed()
+      {index, position} = range
       position += distance
 
       if distance < 0
@@ -71,43 +77,44 @@ class Trix.Composition
           index--
           position += @document.getTextAtIndex(index).getLength() + 1
 
-        startLocation = {index, position}
-        endLocation = location
+        start = {index, position}
+        end = range.start
       else
         if position > (textLength = @document.getTextAtIndex(index).getLength())
           index++
           position -= textLength + 1
 
-        startLocation = location
-        endLocation = {index, position}
+        start = range.start
+        end = {index, position}
 
-      range = [startLocation, endLocation]
+      range = new Trix.LocationRange start, end
 
     @document.removeTextAtLocationRange(range)
-    @requestPosition(range[0])
+    @setLocationRange(range.collapse())
 
   deleteBackward: ->
     distance = 1
+    range = @getLocationRange()
 
-    if location = @getLocation()
-      if location.position > 0
-        while (leftPosition = location.position - distance - 1) >= 0
-          string = @document.getTextAtIndex(location.index).getStringAtRange([leftPosition, location.position])
-          if countGraphemeClusters(string) is 1 or countGraphemeClusters("n#{string}") is 1
-            distance++
-          else
-            break
+    if range.isCollapsed() and range.position > 0
+      while (leftPosition = range.position - distance - 1) >= 0
+        string = @document.getTextAtIndex(range.index).getStringAtRange([leftPosition, range.position])
+        if countGraphemeClusters(string) is 1 or countGraphemeClusters("n#{string}") is 1
+          distance++
+        else
+          break
 
     @deleteFromCurrentPosition(distance * -1)
 
   deleteForward: ->
     distance = 1
+    range = @getLocationRange()
 
-    if location = @getLocation()
-      text = @document.getTextAtIndex(location.index)
+    if range.isCollapsed()
+      text = @document.getTextAtIndex(range.index)
       textLength = text.getLength()
-      while (rightPosition = location.position + distance + 1) <= textLength
-        string = text.getStringAtRange([location.position, rightPosition])
+      while (rightPosition = range.position + distance + 1) <= textLength
+        string = text.getStringAtRange([range.position, rightPosition])
         if countGraphemeClusters(string) is 1
           distance++
         else
@@ -116,19 +123,19 @@ class Trix.Composition
     @deleteFromCurrentPosition(distance)
 
   deleteWordBackward: ->
-    if @getSelectedRange()
+    if @getLocationRange()
       @deleteBackward()
     else
-      location = @getLocation()
-      text = @getTextAtIndex(location.index)
+      range = @getLocationRange()
+      text = @getTextAtIndex(range.index)
       # TODO: delete across blocks
-      stringBeforePosition = text.getStringAtRange([0, location.position])
+      stringBeforePosition = text.getStringAtRange([0, range.position])
       # TODO: \b is not unicode compatible
       positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
       @deleteFromCurrentPosition(positionBeforeLastWord - position)
 
   moveTextFromRange: (range) ->
-    location = @getLocation()
+    range = @getLocationRange()
     # TODO: move selection spanning blocks
     text = @getTextAtIndex(index)
     text.moveTextFromRangeToPosition(range, position)
@@ -136,10 +143,10 @@ class Trix.Composition
 
   getTextFromSelection: ->
     # TODO: get text(s) spanning blocks
-    if locationRange = @getSelectedRange()
-      if locationRange[0].index is locationRange[1].index
-        text = @getTextAtIndex(locationRange[0].index)
-        text.getTextAtRange([locationRange[0].position, locationRange[1].position])
+    if range = @getLocationRange()
+      if range[0].index is range[1].index
+        text = @getTextAtIndex(range[0].index)
+        text.getTextAtRange([range[0].position, range[1].position])
 
   # Attachment owner protocol
 
@@ -165,39 +172,25 @@ class Trix.Composition
     @setCurrentAttribute(attributeName, value)
 
   setCurrentAttribute: (attributeName, value) ->
-    unless locationRange = @getSelectedRange()
-      location = @getLocation()
-      locationRange = [location, location]
+    range = @getLocationRange()
 
     if value
-      @document.addAttributeAtLocationRange(attributeName, value, locationRange)
+      @document.addAttributeAtLocationRange(attributeName, value, range)
       @currentAttributes[attributeName] = value
     else
-      @document.removeAttributeAtLocationRange(attributeName, locationRange)
+      @document.removeAttributeAtLocationRange(attributeName, range)
       delete @currentAttributes[attributeName]
 
     @notifyDelegateOfCurrentAttributesChange()
 
   updateCurrentAttributes: ->
-    if locationRange = @getSelectedRange()
-      @currentAttributes = @document.getCommonAttributesAtLocationRange(locationRange)
-
-    else if location = @getLocation()
-      block = @document.getBlockAtIndex(location.index)
-      @currentAttributes = block.getAttributes()
-
-      attributes = block.text.getAttributesAtPosition(location.position)
-      attributesLeft = block.text.getAttributesAtPosition(location.position - 1)
-
-      for key, value of attributesLeft
-        if value is attributes[key] or key in inheritableAttributes()
-          @currentAttributes[key] = value
+    @currentAttributes =
+      if range = @getLocationRange()
+        @document.getCommonAttributesAtLocationRange(range)
+      else
+        {}
 
     @notifyDelegateOfCurrentAttributesChange()
-
-  inheritableAttributes = ->
-    for key, value of Trix.attributes when value.inheritable
-      key
 
   notifyDelegateOfCurrentAttributesChange: ->
     @delegate?.compositionDidChangeCurrentAttributes?(this, @currentAttributes)
@@ -213,44 +206,35 @@ class Trix.Composition
   hasFrozenSelection: ->
     @hasCurrentAttribute("frozen")
 
-  # Position and selected range
+  # Location range and selection
 
-  getLocation: ->
-    if range = @getInternalSelectedRange()
-      [start, end] = range
-      start if start is end
+  getLocationRange: ->
+    @selectionDelegate?.getLocationRange?()
 
-  requestPosition: (position) ->
-    @requestSelectedRange([position, position])
+  setLocationRange: (locationRangeOrStart, end) ->
+    @selectionDelegate?.setLocationRange?(locationRangeOrStart, end)
 
-  requestPositionAtPoint: (point) ->
-    if range = @selectionDelegate?.getRangeOfCompositionAtPoint?(this, point)
-      @requestSelectedRange(range)
+  preserveSelection: (block) ->
+    @selectionDelegate?.preserveSelection?(block) ? block()
 
-  preserveSelectionEndPoint: (block) ->
-    point = @selectionDelegate?.getPointAtEndOfCompositionSelection?(this)
-    block()
-    @requestPositionAtPoint(point) if point?
+  expandSelectionForEditing: ->
+    for key, value of Trix.attributes when value.parent
+      if @hasCurrentAttribute(key)
+        @expandLocationRangeAroundCommonAttribute(key)
+        break
 
-  getSelectedRange: ->
-    if range = @getInternalSelectedRange()
-      [start, end] = range
-      range unless start is end
+  expandLocationRangeAroundCommonAttribute: (attributeName) ->
+    range = @getLocationRange()
 
-  requestSelectedRange: (range) ->
-    if range?
-      #[start, end] = range
-      #length = @text.getLength()
-      #range = [clamp(start, 0, length), clamp(end, 0, length)]
-      @selectionDelegate?.compositionDidRequestSelectionOfRange?(this, range)
+    if range.isInSingleIndex()
+      {index} = range
+      text = @document.getTextAtIndex(index)
+      textRange = [range.start.position, range.end.position]
+      [left, right] = text.getExpandedRangeForAttributeAtRange(attributeName, textRange)
+
+      @setLocationRange({position: left, index}, {position: right, index})
 
   # Private
 
   getDocument: ->
     @document.copy()
-
-  getInternalSelectedRange: ->
-    @selectionDelegate?.getSelectedRangeOfComposition?(this)
-
-  clamp = (value, floor, ceiling) ->
-    Math.max(floor, Math.min(ceiling, value))

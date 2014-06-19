@@ -4,7 +4,7 @@
 #= require trix/controllers/toolbar_controller
 #= require trix/models/composition
 #= require trix/models/undo_manager
-#= require trix/observers/selection_observer
+#= require trix/models/selection_manager
 #= require trix/observers/mutation_observer
 
 class Trix.EditorController extends Trix.AbstractEditorController
@@ -12,18 +12,18 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @documentController = new Trix.DocumentController @textElement, @document, @config
     @documentController.delegate = this
 
+    @selectionManager = new Trix.SelectionManager @textElement
+    @selectionManager.delegate = this
+
     @composition = new Trix.Composition @document, @config
     @composition.delegate = this
-    @composition.selectionDelegate = @documentController
+    @composition.selectionDelegate = @selectionManager
 
     @undoManager = new Trix.UndoManager @composition
 
     @inputController = new Trix.InputController @textElement
     @inputController.delegate = this
     @inputController.responder = @composition
-
-    @selectionObserver = new Trix.SelectionObserver
-    @selectionObserver.delegate = this
 
     @mutationObserver = new Trix.MutationObserver @textElement
     @mutationObserver.delegate = this
@@ -79,11 +79,11 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   inputControllerWillStartComposition: ->
     @mutationObserver.stop()
-    @documentController.lockSelection()
+    @selectionManager.lock()
 
   inputControllerWillEndComposition: ->
     @documentController.render()
-    @documentController.unlockSelection()
+    @selectionManager.unlock()
     @mutationObserver.start()
 
   inputControllerDidComposeCharacters: (composedString) ->
@@ -92,8 +92,8 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   # Selection observer delegate
 
-  selectionDidChange: (range) ->
-    @documentController.selectionDidChange(range)
+  locationDidChange: (locationRange) ->
+    @documentController.selectionDidChange?(locationRange)
     @composition.updateCurrentAttributes()
     @delegate?.didChangeSelection?()
 
@@ -130,7 +130,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   toolbarWillShowDialog: (wantsFocus) ->
     @dialogWantsFocus = wantsFocus
-    @expandSelectionForEditing()
+    @composition.expandSelectionForEditing()
     @freezeSelection() if wantsFocus
 
   toolbarDidHideDialog: ->
@@ -142,18 +142,12 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   freezeSelection: ->
     unless @selectionFrozen
-      @documentController.lockSelection()
+      @selectionManager.lock()
       @composition.freezeSelection()
       @selectionFrozen = true
 
   thawSelection: ->
     if @selectionFrozen
-      @documentController.unlockSelection()
       @composition.thawSelection()
+      @selectionManager.unlock()
       delete @selectionFrozen
-
-  expandSelectionForEditing: ->
-    for key, value of Trix.attributes when value.parent
-      if @composition.hasCurrentAttribute(key)
-        @documentController.expandSelectedRangeAroundCommonAttribute(key)
-        break

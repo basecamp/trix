@@ -50,27 +50,28 @@ class Trix.Document extends Trix.Object
   eachBlock: (callback) ->
     callback(block, index) for block, index in @blockList.toArray()
 
-  eachBlockInLocationRange: ([startLocation, endLocation], callback) ->
-    if startLocation.index is endLocation.index
-      block = @getBlockAtIndex(startLocation.index)
-      callback(block, [startLocation.position, endLocation.position], startLocation.index)
+  eachBlockAtLocationRange: (range, callback) ->
+    if range.isInSingleIndex()
+      block = @getBlockAtIndex(range.index)
+      textRange = [range.start.position, range.end.position]
+      callback(block, textRange, range.index)
     else
-      for index in [startLocation.index..endLocation.index]
+      range.eachIndex (index) =>
         block = @getBlockAtIndex(index)
 
-        range = switch index
-          when startLocation.index
-            [startLocation.position, block.text.getLength()]
-          when endLocation.index
-            [0, endLocation.position]
+        textRange = switch index
+          when range.start.index
+            [range.start.position, block.text.getLength()]
+          when range.end.index
+            [0, range.end.position]
           else
             [0, block.text.getLength()]
 
-        callback(block, range, index)
+        callback(block, textRange, index)
 
-  insertTextAtLocation: edit (text, location) ->
-    @blockList = @blockList.editObjectAtIndex location.index, (block) ->
-      block.copyWithText(block.text.insertTextAtPosition(text, location.position))
+  insertTextAtLocationRange: edit (text, range) ->
+    @blockList = @blockList.editObjectAtIndex range.index, (block) ->
+      block.copyWithText(block.text.insertTextAtPosition(text, range.position))
 
   removeTextAtLocationRange: edit (locationRange) ->
     range = @rangeFromLocationRange(locationRange)
@@ -110,17 +111,38 @@ class Trix.Document extends Trix.Object
         @blockList = @blockList.editObjectAtIndex index, ->
           block.copyWithText(block.text.removeAttributeAtRange(attribute, range))
 
-  getCommonAttributesAtLocationRange: (locationRange) ->
-    textAttributes = []
-    blockAttributes = []
+  replaceDocument: (document) ->
+    @blockList.replaceBlockList(document.blockList)
+    @delegate?.didEditDocument?(this)
 
-    @eachBlockInLocationRange locationRange, (block, range) ->
-      textAttributes.push(block.text.getCommonAttributesAtRange(range))
-      blockAttributes.push(block.getAttributes())
+  getCommonAttributesAtLocationRange: (range) ->
+    if range.isCollapsed()
+      @getCommonAttributesAtLocation(range.start)
+    else
+      textAttributes = []
+      blockAttributes = []
 
-    Trix.Hash.fromCommonAttributesOfObjects(textAttributes)
-      .merge(Trix.Hash.fromCommonAttributesOfObjects(blockAttributes))
-      .toObject()
+      @eachBlockAtLocationRange range, (block, textRange) ->
+        textAttributes.push(block.text.getCommonAttributesAtRange(textRange))
+        blockAttributes.push(block.getAttributes())
+
+      Trix.Hash.fromCommonAttributesOfObjects(textAttributes)
+        .merge(Trix.Hash.fromCommonAttributesOfObjects(blockAttributes))
+        .toObject()
+
+  getCommonAttributesAtLocation: ({index, position}) ->
+    block = @getBlockAtIndex(index)
+    commonAttributes = block.getAttributes()
+
+    attributes = block.text.getAttributesAtPosition(position)
+    attributesLeft = block.text.getAttributesAtPosition(position - 1)
+    inheritableAttributes = (key for key, value of Trix.attributes when value.inheritable)
+
+    for key, value of attributesLeft
+      if value is attributes[key] or key in inheritableAttributes
+        commonAttributes[key] = value
+
+    commonAttributes
 
   getAttachments: ->
     attachments = []

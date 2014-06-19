@@ -95,6 +95,7 @@ class Trix.InputController
       event.preventDefault()
       if html = event.clipboardData.getData("text/html")
         @delegate?.inputControllerWillPasteText()
+        console.log "pasted html:", html
         @responder?.insertHTML(html)
       else if string = event.clipboardData.getData("text/plain")
         @delegate?.inputControllerWillPasteText()
