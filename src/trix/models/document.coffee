@@ -70,11 +70,20 @@ class Trix.Document extends Trix.Object
       block.copyWithText(block.text.insertTextAtPosition(text, location.position))
 
   removeTextAtLocationRange: edit (locationRange) ->
-    if locationRange[0].index is locationRange[1].index
-      @blockList = @blockList.editObjectAtIndex locationRange[0].index, (block) ->
-        range = [locationRange[0].position, locationRange[1].position]
-        text = block.text.removeTextAtRange(range)
-        block.copyWithText(text)
+    range = @rangeFromLocationRange(locationRange)
+    blockList = @blockList.removeObjectsInRange(range)
+
+    leftIndex = locationRange[0].index
+    rightIndex = leftIndex + 1
+    leftBlock = blockList.getObjectAtIndex(leftIndex)
+    rightBlock = blockList.getObjectAtIndex(rightIndex)
+
+    if leftBlock and rightBlock
+      blockList = blockList.
+        removeObjectAtIndex(rightIndex).
+        replaceObjectAtIndex(leftBlock.consolidateWith(rightBlock), leftIndex)
+
+    @blockList = blockList
 
   replaceTextAtLocationRange: edit (text, range) ->
     @removeTextAtLocationRange(range)

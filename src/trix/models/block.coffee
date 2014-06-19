@@ -24,6 +24,10 @@ class Trix.Block extends Trix.Object
   getAttributes: ->
     @attributes.toObject()
 
+  contentsForInspection: ->
+    text: @text.inspect()
+    attributes: @attributes.inspect()
+
   toJSON: ->
     text: @text
     attributes: @getAttributes()
@@ -36,6 +40,9 @@ class Trix.Block extends Trix.Object
   canBeConsolidatedWith: (block) ->
     false
 
+  consolidateWith: (block) ->
+    @copyWithText(@text.appendText(block.text))
+
   splitAtOffset: (offset) ->
     if offset is 0
       left = null
@@ -44,6 +51,6 @@ class Trix.Block extends Trix.Object
       left = this
       right = null
     else
-      left = @copyWithText(@text.getTextAtRange([0, offset - 1]))
+      left = @copyWithText(@text.getTextAtRange([0, offset]))
       right = @copyWithText(@text.getTextAtRange([offset, @getLength()]))
     [left, right]
