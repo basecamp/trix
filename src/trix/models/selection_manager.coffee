@@ -8,6 +8,7 @@
 
 class Trix.SelectionManager
   constructor: (@element) ->
+    @lockCount = 0
     @selectionObserver = new Trix.SelectionObserver
     @selectionObserver.delegate = this
 
@@ -25,12 +26,14 @@ class Trix.SelectionManager
     @setLocationRange(locationRange)
 
   lock: ->
-    @lockedLocationRange ?= @getLocationRange()
+    if @lockCount++ is 0
+      @lockedLocationRange = @getLocationRange()
 
   unlock: ->
-    if lockedLocationRange = @lockedLocationRange
+    if --@lockCount is 0
+      lockedLocationRange = @lockedLocationRange
       delete @lockedLocationRange
-      lockedLocationRange
+      @setLocationRange(lockedLocationRange)
 
   preserveSelection: (block) ->
     point = @getPointAtEndOfSelection()

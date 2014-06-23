@@ -42,20 +42,19 @@ class Trix.EditorController extends Trix.AbstractEditorController
   compositionDidChangeCurrentAttributes: (composition, currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
 
-  compositionDidRequestNextLocationRange: (locationRange) ->
-    @nextLocationRange = locationRange
+  compositionWillSetLocationRange: ->
+    @skipSelectionLock = true
 
   # Document controller delegate
 
   documentControllerWillRender: ->
     @mutationObserver.stop()
-    @nextLocationRange ?= @selectionManager.getLocationRange()
+    @selectionManager.lock() unless @skipSelectionLock
 
   documentControllerDidRender: ->
     @mutationObserver.start()
-    if @nextLocationRange?
-      @selectionManager.setLocationRange(@nextLocationRange)
-      delete @nextLocationRange
+    @selectionManager.unlock() unless @skipSelectionLock
+    delete @skipSelectionLock
     @delegate?.didRenderDocument?()
 
   documentControllerDidFocus: ->

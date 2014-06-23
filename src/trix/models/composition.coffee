@@ -32,16 +32,18 @@ class Trix.Composition
   # Responder protocol
 
   insertText: (text, {updatePosition} = updatePosition: true) ->
+    @delegate?.compositionWillSetLocationRange?() if updatePosition
+
     range = @getLocationRange()
+    @document.insertTextAtLocationRange(text, range)
 
     if updatePosition
       {index, offset} = range.start
       offset += text.getLength()
-      @requestNextLocationRange({index, offset})
-
-    @document.insertTextAtLocationRange(text, range)
+      @setLocationRange({index, offset})
 
   insertDocument: (document) ->
+    @delegate?.compositionWillSetLocationRange?()
     range = @getLocationRange()
     @document.insertDocumentAtLocationRange(document, range)
 
@@ -68,6 +70,7 @@ class Trix.Composition
       @insertText(text)
 
   deleteFromCurrentPosition: (distance = -1) ->
+    @delegate?.compositionWillSetLocationRange?()
     range = @getLocationRange()
 
     if range.isCollapsed()
@@ -218,9 +221,6 @@ class Trix.Composition
 
   setLocationRangeFromPoint: (point) ->
     @selectionDelegate?.setLocationRangeFromPoint?(point)
-
-  requestNextLocationRange: (locationRange) ->
-    @delegate.compositionDidRequestNextLocationRange?(locationRange)
 
   preserveSelection: (block) ->
     @selectionDelegate?.preserveSelection?(block) ? block()
