@@ -35,7 +35,10 @@ class Trix.EditorController extends Trix.AbstractEditorController
   # Composition controller delegate
 
   compositionDidChangeDocument: (composition, document) ->
+    range = @selectionManager.getLocationRange()
     @documentController.render()
+    @selectionManager.setLocationRange(range) if range?
+
     @saveSerializedText()
     @toolbarController.updateActions()
 
