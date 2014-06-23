@@ -7,7 +7,7 @@ class Trix.LocationRange
 
   constructor: (@start, @end) ->
     @end ?= @start
-    {@index, @position} = @start
+    {@index, @offset} = @start
 
   isCollapsed: ->
     @start is @end

@@ -35,17 +35,17 @@ class Trix.Composition
     range = @getLocationRange()
     @document.insertTextAtLocationRange(text, range)
 
-    {index, position} = range.start
-    position += text.getLength() if updatePosition
-    @setLocationRange({index, position})
+    {index, offset} = range.start
+    offset += text.getLength() if updatePosition
+    @setLocationRange({index, offset})
 
   insertDocument: (document) ->
     range = @getLocationRange()
     @document.insertDocumentAtLocationRange(document, range)
 
     index = range.index + (blockLength = document.blockList.blocks.length)
-    position = document.getBlockAtIndex(blockLength - 1).text.getLength()
-    @setLocationRange({index, position})
+    offset = document.getBlockAtIndex(blockLength - 1).text.getLength()
+    @setLocationRange({index, offset})
 
   insertString: (string, options) ->
     text = Trix.Text.textForStringWithAttributes(string, @currentAttributes)
@@ -69,23 +69,23 @@ class Trix.Composition
     range = @getLocationRange()
 
     if range.isCollapsed()
-      {index, position} = range
-      position += distance
+      {index, offset} = range
+      offset += distance
 
       if distance < 0
-        if position < 0
+        if offset < 0
           index--
-          position += @document.getTextAtIndex(index).getLength() + 1
+          offset += @document.getTextAtIndex(index).getLength() + 1
 
-        start = {index, position}
+        start = {index, offset}
         end = range.start
       else
-        if position > (textLength = @document.getTextAtIndex(index).getLength())
+        if offset > (textLength = @document.getTextAtIndex(index).getLength())
           index++
-          position -= textLength + 1
+          offset -= textLength + 1
 
         start = range.start
-        end = {index, position}
+        end = {index, offset}
 
       range = new Trix.LocationRange start, end
 
@@ -96,9 +96,9 @@ class Trix.Composition
     distance = 1
     range = @getLocationRange()
 
-    if range.isCollapsed() and range.position > 0
-      while (leftPosition = range.position - distance - 1) >= 0
-        string = @document.getTextAtIndex(range.index).getStringAtRange([leftPosition, range.position])
+    if range.isCollapsed() and range.offset > 0
+      while (leftPosition = range.offset - distance - 1) >= 0
+        string = @document.getTextAtIndex(range.index).getStringAtRange([leftPosition, range.offset])
         if countGraphemeClusters(string) is 1 or countGraphemeClusters("n#{string}") is 1
           distance++
         else
@@ -113,8 +113,8 @@ class Trix.Composition
     if range.isCollapsed()
       text = @document.getTextAtIndex(range.index)
       textLength = text.getLength()
-      while (rightPosition = range.position + distance + 1) <= textLength
-        string = text.getStringAtRange([range.position, rightPosition])
+      while (rightPosition = range.offset + distance + 1) <= textLength
+        string = text.getStringAtRange([range.offset, rightPosition])
         if countGraphemeClusters(string) is 1
           distance++
         else
@@ -129,7 +129,7 @@ class Trix.Composition
       range = @getLocationRange()
       text = @getTextAtIndex(range.index)
       # TODO: delete across blocks
-      stringBeforePosition = text.getStringAtRange([0, range.position])
+      stringBeforePosition = text.getStringAtRange([0, range.offset])
       # TODO: \b is not unicode compatible
       positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
       @deleteFromCurrentPosition(positionBeforeLastWord - position)
@@ -146,7 +146,7 @@ class Trix.Composition
     if range = @getLocationRange()
       if range[0].index is range[1].index
         text = @getTextAtIndex(range[0].index)
-        text.getTextAtRange([range[0].position, range[1].position])
+        text.getTextAtRange([range[0].offset, range[1].offset])
 
   # Attachment owner protocol
 
@@ -232,10 +232,10 @@ class Trix.Composition
     if range.isInSingleIndex()
       {index} = range
       text = @document.getTextAtIndex(index)
-      textRange = [range.start.position, range.end.position]
+      textRange = [range.start.offset, range.end.offset]
       [left, right] = text.getExpandedRangeForAttributeAtRange(attributeName, textRange)
 
-      @setLocationRange({position: left, index}, {position: right, index})
+      @setLocationRange({offset: left, index}, {offset: right, index})
 
   # Private
 

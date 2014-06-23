@@ -50,7 +50,7 @@ class Trix.Document extends Trix.Object
   eachBlockAtLocationRange: (range, callback) ->
     if range.isInSingleIndex()
       block = @getBlockAtIndex(range.index)
-      textRange = [range.start.position, range.end.position]
+      textRange = [range.start.offset, range.end.offset]
       callback(block, textRange, range.index)
     else
       range.eachIndex (index) =>
@@ -58,9 +58,9 @@ class Trix.Document extends Trix.Object
 
         textRange = switch index
           when range.start.index
-            [range.start.position, block.text.getLength()]
+            [range.start.offset, block.text.getLength()]
           when range.end.index
-            [0, range.end.position]
+            [0, range.end.offset]
           else
             [0, block.text.getLength()]
 
@@ -68,7 +68,7 @@ class Trix.Document extends Trix.Object
 
   insertTextAtLocationRange: edit (text, locationRange) ->
     @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
-      block.copyWithText(block.text.insertTextAtPosition(text, locationRange.position))
+      block.copyWithText(block.text.insertTextAtPosition(text, locationRange.offset))
 
   removeTextAtLocationRange: edit (locationRange) ->
     range = @rangeFromLocationRange(locationRange)
@@ -123,12 +123,12 @@ class Trix.Document extends Trix.Object
         .merge(Trix.Hash.fromCommonAttributesOfObjects(blockAttributes))
         .toObject()
 
-  getCommonAttributesAtLocation: ({index, position}) ->
+  getCommonAttributesAtLocation: ({index, offset}) ->
     block = @getBlockAtIndex(index)
     commonAttributes = block.getAttributes()
 
-    attributes = block.text.getAttributesAtPosition(position)
-    attributesLeft = block.text.getAttributesAtPosition(position - 1)
+    attributes = block.text.getAttributesAtPosition(offset)
+    attributesLeft = block.text.getAttributesAtPosition(offset - 1)
     inheritableAttributes = (key for key, value of Trix.attributes when value.inheritable)
 
     for key, value of attributesLeft
@@ -146,7 +146,7 @@ class Trix.Document extends Trix.Object
   getLocationRangeOfAttachment: (attachment) ->
     for {text}, index in @blockList.toArray()
       if range = text.getRangeOfAttachment(attachment)
-        return new Trix.LocationRange {index, position: range[0]}, {index, position: range[1]}
+        return new Trix.LocationRange {index, offset: range[0]}, {index, offset: range[1]}
 
   getAttachmentById: (id) ->
     for {text} in @blockList.toArray()
@@ -160,8 +160,8 @@ class Trix.Document extends Trix.Object
       block.copyWithText(text.resizeAttachmentToDimensions(attachment, dimensions))
 
   rangeFromLocationRange: (locationRange) ->
-    leftPosition = @blockList.findPositionAtIndexAndOffset(locationRange.start.index, locationRange.start.position)
-    rightPosition = @blockList.findPositionAtIndexAndOffset(locationRange.end.index, locationRange.end.position)
+    leftPosition = @blockList.findPositionAtIndexAndOffset(locationRange.start.index, locationRange.start.offset)
+    rightPosition = @blockList.findPositionAtIndexAndOffset(locationRange.end.index, locationRange.end.offset)
     [leftPosition, rightPosition]
 
   toJSON: ->

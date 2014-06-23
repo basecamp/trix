@@ -91,28 +91,28 @@ class Trix.SelectionManager
   findLocationFromContainerAtOffset: (container, offset) ->
     if container.nodeType is Node.TEXT_NODE
       index = container.trixIndex
-      position = container.trixPosition + offset
+      offset = container.trixPosition + offset
     else
       if offset is 0
         index = container.trixIndex
-        position = container.trixPosition
+        offset = container.trixPosition
       else
         node = container.childNodes[offset - 1]
         walker = DOM.createTreeWalker(node)
         walker.lastChild()
         index = walker.currentNode.trixIndex
-        position = walker.currentNode.trixPosition + walker.currentNode.trixLength
+        offset = walker.currentNode.trixPosition + walker.currentNode.trixLength
 
-    {index, position}
+    {index, offset}
 
   findContainerAndOffsetForLocationRange: (loactionRange) ->
-    return [@element, 0] if loactionRange.index is 0 and loactionRange.position < 1
+    return [@element, 0] if loactionRange.index is 0 and loactionRange.offset < 1
 
     node = @findNodeForLocationRange(loactionRange)
 
     if node.nodeType is Node.TEXT_NODE
       container = node
-      offset = loactionRange.position - node.trixPosition
+      offset = loactionRange.offset - node.trixPosition
     else
       container = node.parentNode
       offset = [node.parentNode.childNodes...].indexOf(node) + 1
@@ -128,7 +128,7 @@ class Trix.SelectionManager
         startPosition = walker.currentNode.trixPosition
         endPosition = startPosition + walker.currentNode.trixLength
 
-        if startPosition <= range.position <= endPosition
+        if startPosition <= range.offset <= endPosition
           node = walker.currentNode
           break
     node
