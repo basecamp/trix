@@ -35,24 +35,28 @@ class Trix.EditorController extends Trix.AbstractEditorController
   # Composition controller delegate
 
   compositionDidChangeDocument: (composition, document) ->
-    range = @selectionManager.getLocationRange()
     @documentController.render()
-    @selectionManager.setLocationRange(range) if range?
-
     @saveSerializedText()
     @toolbarController.updateActions()
 
   compositionDidChangeCurrentAttributes: (composition, currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
 
-  # Text controller delegate
+  compositionDidRequestNextLocationRange: (locationRange) ->
+    @nextLocationRange = locationRange
+
+  # Document controller delegate
 
   documentControllerWillRender: ->
     @mutationObserver.stop()
+    @nextLocationRange ?= @selectionManager.getLocationRange()
 
   documentControllerDidRender: ->
     @mutationObserver.start()
-    @delegate?.didRenderText?()
+    if @nextLocationRange?
+      @selectionManager.setLocationRange(@nextLocationRange)
+      delete @nextLocationRange
+    @delegate?.didRenderDocument?()
 
   documentControllerDidFocus: ->
     @toolbarController.hideDialog() if @dialogWantsFocus

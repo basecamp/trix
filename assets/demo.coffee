@@ -34,7 +34,7 @@ config =
     didChangeSelection: ->
       inspectorController.render()
 
-    didRenderText: ->
+    didRenderDocument: ->
       inspectorController.render()
 
 saveAttachment = (attachment) ->

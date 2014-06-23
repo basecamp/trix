@@ -33,11 +33,13 @@ class Trix.Composition
 
   insertText: (text, {updatePosition} = updatePosition: true) ->
     range = @getLocationRange()
-    @document.insertTextAtLocationRange(text, range)
 
-    {index, offset} = range.start
-    offset += text.getLength() if updatePosition
-    @setLocationRange({index, offset})
+    if updatePosition
+      {index, offset} = range.start
+      offset += text.getLength()
+      @requestNextLocationRange({index, offset})
+
+    @document.insertTextAtLocationRange(text, range)
 
   insertDocument: (document) ->
     range = @getLocationRange()
@@ -216,6 +218,9 @@ class Trix.Composition
 
   setLocationRangeFromPoint: (point) ->
     @selectionDelegate?.setLocationRangeFromPoint?(point)
+
+  requestNextLocationRange: (locationRange) ->
+    @delegate.compositionDidRequestNextLocationRange?(locationRange)
 
   preserveSelection: (block) ->
     @selectionDelegate?.preserveSelection?(block) ? block()
