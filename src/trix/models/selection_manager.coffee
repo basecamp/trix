@@ -46,13 +46,14 @@ class Trix.SelectionManager
 
   selectionDidChange: (domRange) ->
     @updateCurrentLocationRange(domRange)
-    @delegate?.locationDidChange?(@currentLocationRange)
 
   # Private
 
-  updateCurrentLocationRange: (domRange) ->
-    domRange ?= @getDOMRange()
-    @currentLocationRange = @createLocationRangeFromDOMRange(domRange)
+  updateCurrentLocationRange: (domRange = @getDOMRange()) ->
+    locationRange = @createLocationRangeFromDOMRange(domRange)
+    unless locationRange?.isEqualTo?(@currentLocationRange)
+      @currentLocationRange = locationRange
+      @delegate?.locationRangeDidChange?(@currentLocationRange)
 
   getDOMRange: ->
     selection = window.getSelection()

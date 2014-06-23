@@ -60,9 +60,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
   documentControllerDidFocus: ->
     @toolbarController.hideDialog() if @dialogWantsFocus
 
-  documentControllerDidChangeSelection: ->
-    @delegate?.didChangeSelection?()
-
   documentControllerWillResizeAttachment: ->
     @undoManager.recordUndoEntry("Resize", consolidatable: true)
 
@@ -96,10 +93,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @undoManager.recordUndoEntry("Typing", consolidatable: true)
     @composition.insertString(composedString)
 
-  # Selection observer delegate
+  # Selection manager delegate
 
-  locationDidChange: (locationRange) ->
-    @documentController.selectionDidChange?(locationRange)
+  locationRangeDidChange: (locationRange) ->
     @composition.updateCurrentAttributes()
     @delegate?.didChangeSelection?()
 
