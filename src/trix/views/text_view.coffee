@@ -1,4 +1,6 @@
 #= require trix/utilities/dom
+#= require trix/views/attachment_view
+#= require trix/views/image_attachment_view
 
 class Trix.TextView
   constructor: (@block, @blockIndex) ->
@@ -86,7 +88,7 @@ class Trix.TextView
   createAttachmentElementForCurrentRun: ->
     {attachment, attributes, position} = @currentRun
 
-    attachment.view ?= Trix.AttachmentView.for(attachment)
+    attachment.view ?= createAttachmentViewForAttachment(attachment)
     attachment.element ?= attachment.view.render()
     attachment.view.resize(width: attributes.width, height: attributes.height)
 
@@ -96,6 +98,12 @@ class Trix.TextView
     element.trixIndex = @blockIndex
     element.trixAttachmentId = attachment.id
     element
+
+  createAttachmentViewForAttachment = (attachment) ->
+    if attachment.isImage()
+      new Trix.ImageAttachmentView attachment
+    else
+      new Trix.AttachmentView attachment
 
   createStringNodesForCurrentRun: ->
     {string, position} = @currentRun

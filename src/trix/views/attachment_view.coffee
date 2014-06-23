@@ -1,10 +1,4 @@
 class Trix.AttachmentView
-  @for: (attachment) ->
-    if attachment.isImage()
-      new Trix.ImageAttachmentView attachment
-    else
-      new this attachment
-
   constructor: (@attachment) ->
     @attachment.delegate = this
 
