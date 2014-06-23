@@ -1,5 +1,5 @@
 #= require trix/controllers/abstract_editor_controller
-#= require trix/views/text_view
+#= require trix/views/block_view
 
 class Trix.DegradedEditorController extends Trix.AbstractEditorController
   initialize: ->
@@ -7,13 +7,13 @@ class Trix.DegradedEditorController extends Trix.AbstractEditorController
     @textElement.addEventListener("blur", @didBlur)
 
   didBlur: =>
-    @updateText()
+    @updateDocument()
 
-  updateText: ->
-    @text = Trix.Text.fromHTML(@textElement.innerHTML)
+  updateDocument: ->
+    @document = Trix.Document.fromHTML(@textElement.innerHTML)
     @render()
     @saveSerializedText()
 
   render: ->
-    view = new Trix.TextView @textElement, @text
+    view = new Trix.DocumentView @textElement, @document
     view.render()

@@ -2,7 +2,7 @@
 #= require trix/views/attachment_view
 #= require trix/views/image_attachment_view
 
-class Trix.TextView
+class Trix.BlockView
   constructor: (@block, @blockIndex) ->
     @text = @block.text
     @blockAttributes = @block.getAttributes()
