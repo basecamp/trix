@@ -9,6 +9,12 @@ class Trix.LocationRange
     @end ?= @start
     {@index, @offset} = @start
 
+  isEqualTo: (locationRange) ->
+    @start.index is locationRange?.start?.index and
+      @end.index is locationRange?.end?.index and
+      @start.offset is locationRange?.start?.offset and
+      @end.offset is locationRange?.end?.offset
+
   isCollapsed: ->
     @start.index is @end.index and @start.offset is @end.offset
 
