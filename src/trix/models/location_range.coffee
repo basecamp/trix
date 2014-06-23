@@ -10,7 +10,7 @@ class Trix.LocationRange
     {@index, @offset} = @start
 
   isCollapsed: ->
-    @start is @end
+    @start.index is @end.index and @start.offset is @end.offset
 
   isInSingleIndex: ->
     @start.index is @end.index
