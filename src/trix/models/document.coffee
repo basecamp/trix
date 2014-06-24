@@ -101,7 +101,7 @@ class Trix.Document extends Trix.Object
     @getBlockAtIndex(index)?.text
 
   eachBlock: (callback) ->
-    callback(block, index) for block, index in @blockList.toArray()
+    @blockList.eachObject(callback)
 
   eachBlockAtLocationRange: (range, callback) ->
     if range.isInSingleIndex()
