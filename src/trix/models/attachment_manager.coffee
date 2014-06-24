@@ -8,6 +8,9 @@ class Trix.AttachmentManager
   get: (id) ->
     @collection.get(id)
 
+  findWhere: (attributes) ->
+    @collection.findWhere(attributes)
+
   add: (attachment) ->
     unless @collection.has(attachment.id)
       @collection.add(attachment)

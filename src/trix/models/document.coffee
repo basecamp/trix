@@ -8,8 +8,8 @@ class Trix.Document extends Trix.Object
       Trix.Block.fromJSON blockJSON
     new this blocks
 
-  @fromHTML: (html) ->
-    Trix.HTMLParser.parse(html).getDocument()
+  @fromHTML: (html, options) ->
+    Trix.HTMLParser.parse(html, options).getDocument()
 
   constructor: (blocks = []) ->
     super

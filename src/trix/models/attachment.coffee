@@ -17,6 +17,9 @@ class Trix.Attachment extends Trix.Object
 
     @delegate?.attachmentDidChange(this)
 
+  getAttributes: ->
+    @attributes
+
   isPending: ->
     @file and not @attributes.url
 

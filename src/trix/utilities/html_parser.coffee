@@ -4,12 +4,12 @@
 class Trix.HTMLParser
   allowedAttributes = "style href src width height".split(" ")
 
-  @parse: (html) ->
-    parser = new this html
+  @parse: (html, options) ->
+    parser = new this html, options
     parser.parse()
     parser
 
-  constructor: (@html) ->
+  constructor: (@html, {@attachments} = {}) ->
     @blocks = []
 
   createHiddenContainer: ->
@@ -76,7 +76,13 @@ class Trix.HTMLParser
     @block.text = @block.text.appendText(text)
 
   appendAttachment: (attachmentAttributes, attributes) ->
-    attachment = new Trix.Attachment attachmentAttributes
+    if attachment = @attachments?.findWhere(url: attachmentAttributes.url)
+      if attachmentAttributes.width?
+        attributes.width = attachmentAttributes.width
+        attributes.height = attachmentAttributes.height
+    else
+      attachment = new Trix.Attachment attachmentAttributes
+
     text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
     @block.text = @block.text.appendText(text)
 

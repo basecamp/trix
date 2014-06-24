@@ -61,7 +61,7 @@ class Trix.Composition
 
   replaceHTML: (html) ->
     @preserveSelection =>
-      document = Trix.Document.fromHTML(html)
+      document = Trix.Document.fromHTML(html, {@attachments})
       @document.replaceDocument(document)
 
   insertFile: (file) ->
