@@ -35,41 +35,13 @@ class Trix.Document extends Trix.Object
       @delegate?.didEditDocument?(this)
     this
 
-  replaceDocument: edit (document) ->
-    @blockList = document.blockList.copy()
-
-  getBlockAtIndex: (index) ->
-    @blockList.getObjectAtIndex(index)
-
-  getTextAtIndex: (index) ->
-    @getBlockAtIndex(index)?.text
-
-  eachBlock: (callback) ->
-    callback(block, index) for block, index in @blockList.toArray()
-
-  eachBlockAtLocationRange: (range, callback) ->
-    if range.isInSingleIndex()
-      block = @getBlockAtIndex(range.index)
-      textRange = [range.start.offset, range.end.offset]
-      callback(block, textRange, range.index)
-    else
-      range.eachIndex (index) =>
-        block = @getBlockAtIndex(index)
-
-        textRange = switch index
-          when range.start.index
-            [range.start.offset, block.text.getLength()]
-          when range.end.index
-            [0, range.end.offset]
-          else
-            [0, block.text.getLength()]
-
-        callback(block, textRange, index)
-
   insertDocumentAtLocationRange: edit (document, locationRange) ->
     @removeTextAtLocationRange(locationRange)
     position = @blockList.findPositionAtIndexAndOffset(locationRange.index, locationRange.offset)
     @blockList = @blockList.insertSplittableListAtPosition(document.blockList, position)
+
+  replaceDocument: edit (document) ->
+    @blockList = document.blockList.copy()
 
   insertTextAtLocationRange: edit (text, locationRange) ->
     @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
@@ -116,6 +88,40 @@ class Trix.Document extends Trix.Object
         @blockList = @blockList.editObjectAtIndex index, ->
           block.copyWithText(block.text.removeAttributeAtRange(attribute, range))
 
+  resizeAttachmentToDimensions: edit (attachment, dimensions) ->
+    locationRange = @getLocationRangeOfAttachment(attachment)
+    text = @getTextAtIndex(locationRange.index)
+    @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
+      block.copyWithText(text.resizeAttachmentToDimensions(attachment, dimensions))
+
+  getBlockAtIndex: (index) ->
+    @blockList.getObjectAtIndex(index)
+
+  getTextAtIndex: (index) ->
+    @getBlockAtIndex(index)?.text
+
+  eachBlock: (callback) ->
+    callback(block, index) for block, index in @blockList.toArray()
+
+  eachBlockAtLocationRange: (range, callback) ->
+    if range.isInSingleIndex()
+      block = @getBlockAtIndex(range.index)
+      textRange = [range.start.offset, range.end.offset]
+      callback(block, textRange, range.index)
+    else
+      range.eachIndex (index) =>
+        block = @getBlockAtIndex(index)
+
+        textRange = switch index
+          when range.start.index
+            [range.start.offset, block.text.getLength()]
+          when range.end.index
+            [0, range.end.offset]
+          else
+            [0, block.text.getLength()]
+
+        callback(block, textRange, index)
+
   getCommonAttributesAtLocationRange: (locationRange) ->
     if locationRange.isCollapsed()
       @getCommonAttributesAtLocation(locationRange.start)
@@ -161,12 +167,6 @@ class Trix.Document extends Trix.Object
     for {text} in @blockList.toArray()
       if attachment = text.getAttachmentById(id)
         return attachment
-
-  resizeAttachmentToDimensions: edit (attachment, dimensions) ->
-    locationRange = @getLocationRangeOfAttachment(attachment)
-    text = @getTextAtIndex(locationRange.index)
-    @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
-      block.copyWithText(text.resizeAttachmentToDimensions(attachment, dimensions))
 
   rangeFromLocationRange: (locationRange) ->
     leftPosition = @blockList.findPositionAtIndexAndOffset(locationRange.start.index, locationRange.start.offset)
