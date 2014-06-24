@@ -126,16 +126,16 @@
       .trix-inspector {
         position: absolute;
         overflow: hidden;
-        height: 300px;
-        bottom: -275px;
+        height: 25px;
         left: 0;
         right: 0;
+        bottom: 0;
         background: #fff;
-        transition: bottom 0.1s ease;
+        transition: height 0.1s ease;
       }
 
-      .trix-inspector:hover {
-        bottom: 0;
+      .trix-inspector.open {
+        height: 300px;
       }
 
       .trix-inspector-toolbar {
@@ -150,6 +150,18 @@
         text-shadow: 0px 1px #ddd;
       }
 
+      .trix-inspector-toolbar .trix-inspector-close-button {
+        display: none;
+        position: absolute;
+        top: 7px;
+        right: 10px;
+      }
+
+      .trix-inspector.open .trix-inspector-close-button {
+        display: block;
+        cursor: default;
+      }
+
       .trix-inspector-toolbar input {
         display: none;
       }
@@ -162,7 +174,7 @@
         border-radius: 10px;
       }
 
-      .trix-inspector-toolbar input:checked + label {
+      .trix-inspector.open .trix-inspector-toolbar input:checked + label {
         background: #808080;
         color: #fff;
         text-shadow: 0px -1px #444;
@@ -312,13 +324,14 @@
 
     <textarea id="text" placeholder="Type some rich text!" autofocus></textarea>
 
-    <div id="inspector" class="trix-inspector" style="display: none;">
+    <div id="inspector" class="trix-inspector">
       <div class="trix-inspector-toolbar">
         <input type="radio" name="inspector-panel" id="inspect-attachments" value="attachments"><label for="inspect-attachments">Attachments</label>
         <input type="radio" name="inspector-panel" id="inspect-text" value="text"><label for="inspect-text">Structure</label>
         <input type="radio" name="inspector-panel" id="inspect-undo" value="undo"><label for="inspect-undo">Undo/Redo</label>
         <input type="radio" name="inspector-panel" id="inspect-source" value="source"><label for="inspect-source">Source</label>
         <div class="trix-inspector-selection-view"></div>
+        <div class="trix-inspector-close-button">✕</div>
       </div>
       <div class="trix-inspector-panel" data-inspector-panel-name="attachments">
         <ul id="attachments"></ul>

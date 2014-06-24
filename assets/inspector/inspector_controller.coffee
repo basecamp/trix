@@ -1,3 +1,4 @@
+#= require trix/utilities/dom
 #= require ./selection_view
 #= require ./inspector_panel_view
 #= require ./text_panel_view
@@ -6,7 +7,8 @@
 class Trix.InspectorController
   constructor: (@element, @editorController) ->
     @toolbarElement = @element.querySelector(".trix-inspector-toolbar")
-    @toolbarElement.addEventListener("change", @didClickToolbarButton)
+    Trix.DOM.on(@toolbarElement, "click", @didClickToolbar)
+    Trix.DOM.on(@toolbarElement, "change", @didClickToolbarButton)
 
     selectionElement = @element.querySelector(".trix-inspector-selection-view")
     @selectionView = new Trix.SelectionView selectionElement, @editorController
@@ -14,6 +16,19 @@ class Trix.InspectorController
     @activePanelView = null
     @activatePanel("text")
     @render()
+
+  open: ->
+    @element.classList.add("open")
+
+  close: ->
+    @element.classList.remove("open")
+
+  didClickToolbar: (event) =>
+    if Trix.DOM.closest(event.target, ".trix-inspector-close-button")
+      @close()
+      event.preventDefault()
+    else
+      @open()
 
   didClickToolbarButton: (event) =>
     @activatePanel(event.target.value)
