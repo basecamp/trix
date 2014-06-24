@@ -74,15 +74,18 @@ class Trix.Document extends Trix.Object
     range = @rangeFromLocationRange(locationRange)
     blockList = @blockList.removeObjectsInRange(range)
 
-    leftIndex = locationRange.index
-    rightIndex = leftIndex + 1
-    leftBlock = blockList.getObjectAtIndex(leftIndex)
-    rightBlock = blockList.getObjectAtIndex(rightIndex)
+    if blockList.length
+      leftIndex = locationRange.index
+      rightIndex = leftIndex + 1
+      leftBlock = blockList.getObjectAtIndex(leftIndex)
+      rightBlock = blockList.getObjectAtIndex(rightIndex)
 
-    if leftBlock and rightBlock
-      blockList = blockList.
-        removeObjectAtIndex(rightIndex).
-        replaceObjectAtIndex(leftBlock.consolidateWith(rightBlock), leftIndex)
+      if leftBlock and rightBlock
+        blockList = blockList.
+          removeObjectAtIndex(rightIndex).
+          replaceObjectAtIndex(leftBlock.consolidateWith(rightBlock), leftIndex)
+    else
+      blockList = new Trix.SplittableList [new Trix.Block]
 
     @blockList = blockList
 
@@ -125,8 +128,9 @@ class Trix.Document extends Trix.Object
 
   getCommonAttributesAtLocation: ({index, offset}) ->
     block = @getBlockAtIndex(index)
-    commonAttributes = block.getAttributes()
+    return {} unless block
 
+    commonAttributes = block.getAttributes()
     attributes = block.text.getAttributesAtPosition(offset)
     attributesLeft = block.text.getAttributesAtPosition(offset - 1)
     inheritableAttributes = (key for key, value of Trix.attributes when value.inheritable)

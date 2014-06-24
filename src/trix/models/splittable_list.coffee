@@ -4,6 +4,7 @@ class Trix.SplittableList extends Trix.Object
   constructor: (objects = []) ->
     super
     @objects = objects.slice(0)
+    @length = @objects.length
 
   copy: ->
     new @constructor @objects
