@@ -184,6 +184,105 @@
         right: 0;
         padding: 0 10px;
       }
+
+      .trix-inspector-text {
+        padding: 10px;
+      }
+
+      .trix-inspector-text .block,
+      .trix-inspector-text .piece {
+        padding: 5px 15px;
+        margin: 5px 15px;
+      }
+
+      .trix-inspector-text .text,
+      .trix-inspector-text .string {
+        border-top: 1px solid #ccc;
+        padding-top: 5px;
+        margin-top: 5px;
+      }
+
+      .trix-inspector-text .block {
+        float: left;
+        clear: both;
+        border: 1px solid #ccc;
+        margin: 15px;
+        background: #eee;
+        font-size: 12px;
+      }
+
+      .trix-inspector-text .title {
+        font-weight: bold;
+      }
+
+      .trix-inspector-text .title .description {
+        margin-left: 5px;
+        font-weight: normal;
+      }
+
+      .trix-inspector-text .text {
+        overflow: hidden;
+      }
+
+      .trix-inspector-text .object {
+        overflow: hidden;
+      }
+
+      .trix-inspector-text .object .property {
+        margin-left: 5px;
+      }
+
+      .trix-inspector-text .object .property .key::after {
+        display: inline;
+        content: ": ";
+      }
+
+      .trix-inspector-text .piece {
+        border: 1px solid #38c;
+        border-radius: 10px;
+        background: #fff;
+        width: 180px;
+        float: left;
+        overflow: hidden;
+      }
+
+      .trix-inspector-text .expandable .title {
+        position: relative;
+        white-space: nowrap;
+        cursor: pointer;
+      }
+
+      .trix-inspector-text .expandable .title::before {
+        display: block;
+        position: absolute;
+        right: 0;
+        padding-left: 3px;
+        content: "+";
+      }
+
+      .trix-inspector-text .expandable div.content {
+        display: none;
+      }
+
+      .trix-inspector-text .expandable.expanded .title::before {
+        content: "–";
+      }
+
+      .trix-inspector-text .expandable.expanded .title .description {
+        display: none;
+      }
+
+      .trix-inspector-text .expandable.expanded div.content {
+        display: block;
+      }
+
+      .trix-inspector-text .block .expandable .title::before {
+        background: #eee;
+      }
+
+      .trix-inspector-text .piece .expandable .title::before {
+        background: #fff;
+      }
     </style>
   </head>
   <body>
@@ -216,7 +315,7 @@
     <div id="inspector" class="trix-inspector" style="display: none;">
       <div class="trix-inspector-toolbar">
         <input type="radio" name="inspector-panel" id="inspect-attachments" value="attachments"><label for="inspect-attachments">Attachments</label>
-        <input type="radio" name="inspector-panel" id="inspect-text" value="text"><label for="inspect-text">Text Runs</label>
+        <input type="radio" name="inspector-panel" id="inspect-text" value="text"><label for="inspect-text">Structure</label>
         <input type="radio" name="inspector-panel" id="inspect-undo" value="undo"><label for="inspect-undo">Undo/Redo</label>
         <input type="radio" name="inspector-panel" id="inspect-source" value="source"><label for="inspect-source">Source</label>
         <div class="trix-inspector-selection-view"></div>

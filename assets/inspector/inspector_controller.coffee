@@ -12,7 +12,7 @@ class Trix.InspectorController
     @selectionView = new Trix.SelectionView selectionElement, @editorController
 
     @activePanelView = null
-    @activatePanel("attachments")
+    @activatePanel("text")
     @render()
 
   didClickToolbarButton: (event) =>
