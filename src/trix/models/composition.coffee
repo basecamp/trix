@@ -47,7 +47,7 @@ class Trix.Composition
     range = @getLocationRange()
     @document.insertDocumentAtLocationRange(document, range)
 
-    index = range.index + (blockLength = document.blockList.blocks.length)
+    index = range.index + (blockLength = document.blockList.length)
     offset = document.getBlockAtIndex(blockLength - 1).text.getLength()
     @setLocationRange({index, offset})
 
@@ -56,7 +56,7 @@ class Trix.Composition
     @insertText(text, options)
 
   insertHTML: (html) ->
-    document = Trix.Document.fromHTML(html)
+    document = Trix.Document.fromHTML(html, {@attachments})
     @insertDocument(document)
 
   replaceHTML: (html) ->

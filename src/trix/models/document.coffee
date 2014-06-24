@@ -66,6 +66,11 @@ class Trix.Document extends Trix.Object
 
         callback(block, textRange, index)
 
+  insertDocumentAtLocationRange: edit (document, locationRange) ->
+    @removeTextAtLocationRange(locationRange)
+    position = @blockList.findPositionAtIndexAndOffset(locationRange.index, locationRange.offset)
+    @blockList = @blockList.insertSplittableListAtPosition(document.blockList, position)
+
   insertTextAtLocationRange: edit (text, locationRange) ->
     @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
       block.copyWithText(block.text.insertTextAtPosition(text, locationRange.offset))
