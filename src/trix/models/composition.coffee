@@ -145,13 +145,6 @@ class Trix.Composition
     @document.moveTextFromLocationRangeToPosition(locationRange, position)
     @setPosition(position)
 
-  getTextFromSelection: ->
-    # TODO: get text(s) spanning blocks
-    if range = @getLocationRange()
-      if range[0].index is range[1].index
-        text = @getTextAtIndex(range[0].index)
-        text.getTextAtRange([range[0].offset, range[1].offset])
-
   # Attachment owner protocol
 
   getAttachments: ->
