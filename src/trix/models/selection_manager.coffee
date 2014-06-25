@@ -28,7 +28,16 @@ class Trix.SelectionManager
   expandSelectionInDirectionWithGranularity: (direction, granularity) ->
     selection = window.getSelection()
     if selection.rangeCount > 0
-      selection.modify("extend", direction, granularity)
+      if selection.modify
+        selection.modify("extend", direction, granularity)
+      else if document.body.createTextRange
+        textRange = document.body.createTextRange()
+        [x, y] = @getPointAtEndOfSelection()
+        textRange.moveToPoint(x, y)
+        switch direction
+          when "forward" then textRange.moveEnd(granularity, 1)
+          when "backward" then textRange.moveStart(granularity, -1)
+        textRange.select()
       @updateCurrentLocationRange()
 
   lock: ->
