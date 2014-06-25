@@ -139,12 +139,11 @@ class Trix.Composition
       positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
       @deleteFromCurrentPosition(positionBeforeLastWord - position)
 
-  moveTextFromRange: (range) ->
-    range = @getLocationRange()
-    # TODO: move selection spanning blocks
-    text = @getTextAtIndex(index)
-    text.moveTextFromRangeToPosition(range, position)
-    @requestPosition(position)
+  moveTextFromLocationRange: (locationRange) ->
+    @delegate?.compositionWillSetLocationRange?()
+    position = @getPosition()
+    @document.moveTextFromLocationRangeToPosition(locationRange, position)
+    @setPosition(position)
 
   getTextFromSelection: ->
     # TODO: get text(s) spanning blocks
@@ -221,6 +220,14 @@ class Trix.Composition
 
   setLocationRangeFromPoint: (point) ->
     @selectionDelegate?.setLocationRangeFromPoint?(point)
+
+  getPosition: ->
+    range = @getLocationRange()
+    @document.rangeFromLocationRange(range)[0]
+
+  setPosition: (position) ->
+    range = @document.locationRangeFromPosition(position)
+    @setLocationRange(range)
 
   preserveSelection: (block) ->
     @selectionDelegate?.preserveSelection?(block) ? block()

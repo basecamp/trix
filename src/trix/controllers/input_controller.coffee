@@ -57,13 +57,7 @@ class Trix.InputController
 
     dragstart: (event) ->
       target = event.target
-
-      if range = @responder?.getSelectedRange()
-        @draggedRange = range
-
-      else if Trix.DOM.within(@element, target) and target.trixPosition?
-        position = target.trixPosition
-        @draggedRange = [position, position + 1]
+      @draggedRange = @responder?.getLocationRange()
 
     dragover: (event) ->
       event.preventDefault() unless @draggedRange
@@ -78,7 +72,7 @@ class Trix.InputController
 
       if @draggedRange
         @delegate?.inputControllerWillMoveText()
-        @responder?.moveTextFromRange(@draggedRange)
+        @responder?.moveTextFromLocationRange(@draggedRange)
         delete @draggedRange
 
       else if files = event.dataTransfer.files

@@ -1,6 +1,7 @@
 #= require trix/utilities/object
 #= require trix/models/block
 #= require trix/models/splittable_list
+#= require trix/models/location_range
 
 class Trix.Document extends Trix.Object
   @fromJSON: (documentJSON) ->
@@ -70,6 +71,14 @@ class Trix.Document extends Trix.Object
     @removeTextAtLocationRange(locationRange)
     @insertTextAtLocationRange(text, locationRange)
 
+  moveTextFromLocationRangeToPosition: edit (locationRange, position) ->
+    range = @rangeFromLocationRange(locationRange)
+    return if range[0] <= position <= range[1]
+    document = @getDocumentAtLocationRange(locationRange)
+    @removeTextAtLocationRange(locationRange)
+    position -= document.getLength() if range[0] < position
+    @insertDocumentAtLocationRange(document, @locationRangeFromPosition(position))
+
   addAttributeAtLocationRange: edit (attribute, value, locationRange) ->
     @eachBlockAtLocationRange locationRange, (block, range, index) =>
       if Trix.attributes[attribute]?.block
@@ -94,11 +103,18 @@ class Trix.Document extends Trix.Object
     @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
       block.copyWithText(text.resizeAttachmentToDimensions(attachment, dimensions))
 
+  getDocumentAtLocationRange: (locationRange) ->
+    range = @rangeFromLocationRange(locationRange)
+    new @constructor @blockList.getSplittableListInRange(range).toArray()
+
   getBlockAtIndex: (index) ->
     @blockList.getObjectAtIndex(index)
 
   getTextAtIndex: (index) ->
     @getBlockAtIndex(index)?.text
+
+  getLength: ->
+    @blockList.getLength()
 
   eachBlock: (callback) ->
     @blockList.eachObject(callback)
@@ -170,8 +186,11 @@ class Trix.Document extends Trix.Object
 
   rangeFromLocationRange: (locationRange) ->
     leftPosition = @blockList.findPositionAtIndexAndOffset(locationRange.start.index, locationRange.start.offset)
-    rightPosition = @blockList.findPositionAtIndexAndOffset(locationRange.end.index, locationRange.end.offset)
-    [leftPosition, rightPosition]
+    rightPosition = @blockList.findPositionAtIndexAndOffset(locationRange.end.index, locationRange.end.offset) unless locationRange.isCollapsed()
+    [leftPosition, rightPosition ? leftPosition]
+
+  locationRangeFromPosition: (position) ->
+    new Trix.LocationRange @blockList.findIndexAndOffsetAtPosition(position)
 
   toJSON: ->
     @blockList.toJSON()
