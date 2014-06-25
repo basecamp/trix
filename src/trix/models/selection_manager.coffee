@@ -25,7 +25,7 @@ class Trix.SelectionManager
     locationRange = @getLocationRangeAtPoint(point)
     @setLocationRange(locationRange)
 
-  expandSelection: (direction = "forward", granularity = "character") ->
+  expandSelectionInDirectionWithGranularity: (direction, granularity) ->
     selection = window.getSelection()
     if selection.rangeCount > 0
       selection.modify("extend", direction, granularity)

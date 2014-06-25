@@ -69,25 +69,25 @@ class Trix.Composition
       text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
       @insertText(text)
 
-  delete: (direction = "backward", granularity = "character") ->
+  deleteInDirectionWithGranularity: (direction, granularity) ->
     @delegate?.compositionWillSetLocationRange?()
     range = @getLocationRange()
 
     if range.isCollapsed()
-      @selectionDelegate?.expandSelection(direction, granularity)
+      @selectionDelegate?.expandSelectionInDirectionWithGranularity(direction, granularity)
       range = @getLocationRange()
 
     @document.removeTextAtLocationRange(range)
     @setLocationRange(range.collapse())
 
   deleteBackward: ->
-    @delete()
+    @deleteInDirectionWithGranularity("backward", "character")
 
   deleteForward: ->
-    @delete("forward")
+    @deleteInDirectionWithGranularity("forward", "character")
 
   deleteWordBackward: ->
-    @delete("backward", "word")
+    @deleteInDirectionWithGranularity("backward", "word")
 
   moveTextFromLocationRange: (locationRange) ->
     @delegate?.compositionWillSetLocationRange?()
