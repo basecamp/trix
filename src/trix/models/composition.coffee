@@ -69,75 +69,25 @@ class Trix.Composition
       text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
       @insertText(text)
 
-  deleteFromCurrentPosition: (distance = -1) ->
+  delete: (direction = "backward", granularity = "character") ->
     @delegate?.compositionWillSetLocationRange?()
     range = @getLocationRange()
 
     if range.isCollapsed()
-      {index, offset} = range
-      offset += distance
-
-      if distance < 0
-        if offset < 0
-          index--
-          offset += @document.getTextAtIndex(index).getLength() + 1
-
-        start = {index, offset}
-        end = range.start
-      else
-        if offset > (textLength = @document.getTextAtIndex(index).getLength())
-          index++
-          offset -= textLength + 1
-
-        start = range.start
-        end = {index, offset}
-
-      range = new Trix.LocationRange start, end
+      @selectionDelegate?.expandSelection(direction, granularity)
+      range = @getLocationRange()
 
     @document.removeTextAtLocationRange(range)
     @setLocationRange(range.collapse())
 
   deleteBackward: ->
-    distance = 1
-    range = @getLocationRange()
-
-    if range.isCollapsed() and range.offset > 0
-      while (leftPosition = range.offset - distance - 1) >= 0
-        string = @document.getTextAtIndex(range.index).getStringAtRange([leftPosition, range.offset])
-        if countGraphemeClusters(string) is 1 or countGraphemeClusters("n#{string}") is 1
-          distance++
-        else
-          break
-
-    @deleteFromCurrentPosition(distance * -1)
+    @delete()
 
   deleteForward: ->
-    distance = 1
-    range = @getLocationRange()
-
-    if range.isCollapsed()
-      text = @document.getTextAtIndex(range.index)
-      textLength = text.getLength()
-      while (rightPosition = range.offset + distance + 1) <= textLength
-        string = text.getStringAtRange([range.offset, rightPosition])
-        if countGraphemeClusters(string) is 1
-          distance++
-        else
-          break
-
-    @deleteFromCurrentPosition(distance)
+    @delete("forward")
 
   deleteWordBackward: ->
-    if @getLocationRange()
-      @deleteBackward()
-    else
-      range = @getLocationRange()
-      text = @getTextAtIndex(range.index)
-      # TODO: delete across blocks
-      stringBeforePosition = text.getStringAtRange([0, range.offset])
-      # TODO: \b is not unicode compatible
-      positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
-      @deleteFromCurrentPosition(positionBeforeLastWord - position)
+    @delete("backward", "word")
 
   moveTextFromLocationRange: (locationRange) ->
     @delegate?.compositionWillSetLocationRange?()

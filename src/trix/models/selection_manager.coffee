@@ -25,6 +25,12 @@ class Trix.SelectionManager
     locationRange = @getLocationRangeAtPoint(point)
     @setLocationRange(locationRange)
 
+  expandSelection: (direction = "forward", granularity = "character") ->
+    selection = window.getSelection()
+    if selection.rangeCount > 0
+      selection.modify("extend", direction, granularity)
+      @updateCurrentLocationRange()
+
   lock: ->
     if @lockCount++ is 0
       @lockedLocationRange = @getLocationRange()
