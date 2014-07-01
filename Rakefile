@@ -1,5 +1,5 @@
 require 'bundler/setup'
-require File.join(File.dirname(__FILE__) + '/lib/trix')
+require File.join(File.dirname(__FILE__) + '/lib/trix/environment')
 
 def has_phantomjs?
   `which phantomjs` && $?.success?
