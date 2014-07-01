@@ -26,19 +26,18 @@ class Trix.SelectionManager
     @setLocationRange(locationRange)
 
   expandSelectionInDirectionWithGranularity: (direction, granularity) ->
-    selection = window.getSelection()
-    if selection.rangeCount > 0
-      if selection.modify
-        selection.modify("extend", direction, granularity)
-      else if document.body.createTextRange
-        textRange = document.body.createTextRange()
-        [x, y] = @getPointAtEndOfSelection()
-        textRange.moveToPoint(x, y)
-        switch direction
-          when "forward" then textRange.moveEnd(granularity, 1)
-          when "backward" then textRange.moveStart(granularity, -1)
-        textRange.select()
-      @updateCurrentLocationRange()
+    return unless selection = getDOMSelection()
+    if selection.modify
+      selection.modify("extend", direction, granularity)
+    else if document.body.createTextRange
+      textRange = document.body.createTextRange()
+      textRange.moveToPoint(@getPointAtEndOfSelection()...)
+      if direction is "forwrad"
+        textRange.moveEnd(granularity, 1)
+      else
+        textRange.moveStart(granularity, -1)
+      textRange.select()
+    @updateCurrentLocationRange()
 
   lock: ->
     if @lockCount++ is 0
@@ -64,16 +63,11 @@ class Trix.SelectionManager
 
   # Private
 
-  updateCurrentLocationRange: (domRange = @getDOMRange()) ->
+  updateCurrentLocationRange: (domRange = getDOMRange()) ->
     locationRange = @createLocationRangeFromDOMRange(domRange)
     unless locationRange?.isEqualTo?(@currentLocationRange)
       @currentLocationRange = locationRange
       @delegate?.locationRangeDidChange?(@currentLocationRange)
-
-  getDOMRange: ->
-    selection = window.getSelection()
-    if selection.rangeCount > 0
-      selection.getRangeAt(0)
 
   setDOMRange: (locationRange) ->
     rangeStart = @findContainerAndOffsetForLocationRange(locationRange.start)
@@ -177,28 +171,35 @@ class Trix.SelectionManager
       @createLocationRangeFromDOMRange(domRange)
 
   getPointAtEndOfSelection: ->
-    if range = @getDOMRange()
-      rects = range.getClientRects()
-      if rects.length > 0
-        rect = rects[rects.length - 1]
+    return unless range = getDOMRange()
+    rects = range.getClientRects()
+    if rects.length > 0
+      rect = rects[rects.length - 1]
 
-        pageX = rect.right
-        pageY = rect.top + rect.height / 2
+      pageX = rect.right
+      pageY = rect.top + rect.height / 2
 
-        if @clientRectIsRelativeToBody()
-          pageX -= document.body.scrollLeft
-          pageY -= document.body.scrollTop
+      if clientRectIsRelativeToBody()
+        pageX -= document.body.scrollLeft
+        pageY -= document.body.scrollTop
 
-        [pageX, pageY]
+      [pageX, pageY]
+
+  getDOMSelection = ->
+    selection = window.getSelection()
+    selection if selection.rangeCount > 0
+
+  getDOMRange = ->
+    getDOMSelection()?.getRangeAt(0)
 
   # ClientRect position properties should be relative to the viewport,
   # but in some browsers (like mobile Safari), they're relative to the body.
-  clientRectIsRelativeToBody: memoize ->
-    getRectTop = -> window.getSelection().getRangeAt(0).getClientRects()[0].top
-    originalTop = getRectTop()
+  getRectTop = ->
+    getDOMRange().getClientRects()[0].top
 
+  clientRectIsRelativeToBody = memoize ->
+    originalTop = getRectTop()
     window.scrollBy(0, 1)
     result = originalTop is getRectTop()
     window.scrollBy(0, -1)
-
     result
