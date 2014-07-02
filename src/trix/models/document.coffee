@@ -54,15 +54,16 @@ class Trix.Document extends Trix.Object
     blockList = @blockList.removeObjectsInRange(range)
 
     if blockList.length
-      leftIndex = locationRange.index
-      rightIndex = leftIndex + 1
-      leftBlock = blockList.getObjectAtIndex(leftIndex)
-      rightBlock = blockList.getObjectAtIndex(rightIndex)
+      unless @locationRangeEndsAtEndOfBlock(locationRange)
+        leftIndex = locationRange.index
+        rightIndex = leftIndex + 1
+        leftBlock = blockList.getObjectAtIndex(leftIndex)
+        rightBlock = blockList.getObjectAtIndex(rightIndex)
 
-      if leftBlock and rightBlock
-        blockList = blockList.
-          removeObjectAtIndex(rightIndex).
-          replaceObjectAtIndex(leftBlock.consolidateWith(rightBlock), leftIndex)
+        if leftBlock and rightBlock
+          blockList = blockList.
+            removeObjectAtIndex(rightIndex).
+            replaceObjectAtIndex(leftBlock.consolidateWith(rightBlock), leftIndex)
     else
       blockList = new Trix.SplittableList [new Trix.Block]
 
@@ -205,6 +206,10 @@ class Trix.Document extends Trix.Object
 
   locationRangeFromPosition: (position) ->
     new Trix.LocationRange @blockList.findIndexAndOffsetAtPosition(position)
+
+  locationRangeEndsAtEndOfBlock: (locationRange) ->
+    {offset, index} = locationRange.end
+    offset is @getBlockAtIndex(index).getLength()
 
   toJSON: ->
     @blockList.toJSON()
