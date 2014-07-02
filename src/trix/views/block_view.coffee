@@ -13,13 +13,16 @@ class Trix.BlockView
     @resetNodeCache()
     @elements = []
     @createElementsForText()
-    #@createExtraNewlineElement()
+    @createExtraNewlineElement()
 
     container = switch
       when @blockAttributes.quote
         document.createElement("blockquote")
       else
-        document.createDocumentFragment()
+        document.createElement("div")
+
+    container.trixPosition = 0
+    container.trixIndex = @blockIndex
 
     container.appendChild(element) for element in @elements
     container
@@ -76,10 +79,11 @@ class Trix.BlockView
       for key, value of @currentRun.attributes when Trix.attributes[key]?.parent
         return key if value is @previousRun.attributes[key]
 
-  # Add an extra newline if the text ends with one. Otherwise, the cursor won't move down.
+  # A single <br> at the end of a block element has no visual representation
+  # so add an extra one.
   createExtraNewlineElement: ->
     if string = @currentRun?.string
-      if /\n$/.test(string)
+      if /\n$/.test(string) and not @block.isPlaceholder()
         @currentRun = { string: "\n", position: @text.getLength() }
         node = @createStringNodesForCurrentRun()[0]
         @cacheNode(node)

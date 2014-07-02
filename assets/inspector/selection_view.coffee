@@ -9,5 +9,6 @@ class Trix.SelectionView
       description = if range.isCollapsed() then "Location" else "Location range"
       @element.innerHTML = "#{description}: #{JSON.stringify(range)}"
       @element.innerHTML += " (Frozen)" if frozen
+      @element.innerHTML += ", Position: #{@composition.getPosition()}"
     else
       @element.innerHTML = "(No Selection)"

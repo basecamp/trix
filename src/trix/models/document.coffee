@@ -46,7 +46,10 @@ class Trix.Document extends Trix.Object
 
   insertTextAtLocationRange: edit (text, locationRange) ->
     @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
-      block.copyWithText(block.text.insertTextAtPosition(text, locationRange.offset))
+      if block.isPlaceholder()
+        block.copyWithText(text)
+      else
+        block.copyWithText(block.text.insertTextAtPosition(text, locationRange.offset))
 
   removeTextAtLocationRange: edit (locationRange) ->
     return if locationRange.isCollapsed()
@@ -104,9 +107,8 @@ class Trix.Document extends Trix.Object
     {offset, index} = locationRange
     block = @getBlockAtIndex(index)
 
-    if offset is block.getLength()
-      newBlock = new Trix.Block Trix.Text.textForStringWithAttributes("\n")
-      @blockList = @blockList.insertObjectAtIndex(newBlock, index + 1)
+    if offset is block.getLength() and block.text.getStringAtRange([offset - 1, offset]) is "\n"
+      @blockList = @blockList.insertObjectAtIndex(Trix.Block.createPlaceholder(), index + 1)
     else
       attributes = block.text.getAttributesAtPosition(offset)
       text = Trix.Text.textForStringWithAttributes("\n", attributes)

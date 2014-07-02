@@ -29,7 +29,7 @@ class Trix.TextPanelView extends Trix.InspectorPanelView
   renderText: (text) ->
     element = make("div", className: "text")
     pieces = text.pieceList.toArray()
-    element.appendChild(@renderTitle("Text", "Piece Count: #{pieces.length}"))
+    element.appendChild(@renderTitle("Text", "Piece Count: #{pieces.length}, Length: #{text.getLength()}"))
     for piece, index in pieces
       element.appendChild(@renderPiece(piece, index))
     element

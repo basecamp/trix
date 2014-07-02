@@ -5,9 +5,15 @@ class Trix.Block extends Trix.Object
     text = Trix.Text.fromJSON(blockJSON.text)
     new this text, blockJSON.attributes
 
+  @createPlaceholder: ->
+    new this Trix.Text.textForStringWithAttributes("\n")
+
   constructor: (@text = new Trix.Text, attributes = {}) ->
     super
     @attributes = Trix.Hash.box(attributes)
+
+  isPlaceholder: ->
+    @text.toString() is "\n"
 
   copyWithText: (text) ->
     new @constructor text, @attributes
