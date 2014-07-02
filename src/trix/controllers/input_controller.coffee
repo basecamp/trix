@@ -116,7 +116,7 @@ class Trix.InputController
 
     return: (event) ->
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertString("\n")
+      @responder?.insertLineBreak()
       event.preventDefault()
 
     control:

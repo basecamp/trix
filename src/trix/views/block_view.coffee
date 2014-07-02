@@ -13,7 +13,7 @@ class Trix.BlockView
     @resetNodeCache()
     @elements = []
     @createElementsForText()
-    @createExtraNewlineElement()
+    #@createExtraNewlineElement()
 
     container = switch
       when @blockAttributes.quote

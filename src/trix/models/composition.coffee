@@ -55,6 +55,13 @@ class Trix.Composition
     text = Trix.Text.textForStringWithAttributes(string, @currentAttributes)
     @insertText(text, options)
 
+  insertLineBreak: ->
+    @delegate?.compositionWillSetLocationRange?()
+    range = @getLocationRange()
+    position = @getPosition()
+    @document.insertLineBreakAtLocationRange(range)
+    @setPosition(position + 1)
+
   insertHTML: (html) ->
     document = Trix.Document.fromHTML(html, {@attachments})
     @insertDocument(document)

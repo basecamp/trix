@@ -49,6 +49,7 @@ class Trix.Document extends Trix.Object
       block.copyWithText(block.text.insertTextAtPosition(text, locationRange.offset))
 
   removeTextAtLocationRange: edit (locationRange) ->
+    return if locationRange.isCollapsed()
     range = @rangeFromLocationRange(locationRange)
     blockList = @blockList.removeObjectsInRange(range)
 
@@ -96,6 +97,19 @@ class Trix.Document extends Trix.Object
       else if range[0] isnt range[1]
         @blockList = @blockList.editObjectAtIndex index, ->
           block.copyWithText(block.text.removeAttributeAtRange(attribute, range))
+
+  insertLineBreakAtLocationRange: edit (locationRange) ->
+    @removeTextAtLocationRange(locationRange)
+    {offset, index} = locationRange
+    block = @getBlockAtIndex(index)
+
+    if offset is block.getLength()
+      newBlock = new Trix.Block Trix.Text.textForStringWithAttributes("\n")
+      @blockList = @blockList.insertObjectAtIndex(newBlock, index + 1)
+    else
+      attributes = block.text.getAttributesAtPosition(offset)
+      text = Trix.Text.textForStringWithAttributes("\n", attributes)
+      @insertTextAtLocationRange(text, locationRange.collapse())
 
   resizeAttachmentToDimensions: edit (attachment, dimensions) ->
     locationRange = @getLocationRangeOfAttachment(attachment)
