@@ -1,14 +1,16 @@
 class Trix.SelectionObserver
-  constructor: ->
-    requestAnimationFrame(@tick)
+  events = ["DOMFocusIn", "DOMFocusOut", "mousedown", "mousemove", "keydown"]
+
+  constructor: (@element) ->
+    @element.addEventListener(event, @refresh) for event in events
     @range = getRange()
 
-  tick: =>
-    requestAnimationFrame(@tick)
-    range = getRange()
-    unless rangesAreEqual(range, @range)
-      @delegate?.selectionDidChange?()
-      @range = range
+  refresh: =>
+    requestAnimationFrame =>
+      range = getRange()
+      unless rangesAreEqual(range, @range)
+        @delegate?.selectionDidChange?()
+        @range = range
 
   getRange = ->
     selection = window.getSelection()

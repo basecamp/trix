@@ -22,7 +22,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @inputController.delegate = this
     @inputController.responder = @composition
 
-    @selectionObserver = new Trix.SelectionObserver
+    @selectionObserver = new Trix.SelectionObserver @textElement
     @selectionObserver.delegate = this
 
     @mutationObserver = new Trix.MutationObserver @textElement
