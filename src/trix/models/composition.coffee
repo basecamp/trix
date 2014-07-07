@@ -61,6 +61,7 @@ class Trix.Composition
       @deleteBackward()
       document = new Trix.Document [Trix.Block.createPlaceholder()]
       @insertDocument(document)
+      @setLocationRange(index: range.end.index + 1, offset: 0)
     else
       @insertString("\n")
 

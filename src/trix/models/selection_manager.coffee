@@ -128,7 +128,11 @@ class Trix.SelectionManager
       offset = loactionRange.offset - node.trixPosition
     else
       container = node.parentNode
-      offset = [node.parentNode.childNodes...].indexOf(node) + 1
+      offset =
+        if loactionRange.offset is 0
+          0
+        else
+          [node.parentNode.childNodes...].indexOf(node) + 1
 
     [container, offset]
 
