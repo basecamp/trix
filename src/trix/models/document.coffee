@@ -102,18 +102,6 @@ class Trix.Document extends Trix.Object
         @blockList = @blockList.editObjectAtIndex index, ->
           block.copyWithText(block.text.removeAttributeAtRange(attribute, range))
 
-  insertLineBreakAtLocationRange: edit (locationRange) ->
-    @removeTextAtLocationRange(locationRange)
-    {offset, index} = locationRange
-    block = @getBlockAtIndex(index)
-
-    if offset is block.getLength() and block.text.getStringAtRange([offset - 1, offset]) is "\n"
-      @blockList = @blockList.insertObjectAtIndex(Trix.Block.createPlaceholder(), index + 1)
-    else
-      attributes = block.text.getAttributesAtPosition(offset)
-      text = Trix.Text.textForStringWithAttributes("\n", attributes)
-      @insertTextAtLocationRange(text, locationRange.collapse())
-
   resizeAttachmentToDimensions: edit (attachment, dimensions) ->
     locationRange = @getLocationRangeOfAttachment(attachment)
     text = @getTextAtIndex(locationRange.index)
@@ -222,6 +210,11 @@ class Trix.Document extends Trix.Object
   locationRangeEndsAtEndOfBlock: (locationRange) ->
     {offset, index} = locationRange.end
     offset is @getBlockAtIndex(index).getLength()
+
+  locationRangeEndsAtEndOfBlockWithCharacter: (locationRange, character) ->
+    text = @getTextAtIndex(locationRange.end.index)
+    range = [locationRange.end.offset - 1, locationRange.end.offset]
+    @locationRangeEndsAtEndOfBlock(locationRange) and text.getStringAtRange(range) is character
 
   toJSON: ->
     @blockList.toJSON()

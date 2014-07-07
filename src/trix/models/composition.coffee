@@ -56,11 +56,13 @@ class Trix.Composition
     @insertText(text, options)
 
   insertLineBreak: ->
-    @delegate?.compositionWillSetLocationRange?()
     range = @getLocationRange()
-    position = @getPosition()
-    @document.insertLineBreakAtLocationRange(range)
-    @setPosition(position + 1)
+    if @document.locationRangeEndsAtEndOfBlockWithCharacter(range, "\n")
+      @deleteBackward()
+      document = new Trix.Document [Trix.Block.createPlaceholder()]
+      @insertDocument(document)
+    else
+      @insertString("\n")
 
   insertHTML: (html) ->
     document = Trix.Document.fromHTML(html, {@attachments})
