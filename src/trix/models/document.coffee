@@ -85,13 +85,15 @@ class Trix.Document extends Trix.Object
     @insertDocumentAtLocationRange(document, @locationRangeFromPosition(position))
 
   addAttributeAtLocationRange: edit (attribute, value, locationRange) ->
-    @eachBlockAtLocationRange locationRange, (block, range, index) =>
-      if Trix.attributes[attribute]?.block
-        @blockList = @blockList.editObjectAtIndex index, ->
-          block.addAttribute(attribute, value)
-      else if range[0] isnt range[1]
-        @blockList = @blockList.editObjectAtIndex index, ->
-          block.copyWithText(block.text.addAttributeAtRange(attribute, value, range))
+    if Trix.attributes[attribute]?.block
+      range = @rangeFromLocationRange(locationRange)
+      @blockList = @blockList.transformObjectsInRange range, (block) ->
+        block.addAttribute(attribute, value)
+    else
+      @eachBlockAtLocationRange locationRange, (block, range, index) =>
+        if range[0] isnt range[1]
+          @blockList = @blockList.editObjectAtIndex index, ->
+            block.copyWithText(block.text.addAttributeAtRange(attribute, value, range))
 
   removeAttributeAtLocationRange: edit (attribute, locationRange) ->
     @eachBlockAtLocationRange locationRange, (block, range, index) =>

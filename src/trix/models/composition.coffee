@@ -151,6 +151,11 @@ class Trix.Composition
       @document.removeAttributeAtLocationRange(attributeName, range)
       delete @currentAttributes[attributeName]
 
+    if Trix.attributes[attributeName]?.block
+      index = range.index + 1
+      length = @document.getBlockAtIndex(index).getLength()
+      @setLocationRange({index, offset: 0}, {index, offset: length})
+
     @notifyDelegateOfCurrentAttributesChange()
 
   updateCurrentAttributes: ->
