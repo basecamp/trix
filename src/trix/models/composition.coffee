@@ -42,6 +42,13 @@ class Trix.Composition
       offset += text.getLength()
       @setLocationRange({index, offset})
 
+  insertPlaceholderBlock: ->
+    @delegate?.compositionWillSetLocationRange?()
+    range = @getLocationRange()
+    document = new Trix.Document [Trix.Block.createPlaceholder()]
+    @insertDocument(document)
+    @setLocationRange(index: range.end.index + 1, offset: 0)
+
   insertDocument: (document) ->
     @delegate?.compositionWillSetLocationRange?()
     range = @getLocationRange()
@@ -57,13 +64,19 @@ class Trix.Composition
 
   insertLineBreak: ->
     range = @getLocationRange()
-    if @document.locationRangeEndsAtEndOfBlockWithCharacter(range, "\n")
-      @deleteBackward()
-      document = new Trix.Document [Trix.Block.createPlaceholder()]
-      @insertDocument(document)
-      @setLocationRange(index: range.end.index + 1, offset: 0)
-    else
-      @insertString("\n")
+    block = @document.getBlockAtIndex(range.end.index)
+    switch
+      when block.isPlaceholder()
+        @insertPlaceholderBlock()
+      when range.end.offset is block.getLength()
+        if block.hasAttributes() and block.text.endsWithCharacter("\n")
+          # Remove the trailing newline
+          @selectionDelegate?.expandSelectionInDirectionWithGranularity("backward", "character")
+          @insertPlaceholderBlock()
+        else
+          @insertString("\n")
+      else
+        @insertString("\n")
 
   insertHTML: (html) ->
     document = Trix.Document.fromHTML(html, {@attachments})

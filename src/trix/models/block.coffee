@@ -30,6 +30,9 @@ class Trix.Block extends Trix.Object
   getAttributes: ->
     @attributes.toObject()
 
+  hasAttributes: ->
+    @attributes.getKeys().length > 0
+
   contentsForInspection: ->
     text: @text.inspect()
     attributes: @attributes.inspect()

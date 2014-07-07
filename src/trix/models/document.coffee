@@ -211,10 +211,5 @@ class Trix.Document extends Trix.Object
     {offset, index} = locationRange.end
     offset is @getBlockAtIndex(index).getLength()
 
-  locationRangeEndsAtEndOfBlockWithCharacter: (locationRange, character) ->
-    text = @getTextAtIndex(locationRange.end.index)
-    range = [locationRange.end.offset - 1, locationRange.end.offset]
-    @locationRangeEndsAtEndOfBlock(locationRange) and text.getStringAtRange(range) is character
-
   toJSON: ->
     @blockList.toJSON()
