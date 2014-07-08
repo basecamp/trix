@@ -191,6 +191,22 @@ class Trix.Document extends Trix.Object
       if attachment = text.getAttachmentById(id)
         return attachment
 
+  expandedLocationRangeForBlockTransformation: (locationRange) ->
+    {start, end} = locationRange
+
+    unless start.offset is 0
+      startString = @getTextAtIndex(start.index).getStringAtRange([0, start.offset])
+      startOffset = startString.lastIndexOf("\n")
+      start.offset = if startOffset isnt -1 then startOffset + 1 else 0
+
+    endText = @getTextAtIndex(end.index)
+    unless end.offset is (endLength = endText.getLength())
+      endString = endText.getStringAtRange([end.offset, endLength])
+      endOffset = endString.indexOf("\n")
+      end.offset = if endOffset isnt -1 then end.offset + endOffset else endLength
+
+    new Trix.LocationRange start, end
+
   rangeFromLocationRange: (locationRange) ->
     leftPosition = @blockList.findPositionAtIndexAndOffset(locationRange.start.index, locationRange.start.offset)
     rightPosition = @blockList.findPositionAtIndexAndOffset(locationRange.end.index, locationRange.end.offset) unless locationRange.isCollapsed()

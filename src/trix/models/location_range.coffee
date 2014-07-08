@@ -6,8 +6,11 @@ class Trix.LocationRange
       new this start, end
 
   constructor: (@start, @end) ->
-    @end ?= @start
     {@index, @offset} = @start
+
+    unless @end?
+      @end = {}
+      @end[key] = val for key, val of start
 
   isEqualTo: (locationRange) ->
     @start.index is locationRange?.start?.index and
