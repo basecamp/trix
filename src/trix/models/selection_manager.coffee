@@ -9,7 +9,7 @@
 class Trix.SelectionManager
   constructor: (@element) ->
     @lockCount = 0
-    @selectionObserver = new Trix.SelectionObserver
+    @selectionObserver = new Trix.SelectionObserver @element
     @selectionObserver.delegate = this
 
   getLocationRange: ->

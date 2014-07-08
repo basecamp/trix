@@ -154,7 +154,7 @@ class Installer
     textarea.style["display"] = "none"
     textarea.parentElement.insertBefore(element, textarea)
 
-  textareaStylesToCopy = "width position top left right bottom zIndex color".split(" ")
+  textareaStylesToCopy = "position top left right bottom zIndex color".split(" ")
   textareaStylePatternToCopy = /(border|outline|padding|margin|background)[A-Z]+/
 
   copyTextAreaStylesToElement = (textarea, element) ->
@@ -166,7 +166,27 @@ class Installer
     for key, value of textareaStyle when value and textareaStylePatternToCopy.test(key)
       element.style[key] = value
 
-    element.style["minHeight"] = textareaStyle["height"]
+    innerDimensions = calculateInnerDimensionsFromComputedStyle(textareaStyle)
+    element.style.width = innerDimensions.width + "px"
+    element.style.minHeight = innerDimensions.height + "px"
+
+  calculateInnerDimensionsFromComputedStyle = (s) ->
+    i = (value) -> parseInt(value, 10)
+    outerWidth = i(s.width)
+    outerHeight = i(s.height)
+
+    if s.boxSizing is "border-box"
+      borderWidth = i(s.borderLeftWidth) + i(s.borderRightWidth)
+      borderHeight = i(s.borderTopWidth) + i(s.borderBottomWidth)
+      paddingWidth = i(s.paddingLeft) + i(s.paddingRight)
+      paddingHeight = i(s.paddingTop) + i(s.paddingBottom)
+
+      width: outerWidth - borderWidth - paddingWidth
+      height: outerHeight - borderHeight - paddingHeight
+
+    else
+      width: outerWidth
+      height: outerHeight
 
   getElement = (elementOrId) ->
     if typeof(elementOrId) is "string"

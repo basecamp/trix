@@ -2,7 +2,7 @@ require 'bundler/setup'
 require 'rack/rewrite'
 
 root = File.dirname(__FILE__)
-require File.join(root + '/lib/trix')
+require File.join(root + '/lib/trix/environment')
 
 environment = Trix::Environment.new(root)
 environment.paths = %w( assets src test/assets test/src test/vendor )
