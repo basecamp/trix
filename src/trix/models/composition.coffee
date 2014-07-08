@@ -146,6 +146,7 @@ class Trix.Composition
     isBlockAttribute = Trix.attributes[attributeName]?.block
 
     if isBlockAttribute
+      endPosition = @document.rangeFromLocationRange(range)[1]
       range = @document.expandedLocationRangeForBlockTransformation(range)
       @setLocationRange(range)
 
@@ -157,9 +158,7 @@ class Trix.Composition
       delete @currentAttributes[attributeName]
 
     if isBlockAttribute
-      index = range.index + 1
-      length = @document.getBlockAtIndex(index).getLength()
-      @setLocationRange({index, offset: 0}, {index, offset: length})
+      @setPosition(endPosition)
 
     @notifyDelegateOfCurrentAttributesChange()
 
