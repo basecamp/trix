@@ -32,7 +32,7 @@ class Trix.Composition
   # Responder protocol
 
   insertText: (text, {updatePosition} = updatePosition: true) ->
-    @delegate?.compositionWillSetLocationRange?() if updatePosition
+    @notifyDelegateOfIntentionToSetLocationRange() if updatePosition
 
     range = @getLocationRange()
     @document.insertTextAtLocationRange(text, range)
@@ -43,14 +43,14 @@ class Trix.Composition
       @setLocationRange({index, offset})
 
   insertPlaceholderBlock: ->
-    @delegate?.compositionWillSetLocationRange?()
+    @notifyDelegateOfIntentionToSetLocationRange()
     range = @getLocationRange()
     document = new Trix.Document [Trix.Block.createPlaceholder()]
     @insertDocument(document)
     @setLocationRange(index: range.end.index + 1, offset: 0)
 
   insertDocument: (document) ->
-    @delegate?.compositionWillSetLocationRange?()
+    @notifyDelegateOfIntentionToSetLocationRange()
     range = @getLocationRange()
     @document.insertDocumentAtLocationRange(document, range)
 
@@ -93,7 +93,7 @@ class Trix.Composition
       @insertText(text)
 
   deleteInDirectionWithGranularity: (direction, granularity) ->
-    @delegate?.compositionWillSetLocationRange?()
+    @notifyDelegateOfIntentionToSetLocationRange()
     range = @getLocationRange()
 
     if range.isCollapsed()
@@ -113,7 +113,7 @@ class Trix.Composition
     @deleteInDirectionWithGranularity("backward", "word")
 
   moveTextFromLocationRange: (locationRange) ->
-    @delegate?.compositionWillSetLocationRange?()
+    @notifyDelegateOfIntentionToSetLocationRange()
     position = @getPosition()
     @document.moveTextFromLocationRangeToPosition(locationRange, position)
     @setPosition(position)
@@ -206,6 +206,9 @@ class Trix.Composition
 
   preserveSelection: (block) ->
     @selectionDelegate?.preserveSelection?(block) ? block()
+
+  notifyDelegateOfIntentionToSetLocationRange: ->
+    @delegate?.compositionWillSetLocationRange?()
 
   expandSelectionForEditing: ->
     for key, value of Trix.attributes when value.parent
