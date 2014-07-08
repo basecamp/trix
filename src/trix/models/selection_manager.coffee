@@ -32,7 +32,7 @@ class Trix.SelectionManager
     else if document.body.createTextRange
       textRange = document.body.createTextRange()
       textRange.moveToPoint(@getPointAtEndOfSelection()...)
-      if direction is "forwrad"
+      if direction is "forward"
         textRange.moveEnd(granularity, 1)
       else
         textRange.moveStart(granularity, -1)
