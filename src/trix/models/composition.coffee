@@ -138,29 +138,37 @@ class Trix.Composition
     @currentAttributes[attributeName]?
 
   toggleCurrentAttribute: (attributeName) ->
-    value = not @currentAttributes[attributeName]
-    @setCurrentAttribute(attributeName, value)
+    if value = not @currentAttributes[attributeName]
+      @setCurrentAttribute(attributeName, value)
+    else
+      @removeCurrentAttribute(attributeName)
 
   setCurrentAttribute: (attributeName, value) ->
-    range = @getLocationRange()
-    isBlockAttribute = Trix.attributes[attributeName]?.block
-
-    if isBlockAttribute
-      endPosition = @document.rangeFromLocationRange(range)[1]
-      range = @document.expandedLocationRangeForBlockTransformation(range)
-      @setLocationRange(range)
-
-    if value
-      @document.addAttributeAtLocationRange(attributeName, value, range)
-      @currentAttributes[attributeName] = value
+    if Trix.attributes[attributeName]?.block
+      @setBlockAttribute(attributeName, value)
     else
-      @document.removeAttributeAtLocationRange(attributeName, range)
-      delete @currentAttributes[attributeName]
+      @setTextAttribute(attributeName, value)
 
-    if isBlockAttribute
-      @setPosition(endPosition)
-
+    @currentAttributes[attributeName] = value
     @notifyDelegateOfCurrentAttributesChange()
+
+  removeCurrentAttribute: (attributeName) ->
+    range = @getLocationRange()
+    @document.removeAttributeAtLocationRange(attributeName, range)
+    delete @currentAttributes[attributeName]
+    @notifyDelegateOfCurrentAttributesChange()
+
+  setTextAttribute: (attributeName, value) ->
+    range = @getLocationRange()
+    @document.addAttributeAtLocationRange(attributeName, value, range)
+
+  setBlockAttribute: (attributeName, value) ->
+    range = @getLocationRange()
+    endPosition = @document.rangeFromLocationRange(range)[1]
+    range = @document.expandedLocationRangeForBlockTransformation(range)
+    @setLocationRange(range)
+    @document.addAttributeAtLocationRange(attributeName, value, range)
+    @setPosition(endPosition)
 
   updateCurrentAttributes: ->
     @currentAttributes =
