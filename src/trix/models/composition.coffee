@@ -159,12 +159,12 @@ class Trix.Composition
     @notifyDelegateOfCurrentAttributesChange()
 
   setTextAttribute: (attributeName, value) ->
-    range = @getLocationRange()
+    return unless range = @getLocationRange()
     @document.addAttributeAtLocationRange(attributeName, value, range)
 
   setBlockAttribute: (attributeName, value) ->
+    return unless range = @getLocationRange()
     blockLength = @document.blockList.length
-    range = @getLocationRange()
     endPosition = @document.rangeFromLocationRange(range)[1]
     range = @document.expandedLocationRangeForBlockTransformation(range)
     @document.addAttributeAtLocationRange(attributeName, value, range)
