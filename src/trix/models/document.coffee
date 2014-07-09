@@ -87,9 +87,13 @@ class Trix.Document extends Trix.Object
 
   addAttributeAtLocationRange: edit (attribute, value, locationRange) ->
     if Trix.attributes[attribute]?.block
-      range = @rangeFromLocationRange(locationRange)
-      @blockList = @blockList.transformObjectsInRange range, (block) ->
-        block.addAttribute(attribute, value)
+      if locationRange.isCollapsed()
+        @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
+          block.addAttribute(attribute, value)
+      else
+        range = @rangeFromLocationRange(locationRange)
+        @blockList = @blockList.transformObjectsInRange range, (block) ->
+          block.addAttribute(attribute, value)
     else
       @eachBlockAtLocationRange locationRange, (block, range, index) =>
         if range[0] isnt range[1]
