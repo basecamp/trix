@@ -221,17 +221,7 @@ class Trix.Document extends Trix.Object
     [leftPosition, rightPosition ? leftPosition]
 
   locationRangeFromPosition: (position) ->
-    {index, offset} = @blockList.findIndexAndOffsetAtPosition(position)
-    # There are two cursor positions with the same document position
-    # at block boundaries. Prefer the first.
-    if offset is 0 and index > 0
-      leftIndex = index - 1
-      leftOffset = @getBlockAtIndex(leftIndex).getLength()
-      leftPosition = @blockList.findPositionAtIndexAndOffset(leftIndex, leftOffset)
-      if leftPosition is position
-        index = leftIndex
-        offset = leftOffset
-    new Trix.LocationRange {index, offset}
+    new Trix.LocationRange @blockList.findIndexAndOffsetAtPosition(position)
 
   toString: ->
     @blockList.toString()
