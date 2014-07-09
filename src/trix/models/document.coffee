@@ -114,6 +114,9 @@ class Trix.Document extends Trix.Object
     range = @rangeFromLocationRange(locationRange)
     new @constructor @blockList.getSplittableListInRange(range).toArray()
 
+  getStringAtLocationRange: (locationRange) ->
+    @getDocumentAtLocationRange(locationRange).toString()
+
   getBlockAtIndex: (index) ->
     @blockList.getObjectAtIndex(index)
 
@@ -228,6 +231,9 @@ class Trix.Document extends Trix.Object
   locationRangeEndsAtEndOfBlock: (locationRange) ->
     {offset, index} = locationRange.end
     offset is @getBlockAtIndex(index).getLength()
+
+  toString: ->
+    @blockList.toString()
 
   toJSON: ->
     @blockList.toJSON()

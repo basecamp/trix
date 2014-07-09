@@ -69,7 +69,7 @@ class Trix.Composition
       when block.isPlaceholder()
         @insertPlaceholderBlock()
       when range.end.offset is block.getLength()
-        if block.hasAttributes() and block.text.endsWithCharacter("\n")
+        if block.hasAttributes() and block.text.endsWithString("\n")
           # Remove the trailing newline
           @selectionDelegate?.expandSelectionInDirectionWithGranularity("backward", "character")
           @insertPlaceholderBlock()
@@ -163,12 +163,31 @@ class Trix.Composition
     @document.addAttributeAtLocationRange(attributeName, value, range)
 
   setBlockAttribute: (attributeName, value) ->
+    blockLength = @document.blockList.length
     range = @getLocationRange()
     endPosition = @document.rangeFromLocationRange(range)[1]
     range = @document.expandedLocationRangeForBlockTransformation(range)
-    @setLocationRange(range)
     @document.addAttributeAtLocationRange(attributeName, value, range)
     @setPosition(endPosition)
+
+    if @document.blockList.length > blockLength
+      {index} = @getLocationRange()
+      @document.edit =>
+        @removeNewlineAfterBlockAtIndex(index)
+        @removeNewlineBeforeBlockAtIndex(index) if range.offset isnt 0
+
+  removeNewlineBeforeBlockAtIndex: (index) ->
+    unless (block = @document.getBlockAtIndex(--index)).isPlaceholder()
+      offset = block.getLength()
+      range = new Trix.LocationRange({index, offset: offset - 1}, {index, offset})
+      if @document.getStringAtLocationRange(range) is "\n"
+        @document.removeTextAtLocationRange(range)
+
+  removeNewlineAfterBlockAtIndex: (index) ->
+    unless @document.getBlockAtIndex(++index).isPlaceholder()
+      range = new Trix.LocationRange({index, offset: 0}, {index, offset: 1})
+      if @document.getStringAtLocationRange(range) is "\n"
+        @document.removeTextAtLocationRange(range)
 
   updateCurrentAttributes: ->
     @currentAttributes =

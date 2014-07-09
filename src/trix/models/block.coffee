@@ -63,3 +63,6 @@ class Trix.Block extends Trix.Object
       left = @copyWithText(@text.getTextAtRange([0, offset]))
       right = @copyWithText(@text.getTextAtRange([offset, @getLength()]))
     [left, right]
+
+  toString: ->
+    @text.toString()

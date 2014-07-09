@@ -89,9 +89,12 @@ class Trix.Text extends Trix.Object
   getStringAtRange: (range) ->
     @pieceList.getSplittableListInRange(range).toString()
 
-  endsWithCharacter: (character) ->
+  startsWithString: (string) ->
+    @getStringAtRange([0, string.length]) is string
+
+  endsWithString: (string) ->
     length = @getLength()
-    @getStringAtRange([length - 1, length]) is character
+    @getStringAtRange([length - string.length, length]) is string
 
   getAttachments: ->
     piece.attachment for piece in @pieceList.toArray() when piece.attachment?
