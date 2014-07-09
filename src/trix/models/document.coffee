@@ -53,11 +53,14 @@ class Trix.Document extends Trix.Object
 
   removeTextAtLocationRange: edit (locationRange) ->
     return if locationRange.isCollapsed()
-    range = @rangeFromLocationRange(locationRange)
-    blockList = @blockList.removeObjectsInRange(range)
+    if locationRange.isInSingleIndex()
+      @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
+        block.copyWithText(block.text.removeTextAtRange([locationRange.start.offset, locationRange.end.offset]))
+    else
+      range = @rangeFromLocationRange(locationRange)
+      blockList = @blockList.removeObjectsInRange(range)
 
-    if blockList.length
-      unless @locationRangeEndsAtEndOfBlock(locationRange)
+      if blockList.length
         leftIndex = locationRange.index
         rightIndex = leftIndex + 1
         leftBlock = blockList.getObjectAtIndex(leftIndex)
@@ -67,10 +70,8 @@ class Trix.Document extends Trix.Object
           blockList = blockList.
             removeObjectAtIndex(rightIndex).
             replaceObjectAtIndex(leftBlock.consolidateWith(rightBlock), leftIndex)
-    else
-      blockList = new Trix.SplittableList [new Trix.Block]
 
-    @blockList = blockList
+      @blockList = blockList
 
   replaceTextAtLocationRange: edit (text, locationRange) ->
     @removeTextAtLocationRange(locationRange)
@@ -227,10 +228,6 @@ class Trix.Document extends Trix.Object
         index = leftIndex
         offset = leftOffset
     new Trix.LocationRange {index, offset}
-
-  locationRangeEndsAtEndOfBlock: (locationRange) ->
-    {offset, index} = locationRange.end
-    offset is @getBlockAtIndex(index).getLength()
 
   toString: ->
     @blockList.toString()
