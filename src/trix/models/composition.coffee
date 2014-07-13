@@ -45,8 +45,7 @@ class Trix.Composition
   insertPlaceholderBlock: ->
     @notifyDelegateOfIntentionToSetLocationRange()
     range = @getLocationRange()
-    document = new Trix.Document [Trix.Block.createPlaceholder()]
-    @document.insertDocumentAtLocationRange(document, range)
+    @document.insertPlaceholderBlockAtLocationRange(range)
     @setLocationRange(index: range.end.index + 1, offset: 0)
 
   insertDocument: (document) ->
@@ -67,7 +66,12 @@ class Trix.Composition
     block = @document.getBlockAtIndex(range.end.index)
     switch
       when block.isPlaceholder()
-        @insertPlaceholderBlock()
+        if block.hasAttributes()
+          @selectionDelegate?.expandSelectionInDirectionWithGranularity("forward", "character")
+          @document.insertPlaceholderBlockAtLocationRange(@getLocationRange())
+          @setLocationRange(range.end)
+        else
+          @insertPlaceholderBlock()
       when range.end.offset is block.getLength()
         if block.hasAttributes() and block.text.endsWithString("\n")
           # Remove the trailing newline
