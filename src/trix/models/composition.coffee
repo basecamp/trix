@@ -46,7 +46,7 @@ class Trix.Composition
     @notifyDelegateOfIntentionToSetLocationRange()
     range = @getLocationRange()
     document = new Trix.Document [Trix.Block.createPlaceholder()]
-    @insertDocument(document)
+    @document.insertDocumentAtLocationRange(document, range)
     @setLocationRange(index: range.end.index + 1, offset: 0)
 
   insertDocument: (document) ->
