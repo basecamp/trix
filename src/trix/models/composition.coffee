@@ -46,7 +46,9 @@ class Trix.Composition
     @notifyDelegateOfIntentionToSetLocationRange()
     range = @getLocationRange()
     @document.insertPlaceholderBlockAtLocationRange(range)
-    @setLocationRange(index: range.end.index + 1, offset: 0)
+    index = range.end.index + 1
+    @removeNewlineBeforeBlockAtIndex(index)
+    @setLocationRange({index, offset: 0})
 
   replacePlaceholderBlock: ->
     range = @getLocationRange()
@@ -80,8 +82,6 @@ class Trix.Composition
           @insertPlaceholderBlock()
       when range.end.offset is block.getLength()
         if block.hasAttributes() and block.text.endsWithString("\n")
-          # Remove the trailing newline
-          @selectionDelegate?.expandSelectionInDirectionWithGranularity("backward", "character")
           @insertPlaceholderBlock()
         else
           @insertString("\n")
