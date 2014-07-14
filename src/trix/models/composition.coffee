@@ -42,22 +42,6 @@ class Trix.Composition
       offset += text.getLength()
       @setLocationRange({index, offset})
 
-  insertPlaceholderBlock: ->
-    @notifyDelegateOfIntentionToSetLocationRange()
-    range = @getLocationRange()
-    @document.insertPlaceholderBlockAtLocationRange(range)
-    index = range.end.index + 1
-    @removeNewlineBeforeBlockAtIndex(index)
-    @setLocationRange({index, offset: 0})
-
-  replacePlaceholderBlock: ->
-    range = @getLocationRange()
-    return unless @document.getBlockAtIndex(range.end.index).isPlaceholder()
-    @selectionDelegate?.expandSelectionInDirectionWithGranularity("forward", "character")
-    range = @getLocationRange()
-    @document.insertPlaceholderBlockAtLocationRange(range)
-    @setLocationRange(range.start)
-
   insertDocument: (document) ->
     @notifyDelegateOfIntentionToSetLocationRange()
     range = @getLocationRange()
@@ -84,6 +68,22 @@ class Trix.Composition
         @insertPlaceholderBlock()
       else
         @insertString("\n")
+
+  insertPlaceholderBlock: ->
+    @notifyDelegateOfIntentionToSetLocationRange()
+    range = @getLocationRange()
+    @document.insertPlaceholderBlockAtLocationRange(range)
+    index = range.end.index + 1
+    @removeNewlineBeforeBlockAtIndex(index)
+    @setLocationRange({index, offset: 0})
+
+  replacePlaceholderBlock: ->
+    range = @getLocationRange()
+    return unless @document.getBlockAtIndex(range.end.index).isPlaceholder()
+    @selectionDelegate?.expandSelectionInDirectionWithGranularity("forward", "character")
+    range = @getLocationRange()
+    @document.insertPlaceholderBlockAtLocationRange(range)
+    @setLocationRange(range.start)
 
   insertHTML: (html) ->
     document = Trix.Document.fromHTML(html, {@attachments})
