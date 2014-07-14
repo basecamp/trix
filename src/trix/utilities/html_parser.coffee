@@ -57,7 +57,8 @@ class Trix.HTMLParser
   processElementNode: (node) ->
     switch node.tagName.toLowerCase()
       when "br"
-        @appendString("\n", getAttributes(node))
+        unless nodeIsExtraBR(node)
+          @appendString("\n", getAttributes(node))
       when "img"
         attributes = { contentType: "image", url: node.getAttribute("src") }
 
@@ -115,3 +116,9 @@ class Trix.HTMLParser
           element.removeAttribute(name) unless name in allowedAttributes
 
     container
+
+  nodeIsExtraBR = (node) ->
+    node.tagName.toLowerCase() is "br" and
+      node.tagName is node.previousElementSibling?.tagName and
+      node is node.parentNode.lastElementChild and
+      window.getComputedStyle(node.parentNode).display is "block"
