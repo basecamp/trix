@@ -48,6 +48,14 @@ class Trix.Composition
     @document.insertPlaceholderBlockAtLocationRange(range)
     @setLocationRange(index: range.end.index + 1, offset: 0)
 
+  replacePlaceholderBlock: ->
+    range = @getLocationRange()
+    return unless @document.getBlockAtIndex(range.end.index).isPlaceholder()
+    @selectionDelegate?.expandSelectionInDirectionWithGranularity("forward", "character")
+    range = @getLocationRange()
+    @document.insertPlaceholderBlockAtLocationRange(range)
+    @setLocationRange(range.start)
+
   insertDocument: (document) ->
     @notifyDelegateOfIntentionToSetLocationRange()
     range = @getLocationRange()
@@ -67,9 +75,7 @@ class Trix.Composition
     switch
       when block.isPlaceholder()
         if block.hasAttributes()
-          @selectionDelegate?.expandSelectionInDirectionWithGranularity("forward", "character")
-          @document.insertPlaceholderBlockAtLocationRange(@getLocationRange())
-          @setLocationRange(range.end)
+          @replacePlaceholderBlock()
         else
           @insertPlaceholderBlock()
       when range.end.offset is block.getLength()
