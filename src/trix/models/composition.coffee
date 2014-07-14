@@ -80,11 +80,8 @@ class Trix.Composition
           @replacePlaceholderBlock()
         else
           @insertPlaceholderBlock()
-      when range.end.offset is block.getLength()
-        if block.hasAttributes() and block.text.endsWithString("\n")
-          @insertPlaceholderBlock()
-        else
-          @insertString("\n")
+      when range.end.offset is block.getLength() and block.hasAttributes() and block.text.endsWithString("\n")
+        @insertPlaceholderBlock()
       else
         @insertString("\n")
 
