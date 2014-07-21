@@ -24,7 +24,7 @@ config =
             attributes = { url: filename, filename }
 
           console.log "Host setting attributes for attachment:", attachment, attributes
-          attachment.update(attributes)
+          attachment.setAttributes(attributes)
         , 1000
 
     didRemoveAttachment: (attachment) ->
@@ -46,7 +46,7 @@ saveAttachment = (attachment) ->
   link.setAttribute("href", "#")
   link.textContent = "(remove)"
   link.addEventListener "click", ->
-    attachment.remove()
+    window.controller.composition.removeAttachment(attachment)
     removeAttachment(attachment)
 
   item.appendChild(link)

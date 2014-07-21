@@ -2,7 +2,7 @@
 #= require trix/models/attachment
 
 class Trix.AttachmentManager
-  constructor: (@owner) ->
+  constructor: (@document) ->
     @collection = new Trix.Collection
 
   get: (id) ->
@@ -14,8 +14,8 @@ class Trix.AttachmentManager
   add: (attachment) ->
     unless @collection.has(attachment.id)
       @collection.add(attachment)
-      object = @attachmentObjectWithCallbacks(attachment)
-      @delegate?.didAddAttachment?(object)
+      attachment.delegate = @document
+      @delegate?.didAddAttachment?(attachment)
       attachment
 
   create: (file) ->
@@ -24,24 +24,14 @@ class Trix.AttachmentManager
 
   remove: (id) ->
     if attachment = @collection.remove(id)
-      @delegate?.didRemoveAttachment?(attachment.toObject())
+      delete attachment.delegate
+      @delegate?.didRemoveAttachment?(attachment)
 
   reset: ->
-    attachments = @owner.getAttachments()
+    attachments = @document.getAttachments()
 
     for attachment in @collection.difference(attachments)
       @remove(attachment.id)
 
     for attachment in attachments
       @add(attachment)
-
-  attachmentObjectWithCallbacks: (attachment) ->
-    object = attachment.toObject()
-
-    object.update = (attributes) =>
-      @owner.updateAttachment(attachment.id, attributes)
-
-    object.remove = =>
-      @owner.removeAttachment(attachment.id)
-
-    object

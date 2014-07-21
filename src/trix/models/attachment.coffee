@@ -10,12 +10,19 @@ class Trix.Attachment extends Trix.Object
     super
 
   setAttributes: (attributes) =>
+    changed = false
+
     for key, value of attributes
-      @attributes[key] = value
+      if @attributes[key] isnt value
+        @attributes[key] = value
+        changed = true
 
-    delete @file if @attributes.url
+    if @attributes.url and @file?
+      delete @file
+      changed = true
 
-    @delegate?.attachmentDidChange(this)
+    if changed
+      @delegate?.attachmentDidChange(this)
 
   getAttributes: ->
     @attributes

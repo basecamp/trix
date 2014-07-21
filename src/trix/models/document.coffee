@@ -187,6 +187,12 @@ class Trix.Document extends Trix.Object
 
     commonAttributes
 
+  attachmentDidChange: (attachment) ->
+    locationRange = @getLocationRangeOfAttachment(attachment)
+    text = @getTextAtIndex(locationRange.index)
+    range = text.getRangeOfAttachment(attachment)
+    @replaceTextAtLocationRange(text.getTextAtRange(range), locationRange)
+
   getAttachments: ->
     attachments = []
     @blockList.eachObject ({text}) ->

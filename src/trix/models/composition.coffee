@@ -9,7 +9,7 @@ class Trix.Composition
     @document.delegate = this
     @currentAttributes = {}
 
-    @attachments = new Trix.AttachmentManager this
+    @attachments = new Trix.AttachmentManager @document
     @attachments.delegate = config?.delegate
     @attachments.reset()
 
@@ -125,18 +125,8 @@ class Trix.Composition
     @document.moveTextFromLocationRangeToPosition(locationRange, position)
     @setPosition(position)
 
-  # Attachment owner protocol
-
-  getAttachments: ->
-    @document.getAttachments()
-
-  updateAttachment: (id, attributes) ->
-    if attachment = @attachments.get(id)
-      @document.edit -> attachment.setAttributes(attributes)
-
-  removeAttachment: (id) ->
-    if attachment = @attachments.get(id)
-      locationRange = @document.getLocationRangeOfAttachment(attachment)
+  removeAttachment: (attachment) ->
+    if locationRange = @document.getLocationRangeOfAttachment(attachment)
       @document.removeTextAtLocationRange(locationRange)
 
   # Current attributes
