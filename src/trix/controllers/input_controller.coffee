@@ -34,6 +34,7 @@ class Trix.InputController
         context = switch
           when event.ctrlKey then @keys.control
           when event.altKey then @keys.alt
+          when event.shiftKey then @keys.shift
           else @keys
 
         context[keyName]?.call(this, event)
@@ -138,4 +139,10 @@ class Trix.InputController
       backspace: (event) ->
         @delegate?.inputControllerWillPerformTyping()
         @responder?.deleteWordBackward()
+        event.preventDefault()
+
+    shift:
+      return: (event) ->
+        @delegate?.inputControllerWillPerformTyping()
+        @responder?.insertString("\n")
         event.preventDefault()
