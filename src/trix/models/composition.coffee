@@ -2,7 +2,7 @@
 #= require trix/models/attachment_manager
 #= require trix/utilities/helpers
 
-{countGraphemeClusters, defer} = Trix.Helpers
+{defer} = Trix.Helpers
 
 class Trix.Composition
   constructor: (@document = new Trix.Document, config) ->
