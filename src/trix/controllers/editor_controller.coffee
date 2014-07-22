@@ -9,8 +9,9 @@
 
 class Trix.EditorController extends Trix.AbstractEditorController
   initialize: ->
-    @documentController = new Trix.DocumentController @textElement, @document, @config
+    @documentController = new Trix.DocumentController @textElement, @document
     @documentController.delegate = this
+    @documentController.focus() if @config.autofocus
 
     @selectionManager = new Trix.SelectionManager @textElement
     @selectionManager.delegate = this

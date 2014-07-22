@@ -3,14 +3,13 @@
 #= require trix/views/document_view
 
 class Trix.DocumentController
-  constructor: (@element, @document, @config) ->
+  constructor: (@element, @document) ->
     @documentView = new Trix.DocumentView @element, @document
 
     @element.addEventListener("focus", @didFocus)
     @element.addEventListener("click", @didClick)
 
     @render()
-    @focus() if @config.autofocus
 
   didFocus: =>
     @delegate?.documentControllerDidFocus?()
