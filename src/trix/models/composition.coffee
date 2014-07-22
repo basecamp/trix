@@ -58,17 +58,24 @@ class Trix.Composition
   insertLineBreak: ->
     range = @getLocationRange()
     block = @document.getBlockAtIndex(range.end.index)
-    switch
-      when block.isPlaceholder()
-        if block.hasAttributes()
+
+    if block.hasAttributes()
+      text = block.text.getTextAtRange([0, range.end.offset])
+      switch
+        # Replace placeholder blocks that have attributes with a placeholder block without attributes
+        when block.isPlaceholder()
           @replacePlaceholderBlock()
-        else
+        # Break from the end of blocks after one newline
+        when text.endsWithString("\n") and text.getLength() is range.end.offset
           @insertPlaceholderBlock()
-      when range.end.offset is block.getLength() and block.hasAttributes() and block.text.endsWithString("\n")
-        @insertPlaceholderBlock()
-      when block.hasAttributes() and block.text.getTextAtRange([0, range.end.offset]).endsWithString("\n\n")
-        if range.isCollapsed()
-          @selectionDelegate?.expandSelectionInDirectionWithGranularity("backward", "character")
+        # Break from the middle of blocks after two newlines
+        when text.endsWithString("\n\n")
+          @insertPlaceholderBlock()
+        # Stay in the block, add a newline
+        else
+          @insertString("\n")
+    else
+      if block.isPlaceholder()
         @insertPlaceholderBlock()
       else
         @insertString("\n")
