@@ -1,15 +1,16 @@
 #= require trix/utilities/object
 #= require trix/utilities/hash
-#= require trix/models/piece
+#= require trix/models/attachment_piece
+#= require trix/models/string_piece
 #= require trix/models/splittable_list
 
 class Trix.Text extends Trix.Object
   @textForAttachmentWithAttributes: (attachment, attributes) ->
-    piece = Trix.Piece.forAttachment(attachment, attributes)
+    piece = new Trix.AttachmentPiece attachment, attributes
     new this [piece]
 
   @textForStringWithAttributes: (string, attributes) ->
-    piece = new Trix.Piece string, attributes
+    piece = new Trix.StringPiece string, attributes
     new this [piece]
 
   @fromJSON: (textJSON) ->
@@ -132,7 +133,7 @@ class Trix.Text extends Trix.Object
     @pieceList.eachObject (piece) ->
       id = piece.id
       attributes = piece.getAttributes()
-      run = {id, attributes, position}
+      run = {id, attributes, position, piece}
 
       if piece.attachment
         run.attachment = piece.attachment
@@ -141,6 +142,9 @@ class Trix.Text extends Trix.Object
 
       callback(run)
       position += piece.length
+
+  eachPiece: (callback) ->
+    @pieceList.eachObject(callback)
 
   contentsForInspection: ->
     pieceList: @pieceList.inspect()

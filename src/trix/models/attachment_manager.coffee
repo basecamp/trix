@@ -14,17 +14,15 @@ class Trix.AttachmentManager
   add: (attachment) ->
     unless @collection.has(attachment.id)
       @collection.add(attachment)
-      attachment.delegate = @document
       @delegate?.didAddAttachment?(attachment)
       attachment
 
   create: (file) ->
     if @delegate?.shouldAcceptFile?(file)
-      @add(Trix.Attachment.forFile(file))
+      @add(new Trix.Attachment file)
 
   remove: (id) ->
     if attachment = @collection.remove(id)
-      delete attachment.delegate
       @delegate?.didRemoveAttachment?(attachment)
 
   reset: ->

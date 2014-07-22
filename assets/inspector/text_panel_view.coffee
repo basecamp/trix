@@ -38,10 +38,7 @@ class Trix.TextPanelView extends Trix.InspectorPanelView
     element = make("div", className: "piece")
     element.appendChild(@renderTitle("Piece", "Index: #{index}"))
     element.appendChild(@renderAttributes(piece.attributes))
-    if piece.attachment
-      element.appendChild(@renderAttachment(piece.attachment))
-    else
-      element.appendChild(@renderString(piece.string))
+    element.appendChild(@renderString(piece.toString()))
     element
 
   renderTitle: (content, description = "") ->

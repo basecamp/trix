@@ -90,9 +90,9 @@ class Trix.BlockView
         @elements.push(node)
 
   createAttachmentElementForCurrentRun: ->
-    {attachment, attributes, position} = @currentRun
+    {attachment, attributes, position, piece} = @currentRun
 
-    view = attachment.view ?= createAttachmentViewForAttachment(attachment)
+    view = attachment.view ?= createAttachmentViewForAttachment(piece)
     element = view.render()
     view.resize(width: attributes.width, height: attributes.height)
 
@@ -102,11 +102,11 @@ class Trix.BlockView
     element.trixAttachmentId = attachment.id
     element
 
-  createAttachmentViewForAttachment = (attachment) ->
-    if attachment.isImage()
-      new Trix.ImageAttachmentView attachment
+  createAttachmentViewForAttachment = (piece) ->
+    if piece.isImage()
+      new Trix.ImageAttachmentView piece
     else
-      new Trix.AttachmentView attachment
+      new Trix.AttachmentView piece
 
   createStringNodesForCurrentRun: ->
     {string, position} = @currentRun

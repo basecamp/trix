@@ -23,6 +23,12 @@ class Trix.Hash extends Trix.Object
   remove: (key) ->
     new Trix.Hash copy(@values, key)
 
+  get: (key) ->
+    @values[key]
+
+  has: (key) ->
+    key of @values
+
   merge: (values) ->
     new Trix.Hash merge(@values, unbox(values))
 

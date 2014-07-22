@@ -1,5 +1,6 @@
 class Trix.AttachmentView
-  constructor: (@attachment) ->
+  constructor: (@attachmentPiece) ->
+    {@attachment} = @attachmentPiece
 
   render: ->
     @element = document.createElement("figure")
@@ -8,7 +9,7 @@ class Trix.AttachmentView
 
     @extension = document.createElement("div")
     @extension.classList.add("extension")
-    @extension.textContent = @attachment.getExtension()
+    @extension.textContent = @attachmentPiece.getExtension()
 
     @caption = document.createElement("figcaption")
 
@@ -20,15 +21,10 @@ class Trix.AttachmentView
     @element
 
   updateAttributes: ->
-    @extension.textContent = @attachment.getExtension()
-    @caption.textContent = @attachment.attributes.filename
-    @caption.setAttribute("title", @attachment.attributes.filename)
+    @extension.textContent = @attachmentPiece.getExtension()
+    @caption.textContent = @attachmentPiece.getFilename()
+    @caption.setAttribute("title", @attachmentPiece.getFilename())
 
   resize: ({width, height} = {}) ->
     @element.style.width = "#{width}px" if width?
     @element.style.height = "#{height}px" if height?
-
-  # Attachment delegate
-
-  attachmentDidChange: ->
-    @updateAttributes()

@@ -13,6 +13,7 @@ config =
 
     didAddAttachment: (attachment) ->
       console.log "Host received attachment:", attachment
+      return
       saveAttachment(attachment)
 
       if file = attachment.file

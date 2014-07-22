@@ -107,7 +107,8 @@ class Trix.Composition
 
   insertFile: (file) ->
     if attachment = @attachments.create(file)
-      text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
+      attributes = Trix.Hash.box(@currentAttributes).merge(contentType: file.type, filename: file.name)
+      text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes.toObject())
       @insertText(text)
 
   deleteInDirectionWithGranularity: (direction, granularity) ->

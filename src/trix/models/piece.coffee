@@ -2,31 +2,23 @@
 #= require trix/utilities/hash
 
 class Trix.Piece extends Trix.Object
-  objectReplacementCharacter = "\uFFFC"
+  @types: {}
+
+  @registerType: (type, constructor) ->
+    constructor.type = type
+    @types[type] = constructor
 
   @fromJSON: (pieceJSON) ->
-    attributes = pieceJSON.attributes
-    if attachmentJSON = pieceJSON.attachment
-      attachment = new Trix.Attachment attachmentJSON.attributes
-      attachment.setIdentifier(attachmentJSON.identifier) if attachmentJSON.identifier?
-      @forAttachment attachment, attributes
-    else
-      new this pieceJSON.string, attributes
+    if constructor = @types[pieceJSON.type]
+      constructor.fromJSON(pieceJSON)
 
-  @forAttachment: (attachment, attributes) ->
-    piece = new this objectReplacementCharacter, attributes
-    piece.attachment = attachment
-    piece
-
-  constructor: (@string, attributes = {}) ->
+  constructor: (@value, attributes = {}) ->
     super
     @attributes = Trix.Hash.box(attributes)
-    @length = @string.length
+    @length = @toString().length
 
   copyWithAttributes: (attributes) ->
-    piece = new Trix.Piece @string, attributes
-    piece.attachment = @attachment
-    piece
+    new @constructor @value, attributes
 
   copyWithAdditionalAttributes: (attributes) ->
     @copyWithAttributes(@attributes.merge(attributes))
@@ -54,8 +46,8 @@ class Trix.Piece extends Trix.Object
 
     attributes.toObject()
 
-  hasSameStringAsPiece: (piece) ->
-    piece? and @string is piece.string
+  hasSameStringValueAsPiece: (piece) ->
+    piece? and @toString() is piece.toString()
 
   hasSameAttributesAsPiece: (piece) ->
     piece? and (@attributes is piece.attributes or @attributes.isEqualTo(piece.attributes))
@@ -63,23 +55,19 @@ class Trix.Piece extends Trix.Object
   isEqualTo: (piece) ->
     super or (
       @hasSameConstructorAs(piece) and
-      @hasSameStringAsPiece(piece) and
+      @hasSameStringValueAsPiece(piece) and
       @hasSameAttributesAsPiece(piece)
     )
 
   toString: ->
-    @string
+    "NO"
 
   toJSON: ->
-    attributes = @getAttributes()
-
-    if @attachment
-      {@attachment, attributes}
-    else
-      {@string, attributes}
+    type: @constructor.type
+    attributes: @getAttributes()
 
   contentsForInspection: ->
-    string: JSON.stringify(@string)
+    type: @constructor.type
     attributes: @attributes.inspect()
 
   # Splittable
@@ -88,19 +76,4 @@ class Trix.Piece extends Trix.Object
     @length
 
   canBeConsolidatedWith: (piece) ->
-    piece? and not (@attachment or piece.attachment) and @hasSameAttributesAsPiece(piece)
-
-  consolidateWith: (piece) ->
-    new @constructor @string + piece.string, @attributes
-
-  splitAtOffset: (offset) ->
-    if offset is 0
-      left = null
-      right = this
-    else if offset is @length
-      left = this
-      right = null
-    else
-      left = new @constructor @string.slice(0, offset), @attributes
-      right = new @constructor @string.slice(offset), @attributes
-    [left, right]
+    false

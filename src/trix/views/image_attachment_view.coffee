@@ -8,37 +8,23 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
   render: ->
     @image = document.createElement("img")
     @image.setAttribute("contenteditable", false)
-    @image.setAttribute("data-trix-identifier", @attachment.getIdentifier()) if @attachment.hasIdentifier()
+    @image.setAttribute("data-trix-identifier", @attachmentPiece.getIdentifier()) if @attachmentPiece.hasIdentifier()
     @image.onload = @recordOriginalDimensions
+    @image.src = @attachmentPiece.getURL()
     @loadImagePreview()
-    @updateAttributes()
     @image
 
   loadImagePreview: ->
-    if @attachment.isPending()
+    if @attachment.file
       getDataURL @attachment.file, @setInitialAttributes
 
   setInitialAttributes: (src) =>
-    if @attachment.isPending()
+    if @attachmentPiece.isPending()
       @image.setAttribute("src", src)
 
   recordOriginalDimensions: =>
     dimensions = Trix.DOM.getDimensions(@image)
-    @attachment.setAttributes(dimensions)
-
-  updateAttributes: ->
-    klass = if @attachment.isPending() then "pending-attachment" else @attachment.attributes.class
-    updateAttribute(@image, "class", klass)
-
-    url = @attachment.attributes.url
-    updateAttribute(@image, "src", url)
-
-  updateAttribute = (element, attribute, value) ->
-    if value?
-      if element.getAttribute(attribute) isnt value
-        element.setAttribute(attribute, value)
-    else if element.hasAttribute(attribute)
-      element.removeAttribute(attribute, value)
+    # @attachment.setAttributes(dimensions)
 
   resize: ({width, height} = {}) ->
     width ?= @attachment.attributes.width
