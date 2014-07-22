@@ -1,5 +1,5 @@
 #= require trix/controllers/abstract_editor_controller
-#= require trix/views/block_view
+#= require trix/views/document_view
 
 class Trix.DegradedEditorController extends Trix.AbstractEditorController
   constructor: ->
