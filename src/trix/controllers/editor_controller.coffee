@@ -10,11 +10,11 @@
 class Trix.EditorController extends Trix.AbstractEditorController
   constructor: ->
     super
-    @documentController = new Trix.DocumentController @textElement, @document
+    @documentController = new Trix.DocumentController @documentElement, @document
     @documentController.delegate = this
     @documentController.focus() if @config.autofocus
 
-    @selectionManager = new Trix.SelectionManager @textElement
+    @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
 
     @composition = new Trix.Composition @document, @config
@@ -23,11 +23,11 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
     @undoManager = new Trix.UndoManager @composition
 
-    @inputController = new Trix.InputController @textElement
+    @inputController = new Trix.InputController @documentElement
     @inputController.delegate = this
     @inputController.responder = @composition
 
-    @mutationObserver = new Trix.MutationObserver @textElement
+    @mutationObserver = new Trix.MutationObserver @documentElement
     @mutationObserver.delegate = this
 
     @toolbarController = new Trix.ToolbarController @toolbarElement
@@ -104,7 +104,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
   # Mutation observer delegate
 
   elementDidMutate: (mutations) ->
-    @composition.replaceHTML(@textElement.innerHTML)
+    @composition.replaceHTML(@documentElement.innerHTML)
 
   # Toolbar controller delegate
 

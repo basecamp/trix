@@ -5,16 +5,16 @@ class Trix.DegradedEditorController extends Trix.AbstractEditorController
   constructor: ->
     super
     @render()
-    @textElement.addEventListener("blur", @didBlur)
+    @documentElement.addEventListener("blur", @didBlur)
 
   didBlur: =>
     @updateDocument()
 
   updateDocument: ->
-    @document = Trix.Document.fromHTML(@textElement.innerHTML)
+    @document = Trix.Document.fromHTML(@documentElement.innerHTML)
     @render()
     @saveSerializedText()
 
   render: ->
-    view = new Trix.DocumentView @textElement, @document
+    view = new Trix.DocumentView @documentElement, @document
     view.render()

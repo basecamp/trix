@@ -102,7 +102,7 @@ class Installer
     @config.autofocus ?= @config.textareaElement.hasAttribute("autofocus")
 
   run: ->
-    @config.textElement = @createTextElement()
+    @config.documentElement = @createDocumentElement()
     @createStyleSheet()
     @editor = @createEditor()
 
@@ -128,16 +128,16 @@ class Installer
       element.appendChild(document.createTextNode(css))
       document.querySelector("head").appendChild(element)
 
-  textElementAttributes =
+  documentElementAttributes =
     contenteditable: "true"
     autocorrect: "off"
 
-  createTextElement: ->
+  createDocumentElement: ->
     textarea = @config.textareaElement
 
     element = document.createElement("div")
     element.innerHTML = textarea.value
-    element.setAttribute(key, value) for key, value of textElementAttributes
+    element.setAttribute(key, value) for key, value of documentElementAttributes
 
     if placeholder = textarea.getAttribute("placeholder")
       element.setAttribute("data-placeholder", placeholder)
