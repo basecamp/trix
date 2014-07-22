@@ -66,6 +66,10 @@ class Trix.Composition
           @insertPlaceholderBlock()
       when range.end.offset is block.getLength() and block.hasAttributes() and block.text.endsWithString("\n")
         @insertPlaceholderBlock()
+      when block.hasAttributes() and block.text.getTextAtRange([0, range.end.offset]).endsWithString("\n\n")
+        if range.isCollapsed()
+          @selectionDelegate?.expandSelectionInDirectionWithGranularity("backward", "character")
+        @insertPlaceholderBlock()
       else
         @insertString("\n")
 
