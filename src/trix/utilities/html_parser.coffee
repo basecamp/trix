@@ -61,11 +61,11 @@ class Trix.HTMLParser
           @appendString("\n", getAttributes(node))
       when "img"
         attributes = { contentType: "image", url: node.getAttribute("src") }
-
+        identifier = node.getAttribute("data-trix-identifier") if node.hasAttribute("data-trix-identifier")
         for key in ["width", "height"] when value = node.getAttribute(key)
           attributes[key] = value
 
-        @appendAttachment(attributes, getAttributes(node))
+        @appendAttachment(attributes, getAttributes(node), identifier)
 
   appendBlock: (attributes = {}) ->
     text = new Trix.Text
@@ -76,13 +76,14 @@ class Trix.HTMLParser
     text = Trix.Text.textForStringWithAttributes(string, attributes)
     @block.text = @block.text.appendText(text)
 
-  appendAttachment: (attachmentAttributes, attributes) ->
+  appendAttachment: (attachmentAttributes, attributes, identifier) ->
     if attachment = @attachments?.findWhere(url: attachmentAttributes.url)
       if attachmentAttributes.width?
         attributes.width = attachmentAttributes.width
         attributes.height = attachmentAttributes.height
     else
       attachment = new Trix.Attachment attachmentAttributes
+      attachment.setIdentifier(identifier) if identifier?
 
     text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
     @block.text = @block.text.appendText(text)

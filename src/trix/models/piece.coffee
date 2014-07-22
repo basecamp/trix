@@ -7,7 +7,8 @@ class Trix.Piece extends Trix.Object
   @fromJSON: (pieceJSON) ->
     attributes = pieceJSON.attributes
     if attachmentJSON = pieceJSON.attachment
-      attachment = new Trix.Attachment attachmentJSON
+      attachment = new Trix.Attachment attachmentJSON.attributes
+      attachment.setIdentifier(attachmentJSON.identifier) if attachmentJSON.identifier?
       @forAttachment attachment, attributes
     else
       new this pieceJSON.string, attributes

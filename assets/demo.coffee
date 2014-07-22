@@ -25,6 +25,7 @@ config =
 
           console.log "Host setting attributes for attachment:", attachment, attributes
           attachment.setAttributes(attributes)
+          attachment.setIdentifier("Attachment:#{Math.random() * 5000}")
         , 1000
 
     didRemoveAttachment: (attachment) ->

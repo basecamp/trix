@@ -9,6 +9,15 @@ class Trix.Attachment extends Trix.Object
   constructor: (@attributes = {}) ->
     super
 
+  setIdentifier: (@identifier) ->
+    @delegate?.attachmentDidChange(this)
+
+  hasIdentifier: ->
+    @identifier?
+
+  getIdentifier: ->
+    @identifier
+
   setAttributes: (attributes) =>
     changed = false
 
@@ -37,7 +46,4 @@ class Trix.Attachment extends Trix.Object
     @attributes.filename.match(/\.(\w+)$/)?[1]
 
   toJSON: ->
-    @attributes
-
-  toObject: ->
-    {@id, @file, @attributes}
+    {@identifier, @attributes}
