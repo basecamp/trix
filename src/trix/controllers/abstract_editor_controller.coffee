@@ -7,9 +7,6 @@ class Trix.AbstractEditorController
   constructor: (@config) ->
     {@textElement, @toolbarElement, @textareaElement, @inputElement, @delegate} = @config
     @document = @createDocument()
-    @initialize()
-
-  initialize: ->
 
   createDocument: ->
     if @textElement.textContent.trim()

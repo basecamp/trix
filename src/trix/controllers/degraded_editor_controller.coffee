@@ -2,7 +2,8 @@
 #= require trix/views/block_view
 
 class Trix.DegradedEditorController extends Trix.AbstractEditorController
-  initialize: ->
+  constructor: ->
+    super
     @render()
     @textElement.addEventListener("blur", @didBlur)
 

@@ -8,7 +8,8 @@
 #= require trix/observers/mutation_observer
 
 class Trix.EditorController extends Trix.AbstractEditorController
-  initialize: ->
+  constructor: ->
+    super
     @documentController = new Trix.DocumentController @textElement, @document
     @documentController.delegate = this
     @documentController.focus() if @config.autofocus
