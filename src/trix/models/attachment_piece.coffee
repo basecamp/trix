@@ -11,6 +11,9 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
     super
     @attachment = @value
 
+  isPending: ->
+    @attachment.file? and not @getURL()?
+
   isImage: ->
     /image/.test(@attributes.get("contentType"))
 
@@ -28,6 +31,12 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
 
   getExtension: ->
     @getFilename().match(/\.(\w+)$/)?[1]
+
+  getWidth: ->
+    @attributes.get("width")
+
+  getHeight: ->
+    @attributes.get("height")
 
   toString: ->
     objectReplacementCharacter

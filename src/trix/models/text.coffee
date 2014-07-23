@@ -97,8 +97,11 @@ class Trix.Text extends Trix.Object
     length = @getLength()
     @getStringAtRange([length - string.length, length]) is string
 
+  getAttachmentPieces: ->
+    piece for piece in @pieceList.toArray() when piece.attachment?
+
   getAttachments: ->
-    piece.attachment for piece in @pieceList.toArray() when piece.attachment?
+    piece.attachment for piece in @getAttachmentPieces()
 
   getAttachmentAndPositionById: (attachmentId) ->
     position = 0
@@ -116,9 +119,9 @@ class Trix.Text extends Trix.Object
     {attachment, position} = @getAttachmentAndPositionById(attachment.id)
     [position, position + 1] if attachment?
 
-  resizeAttachmentToDimensions: (attachment, {width, height} = {}) ->
+  updateAttributesForAttachment: (attributes, attachment) ->
     if range = @getRangeOfAttachment(attachment)
-      @addAttributesAtRange({width, height}, range)
+      @addAttributesAtRange(attributes, range)
     else
       this
 

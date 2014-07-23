@@ -113,11 +113,11 @@ class Trix.Document extends Trix.Object
         @blockList = @blockList.editObjectAtIndex index, ->
           block.copyWithText(block.text.removeAttributeAtRange(attribute, range))
 
-  resizeAttachmentToDimensions: edit (attachment, dimensions) ->
+  updateAttributesForAttachment: edit (attributes, attachment) ->
     locationRange = @getLocationRangeOfAttachment(attachment)
     text = @getTextAtIndex(locationRange.index)
     @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
-      block.copyWithText(text.resizeAttachmentToDimensions(attachment, dimensions))
+      block.copyWithText(text.updateAttributesForAttachment(attributes, attachment))
 
   getDocumentAtLocationRange: (locationRange) ->
     range = @rangeFromLocationRange(locationRange)
@@ -187,17 +187,14 @@ class Trix.Document extends Trix.Object
 
     commonAttributes
 
-  attachmentDidChange: (attachment) ->
-    locationRange = @getLocationRangeOfAttachment(attachment)
-    text = @getTextAtIndex(locationRange.index)
-    range = text.getRangeOfAttachment(attachment)
-    @replaceTextAtLocationRange(text.getTextAtRange(range), locationRange)
+  getAttachmentPieces: ->
+    attachmentPieces = []
+    @blockList.eachObject ({text}) ->
+      attachmentPieces = attachmentPieces.concat(text.getAttachmentPieces())
+    attachmentPieces
 
   getAttachments: ->
-    attachments = []
-    @blockList.eachObject ({text}) ->
-      attachments = attachments.concat(text.getAttachments())
-    attachments
+    piece.attachment for piece in @getAttachmentPieces()
 
   getLocationRangeOfAttachment: (attachment) ->
     for {text}, index in @blockList.toArray()
@@ -208,6 +205,13 @@ class Trix.Document extends Trix.Object
     for {text} in @blockList.toArray()
       if attachment = text.getAttachmentById(id)
         return attachment
+
+  getAttachmentPieceForAttachment: (attachment) ->
+    return piece for piece in @getAttachmentPieces() when piece.attachment is attachment
+
+  attachmentIsImage: (attachment) ->
+    attachmentPiece = @getAttachmentPieceForAttachment(attachment)
+    attachmentPiece?.isImage()
 
   expandedLocationRangeForBlockTransformation: (locationRange) ->
     {start, end} = locationRange

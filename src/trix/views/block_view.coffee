@@ -92,9 +92,8 @@ class Trix.BlockView
   createAttachmentElementForCurrentRun: ->
     {attachment, attributes, position, piece} = @currentRun
 
-    view = attachment.view ?= createAttachmentViewForAttachment(piece)
+    view = createAttachmentViewForAttachment(piece)
     element = view.render()
-    view.resize(width: attributes.width, height: attributes.height)
 
     element.trixPosition = position
     element.trixLength = 1

@@ -1,8 +1,7 @@
-#= require trix/controllers/attachment_controller
 #= require trix/utilities/dom
 
-class Trix.ImageAttachmentController extends Trix.AttachmentController
-  install: ->
+class Trix.ImageEditorController
+  constructor: (@attachment, @element, @container) ->
     @editor = document.createElement("div")
     @editor.setAttribute("contenteditable", false)
     @editor.classList.add("image-editor")
@@ -24,7 +23,10 @@ class Trix.ImageAttachmentController extends Trix.AttachmentController
   uninstall: ->
     @setStyle(@element, width: null, height: null)
     @editor.parentElement.replaceChild(@element, @editor)
-    super()
+    @delegate?.didUninstallAttachmentEditor(this)
+
+  setStyle: (element, attributes) ->
+    element.style[key] = value for key, value of attributes
 
   startResize: (event) =>
     event.preventDefault()
@@ -43,7 +45,7 @@ class Trix.ImageAttachmentController extends Trix.AttachmentController
     @setStyle(@editor, {width, height})
 
   endResize: (event) =>
-    dimensions = width: @element.offsetWidth, height: @element.offsetHeight
+    attributes = width: @element.offsetWidth, height: @element.offsetHeight
 
     @container.style["cursor"] = "auto"
     @container.removeEventListener("mousemove", @resize)
@@ -52,4 +54,4 @@ class Trix.ImageAttachmentController extends Trix.AttachmentController
     delete @resizing
     @uninstall()
 
-    @delegate?.attachmentControllerDidResizeAttachmentToDimensions(@attachment, dimensions)
+    @delegate?.attachmentEditorDidUpdateAttributesForAttachment(attributes, @attachment)

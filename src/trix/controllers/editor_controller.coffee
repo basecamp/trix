@@ -62,8 +62,8 @@ class Trix.EditorController extends Trix.AbstractEditorController
   documentControllerDidFocus: ->
     @toolbarController.hideDialog() if @dialogWantsFocus
 
-  documentControllerWillResizeAttachment: ->
-    @undoManager.recordUndoEntry("Resize", consolidatable: true)
+  documentControllerWillEditAttachment: ->
+    @undoManager.recordUndoEntry("Edit Attachment", consolidatable: true)
 
   # Input controller delegate
 

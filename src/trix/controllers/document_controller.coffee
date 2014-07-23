@@ -1,5 +1,4 @@
-#= require trix/controllers/attachment_controller
-#= require trix/controllers/image_attachment_controller
+#= require trix/controllers/image_editor_controller
 #= require trix/views/document_view
 
 class Trix.DocumentController
@@ -16,9 +15,9 @@ class Trix.DocumentController
 
   didClick: (event) =>
     if event.target.trixAttachmentId
-      @installAttachmentController(event.target)
+      @installAttachmentEditorForElement(event.target)
     else
-      @uninstallAttachmentController()
+      @uninstallAttachmentEditor()
 
   render: ->
     @delegate?.documentControllerWillRender?()
@@ -28,23 +27,25 @@ class Trix.DocumentController
   focus: ->
     @documentView.focus()
 
-  # Attachment controller management
+  # Attachment editor management
 
-  installAttachmentController: (element) ->
+  installAttachmentEditorForElement: (element) ->
     attachment = @document.getAttachmentById(element.trixAttachmentId)
-    unless @attachmentController?.attachment is attachment
-      @uninstallAttachmentController()
-      @attachmentController = Trix.AttachmentController.create(attachment, element, @element)
-      @attachmentController.delegate = this
+    return if @attachmentEditor?.attachment is attachment
+    @uninstallAttachmentEditor()
 
-  uninstallAttachmentController: ->
-    @attachmentController?.uninstall()
+    if @document.attachmentIsImage(attachment)
+      @attachmentEditor = new Trix.ImageEditorController attachment, element, @element
+      @attachmentEditor.delegate = this
+
+  uninstallAttachmentEditor: ->
+    @attachmentEditor?.uninstall()
 
   # Attachment controller delegate
 
-  didUninstallAttachmentController: ->
-    delete @attachmentController
+  didUninstallAttachmentEditor: ->
+    delete @attachmentEditor
 
-  attachmentControllerDidResizeAttachmentToDimensions: (attachment, dimensions) ->
-    @delegate?.documentControllerWillResizeAttachment?(attachment)
-    @document.resizeAttachmentToDimensions(attachment, dimensions)
+  attachmentEditorDidUpdateAttributesForAttachment: (attributes, attachment) ->
+    @delegate?.documentControllerWillEditAttachment?(attachment)
+    @document.updateAttributesForAttachment(attributes, attachment)
