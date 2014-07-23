@@ -2,3 +2,4 @@
 
 class Trix.Attachment extends Trix.Object
   constructor: (@file) ->
+    super
