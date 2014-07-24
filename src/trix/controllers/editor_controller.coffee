@@ -10,12 +10,12 @@
 class Trix.EditorController extends Trix.AbstractEditorController
   constructor: ->
     super
-    @documentController = new Trix.DocumentController @documentElement, @document
-    @documentController.delegate = this
-    @documentController.focus() if @config.autofocus
-
     @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
+
+    @documentController = new Trix.DocumentController @documentElement, @document
+    @documentController.delegate = this
+    @documentController.focus()
 
     @composition = new Trix.Composition @document, @config
     @composition.delegate = this
