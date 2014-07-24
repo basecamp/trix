@@ -7,7 +7,6 @@
 class Trix.ImageAttachmentView extends Trix.AttachmentView
   render: ->
     @image = document.createElement("img")
-    @image.setAttribute("contenteditable", false)
     @image.setAttribute("data-trix-identifier", @attachmentPiece.getIdentifier()) if @attachmentPiece.hasIdentifier()
 
     if @attachmentPiece.isPending()
