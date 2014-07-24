@@ -3,6 +3,7 @@
 #= require ./inspector_panel_view
 #= require ./text_panel_view
 #= require ./undo_panel_view
+#= require ./render_count_view
 
 class Trix.InspectorController
   constructor: (@element, @editorController) ->
@@ -12,6 +13,9 @@ class Trix.InspectorController
 
     selectionElement = @element.querySelector(".trix-inspector-selection-view")
     @selectionView = new Trix.SelectionView selectionElement, @editorController
+
+    renderCountElement = @element.querySelector(".trix-inspector-render-count-view")
+    @renderCountView = new Trix.RenderCountView renderCountElement
 
     @activePanelView = null
     @activatePanel("text")
@@ -52,6 +56,10 @@ class Trix.InspectorController
   findPanelElement: (name) ->
     @element.querySelector("[data-inspector-panel-name=#{name}]")
 
+  incrementRenderCount: ->
+    @renderCountView.incrementAndRender()
+
   render: ->
     @selectionView.render()
+    @renderCountView.render()
     @activePanelView?.render()

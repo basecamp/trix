@@ -180,7 +180,8 @@
         text-shadow: 0px -1px #444;
       }
 
-      .trix-inspector-selection-view {
+      .trix-inspector-selection-view,
+      .trix-inspector-render-count-view {
         display: inline-block;
         margin-left: 15px;
         padding-left: 15px;
@@ -331,6 +332,7 @@
         <input type="radio" name="inspector-panel" id="inspect-undo" value="undo"><label for="inspect-undo">Undo/Redo</label>
         <input type="radio" name="inspector-panel" id="inspect-source" value="source"><label for="inspect-source">Source</label>
         <div class="trix-inspector-selection-view"></div>
+        <div class="trix-inspector-render-count-view"></div>
         <div class="trix-inspector-close-button">✕</div>
       </div>
       <div class="trix-inspector-panel" data-inspector-panel-name="attachments">

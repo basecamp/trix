@@ -38,6 +38,7 @@ config =
 
     didRenderDocument: ->
       inspectorController.render()
+      inspectorController.incrementRenderCount()
 
 saveAttachment = (attachment) ->
   item = document.createElement("li")
