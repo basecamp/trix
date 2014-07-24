@@ -11,6 +11,7 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
 
     if @attachmentPiece.isPending()
       @attachment.getPreviewURL (previewURL) =>
+        @image.ignoreNextMutation = true
         @image.src = previewURL
     else
       @image.src = @attachmentPiece.getURL()

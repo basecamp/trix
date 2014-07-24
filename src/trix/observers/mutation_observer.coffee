@@ -30,8 +30,16 @@ class Trix.MutationObserver
     mutation for mutation in mutations when @mutationIsSignificant(mutation)
 
   mutationIsSignificant: (mutation) ->
-    return true for node in @nodesModifiedByMutation(mutation) when @nodeIsEditable(node)
+    return true for node in @nodesModifiedByMutation(mutation) when @nodeIsSignificant(node)
     false
+
+  nodeIsSignificant: (node) ->
+    node isnt @element and @nodeIsEditable(node) and not @nodeIsIgnoringMutation(node)
+
+  nodeIsIgnoringMutation: (node) ->
+    if node?.ignoreNextMutation
+      delete node.ignoreNextMutation
+      true
 
   nodeIsEditable: (node) ->
     node?.nodeType is Node.ELEMENT_NODE and node.isContentEditable
@@ -40,8 +48,7 @@ class Trix.MutationObserver
     nodes = []
     switch mutation.type
       when "attributes"
-        # Ignore attribute changes made to the outermost element
-        nodes.push(mutation.target) unless mutation.target is @element
+        nodes.push(mutation.target)
       when "characterData"
         # Changes to text nodes should consider the parent element
         nodes.push(mutation.target.parentNode)
