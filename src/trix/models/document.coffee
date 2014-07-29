@@ -40,7 +40,7 @@ class Trix.Document extends Trix.Object
   endEditing: ->
     if --@editDepth is 0
       @delegate?.didEditDocument?(this)
-      @attachments.reset()
+      @attachments?.reset()
     this
 
   insertDocumentAtLocationRange: edit (document, locationRange) ->
