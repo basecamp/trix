@@ -30,11 +30,11 @@ class Trix.DocumentController
   # Attachment editor management
 
   installAttachmentEditorForElement: (element) ->
-    attachment = @document.getAttachmentById(element.trixAttachmentId)
+    attachment = @document.attachments.get(element.trixAttachmentId)
     return if @attachmentEditor?.attachment is attachment
     @uninstallAttachmentEditor()
 
-    if @document.attachmentIsImage(attachment)
+    if attachment.isImage()
       @attachmentEditor = new Trix.ImageEditorController attachment, element, @element
       @attachmentEditor.delegate = this
 
@@ -46,6 +46,5 @@ class Trix.DocumentController
   didUninstallAttachmentEditor: ->
     delete @attachmentEditor
 
-  attachmentEditorDidUpdateAttributesForAttachment: (attributes, attachment) ->
+  attachmentEditorWillEditAttachment: (attachment) ->
     @delegate?.documentControllerWillEditAttachment?(attachment)
-    @document.updateAttributesForAttachment(attributes, attachment)

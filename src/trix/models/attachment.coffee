@@ -28,4 +28,7 @@ class Trix.Attachment extends Trix.Object
       if range = @document.getLocationRangeOfAttachment(this)
         @document.removeTextAtLocationRange(range)
 
+    @isImage = ->
+      @document.getAttachmentPieceForAttachment(this)?.isImage()
+
     this

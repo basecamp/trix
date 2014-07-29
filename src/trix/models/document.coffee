@@ -208,17 +208,8 @@ class Trix.Document extends Trix.Object
       if range = text.getRangeOfAttachment(attachment)
         return new Trix.LocationRange {index, offset: range[0]}, {index, offset: range[1]}
 
-  getAttachmentById: (id) ->
-    for {text} in @blockList.toArray()
-      if attachment = text.getAttachmentById(id)
-        return attachment
-
   getAttachmentPieceForAttachment: (attachment) ->
     return piece for piece in @getAttachmentPieces() when piece.attachment is attachment
-
-  attachmentIsImage: (attachment) ->
-    attachmentPiece = @getAttachmentPieceForAttachment(attachment)
-    attachmentPiece?.isImage()
 
   expandedLocationRangeForBlockTransformation: (locationRange) ->
     {start, end} = locationRange
