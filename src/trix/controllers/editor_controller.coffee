@@ -17,7 +17,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @documentController.delegate = this
     @documentController.focus()
 
-    @composition = new Trix.Composition @document, @config
+    @composition = new Trix.Composition @document
     @composition.delegate = this
     @composition.selectionDelegate = @selectionManager
 
