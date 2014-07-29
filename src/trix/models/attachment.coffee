@@ -14,6 +14,18 @@ class Trix.Attachment extends Trix.Object
         callback(@previewURL = event.target.result)
       reader.readAsDataURL(@file)
 
-  cleanup: ->
-    delete @file
-    delete @previewURL
+  toAttachmentForDocument: (@document) ->
+    @getAttributes = ->
+      @document.getAttachmentPieceForAttachment(this)?.getAttributes()
+
+    @setAttributes = (attributes) ->
+      if attributes.url?
+        delete @file
+        delete @previewURL
+      @document.updateAttributesForAttachment(attributes, this)
+
+    @remove = ->
+      if range = @document.getLocationRangeOfAttachment(this)
+        @document.removeTextAtLocationRange(range)
+
+    this

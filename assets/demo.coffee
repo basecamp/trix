@@ -13,7 +13,6 @@ config =
 
     didAddAttachment: (attachment) ->
       console.log "Host received attachment:", attachment
-      return
       saveAttachment(attachment)
 
       if file = attachment.file
@@ -24,9 +23,9 @@ config =
             filename = "basecamp-#{file.name}.rb"
             attributes = { url: filename, filename }
 
+          attributes.identifier = "Attachment:#{Math.random() * 5000}"
           console.log "Host setting attributes for attachment:", attachment, attributes
           attachment.setAttributes(attributes)
-          attachment.setIdentifier("Attachment:#{Math.random() * 5000}")
         , 1000
 
     didRemoveAttachment: (attachment) ->
@@ -41,15 +40,18 @@ config =
       inspectorController.incrementRenderCount()
 
 saveAttachment = (attachment) ->
+  attributes = attachment.getAttributes()
+
   item = document.createElement("li")
   item.setAttribute("id", "attachment_#{attachment.id}")
-  item.textContent = "#{attachment.attributes.filename ? attachment.attributes.url} "
+  item.textContent = "#{attributes.filename ? attributes.url} "
 
   link = document.createElement("a")
   link.setAttribute("href", "#")
   link.textContent = "(remove)"
-  link.addEventListener "click", ->
-    window.controller.composition.removeAttachment(attachment)
+  link.addEventListener "click",  (event) ->
+    event.preventDefault()
+    attachment.remove()
     removeAttachment(attachment)
 
   item.appendChild(link)
