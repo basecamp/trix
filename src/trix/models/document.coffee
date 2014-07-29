@@ -21,7 +21,7 @@ class Trix.Document extends Trix.Object
   initializeAttachmentManagerWithDelegate: (delegate) ->
     @attachments = new Trix.AttachmentManager this
     @attachments.delegate = delegate
-    @attachments.reset()
+    @attachments.refresh()
 
   copy: ->
     new @constructor @blockList.toArray()
@@ -40,7 +40,7 @@ class Trix.Document extends Trix.Object
   endEditing: ->
     if --@editDepth is 0
       @delegate?.didEditDocument?(this)
-      @attachments?.reset()
+      @attachments?.refresh()
     this
 
   insertDocumentAtLocationRange: edit (document, locationRange) ->

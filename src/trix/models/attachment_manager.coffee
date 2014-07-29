@@ -26,7 +26,7 @@ class Trix.AttachmentManager
     if attachment = @collection.remove(id)
       @delegate?.didRemoveAttachment?(attachment)
 
-  reset: ->
+  refresh: ->
     attachments = @document.getAttachments()
 
     for attachment in @collection.difference(attachments)
