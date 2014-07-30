@@ -50,11 +50,15 @@ class Trix.Document extends Trix.Object
 
   insertTextAtLocationRange: edit (text, locationRange) ->
     @removeTextAtLocationRange(locationRange)
-    @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
-      if block.isPlaceholder()
-        block.copyWithText(text)
-      else
-        block.copyWithText(block.text.insertTextAtPosition(text, locationRange.offset))
+    if @blockList.length is 0
+      block = new Trix.Block text
+      @blockList = @blockList.insertObjectAtIndex(block, 0)
+    else
+      @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
+        if block.isPlaceholder()
+          block.copyWithText(text)
+        else
+          block.copyWithText(block.text.insertTextAtPosition(text, locationRange.offset))
 
   removeTextAtLocationRange: edit (locationRange) ->
     return if locationRange.isCollapsed()
