@@ -62,39 +62,26 @@ class Trix.Composition
     if block.hasAttributes()
       text = block.text.getTextAtRange([0, range.end.offset])
       switch
-        # Replace placeholder blocks that have attributes with a placeholder block without attributes
-        when block.isPlaceholder()
-          @replacePlaceholderBlock()
+        # Remove block attributes
+        when block.isEmpty()
+          @removeCurrentAttribute(key) for key of block.getAttributes()
         # Break from the end of blocks after one newline
         when text.endsWithString("\n") and text.getLength() is range.end.offset
-          @insertPlaceholderBlock()
+          @insertEmptyBlock()
         # Break from the middle of blocks after two newlines
         when text.endsWithString("\n\n")
-          @insertPlaceholderBlock()
+          @insertEmptyBlock()
         # Stay in the block, add a newline
         else
           @insertString("\n")
     else
-      if block.isPlaceholder()
-        @insertPlaceholderBlock()
-      else
-        @insertString("\n")
+      @insertString("\n")
 
-  insertPlaceholderBlock: ->
-    @notifyDelegateOfIntentionToSetLocationRange()
+  insertEmptyBlock: ->
+    document = Trix.Document.fromString("")
+    @insertDocument(document)
     range = @getLocationRange()
-    @document.insertPlaceholderBlockAtLocationRange(range)
-    index = range.end.index + 1
-    @removeNewlineBeforeBlockAtIndex(index)
-    @setLocationRange({index, offset: 0})
-
-  replacePlaceholderBlock: ->
-    range = @getLocationRange()
-    return unless @document.getBlockAtIndex(range.end.index).isPlaceholder()
-    @selectionDelegate?.expandSelectionInDirectionWithGranularity("forward", "character")
-    range = @getLocationRange()
-    @document.insertPlaceholderBlockAtLocationRange(range)
-    @setLocationRange(range.start)
+    @removeNewlineBeforeBlockAtIndex(range.index)
 
   insertHTML: (html) ->
     document = Trix.Document.fromHTML(html, {@attachments})
@@ -186,14 +173,14 @@ class Trix.Composition
         @removeNewlineBeforeBlockAtIndex(index) if range.offset isnt 0
 
   removeNewlineBeforeBlockAtIndex: (index) ->
-    unless (block = @document.getBlockAtIndex(--index))?.isPlaceholder()
+    unless (block = @document.getBlockAtIndex(--index))?.isEmpty()
       offset = block.getLength()
       range = new Trix.LocationRange({index, offset: offset - 1}, {index, offset})
       if @document.getStringAtLocationRange(range) is "\n"
         @document.removeTextAtLocationRange(range)
 
   removeNewlineAfterBlockAtIndex: (index) ->
-    unless @document.getBlockAtIndex(++index)?.isPlaceholder()
+    unless @document.getBlockAtIndex(++index)?.isEmpty()
       range = new Trix.LocationRange({index, offset: 0}, {index, offset: 1})
       if @document.getStringAtLocationRange(range) is "\n"
         @document.removeTextAtLocationRange(range)

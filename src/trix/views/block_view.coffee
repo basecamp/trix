@@ -6,15 +6,12 @@ class Trix.BlockView
   constructor: (@block, @blockIndex) ->
     @text = @block.text
     @blockAttributes = @block.getAttributes()
+    @elements = []
+    @nodeCache = []
 
   # Rendering
 
   render: ->
-    @resetNodeCache()
-    @elements = []
-    @createElementsForText()
-    @createExtraNewlineElement()
-
     container = switch
       when @blockAttributes.quote
         document.createElement("blockquote")
@@ -24,11 +21,18 @@ class Trix.BlockView
     container.trixPosition = 0
     container.trixIndex = @blockIndex
 
-    container.appendChild(element) for element in @elements
-    container
+    if @block.isEmpty()
+      br = document.createElement("br")
+      br.trixPosition = 0
+      br.trixLength = 0
+      br.trixIndex = @blockIndex
+      container.appendChild(br)
+    else
+      @createElementsForText()
+      @createExtraNewlineElement()
+      container.appendChild(element) for element in @elements
 
-  resetNodeCache: ->
-    @nodeCache = []
+    container
 
   # Hold a reference to every node we create to prevent IE from losing
   # their expando properties like trixPosition. IE will otherwise occasionally
@@ -83,7 +87,7 @@ class Trix.BlockView
   # so add an extra one.
   createExtraNewlineElement: ->
     if string = @currentRun?.string
-      if /\n$/.test(string) and not @block.isPlaceholder()
+      if /\n$/.test(string)
         @currentRun = { string: "\n", position: @text.getLength() }
         node = @createStringNodesForCurrentRun()[0]
         @cacheNode(node)

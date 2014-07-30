@@ -12,6 +12,10 @@ class Trix.Document extends Trix.Object
   @fromHTML: (html, options) ->
     Trix.HTMLParser.parse(html, options).getDocument()
 
+  @fromString: (string, textAttributes) ->
+    text = Trix.Text.textForStringWithAttributes(string, textAttributes)
+    new this [new Trix.Block text]
+
   constructor: (blocks = []) ->
     super
     @editDepth = 0
@@ -55,10 +59,7 @@ class Trix.Document extends Trix.Object
       @blockList = @blockList.insertObjectAtIndex(block, 0)
     else
       @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
-        if block.isPlaceholder()
-          block.copyWithText(text)
-        else
-          block.copyWithText(block.text.insertTextAtPosition(text, locationRange.offset))
+        block.copyWithText(block.text.insertTextAtPosition(text, locationRange.offset))
 
   removeTextAtLocationRange: edit (locationRange) ->
     return if locationRange.isCollapsed()
