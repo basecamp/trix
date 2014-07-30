@@ -14,6 +14,9 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   isPending: ->
     @attachment.file? and not @getURL()?
 
+  isSerializable: ->
+    not @isPending()
+
   isImage: ->
     /image/.test(@attributes.get("contentType"))
 

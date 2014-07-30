@@ -87,10 +87,6 @@ class Trix.Text extends Trix.Object
   getTextAtRange: (range) ->
     @copyWithPieceList @pieceList.getSplittableListInRange(range)
 
-  getTextWithoutPendingPieces: ->
-    pieceList = @pieceList.selectSplittableList (piece) -> not piece.isPending()
-    @copyWithPieceList(pieceList)
-
   getStringAtRange: (range) ->
     @pieceList.getSplittableListInRange(range).toString()
 
@@ -155,6 +151,10 @@ class Trix.Text extends Trix.Object
 
   contentsForInspection: ->
     pieceList: @pieceList.inspect()
+
+  toSerializableText: ->
+    pieceList = @pieceList.selectSplittableList (piece) -> piece.isSerializable()
+    @copyWithPieceList(pieceList)
 
   toString: ->
     @pieceList.toString()

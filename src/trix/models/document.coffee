@@ -130,12 +130,6 @@ class Trix.Document extends Trix.Object
     range = @rangeFromLocationRange(locationRange)
     new @constructor @blockList.getSplittableListInRange(range).toArray()
 
-  getDocumentWithoutPendingObjects: ->
-    blocks = []
-    @blockList.eachObject (block) ->
-      blocks.push(block.copyWithText(block.text.getTextWithoutPendingPieces()))
-    new @constructor blocks
-
   getStringAtLocationRange: (locationRange) ->
     @getDocumentAtLocationRange(locationRange).toString()
 
@@ -240,6 +234,12 @@ class Trix.Document extends Trix.Object
 
   locationRangeFromPosition: (position) ->
     new Trix.LocationRange @blockList.findIndexAndOffsetAtPosition(position)
+
+  toSerializableDocument: ->
+    blocks = []
+    @blockList.eachObject (block) ->
+      blocks.push(block.copyWithText(block.text.toSerializableText()))
+    new @constructor blocks
 
   toString: ->
     @blockList.toString()

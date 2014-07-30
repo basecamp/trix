@@ -59,8 +59,8 @@ class Trix.Piece extends Trix.Object
       @hasSameAttributesAsPiece(piece)
     )
 
-  isPending: ->
-    false
+  isSerializable: ->
+    true
 
   toString: ->
     "NO"
