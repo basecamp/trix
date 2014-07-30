@@ -5,9 +5,8 @@
 
 class Trix.AbstractEditorController
   constructor: (@config) ->
-    {@documentElement, @toolbarElement, @textareaElement, @inputElement} = @config
+    {@documentElement, @toolbarElement, @textareaElement, @inputElement, @delegate} = @config
     @document = @createDocument()
-    @document.initializeAttachmentManagerCollectionWithDelegate(@config.delegate)
 
   createDocument: ->
     if @documentElement.textContent.trim()

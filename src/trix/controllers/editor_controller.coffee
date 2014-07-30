@@ -10,6 +10,8 @@
 class Trix.EditorController extends Trix.AbstractEditorController
   constructor: ->
     super
+    @document.initializeAttachmentManagerCollectionWithDelegate(@delegate)
+
     @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
 
