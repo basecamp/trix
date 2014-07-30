@@ -30,7 +30,7 @@ class Trix.DocumentController
   # Attachment editor management
 
   installAttachmentEditorForElement: (element) ->
-    attachment = @document.attachments.get(element.trixAttachmentId)
+    attachment = @document.attachmentManagers.get(element.trixAttachmentId)
     return if @attachmentEditor?.attachment is attachment
     @uninstallAttachmentEditor()
 

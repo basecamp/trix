@@ -97,7 +97,8 @@ class Trix.Composition
       @document.replaceDocument(document)
 
   insertFile: (file) ->
-    if attachment = @document.attachments.create(file)
+    if @document.attachmentManagers.shouldAcceptFile(file)
+      attachment = new Trix.Attachment file
       attributes = Trix.Hash.box(@currentAttributes).merge(contentType: file.type, filename: file.name)
       text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes.toObject())
       @insertText(text)

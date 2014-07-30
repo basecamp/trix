@@ -1,36 +1,19 @@
-#= require trix/utilities/collection
-#= require trix/models/attachment
-
 class Trix.AttachmentManager
-  constructor: (@document) ->
-    @collection = new Trix.Collection
+  constructor: (@attachment, @document) ->
+    {@id, @file} = @attachment
 
-  get: (id) ->
-    @collection.get(id)
+  getAttributes: ->
+    @document.getAttachmentPieceForAttachment(@attachment)?.getAttributes()
 
-  findWhere: (attributes) ->
-    @collection.findWhere(attributes)
+  setAttributes: (attributes) ->
+    if attributes.url?
+      delete @attachment.file
+      delete @attachment.previewURL
+    @document.updateAttributesForAttachment(attributes, @attachment)
 
-  add: (attachment) ->
-    unless @collection.has(attachment.id)
-      attachment = attachment.toAttachmentForDocument(@document)
-      @collection.add(attachment)
-      @delegate?.didAddAttachment?(attachment)
-      attachment
+  remove: ->
+    if range = @document.getLocationRangeOfAttachment(@attachment)
+      @document.removeTextAtLocationRange(range)
 
-  create: (file) ->
-    if @delegate?.shouldAcceptFile?(file)
-      new Trix.Attachment file
-
-  remove: (id) ->
-    if attachment = @collection.remove(id)
-      @delegate?.didRemoveAttachment?(attachment)
-
-  refresh: ->
-    attachments = @document.getAttachments()
-
-    for attachment in @collection.difference(attachments)
-      @remove(attachment.id)
-
-    for attachment in attachments
-      @add(attachment)
+  isImage: ->
+    @document.getAttachmentPieceForAttachment(@attachment)?.isImage()
