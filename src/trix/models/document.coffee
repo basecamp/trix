@@ -49,6 +49,7 @@ class Trix.Document extends Trix.Object
     @insertDocumentAtLocationRange(document, locationRange)
 
   insertTextAtLocationRange: edit (text, locationRange) ->
+    @removeTextAtLocationRange(locationRange)
     @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
       if block.isPlaceholder()
         block.copyWithText(text)
@@ -76,10 +77,6 @@ class Trix.Document extends Trix.Object
             replaceObjectAtIndex(leftBlock.consolidateWith(rightBlock), leftIndex)
 
       @blockList = blockList
-
-  replaceTextAtLocationRange: edit (text, locationRange) ->
-    @removeTextAtLocationRange(locationRange)
-    @insertTextAtLocationRange(text, locationRange)
 
   moveTextFromLocationRangeToPosition: edit (locationRange, position) ->
     range = @rangeFromLocationRange(locationRange)
