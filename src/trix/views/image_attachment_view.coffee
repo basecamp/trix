@@ -10,6 +10,7 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
     @image.setAttribute("data-trix-identifier", @attachmentPiece.getIdentifier()) if @attachmentPiece.hasIdentifier()
 
     if @attachmentPiece.isPending()
+      @image.setAttribute("data-trix-pending", "true")
       @attachment.getPreviewURL (previewURL) =>
         @image.ignoreNextMutation = true
         @image.src = previewURL

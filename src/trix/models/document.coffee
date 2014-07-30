@@ -130,6 +130,12 @@ class Trix.Document extends Trix.Object
     range = @rangeFromLocationRange(locationRange)
     new @constructor @blockList.getSplittableListInRange(range).toArray()
 
+  getDocumentWithoutPendingObjects: ->
+    blocks = []
+    @blockList.eachObject (block) ->
+      blocks.push(block.copyWithText(block.text.getTextWithoutPendingPieces()))
+    new @constructor blocks
+
   getStringAtLocationRange: (locationRange) ->
     @getDocumentAtLocationRange(locationRange).toString()
 

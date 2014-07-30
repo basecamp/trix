@@ -46,6 +46,10 @@ class Trix.SplittableList extends Trix.Object
     [objects, leftIndex, rightIndex] = @splitObjectsAtRange(range)
     new @constructor objects.slice(leftIndex, rightIndex + 1)
 
+  selectSplittableList: (test) ->
+    objects = (object for object in @objects when test(object))
+    new @constructor objects
+
   removeObjectsInRange: (range) ->
     [objects, leftIndex, rightIndex] = @splitObjectsAtRange(range)
     objects.splice(leftIndex, rightIndex - leftIndex + 1)
