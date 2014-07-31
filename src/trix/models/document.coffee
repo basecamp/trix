@@ -145,7 +145,11 @@ class Trix.Document extends Trix.Object
 
   getDocumentAtLocationRange: (locationRange) ->
     range = @rangeFromLocationRange(locationRange)
-    new @constructor @blockList.getSplittableListInRange(range).toArray()
+    blocks = @blockList.getSplittableListInRange(range).toArray()
+    if blocks.length is 0
+      # Should the constructor do this?
+      blocks.push(new Trix.Block)
+    new @constructor blocks
 
   getStringAtLocationRange: (locationRange) ->
     @getDocumentAtLocationRange(locationRange).toString()
