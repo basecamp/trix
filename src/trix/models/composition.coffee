@@ -152,19 +152,25 @@ class Trix.Composition
 
   setBlockAttribute: (attributeName, value) ->
     return unless range = @getLocationRange()
-    expandedRange = @document.expandedLocationRangeForBlockTransformation(range)
-    document = @document.getDocumentAtLocationRange(expandedRange)
-    document.addAttribute(attributeName, value)
-
-    [startPosition, endPosition] = @document.rangeFromLocationRange(range)
-    startPosition-- if document.getLength() > document.trimLeft("\n").getLength()
-    endPosition-- if document.getLength() > document.trimRight("\n").getLength()
-
     @notifyDelegateOfIntentionToSetLocationRange()
-    @document.insertDocumentAtLocationRange(document, expandedRange)
-    {start} = @document.locationRangeFromPosition(startPosition)
-    {end} = @document.locationRangeFromPosition(endPosition)
-    @setLocationRange(start, end)
+    [startPosition, endPosition] = @document.rangeFromLocationRange(range)
+
+    expandedRange = @document.expandedLocationRangeForBlockTransformation(range)
+    if expandedRange.isEqualTo(range)
+      @document.addAttributeAtLocationRange(attributeName, value, range)
+    else
+      document = @document.getDocumentAtLocationRange(expandedRange)
+      document.addAttribute(attributeName, value)
+      startPosition-- if document.getLength() > document.trimLeft("\n").getLength()
+      endPosition-- if document.getLength() > document.trimRight("\n").getLength()
+      @document.insertDocumentAtLocationRange(document, expandedRange)
+
+    if startPosition is endPosition or range.isCollapsed()
+      @setPosition(startPosition)
+    else
+      {start} = @document.locationRangeFromPosition(startPosition)
+      {end} = @document.locationRangeFromPosition(endPosition)
+      @setLocationRange(start, end)
 
   updateCurrentAttributes: ->
     @currentAttributes =
@@ -206,6 +212,14 @@ class Trix.Composition
 
   setPosition: (position) ->
     range = @document.locationRangeFromPosition(position)
+    # There are two cursor positions with the same Document
+    # position at Block boundaries. Prefer the first.
+    if range.offset is 0 and range.index isnt 0
+      index = range.index - 1
+      offset = @document.getBlockAtIndex(index).getLength()
+      leftRange = new Trix.LocationRange {index, offset}
+      if @document.rangeFromLocationRange(leftRange)[0] is position
+        range = leftRange
     @setLocationRange(range)
 
   preserveSelection: (block) ->
