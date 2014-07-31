@@ -242,7 +242,8 @@ class Trix.Document extends Trix.Object
     attachmentPiece?.isImage()
 
   expandedLocationRangeForBlockTransformation: (locationRange) ->
-    {start, end} = locationRange
+    start = { index: locationRange.start.index, offset: locationRange.start.offset }
+    end = { index: locationRange.end.index, offset: locationRange.end.offset }
 
     unless start.offset is 0
       startString = @getTextAtIndex(start.index).getStringAtRange([0, start.offset])
