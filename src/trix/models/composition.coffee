@@ -65,23 +65,15 @@ class Trix.Composition
         # Remove block attributes
         when block.isEmpty()
           @removeCurrentAttribute(key) for key of block.getAttributes()
-        # Break from the end of blocks after one newline
-        when text.endsWithString("\n") and text.getLength() is range.end.offset
-          @insertEmptyBlock()
-        # Break from the middle of blocks after two newlines
-        when text.endsWithString("\n\n")
-          @insertEmptyBlock()
+        # Break out of block after a newline (and remove the newline)
+        when text.endsWithString("\n")
+          @selectionDelegate?.expandSelectionInDirectionWithGranularity("backward", "character")
+          @insertDocument(Trix.Document.fromString(""))
         # Stay in the block, add a newline
         else
           @insertString("\n")
     else
       @insertString("\n")
-
-  insertEmptyBlock: ->
-    document = Trix.Document.fromString("")
-    @insertDocument(document)
-    range = @getLocationRange()
-    @removeNewlineBeforeBlockAtIndex(range.index)
 
   insertHTML: (html) ->
     document = Trix.Document.fromHTML(html, {@attachments})
@@ -160,30 +152,19 @@ class Trix.Composition
 
   setBlockAttribute: (attributeName, value) ->
     return unless range = @getLocationRange()
-    blockLength = @document.blockList.length
-    endPosition = @document.rangeFromLocationRange(range)[1]
-    range = @document.expandedLocationRangeForBlockTransformation(range)
-    @document.addAttributeAtLocationRange(attributeName, value, range)
-    @setPosition(endPosition)
+    expandedRange = @document.expandedLocationRangeForBlockTransformation(range)
+    document = @document.getDocumentAtLocationRange(expandedRange)
+    document.addAttribute(attributeName, value)
 
-    if @document.blockList.length > blockLength
-      {index} = @getLocationRange()
-      @document.edit =>
-        @removeNewlineAfterBlockAtIndex(index)
-        @removeNewlineBeforeBlockAtIndex(index) if range.offset isnt 0
+    [startPosition, endPosition] = @document.rangeFromLocationRange(range)
+    startPosition-- if document.getLength() > document.trimLeft("\n").getLength()
+    endPosition-- if document.getLength() > document.trimRight("\n").getLength()
 
-  removeNewlineBeforeBlockAtIndex: (index) ->
-    return unless block = @document.getBlockAtIndex(--index)
-    offset = block.getLength()
-    range = new Trix.LocationRange({index, offset: offset - 1}, {index, offset})
-    if @document.getStringAtLocationRange(range) is "\n"
-      @document.removeTextAtLocationRange(range)
-
-  removeNewlineAfterBlockAtIndex: (index) ->
-    return unless block = @document.getBlockAtIndex(++index)
-    range = new Trix.LocationRange({index, offset: 0}, {index, offset: 1})
-    if @document.getStringAtLocationRange(range) is "\n"
-      @document.removeTextAtLocationRange(range)
+    @notifyDelegateOfIntentionToSetLocationRange()
+    @document.insertDocumentAtLocationRange(document, expandedRange)
+    {start} = @document.locationRangeFromPosition(startPosition)
+    {end} = @document.locationRangeFromPosition(endPosition)
+    @setLocationRange(start, end)
 
   updateCurrentAttributes: ->
     @currentAttributes =

@@ -41,8 +41,8 @@ class Trix.Document extends Trix.Object
     this
 
   insertDocumentAtLocationRange: edit (document, locationRange) ->
-    @removeTextAtLocationRange(locationRange)
     position = @blockList.findPositionAtIndexAndOffset(locationRange.index, locationRange.offset)
+    @removeTextAtLocationRange(locationRange)
     @blockList = @blockList.insertSplittableListAtPosition(document.blockList, position)
 
   replaceDocument: edit (document) ->
@@ -106,6 +106,11 @@ class Trix.Document extends Trix.Object
           @blockList = @blockList.editObjectAtIndex index, ->
             block.copyWithText(block.text.addAttributeAtRange(attribute, value, range))
 
+  addAttribute: edit (attribute, value) ->
+    @eachBlock (block, index) =>
+      @blockList = @blockList.editObjectAtIndex (index), ->
+        block.addAttribute(attribute, value)
+
   removeAttributeAtLocationRange: edit (attribute, locationRange) ->
     @eachBlockAtLocationRange locationRange, (block, range, index) =>
       if Trix.attributes[attribute]?.block
@@ -120,6 +125,23 @@ class Trix.Document extends Trix.Object
     text = @getTextAtIndex(locationRange.index)
     @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
       block.copyWithText(text.updateAttributesForAttachment(attributes, attachment))
+
+  trimLeft: edit (string = " ") ->
+    text = @getTextAtIndex(0)
+    textLength = text.getLength()
+    range = [0, string.length]
+    if text.getStringAtRange(range) is string
+      @blockList = @blockList.editObjectAtIndex 0, (block) ->
+        block.copyWithText(text.removeTextAtRange(range))
+
+  trimRight: edit (string = " ") ->
+    index = @blockList.length - 1
+    text = @getTextAtIndex(index)
+    textLength = text.getLength()
+    range = [textLength - string.length, textLength]
+    if text.getStringAtRange(range) is string
+      @blockList = @blockList.editObjectAtIndex index, (block) ->
+        block.copyWithText(text.removeTextAtRange(range))
 
   getDocumentAtLocationRange: (locationRange) ->
     range = @rangeFromLocationRange(locationRange)
@@ -221,13 +243,13 @@ class Trix.Document extends Trix.Object
     unless start.offset is 0
       startString = @getTextAtIndex(start.index).getStringAtRange([0, start.offset])
       startOffset = startString.lastIndexOf("\n")
-      start.offset = if startOffset isnt -1 then startOffset + 1 else 0
+      start.offset = if startOffset isnt -1 then startOffset else 0
 
     endText = @getTextAtIndex(end.index)
     unless end.offset is (endLength = endText.getLength())
       endString = endText.getStringAtRange([end.offset, endLength])
       endOffset = endString.indexOf("\n")
-      end.offset = if endOffset isnt -1 then end.offset + endOffset else endLength
+      end.offset = if endOffset isnt -1 then end.offset + endOffset + 1 else endLength
 
     new Trix.LocationRange start, end
 
