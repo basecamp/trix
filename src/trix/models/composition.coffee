@@ -173,17 +173,17 @@ class Trix.Composition
         @removeNewlineBeforeBlockAtIndex(index) if range.offset isnt 0
 
   removeNewlineBeforeBlockAtIndex: (index) ->
-    unless (block = @document.getBlockAtIndex(--index))?.isEmpty()
-      offset = block.getLength()
-      range = new Trix.LocationRange({index, offset: offset - 1}, {index, offset})
-      if @document.getStringAtLocationRange(range) is "\n"
-        @document.removeTextAtLocationRange(range)
+    return unless block = @document.getBlockAtIndex(--index)
+    offset = block.getLength()
+    range = new Trix.LocationRange({index, offset: offset - 1}, {index, offset})
+    if @document.getStringAtLocationRange(range) is "\n"
+      @document.removeTextAtLocationRange(range)
 
   removeNewlineAfterBlockAtIndex: (index) ->
-    unless @document.getBlockAtIndex(++index)?.isEmpty()
-      range = new Trix.LocationRange({index, offset: 0}, {index, offset: 1})
-      if @document.getStringAtLocationRange(range) is "\n"
-        @document.removeTextAtLocationRange(range)
+    return unless block = @document.getBlockAtIndex(++index)
+    range = new Trix.LocationRange({index, offset: 0}, {index, offset: 1})
+    if @document.getStringAtLocationRange(range) is "\n"
+      @document.removeTextAtLocationRange(range)
 
   updateCurrentAttributes: ->
     @currentAttributes =
