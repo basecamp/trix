@@ -63,9 +63,17 @@ class Trix.Document extends Trix.Object
 
   removeTextAtLocationRange: edit (locationRange) ->
     return if locationRange.isCollapsed()
+
     if locationRange.isInSingleIndex()
-      @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
-        block.copyWithText(block.text.removeTextAtRange([locationRange.start.offset, locationRange.end.offset]))
+      index = locationRange.index
+      block = @blockList.getObjectAtIndex(index)
+      text = block.text.removeTextAtRange([locationRange.start.offset, locationRange.end.offset])
+
+      @blockList = if text.isEmpty()
+        @blockList.removeObjectAtIndex(index)
+      else
+        @blockList.replaceObjectAtIndex(block.copyWithText(text), index)
+
     else
       range = @rangeFromLocationRange(locationRange)
       blockList = @blockList.removeObjectsInRange(range)
