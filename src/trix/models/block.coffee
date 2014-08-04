@@ -10,7 +10,7 @@ class Trix.Block extends Trix.Object
     @attributes = Trix.Hash.box(attributes)
 
   isEmpty: ->
-    @text.toString() is ""
+    @text.isEmpty()
 
   copyWithText: (text) ->
     new @constructor text, @attributes

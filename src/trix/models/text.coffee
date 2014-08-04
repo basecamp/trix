@@ -128,6 +128,9 @@ class Trix.Text extends Trix.Object
   getLength: ->
     @pieceList.getLength()
 
+  isEmpty: ->
+    @getLength() is 0
+
   isEqualTo: (text) ->
     super or text?.pieceList?.isEqualTo(@pieceList)
 
