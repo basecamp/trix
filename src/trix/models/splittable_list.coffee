@@ -121,9 +121,11 @@ class Trix.SplittableList extends Trix.Object
     position
 
   getEndPosition: ->
-    position = 0
-    position += object.getLength() for object in @objects
-    position
+    @endPosition ?= (
+      position = 0
+      position += object.getLength() for object in @objects
+      position
+    )
 
   toString: ->
     @objects.join("")
