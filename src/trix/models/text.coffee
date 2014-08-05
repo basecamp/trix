@@ -126,7 +126,7 @@ class Trix.Text extends Trix.Object
       this
 
   getLength: ->
-    @pieceList.getLength()
+    @pieceList.getEndPosition()
 
   isEmpty: ->
     @getLength() is 0

@@ -169,7 +169,7 @@ class Trix.Document extends Trix.Object
     @getBlockAtIndex(index)?.text
 
   getLength: ->
-    @blockList.getLength()
+    @blockList.getEndPosition()
 
   eachBlock: (callback) ->
     @blockList.eachObject(callback)
