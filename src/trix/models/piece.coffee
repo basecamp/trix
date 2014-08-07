@@ -29,6 +29,9 @@ class Trix.Piece extends Trix.Object
   copy: ->
     @copyWithAttributes(@attributes)
 
+  getAttribute: (attribute) ->
+    @attributes.get(attribute)
+
   getAttributesHash: ->
     @attributes
 

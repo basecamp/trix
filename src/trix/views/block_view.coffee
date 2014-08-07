@@ -48,6 +48,7 @@ class Trix.BlockView
 
   createElementForCurrentRun: ->
     {attributes, position} = @currentRun
+    return if attributes.blockBreak
 
     parentAttribute = @getParentAttribute()
     elements = createElementsForAttributes(attributes, parentAttribute)

@@ -152,6 +152,9 @@ class Trix.Text extends Trix.Object
   eachPiece: (callback) ->
     @pieceList.eachObject(callback)
 
+  getPieces: ->
+    @pieceList.toArray()
+
   contentsForInspection: ->
     pieceList: @pieceList.inspect()
 
