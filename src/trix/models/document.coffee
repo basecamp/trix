@@ -64,32 +64,25 @@ class Trix.Document extends Trix.Object
   removeTextAtLocationRange: edit (locationRange) ->
     return if locationRange.isCollapsed()
 
-    if locationRange.isInSingleIndex()
-      index = locationRange.index
-      block = @blockList.getObjectAtIndex(index)
-      text = block.text.removeTextAtRange([locationRange.start.offset, locationRange.end.offset])
+    leftIndex = locationRange.start.index
+    leftBlock = @getBlockAtIndex(leftIndex)
+    leftText = leftBlock.text.getTextAtRange([0, locationRange.start.offset])
 
-      @blockList = if text.isEmpty()
-        @blockList.removeObjectAtIndex(index)
-      else
-        @blockList.replaceObjectAtIndex(block.copyWithText(text), index)
+    rightIndex = locationRange.end.index
+    rightBlock = @getBlockAtIndex(rightIndex)
+    rightText = rightBlock.text.getTextAtRange([locationRange.end.offset, rightBlock.getLength()])
 
+    text = leftText.appendText(rightText)
+    block = leftBlock.copyWithText(text)
+    blocks = @blockList.toArray()
+    affectedBlockCount = rightIndex + 1 - leftIndex
+
+    if block.isEmpty()
+      blocks.splice(leftIndex, affectedBlockCount)
     else
-      range = @rangeFromLocationRange(locationRange)
-      blockList = @blockList.removeObjectsInRange(range)
+      blocks.splice(leftIndex, affectedBlockCount, block)
 
-      if blockList.length
-        leftIndex = locationRange.index
-        rightIndex = leftIndex + 1
-        leftBlock = blockList.getObjectAtIndex(leftIndex)
-        rightBlock = blockList.getObjectAtIndex(rightIndex)
-
-        if leftBlock and rightBlock
-          blockList = blockList.
-            removeObjectAtIndex(rightIndex).
-            replaceObjectAtIndex(leftBlock.consolidateWith(rightBlock), leftIndex)
-
-      @blockList = blockList
+    @blockList = new Trix.SplittableList blocks
 
   moveTextFromLocationRangeToPosition: edit (locationRange, position) ->
     range = @rangeFromLocationRange(locationRange)
