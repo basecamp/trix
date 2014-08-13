@@ -35,6 +35,9 @@ class Trix.Block extends Trix.Object
     text: @text.inspect()
     attributes: @attributes.inspect()
 
+  toString: ->
+    @text.toString()
+
   toJSON: ->
     text: @text
     attributes: @getAttributes()
