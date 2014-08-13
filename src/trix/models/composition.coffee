@@ -67,7 +67,8 @@ class Trix.Composition
           @removeCurrentAttribute(key) for key of block.getAttributes()
         # Break out of block after a newline (and remove the newline)
         when text.endsWithString("\n")
-          @selectionDelegate?.expandSelectionInDirectionWithGranularity("backward", "character")
+          @deleteBackward()
+          @setPosition(@getPosition() + 1)
           @insertDocument(Trix.Document.fromString(""))
         # Stay in the block, add a newline
         else
