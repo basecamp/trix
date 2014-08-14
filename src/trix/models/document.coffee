@@ -72,10 +72,6 @@ class Trix.Document extends Trix.Object
   replaceDocument: edit "replaceDocument", (document) ->
     @blockList = document.blockList.copy()
 
-  insertPlaceholderBlockAtLocationRange: edit "insertPlaceholderBlockAtLocationRange", (locationRange) ->
-    document = new Trix.Document [Trix.Block.createPlaceholder()]
-    @insertDocumentAtLocationRange(document, locationRange)
-
   insertTextAtLocationRange: edit "insertTextAtLocationRange", (text, locationRange) ->
     @removeTextAtLocationRange(locationRange)
     if @blockList.length is 0
