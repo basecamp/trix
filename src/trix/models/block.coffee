@@ -68,6 +68,9 @@ class Trix.Block extends Trix.Object
   toString: ->
     @text.toString()
 
+  getBlockBreakPosition: ->
+    @text.getLength() - 1
+
   # Block breaks
 
   applyBlockBreakToText = (text) ->
