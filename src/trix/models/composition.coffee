@@ -42,7 +42,7 @@ class Trix.Composition
       offset += text.getLength()
       @setLocationRange({index, offset})
 
-  insertDocument: (document) ->
+  insertDocument: (document = Trix.Document.fromString("")) ->
     @notifyDelegateOfIntentionToSetLocationRange()
     range = @getLocationRange()
     @document.insertDocumentAtLocationRange(document, range)
@@ -67,9 +67,8 @@ class Trix.Composition
           @removeCurrentAttribute(key) for key of block.getAttributes()
         # Break out of block after a newline (and remove the newline)
         when text.endsWithString("\n")
-          @deleteBackward()
-          @setPosition(@getPosition() + 1)
-          @insertDocument(Trix.Document.fromString(""))
+          @expandSelectionInDirectionWithGranularity("backward", "character")
+          @insertDocument()
         # Stay in the block, add a newline
         else
           @insertString("\n")
