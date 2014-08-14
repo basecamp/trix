@@ -163,3 +163,6 @@ class Trix.Text extends Trix.Object
 
   toJSON: ->
     @pieceList.toJSON()
+
+  toConsole: ->
+    JSON.stringify(JSON.parse(piece.toConsole()) for piece in @pieceList.toArray())

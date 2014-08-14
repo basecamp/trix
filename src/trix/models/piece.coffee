@@ -69,6 +69,11 @@ class Trix.Piece extends Trix.Object
     type: @constructor.type
     attributes: @getAttributes()
 
+  toConsole: ->
+    stringValue = @toString()
+    stringValue = stringValue.slice(0, 14) + "…" if stringValue.length > 15
+    JSON.stringify(stringValue)
+
   contentsForInspection: ->
     type: @constructor.type
     attributes: @attributes.inspect()

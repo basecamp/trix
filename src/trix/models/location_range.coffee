@@ -39,3 +39,6 @@ class Trix.LocationRange
       @start
     else
       @toArray()
+
+  toConsole: ->
+    JSON.stringify(this)
