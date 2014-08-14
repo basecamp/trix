@@ -213,14 +213,6 @@ class Trix.Composition
 
   setPosition: (position) ->
     range = @document.locationRangeFromPosition(position)
-    # There are two cursor positions with the same Document
-    # position at Block boundaries. Prefer the first.
-    if range.offset is 0 and range.index isnt 0
-      index = range.index - 1
-      offset = @document.getBlockAtIndex(index).getLength()
-      leftRange = new Trix.LocationRange {index, offset}
-      if @document.rangeFromLocationRange(leftRange)[0] is position
-        range = leftRange
     @setLocationRange(range)
 
   preserveSelection: (block) ->
