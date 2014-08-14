@@ -40,5 +40,10 @@ class Trix.LocationRange
     else
       @toArray()
 
+  inspect: ->
+    locations = if @isCollapsed() then [@start] else [@start, @end]
+    strings = ("#{location.index}/#{location.offset}" for location in locations)
+    "(#{strings.join(" — ")})"
+
   toConsole: ->
-    JSON.stringify(this)
+    @inspect()
