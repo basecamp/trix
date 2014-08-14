@@ -17,12 +17,21 @@ class Trix.LocationRange
 
     new this start, end
 
-  constructor: (@start, @end) ->
+  constructor: (start, end) ->
+    @start = parse(start)
+    @end = parse(end)
+
     {@index, @offset} = @start
 
     unless @end?
       @end = {}
       @end[key] = val for key, val of start
+
+  parse = (location) ->
+    if Array.isArray(location)
+      index: location[0], offset: location[1]
+    else
+      location
 
   isEqualTo: (locationRange) ->
     @start.index is locationRange?.start?.index and
