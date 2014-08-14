@@ -49,6 +49,9 @@ class Trix.Document extends Trix.Object
     if @editDepth++ is 0
       @editCount++
       console.group("Edit operation #{@editCount}")
+      console.groupCollapsed("Backtrace")
+      console.trace()
+      console.groupEnd()
     this
 
   endEditing: ->
