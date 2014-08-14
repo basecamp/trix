@@ -31,6 +31,16 @@ class Trix.Block extends Trix.Object
   hasAttributes: ->
     @attributes.getKeys().length > 0
 
+  findLineBreakInDirectionFromPosition: (direction, position) ->
+    string = @toString()
+    result = switch direction
+      when "forward"
+        string.indexOf("\n", position)
+      when "backward"
+        string.slice(0, position).lastIndexOf("\n")
+
+    result unless result is -1
+
   contentsForInspection: ->
     text: @text.inspect()
     attributes: @attributes.inspect()

@@ -155,22 +155,12 @@ class Trix.Composition
     @notifyDelegateOfIntentionToSetLocationRange()
     [startPosition, endPosition] = @document.rangeFromLocationRange(range)
 
-    expandedRange = @document.expandLocationRangeForBlockTransformation(range)
-    if expandedRange.isEqualTo(range)
-      @document.addAttributeAtLocationRange(attributeName, value, range)
-    else
-      document = @document.getDocumentAtLocationRange(expandedRange)
-      document.addAttribute(attributeName, value)
-      startPosition-- if document.getLength() > document.trimLeft("\n").getLength()
-      endPosition-- if document.getLength() > document.trimRight("\n").getLength()
-      @document.insertDocumentAtLocationRange(document, expandedRange)
+    range = @document.expandLocationRangeToLineBreaksAndSplitBlocks(range)
+    @document.addAttributeAtLocationRange(attributeName, value, range)
 
-    if startPosition is endPosition or range.isCollapsed()
-      @setPosition(startPosition)
-    else
-      {start} = @document.locationRangeFromPosition(startPosition)
-      {end} = @document.locationRangeFromPosition(endPosition)
-      @setLocationRange(start, end)
+    {start} = @document.locationRangeFromPosition(startPosition)
+    {end} = @document.locationRangeFromPosition(endPosition)
+    @setLocationRange(start, end)
 
   updateCurrentAttributes: ->
     @currentAttributes =

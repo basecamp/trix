@@ -147,22 +147,33 @@ class Trix.Document extends Trix.Object
     @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
       block.copyWithText(text.updateAttributesForAttachment(attributes, attachment))
 
-  trimLeft: edit "trimLeft", (string = " ") ->
-    text = @getTextAtIndex(0)
-    textLength = text.getLength()
-    range = [0, string.length]
-    if text.getStringAtRange(range) is string
-      @blockList = @blockList.editObjectAtIndex 0, (block) ->
-        block.copyWithText(text.removeTextAtRange(range))
+  insertBlockBreakAtLocationRange: edit "insertBlockBreakAtLocationRange", (locationRange) ->
+    block = @getBlockAtIndex(locationRange.end.index)
+    position = @blockList.findPositionAtIndexAndOffset(locationRange.index, locationRange.offset)
+    position++ if locationRange.end.offset is block.getBlockBreakPosition()
 
-  trimRight: edit "trimRight", (string = " ") ->
-    index = @blockList.length - 1
-    text = @getTextAtIndex(index)
-    textLength = text.getLength()
-    range = [textLength - string.length, textLength]
-    if text.getStringAtRange(range) is string
-      @blockList = @blockList.editObjectAtIndex index, (block) ->
-        block.copyWithText(text.removeTextAtRange(range))
+    @removeTextAtLocationRange(locationRange)
+
+    blocks = if locationRange.offset is 0 then [new Trix.Block] else []
+    @blockList = @blockList.insertSplittableListAtPosition(new Trix.SplittableList(blocks), position)
+
+  expandLocationRangeToLineBreaksAndSplitBlocks: (locationRange) ->
+    start = index: locationRange.start.index, offset: locationRange.start.offset
+    end = index: locationRange.end.index, offset: locationRange.end.offset
+
+    @edit =>
+      startBlock = @getBlockAtIndex(start.index)
+      if (start.offset = startBlock.findLineBreakInDirectionFromPosition("backward", start.offset))?
+        @insertBlockBreakAtLocationRange(Trix.LocationRange.forLocationWithLength(start, 1))
+        start.index += 1
+        end.index += 1
+      start.offset = 0
+
+      endBlock = @getBlockAtIndex(end.index)
+      end.offset = endBlock.findLineBreakInDirectionFromPosition("forward", end.offset)
+      @insertBlockBreakAtLocationRange(Trix.LocationRange.forLocationWithLength(end, 1))
+
+    new Trix.LocationRange start, end
 
   getDocumentAtLocationRange: (locationRange) ->
     range = @rangeFromLocationRange(locationRange)
@@ -261,23 +272,6 @@ class Trix.Document extends Trix.Object
   attachmentIsImage: (attachment) ->
     attachmentPiece = @getAttachmentPieceForAttachment(attachment)
     attachmentPiece?.isImage()
-
-  expandLocationRangeForBlockTransformation: (locationRange) ->
-    start = { index: locationRange.start.index, offset: locationRange.start.offset }
-    end = { index: locationRange.end.index, offset: locationRange.end.offset }
-
-    unless start.offset is 0
-      startString = @getTextAtIndex(start.index).getStringAtRange([0, start.offset])
-      startOffset = startString.lastIndexOf("\n")
-      start.offset = if startOffset isnt -1 then startOffset else 0
-
-    endText = @getTextAtIndex(end.index)
-    unless end.offset is (endLength = endText.getLength())
-      endString = endText.getStringAtRange([end.offset, endLength])
-      endOffset = endString.indexOf("\n")
-      end.offset = if endOffset isnt -1 then end.offset + endOffset + 1 else endLength
-
-    new Trix.LocationRange start, end
 
   rangeFromLocationRange: (locationRange) ->
     leftPosition = @blockList.findPositionAtIndexAndOffset(locationRange.start.index, locationRange.start.offset)
