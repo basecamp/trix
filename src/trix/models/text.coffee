@@ -20,6 +20,7 @@ class Trix.Text extends Trix.Object
 
   constructor: (pieces = []) ->
     super
+    pieces = (piece for piece in pieces when not piece.isEmpty())
     @pieceList = new Trix.SplittableList pieces
 
   copy: ->

@@ -62,6 +62,9 @@ class Trix.Piece extends Trix.Object
       @hasSameAttributesAsPiece(piece)
     )
 
+  isEmpty: ->
+    @length is 0
+
   toString: ->
     "NO"
 
