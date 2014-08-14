@@ -24,7 +24,7 @@ class Trix.BlockView
     if @block.isEmpty()
       br = document.createElement("br")
       br.trixPosition = 0
-      br.trixLength = 0
+      br.trixLength = 1
       br.trixIndex = @blockIndex
       container.appendChild(br)
     else
