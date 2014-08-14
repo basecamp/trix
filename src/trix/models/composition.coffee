@@ -96,7 +96,7 @@ class Trix.Composition
     range = @getLocationRange()
 
     if range.isCollapsed()
-      @selectionDelegate?.expandSelectionInDirectionWithGranularity(direction, granularity)
+      @expandSelectionInDirectionWithGranularity(direction, granularity)
       range = @getLocationRange()
 
     @document.removeTextAtLocationRange(range)
@@ -220,6 +220,9 @@ class Trix.Composition
 
   notifyDelegateOfIntentionToSetLocationRange: ->
     @delegate?.compositionWillSetLocationRange?()
+
+  expandSelectionInDirectionWithGranularity: (direction, granularity) ->
+    @selectionDelegate?.expandSelectionInDirectionWithGranularity(direction, granularity)
 
   expandSelectionForEditing: ->
     for key, value of Trix.attributes when value.parent
