@@ -27,12 +27,12 @@ class Trix.Document extends Trix.Object
 
   edit = (name, fn) -> ->
     @beginEditing()
+    fn.apply(this, arguments)
 
     console.group(name)
     console.log(format(object)...) for object in arguments
     console.groupEnd()
 
-    fn.apply(this, arguments)
     @endEditing()
 
   format = (object) ->
