@@ -70,12 +70,12 @@ class Trix.SelectionManager
       @delegate?.locationRangeDidChange?(@currentLocationRange)
 
   setDOMRange: (locationRange) ->
-    rangeStart = @findContainerAndOffsetForLocationRange(locationRange.start)
+    rangeStart = @findContainerAndOffsetForLocation(locationRange.start)
     rangeEnd =
       if locationRange.isCollapsed()
         rangeStart
       else
-        @findContainerAndOffsetForLocationRange(locationRange.end)
+        @findContainerAndOffsetForLocation(locationRange.end)
 
     range = document.createRange()
     try
@@ -118,39 +118,42 @@ class Trix.SelectionManager
 
     {index, offset}
 
-  findContainerAndOffsetForLocationRange: (loactionRange) ->
-    return [@element, 0] if loactionRange.index is 0 and loactionRange.offset < 1
+  findContainerAndOffsetForLocation: (location) ->
+    return [@element, 0] if location.index is 0 and location.offset < 1
 
-    node = @findNodeForLocationRange(loactionRange)
+    node = @findNodeForLocation(location)
 
     if node.nodeType is Node.TEXT_NODE
       container = node
-      offset = loactionRange.offset - node.trixPosition
+      offset = location.offset - node.trixPosition
     else
       container = node.parentNode
       offset =
-        if loactionRange.offset is 0
+        if location.offset is 0
           0
         else
           [node.parentNode.childNodes...].indexOf(node) + 1
 
     [container, offset]
 
-  findNodeForLocationRange: (range) ->
-    walker = DOM.createTreeWalker(@element, null, nodeFilterForLocationRange)
+  findNodeForLocation: (location) ->
+    walker = DOM.createTreeWalker(@element, null, trixNodeFilter)
     node = walker.currentNode
 
     while walker.nextNode()
-      if walker.currentNode.trixIndex is range.index
+      currentNode = walker.currentNode
+
+      if walker.currentNode.trixIndex is location.index
         startPosition = walker.currentNode.trixPosition
         endPosition = startPosition + walker.currentNode.trixLength
 
-        if startPosition <= range.offset <= endPosition
+        if startPosition <= location.offset <= endPosition
           node = walker.currentNode
           break
+
     node
 
-  nodeFilterForLocationRange = (node) ->
+  trixNodeFilter = (node) ->
     if node.trixPosition? and node.trixLength?
       NodeFilter.FILTER_ACCEPT
     else
