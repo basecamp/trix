@@ -262,7 +262,7 @@ class Trix.Document extends Trix.Object
     attachmentPiece = @getAttachmentPieceForAttachment(attachment)
     attachmentPiece?.isImage()
 
-  expandedLocationRangeForBlockTransformation: (locationRange) ->
+  expandLocationRangeForBlockTransformation: (locationRange) ->
     start = { index: locationRange.start.index, offset: locationRange.start.offset }
     end = { index: locationRange.end.index, offset: locationRange.end.offset }
 

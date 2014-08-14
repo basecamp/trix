@@ -155,7 +155,7 @@ class Trix.Composition
     @notifyDelegateOfIntentionToSetLocationRange()
     [startPosition, endPosition] = @document.rangeFromLocationRange(range)
 
-    expandedRange = @document.expandedLocationRangeForBlockTransformation(range)
+    expandedRange = @document.expandLocationRangeForBlockTransformation(range)
     if expandedRange.isEqualTo(range)
       @document.addAttributeAtLocationRange(attributeName, value, range)
     else
