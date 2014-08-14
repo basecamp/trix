@@ -5,6 +5,18 @@ class Trix.LocationRange
     else
       new this start, end
 
+  @forLocationWithLength: (location, length) ->
+    if length > 0
+      start = location
+      end = index: location.index, offset: location.offset + length
+    else if length < 0
+      start = index: location.index, offset: location.offset - length
+      end = location
+    else
+      start = end = location
+
+    new this start, end
+
   constructor: (@start, @end) ->
     {@index, @offset} = @start
 
