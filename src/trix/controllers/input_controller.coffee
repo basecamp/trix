@@ -4,6 +4,8 @@
 {defer} = Trix.Helpers
 
 class Trix.InputController
+  pastedFileCount = 0
+
   @keyNames:
     0x08: "backspace"
     0x0D: "return"
@@ -93,12 +95,22 @@ class Trix.InputController
 
     paste: (event) ->
       event.preventDefault()
-      if html = event.clipboardData.getData("text/html")
+      paste = event.clipboardData
+
+      if html = paste.getData("text/html")
         @delegate?.inputControllerWillPasteText()
         @responder?.insertHTML(html)
-      else if string = event.clipboardData.getData("text/plain")
+      else if string = paste.getData("text/plain")
         @delegate?.inputControllerWillPasteText()
         @responder?.insertString(string)
+
+      if "Files" in paste.types
+        if file = paste.items?[0]?.getAsFile?()
+          if not file.name and extension = extensionForFile(file)
+            file.name = "pasted-file-#{++pastedFileCount}.#{extension}"
+          @delegate?.inputControllerWillAttachFiles()
+          if @responder?.insertFile(file)
+            file.trixInserted = true
 
     compositionstart: (event) ->
       @delegate?.inputControllerWillStartComposition?()
@@ -145,3 +157,6 @@ class Trix.InputController
         @delegate?.inputControllerWillPerformTyping()
         @responder?.deleteWordBackward()
         event.preventDefault()
+
+  extensionForFile = (file) ->
+    file.type?.match(/\/(\w+)$/)?[1]
