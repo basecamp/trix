@@ -6,7 +6,7 @@
     <script type="text/javascript" src="trix.js"></script>
     <script type="text/javascript" src="demo.js"></script>
     <style type="text/css">
-      #text {
+      .editor {
         width: 90%;
         max-width: 450px;
         min-height: 300px;
@@ -17,8 +17,8 @@
         font-size: 16px;
       }
 
-      #text a,
-      #text a:visited {
+      .editor a,
+      .editor a:visited {
         color: blue;
       }
 
@@ -201,7 +201,7 @@
       </div>
     </div>
 
-    <textarea id="text" placeholder="Type some rich text!" autofocus></textarea>
+    <textarea id="text" class="editor" placeholder="Type some rich text!" autofocus></textarea>
 
     <div id="inspector" class="trix-inspector" style="display: none;">
       <div class="trix-inspector-toolbar">
