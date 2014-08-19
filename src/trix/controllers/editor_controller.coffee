@@ -9,7 +9,7 @@
 
 class Trix.EditorController extends Trix.AbstractEditorController
   initialize: ->
-    @textController = new Trix.TextController @textElement, @text, @config
+    @textController = new Trix.TextController @textElement, @text
     @textController.delegate = this
 
     @composition = new Trix.Composition @text, @config
@@ -31,6 +31,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @toolbarController = new Trix.ToolbarController @toolbarElement
     @toolbarController.delegate = this
     @toolbarController.updateActions()
+
+    # Focus last to ensure all focus event handlers are triggered
+    @textController.focus() if @config.autofocus
 
   # Composition controller delegate
 

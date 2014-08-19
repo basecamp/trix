@@ -3,7 +3,7 @@
 #= require trix/views/text_view
 
 class Trix.TextController
-  constructor: (@element, @text, @config) ->
+  constructor: (@element, @text) ->
     @textView = new Trix.TextView @element, @text
 
     @selectionLockCount = 0
@@ -12,7 +12,6 @@ class Trix.TextController
     @element.addEventListener("click", @didClick)
 
     @render()
-    @focus() if @config.autofocus
 
   didFocus: =>
     @delegate?.textControllerDidFocus?()
