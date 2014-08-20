@@ -1,128 +1,146 @@
-#= require trix/models/piece
-#= require trix/models/piece_list
+#= require trix/utilities/object
+#= require trix/utilities/hash
+#= require trix/models/attachment_piece
+#= require trix/models/string_piece
+#= require trix/models/splittable_list
 
-class Trix.Text
+class Trix.Text extends Trix.Object
   @textForAttachmentWithAttributes: (attachment, attributes) ->
-    piece = Trix.Piece.forAttachment(attachment, attributes)
+    piece = new Trix.AttachmentPiece attachment, attributes
     new this [piece]
 
   @textForStringWithAttributes: (string, attributes) ->
-    piece = new Trix.Piece string, attributes
+    piece = new Trix.StringPiece string, attributes
     new this [piece]
 
-  @fromJSON: (json) ->
-    new this do ->
-      for {string, attachment, attributes} in JSON.parse(json)
-        if attachment
-          attachment = new Trix.Attachment attachment
-          Trix.Piece.forAttachment(attachment, attributes)
-        else
-          new Trix.Piece string, attributes
-
-  @fromHTML: (html) ->
-    Trix.HTMLParser.parse(html).getText()
+  @fromJSON: (textJSON) ->
+    pieces = for pieceJSON in textJSON
+      Trix.Piece.fromJSON pieceJSON
+    new this pieces
 
   constructor: (pieces = []) ->
-    @editDepth = 0
-    @pieceList = new Trix.PieceList pieces
+    super
+    pieces = (piece for piece in pieces when not piece.isEmpty())
+    @pieceList = new Trix.SplittableList pieces
 
-  edit = (fn) -> ->
-    @beginEditing()
-    fn.apply(this, arguments)
-    @endEditing()
+  copy: ->
+    @copyWithPieceList @pieceList
 
-  beginEditing: ->
-    @editDepth++
-    this
+  copyWithPieceList: (pieceList) ->
+    new @constructor pieceList.consolidate().toArray(), @attributes
 
-  endEditing: ->
-    if --@editDepth is 0
-      @pieceList.consolidate()
-      @delegate?.didEditText?(this)
-    this
-
-  edit: edit (fn) -> fn()
-
-  appendText: edit (text) ->
+  appendText: (text) ->
     @insertTextAtPosition(text, @getLength())
 
-  insertTextAtPosition: edit (text, position) ->
-    @pieceList.insertPieceListAtPosition(text.pieceList, position)
+  insertTextAtPosition: (text, position) ->
+    @copyWithPieceList @pieceList.insertSplittableListAtPosition(text.pieceList, position)
 
-  removeTextAtRange: edit (range) ->
-    @pieceList.removePiecesInRange(range)
+  removeTextAtRange: (range) ->
+    @copyWithPieceList @pieceList.removeObjectsInRange(range)
 
-  replaceTextAtRange: edit (text, range) ->
-    @removeTextAtRange(range)
-    @insertTextAtPosition(text, range[0])
+  replaceTextAtRange: (text, range) ->
+    @removeTextAtRange(range).insertTextAtPosition(text, range[0])
 
-  replaceText: edit (text) ->
-    @pieceList.mergePieceList(text.pieceList)
-
-  moveTextFromRangeToPosition: edit (range, position) ->
+  moveTextFromRangeToPosition: (range, position) ->
     return if range[0] <= position <= range[1]
     text = @getTextAtRange(range)
     length = text.getLength()
     position -= length if range[0] < position
-    @removeTextAtRange(range)
-    @insertTextAtPosition(text, position)
+    @removeTextAtRange(range).insertTextAtPosition(text, position)
 
-  addAttributeAtRange: edit (attribute, value, range) ->
+  addAttributeAtRange: (attribute, value, range) ->
     attributes = {}
     attributes[attribute] = value
     @addAttributesAtRange(attributes, range)
 
-  addAttributesAtRange: edit (attributes, range) ->
-    @pieceList.transformPiecesInRange range, (piece) ->
+  addAttributesAtRange: (attributes, range) ->
+    @copyWithPieceList @pieceList.transformObjectsInRange range, (piece) ->
       piece.copyWithAdditionalAttributes(attributes)
 
-  removeAttributeAtRange: edit (attribute, range) ->
-    @pieceList.transformPiecesInRange range, (piece) ->
+  removeAttributeAtRange: (attribute, range) ->
+    @copyWithPieceList @pieceList.transformObjectsInRange range, (piece) ->
       piece.copyWithoutAttribute(attribute)
 
-  setAttributesAtRange: edit (attributes, range) ->
-    @pieceList.transformPiecesInRange range, (piece) ->
+  setAttributesAtRange: (attributes, range) ->
+    @copyWithPieceList @pieceList.transformObjectsInRange range, (piece) ->
       piece.copyWithAttributes(attributes)
 
   getAttributesAtPosition: (position) ->
-    @pieceList.getPieceAtPosition(position)?.getAttributes() ? {}
+    @pieceList.getObjectAtPosition(position)?.getAttributes() ? {}
+
+  getCommonAttributes: ->
+    objects = (piece.getAttributes() for piece in @pieceList.toArray())
+    Trix.Hash.fromCommonAttributesOfObjects(objects).toObject()
 
   getCommonAttributesAtRange: (range) ->
-    @pieceList.getPieceListInRange(range)?.getCommonAttributes() ? {}
+    @getTextAtRange(range).getCommonAttributes() ? {}
+
+  getExpandedRangeForAttributeAtRange: (attributeName, range) ->
+    [left, right] = range
+    originalLeft = left
+    length = @getLength()
+
+    left-- while left > 0 and @getCommonAttributesAtRange([left - 1, right])[attributeName]
+    right++ while right < length and @getCommonAttributesAtRange([originalLeft, right + 1])[attributeName]
+
+    [left, right]
 
   getTextAtRange: (range) ->
-    new @constructor @pieceList.getPieceListInRange(range).toArray()
+    @copyWithPieceList @pieceList.getSplittableListInRange(range)
 
   getStringAtRange: (range) ->
-    @pieceList.getPieceListInRange(range).toString()
+    @pieceList.getSplittableListInRange(range).toString()
+
+  startsWithString: (string) ->
+    @getStringAtRange([0, string.length]) is string
+
+  endsWithString: (string) ->
+    length = @getLength()
+    @getStringAtRange([length - string.length, length]) is string
+
+  getAttachmentPieces: ->
+    piece for piece in @pieceList.toArray() when piece.attachment?
 
   getAttachments: ->
-    @pieceList.getAttachments()
+    piece.attachment for piece in @getAttachmentPieces()
+
+  getAttachmentAndPositionById: (attachmentId) ->
+    position = 0
+    for piece in @pieceList.toArray()
+      if piece.attachment?.id is attachmentId
+        return { attachment: piece.attachment, position }
+      position += piece.length
+    attachment: null, position: null
 
   getAttachmentById: (attachmentId) ->
-    {attachment, position} = @pieceList.getAttachmentAndPositionById(attachmentId)
+    {attachment, position} = @getAttachmentAndPositionById(attachmentId)
     attachment
 
   getRangeOfAttachment: (attachment) ->
-    {attachment, position} = @pieceList.getAttachmentAndPositionById(attachment.id)
+    {attachment, position} = @getAttachmentAndPositionById(attachment.id)
     [position, position + 1] if attachment?
 
-  resizeAttachmentToDimensions: (attachment, {width, height} = {}) ->
+  updateAttributesForAttachment: (attributes, attachment) ->
     if range = @getRangeOfAttachment(attachment)
-      @addAttributesAtRange({width, height}, range)
+      @addAttributesAtRange(attributes, range)
+    else
+      this
 
   getLength: ->
-    @pieceList.getLength()
+    @pieceList.getEndPosition()
+
+  isEmpty: ->
+    @getLength() is 0
 
   isEqualTo: (text) ->
-    this is text or text?.pieceList?.isEqualTo(@pieceList)
+    super or text?.pieceList?.isEqualTo(@pieceList)
 
   eachRun: (callback) ->
     position = 0
-    @pieceList.eachPiece (piece) ->
+    @pieceList.eachObject (piece) ->
       id = piece.id
       attributes = piece.getAttributes()
-      run = {id, attributes, position}
+      run = {id, attributes, position, piece}
 
       if piece.attachment
         run.attachment = piece.attachment
@@ -132,11 +150,14 @@ class Trix.Text
       callback(run)
       position += piece.length
 
-  inspect: ->
-    @pieceList.inspect()
+  eachPiece: (callback) ->
+    @pieceList.eachObject(callback)
 
-  copy: ->
-    new @constructor @pieceList.toArray()
+  getPieces: ->
+    @pieceList.toArray()
+
+  contentsForInspection: ->
+    pieceList: @pieceList.inspect()
 
   toString: ->
     @pieceList.toString()
@@ -144,5 +165,5 @@ class Trix.Text
   toJSON: ->
     @pieceList.toJSON()
 
-  asJSON: ->
-    JSON.stringify(this)
+  toConsole: ->
+    JSON.stringify(JSON.parse(piece.toConsole()) for piece in @pieceList.toArray())

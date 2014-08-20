@@ -1,23 +1,24 @@
+#= require trix/utilities/object
 #= require trix/utilities/hash
 
-class Trix.Piece
-  id = 0
-  objectReplacementCharacter = "\uFFFC"
+class Trix.Piece extends Trix.Object
+  @types: {}
 
-  @forAttachment: (attachment, attributes) ->
-    piece = new this objectReplacementCharacter, attributes
-    piece.attachment = attachment
-    piece
+  @registerType: (type, constructor) ->
+    constructor.type = type
+    @types[type] = constructor
 
-  constructor: (@string, attributes = {}) ->
-    @id = ++id
+  @fromJSON: (pieceJSON) ->
+    if constructor = @types[pieceJSON.type]
+      constructor.fromJSON(pieceJSON)
+
+  constructor: (@value, attributes = {}) ->
+    super
     @attributes = Trix.Hash.box(attributes)
-    @length = @string.length
+    @length = @toString().length
 
   copyWithAttributes: (attributes) ->
-    piece = new Trix.Piece @string, attributes
-    piece.attachment = @attachment
-    piece
+    new @constructor @value, attributes
 
   copyWithAdditionalAttributes: (attributes) ->
     @copyWithAttributes(@attributes.merge(attributes))
@@ -27,6 +28,9 @@ class Trix.Piece
 
   copy: ->
     @copyWithAttributes(@attributes)
+
+  getAttribute: (attribute) ->
+    @attributes.get(attribute)
 
   getAttributesHash: ->
     @attributes
@@ -45,50 +49,42 @@ class Trix.Piece
 
     attributes.toObject()
 
-  isSameKindAsPiece: (piece) ->
-    piece? and @constructor is piece.constructor
-
-  hasSameStringAsPiece: (piece) ->
-    piece? and @string is piece.string
+  hasSameStringValueAsPiece: (piece) ->
+    piece? and @toString() is piece.toString()
 
   hasSameAttributesAsPiece: (piece) ->
     piece? and (@attributes is piece.attributes or @attributes.isEqualTo(piece.attributes))
 
-  canBeConsolidatedWithPiece: (piece) ->
-    piece? and not (@attachment or piece.attachment) and @hasSameAttributesAsPiece(piece)
-
   isEqualTo: (piece) ->
-    this is piece or (
-      @isSameKindAsPiece(piece) and
-      @hasSameStringAsPiece(piece) and
+    super or (
+      @hasSameConstructorAs(piece) and
+      @hasSameStringValueAsPiece(piece) and
       @hasSameAttributesAsPiece(piece)
     )
 
-  append: (piece) ->
-    new Trix.Piece @string + piece, @attributes
-
-  splitAtOffset: (offset) ->
-    if offset is 0
-      left = null
-      right = this
-    else if offset is @length
-      left = this
-      right = null
-    else
-      left = new Trix.Piece @string.slice(0, offset), @attributes
-      right = new Trix.Piece @string.slice(offset), @attributes
-    [left, right]
+  isEmpty: ->
+    @length is 0
 
   toString: ->
-    @string
+    "NO"
 
   toJSON: ->
-    attributes = @getAttributes()
+    type: @constructor.type
+    attributes: @getAttributes()
 
-    if @attachment
-      {@attachment, attributes}
-    else
-      {@string, attributes}
+  toConsole: ->
+    stringValue = @toString()
+    stringValue = stringValue.slice(0, 14) + "…" if stringValue.length > 15
+    JSON.stringify(stringValue)
 
-  inspect: ->
-    "#<Piece string=#{JSON.stringify(@string)}, attributes=#{@attributes.inspect()}>"
+  contentsForInspection: ->
+    type: @constructor.type
+    attributes: @attributes.inspect()
+
+  # Splittable
+
+  getLength: ->
+    @length
+
+  canBeConsolidatedWith: (piece) ->
+    false

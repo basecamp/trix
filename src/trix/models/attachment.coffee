@@ -1,33 +1,19 @@
-class Trix.Attachment
-  id = 0
+#= require trix/utilities/object
 
-  @forFile: (file) ->
-    attachment = new this { contentType: file.type, filename: file.name }
-    attachment.file = file
-    attachment
+class Trix.Attachment extends Trix.Object
+  constructor: (@file) ->
+    super
 
-  constructor: (@attributes = {}) ->
-    @id = ++id
+  getPreviewURL: (callback) ->
+    if @previewURL?
+      callback(@previewURL)
+    else if @file?
+      reader = new FileReader
+      reader.onload = (event) =>
+        return unless @file?
+        callback(@previewURL = event.target.result)
+      reader.readAsDataURL(@file)
 
-  setAttributes: (attributes) =>
-    for key, value of attributes
-      @attributes[key] = value
-
-    delete @file if @attributes.url
-
-    @delegate?.attachmentDidChange(this)
-
-  isPending: ->
-    @file and not @attributes.url
-
-  isImage: ->
-    /image/.test(@attributes.contentType)
-
-  getExtension: ->
-    @attributes.filename.match(/\.(\w+)$/)?[1]
-
-  toJSON: ->
-    @attributes
-
-  toObject: ->
-    {@id, @file, @attributes}
+  cleanup: ->
+    delete @file
+    delete @previewURL

@@ -1,24 +1,22 @@
 #= require trix/models/text
+#= require trix/models/document
 #= require trix/utilities/dom
 #= require trix/utilities/html_parser
 
 class Trix.AbstractEditorController
   constructor: (@config) ->
-    {@textElement, @toolbarElement, @textareaElement, @inputElement, @delegate} = @config
-    @text = @createText()
-    @initialize()
+    {@documentElement, @toolbarElement, @textareaElement, @inputElement, @delegate} = @config
+    @document = @createDocument()
 
-  initialize: ->
-
-  createText: ->
-    if @textElement.textContent.trim()
-      Trix.Text.fromHTML(@textElement.innerHTML)
+  createDocument: ->
+    if @documentElement.textContent.trim()
+      Trix.Document.fromHTML(@documentElement.innerHTML)
     else if @inputElement?.value
-      Trix.Text.fromJSON(@inputElement.value)
+      Trix.Document.fromJSONString(@inputElement.value)
     else
-      new Trix.Text
+      new Trix.Document
 
   saveSerializedText: ->
-    @textareaElement.value = @textElement.innerHTML
+    @textareaElement.value = @documentElement.innerHTML
     Trix.DOM.trigger(@textareaElement, "input")
-    @inputElement?.value = @text.asJSON()
+    @inputElement?.value = @document.toJSONString()

@@ -36,6 +36,7 @@ class Trix.InputController
         context = switch
           when event.ctrlKey then @keys.control
           when event.altKey then @keys.alt
+          when event.shiftKey then @keys.shift
           else @keys
 
         context[keyName]?.call(this, event)
@@ -59,13 +60,7 @@ class Trix.InputController
 
     dragstart: (event) ->
       target = event.target
-
-      if range = @responder?.getSelectedRange()
-        @draggedRange = range
-
-      else if Trix.DOM.within(@element, target) and target.trixPosition?
-        position = target.trixPosition
-        @draggedRange = [position, position + 1]
+      @draggedRange = @responder?.getLocationRange()
 
     dragover: (event) ->
       event.preventDefault() unless @draggedRange
@@ -76,11 +71,11 @@ class Trix.InputController
     drop: (event) ->
       event.preventDefault()
       point = [event.pageX, event.pageY]
-      @responder?.requestPositionAtPoint(point)
+      @responder?.setLocationRangeFromPoint(point)
 
       if @draggedRange
         @delegate?.inputControllerWillMoveText()
-        @responder?.moveTextFromRange(@draggedRange)
+        @responder?.moveTextFromLocationRange(@draggedRange)
         delete @draggedRange
 
       else if files = event.dataTransfer.files
@@ -134,7 +129,7 @@ class Trix.InputController
 
     return: (event) ->
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertString("\n")
+      @responder?.insertLineBreak()
       event.preventDefault()
 
     control:
@@ -156,6 +151,12 @@ class Trix.InputController
       backspace: (event) ->
         @delegate?.inputControllerWillPerformTyping()
         @responder?.deleteWordBackward()
+        event.preventDefault()
+
+    shift:
+      return: (event) ->
+        @delegate?.inputControllerWillPerformTyping()
+        @responder?.insertString("\n")
         event.preventDefault()
 
   extensionForFile = (file) ->

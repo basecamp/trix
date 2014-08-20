@@ -1,130 +1,124 @@
-#= require trix/models/text
+#= require trix/models/document
 #= require trix/models/attachment_manager
 #= require trix/utilities/helpers
 
-{countGraphemeClusters, defer} = Trix.Helpers
+{defer} = Trix.Helpers
 
 class Trix.Composition
-  constructor: (@text = new Trix.Text, config) ->
-    @text.delegate = this
+  constructor: (@document = new Trix.Document, config) ->
+    @document.delegate = this
     @currentAttributes = {}
 
-    @attachments = new Trix.AttachmentManager this
+    @attachments = new Trix.AttachmentManager @document
     @attachments.delegate = config?.delegate
     @attachments.reset()
 
   # Snapshots
 
   createSnapshot: ->
-    text: @getText()
-    selectedRange: @getInternalSelectedRange()
+    document: @getDocument()
+    selectedRange: @getLocationRange()
 
-  restoreSnapshot: ({text, selectedRange}) ->
-    @text.replaceText(text)
-    @requestSelectedRange(selectedRange)
+  restoreSnapshot: ({document, selectedRange}) ->
+    @document.replaceDocument(document)
+    @setLocationRange(selectedRange)
 
-  # Text delegate
+  # Document delegate
 
-  didEditText: (text) ->
-    @delegate?.compositionDidChangeText?(this, @text)
+  didEditDocument: (document) ->
+    @delegate?.compositionDidChangeDocument?(this, @document)
     defer => @attachments.reset()
 
   # Responder protocol
 
   insertText: (text, {updatePosition} = updatePosition: true) ->
-    if selectedRange = @getSelectedRange()
-      position = selectedRange[0]
-      @text.replaceTextAtRange(text, selectedRange)
-    else
-      position = @getPosition()
-      @text.insertTextAtPosition(text, position)
+    @notifyDelegateOfIntentionToSetLocationRange() if updatePosition
 
-    @requestPosition(position + (if updatePosition then text.getLength() else 0))
+    range = @getLocationRange()
+    @document.insertTextAtLocationRange(text, range)
+
+    if updatePosition
+      {index, offset} = range.start
+      offset += text.getLength()
+      @setLocationRange({index, offset})
+
+  insertDocument: (document = Trix.Document.fromString("")) ->
+    @notifyDelegateOfIntentionToSetLocationRange()
+    range = @getLocationRange()
+    @document.insertDocumentAtLocationRange(document, range)
+
+    index = range.index + (blockLength = document.blockList.length)
+    offset = document.getBlockAtIndex(blockLength - 1).text.getLength()
+    @setLocationRange({index, offset})
 
   insertString: (string, options) ->
     text = Trix.Text.textForStringWithAttributes(string, @currentAttributes)
     @insertText(text, options)
 
-  insertHTML: (html, options) ->
-    text = Trix.Text.fromHTML(html)
-    @insertText(text, options)
+  insertLineBreak: ->
+    range = @getLocationRange()
+    block = @document.getBlockAtIndex(range.end.index)
+
+    if block.hasAttributes()
+      text = block.text.getTextAtRange([0, range.end.offset])
+      switch
+        # Remove block attributes
+        when block.isEmpty()
+          @removeCurrentAttribute(key) for key of block.getAttributes()
+        # Break out of block after a newline (and remove the newline)
+        when text.endsWithString("\n")
+          @expandSelectionInDirectionWithGranularity("backward", "character")
+          @insertDocument()
+        # Stay in the block, add a newline
+        else
+          @insertString("\n")
+    else
+      @insertString("\n")
+
+  insertHTML: (html) ->
+    document = Trix.Document.fromHTML(html, {@attachments})
+    @insertDocument(document)
 
   replaceHTML: (html) ->
-    @preserveSelectionEndPoint =>
-      text = Trix.Text.fromHTML(html)
-      @text.replaceText(text)
+    @preserveSelection =>
+      document = Trix.Document.fromHTML(html, {@attachments})
+      @document.replaceDocument(document)
 
   insertFile: (file) ->
     if attachment = @attachments.create(file)
-      text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
+      attributes = Trix.Hash.box(@currentAttributes).merge(contentType: file.type, filename: file.name)
+      text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes.toObject())
       @insertText(text)
 
-  deleteFromCurrentPosition: (distance = -1) ->
-    unless range = @getSelectedRange()
-      position = @getPosition()
-      offset = position + distance
-      range = if distance < 0 then [offset, position] else [position, offset]
+  deleteInDirectionWithGranularity: (direction, granularity) ->
+    @notifyDelegateOfIntentionToSetLocationRange()
+    range = @getLocationRange()
 
-    @text.removeTextAtRange(range)
-    @requestPosition(range[0])
+    if range.isCollapsed()
+      @expandSelectionInDirectionWithGranularity(direction, granularity)
+      range = @getLocationRange()
+
+    @document.removeTextAtLocationRange(range)
+    @setLocationRange(range.collapse())
 
   deleteBackward: ->
-    distance = 1
-
-    if (position = @getPosition())?
-      while (leftPosition = position - distance - 1) >= 0
-        string = @text.getStringAtRange([leftPosition, position])
-        if countGraphemeClusters(string) is 1 or countGraphemeClusters("n#{string}") is 1
-          distance++
-        else
-          break
-
-    @deleteFromCurrentPosition(distance * -1)
+    @deleteInDirectionWithGranularity("backward", "character")
 
   deleteForward: ->
-    distance = 1
-
-    if (position = @getPosition())?
-      while (rightPosition = position + distance + 1) <= @text.getLength()
-        string = @text.getStringAtRange([position, rightPosition])
-        if countGraphemeClusters(string) is 1
-          distance++
-        else
-          break
-
-    @deleteFromCurrentPosition(distance)
+    @deleteInDirectionWithGranularity("forward", "character")
 
   deleteWordBackward: ->
-    if @getSelectedRange()
-      @deleteBackward()
-    else
-      position = @getPosition()
-      stringBeforePosition = @text.getStringAtRange([0, position])
-      positionBeforeLastWord = stringBeforePosition.search(/(\b\w+)\W*$/)
-      @deleteFromCurrentPosition(positionBeforeLastWord - position)
+    @deleteInDirectionWithGranularity("backward", "word")
 
-  moveTextFromRange: (range) ->
+  moveTextFromLocationRange: (locationRange) ->
+    @notifyDelegateOfIntentionToSetLocationRange()
     position = @getPosition()
-    @text.moveTextFromRangeToPosition(range, position)
-    @requestPosition(position)
+    @document.moveTextFromLocationRangeToPosition(locationRange, position)
+    @setPosition(position)
 
-  getTextFromSelection: ->
-    selectedRange = @getSelectedRange() ? [0, 0]
-    @text.getTextAtRange(selectedRange)
-
-  # Attachment owner protocol
-
-  getAttachments: ->
-    @text.getAttachments()
-
-  updateAttachment: (id, attributes) ->
-    if attachment = @attachments.get(id)
-      @text.edit -> attachment.setAttributes(attributes)
-
-  removeAttachment: (id) ->
-    if attachment = @attachments.get(id)
-      range = @text.getRangeOfAttachment(attachment)
-      @text.removeTextAtRange(range)
+  removeAttachment: (attachment) ->
+    if locationRange = @document.getLocationRangeOfAttachment(attachment)
+      @document.removeTextAtLocationRange(locationRange)
 
   # Current attributes
 
@@ -132,44 +126,50 @@ class Trix.Composition
     @currentAttributes[attributeName]?
 
   toggleCurrentAttribute: (attributeName) ->
-    value = not @currentAttributes[attributeName]
-    @setCurrentAttribute(attributeName, value)
+    if value = not @currentAttributes[attributeName]
+      @setCurrentAttribute(attributeName, value)
+    else
+      @removeCurrentAttribute(attributeName)
 
   setCurrentAttribute: (attributeName, value) ->
-    if selectedRange = @getSelectedRange()
-      if value
-        attributes = {}
-        attributes[attributeName] = value
-        @text.addAttributesAtRange(attributes, selectedRange)
-      else
-        @text.removeAttributeAtRange(attributeName, selectedRange)
+    if Trix.attributes[attributeName]?.block
+      @setBlockAttribute(attributeName, value)
     else
-      if value
-        @currentAttributes[attributeName] = value
-      else
-        delete @currentAttributes[attributeName]
+      @setTextAttribute(attributeName, value)
 
+    @currentAttributes[attributeName] = value
     @notifyDelegateOfCurrentAttributesChange()
 
+  removeCurrentAttribute: (attributeName) ->
+    range = @getLocationRange()
+    @document.removeAttributeAtLocationRange(attributeName, range)
+    delete @currentAttributes[attributeName]
+    @notifyDelegateOfCurrentAttributesChange()
+
+  setTextAttribute: (attributeName, value) ->
+    return unless range = @getLocationRange()
+    @document.addAttributeAtLocationRange(attributeName, value, range)
+
+  setBlockAttribute: (attributeName, value) ->
+    return unless range = @getLocationRange()
+    @notifyDelegateOfIntentionToSetLocationRange()
+    [startPosition, endPosition] = @document.rangeFromLocationRange(range)
+
+    range = @document.expandLocationRangeToLineBreaksAndSplitBlocks(range)
+    @document.addAttributeAtLocationRange(attributeName, value, range)
+
+    {start} = @document.locationRangeFromPosition(startPosition)
+    {end} = @document.locationRangeFromPosition(endPosition)
+    @setLocationRange(start, end)
+
   updateCurrentAttributes: ->
-    if selectedRange = @getSelectedRange()
-      @currentAttributes = @text.getCommonAttributesAtRange(selectedRange)
-      @notifyDelegateOfCurrentAttributesChange()
+    @currentAttributes =
+      if range = @getLocationRange()
+        @document.getCommonAttributesAtLocationRange(range)
+      else
+        {}
 
-    else if (position = @getPosition())?
-      @currentAttributes = {}
-      attributes = @text.getAttributesAtPosition(position)
-      attributesLeft = @text.getAttributesAtPosition(position - 1)
-
-      for key, value of attributesLeft
-        if value is attributes[key] or key in inheritableAttributes()
-          @currentAttributes[key] = value
-
-      @notifyDelegateOfCurrentAttributesChange()
-
-  inheritableAttributes = ->
-    for key, value of Trix.attributes when value.inheritable
-      key
+    @notifyDelegateOfCurrentAttributesChange()
 
   notifyDelegateOfCurrentAttributesChange: ->
     @delegate?.compositionDidChangeCurrentAttributes?(this, @currentAttributes)
@@ -185,44 +185,52 @@ class Trix.Composition
   hasFrozenSelection: ->
     @hasCurrentAttribute("frozen")
 
-  # Position and selected range
+  # Location range and selection
+
+  getLocationRange: ->
+    @selectionDelegate?.getLocationRange?()
+
+  setLocationRange: (locationRangeOrStart, end) ->
+    @selectionDelegate?.setLocationRange?(locationRangeOrStart, end)
+
+  setLocationRangeFromPoint: (point) ->
+    @selectionDelegate?.setLocationRangeFromPoint?(point)
 
   getPosition: ->
-    if range = @getInternalSelectedRange()
-      [start, end] = range
-      start if start is end
+    range = @getLocationRange()
+    @document.rangeFromLocationRange(range)[0]
 
-  requestPosition: (position) ->
-    @requestSelectedRange([position, position])
+  setPosition: (position) ->
+    range = @document.locationRangeFromPosition(position)
+    @setLocationRange(range)
 
-  requestPositionAtPoint: (point) ->
-    if range = @selectionDelegate?.getRangeOfCompositionAtPoint?(this, point)
-      @requestSelectedRange(range)
+  preserveSelection: (block) ->
+    @selectionDelegate?.preserveSelection?(block) ? block()
 
-  preserveSelectionEndPoint: (block) ->
-    point = @selectionDelegate?.getPointAtEndOfCompositionSelection?(this)
-    block()
-    @requestPositionAtPoint(point) if point?
+  notifyDelegateOfIntentionToSetLocationRange: ->
+    @delegate?.compositionWillSetLocationRange?()
 
-  getSelectedRange: ->
-    if range = @getInternalSelectedRange()
-      [start, end] = range
-      range unless start is end
+  expandSelectionInDirectionWithGranularity: (direction, granularity) ->
+    @selectionDelegate?.expandSelectionInDirectionWithGranularity(direction, granularity)
 
-  requestSelectedRange: (range) ->
-    if range?
-      [start, end] = range
-      length = @text.getLength()
-      range = [clamp(start, 0, length), clamp(end, 0, length)]
-      @selectionDelegate?.compositionDidRequestSelectionOfRange?(this, range)
+  expandSelectionForEditing: ->
+    for key, value of Trix.attributes when value.parent
+      if @hasCurrentAttribute(key)
+        @expandLocationRangeAroundCommonAttribute(key)
+        break
+
+  expandLocationRangeAroundCommonAttribute: (attributeName) ->
+    range = @getLocationRange()
+
+    if range.isInSingleIndex()
+      {index} = range
+      text = @document.getTextAtIndex(index)
+      textRange = [range.start.offset, range.end.offset]
+      [left, right] = text.getExpandedRangeForAttributeAtRange(attributeName, textRange)
+
+      @setLocationRange({offset: left, index}, {offset: right, index})
 
   # Private
 
-  getText: ->
-    @text.copy()
-
-  getInternalSelectedRange: ->
-    @selectionDelegate?.getSelectedRangeOfComposition?(this)
-
-  clamp = (value, floor, ceiling) ->
-    Math.max(floor, Math.min(ceiling, value))
+  getDocument: ->
+    @document.copy()

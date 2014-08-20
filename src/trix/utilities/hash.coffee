@@ -1,14 +1,33 @@
-class Trix.Hash
+#= require trix/utilities/object
+
+class Trix.Hash extends Trix.Object
+  @fromCommonAttributesOfObjects: (objects = []) ->
+    return new this unless objects.length
+    hash = box(objects[0])
+    keys = hash.getKeys()
+
+    for object in objects[1..]
+      keys = hash.getKeysCommonToHash(box(object))
+      hash = hash.slice(keys)
+    hash
+
   @box: (values) ->
     box(values)
 
   constructor: (@values = {}) ->
+    super
 
   add: (key, value) ->
     @merge(object(key, value))
 
   remove: (key) ->
     new Trix.Hash copy(@values, key)
+
+  get: (key) ->
+    @values[key]
+
+  has: (key) ->
+    key of @values
 
   merge: (values) ->
     new Trix.Hash merge(@values, unbox(values))
@@ -44,8 +63,11 @@ class Trix.Hash
   toObject: ->
     copy(@values)
 
-  inspect: ->
-    JSON.stringify(@values)
+  toJSON: ->
+    @toObject()
+
+  contentsForInspection: ->
+    values: JSON.stringify(@values)
 
   object = (key, value) ->
     result = {}

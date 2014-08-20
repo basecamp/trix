@@ -9,7 +9,7 @@ GEM
     coffee-script (2.2.0)
       coffee-script-source
       execjs
-    coffee-script-source (1.6.2)
+    coffee-script-source (1.7.0)
     execjs (1.4.0)
       multi_json (~> 1.0)
     ffi (1.9.3)
@@ -40,7 +40,7 @@ PLATFORMS
 
 DEPENDENCIES
   coffee-script
-  coffee-script-source
+  coffee-script-source (~> 1.7.0)
   listen
   rack-rewrite
   rake

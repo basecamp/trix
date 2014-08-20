@@ -24,5 +24,20 @@ class Trix.Collection
   difference: (otherModels = []) ->
     model for model in @toArray() when model not in otherModels
 
+  where: (attributes = {}, {limit} = {}) ->
+    models = []
+    for id, model of @models when modelHasAttributes(model, attributes)
+      break if limit? and models.length is limit
+      models.push(model)
+    models
+
+  findWhere: (attributes) ->
+    @where(attributes, limit: 1)[0]
+
   toArray: ->
     model for id, model of @models
+
+  modelHasAttributes = (model, attributes) ->
+    modelAttributes = model.getAttributes()
+    return false for key, value of attributes when modelAttributes[key] isnt value
+    true

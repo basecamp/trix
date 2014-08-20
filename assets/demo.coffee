@@ -13,6 +13,7 @@ config =
 
     didAddAttachment: (attachment) ->
       console.log "Host received attachment:", attachment
+      return
       saveAttachment(attachment)
 
       if file = attachment.file
@@ -24,7 +25,8 @@ config =
             attributes = { url: filename, filename }
 
           console.log "Host setting attributes for attachment:", attachment, attributes
-          attachment.update(attributes)
+          attachment.setAttributes(attributes)
+          attachment.setIdentifier("Attachment:#{Math.random() * 5000}")
         , 1000
 
     didRemoveAttachment: (attachment) ->
@@ -34,8 +36,9 @@ config =
     didChangeSelection: ->
       inspectorController.render()
 
-    didRenderText: ->
+    didRenderDocument: ->
       inspectorController.render()
+      inspectorController.incrementRenderCount()
 
 saveAttachment = (attachment) ->
   item = document.createElement("li")
@@ -46,7 +49,7 @@ saveAttachment = (attachment) ->
   link.setAttribute("href", "#")
   link.textContent = "(remove)"
   link.addEventListener "click", ->
-    attachment.remove()
+    window.controller.composition.removeAttachment(attachment)
     removeAttachment(attachment)
 
   item.appendChild(link)
