@@ -144,13 +144,9 @@ class Trix.Document extends Trix.Object
       block.copyWithText(text.updateAttributesForAttachment(attributes, attachment))
 
   insertBlockBreakAtLocationRange: edit "insertBlockBreakAtLocationRange", (locationRange) ->
-    block = @getBlockAtIndex(locationRange.end.index)
     position = @blockList.findPositionAtIndexAndOffset(locationRange.index, locationRange.offset)
-    position++ if locationRange.end.offset is block.getBlockBreakPosition()
-
     @removeTextAtLocationRange(locationRange)
-
-    blocks = if locationRange.offset is 0 then [new Trix.Block] else []
+    blocks = [new Trix.Block] if locationRange.offset is 0
     @blockList = @blockList.insertSplittableListAtPosition(new Trix.SplittableList(blocks), position)
 
   expandLocationRangeToLineBreaksAndSplitBlocks: (locationRange) ->
@@ -167,7 +163,8 @@ class Trix.Document extends Trix.Object
 
       endBlock = @getBlockAtIndex(end.index)
       end.offset = endBlock.findLineBreakInDirectionFromPosition("forward", end.offset)
-      @insertBlockBreakAtLocationRange(Trix.LocationRange.forLocationWithLength(end, 1))
+      unless end.offset is endBlock.getBlockBreakPosition()
+        @insertBlockBreakAtLocationRange(Trix.LocationRange.forLocationWithLength(end, 1))
 
     new Trix.LocationRange start, end
 
