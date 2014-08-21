@@ -129,8 +129,7 @@ class Trix.Composition
     else
       @setTextAttribute(attributeName, value)
 
-    @currentAttributes[attributeName] = value
-    @notifyDelegateOfCurrentAttributesChange()
+    @updateCurrentAttributes()
 
   removeCurrentAttribute: (attributeName) ->
     range = @getLocationRange()
