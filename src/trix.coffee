@@ -82,6 +82,9 @@
       }
     """
 
+  debug:
+    logEditOperations: false
+
 
 class BrowserSupport
   required:

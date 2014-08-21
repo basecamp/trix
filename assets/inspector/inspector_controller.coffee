@@ -25,9 +25,7 @@ class Trix.InspectorController
 
   didClickToolbar: (event) =>
     unless Trix.DOM.closest(event.target, "input[name=inspector-panel]")
-      @activePanelView?.hide()
-      for input in @element.querySelectorAll("input[name=inspector-panel]")
-        input.checked = false
+      @deactivateActivePanel()
 
   activatePanel: (name) ->
     inputElement = @findInputElement(name)
@@ -36,6 +34,18 @@ class Trix.InspectorController
     @activePanelView?.hide()
     @activePanelView = @createViewForPanel(name)
     @activePanelView.show()
+
+    Trix.debug.logEditOperations = true
+
+  deactivateActivePanel: ->
+    return unless @activePanelView
+    @activePanelView.hide()
+    delete @activePanelView
+
+    for input in @element.querySelectorAll("input[name=inspector-panel]")
+      input.checked = false
+
+    Trix.debug.logEditOperations = false
 
   createViewForPanel: (name) ->
     element = @findPanelElement(name)

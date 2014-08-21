@@ -34,10 +34,10 @@ class Trix.Document extends Trix.Object
   edit = (name, fn) -> ->
     @beginEditing()
     fn.apply(this, arguments)
-
-    console.group(name)
-    console.log(format(object)...) for object in arguments
-    console.groupEnd()
+    if Trix.debug.logEditOperations
+      console.group(name)
+      console.log(format(object)...) for object in arguments
+      console.groupEnd()
 
     @endEditing()
 
@@ -54,15 +54,17 @@ class Trix.Document extends Trix.Object
   beginEditing: ->
     if @editDepth++ is 0
       @editCount++
-      console.group("Document #{@id}: Edit operation #{@editCount}")
-      console.groupCollapsed("Backtrace")
-      console.trace()
-      console.groupEnd()
+      if Trix.debug.logEditOperations
+        console.group("Document #{@id}: Edit operation #{@editCount}")
+        console.groupCollapsed("Backtrace")
+        console.trace()
+        console.groupEnd()
     this
 
   endEditing: ->
     if --@editDepth is 0
-      console.groupEnd()
+      if Trix.debug.logEditOperations
+        console.groupEnd()
       @delegate?.didEditDocument?(this)
       @attachments?.refresh()
     this
