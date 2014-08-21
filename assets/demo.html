@@ -84,11 +84,6 @@
         display: block;
       }
 
-      .trix-editor > div,
-      .trix-editor > blockquote {
-        outline: 1px dotted red;
-      }
-
       .trix-editor figure.attachment {
         font-family: monospace;
         width: 100px;
@@ -129,23 +124,17 @@
       }
 
       .trix-inspector {
-        position: absolute;
-        overflow: hidden;
-        height: 25px;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        visibility: hidden;
+        display: inline-block;
+        min-width: 470px;
+        margin-top: 10px;
         background: #fff;
-        transition: height 0.1s ease;
-      }
-
-      .trix-inspector.open {
-        height: 300px;
+        border: 1px solid #444;
+        border-radius: 5px;
+        overflow: auto;
       }
 
       .trix-inspector-toolbar {
-        height: 14px;
-        border-top: 1px solid #444;
         border-bottom: 1px solid #444;
         background: linear-gradient(to bottom, rgba(211,211,211,1) 0%,rgba(206,206,206,1) 2%,rgba(172,172,172,1) 98%,rgba(172,172,172,1) 100%);
         padding: 5px 10px;
@@ -153,18 +142,6 @@
         font-size: 11px;
         color: #333;
         text-shadow: 0px 1px #ddd;
-      }
-
-      .trix-inspector-toolbar .trix-inspector-close-button {
-        display: none;
-        position: absolute;
-        top: 7px;
-        right: 10px;
-      }
-
-      .trix-inspector.open .trix-inspector-close-button {
-        display: block;
-        cursor: default;
       }
 
       .trix-inspector-toolbar input {
@@ -179,7 +156,7 @@
         border-radius: 10px;
       }
 
-      .trix-inspector.open .trix-inspector-toolbar input:checked + label {
+      .trix-inspector .trix-inspector-toolbar input:checked + label {
         background: #808080;
         color: #fff;
         text-shadow: 0px -1px #444;
@@ -187,19 +164,11 @@
 
       .trix-inspector-selection-view,
       .trix-inspector-render-count-view {
-        display: inline-block;
-        margin-left: 15px;
-        padding-left: 15px;
+        margin-bottom: 4px;
       }
 
       .trix-inspector-panel {
         display: none;
-        position: absolute;
-        overflow: auto;
-        top: 26px;
-        bottom: 0;
-        left: 0;
-        right: 0;
         padding: 0 10px;
       }
 
@@ -223,10 +192,15 @@
       .trix-inspector-text .block {
         float: left;
         clear: both;
-        border: 1px solid #ccc;
         margin: 15px;
         background: #eee;
         font-size: 12px;
+      }
+
+      .trix-inspector-text .block,
+      .trix-editor.outline-blocks > div,
+      .trix-editor.outline-blocks > blockquote {
+        outline: 1px dotted red;
       }
 
       .trix-inspector-text .title {
@@ -332,18 +306,17 @@
 
     <div id="inspector" class="trix-inspector">
       <div class="trix-inspector-toolbar">
-        <input type="radio" name="inspector-panel" id="inspect-attachments" value="attachments"><label for="inspect-attachments">Attachments</label>
-        <input type="radio" name="inspector-panel" id="inspect-text" value="text"><label for="inspect-text">Structure</label>
-        <input type="radio" name="inspector-panel" id="inspect-undo" value="undo"><label for="inspect-undo">Undo/Redo</label>
-        <input type="radio" name="inspector-panel" id="inspect-source" value="source"><label for="inspect-source">Source</label>
         <div class="trix-inspector-selection-view"></div>
         <div class="trix-inspector-render-count-view"></div>
-        <div class="trix-inspector-close-button">✕</div>
+        <input type="radio" name="inspector-panel" id="inspect-text" value="text"><label for="inspect-text">Structure</label>
+        <input type="radio" name="inspector-panel" id="inspect-attachments" value="attachments"><label for="inspect-attachments">Attachments</label>
+        <input type="radio" name="inspector-panel" id="inspect-undo" value="undo"><label for="inspect-undo">Undo/Redo</label>
+        <input type="radio" name="inspector-panel" id="inspect-source" value="source"><label for="inspect-source">Source</label>
+      </div>
+      <div class="trix-inspector-panel" data-inspector-panel-name="text" data-inspector-panel-view="TextPanelView">
       </div>
       <div class="trix-inspector-panel" data-inspector-panel-name="attachments">
         <ul id="attachments"></ul>
-      </div>
-      <div class="trix-inspector-panel" data-inspector-panel-name="text" data-inspector-panel-view="TextPanelView">
       </div>
       <div class="trix-inspector-panel" data-inspector-panel-name="undo" data-inspector-panel-view="UndoPanelView">
       </div>
