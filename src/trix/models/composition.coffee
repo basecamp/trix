@@ -43,7 +43,7 @@ class Trix.Composition
     @setLocationRange({index, offset})
 
   insertString: (string, options) ->
-    text = Trix.Text.textForStringWithAttributes(string, @currentAttributes)
+    text = Trix.Text.textForStringWithAttributes(string, @getCurrentTextAttributes())
     @insertText(text, options)
 
   insertLineBreak: ->
@@ -161,6 +161,11 @@ class Trix.Composition
         {}
 
     @notifyDelegateOfCurrentAttributesChange()
+
+  getCurrentTextAttributes: ->
+    attributes = {}
+    attributes[key] = value for key, value of @currentAttributes when not Trix.attributes[key]?.block
+    attributes
 
   notifyDelegateOfCurrentAttributesChange: ->
     @delegate?.compositionDidChangeCurrentAttributes?(this, @currentAttributes)
