@@ -60,12 +60,13 @@ class Trix.HTMLParser
         unless nodeIsExtraBR(node)
           @appendString("\n", getAttributes(node))
       when "img"
-        attributes = { contentType: "image", url: node.getAttribute("src") }
-        identifier = node.getAttribute("data-trix-identifier") if node.hasAttribute("data-trix-identifier")
-        for key in ["width", "height"] when value = node.getAttribute(key)
-          attributes[key] = value
-
-        @appendAttachment(attributes, getAttributes(node), identifier)
+        attributes = getAttributes(node)
+        attributes.url = node.getAttribute("src")
+        # TODO: we lose the true content type here
+        attributes.contentType = "image"
+        attributes.identifier = identifier if identifier = node.getAttribute("data-trix-identifier")
+        attributes[key] = value for key in ["width", "height"] when value = node.getAttribute(key)
+        @appendAttachment(attributes)
 
   appendBlock: (attributes = {}) ->
     text = new Trix.Text
@@ -76,17 +77,22 @@ class Trix.HTMLParser
     text = Trix.Text.textForStringWithAttributes(string, attributes)
     @block.text = @block.text.appendText(text)
 
-  appendAttachment: (attachmentAttributes, attributes, identifier) ->
-    if attachment = @attachments?.findWhere(url: attachmentAttributes.url)
-      if attachmentAttributes.width?
-        attributes.width = attachmentAttributes.width
-        attributes.height = attachmentAttributes.height
+  appendAttachment: (attributes) ->
+    if managedAttachment = @findManagedAttachmentByAttributes(attributes)
+      attachment = managedAttachment.attachment
     else
-      attachment = new Trix.Attachment attachmentAttributes
-      attachment.setIdentifier(identifier) if identifier?
+      attachment = new Trix.Attachment
 
     text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
     @block.text = @block.text.appendText(text)
+
+  findManagedAttachmentByAttributes: (attributes) ->
+    return unless @attachments
+    {identifier, url} = attributes
+    if identifier?
+      @attachments.findWhere({identifier})
+    else if url?
+      @attachments.findWhere({url})
 
   getDocument: ->
     new Trix.Document @blocks
