@@ -46,6 +46,9 @@ class Trix.HTMLParser
           when "blockquote"
             @appendBlock(quote: true)
             @currentBlockElement = node
+          when "pre"
+            @appendBlock(code: true)
+            @currentBlockElement = node
 
     unless @block?
       @appendBlock()

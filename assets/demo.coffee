@@ -1,7 +1,5 @@
 #= require ./inspector/inspector_controller
 
-Trix.attributes["code"] = { tagName: "code", inheritable: true }
-
 config =
   textarea: "text"
   toolbar: "toolbar"

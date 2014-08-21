@@ -123,7 +123,7 @@ class Trix.Document extends Trix.Object
     @eachBlockAtLocationRange locationRange, (block, range, index) =>
       @blockList = @blockList.editObjectAtIndex index, ->
         if Trix.attributes[attribute]?.block
-          block.addAttribute(attribute, value)
+          block.removeFormattingAttributes().addAttribute(attribute, value)
         else
           if range[0] isnt range[1]
             block.copyWithText(block.text.addAttributeAtRange(attribute, value, range))

@@ -45,6 +45,10 @@
       style: { "background-color": "highlight" }
     quote:
       block: true
+      tagName: "blockquote"
+    code:
+      block: true
+      tagName: "pre"
 
   config:
     editorCSS: """

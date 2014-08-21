@@ -12,12 +12,7 @@ class Trix.BlockView
   # Rendering
 
   render: ->
-    container = switch
-      when @blockAttributes.quote
-        document.createElement("blockquote")
-      else
-        document.createElement("div")
-
+    container = document.createElement(@getTagNameForBlock())
     container.trixPosition = 0
     container.trixIndex = @blockIndex
 
@@ -33,6 +28,10 @@ class Trix.BlockView
       container.appendChild(element) for element in @elements
 
     container
+
+  getTagNameForBlock: ->
+    return tagName for key of @blockAttributes when tagName = Trix.attributes[key]?.tagName
+    "div"
 
   # Hold a reference to every node we create to prevent IE from losing
   # their expando properties like trixPosition. IE will otherwise occasionally
