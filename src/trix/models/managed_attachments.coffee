@@ -1,7 +1,7 @@
 #= require trix/utilities/collection
-#= require trix/models/attachment_manager
+#= require trix/models/managed_attachment
 
-class Trix.AttachmentManagerCollection
+class Trix.ManagedAttachments
   constructor: (@document) ->
     @collection = new Trix.Collection
 
@@ -23,7 +23,7 @@ class Trix.AttachmentManagerCollection
 
   refresh: ->
     managers = for attachment in @document.getAttachments()
-      @get(attachment.id) ? new Trix.AttachmentManager attachment, @document
+      @get(attachment.id) ? new Trix.ManagedAttachment attachment, @document
 
     for manager in @collection.difference(managers)
       @remove(manager.id)

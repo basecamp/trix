@@ -2,7 +2,7 @@
 #= require trix/models/block
 #= require trix/models/splittable_list
 #= require trix/models/location_range
-#= require trix/models/attachment_manager_collection
+#= require trix/models/managed_attachments
 
 class Trix.Document extends Trix.Object
   @fromJSON: (documentJSON) ->
@@ -23,10 +23,10 @@ class Trix.Document extends Trix.Object
     @editCount = 0
     @blockList = new Trix.SplittableList blocks
 
-  initializeAttachmentManagerCollectionWithDelegate: (delegate) ->
-    @attachmentManagers = new Trix.AttachmentManagerCollection this
-    @attachmentManagers.delegate = delegate
-    @attachmentManagers.refresh()
+  initializeManagedAttachmentsWithDelegate: (delegate) ->
+    @attachments = new Trix.ManagedAttachments this
+    @attachments.delegate = delegate
+    @attachments.refresh()
 
   copy: ->
     new @constructor @blockList.toArray()
@@ -64,7 +64,7 @@ class Trix.Document extends Trix.Object
     if --@editDepth is 0
       console.groupEnd()
       @delegate?.didEditDocument?(this)
-      @attachmentManagers?.refresh()
+      @attachments?.refresh()
     this
 
   insertDocumentAtLocationRange: edit "insertDocumentAtLocationRange", (document, locationRange) ->

@@ -1,4 +1,4 @@
-class Trix.AttachmentManager
+class Trix.ManagedAttachment
   constructor: (@attachment, @document) ->
     {@id, @file} = @attachment
 
