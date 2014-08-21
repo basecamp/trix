@@ -8,8 +8,8 @@
 class Trix.InspectorController
   constructor: (@element, @editorController) ->
     @toolbarElement = @element.querySelector(".trix-inspector-toolbar")
-    Trix.DOM.on(@toolbarElement, "click", @didClickToolbar)
     Trix.DOM.on(@toolbarElement, "change", @didClickToolbarButton)
+    Trix.DOM.on(@toolbarElement, "click", @didClickToolbar)
 
     selectionElement = @element.querySelector(".trix-inspector-selection-view")
     @selectionView = new Trix.SelectionView selectionElement, @editorController
@@ -18,24 +18,16 @@ class Trix.InspectorController
     @renderCountView = new Trix.RenderCountView renderCountElement
 
     @activePanelView = null
-    @activatePanel("text")
     @render()
-
-  open: ->
-    @element.classList.add("open")
-
-  close: ->
-    @element.classList.remove("open")
-
-  didClickToolbar: (event) =>
-    if Trix.DOM.closest(event.target, ".trix-inspector-close-button")
-      @close()
-      event.preventDefault()
-    else
-      @open()
 
   didClickToolbarButton: (event) =>
     @activatePanel(event.target.value)
+
+  didClickToolbar: (event) =>
+    unless Trix.DOM.closest(event.target, "input[name=inspector-panel]")
+      @activePanelView?.hide()
+      for input in @element.querySelectorAll("input[name=inspector-panel]")
+        input.checked = false
 
   activatePanel: (name) ->
     inputElement = @findInputElement(name)

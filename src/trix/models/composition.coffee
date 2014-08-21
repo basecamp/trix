@@ -33,7 +33,7 @@ class Trix.Composition
       offset += text.getLength()
       @setLocationRange({index, offset})
 
-  insertDocument: (document) ->
+  insertDocument: (document = Trix.Document.fromString("")) ->
     @notifyDelegateOfIntentionToSetLocationRange()
     range = @getLocationRange()
     @document.insertDocumentAtLocationRange(document, range)
@@ -53,39 +53,18 @@ class Trix.Composition
     if block.hasAttributes()
       text = block.text.getTextAtRange([0, range.end.offset])
       switch
-        # Replace placeholder blocks that have attributes with a placeholder block without attributes
-        when block.isPlaceholder()
-          @replacePlaceholderBlock()
-        # Break from the end of blocks after one newline
-        when text.endsWithString("\n") and text.getLength() is range.end.offset
-          @insertPlaceholderBlock()
-        # Break from the middle of blocks after two newlines
-        when text.endsWithString("\n\n")
-          @insertPlaceholderBlock()
+        # Remove block attributes
+        when block.isEmpty()
+          @removeCurrentAttribute(key) for key of block.getAttributes()
+        # Break out of block after a newline (and remove the newline)
+        when text.endsWithString("\n")
+          @expandSelectionInDirectionWithGranularity("backward", "character")
+          @insertDocument()
         # Stay in the block, add a newline
         else
           @insertString("\n")
     else
-      if block.isPlaceholder()
-        @insertPlaceholderBlock()
-      else
-        @insertString("\n")
-
-  insertPlaceholderBlock: ->
-    @notifyDelegateOfIntentionToSetLocationRange()
-    range = @getLocationRange()
-    @document.insertPlaceholderBlockAtLocationRange(range)
-    index = range.end.index + 1
-    @removeNewlineBeforeBlockAtIndex(index)
-    @setLocationRange({index, offset: 0})
-
-  replacePlaceholderBlock: ->
-    range = @getLocationRange()
-    return unless @document.getBlockAtIndex(range.end.index).isPlaceholder()
-    @selectionDelegate?.expandSelectionInDirectionWithGranularity("forward", "character")
-    range = @getLocationRange()
-    @document.insertPlaceholderBlockAtLocationRange(range)
-    @setLocationRange(range.start)
+      @insertString("\n")
 
   insertHTML: (html) ->
     document = Trix.Document.fromHTML(html, { attachments: @document.attachments })
@@ -108,7 +87,7 @@ class Trix.Composition
     range = @getLocationRange()
 
     if range.isCollapsed()
-      @selectionDelegate?.expandSelectionInDirectionWithGranularity(direction, granularity)
+      @expandSelectionInDirectionWithGranularity(direction, granularity)
       range = @getLocationRange()
 
     @document.removeTextAtLocationRange(range)
@@ -165,30 +144,15 @@ class Trix.Composition
 
   setBlockAttribute: (attributeName, value) ->
     return unless range = @getLocationRange()
-    blockLength = @document.blockList.length
-    endPosition = @document.rangeFromLocationRange(range)[1]
-    range = @document.expandedLocationRangeForBlockTransformation(range)
+    @notifyDelegateOfIntentionToSetLocationRange()
+    [startPosition, endPosition] = @document.rangeFromLocationRange(range)
+
+    range = @document.expandLocationRangeToLineBreaksAndSplitBlocks(range)
     @document.addAttributeAtLocationRange(attributeName, value, range)
-    @setPosition(endPosition)
 
-    if @document.blockList.length > blockLength
-      {index} = @getLocationRange()
-      @document.edit =>
-        @removeNewlineAfterBlockAtIndex(index)
-        @removeNewlineBeforeBlockAtIndex(index) if range.offset isnt 0
-
-  removeNewlineBeforeBlockAtIndex: (index) ->
-    unless (block = @document.getBlockAtIndex(--index))?.isPlaceholder()
-      offset = block.getLength()
-      range = new Trix.LocationRange({index, offset: offset - 1}, {index, offset})
-      if @document.getStringAtLocationRange(range) is "\n"
-        @document.removeTextAtLocationRange(range)
-
-  removeNewlineAfterBlockAtIndex: (index) ->
-    unless @document.getBlockAtIndex(++index)?.isPlaceholder()
-      range = new Trix.LocationRange({index, offset: 0}, {index, offset: 1})
-      if @document.getStringAtLocationRange(range) is "\n"
-        @document.removeTextAtLocationRange(range)
+    {start} = @document.locationRangeFromPosition(startPosition)
+    {end} = @document.locationRangeFromPosition(endPosition)
+    @setLocationRange(start, end)
 
   updateCurrentAttributes: ->
     @currentAttributes =
@@ -237,6 +201,9 @@ class Trix.Composition
 
   notifyDelegateOfIntentionToSetLocationRange: ->
     @delegate?.compositionWillSetLocationRange?()
+
+  expandSelectionInDirectionWithGranularity: (direction, granularity) ->
+    @selectionDelegate?.expandSelectionInDirectionWithGranularity(direction, granularity)
 
   expandSelectionForEditing: ->
     for key, value of Trix.attributes when value.parent

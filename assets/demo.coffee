@@ -70,7 +70,7 @@ installTrix = ->
     toolbarElement.style.display = "block"
 
     inspectorElement = document.getElementById("inspector")
-    inspectorElement.style.display = "block"
+    inspectorElement.style.visibility = "visible"
 
     window.inspectorController = new Trix.InspectorController inspectorElement, window.controller
 

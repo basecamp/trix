@@ -5,15 +5,13 @@ class Trix.Block extends Trix.Object
     text = Trix.Text.fromJSON(blockJSON.text)
     new this text, blockJSON.attributes
 
-  @createPlaceholder: ->
-    new this Trix.Text.textForStringWithAttributes("\n")
-
-  constructor: (@text = new Trix.Text, attributes = {}) ->
+  constructor: (text = new Trix.Text, attributes = {}) ->
     super
+    @text = applyBlockBreakToText(text)
     @attributes = Trix.Hash.box(attributes)
 
-  isPlaceholder: ->
-    @text.toString() is "\n"
+  isEmpty: ->
+    textIsBlockBreak(@text)
 
   copyWithText: (text) ->
     new @constructor text, @attributes
@@ -33,9 +31,22 @@ class Trix.Block extends Trix.Object
   hasAttributes: ->
     @attributes.getKeys().length > 0
 
+  findLineBreakInDirectionFromPosition: (direction, position) ->
+    string = @toString()
+    result = switch direction
+      when "forward"
+        string.indexOf("\n", position)
+      when "backward"
+        string.slice(0, position).lastIndexOf("\n")
+
+    result unless result is -1
+
   contentsForInspection: ->
     text: @text.inspect()
     attributes: @attributes.inspect()
+
+  toString: ->
+    @text.toString()
 
   toJSON: ->
     text: @text
@@ -66,3 +77,55 @@ class Trix.Block extends Trix.Object
 
   toString: ->
     @text.toString()
+
+  getBlockBreakPosition: ->
+    @text.getLength() - 1
+
+  # Block breaks
+
+  applyBlockBreakToText = (text) ->
+    text = unmarkExistingInnerBlockBreaksInText(text)
+    text = addBlockBreakToText(text)
+    text
+
+  unmarkExistingInnerBlockBreaksInText = (text) ->
+    modified = false
+    [innerPieces..., lastPiece] = text.getPieces()
+    return text unless lastPiece?
+
+    innerPieces = for piece in innerPieces
+      if pieceIsBlockBreak(piece)
+        modified = true
+        unmarkBlockBreakPiece(piece)
+      else
+        piece
+
+    if modified
+      new Trix.Text [innerPieces..., lastPiece]
+    else
+      text
+
+  blockBreakText = Trix.Text.textForStringWithAttributes("\n", blockBreak: true)
+
+  addBlockBreakToText = (text) ->
+    if textEndsInBlockBreak(text)
+      text
+    else
+      text.appendText(blockBreakText)
+
+  textEndsInBlockBreak = (text) ->
+    length = text.getLength()
+    return false if length is 0
+    endText = text.getTextAtRange([length - 1, length])
+    textIsBlockBreak(endText)
+
+  textIsBlockBreak = (text) ->
+    return false unless text.getLength() is 1
+    piece = text.pieceList.getObjectAtIndex(0)
+    pieceIsBlockBreak(piece)
+
+  pieceIsBlockBreak = (piece) ->
+    piece.toString() is "\n" and piece.getAttribute("blockBreak") is true
+
+  unmarkBlockBreakPiece = (piece) ->
+    piece.copyWithoutAttribute("blockBreak")

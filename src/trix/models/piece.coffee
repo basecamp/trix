@@ -29,6 +29,9 @@ class Trix.Piece extends Trix.Object
   copy: ->
     @copyWithAttributes(@attributes)
 
+  getAttribute: (attribute) ->
+    @attributes.get(attribute)
+
   getAttributesHash: ->
     @attributes
 
@@ -59,6 +62,9 @@ class Trix.Piece extends Trix.Object
       @hasSameAttributesAsPiece(piece)
     )
 
+  isEmpty: ->
+    @length is 0
+
   isSerializable: ->
     true
 
@@ -68,6 +74,11 @@ class Trix.Piece extends Trix.Object
   toJSON: ->
     type: @constructor.type
     attributes: @getAttributes()
+
+  toConsole: ->
+    stringValue = @toString()
+    stringValue = stringValue.slice(0, 14) + "…" if stringValue.length > 15
+    JSON.stringify(stringValue)
 
   contentsForInspection: ->
     type: @constructor.type

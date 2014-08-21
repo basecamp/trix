@@ -20,6 +20,7 @@ class Trix.Text extends Trix.Object
 
   constructor: (pieces = []) ->
     super
+    pieces = (piece for piece in pieces when not piece.isEmpty())
     @pieceList = new Trix.SplittableList pieces
 
   copy: ->
@@ -126,7 +127,10 @@ class Trix.Text extends Trix.Object
       this
 
   getLength: ->
-    @pieceList.getLength()
+    @pieceList.getEndPosition()
+
+  isEmpty: ->
+    @getLength() is 0
 
   isEqualTo: (text) ->
     super or text?.pieceList?.isEqualTo(@pieceList)
@@ -149,6 +153,9 @@ class Trix.Text extends Trix.Object
   eachPiece: (callback) ->
     @pieceList.eachObject(callback)
 
+  getPieces: ->
+    @pieceList.toArray()
+
   contentsForInspection: ->
     pieceList: @pieceList.inspect()
 
@@ -161,3 +168,6 @@ class Trix.Text extends Trix.Object
 
   toJSON: ->
     @pieceList.toJSON()
+
+  toConsole: ->
+    JSON.stringify(JSON.parse(piece.toConsole()) for piece in @pieceList.toArray())

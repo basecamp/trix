@@ -5,12 +5,33 @@ class Trix.LocationRange
     else
       new this start, end
 
-  constructor: (@start, @end) ->
+  @forLocationWithLength: (location, length) ->
+    if length > 0
+      start = location
+      end = index: location.index, offset: location.offset + length
+    else if length < 0
+      start = index: location.index, offset: location.offset - length
+      end = location
+    else
+      start = end = location
+
+    new this start, end
+
+  constructor: (start, end) ->
+    @start = parse(start)
+    @end = parse(end)
+
     {@index, @offset} = @start
 
     unless @end?
       @end = {}
       @end[key] = val for key, val of start
+
+  parse = (location) ->
+    if Array.isArray(location)
+      index: location[0], offset: location[1]
+    else
+      location
 
   isEqualTo: (locationRange) ->
     @start.index is locationRange?.start?.index and
@@ -39,3 +60,11 @@ class Trix.LocationRange
       @start
     else
       @toArray()
+
+  inspect: ->
+    locations = if @isCollapsed() then [@start] else [@start, @end]
+    strings = ("#{location.index}/#{location.offset}" for location in locations)
+    "(#{strings.join(" — ")})"
+
+  toConsole: ->
+    @inspect()

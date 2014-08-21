@@ -19,6 +19,14 @@ class Trix.TextPanelView extends Trix.InspectorPanelView
     @clear()
     @element.appendChild(element)
 
+  show: ->
+    super
+    @editorController.documentElement.classList.add("outline-blocks")
+
+  hide: ->
+    super
+    @editorController.documentElement.classList.remove("outline-blocks")
+
   renderBlock: (block, index) ->
     element = make("div", className: "block")
     element.appendChild(@renderTitle("Block", "Index: #{index}"))
