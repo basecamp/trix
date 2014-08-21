@@ -37,31 +37,31 @@ class Trix.HTMLParser
   appendBlockForNode: (node) ->
     if @currentBlockElement?
       unless Trix.DOM.within(@currentBlockElement, node)
-        @appendBlock()
+        @appendBlockForAttributes({})
         delete @currentBlockElement
 
     if node.nodeType is Node.ELEMENT_NODE
       if window.getComputedStyle(node).display is "block"
         switch node.tagName.toLowerCase()
           when "blockquote"
-            @appendBlock(quote: true)
+            @appendBlockForAttributes(quote: true)
             @currentBlockElement = node
           when "pre"
-            @appendBlock(code: true)
+            @appendBlockForAttributes(code: true)
             @currentBlockElement = node
 
-    unless @block?
-      @appendBlock()
+    unless @blocks.length
+      @appendBlockForAttributes({})
 
   processTextNode: (node) ->
     string = node.textContent.replace(/\s/, " ")
-    @appendString(string, getAttributes(node.parentNode))
+    @appendStringWithAttributes(string, getAttributes(node.parentNode))
 
   processElementNode: (node) ->
     switch node.tagName.toLowerCase()
       when "br"
         unless nodeIsExtraBR(node)
-          @appendString("\n", getAttributes(node))
+          @appendStringWithAttributes("\n", getAttributes(node))
       when "img"
         attributes = getAttributes(node)
         attributes.url = node.getAttribute("src")
@@ -69,25 +69,30 @@ class Trix.HTMLParser
         attributes.contentType = "image"
         attributes.identifier = identifier if identifier = node.getAttribute("data-trix-identifier")
         attributes[key] = value for key in ["width", "height"] when value = node.getAttribute(key)
-        @appendAttachment(attributes)
+        @appendAttachmentForAttributes(attributes)
 
-  appendBlock: (attributes = {}) ->
-    text = new Trix.Text
-    @block = new Trix.Block text, attributes
-    @blocks.push(@block)
+  appendBlockForAttributes: (attributes) ->
+    @text = new Trix.Text
+    block = new Trix.Block @text, attributes
+    @blocks.push(block)
 
-  appendString: (string, attributes) ->
+  appendStringWithAttributes: (string, attributes) ->
     text = Trix.Text.textForStringWithAttributes(string, attributes)
-    @block.text = @block.text.appendText(text)
+    @appendText(@text.appendText(text))
 
-  appendAttachment: (attributes) ->
+  appendAttachmentForAttributes: (attributes) ->
     if managedAttachment = @findManagedAttachmentByAttributes(attributes)
       attachment = managedAttachment.attachment
     else
       attachment = new Trix.Attachment
 
     text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
-    @block.text = @block.text.appendText(text)
+    @appendText(@text.appendText(text))
+
+  appendText: (@text) ->
+    index = @blocks.length - 1
+    block = @blocks[index]
+    @blocks[index] = block.copyWithText(@text)
 
   findManagedAttachmentByAttributes: (attributes) ->
     return unless @attachments
@@ -130,5 +135,5 @@ class Trix.HTMLParser
   nodeIsExtraBR = (node) ->
     node.tagName.toLowerCase() is "br" and
       node.tagName is node.previousElementSibling?.tagName and
-      node is node.parentNode.lastElementChild and
+      node is node.parentNode.lastChild and
       window.getComputedStyle(node.parentNode).display is "block"
