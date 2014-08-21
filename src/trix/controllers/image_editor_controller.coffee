@@ -54,4 +54,5 @@ class Trix.ImageEditorController
     delete @resizing
     @uninstall()
 
-    @delegate?.attachmentEditorDidUpdateAttributesForAttachment(attributes, @attachment)
+    @delegate?.attachmentEditorWillEditAttachment(@attachment)
+    @attachment.setAttributes(attributes)

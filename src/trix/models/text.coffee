@@ -159,6 +159,10 @@ class Trix.Text extends Trix.Object
   contentsForInspection: ->
     pieceList: @pieceList.inspect()
 
+  toSerializableText: ->
+    pieceList = @pieceList.selectSplittableList (piece) -> piece.isSerializable()
+    @copyWithPieceList(pieceList)
+
   toString: ->
     @pieceList.toString()
 

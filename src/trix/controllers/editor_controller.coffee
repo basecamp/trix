@@ -10,14 +10,15 @@
 class Trix.EditorController extends Trix.AbstractEditorController
   constructor: ->
     super
+    @document.initializeManagedAttachmentsWithDelegate(@delegate)
+
     @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
 
     @documentController = new Trix.DocumentController @documentElement, @document
     @documentController.delegate = this
-    @documentController.focus()
 
-    @composition = new Trix.Composition @document, @config
+    @composition = new Trix.Composition @document
     @composition.delegate = this
     @composition.selectionDelegate = @selectionManager
 
@@ -33,6 +34,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @toolbarController = new Trix.ToolbarController @toolbarElement
     @toolbarController.delegate = this
     @toolbarController.updateActions()
+
+    # Focus last to ensure all focus event handlers are triggered
+    @documentController.focus() if @config.autofocus
 
   # Composition controller delegate
 

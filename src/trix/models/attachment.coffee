@@ -13,7 +13,3 @@ class Trix.Attachment extends Trix.Object
         return unless @file?
         callback(@previewURL = event.target.result)
       reader.readAsDataURL(@file)
-
-  cleanup: ->
-    delete @file
-    delete @previewURL

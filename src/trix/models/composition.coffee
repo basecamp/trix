@@ -1,17 +1,9 @@
 #= require trix/models/document
-#= require trix/models/attachment_manager
-#= require trix/utilities/helpers
-
-{defer} = Trix.Helpers
 
 class Trix.Composition
-  constructor: (@document = new Trix.Document, config) ->
+  constructor: (@document = new Trix.Document) ->
     @document.delegate = this
     @currentAttributes = {}
-
-    @attachments = new Trix.AttachmentManager @document
-    @attachments.delegate = config?.delegate
-    @attachments.reset()
 
   # Snapshots
 
@@ -27,7 +19,6 @@ class Trix.Composition
 
   didEditDocument: (document) ->
     @delegate?.compositionDidChangeDocument?(this, @document)
-    defer => @attachments.reset()
 
   # Responder protocol
 
@@ -76,16 +67,17 @@ class Trix.Composition
       @insertString("\n")
 
   insertHTML: (html) ->
-    document = Trix.Document.fromHTML(html, {@attachments})
+    document = Trix.Document.fromHTML(html, { attachments: @document.attachments })
     @insertDocument(document)
 
   replaceHTML: (html) ->
     @preserveSelection =>
-      document = Trix.Document.fromHTML(html, {@attachments})
+      document = Trix.Document.fromHTML(html, { attachments: @document.attachments })
       @document.replaceDocument(document)
 
   insertFile: (file) ->
-    if attachment = @attachments.create(file)
+    if @document.attachments.shouldAcceptFile(file)
+      attachment = new Trix.Attachment file
       attributes = Trix.Hash.box(@currentAttributes).merge(contentType: file.type, filename: file.name)
       text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes.toObject())
       @insertText(text)

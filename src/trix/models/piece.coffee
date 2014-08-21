@@ -65,6 +65,9 @@ class Trix.Piece extends Trix.Object
   isEmpty: ->
     @length is 0
 
+  isSerializable: ->
+    true
+
   toString: ->
     "NO"
 

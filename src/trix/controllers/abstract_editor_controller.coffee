@@ -17,6 +17,12 @@ class Trix.AbstractEditorController
       new Trix.Document
 
   saveSerializedText: ->
-    @textareaElement.value = @documentElement.innerHTML
+    @textareaElement.value = @serializedHTML()
     Trix.DOM.trigger(@textareaElement, "input")
-    @inputElement?.value = @document.toJSONString()
+    @inputElement?.value = @document.toSerializableDocument().toJSONString()
+
+  serializedHTML: ->
+    element = @documentElement.cloneNode(true)
+    for pendingElement in element.querySelectorAll("[data-trix-pending]")
+      pendingElement.parentNode.removeChild(pendingElement)
+    element.innerHTML

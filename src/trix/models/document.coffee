@@ -2,6 +2,7 @@
 #= require trix/models/block
 #= require trix/models/splittable_list
 #= require trix/models/location_range
+#= require trix/models/managed_attachments
 
 class Trix.Document extends Trix.Object
   @fromJSON: (documentJSON) ->
@@ -21,6 +22,11 @@ class Trix.Document extends Trix.Object
     @editDepth = 0
     @editCount = 0
     @blockList = new Trix.SplittableList blocks
+
+  initializeManagedAttachmentsWithDelegate: (delegate) ->
+    @attachments = new Trix.ManagedAttachments this
+    @attachments.delegate = delegate
+    @attachments.refresh()
 
   copy: ->
     new @constructor @blockList.toArray()
@@ -58,6 +64,7 @@ class Trix.Document extends Trix.Object
     if --@editDepth is 0
       console.groupEnd()
       @delegate?.didEditDocument?(this)
+      @attachments?.refresh()
     this
 
   insertDocumentAtLocationRange: edit "insertDocumentAtLocationRange", (document, locationRange) ->
@@ -254,17 +261,24 @@ class Trix.Document extends Trix.Object
       if range = text.getRangeOfAttachment(attachment)
         return new Trix.LocationRange {index, offset: range[0]}, {index, offset: range[1]}
 
-  getAttachmentById: (id) ->
-    for {text} in @blockList.toArray()
-      if attachment = text.getAttachmentById(id)
-        return attachment
-
   getAttachmentPieceForAttachment: (attachment) ->
     return piece for piece in @getAttachmentPieces() when piece.attachment is attachment
 
-  attachmentIsImage: (attachment) ->
-    attachmentPiece = @getAttachmentPieceForAttachment(attachment)
-    attachmentPiece?.isImage()
+  expandedLocationRangeForBlockTransformation: (locationRange) ->
+    {start, end} = locationRange
+
+    unless start.offset is 0
+      startString = @getTextAtIndex(start.index).getStringAtRange([0, start.offset])
+      startOffset = startString.lastIndexOf("\n")
+      start.offset = if startOffset isnt -1 then startOffset + 1 else 0
+
+    endText = @getTextAtIndex(end.index)
+    unless end.offset is (endLength = endText.getLength())
+      endString = endText.getStringAtRange([end.offset, endLength])
+      endOffset = endString.indexOf("\n")
+      end.offset = if endOffset isnt -1 then end.offset + endOffset else endLength
+
+    new Trix.LocationRange start, end
 
   rangeFromLocationRange: (locationRange) ->
     leftPosition = @blockList.findPositionAtIndexAndOffset(locationRange.start.index, locationRange.start.offset)
@@ -273,6 +287,12 @@ class Trix.Document extends Trix.Object
 
   locationRangeFromPosition: (position) ->
     new Trix.LocationRange @blockList.findIndexAndOffsetAtPosition(position)
+
+  toSerializableDocument: ->
+    blocks = []
+    @blockList.eachObject (block) ->
+      blocks.push(block.copyWithText(block.text.toSerializableText()))
+    new @constructor blocks
 
   toString: ->
     @blockList.toString()
