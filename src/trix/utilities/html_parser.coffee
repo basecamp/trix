@@ -2,7 +2,7 @@
 #= require trix/utilities/dom
 
 class Trix.HTMLParser
-  allowedAttributes = "style href src width height".split(" ")
+  allowedAttributes = "style href src width height data-trix-identifier".split(" ")
 
   @parse: (html, options) ->
     parser = new this html, options
