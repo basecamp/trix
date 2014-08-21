@@ -17,10 +17,7 @@ class Trix.BlockView
     container.trixIndex = @blockIndex
 
     if @block.isEmpty()
-      br = document.createElement("br")
-      br.trixPosition = 0
-      br.trixLength = 1
-      br.trixIndex = @blockIndex
+      br = @createBRElementForPosition(0)
       container.appendChild(br)
     else
       @createElementsForText()
@@ -86,12 +83,11 @@ class Trix.BlockView
   # A single <br> at the end of a block element has no visual representation
   # so add an extra one.
   createExtraNewlineElement: ->
-    if string = @currentRun?.string
-      if /\n$/.test(string)
-        @currentRun = { string: "\n", position: @text.getLength() }
-        node = @createStringNodesForCurrentRun()[0]
-        @cacheNode(node)
-        @elements.push(node)
+    if string = @block.toString()
+      # A newline followed by the block break newline
+      if /\n\n$/.test(string)
+        br = @createBRElementForPosition(string.length - 1)
+        @elements.push(br)
 
   createAttachmentElementForCurrentRun: ->
     {attachment, attributes, position, piece} = @currentRun
@@ -117,11 +113,8 @@ class Trix.BlockView
 
     for substring, index in string.split("\n")
       if index > 0
-        node = document.createElement("br")
-        node.trixPosition = position
-        node.trixIndex = @blockIndex
-        position += 1
-        node.trixLength = 1
+        node = @createBRElementForPosition(position)
+        position++
         nodes.push(node)
 
       if length = substring.length
@@ -133,6 +126,13 @@ class Trix.BlockView
         nodes.push(node)
 
     nodes
+
+  createBRElementForPosition: (position) ->
+    element = document.createElement("br")
+    element.trixPosition = position
+    element.trixLength = 1
+    element.trixIndex = @blockIndex
+    element
 
   createElementsForAttributes = (attributes, parentAttribute) ->
     elements = []
