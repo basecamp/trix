@@ -25,10 +25,9 @@ class Trix.Block extends Trix.Object
   removeAttribute: (attribute) ->
     @copyWithAttributes @attributes.remove(attribute)
 
-  removeFormattingAttributes: ->
-    attributes = @attributes
-    for key, value of Trix.attributes when value.block and @attributes.has(key)
-      attributes = attributes.remove(key)
+  replaceAttributesWithAttribute: (attribute, value) ->
+    attributes = {}
+    attributes[attribute] = value
     @copyWithAttributes(attributes)
 
   getAttributes: ->
