@@ -36,7 +36,7 @@ class Trix.HTMLParser
 
   appendBlockForNode: (node) ->
     if @currentBlockElement?
-      unless Trix.DOM.within(@currentBlockElement, node)
+      unless @currentBlockElement.contains(node)
         @appendBlockForAttributes({})
         delete @currentBlockElement
 

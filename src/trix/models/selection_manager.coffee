@@ -97,9 +97,9 @@ class Trix.SelectionManager
 
   rangeWithinElement: (range) ->
     if range.collapsed
-      DOM.within(@element, range.startContainer)
+      @element.contains(range.startContainer)
     else
-      DOM.within(@element, range.startContainer) and DOM.within(@element, range.endContainer)
+      @element.contains(range.startContainer) and @element.contains(range.endContainer)
 
   findLocationFromContainerAtOffset: (container, offset) ->
     if container.nodeType is Node.TEXT_NODE

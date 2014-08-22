@@ -24,11 +24,6 @@ Trix.DOM = dom =
       return element if dom.match(element, selector)
       element = element.parentNode
 
-  within: (ancestor, element) ->
-    while element
-      return true if element is ancestor
-      element = element.parentNode
-
   getDimensions: (element) ->
     width:  element.offsetWidth
     height: element.offsetHeight
