@@ -2,6 +2,7 @@ require 'trix'
 require 'pathname'
 require 'sprockets'
 require 'coffee-script'
+require 'uglifier'
 
 module Trix
   class Environment
@@ -14,6 +15,7 @@ module Trix
 
     def sprockets_environment
       @sprockets_environment ||= Sprockets::Environment.new do |env|
+        env.js_compressor = Uglifier.new
         paths.each do |path|
           env.append_path(path)
         end

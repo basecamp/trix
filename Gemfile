@@ -6,3 +6,5 @@ gem 'coffee-script'
 gem 'coffee-script-source', '~> 1.7.0'
 gem 'rack-rewrite'
 gem 'listen'
+gem 'uglifier'
+
