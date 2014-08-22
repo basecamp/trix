@@ -1,16 +1,27 @@
 class Trix.SelectionObserver
-  events = ["DOMFocusIn", "DOMFocusOut", "mousedown", "mousemove", "keydown"]
+  events = ["DOMFocusIn", "DOMFocusOut", "mousedown", "keydown"]
 
   constructor: (@element) ->
-    @element.addEventListener(event, @refresh) for event in events
+    @element.addEventListener(event, @start) for event in events
     @range = getRange()
 
-  refresh: =>
-    requestAnimationFrame =>
+  start: =>
+    return if @running
+    @running = true
+    requestAnimationFrame(@tick)
+
+  stop: ->
+    delete @running
+
+  tick: =>
+    if elementWasRemovedFromDOM(@element)
+      @stop()
+    else
       range = getRange()
       unless rangesAreEqual(range, @range)
         @delegate?.selectionDidChange?()
         @range = range
+      requestAnimationFrame(@tick)
 
   getRange = ->
     selection = window.getSelection()
@@ -21,3 +32,6 @@ class Trix.SelectionObserver
       left?.startOffset is right?.startOffset and
       left?.endContainer is right?.endContainer and
       left?.endOffset is right?.endOffset
+
+  elementWasRemovedFromDOM = (element) ->
+    not element.parentNode
