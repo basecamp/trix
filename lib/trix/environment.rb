@@ -61,7 +61,7 @@ module Trix
     end
 
     def project_root
-      Pathname.new(File.dirname(__FILE__) + "/..")
+      Pathname.new(File.dirname(__FILE__) + "/../..")
     end
 
     def build_path
