@@ -14,14 +14,14 @@ class Trix.SelectionObserver
     delete @running
 
   tick: =>
-    if elementWasRemovedFromDOM(@element)
-      @stop()
-    else
+    if document.contains(@element)
       range = getRange()
       unless rangesAreEqual(range, @range)
         @delegate?.selectionDidChange?()
         @range = range
       requestAnimationFrame(@tick)
+    else
+      @stop()
 
   getRange = ->
     selection = window.getSelection()
@@ -32,6 +32,3 @@ class Trix.SelectionObserver
       left?.startOffset is right?.startOffset and
       left?.endContainer is right?.endContainer and
       left?.endOffset is right?.endOffset
-
-  elementWasRemovedFromDOM = (element) ->
-    not element.parentNode
