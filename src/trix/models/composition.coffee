@@ -35,12 +35,10 @@ class Trix.Composition
 
   insertDocument: (document = Trix.Document.fromString("")) ->
     @notifyDelegateOfIntentionToSetLocationRange()
+    position = @getPosition()
     range = @getLocationRange()
     @document.insertDocumentAtLocationRange(document, range)
-
-    index = range.index + (blockLength = document.blockList.length)
-    offset = document.getBlockAtIndex(blockLength - 1).text.getLength()
-    @setLocationRange({index, offset})
+    @setPosition(position + document.getLength())
 
   insertString: (string, options) ->
     text = Trix.Text.textForStringWithAttributes(string, @getCurrentTextAttributes())
