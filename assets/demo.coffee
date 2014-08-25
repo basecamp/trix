@@ -11,20 +11,12 @@ config =
 
     didAddAttachment: (attachment) ->
       console.log "Host received attachment:", attachment
-      saveAttachment(attachment)
-
       if file = attachment.file
-        setTimeout ->
-          if /image/.test(file.type)
-           attributes = { url: "basecamp.png" }
-          else
-            filename = "basecamp-#{file.name}.rb"
-            attributes = { url: filename, filename }
-
-          attributes.identifier = "Attachment:#{Math.random() * 5000}"
-          console.log "Host setting attributes for attachment:", attachment, attributes
+        uploadFile attachment.file, (response) ->
+          attributes = JSON.parse(response)
           attachment.setAttributes(attributes)
-        , 1000
+      else
+        saveAttachment(attachment)
 
     didRemoveAttachment: (attachment) ->
       console.log "Host received removed attachment:", attachment
@@ -59,6 +51,20 @@ removeAttachment = (attachment) ->
   if item = document.getElementById("attachment_#{attachment.id}")
     item.parentElement.removeChild(item)
 
+uploadFile = (file, callback) ->
+  e = (string) -> encodeURIComponent(string)
+  url = "/attachments?contentType=#{e(file.type)}&filename=#{e(file.name)}"
+
+  xhr = new XMLHttpRequest
+  xhr.open("POST", url, true)
+  xhr.setRequestHeader("Content-Type", "application/octet-stream")
+  xhr.onreadystatechange = (response) ->
+    if xhr.readyState is 4
+      if xhr.status is 200
+        callback?(xhr.responseText)
+      else
+        console.warn "Host failed to upload file:", file
+  xhr.send(file)
 
 installTrix = ->
   if Trix.isSupported(config)
