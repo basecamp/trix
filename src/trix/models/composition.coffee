@@ -66,7 +66,12 @@ class Trix.Composition
 
   insertHTML: (html) ->
     document = Trix.Document.fromHTML(html, { attachments: @document.attachments })
-    @insertDocument(document)
+    block = document.getBlockAtIndex(0)
+
+    if document.blockList.length is 1 and not block.hasAttributes()
+      @insertText(block.getTextWithoutBlockBreak())
+    else
+      @insertDocument(document)
 
   replaceHTML: (html) ->
     @preserveSelection =>

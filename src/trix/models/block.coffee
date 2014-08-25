@@ -86,6 +86,12 @@ class Trix.Block extends Trix.Object
   getBlockBreakPosition: ->
     @text.getLength() - 1
 
+  getTextWithoutBlockBreak: ->
+    if textEndsInBlockBreak(@text)
+      @text.getTextAtRange([0, @getBlockBreakPosition()])
+    else
+      @text.copy()
+
   # Block breaks
 
   applyBlockBreakToText = (text) ->
