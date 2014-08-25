@@ -174,7 +174,7 @@ class Trix.Composition
     @setCurrentAttribute("frozen", true)
 
   thawSelection: ->
-    @setCurrentAttribute("frozen", false)
+    @removeCurrentAttribute("frozen")
 
   hasFrozenSelection: ->
     @hasCurrentAttribute("frozen")
