@@ -8,6 +8,9 @@ class Trix.ManagedAttachments
   get: (id) ->
     @collection.get(id)
 
+  each: (callback) ->
+    @collection.each(callback)
+
   findWhere: (attributes) ->
     @collection.findWhere(attributes)
 

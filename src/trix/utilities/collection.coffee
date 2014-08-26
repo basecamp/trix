@@ -5,6 +5,9 @@ class Trix.Collection
   get: (id) ->
     @models[id]
 
+  each: (callback) ->
+    callback(model) for id, model of @models
+
   has: (id) ->
     id of @models
 
