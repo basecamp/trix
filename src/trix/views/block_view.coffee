@@ -5,14 +5,14 @@
 class Trix.BlockView
   constructor: (@block, @blockIndex) ->
     @text = @block.text
-    @blockAttributes = @block.getAttributes()
+    @blockConfig = @getBlockConfig()
     @elements = []
     @nodeCache = []
 
   # Rendering
 
   render: ->
-    container = document.createElement(@getTagNameForBlock())
+    container = document.createElement(@blockConfig.tagName ? "div")
     container.trixPosition = 0
     container.trixIndex = @blockIndex
 
@@ -26,9 +26,9 @@ class Trix.BlockView
 
     container
 
-  getTagNameForBlock: ->
-    return tagName for key of @blockAttributes when tagName = Trix.attributes[key]?.tagName
-    "div"
+  getBlockConfig: ->
+    return config for key of @block.getAttributes() when (config = Trix.attributes[key])?.block
+    {}
 
   # Hold a reference to every node we create to prevent IE from losing
   # their expando properties like trixPosition. IE will otherwise occasionally
@@ -111,19 +111,26 @@ class Trix.BlockView
     {string, position} = @currentRun
     nodes = []
 
-    for substring, index in string.split("\n")
-      if index > 0
-        node = @createBRElementForPosition(position)
-        position++
-        nodes.push(node)
+    if @blockConfig.plaintext
+      node = document.createTextNode(string)
+      node.trixPosition = position
+      node.trixIndex = @blockIndex
+      node.trixLength = string.length
+      nodes.push(node)
+    else
+      for substring, index in string.split("\n")
+        if index > 0
+          node = @createBRElementForPosition(position)
+          position++
+          nodes.push(node)
 
-      if length = substring.length
-        node = document.createTextNode(preserveSpaces(substring))
-        node.trixPosition = position
-        node.trixIndex = @blockIndex
-        position += length
-        node.trixLength = length
-        nodes.push(node)
+        if length = substring.length
+          node = document.createTextNode(preserveSpaces(substring))
+          node.trixPosition = position
+          node.trixIndex = @blockIndex
+          position += length
+          node.trixLength = length
+          nodes.push(node)
 
     nodes
 

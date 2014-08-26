@@ -49,6 +49,7 @@
     code:
       block: true
       tagName: "pre"
+      plaintext: true
 
   config:
     editorCSS: """
