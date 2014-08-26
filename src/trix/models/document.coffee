@@ -22,6 +22,11 @@ class Trix.Document extends Trix.Object
     @editDepth = 0
     @editCount = 0
     @blockList = new Trix.SplittableList blocks
+    @ensureDocumentHasBlock()
+
+  ensureDocumentHasBlock: ->
+    if @blockList.length is 0
+      @blockList = new Trix.SplittableList [new Trix.Block]
 
   initializeManagedAttachmentsWithDelegate: (delegate) ->
     @attachments = new Trix.ManagedAttachments this
@@ -34,11 +39,11 @@ class Trix.Document extends Trix.Object
   edit = (name, fn) -> ->
     @beginEditing()
     fn.apply(this, arguments)
+    @ensureDocumentHasBlock()
     if Trix.debug.logEditOperations
       console.group(name)
       console.log(format(object)...) for object in arguments
       console.groupEnd()
-
     @endEditing()
 
   format = (object) ->
@@ -83,12 +88,8 @@ class Trix.Document extends Trix.Object
 
   insertTextAtLocationRange: edit "insertTextAtLocationRange", (text, locationRange) ->
     @removeTextAtLocationRange(locationRange)
-    if @blockList.length is 0
-      block = new Trix.Block text
-      @blockList = @blockList.insertObjectAtIndex(block, 0)
-    else
-      @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
-        block.copyWithText(block.text.insertTextAtPosition(text, locationRange.offset))
+    @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
+      block.copyWithText(block.text.insertTextAtPosition(text, locationRange.offset))
 
   removeTextAtLocationRange: edit "removeTextAtLocationRange", (locationRange) ->
     return if locationRange.isCollapsed()
@@ -180,9 +181,6 @@ class Trix.Document extends Trix.Object
   getDocumentAtLocationRange: (locationRange) ->
     range = @rangeFromLocationRange(locationRange)
     blocks = @blockList.getSplittableListInRange(range).toArray()
-    if blocks.length is 0
-      # Should the constructor do this?
-      blocks.push(new Trix.Block)
     new @constructor blocks
 
   getStringAtLocationRange: (locationRange) ->
