@@ -16,7 +16,7 @@ class Trix.HTMLParser
     @blocks = []
 
   createHiddenContainer: ->
-    @container = sanitizeHTML(squish(@html))
+    @container = sanitizeHTML(@html)
     @container.style["display"] = "none"
     document.body.appendChild(@container)
 
@@ -122,9 +122,6 @@ class Trix.HTMLParser
       attributeName = decapitalize(key.replace(/^trix/, ''))
       attributes[attributeName] = value
     attributes
-
-  squish = (string) ->
-    string.trim().replace(/\n/g, " ").replace(/\s{2,}/g, " ")
 
   sanitizeHTML = (html) ->
     container = document.createElement("div")
