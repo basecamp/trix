@@ -2,12 +2,14 @@
 #= require trix/utilities/dom
 #= require trix/utilities/helpers
 
-{defer} = Trix.Helpers
+{capitalize} = Trix.Helpers
 
 class Trix.ImageAttachmentView extends Trix.AttachmentView
   render: ->
     @image = document.createElement("img")
-    @image.setAttribute("data-trix-identifier", @attachmentPiece.getIdentifier()) if @attachmentPiece.hasIdentifier()
+
+    for key, value of @attachmentPiece.getMetadata()
+      @image.dataset["trix#{capitalize(key)}"] = value
 
     if @attachmentPiece.isPending()
       @image.setAttribute("data-trix-pending", "true")

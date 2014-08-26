@@ -1,8 +1,11 @@
 #= require trix/models/document
 #= require trix/utilities/dom
+#= require trix/utilities/helpers
+
+{decapitalize} = Trix.Helpers
 
 class Trix.HTMLParser
-  allowedAttributes = "style href src width height data-trix-identifier".split(" ")
+  allowedAttributes = "style href src width height".split(" ")
 
   @parse: (html, options) ->
     parser = new this html, options
@@ -65,10 +68,8 @@ class Trix.HTMLParser
       when "img"
         attributes = getAttributes(node)
         attributes.url = node.getAttribute("src")
-        # TODO: we lose the true content type here
-        attributes.contentType = "image"
-        attributes.identifier = identifier if identifier = node.getAttribute("data-trix-identifier")
         attributes[key] = value for key in ["width", "height"] when value = node.getAttribute(key)
+        attributes[key] = value for key, value of getMetadata(node)
         @appendAttachmentForAttributes(attributes)
 
   appendBlockForAttributes: (attributes) ->
@@ -115,6 +116,13 @@ class Trix.HTMLParser
 
     attributes
 
+  getMetadata = (element) ->
+    attributes = {}
+    for key, value of element.dataset
+      attributeName = decapitalize(key.replace(/^trix/, ''))
+      attributes[attributeName] = value
+    attributes
+
   squish = (string) ->
     string.trim().replace(/\n/g, " ").replace(/\s{2,}/g, " ")
 
@@ -128,7 +136,7 @@ class Trix.HTMLParser
       for attribute in [element.attributes...]
         do (attribute) ->
           {name} = attribute
-          element.removeAttribute(name) unless name in allowedAttributes
+          element.removeAttribute(name) unless name in allowedAttributes or name.indexOf("data-trix") is 0
 
     container
 

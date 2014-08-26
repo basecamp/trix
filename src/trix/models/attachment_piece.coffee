@@ -20,11 +20,11 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   isImage: ->
     /image/.test(@attributes.get("contentType"))
 
-  getIdentifier: ->
-    @attributes.get("identifier")
-
-  hasIdentifier: ->
-    @attributes.has("identifier")
+  getMetadata: ->
+    attributes = {}
+    for key in ["contentType", "filename", "identifier"]
+      attributes[key] = @attributes.get(key) if @attributes.has(key)
+    attributes
 
   getURL: ->
     @attributes.get("url")
