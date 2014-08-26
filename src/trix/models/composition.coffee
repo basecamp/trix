@@ -128,11 +128,13 @@ class Trix.Composition
 
   setCurrentAttribute: (attributeName, value) ->
     if Trix.attributes[attributeName]?.block
+      @removeCurrentAttribute(key) for key of @currentAttributes when Trix.attributes[key]?.block
       @setBlockAttribute(attributeName, value)
     else
       @setTextAttribute(attributeName, value)
 
-    @updateCurrentAttributes()
+    @currentAttributes[attributeName] = value
+    @notifyDelegateOfCurrentAttributesChange()
 
   removeCurrentAttribute: (attributeName) ->
     range = @getLocationRange()
