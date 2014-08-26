@@ -1,9 +1,12 @@
 #= require trix/utilities/dom
+#= require trix/utilities/helpers
 #= require ./selection_view
 #= require ./inspector_panel_view
 #= require ./text_panel_view
 #= require ./undo_panel_view
 #= require ./render_count_view
+
+{defer} = Trix.Helpers
 
 class Trix.InspectorController
   constructor: (@element, @editorController) ->
@@ -58,10 +61,10 @@ class Trix.InspectorController
   findPanelElement: (name) ->
     @element.querySelector("[data-inspector-panel-name=#{name}]")
 
-  incrementRenderCount: ->
+  incrementRenderCount: -> defer =>
     @renderCountView.incrementAndRender()
 
-  render: ->
+  render: -> defer =>
     @selectionView.render()
     @renderCountView.render()
     @activePanelView?.render()
