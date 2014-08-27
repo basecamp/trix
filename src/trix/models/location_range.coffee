@@ -45,6 +45,9 @@ class Trix.LocationRange
   isInSingleIndex: ->
     @start.index is @end.index
 
+  isValid: ->
+    @start.index? and @start.offset? and @end.index? and @end.offset?
+
   eachIndex: (callback) ->
     callback(index) for index in [@start.index..@end.index]
 

@@ -65,7 +65,7 @@ class Trix.SelectionManager
 
   updateCurrentLocationRange: (domRange = getDOMRange()) ->
     locationRange = @createLocationRangeFromDOMRange(domRange)
-    unless locationRange?.isEqualTo?(@currentLocationRange)
+    if (@currentLocationRange and not locationRange) or not locationRange?.isEqualTo(@currentLocationRange)
       @currentLocationRange = locationRange
       @delegate?.locationRangeDidChange?(@currentLocationRange)
 
@@ -93,7 +93,8 @@ class Trix.SelectionManager
     return unless range? and @rangeWithinElement(range)
     start = @findLocationFromContainerAtOffset(range.startContainer, range.startOffset)
     end = @findLocationFromContainerAtOffset(range.endContainer, range.endOffset) unless range.collapsed
-    new Trix.LocationRange start, end
+    locationRange = new Trix.LocationRange start, end
+    locationRange if locationRange.isValid()
 
   rangeWithinElement: (range) ->
     if range.collapsed

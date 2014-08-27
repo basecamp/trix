@@ -17,7 +17,7 @@ class Trix.SelectionObserver
     if document.contains(@element)
       range = getRange()
       unless rangesAreEqual(range, @range)
-        @delegate?.selectionDidChange?()
+        @delegate?.selectionDidChange?(range)
         @range = range
       requestAnimationFrame(@tick)
     else
