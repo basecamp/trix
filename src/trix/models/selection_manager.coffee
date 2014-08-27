@@ -159,18 +159,18 @@ class Trix.SelectionManager
     else
       NodeFilter.FILTER_SKIP
 
-  getLocationRangeAtPoint: ([pageX, pageY]) ->
+  getLocationRangeAtPoint: ([clientX, clientY]) ->
     if document.caretPositionFromPoint
-      {offsetNode, offset} = document.caretPositionFromPoint(pageX, pageY)
+      {offsetNode, offset} = document.caretPositionFromPoint(clientX, clientY)
       domRange = document.createRange()
       domRange.setStart(offsetNode, offset)
 
     else if document.caretRangeFromPoint
-      domRange = document.caretRangeFromPoint(pageX, pageY)
+      domRange = document.caretRangeFromPoint(clientX, clientY)
 
     else if document.body.createTextRange
       range = document.body.createTextRange()
-      range.moveToPoint(pageX, pageY)
+      range.moveToPoint(clientX, clientY)
       range.select()
       return @updateCurrentLocationRange()
 
@@ -183,14 +183,14 @@ class Trix.SelectionManager
     if rects.length > 0
       rect = rects[rects.length - 1]
 
-      pageX = rect.right
-      pageY = rect.top + rect.height / 2
+      clientX = rect.right
+      clientY = rect.top + rect.height / 2
 
       if clientRectIsRelativeToBody()
-        pageX -= document.body.scrollLeft
-        pageY -= document.body.scrollTop
+        clientX -= document.body.scrollLeft
+        clientY -= document.body.scrollTop
 
-      [pageX, pageY]
+      [clientX, clientY]
 
   getDOMSelection = ->
     selection = window.getSelection()

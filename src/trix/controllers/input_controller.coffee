@@ -70,7 +70,7 @@ class Trix.InputController
 
     drop: (event) ->
       event.preventDefault()
-      point = [event.pageX, event.pageY]
+      point = [event.clientX, event.clientY]
       @responder?.setLocationRangeFromPoint(point)
 
       if @draggedRange
