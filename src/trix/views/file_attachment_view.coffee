@@ -6,6 +6,8 @@
 class Trix.FileAttachmentView extends Trix.AttachmentView
   render: ->
     element = super
+    element.classList.add("file")
+
     caption = document.createElement("figcaption")
     caption.textContent = @attachmentPiece.getFilename()
 

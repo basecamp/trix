@@ -3,6 +3,7 @@
 class Trix.ImageAttachmentView extends Trix.AttachmentView
   render: ->
     element = super
+    element.classList.add("image")
     image = document.createElement("img")
 
     if @attachmentPiece.isPending()
