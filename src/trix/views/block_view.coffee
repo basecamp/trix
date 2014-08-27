@@ -1,5 +1,5 @@
 #= require trix/utilities/dom
-#= require trix/views/attachment_view
+#= require trix/views/file_attachment_view
 #= require trix/views/image_attachment_view
 
 class Trix.BlockView
@@ -94,10 +94,6 @@ class Trix.BlockView
 
     view = createAttachmentViewForAttachment(piece)
     element = view.render()
-
-    element.trixPosition = position
-    element.trixLength = 1
-    element.trixIndex = @blockIndex
     element.trixAttachmentId = attachment.id
     element
 
@@ -105,7 +101,7 @@ class Trix.BlockView
     if piece.isImage()
       new Trix.ImageAttachmentView piece
     else
-      new Trix.AttachmentView piece
+      new Trix.FileAttachmentView piece
 
   createStringNodesForCurrentRun: ->
     {string, position} = @currentRun

@@ -1,30 +1,24 @@
+#= require trix/utilities/helpers
+
+{capitalize} = Trix.Helpers
+
 class Trix.AttachmentView
   constructor: (@attachmentPiece) ->
     {@attachment} = @attachmentPiece
 
   render: ->
-    @element = document.createElement("figure")
-    @element.setAttribute("contenteditable", false)
-    @element.classList.add("attachment")
+    element = document.createElement("figure")
+    element.classList.add("attachment")
+    element.setAttribute("contenteditable", "false")
 
-    @extension = document.createElement("div")
-    @extension.classList.add("extension")
-    @extension.textContent = @attachmentPiece.getExtension()
+    for key, value of @attachmentPiece.getMetadata()
+      element.dataset["trix#{capitalize(key)}"] = value
 
-    @caption = document.createElement("figcaption")
+    if @attachmentPiece.isPending()
+      element.setAttribute("data-trix-pending", "true")
+      progress = document.createElement("progress")
+      progress.setAttribute("max", 100)
+      progress.setAttribute("value", 0)
+      element.appendChild(progress)
 
-    @updateAttributes()
-
-    @element.appendChild(@extension)
-    @element.appendChild(@caption)
-
-    @element
-
-  updateAttributes: ->
-    @extension.textContent = @attachmentPiece.getExtension()
-    @caption.textContent = @attachmentPiece.getFilename()
-    @caption.setAttribute("title", @attachmentPiece.getFilename())
-
-  resize: ({width, height} = {}) ->
-    @element.style.width = "#{width}px" if width?
-    @element.style.height = "#{height}px" if height?
+    element
