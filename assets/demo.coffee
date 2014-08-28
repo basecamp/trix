@@ -65,6 +65,9 @@ uploadAttachment = (attachment) ->
           attachment.setUploadProgress(progress++)
           if progress is 100
             attributes = JSON.parse(xhr.responseText)
+            unless attachment.isImage()
+              attributes.href = attributes.url
+              delete attributes.url
             attachment.setAttributes(attributes)
           else
             setTimeout(fakeProgress, 20)

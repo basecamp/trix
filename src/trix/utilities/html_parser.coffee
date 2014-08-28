@@ -77,6 +77,8 @@ class Trix.HTMLParser
           attributes = getAttributes(node)
           attributes[key] = value for key, value of getMetadata(node)
           @appendAttachmentForAttributes(attributes)
+          # We have everything we need so avoid processing inner nodes
+          node.innerHTML = ""
 
   appendBlockForAttributes: (attributes) ->
     @text = new Trix.Text
