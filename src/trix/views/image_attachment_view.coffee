@@ -5,6 +5,7 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
     element = super
     element.classList.add("image")
     image = document.createElement("img")
+    image.trixAttachmentId = @attachment.id
 
     if @attachmentPiece.isPending()
       @attachment.getPreviewURL (previewURL) =>

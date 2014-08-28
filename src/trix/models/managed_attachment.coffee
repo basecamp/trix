@@ -6,10 +6,10 @@ class Trix.ManagedAttachment
     @document.getAttachmentPieceForAttachment(@attachment)?.getAttributes()
 
   setAttributes: (attributes) ->
+    delete @attachment.element
     if attributes.url? or attributes.href?
       delete @attachment.file
       delete @attachment.previewURL
-      delete @attachment.element
     @document.updateAttributesForAttachment(attributes, @attachment)
 
   setUploadProgress: (value) ->

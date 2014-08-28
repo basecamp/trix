@@ -95,7 +95,6 @@ class Trix.BlockView
     attachment.element ?= (
       view = createAttachmentViewForAttachment(piece)
       element = view.render()
-      element.trixAttachmentId = attachment.id
       element
     )
 
