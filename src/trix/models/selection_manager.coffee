@@ -46,7 +46,7 @@ class Trix.SelectionManager
     if --@lockCount is 0
       lockedLocationRange = @lockedLocationRange
       delete @lockedLocationRange
-      @setLocationRange(lockedLocationRange)
+      @setLocationRange(lockedLocationRange) if lockedLocationRange?
 
   preserveSelection: (block) ->
     point = @getPointAtEndOfSelection()
