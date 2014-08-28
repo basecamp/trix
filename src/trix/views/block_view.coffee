@@ -92,10 +92,12 @@ class Trix.BlockView
   createAttachmentElementForCurrentRun: ->
     {attachment, attributes, position, piece} = @currentRun
 
-    view = createAttachmentViewForAttachment(piece)
-    element = view.render()
-    element.trixAttachmentId = attachment.id
-    element
+    attachment.element ?= (
+      view = createAttachmentViewForAttachment(piece)
+      element = view.render()
+      element.trixAttachmentId = attachment.id
+      element
+    )
 
   createAttachmentViewForAttachment = (piece) ->
     if piece.isImage()

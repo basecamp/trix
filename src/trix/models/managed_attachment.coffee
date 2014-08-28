@@ -9,7 +9,11 @@ class Trix.ManagedAttachment
     if attributes.url?
       delete @attachment.file
       delete @attachment.previewURL
+      delete @attachment.element
     @document.updateAttributesForAttachment(attributes, @attachment)
+
+  setUploadProgress: (value) ->
+    @attachment.element?.querySelector("progress")?.setAttribute("value", value)
 
   remove: ->
     if range = @document.getLocationRangeOfAttachment(@attachment)
