@@ -15,10 +15,9 @@ class Trix.SelectionManager
   getLocationRange: ->
     @lockedLocationRange ? @currentLocationRange
 
-  setLocationRange: (locationRangeOrStart, end) ->
+  setLocationRange: (start, end) ->
     unless @lockedLocationRange?
-      locationRange = Trix.LocationRange.create(locationRangeOrStart, end)
-      @setDOMRange(locationRange)
+      @setDOMRange(new Trix.LocationRange start, end)
       @updateCurrentLocationRange()
 
   setLocationRangeFromPoint: (point) ->

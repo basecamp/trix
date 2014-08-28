@@ -1,10 +1,4 @@
 class Trix.LocationRange
-  @create: (start, end) ->
-    if start instanceof this
-      start
-    else
-      new this start, end
-
   @forLocationWithLength: (location, length) ->
     if length > 0
       start = location
@@ -25,7 +19,7 @@ class Trix.LocationRange
 
     unless @end?
       @end = {}
-      @end[key] = val for key, val of start
+      @end[key] = val for key, val of @start
 
   parse = (location) ->
     if Array.isArray(location)

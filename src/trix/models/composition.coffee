@@ -31,7 +31,7 @@ class Trix.Composition
     if updatePosition
       {index, offset} = range.start
       offset += text.getLength()
-      @setLocationRange({index, offset})
+      @setLocationRange([index, offset])
 
   insertDocument: (document = Trix.Document.fromString("")) ->
     @notifyDelegateOfIntentionToSetLocationRange()
@@ -191,8 +191,8 @@ class Trix.Composition
   getLocationRange: ->
     @selectionDelegate?.getLocationRange?()
 
-  setLocationRange: (locationRangeOrStart, end) ->
-    @selectionDelegate?.setLocationRange?(locationRangeOrStart, end)
+  setLocationRange: (start, end) ->
+    @selectionDelegate?.setLocationRange?(start, end)
 
   setLocationRangeFromPoint: (point) ->
     @selectionDelegate?.setLocationRangeFromPoint?(point)
@@ -229,7 +229,7 @@ class Trix.Composition
       textRange = [range.start.offset, range.end.offset]
       [left, right] = text.getExpandedRangeForAttributeAtRange(attributeName, textRange)
 
-      @setLocationRange({offset: left, index}, {offset: right, index})
+      @setLocationRange([index, left], [index, right])
 
   # Private
 
