@@ -12,9 +12,7 @@ config =
     didAddAttachment: (attachment) ->
       console.log "Host received attachment:", attachment
       if file = attachment.file
-        uploadFile attachment.file, (response) ->
-          attributes = JSON.parse(response)
-          attachment.setAttributes(attributes)
+        uploadAttachment(attachment)
       else
         saveAttachment(attachment)
 
@@ -51,17 +49,26 @@ removeAttachment = (attachment) ->
   if item = document.getElementById("attachment_#{attachment.id}")
     item.parentElement.removeChild(item)
 
-uploadFile = (file, callback) ->
+uploadAttachment = (attachment) ->
+  {file} = attachment
   e = (string) -> encodeURIComponent(string)
   url = "/attachments?contentType=#{e(file.type)}&filename=#{e(file.name)}"
 
   xhr = new XMLHttpRequest
   xhr.open("POST", url, true)
   xhr.setRequestHeader("Content-Type", "application/octet-stream")
-  xhr.onreadystatechange = (response) ->
+  xhr.onreadystatechange = (response) =>
     if xhr.readyState is 4
       if xhr.status is 200
-        callback?(xhr.responseText)
+        progress = 0
+        fakeProgress = =>
+          attachment.setUploadProgress(progress++)
+          if progress is 100
+            attributes = JSON.parse(xhr.responseText)
+            attachment.setAttributes(attributes)
+          else
+            setTimeout(fakeProgress, 20)
+        fakeProgress()
       else
         console.warn "Host failed to upload file:", file
   xhr.send(file)
