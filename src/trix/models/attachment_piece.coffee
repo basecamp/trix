@@ -36,7 +36,7 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
     @attributes.get("filesize")
 
   getExtension: ->
-    @getFilename().match(/\.(\w+)$/)?[1]
+    @getFilename().match(/\.(\w+)$/)?[1].toLowerCase()
 
   getWidth: ->
     @attributes.get("width")
