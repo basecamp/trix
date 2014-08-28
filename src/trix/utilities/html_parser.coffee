@@ -5,7 +5,7 @@
 {decapitalize} = Trix.Helpers
 
 class Trix.HTMLParser
-  allowedAttributes = "style href src width height".split(" ")
+  allowedAttributes = "style href src width height class".split(" ")
 
   @parse: (html, options) ->
     parser = new this html, options
@@ -69,8 +69,14 @@ class Trix.HTMLParser
         attributes = getAttributes(node)
         attributes.url = node.getAttribute("src")
         attributes[key] = value for key in ["width", "height"] when value = node.getAttribute(key)
-        attributes[key] = value for key, value of getMetadata(node)
+        if figure = Trix.DOM.closest(node, "figure.attachment")
+          attributes[key] = value for key, value of getMetadata(figure)
         @appendAttachmentForAttributes(attributes)
+      when "figure"
+        if node.classList.contains("attachment") and node.classList.contains("file")
+          attributes = getAttributes(node)
+          attributes[key] = value for key, value of getMetadata(node)
+          @appendAttachmentForAttributes(attributes)
 
   appendBlockForAttributes: (attributes) ->
     @text = new Trix.Text

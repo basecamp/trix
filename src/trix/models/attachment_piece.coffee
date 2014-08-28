@@ -22,7 +22,7 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
 
   getMetadata: ->
     attributes = {}
-    for key in ["contentType", "filename", "identifier"]
+    for key in ["contentType", "filename", "filesize", "identifier"]
       attributes[key] = @attributes.get(key) if @attributes.has(key)
     attributes
 
