@@ -1,4 +1,5 @@
 require 'bundler/setup'
+require 'uglifier'
 require File.join(File.dirname(__FILE__) + '/lib/trix/environment')
 
 def has_phantomjs?
@@ -9,6 +10,7 @@ namespace :trix do
   environment = Trix::Environment.new(".")
   environment.paths = %w( assets src )
   environment.assets = %w( demo.html demo.js trix.js basecamp.png )
+  environment.js_compressor = Uglifier.new
 
   desc "Clean Trix distribution"
   task :clean do
