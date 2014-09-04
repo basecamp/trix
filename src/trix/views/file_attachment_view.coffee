@@ -11,6 +11,7 @@ class Trix.FileAttachmentView extends Trix.AttachmentView
       element.classList.add(extension)
 
     caption = document.createElement("figcaption")
+    caption.setAttribute("contenteditable", "false")
     caption.textContent = @attachmentPiece.getFilename()
 
     if filesize = @attachmentPiece.getFilesize()
