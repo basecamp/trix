@@ -63,20 +63,10 @@ class Trix.SelectionManager
   # Private
 
   updateCurrentLocationRange: (domRange = getDOMRange()) ->
-    @expandSelectionAroundAttachments(domRange)
-    domRange = getDOMRange()
     locationRange = @createLocationRangeFromDOMRange(domRange)
     if (@currentLocationRange and not locationRange) or not locationRange?.isEqualTo(@currentLocationRange)
       @currentLocationRange = locationRange
       @delegate?.locationRangeDidChange?(@currentLocationRange)
-
-  expandSelectionAroundAttachments: (domRange) ->
-    for containerName in ["start", "end"]
-      attachment = Trix.DOM.closest(domRange["#{containerName}Container"], "figure")
-      if attachment?.textContent
-        range = document.createRange()
-        range.selectNode(attachment)
-        window.getSelection().addRange(range)
 
   setDOMRange: (locationRange) ->
     rangeStart = @findContainerAndOffsetForLocation(locationRange.start)
