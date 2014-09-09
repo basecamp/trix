@@ -33,8 +33,8 @@ class Trix.BlockView
   # Hold a reference to every node we create to prevent IE from losing
   # their expando properties like trixPosition. IE will otherwise occasionally
   # replace the nodes or remove the properties (uncertain which one).
-  cacheNode: (node) ->
-    @nodeCache.push(node)
+  cacheNode: (nodes...) ->
+    @nodeCache.push(node) for node in nodes
 
   createElementsForText: ->
     @text.eachRun (run) =>
@@ -63,8 +63,12 @@ class Trix.BlockView
 
     if @currentRun.attachment
       if attachmentElement = @createAttachmentElementForCurrentRun()
-        @cacheNode(attachmentElement)
+        left = @createCursorTargetForPositionWithDirection(position, "left")
+        right = @createCursorTargetForPositionWithDirection(position, "right")
+        @cacheNode(attachmentElement, left, right)
+        innerElement.appendChild(left)
         innerElement.appendChild(attachmentElement)
+        innerElement.appendChild(right)
     else if @currentRun.string
       for node in @createStringNodesForCurrentRun()
         @cacheNode(node)
@@ -74,6 +78,17 @@ class Trix.BlockView
       @elements[@elements.length - 1].appendChild(element)
     else
       @elements.push(element)
+
+  createCursorTargetForPositionWithDirection: (position, direction) ->
+    text = document.createTextNode("\u2060")
+    text.trixCursorTarget = direction
+    text.trixPosition = position
+    text.trixLength = 0
+    text.trixIndex = @blockIndex
+    span = document.createElement("span")
+    span.setAttribute("data-trix-pending", "true")
+    span.appendChild(text)
+    span
 
   getParentAttribute: ->
     if @previousRun

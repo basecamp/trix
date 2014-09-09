@@ -7,7 +7,6 @@ class Trix.FileAttachmentView extends Trix.AttachmentView
   render: ->
     element = super
     element.classList.add("file")
-    element.setAttribute("contenteditable", "false")
     if extension = @attachmentPiece.getExtension()
       element.classList.add(extension)
 

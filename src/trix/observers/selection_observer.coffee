@@ -17,11 +17,28 @@ class Trix.SelectionObserver
     if document.contains(@element)
       range = getRange()
       unless rangesAreEqual(range, @range)
-        @delegate?.selectionDidChange?(range)
+        @delegate?.selectionDidChange?(range, @getDirectionOfSelection())
         @range = range
       requestAnimationFrame(@tick)
     else
       @stop()
+
+  getDirectionOfSelection: ->
+    selection = window.getSelection()
+
+    if @focusNode? and @focusOffset?
+      directionIsForward =
+        if @focusNode is selection.focusNode
+          selection.focusOffset > @focusOffset
+        else
+          previousNode = findNodeForContainerAtOffset(@focusNode, @focusOffset)
+          currentNode = findNodeForContainerAtOffset(selection.focusNode, selection.focusOffset)
+          previousNode.compareDocumentPosition(currentNode) & Node.DOCUMENT_POSITION_FOLLOWING
+
+      direction = if directionIsForward then "forward" else "backward"
+
+    {@focusNode, @focusOffset} = selection
+    direction
 
   getRange = ->
     selection = window.getSelection()
@@ -32,3 +49,9 @@ class Trix.SelectionObserver
       left?.startOffset is right?.startOffset and
       left?.endContainer is right?.endContainer and
       left?.endOffset is right?.endOffset
+
+  findNodeForContainerAtOffset = (container, offset) ->
+    if container.nodeType is Node.TEXT_NODE
+      container
+    else
+      container.childNodes.item(offset)
