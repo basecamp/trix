@@ -233,8 +233,9 @@ class Trix.Document extends Trix.Object
       blockAttributes = []
 
       @eachBlockAtLocationRange locationRange, (block, textRange) ->
-        textAttributes.push(block.text.getCommonAttributesAtRange(textRange))
-        blockAttributes.push(block.getAttributes())
+        unless textRange[0] is textRange[1]
+          textAttributes.push(block.text.getCommonAttributesAtRange(textRange))
+          blockAttributes.push(block.getAttributes())
 
       Trix.Hash.fromCommonAttributesOfObjects(textAttributes)
         .merge(Trix.Hash.fromCommonAttributesOfObjects(blockAttributes))
