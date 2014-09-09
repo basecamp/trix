@@ -58,33 +58,17 @@ class Trix.SelectionManager
   # Selection observer delegate
 
   selectionDidChange: (domRange, direction) ->
-    @adjustDOMRangeForDirection(direction) if direction
+    @adjustSelectionInDirection(direction) if direction
     @updateCurrentLocationRange()
 
   # Private
 
-  adjustDOMRangeForDirection: (direction) ->
-    selection = window.getSelection()
-    return unless target = selection.focusNode.trixCursorTarget
-
-    if direction is "forward" and target is "left" and selection.focusOffset is 1
-      rightTarget = selection.focusNode.parentNode.nextSibling.nextSibling.firstChild
-      range = document.createRange()
-      if selection.isCollapsed
-        range.setStart(rightTarget, 1)
-      else
-        range.setStart(selection.anchorNode, selection.anchorOffset)
-        range.setEnd(rightTarget, 1)
-
-    else if direction is "backward" and target is "right" and selection.focusOffset is 0
-      leftTarget = selection.focusNode.parentNode.previousSibling.previousSibling.firstChild
-      range = document.createRange()
-      range.setStart(leftTarget, 0)
-      range.setEnd(selection.anchorNode, selection.anchorOffset) unless selection.isCollapsed
-
-    if range
-      selection.removeAllRanges()
-      selection.addRange(range)
+  adjustSelectionInDirection: (direction) ->
+    {focusNode, focusOffset} = selection = window.getSelection()
+    return unless target = focusNode.trixCursorTarget
+    if target is "left" and focusOffset is 1 or target is "right" and focusOffset is 0
+      alter = if selection.isCollapsed then "move" else "extend"
+      selection.modify(alter, direction, "character")
 
   updateCurrentLocationRange: (domRange = getDOMRange()) ->
     locationRange = @createLocationRangeFromDOMRange(domRange)
