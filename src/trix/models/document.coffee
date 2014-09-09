@@ -172,10 +172,17 @@ class Trix.Document extends Trix.Object
         start.index += 1
       start.offset = 0
 
-      endBlock = @getBlockAtIndex(end.index)
-      end.offset = endBlock.findLineBreakInDirectionFromPosition("forward", end.offset)
-      unless end.offset is endBlock.getBlockBreakPosition()
-        @insertBlockBreakAtLocationRange(Trix.LocationRange.forLocationWithLength(end, 1))
+      if end.offset is 0 and end.index > start.index
+        end.index -= 1
+        end.offset = @getBlockAtIndex(end.index).getBlockBreakPosition()
+      else
+        endBlock = @getBlockAtIndex(end.index)
+        if endBlock.text.getStringAtRange([end.offset - 1, end.offset]) is "\n"
+          end.offset -= 1
+        else
+          end.offset = endBlock.findLineBreakInDirectionFromPosition("forward", end.offset)
+        unless end.offset is endBlock.getBlockBreakPosition()
+          @insertBlockBreakAtLocationRange(Trix.LocationRange.forLocationWithLength(end, 1))
 
     new Trix.LocationRange start, end
 
