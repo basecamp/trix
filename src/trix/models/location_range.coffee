@@ -1,13 +1,13 @@
 class Trix.LocationRange
   @forLocationWithLength: (location, length) ->
-    if length > 0
+    locationWithLength = index: location.index, offset: location.offset + length
+
+    if length >= 0
       start = location
-      end = index: location.index, offset: location.offset + length
-    else if length < 0
-      start = index: location.index, offset: location.offset - length
-      end = location
+      end = locationWithLength
     else
-      start = end = location
+      start = locationWithLength
+      end = location
 
     new this start, end
 
