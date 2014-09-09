@@ -167,8 +167,9 @@ class Trix.Document extends Trix.Object
       startBlock = @getBlockAtIndex(start.index)
       if (start.offset = startBlock.findLineBreakInDirectionFromPosition("backward", start.offset))?
         @insertBlockBreakAtLocationRange(Trix.LocationRange.forLocationWithLength(start, 1))
-        start.index += 1
         end.index += 1
+        end.offset -= @getBlockAtIndex(start.index).getLength()
+        start.index += 1
       start.offset = 0
 
       endBlock = @getBlockAtIndex(end.index)
