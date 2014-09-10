@@ -25,6 +25,7 @@ Trix.DOM = dom =
       element = element.parentNode
 
   closestElementNode: (node) ->
+    return unless node
     node = node.parentNode until node.nodeType is Node.ELEMENT_NODE
     node
 
@@ -45,6 +46,9 @@ Trix.DOM = dom =
       container
     else
       container.childNodes.item(offset - 1)
+
+  findElementForContainerAtOffset: (container, offset) ->
+    dom.closestElementNode(dom.findNodeForContainerAtOffset(container, offset))
 
 html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector

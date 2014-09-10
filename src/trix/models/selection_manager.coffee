@@ -58,7 +58,11 @@ class Trix.SelectionManager
   # Selection observer delegate
 
   selectionDidChange: (domRange, direction) ->
-    if direction and @rangeWithinElement(domRange)
+    startElement = DOM.findElementForContainerAtOffset(domRange.startContainer, domRange.startOffset)
+    endElement = DOM.findElementForContainerAtOffset(domRange.endContainer, domRange.endOffset)
+    insideContentEditable = startElement.isContentEditable and endElement.isContentEditable
+
+    if insideContentEditable and direction and @rangeWithinElement(domRange)
       @adjustSelectionInDirection(direction)
     else
       @updateCurrentLocationRange(domRange)
