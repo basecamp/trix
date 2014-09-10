@@ -169,19 +169,25 @@ class Trix.SelectionManager
   findNodeForLocation: (location) ->
     walker = DOM.createTreeWalker(@element, null, trixNodeFilter)
     node = walker.currentNode
+    match = null
 
     while walker.nextNode()
-      currentNode = walker.currentNode
-
       if walker.currentNode.trixIndex is location.index
         startPosition = walker.currentNode.trixPosition
         endPosition = startPosition + walker.currentNode.trixLength
 
         if startPosition <= location.offset <= endPosition
-          node = walker.currentNode
+          match = walker.currentNode
+
+        if match?.trixCursorTarget
           break
 
-    node
+        if match and startPosition > location.offset
+          break
+
+      previousNode = walker.currentNode
+
+    match ? node
 
   trixNodeFilter = (node) ->
     if node.trixPosition? and node.trixLength?
