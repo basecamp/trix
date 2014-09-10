@@ -63,8 +63,8 @@ class Trix.BlockView
 
     if @currentRun.attachment
       if attachmentElement = @createAttachmentElementForCurrentRun()
-        left = @createCursorTargetForPositionWithDirection(position, "left")
-        right = @createCursorTargetForPositionWithDirection(position, "right")
+        left = @createCursorTargetForPosition(position)
+        right = @createCursorTargetForPosition(position + 1)
         @cacheNode(attachmentElement, left, right)
         innerElement.appendChild(left)
         innerElement.appendChild(attachmentElement)
@@ -79,15 +79,15 @@ class Trix.BlockView
     else
       @elements.push(element)
 
-  createCursorTargetForPositionWithDirection: (position, direction) ->
+  createCursorTargetForPosition: (position) ->
     text = document.createTextNode("\u2060")
-    text.trixCursorTarget = direction
+    text.trixCursorTarget = true
     text.trixPosition = position
     text.trixLength = 0
     text.trixIndex = @blockIndex
     span = document.createElement("span")
     span.setAttribute("data-trix-pending", "true")
-    span.trixCursorTarget = direction
+    span.trixCursorTarget = true
     span.appendChild(text)
     span
 

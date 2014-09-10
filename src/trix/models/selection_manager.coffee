@@ -36,7 +36,7 @@ class Trix.SelectionManager
       else
         textRange.moveStart(granularity, -1)
       textRange.select()
-    @updateCurrentLocationRange()
+    @adjustSelectionInDirection(direction)
 
   lock: ->
     if @lockCount++ is 0
@@ -58,26 +58,31 @@ class Trix.SelectionManager
   # Selection observer delegate
 
   selectionDidChange: (domRange, direction) ->
-    @adjustSelectionInDirection(direction) if direction
-    @updateCurrentLocationRange()
+    if direction
+      @adjustSelectionInDirection(direction)
+    else
+      @updateCurrentLocationRange()
 
   # Private
 
   adjustSelectionInDirection: (direction) ->
-    {focusNode, focusOffset} = selection = window.getSelection()
-    node = DOM.findNodeForContainerAtOffset(focusNode, focusOffset)
+    selection = window.getSelection()
+    node = DOM.findNodeForContainerAtOffset(selection.focusNode, selection.focusOffset)
     alter = if selection.isCollapsed then "move" else "extend"
 
     if not DOM.closestElementNode(node).isContentEditable
       # Cursor is inside a contenteditable=false element (FF)
       selection.modify(alter, direction, "character")
-    else if target = node.trixCursorTarget
+      node = DOM.findNodeForContainerAtOffset(selection.focusNode, selection.focusOffset)
+
+    if node.trixCursorTarget
       if node.nodeType is Node.ELEMENT_NODE
         # Cursor is outside of a target span (FF)
         selection.modify(alter, direction, "character")
-      else if target is "left" and focusOffset is 1 or target is "right" and focusOffset is 0
+      if selection.focusOffset isnt 0
         # Move cursor over zero-width space
         selection.modify(alter, direction, "character")
+    @updateCurrentLocationRange()
 
   updateCurrentLocationRange: (domRange = getDOMRange()) ->
     locationRange = @createLocationRangeFromDOMRange(domRange)
