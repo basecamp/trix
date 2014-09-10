@@ -48,7 +48,9 @@ module Trix
       end
 
       def response_for_key(key)
-        response = JSON.dump(identifier: key, url: "/attachments/#{key}")
+        mb = File.size(root.join(key)).to_f / (1024 * 1024)
+        filesize = "#{mb.round(2)} MB"
+        response = JSON.dump(identifier: key, url: "/attachments/#{key}", filesize: filesize)
         [200, {'Content-Type' => 'application/json'}, [response]]
       end
 

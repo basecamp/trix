@@ -62,15 +62,13 @@ uploadAttachment = (attachment) ->
       if xhr.status is 200
         progress = 0
         fakeProgress = =>
-          attachment.setUploadProgress(progress++)
+          attachment.setUploadProgress(progress)
           if progress is 100
             attributes = JSON.parse(xhr.responseText)
-            #unless attachment.isImage()
-            #  attributes.href = attributes.url
-            #  delete attributes.url
             attachment.setAttributes(attributes)
           else
-            setTimeout(fakeProgress, 20)
+            progress += 5
+            setTimeout(fakeProgress, 30)
         fakeProgress()
       else
         console.warn "Host failed to upload file:", file
