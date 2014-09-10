@@ -34,12 +34,7 @@ class Trix.MutationObserver
     false
 
   nodeIsSignificant: (node) ->
-    node isnt @element and @nodeIsEditable(node) and not @nodeIsIgnoringMutation(node)
-
-  nodeIsIgnoringMutation: (node) ->
-    if node?.ignoreNextMutation
-      delete node.ignoreNextMutation
-      true
+    node isnt @element and @nodeIsEditable(node)
 
   nodeIsEditable: (node) ->
     node?.nodeType is Node.ELEMENT_NODE and node.isContentEditable
