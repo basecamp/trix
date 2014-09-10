@@ -36,7 +36,7 @@ class Trix.SelectionManager
       else
         textRange.moveStart(granularity, -1)
       textRange.select()
-    @updateCurrentLocationRange()
+    @adjustSelectionInDirection(direction)
 
   lock: ->
     if @lockCount++ is 0
@@ -57,10 +57,27 @@ class Trix.SelectionManager
 
   # Selection observer delegate
 
-  selectionDidChange: (domRange) ->
-    @updateCurrentLocationRange(domRange)
+  selectionDidChange: (domRange, direction) ->
+    if direction and @rangeWithinElement(domRange)
+      @adjustSelectionInDirection(direction)
+    else
+      @updateCurrentLocationRange(domRange)
 
   # Private
+
+  adjustSelectionInDirection: (direction) ->
+    selection = window.getSelection()
+
+    selectionIsValid = ->
+      node = DOM.findNodeForContainerAtOffset(selection.focusNode, selection.focusOffset)
+      if node.trixCursorTarget
+        node.nodeType is Node.TEXT_NODE and selection.focusOffset is 0
+      else
+        DOM.closestElementNode(node).isContentEditable
+
+    alter = if selection.isCollapsed then "move" else "extend"
+    selection.modify(alter, direction, "character") until selectionIsValid()
+    @updateCurrentLocationRange()
 
   updateCurrentLocationRange: (domRange = getDOMRange()) ->
     locationRange = @createLocationRangeFromDOMRange(domRange)

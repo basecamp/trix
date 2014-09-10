@@ -1,3 +1,7 @@
+#= require trix/utilities/dom
+
+{DOM} = Trix
+
 class Trix.SelectionObserver
   events = ["DOMFocusIn", "DOMFocusOut", "mousedown", "keydown"]
 
@@ -17,11 +21,28 @@ class Trix.SelectionObserver
     if document.contains(@element)
       range = getRange()
       unless rangesAreEqual(range, @range)
-        @delegate?.selectionDidChange?(range)
+        @delegate?.selectionDidChange?(range, @getDirectionOfSelection())
         @range = range
       requestAnimationFrame(@tick)
     else
       @stop()
+
+  getDirectionOfSelection: ->
+    selection = window.getSelection()
+
+    if @focusNode? and @focusOffset?
+      directionIsForward =
+        if @focusNode is selection.focusNode
+          selection.focusOffset > @focusOffset
+        else
+          previousNode = DOM.findNodeForContainerAtOffset(@focusNode, @focusOffset)
+          currentNode = DOM.findNodeForContainerAtOffset(selection.focusNode, selection.focusOffset)
+          previousNode.compareDocumentPosition(currentNode) & Node.DOCUMENT_POSITION_FOLLOWING
+
+      direction = if directionIsForward then "forward" else "backward"
+
+    {@focusNode, @focusOffset} = selection
+    direction
 
   getRange = ->
     selection = window.getSelection()
