@@ -76,7 +76,11 @@ class Trix.SelectionManager
         DOM.closestElementNode(node).isContentEditable
 
     alter = if selection.isCollapsed then "move" else "extend"
-    selection.modify(alter, direction, "character") until selectionIsValid()
+    until selectionIsValid()
+      previousSelection = focusNode: selection.focusNode, focusOffset: selection.focusOffset
+      selection.modify(alter, direction, "character")
+      break if selection.focusNode is previousSelection.focusNode and selection.focusOffset is previousSelection.focusOffset
+
     @updateCurrentLocationRange()
 
   updateCurrentLocationRange: (domRange = getDOMRange()) ->
