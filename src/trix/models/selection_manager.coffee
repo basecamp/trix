@@ -77,14 +77,20 @@ class Trix.SelectionManager
   adjustSelectionInDirection: (direction) ->
     selection = window.getSelection()
 
-    selectionIsValid = ->
-      node = DOM.findNodeForContainerAtOffset(selection.focusNode, selection.focusOffset)
+    containerAndOffsetAreValid = (container, offset) ->
+      node = DOM.findNodeForContainerAtOffset(container, offset)
       if node.trixCursorTarget
-        node.nodeType is Node.TEXT_NODE and selection.focusOffset is 0
+        node.nodeType is Node.TEXT_NODE and offset is 0
       else
         DOM.closestElementNode(node).isContentEditable
 
+    selectionIsValid = ->
+      range = selection.getRangeAt(0)
+      containerAndOffsetAreValid(range.startContainer, range.startOffset) and
+        containerAndOffsetAreValid(range.endContainer, range.endOffset)
+
     alter = if selection.isCollapsed then "move" else "extend"
+
     until selectionIsValid()
       previousSelection = focusNode: selection.focusNode, focusOffset: selection.focusOffset
       selection.modify(alter, direction, "character")
