@@ -1,3 +1,7 @@
+#= require trix/utilities/dom
+
+{DOM} = Trix
+
 class Trix.SelectionObserver
   events = ["DOMFocusIn", "DOMFocusOut", "mousedown", "keydown"]
 
@@ -31,8 +35,8 @@ class Trix.SelectionObserver
         if @focusNode is selection.focusNode
           selection.focusOffset > @focusOffset
         else
-          previousNode = findNodeForContainerAtOffset(@focusNode, @focusOffset)
-          currentNode = findNodeForContainerAtOffset(selection.focusNode, selection.focusOffset)
+          previousNode = DOM.findNodeForContainerAtOffset(@focusNode, @focusOffset)
+          currentNode = DOM.findNodeForContainerAtOffset(selection.focusNode, selection.focusOffset)
           previousNode.compareDocumentPosition(currentNode) & Node.DOCUMENT_POSITION_FOLLOWING
 
       direction = if directionIsForward then "forward" else "backward"
@@ -49,9 +53,3 @@ class Trix.SelectionObserver
       left?.startOffset is right?.startOffset and
       left?.endContainer is right?.endContainer and
       left?.endOffset is right?.endOffset
-
-  findNodeForContainerAtOffset = (container, offset) ->
-    if container.nodeType is Node.TEXT_NODE
-      container
-    else
-      container.childNodes.item(offset)
