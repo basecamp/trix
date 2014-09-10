@@ -88,6 +88,8 @@ class Trix.BlockView
     span = document.createElement("span")
     span.setAttribute("data-trix-pending", "true")
     span.trixCursorTarget = true
+    span.trixPosition = position
+    span.trixIndex = @blockIndex
     span.appendChild(text)
     span
 
