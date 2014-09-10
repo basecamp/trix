@@ -24,6 +24,10 @@ Trix.DOM = dom =
       return element if dom.match(element, selector)
       element = element.parentNode
 
+  closestElementNode: (node) ->
+    node = node.parentNode until node.nodeType is Node.ELEMENT_NODE
+    node
+
   getDimensions: (element) ->
     width:  element.offsetWidth
     height: element.offsetHeight

@@ -65,10 +65,19 @@ class Trix.SelectionManager
 
   adjustSelectionInDirection: (direction) ->
     {focusNode, focusOffset} = selection = window.getSelection()
-    return unless target = focusNode.trixCursorTarget
-    if target is "left" and focusOffset is 1 or target is "right" and focusOffset is 0
-      alter = if selection.isCollapsed then "move" else "extend"
+    node = DOM.findNodeForContainerAtOffset(focusNode, focusOffset)
+    alter = if selection.isCollapsed then "move" else "extend"
+
+    if not DOM.closestElementNode(node).isContentEditable
+      # Cursor is inside a contenteditable=false element (FF)
       selection.modify(alter, direction, "character")
+    else if target = node.trixCursorTarget
+      if node.nodeType is Node.ELEMENT_NODE
+        # Cursor is outside of a target span (FF)
+        selection.modify(alter, direction, "character")
+      else if target is "left" and focusOffset is 1 or target is "right" and focusOffset is 0
+        # Move cursor over zero-width space
+        selection.modify(alter, direction, "character")
 
   updateCurrentLocationRange: (domRange = getDOMRange()) ->
     locationRange = @createLocationRangeFromDOMRange(domRange)
