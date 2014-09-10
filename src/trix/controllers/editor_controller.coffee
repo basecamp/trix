@@ -66,7 +66,11 @@ class Trix.EditorController extends Trix.AbstractEditorController
   documentControllerDidFocus: ->
     @toolbarController.hideDialog() if @dialogWantsFocus
 
-  documentControllerWillEditAttachment: ->
+  documentControllerDidActivateAttachment: (attachment) ->
+    locationRange = @document.getLocationRangeOfAttachment(attachment)
+    @selectionManager.setLocationRange(locationRange)
+
+  documentControllerWillUpdateAttachment: ->
     @undoManager.recordUndoEntry("Edit Attachment", consolidatable: true)
 
   # Input controller delegate

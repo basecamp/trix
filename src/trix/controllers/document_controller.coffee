@@ -37,6 +37,7 @@ class Trix.DocumentController
     if attachment.isImage()
       @attachmentEditor = new Trix.ImageEditorController attachment, element, @element
       @attachmentEditor.delegate = this
+      @delegate?.documentControllerDidActivateAttachment?(attachment)
 
   uninstallAttachmentEditor: ->
     @attachmentEditor?.uninstall()
@@ -47,4 +48,4 @@ class Trix.DocumentController
     delete @attachmentEditor
 
   attachmentEditorWillEditAttachment: (attachment) ->
-    @delegate?.documentControllerWillEditAttachment?(attachment)
+    @delegate?.documentControllerWillUpdateAttachment?(attachment)

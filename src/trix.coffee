@@ -81,6 +81,14 @@
         right: -4px;
         cursor: nwse-resize;
       }
+
+      .trix-editor figure.attachment::selection, figure.attachment *::selection {
+        background-color: rgba(0, 0, 0, 0);
+      }
+
+      .trix-editor figure.attachment::-moz-selection, figure.attachment *::-moz-selection {
+        background-color: rgba(0, 0, 0, 0);
+      }
     """
 
   debug:
