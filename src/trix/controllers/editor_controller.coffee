@@ -38,7 +38,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     # Focus last to ensure all focus event handlers are triggered
     @documentController.focus() if @config.autofocus
 
-  # Composition controller delegate
+  # Composition delegate
 
   compositionDidChangeDocument: (composition, document) ->
     @documentController.render()
@@ -50,6 +50,15 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   compositionWillSetLocationRange: ->
     @skipSelectionLock = true
+
+  compositionDidStartEditingAttachment: (composition, attachment) ->
+    @attachmentLocationRange = @document.getLocationRangeOfAttachment(attachment)
+    @documentController.installAttachmentEditorForAttachment(attachment)
+    @selectionManager.setLocationRange(@attachmentLocationRange)
+
+  compositionDidStopEditingAttachment: (composition, attachment) ->
+    @documentController.uninstallAttachmentEditor()
+    delete @attachmentLocationRange
 
   # Document controller delegate
 
@@ -66,9 +75,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
   documentControllerDidFocus: ->
     @toolbarController.hideDialog() if @dialogWantsFocus
 
-  documentControllerDidActivateAttachment: (attachment) ->
+  documentControllerDidSelectAttachment: (attachment) ->
     locationRange = @document.getLocationRangeOfAttachment(attachment)
-    @selectionManager.setLocationRange(locationRange)
+    @composition.editAttachment(attachment)
 
   documentControllerWillUpdateAttachment: ->
     @undoManager.recordUndoEntry("Edit Attachment", consolidatable: true)
@@ -107,6 +116,8 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   locationRangeDidChange: (locationRange) ->
     @composition.updateCurrentAttributes()
+    if @attachmentLocationRange and not @attachmentLocationRange.isEqualTo(locationRange)
+      @composition.stopEditingAttachment()
     @delegate?.didChangeSelection?()
 
   # Mutation observer delegate

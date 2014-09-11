@@ -11,18 +11,19 @@ class Trix.ImageEditorController
     @handle.classList.add("se")
     @handle.addEventListener("mousedown", @startResize)
 
-    @element.parentElement.insertBefore(@editor, @element)
-    @editor.appendChild(@element)
+    @image = @element.querySelector("img")
+    @element.insertBefore(@editor, @image)
+    @editor.appendChild(@image)
     @editor.appendChild(@handle)
 
-    {width, height} = Trix.DOM.getDimensions(@element)
+    {width, height} = Trix.DOM.getDimensions(@image)
 
     @setStyle(@editor, width: "#{width}px", height: "#{height}px")
-    @setStyle(@element, width: "100%", height: "auto")
+    @setStyle(@image, width: "100%", height: "auto")
 
   uninstall: ->
-    @setStyle(@element, width: null, height: null)
-    @editor.parentElement.replaceChild(@element, @editor)
+    @setStyle(@image, width: null, height: null)
+    @element.replaceChild(@image, @editor)
     @delegate?.didUninstallAttachmentEditor(this)
 
   setStyle: (element, attributes) ->
@@ -45,14 +46,13 @@ class Trix.ImageEditorController
     @setStyle(@editor, {width, height})
 
   endResize: (event) =>
-    attributes = width: @element.offsetWidth, height: @element.offsetHeight
+    attributes = width: @image.offsetWidth, height: @image.offsetHeight
 
     @container.style["cursor"] = "auto"
     @container.removeEventListener("mousemove", @resize)
     document.removeEventListener("mouseup", @endResize)
 
     delete @resizing
-    @uninstall()
 
-    @delegate?.attachmentEditorWillEditAttachment(@attachment)
+    @delegate?.attachmentEditorWillUpdateAttachment(@attachment)
     @attachment.setAttributes(attributes)

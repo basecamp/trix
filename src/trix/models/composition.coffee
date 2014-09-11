@@ -231,6 +231,19 @@ class Trix.Composition
 
       @setLocationRange([index, left], [index, right])
 
+  # Attachment editing
+
+  editAttachment: (attachment) ->
+    return if attachment is @editingAttachment
+    @stopEditingAttachment()
+    @editingAttachment = attachment
+    @delegate?.compositionDidStartEditingAttachment(this, @editingAttachment)
+
+  stopEditingAttachment: ->
+    return unless @editingAttachment
+    @delegate?.compositionDidStopEditingAttachment(this, @editingAttachment)
+    delete @editingAttachment
+
   # Private
 
   getDocument: ->

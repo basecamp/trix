@@ -14,10 +14,9 @@ class Trix.DocumentController
     @delegate?.documentControllerDidFocus?()
 
   didClick: (event) =>
-    if event.target.trixAttachmentId
-      @installAttachmentEditorForElement(event.target)
-    else
-      @uninstallAttachmentEditor()
+    if id = event.target.trixAttachmentId
+      attachment = @document.getAttachmentById(id)
+      @delegate?.documentControllerDidSelectAttachment?(attachment)
 
   render: ->
     @delegate?.documentControllerWillRender?()
@@ -29,15 +28,14 @@ class Trix.DocumentController
 
   # Attachment editor management
 
-  installAttachmentEditorForElement: (element) ->
-    attachment = @document.attachments.get(element.trixAttachmentId)
+  installAttachmentEditorForAttachment: (attachment) ->
     return if @attachmentEditor?.attachment is attachment
+    return unless element = @findElementForAttachment(attachment)
     @uninstallAttachmentEditor()
 
     if attachment.isImage()
       @attachmentEditor = new Trix.ImageEditorController attachment, element, @element
       @attachmentEditor.delegate = this
-      @delegate?.documentControllerDidActivateAttachment?(attachment)
 
   uninstallAttachmentEditor: ->
     @attachmentEditor?.uninstall()
@@ -47,5 +45,11 @@ class Trix.DocumentController
   didUninstallAttachmentEditor: ->
     delete @attachmentEditor
 
-  attachmentEditorWillEditAttachment: (attachment) ->
+  attachmentEditorWillUpdateAttachment: (attachment) ->
     @delegate?.documentControllerWillUpdateAttachment?(attachment)
+
+  # Private
+
+  findElementForAttachment: (attachment) ->
+    for figure in @element.querySelectorAll("figure")
+      return figure if figure.trixAttachmentId is attachment.id

@@ -256,6 +256,9 @@ class Trix.Document extends Trix.Object
 
     commonAttributes
 
+  getAttachmentById: (attachmentId) ->
+    @attachments.get(attachmentId)
+
   getAttachmentPieces: ->
     attachmentPieces = []
     @blockList.eachObject ({text}) ->
