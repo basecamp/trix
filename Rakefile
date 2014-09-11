@@ -10,7 +10,7 @@ namespace :trix do
   environment = Trix::Environment.new(".")
   environment.paths = %w( assets src )
   environment.assets = %w( demo.html demo.js trix.js basecamp.png )
-  environment.js_compressor = Uglifier.new
+  environment.sprockets_environment.js_compressor = Uglifier.new
 
   desc "Clean Trix distribution"
   task :clean do
