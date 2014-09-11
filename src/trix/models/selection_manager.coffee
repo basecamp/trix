@@ -63,11 +63,7 @@ class Trix.SelectionManager
   # Selection observer delegate
 
   selectionDidChange: (domRange, direction) ->
-    startElement = DOM.findElementForContainerAtOffset(domRange.startContainer, domRange.startOffset)
-    endElement = DOM.findElementForContainerAtOffset(domRange.endContainer, domRange.endOffset)
-    insideContentEditable = startElement.isContentEditable and endElement.isContentEditable
-
-    if insideContentEditable and direction and @rangeWithinElement(domRange)
+    if direction
       @adjustSelectionInDirection(direction)
     else
       @updateCurrentLocationRange(domRange)
@@ -77,25 +73,20 @@ class Trix.SelectionManager
   adjustSelectionInDirection: (direction) ->
     selection = window.getSelection()
 
-    containerAndOffsetAreValid = (container, offset) ->
-      node = DOM.findNodeForContainerAtOffset(container, offset)
-      if node.trixCursorTarget
-        node.nodeType is Node.TEXT_NODE and offset is 0
-      else
-        DOM.closestElementNode(node).isContentEditable
+    selectionNeedsAdjustment = =>
+      focusOffset = selection.focusOffset
+      focusElement = DOM.findElementForContainerAtOffset(selection.focusNode, focusOffset)
 
-    selectionIsValid = ->
-      range = selection.getRangeAt(0)
-      containerAndOffsetAreValid(range.startContainer, range.startOffset) and
-        containerAndOffsetAreValid(range.endContainer, range.endOffset)
+      result = if focusElement.trixCursorTarget and @previousFocus?
+        focusElement is @previousFocus.element and focusOffset isnt @previousFocus.offset
+      else
+        not focusElement.isContentEditable and @element.contains(focusElement)
+
+      @previousFocus = element: focusElement, offset: focusOffset
+      result
 
     alter = if selection.isCollapsed then "move" else "extend"
-
-    until selectionIsValid()
-      previousSelection = focusNode: selection.focusNode, focusOffset: selection.focusOffset
-      selection.modify(alter, direction, "character")
-      break if selection.focusNode is previousSelection.focusNode and selection.focusOffset is previousSelection.focusOffset
-
+    selection.modify(alter, direction, "character") while selectionNeedsAdjustment()
     @updateCurrentLocationRange()
 
   updateCurrentLocationRange: (domRange = getDOMRange()) ->
@@ -140,7 +131,10 @@ class Trix.SelectionManager
   findLocationFromContainerAtOffset: (container, offset) ->
     if container.nodeType is Node.TEXT_NODE
       index = container.trixIndex
-      offset = container.trixPosition + offset
+      offset = if container.trixCursorTarget
+        container.trixPosition
+      else
+        container.trixPosition + offset
     else
       if offset is 0
         index = container.trixIndex
