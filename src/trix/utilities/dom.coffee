@@ -42,8 +42,10 @@ Trix.DOM = dom =
     document.createTreeWalker(root, whatToShow, filter, entityReferenceExpansion)
 
   findNodeForContainerAtOffset: (container, offset) ->
-    if container.nodeType is Node.TEXT_NODE or offset is 0
+    if container.nodeType is Node.TEXT_NODE
       container
+    else if offset is 0
+      container.firstChild
     else
       container.childNodes.item(offset - 1)
 
