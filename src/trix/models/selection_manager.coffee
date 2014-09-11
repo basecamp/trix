@@ -63,31 +63,28 @@ class Trix.SelectionManager
   # Selection observer delegate
 
   selectionDidChange: (domRange, direction) ->
-    if direction
-      @adjustSelectionInDirection(direction)
-    else
-      @updateCurrentLocationRange(domRange)
+    @adjustSelectionInDirection(direction) if direction
+    @updateCurrentLocationRange()
 
   # Private
 
   adjustSelectionInDirection: (direction) ->
     selection = window.getSelection()
+    focusElement = DOM.findElementForContainerAtOffset(selection.focusNode, selection.focusOffset)
+    return unless focusElement.isContentEditable
 
     selectionNeedsAdjustment = =>
-      focusOffset = selection.focusOffset
-      focusElement = DOM.findElementForContainerAtOffset(selection.focusNode, focusOffset)
-
       result = if focusElement.trixCursorTarget and @previousFocus?
-        focusElement is @previousFocus.element and focusOffset isnt @previousFocus.offset
+        focusElement is @previousFocus.element and selection.focusOffset isnt @previousFocus.offset
       else
         not focusElement.isContentEditable and @element.contains(focusElement)
 
-      @previousFocus = element: focusElement, offset: focusOffset
+      @previousFocus = element: focusElement, offset: selection.focusOffset
+      focusElement = DOM.findElementForContainerAtOffset(selection.focusNode, selection.focusOffset)
       result
 
     alter = if selection.isCollapsed then "move" else "extend"
     selection.modify(alter, direction, "character") while selectionNeedsAdjustment()
-    @updateCurrentLocationRange()
 
   updateCurrentLocationRange: (domRange = getDOMRange()) ->
     locationRange = @createLocationRangeFromDOMRange(domRange)
