@@ -42,7 +42,7 @@ class Trix.ImageEditorController
 
   resize: (event) =>
     width = @resizing.startWidth + event.clientX - @resizing.startClientX + "px"
-    height = @element.offsetHeight + "px"
+    height = @image.offsetHeight + "px"
     @setStyle(@editor, {width, height})
 
   endResize: (event) =>
