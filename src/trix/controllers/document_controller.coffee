@@ -21,6 +21,7 @@ class Trix.DocumentController
   render: ->
     @delegate?.documentControllerWillRender?()
     @documentView.render()
+    @reinstallAttachmentEditor()
     @delegate?.documentControllerDidRender?()
 
   focus: ->
@@ -39,6 +40,12 @@ class Trix.DocumentController
 
   uninstallAttachmentEditor: ->
     @attachmentEditor?.uninstall()
+
+  reinstallAttachmentEditor: ->
+    if @attachmentEditor
+      attachment = @attachmentEditor.attachment
+      @uninstallAttachmentEditor()
+      @installAttachmentEditorForAttachment(attachment)
 
   # Attachment controller delegate
 
