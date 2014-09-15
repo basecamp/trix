@@ -174,7 +174,10 @@ class Trix.SelectionManager
         endPosition = startPosition + walker.currentNode.trixLength
 
         if startPosition <= location.offset <= endPosition
-          match = walker.currentNode
+          if walker.currentNode.nodeType is Node.TEXT_NODE
+            match = walker.currentNode
+          else
+            match ?= walker.currentNode
 
         if match?.trixCursorTarget
           break
