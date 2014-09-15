@@ -41,7 +41,7 @@ class Trix.SelectionManager
       else
         textRange.moveStart(granularity, -1)
       textRange.select()
-    @adjustSelectionInDirection(direction)
+    @selectionDidChange(null, direction)
 
   lock: ->
     if @lockCount++ is 0
