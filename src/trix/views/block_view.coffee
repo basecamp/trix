@@ -43,7 +43,7 @@ class Trix.BlockView
       @createElementForCurrentRun()
 
   createElementForCurrentRun: ->
-    {attributes, position} = @currentRun
+    {attributes, position, piece} = @currentRun
     return if attributes.blockBreak
 
     parentAttribute = @getParentAttribute()
@@ -62,13 +62,23 @@ class Trix.BlockView
       innerElement.trixIndex = @blockIndex
 
     if @currentRun.attachment
-      if attachmentElement = @createAttachmentElementForCurrentRun()
-        left = @createCursorTargetForPosition(position)
-        right = @createCursorTargetForPosition(position + 1)
-        @cacheNode(attachmentElement, left, right)
-        innerElement.appendChild(left)
+      attachmentElement = @createAttachmentElementForCurrentRun()
+      @cacheNode(attachmentElement)
+
+      if element.nodeType is Node.DOCUMENT_FRAGMENT_NODE
+        element = attachmentElement
+      else
         innerElement.appendChild(attachmentElement)
-        innerElement.appendChild(right)
+
+      element.setAttribute("contenteditable", "false")
+      element.setAttribute("data-trix-pending", "true") if piece.isPending()
+
+      container = document.createDocumentFragment()
+      container.appendChild(@createCursorTargetForPosition(position))
+      container.appendChild(element)
+      container.appendChild(@createCursorTargetForPosition(position + 1))
+      element = container
+
     else if @currentRun.string
       for node in @createStringNodesForCurrentRun()
         @cacheNode(node)
@@ -91,6 +101,7 @@ class Trix.BlockView
     span.trixPosition = position
     span.trixIndex = @blockIndex
     span.appendChild(text)
+    @cacheNode(span)
     span
 
   getParentAttribute: ->
