@@ -1,22 +1,25 @@
 #= require trix/controllers/image_editor_controller
 #= require trix/views/document_view
+#= require trix/utilities/dom
+
+{DOM} = Trix
 
 class Trix.DocumentController
   constructor: (@element, @document) ->
     @documentView = new Trix.DocumentView @element, @document
 
-    @element.addEventListener("focus", @didFocus)
-    @element.addEventListener("click", @didClick)
+    DOM.on(@element, "focus", @didFocus)
+    DOM.on(@element, "click", "a[contenteditable=false]", (e) -> e.preventDefault())
+    DOM.on(@element, "click", "figure.attachment", @didClickAttachment)
 
     @render()
 
   didFocus: =>
     @delegate?.documentControllerDidFocus?()
 
-  didClick: (event) =>
-    if id = event.target.trixAttachmentId
-      attachment = @document.getAttachmentById(id)
-      @delegate?.documentControllerDidSelectAttachment?(attachment)
+  didClickAttachment: (event, target) =>
+    attachment = @document.getAttachmentById(target.trixAttachmentId)
+    @delegate?.documentControllerDidSelectAttachment?(attachment)
 
   render: ->
     @delegate?.documentControllerWillRender?()

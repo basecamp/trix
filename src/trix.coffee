@@ -58,6 +58,10 @@
         color: graytext;
       }
 
+      .trix-editor a[contenteditable=false] {
+        cursor: text;
+      }
+
       .trix-editor .image-editor,
       .trix-editor .pending-attachment {
         position: relative;
