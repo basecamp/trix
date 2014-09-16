@@ -1,7 +1,9 @@
+#= require trix/controllers/attachment_editor_controller
 #= require trix/utilities/dom
 
-class Trix.ImageEditorController
-  constructor: (@attachment, @element, @container) ->
+class Trix.ImageAttachmentEditorController extends Trix.AttachmentEditorController
+  constructor: ->
+    super
     @editor = document.createElement("div")
     @editor.setAttribute("contenteditable", false)
     @editor.classList.add("image-editor")
@@ -24,7 +26,7 @@ class Trix.ImageEditorController
   uninstall: ->
     @setStyle(@image, width: null, height: null)
     @element.replaceChild(@image, @editor)
-    @delegate?.didUninstallAttachmentEditor(this)
+    super
 
   setStyle: (element, attributes) ->
     element.style[key] = value for key, value of attributes

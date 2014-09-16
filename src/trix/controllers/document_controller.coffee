@@ -1,4 +1,5 @@
-#= require trix/controllers/image_editor_controller
+#= require trix/controllers/attachment_editor_controller
+#= require trix/controllers/image_attachment_editor_controller
 #= require trix/views/document_view
 #= require trix/utilities/dom
 
@@ -37,9 +38,13 @@ class Trix.DocumentController
     return unless element = @findElementForAttachment(attachment)
     @uninstallAttachmentEditor()
 
-    if attachment.isImage()
-      @attachmentEditor = new Trix.ImageEditorController attachment, element, @element
-      @attachmentEditor.delegate = this
+    controller = if attachment.isImage()
+      Trix.ImageAttachmentEditorController
+    else
+      Trix.AttachmentEditorController
+
+    @attachmentEditor = new controller attachment, element, @element
+    @attachmentEditor.delegate = this
 
   uninstallAttachmentEditor: ->
     @attachmentEditor?.uninstall()
