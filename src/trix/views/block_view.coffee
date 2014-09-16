@@ -71,7 +71,7 @@ class Trix.BlockView
         innerElement.appendChild(attachmentElement)
 
       element.setAttribute("contenteditable", "false")
-      element.setAttribute("data-trix-pending", "true") if piece.isPending()
+      element.setAttribute("data-trix-serialize", "false") if piece.isPending()
 
       container = document.createDocumentFragment()
       container.appendChild(@createCursorTargetForPosition(position))
@@ -96,7 +96,7 @@ class Trix.BlockView
     text.trixLength = 0
     text.trixIndex = @blockIndex
     span = document.createElement("span")
-    span.setAttribute("data-trix-pending", "true")
+    span.setAttribute("data-trix-serialize", "false")
     span.trixCursorTarget = true
     span.trixPosition = position
     span.trixIndex = @blockIndex

@@ -21,8 +21,17 @@ class Trix.AbstractEditorController
     Trix.DOM.trigger(@textareaElement, "input")
     @inputElement?.value = @document.toSerializableDocument().toJSONString()
 
+  unserializableElementSelector = "[data-trix-serialize=false]"
+  unserializableAttributeNames = ["contenteditable"]
+
   serializedHTML: ->
     element = @documentElement.cloneNode(true)
-    for pendingElement in element.querySelectorAll("[data-trix-pending]")
-      pendingElement.parentNode.removeChild(pendingElement)
+
+    for el in element.querySelectorAll(unserializableElementSelector)
+      el.parentNode.removeChild(el)
+
+    for attribute in unserializableAttributeNames
+      for el in element.querySelectorAll("[#{attribute}]")
+        el.removeAttribute(attribute)
+
     element.innerHTML
