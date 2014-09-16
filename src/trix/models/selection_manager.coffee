@@ -71,7 +71,7 @@ class Trix.SelectionManager
   adjustSelectionInDirection: (direction) ->
     selection = window.getSelection()
     focusElement = DOM.findElementForContainerAtOffset(selection.focusNode, selection.focusOffset)
-    return unless focusElement.isContentEditable
+    return unless focusElement?.isContentEditable
 
     selectionNeedsAdjustment = =>
       result = if focusElement.trixCursorTarget and @previousFocus?
