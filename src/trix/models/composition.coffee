@@ -126,6 +126,13 @@ class Trix.Composition
     else
       @removeCurrentAttribute(attributeName)
 
+  canSetCurrentAttribute: (attributeName) ->
+    switch attributeName
+      when "href"
+        not @selectionContainsAttachmentWithAttribute(attributeName)
+      else
+        true
+
   setCurrentAttribute: (attributeName, value) ->
     if Trix.attributes[attributeName]?.block
       @removeCurrentAttribute(key) for key of @currentAttributes when Trix.attributes[key]?.block
@@ -230,6 +237,12 @@ class Trix.Composition
       [left, right] = text.getExpandedRangeForAttributeAtRange(attributeName, textRange)
 
       @setLocationRange([index, left], [index, right])
+
+  selectionContainsAttachmentWithAttribute: (attributeName) ->
+    if range = @getLocationRange()
+      for piece in @document.getDocumentAtLocationRange(range).getAttachmentPieces()
+        return true if piece.hasAttribute(attributeName)
+      false
 
   # Attachment editing
 

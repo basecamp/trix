@@ -47,6 +47,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   compositionDidChangeCurrentAttributes: (composition, currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
+    @toolbarController.updateActions()
 
   compositionWillSetLocationRange: ->
     @skipSelectionLock = true
@@ -134,6 +135,8 @@ class Trix.EditorController extends Trix.AbstractEditorController
     redo:
       test: -> @undoManager.canRedo()
       perform: -> @undoManager.redo()
+    link:
+      test: -> @composition.canSetCurrentAttribute("href")
 
   toolbarCanInvokeAction: (actionName) ->
     @toolbarActions[actionName]?.test.call(this)

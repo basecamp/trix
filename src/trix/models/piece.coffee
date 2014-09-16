@@ -49,6 +49,9 @@ class Trix.Piece extends Trix.Object
 
     attributes.toObject()
 
+  hasAttribute: (attribute) ->
+    @attributes.has(attribute)
+
   hasSameStringValueAsPiece: (piece) ->
     piece? and @toString() is piece.toString()
 
