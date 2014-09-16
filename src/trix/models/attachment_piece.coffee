@@ -10,6 +10,8 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   constructor: ->
     super
     @attachment = @value
+    if not @isImage() and @attributes.has("url")
+      @attributes = @attributes.add("href", @attributes.get("url"))
 
   isPending: ->
     @attachment.file? and not @getURL()?
