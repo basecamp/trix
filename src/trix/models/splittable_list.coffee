@@ -65,8 +65,8 @@ class Trix.SplittableList extends Trix.Object
     new @constructor transformedObjects
 
   splitObjectsAtRange: (range) ->
-    [objects, leftInnerIndex] = @splitObjectAtPosition(startOfRange(range))
-    [objects, rightOuterIndex] = new @constructor(objects).splitObjectAtPosition(endOfRange(range))
+    [objects, leftInnerIndex, offset] = @splitObjectAtPosition(startOfRange(range))
+    [objects, rightOuterIndex] = new @constructor(objects).splitObjectAtPosition(endOfRange(range) + offset)
     [objects, leftInnerIndex, rightOuterIndex - 1]
 
   getObjectAtPosition: (position) ->
@@ -76,18 +76,21 @@ class Trix.SplittableList extends Trix.Object
   splitObjectAtPosition: (position) ->
     {index, offset} = @findIndexAndOffsetAtPosition(position)
     objects = @objects.slice(0)
-    result = if index?
+    if index?
       if offset is 0
-        index
+        splitIndex = index
+        splitOffset = 0
       else
         object = @getObjectAtIndex(index)
         [leftObject, rightObject] = object.splitAtOffset(offset)
         objects.splice(index, 1, leftObject, rightObject)
-        index + 1
+        splitIndex = index + 1
+        splitOffset = leftObject.getLength() - offset
     else
-      objects.length
+      splitIndex = objects.length
+      splitOffset = 0
 
-    [objects, result]
+    [objects, splitIndex, splitOffset]
 
   consolidate: ->
     objects = []
