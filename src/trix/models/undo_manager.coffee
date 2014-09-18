@@ -3,23 +3,23 @@ class Trix.UndoManager
     @undoEntries = []
     @redoEntries = []
 
-  recordUndoEntry: (description, {consolidatable} = {}) ->
+  recordUndoEntry: (description, {context, consolidatable} = {}) ->
     previousEntry = @undoEntries[-1..][0]
 
-    unless consolidatable and previousEntry?.description is description
-      undoEntry = @createEntryWithDescription(description)
+    unless consolidatable and entryHasDescriptionAndContext(previousEntry, description, context)
+      undoEntry = @createEntry({description, context})
       @undoEntries.push(undoEntry)
       @redoEntries = []
 
   undo: ->
     if undoEntry = @undoEntries.pop()
-      redoEntry = @createEntryWithDescription(undoEntry.description)
+      redoEntry = @createEntry(undoEntry)
       @redoEntries.push(redoEntry)
       @composition.restoreSnapshot(undoEntry.snapshot)
 
   redo: ->
     if redoEntry = @redoEntries.pop()
-      undoEntry = @createEntryWithDescription(redoEntry.description)
+      undoEntry = @createEntry(redoEntry)
       @undoEntries.push(undoEntry)
       @composition.restoreSnapshot(redoEntry.snapshot)
 
@@ -31,6 +31,10 @@ class Trix.UndoManager
 
   # Private
 
-  createEntryWithDescription: (description) ->
-    description: description
+  createEntry: ({description, context} = {}) ->
+    description: description?.toString()
+    context: context?.toString()
     snapshot: @composition.createSnapshot()
+
+  entryHasDescriptionAndContext = (entry, description, context) ->
+    entry?.description is description?.toString() and entry?.context is context?.toString()

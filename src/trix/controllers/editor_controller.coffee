@@ -80,13 +80,13 @@ class Trix.EditorController extends Trix.AbstractEditorController
     locationRange = @document.getLocationRangeOfAttachment(attachment)
     @composition.editAttachment(attachment)
 
-  documentControllerWillUpdateAttachment: ->
-    @undoManager.recordUndoEntry("Edit Attachment", consolidatable: true)
+  documentControllerWillUpdateAttachment: (attachment) ->
+    @undoManager.recordUndoEntry("Edit Attachment", context: attachment.id, consolidatable: true)
 
   # Input controller delegate
 
   inputControllerWillPerformTyping: ->
-    @undoManager.recordUndoEntry("Typing", consolidatable: true)
+    @undoManager.recordUndoEntry("Typing", context: @getLocationContext(), consolidatable: true)
 
   inputControllerWillCutText: ->
     @undoManager.recordUndoEntry("Cut")
@@ -110,7 +110,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @mutationObserver.start()
 
   inputControllerDidComposeCharacters: (composedString) ->
-    @undoManager.recordUndoEntry("Typing", consolidatable: true)
+    @undoManager.recordUndoEntry("Typing", context: @getLocationContext(), consolidatable: true)
     @composition.insertString(composedString)
 
   # Selection manager delegate
@@ -145,12 +145,12 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @toolbarActions[actionName]?.perform.call(this)
 
   toolbarDidToggleAttribute: (attributeName) ->
-    @undoManager.recordUndoEntry("Formatting", consolidatable: true)
+    @undoManager.recordUndoEntry("Formatting", context: @getLocationContext(), consolidatable: true)
     @composition.toggleCurrentAttribute(attributeName)
     @documentController.focus()
 
   toolbarDidUpdateAttribute: (attributeName, value) ->
-    @undoManager.recordUndoEntry("Formatting", consolidatable: true)
+    @undoManager.recordUndoEntry("Formatting", context: @getLocationContext(), consolidatable: true)
     @composition.setCurrentAttribute(attributeName, value)
     @documentController.focus()
 
@@ -177,3 +177,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
       @composition.thawSelection()
       @selectionManager.unlock()
       delete @selectionFrozen
+
+  getLocationContext: ->
+    locationRange = @selectionManager.getLocationRange()
+    if locationRange?.isCollapsed() then locationRange.index else locationRange
