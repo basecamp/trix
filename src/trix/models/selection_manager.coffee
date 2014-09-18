@@ -41,7 +41,14 @@ class Trix.SelectionManager
       else
         textRange.moveStart(granularity, -1)
       textRange.select()
-    @selectionDidChange(null, direction)
+    @selectionObserver.tick()
+
+  # TODO: Combine with #expandSelectionInDirectionWithGranularity and add IE compatibility
+  adjustSelectionInDirectionWithGranularity: (direction, granularity) ->
+    return unless selection = getDOMSelection()
+    alter = if selection.isCollapsed then "move" else "extend"
+    selection.modify(alter, direction, granularity)
+    @selectionObserver.tick()
 
   lock: ->
     if @lockCount++ is 0
@@ -62,29 +69,16 @@ class Trix.SelectionManager
 
   # Selection observer delegate
 
-  selectionDidChange: (domRange, direction) ->
-    @adjustSelectionInDirection(direction) if direction
-    @updateCurrentLocationRange()
+  selectionDidChange: (range, previousRange) ->
+    direction = getDirectionFromDOMRanges(range, previousRange)
+
+    if direction and @rangeWithinElement(range) and
+         (domRangesHaveSameCursorPositionForDirection(range, previousRange, direction) or domSelectionIsUneditable())
+      @adjustSelectionInDirectionWithGranularity(direction, "character")
+    else
+      @updateCurrentLocationRange()
 
   # Private
-
-  adjustSelectionInDirection: (direction) ->
-    selection = window.getSelection()
-    focusElement = DOM.findElementForContainerAtOffset(selection.focusNode, selection.focusOffset)
-    return unless focusElement?.isContentEditable
-
-    selectionNeedsAdjustment = =>
-      result = if focusElement.trixCursorTarget and @previousFocus?
-        focusElement is @previousFocus.element and selection.focusOffset isnt @previousFocus.offset
-      else
-        not focusElement.isContentEditable and @element.contains(focusElement)
-
-      @previousFocus = element: focusElement, offset: selection.focusOffset
-      focusElement = DOM.findElementForContainerAtOffset(selection.focusNode, selection.focusOffset)
-      result
-
-    alter = if selection.isCollapsed then "move" else "extend"
-    selection.modify(alter, direction, "character") while selectionNeedsAdjustment()
 
   updateCurrentLocationRange: (domRange = getDOMRange()) ->
     locationRange = @createLocationRangeFromDOMRange(domRange)
@@ -235,6 +229,10 @@ class Trix.SelectionManager
   getDOMRange = ->
     getDOMSelection()?.getRangeAt(0)
 
+  getClientRects = ->
+    rects = getDOMRange()?.getClientRects()
+    rects if rects?.length
+
   # ClientRect position properties should be relative to the viewport,
   # but in some browsers (like mobile Safari), they're relative to the body.
   getRectTop = ->
@@ -253,3 +251,24 @@ class Trix.SelectionManager
       "backward"
     else if range.compareBoundaryPoints(Range.END_TO_END, previousRange) is 1
       "forward"
+
+  domRangesHaveSameCursorPositionForDirection = (range, otherRange, direction) ->
+    rects = range.getClientRects()
+    otherRects = otherRange.getClientRects()
+
+    if rects.length and otherRects.length
+      if direction is "backward"
+        a = rects[0]
+        b = otherRects[0]
+      else
+        a = rects[rects.length - 1]
+        b = otherRects[otherRects.length - 1]
+
+      for prop in ["left", "right", "bottom", "width"]
+        return false if Math.ceil(a[prop]) isnt Math.ceil(b[prop])
+      true
+
+  domSelectionIsUneditable = ->
+    selection = getDOMSelection()
+    focusElement = DOM.findElementForContainerAtOffset(selection.focusNode, selection.focusOffset)
+    not focusElement?.isContentEditable
