@@ -246,3 +246,10 @@ class Trix.SelectionManager
     result = originalTop is getRectTop()
     window.scrollBy(0, -1)
     result
+
+  getDirectionFromDOMRanges = (range, previousRange) ->
+    return unless range? and previousRange?
+    if range.compareBoundaryPoints(Range.START_TO_START, previousRange) is -1
+      "backward"
+    else if range.compareBoundaryPoints(Range.END_TO_END, previousRange) is 1
+      "forward"
