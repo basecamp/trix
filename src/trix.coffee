@@ -4,6 +4,8 @@
 #= require trix/controllers/degraded_editor_controller
 
 @Trix =
+  ZERO_WIDTH_SPACE: "\u2060"
+
   isSupported: (config = {}) ->
     trixSupport = new BrowserSupport().getTrixSupport()
 

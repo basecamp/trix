@@ -90,7 +90,7 @@ class Trix.BlockView
       @elements.push(element)
 
   createCursorTargetForPosition: (position) ->
-    text = document.createTextNode("\u2060")
+    text = document.createTextNode(Trix.ZERO_WIDTH_SPACE)
     text.trixCursorTarget = true
     text.trixPosition = position
     text.trixLength = 0

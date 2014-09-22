@@ -73,7 +73,7 @@ class Trix.SelectionManager
     direction = getDirectionFromDOMRanges(range, previousRange)
 
     if direction and @rangeWithinElement(range) and
-         (domRangesHaveSameCursorPositionForDirection(range, previousRange, direction) or domSelectionIsUneditable())
+         (domRangeChangeContainsCursorTarget(range, previousRange, direction) or domSelectionIsUneditable())
       @adjustSelectionInDirectionWithGranularity(direction, "character")
     else
       @updateCurrentLocationRange()
@@ -252,21 +252,20 @@ class Trix.SelectionManager
     else if range.compareBoundaryPoints(Range.END_TO_END, previousRange) is 1
       "forward"
 
-  domRangesHaveSameCursorPositionForDirection = (range, otherRange, direction) ->
-    rects = range.getClientRects()
-    otherRects = otherRange.getClientRects()
+  domRangeChangeContainsCursorTarget = (range, previousRange, direction) ->
+    focusRange = document.createRange()
+    if direction is "backward"
+      focusRange.setStart(range.startContainer, range.startOffset)
+      focusRange.setEnd(previousRange.startContainer, previousRange.startOffset)
+    else
+      focusRange.setStart(previousRange.endContainer, previousRange.endOffset)
+      focusRange.setEnd(range.endContainer, range.endOffset)
 
-    if rects.length and otherRects.length
-      if direction is "backward"
-        a = rects[0]
-        b = otherRects[0]
-      else
-        a = rects[rects.length - 1]
-        b = otherRects[otherRects.length - 1]
+    {firstChild, lastChild} = focusRange.cloneContents()
+    firstChild = firstChild.firstChild while firstChild.firstChild
+    lastChild = lastChild.lastChild while lastChild.lastChild
 
-      for prop in ["left", "right", "bottom", "width"]
-        return false if Math.ceil(a[prop]) isnt Math.ceil(b[prop])
-      true
+    firstChild.textContent is Trix.ZERO_WIDTH_SPACE and lastChild.textContent is Trix.ZERO_WIDTH_SPACE
 
   domSelectionIsUneditable = ->
     selection = getDOMSelection()
