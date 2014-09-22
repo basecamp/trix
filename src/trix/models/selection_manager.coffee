@@ -2,6 +2,7 @@
 #= require trix/models/location_range
 #= require trix/utilities/dom
 #= require trix/utilities/helpers
+#= require trix/utilities/dom_range_change
 
 {DOM} = Trix
 {memoize} = Trix.Helpers
@@ -70,11 +71,11 @@ class Trix.SelectionManager
   # Selection observer delegate
 
   selectionDidChange: (range, previousRange) ->
-    direction = getDirectionFromDOMRanges(range, previousRange)
+    if previousRange and @rangeWithinElement(range)
+      rangeChange = new Trix.DOMRangeChange(range, previousRange)
 
-    if direction and @rangeWithinElement(range) and
-         (domRangeChangeContainsCursorTarget(range, previousRange, direction) or domSelectionIsUneditable())
-      @adjustSelectionInDirectionWithGranularity(direction, "character")
+    if rangeChange?.needsAdjustment()
+      @adjustSelectionInDirectionWithGranularity(rangeChange.getDirection(), "character")
     else
       @updateCurrentLocationRange()
 
@@ -244,30 +245,3 @@ class Trix.SelectionManager
     result = originalTop is getRectTop()
     window.scrollBy(0, -1)
     result
-
-  getDirectionFromDOMRanges = (range, previousRange) ->
-    return unless range? and previousRange?
-    if range.compareBoundaryPoints(Range.START_TO_START, previousRange) is -1
-      "backward"
-    else if range.compareBoundaryPoints(Range.END_TO_END, previousRange) is 1
-      "forward"
-
-  domRangeChangeContainsCursorTarget = (range, previousRange, direction) ->
-    focusRange = document.createRange()
-    if direction is "backward"
-      focusRange.setStart(range.startContainer, range.startOffset)
-      focusRange.setEnd(previousRange.startContainer, previousRange.startOffset)
-    else
-      focusRange.setStart(previousRange.endContainer, previousRange.endOffset)
-      focusRange.setEnd(range.endContainer, range.endOffset)
-
-    {firstChild, lastChild} = focusRange.cloneContents()
-    firstChild = firstChild.firstChild while firstChild.firstChild
-    lastChild = lastChild.lastChild while lastChild.lastChild
-
-    firstChild.textContent is Trix.ZERO_WIDTH_SPACE and lastChild.textContent is Trix.ZERO_WIDTH_SPACE
-
-  domSelectionIsUneditable = ->
-    selection = getDOMSelection()
-    focusElement = DOM.findElementForContainerAtOffset(selection.focusNode, selection.focusOffset)
-    not focusElement?.isContentEditable
