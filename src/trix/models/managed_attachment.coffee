@@ -6,14 +6,13 @@ class Trix.ManagedAttachment
     @document.getAttachmentPieceForAttachment(@attachment)?.getAttributes()
 
   setAttributes: (attributes) ->
-    delete @attachment.element
     if attributes.url?
       delete @attachment.file
       delete @attachment.previewURL
     @document.updateAttributesForAttachment(attributes, @attachment)
 
   setUploadProgress: (value) ->
-    @attachment.element?.querySelector("progress")?.setAttribute("value", value)
+    document.getElementById("trix-progress-#{@id}")?.setAttribute("value", value)
 
   remove: ->
     if range = @document.getLocationRangeOfAttachment(@attachment)
