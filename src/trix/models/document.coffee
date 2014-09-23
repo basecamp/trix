@@ -28,6 +28,9 @@ class Trix.Document extends Trix.Object
     if @blockList.length is 0
       @blockList = new Trix.SplittableList [new Trix.Block]
 
+  isEmpty: ->
+    @blockList.length is 1 and @getBlockAtIndex(0).isEmpty()
+
   initializeManagedAttachmentsWithDelegate: (delegate) ->
     @attachments = new Trix.ManagedAttachments this
     @attachments.delegate = delegate

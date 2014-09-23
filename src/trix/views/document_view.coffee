@@ -7,9 +7,10 @@ class Trix.DocumentView
 
   render: ->
     @element.removeChild(@element.lastChild) while @element.lastChild
-    @document.eachBlock (block, index) =>
-      textView = new Trix.BlockView block, index
-      @element.appendChild(textView.render())
+    unless @document.isEmpty()
+      @document.eachBlock (block, index) =>
+        blockView = new Trix.BlockView block, index
+        @element.appendChild(blockView.render())
 
   focus: ->
     @element.focus()
