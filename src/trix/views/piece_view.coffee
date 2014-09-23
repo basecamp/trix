@@ -76,19 +76,20 @@ class Trix.PieceView
       node.dataset.trixSerializeContainer = false
       nodes.push(node)
     else
+      position = @position
       for substring, index in @string.split("\n")
         if index > 0
-          node = @createBRElementForPosition(@position)
-          @position++
+          node = @createBRElementForPosition(position)
+          position++
           nodes.push(node)
 
         if length = substring.length
           node = document.createElement("span")
           node.textContent = preserveSpaces(substring)
-          @position += length
-          node.dataset.trixPosition = @position
+          node.dataset.trixPosition = position
           node.dataset.trixLength = length
           node.dataset.trixSerializeContainer = false
+          position += length
           nodes.push(node)
     nodes
 
