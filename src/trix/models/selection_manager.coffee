@@ -121,22 +121,20 @@ class Trix.SelectionManager
       @element.contains(range.startContainer) and @element.contains(range.endContainer)
 
   findLocationFromContainerAtOffset: (container, offset) ->
+    index = Number(DOM.closest(container, "[data-trix-block-index]").dataset.trixBlockIndex)
+    position = Number(DOM.closest(container, "[data-trix-position]").dataset.trixPosition)
+
     if container.nodeType is Node.TEXT_NODE
-      index = container.trixIndex
-      offset = if container.trixCursorTarget
-        container.trixPosition
+      offset = if DOM.closest(container, "[data-trix-cursor-target]")
+        position
       else
-        container.trixPosition + offset
+        position + offset
     else
       if offset is 0
-        index = container.trixIndex
-        offset = container.trixPosition
+        offset = Number(container.dataset.trixPosition)
       else
-        node = container.childNodes[offset - 1]
-        walker = DOM.createTreeWalker(node)
-        walker.lastChild()
-        index = walker.currentNode.trixIndex
-        offset = walker.currentNode.trixPosition + walker.currentNode.trixLength
+        element = container.childNodes[offset - 1]
+        offset = Number(element.dataset.trixPosition) + Number(element.dataset.trixLength)
 
     {index, offset}
 

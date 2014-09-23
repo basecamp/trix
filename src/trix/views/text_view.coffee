@@ -8,8 +8,10 @@ class Trix.TextView
 
     position = 0
     @text.eachPiece (piece) =>
+      return if piece.hasAttribute("blockBreak")
       @previousPiece = @currentPiece
       @currentPiece = piece
+
       parentAttribute = @getParentAttribute()
       pieceView = new Trix.PieceView piece, parentAttribute, position
       pieceElement = pieceView.render()

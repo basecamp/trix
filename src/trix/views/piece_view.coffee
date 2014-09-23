@@ -15,6 +15,7 @@ class Trix.PieceView
 
     @element = innerElement = elements[0]
     @element.dataset.trixPosition = @position
+    @element.dataset.trixLength = @piece.length
 
     for child in elements[1..]
       innerElement.appendChild(child)
