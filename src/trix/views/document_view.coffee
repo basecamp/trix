@@ -2,8 +2,6 @@
 
 class Trix.DocumentView
   constructor: (@element, @document) ->
-    @element.trixPosition = 0
-    @element.trixIndex = 0
 
   render: ->
     @element.removeChild(@element.lastChild) while @element.lastChild
