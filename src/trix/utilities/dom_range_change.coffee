@@ -5,10 +5,22 @@
 {memoize} = Trix.Helpers
 
 class Trix.DOMRangeChange
-  constructor: (@range, @previousRange) ->
+  constructor: ({@range, @previousRange, @element}) ->
 
   needsAdjustment: ->
-    @isntEditable() or @containsCursorTarget()
+    @canAdjust() and (@isntEditable() or @containsCursorTarget())
+
+  canAdjust: ->
+    if @getDirection() is "backward"
+      if @element.contains(@range.startContainer)
+        {firstChild} = @element
+        firstChild = firstChild.firstChild while firstChild.firstChild
+        @range.startContainer isnt firstChild
+    else
+      if @element.contains(@range.endContainer)
+        {lastChild} = @element
+        lastChild = lastChild.lastChild while lastChild.lastChild
+        @range.endContainer isnt lastChild
 
   containsCursorTarget: ->
     range = document.createRange()

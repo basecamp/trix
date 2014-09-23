@@ -71,8 +71,8 @@ class Trix.SelectionManager
   # Selection observer delegate
 
   selectionDidChange: (range, previousRange) ->
-    if previousRange and @rangeWithinElement(range)
-      rangeChange = new Trix.DOMRangeChange(range, previousRange)
+    if previousRange
+      rangeChange = new Trix.DOMRangeChange({range, previousRange, @element})
 
     if rangeChange?.needsAdjustment()
       @adjustSelectionInDirectionWithGranularity(rangeChange.getDirection(), "character")
