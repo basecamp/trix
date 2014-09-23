@@ -15,11 +15,9 @@ class Trix.DOMRangeChange
     range.setStart(@getStartContainerAndOffset()...)
     range.setEnd(@getEndContainerAndOffset()...)
 
-    {firstChild, lastChild} = range.cloneContents()
-    firstChild = firstChild.firstChild while firstChild.firstChild
-    lastChild = lastChild.lastChild while lastChild.lastChild
-
-    firstChild.textContent is Trix.ZERO_WIDTH_SPACE and lastChild.textContent is Trix.ZERO_WIDTH_SPACE
+    contents = range.cloneContents()
+    contents.normalize()
+    contents.childNodes.length is 1 and contents.firstChild.textContent is Trix.ZERO_WIDTH_SPACE
 
   isntEditable: ->
     focusElement = DOM.findElementForContainerAtOffset(@getFocusContainerAndOffset()...)
