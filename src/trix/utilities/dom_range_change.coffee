@@ -13,14 +13,14 @@ class Trix.DOMRangeChange
   canAdjust: ->
     if @getDirection() is "backward"
       if @element.contains(@range.startContainer)
-        {firstChild} = @element
-        firstChild = firstChild.firstChild while firstChild.firstChild
-        @range.startContainer isnt firstChild
+        firstNode = @element.firstChild ? @element
+        firstNode = firstNode.firstChild while firstNode.firstChild
+        @range.startContainer isnt firstNode
     else
       if @element.contains(@range.endContainer)
-        {lastChild} = @element
-        lastChild = lastChild.lastChild while lastChild.lastChild
-        @range.endContainer isnt lastChild
+        lastNode = @element.lastChild ? @element
+        lastNode = lastNode.lastChild while lastNode.lastChild
+        @range.endContainer isnt lastNode
 
   containsCursorTarget: ->
     range = document.createRange()
