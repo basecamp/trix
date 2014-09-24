@@ -132,7 +132,7 @@ class Trix.SelectionManager
         index = Number(index)
         offset = Number(offset)
         if node.nodeType is Node.TEXT_NODE
-          offset += containerOffset
+          offset += containerOffset unless nodeIsCursorTarget(node)
         else
           offset += 1 unless containerOffset is 0
         return {index, offset}
@@ -157,11 +157,9 @@ class Trix.SelectionManager
     node = null
     for offset, nodes of @getNodeRecords()[location.index]
       candidate = nodes[nodes.length - 1]
-      if offset > location.offset
-        break
+      break if offset > location.offset
       node = candidate
-      if offset is location.offset and candidate.nodeType is Node.TEXT_NODE and candidate.textContent is Trix.ZERO_WIDTH_SPACE
-        break
+      break if offset is location.offset and nodeIsCursorTarget(node)
     node
 
   getLocationRangeAtPoint: ([clientX, clientY]) ->
@@ -196,6 +194,13 @@ class Trix.SelectionManager
         clientY -= document.body.scrollTop
 
       [clientX, clientY]
+
+  nodeIsCursorTarget = (node) ->
+    return unless node
+    if node.nodeType is Node.TEXT_NODE
+      node.textContent is Trix.ZERO_WIDTH_SPACE
+    else
+      nodeIsCursorTarget(node.firstChild)
 
   getDOMSelection = ->
     selection = window.getSelection()
