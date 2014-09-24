@@ -30,10 +30,4 @@ class Trix.BlockView
     if string = @block.toString()
       # A newline followed by the block break newline
       if /\n\n$/.test(string)
-        @element.appendChild(createBRElementForPosition(string.length - 1))
-
-  createBRElementForPosition = (position) ->
-    element = document.createElement("br")
-    element.dataset.trixPosition = position
-    element.dataset.trixLength = 1
-    element
+        @element.appendChild(document.createElement("br"))

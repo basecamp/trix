@@ -51,6 +51,7 @@ class Trix.PieceView
     span.setAttribute("data-trix-serialize", "false")
     span.dataset.trixCursorTarget = true
     span.dataset.trixPosition = position
+    span.dataset.trixLength = 0
     span
 
   createAttachmentElement: ->

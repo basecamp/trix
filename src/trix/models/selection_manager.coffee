@@ -139,13 +139,15 @@ class Trix.SelectionManager
     {index, offset}
 
   findContainerAndOffsetForLocation: (location) ->
-    return [@element, 0] if location.index is 0 and location.offset < 1
+    element = @findElementForLocation(location)
+    position = Number(element.dataset.trixPosition)
 
-    node = @findNodeForLocation(location)
+    node = element.firstChild ? element
+    node = node.firstChild while node.firstChild
 
     if node.nodeType is Node.TEXT_NODE
       container = node
-      offset = location.offset - node.trixPosition
+      offset = location.offset - position
     else
       container = node.parentNode
       offset =
@@ -156,37 +158,15 @@ class Trix.SelectionManager
 
     [container, offset]
 
-  findNodeForLocation: (location) ->
-    walker = DOM.createTreeWalker(@element, null, trixNodeFilter)
-    node = walker.currentNode
-    match = null
-
-    while walker.nextNode()
-      if walker.currentNode.trixIndex is location.index
-        startPosition = walker.currentNode.trixPosition
-        endPosition = startPosition + walker.currentNode.trixLength
-
-        if startPosition <= location.offset <= endPosition
-          if walker.currentNode.nodeType is Node.TEXT_NODE
-            match = walker.currentNode
-          else
-            match ?= walker.currentNode
-
-        if match?.trixCursorTarget
-          break
-
-        if match and startPosition > location.offset
-          break
-
-      previousNode = walker.currentNode
-
-    match ? node
-
-  trixNodeFilter = (node) ->
-    if node.trixPosition? and node.trixLength?
-      NodeFilter.FILTER_ACCEPT
-    else
-      NodeFilter.FILTER_SKIP
+  findElementForLocation: (location) ->
+    element = null
+    blockElement = @element.querySelector("[data-trix-block-index='#{location.index}']")
+    for candidate in blockElement.querySelectorAll("[data-trix-position][data-trix-length]")
+      position = Number(candidate.dataset.trixPosition)
+      break if position > location.offset
+      element = candidate
+      break if position is location.offset and candidate.dataset.trixCursorTarget
+    element
 
   getLocationRangeAtPoint: ([clientX, clientY]) ->
     if document.caretPositionFromPoint
