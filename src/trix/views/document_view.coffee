@@ -1,15 +1,15 @@
+#= require trix/views/view
 #= require trix/views/block_view
 
-class Trix.DocumentView
+class Trix.DocumentView extends Trix.View
   constructor: (@element, @document) ->
-    @element.dataset.trixBlockIndex = 0
-    @element.dataset.trixPosition = 0
 
   render: ->
+    @resetNodeRecords()
     @element.removeChild(@element.lastChild) while @element.lastChild
     unless @document.isEmpty()
       @document.eachBlock (block, index) =>
-        blockView = new Trix.BlockView block, index
+        blockView = @createChildView(Trix.BlockView, block, index)
         @element.appendChild(blockView.render())
 
   focus: ->

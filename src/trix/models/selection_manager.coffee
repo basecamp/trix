@@ -13,6 +13,10 @@ class Trix.SelectionManager
     @selectionObserver = new Trix.SelectionObserver @element
     @selectionObserver.delegate = this
 
+  # FIXME
+  getNodeRecords: ->
+    @delegate.documentController.documentView.nodeRecords
+
   getLocationRange: ->
     @lockedLocationRange ? @currentLocationRange
 
@@ -120,34 +124,25 @@ class Trix.SelectionManager
     else
       @element.contains(range.startContainer) and @element.contains(range.endContainer)
 
-  findLocationFromContainerAtOffset: (container, offset) ->
-    index = Number(DOM.closest(container, "[data-trix-block-index]").dataset.trixBlockIndex)
-    position = Number(DOM.closest(container, "[data-trix-position]").dataset.trixPosition)
+  findLocationFromContainerAtOffset: (container, containerOffset) ->
+    node = DOM.findNodeForContainerAtOffset(container, containerOffset)
 
-    if container.nodeType is Node.TEXT_NODE
-      offset = if DOM.closest(container, "[data-trix-cursor-target]")
-        position
-      else
-        position + offset
-    else
-      if offset is 0
-        offset = Number(container.dataset.trixPosition)
-      else
-        element = container.childNodes[offset - 1]
-        offset = Number(element.dataset.trixPosition) + Number(element.dataset.trixLength)
-
-    {index, offset}
+    for index, offsets of @getNodeRecords()
+      for offset, nodes of offsets when node in nodes
+        index = Number(index)
+        offset = Number(offset)
+        if node.nodeType is Node.TEXT_NODE
+          offset += containerOffset
+        else
+          offset += 1 unless containerOffset is 0
+        return {index, offset}
 
   findContainerAndOffsetForLocation: (location) ->
-    element = @findElementForLocation(location)
-    position = Number(element.dataset.trixPosition)
-
-    node = element.firstChild ? element
-    node = node.firstChild while node.firstChild
+    node = @findNodeForLocation(location)
 
     if node.nodeType is Node.TEXT_NODE
       container = node
-      offset = location.offset - position
+      offset = location.offset
     else
       container = node.parentNode
       offset =
@@ -158,15 +153,16 @@ class Trix.SelectionManager
 
     [container, offset]
 
-  findElementForLocation: (location) ->
-    element = null
-    blockElement = @element.querySelector("[data-trix-block-index='#{location.index}']")
-    for candidate in blockElement.querySelectorAll("[data-trix-position][data-trix-length]")
-      position = Number(candidate.dataset.trixPosition)
-      break if position > location.offset
-      element = candidate
-      break if position is location.offset and candidate.dataset.trixCursorTarget
-    element
+  findNodeForLocation: (location) ->
+    node = null
+    for offset, nodes of @getNodeRecords()[location.index]
+      candidate = nodes[nodes.length - 1]
+      if offset > location.offset
+        break
+      node = candidate
+      if offset is location.offset and candidate.nodeType is Node.TEXT_NODE and candidate.textContent is Trix.ZERO_WIDTH_SPACE
+        break
+    node
 
   getLocationRangeAtPoint: ([clientX, clientY]) ->
     if document.caretPositionFromPoint

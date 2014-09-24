@@ -1,7 +1,8 @@
+#= require trix/views/view
 #= require trix/views/file_attachment_view
 #= require trix/views/image_attachment_view
 
-class Trix.PieceView
+class Trix.PieceView extends Trix.View
   constructor: (@piece, @parentAttribute, @position) ->
     @options = {}
     @attributes = @piece.getAttributes()
@@ -14,13 +15,12 @@ class Trix.PieceView
     elements = createElementsForAttributes(@attributes, @parentAttribute)
 
     @element = innerElement = elements[0]
-    @element.dataset.trixPosition = @position
-    @element.dataset.trixLength = @piece.length
+    @recordNode(@element, offset: @position)
 
     for child in elements[1..]
       innerElement.appendChild(child)
       innerElement = child
-      innerElement.dataset.trixPosition = @position
+      @recordNode(innerElement, offset: @position)
 
     if @attachment
       attachmentElement = @createAttachmentElement()
@@ -46,36 +46,30 @@ class Trix.PieceView
     @element
 
   createCursorTargetForPosition: (position) ->
+    text = document.createTextNode(Trix.ZERO_WIDTH_SPACE)
+    @recordNode(text, offset: position)
     span = document.createElement("span")
-    span.textContent = Trix.ZERO_WIDTH_SPACE
-    span.setAttribute("data-trix-serialize", "false")
-    span.dataset.trixCursorTarget = true
-    span.dataset.trixPosition = position
-    span.dataset.trixLength = 0
+    span.appendChild(text)
+    span.dataset.trixSerialze = false
     span
 
   createAttachmentElement: ->
+    view = if @piece.isImage()
+      @createChildView(Trix.ImageAttachmentView, @piece)
+    else
+      @createChildView(Trix.FileAttachmentView, @piece)
+
     @piece.element ?= (
-      view = createAttachmentViewForAttachment(@piece)
       element = view.render()
       element
     )
-
-  createAttachmentViewForAttachment = (piece) ->
-    if piece.isImage()
-      new Trix.ImageAttachmentView piece
-    else
-      new Trix.FileAttachmentView piece
 
   createStringNodes: ->
     nodes = []
 
     if @options.plaintext
-      node = document.createElement("span")
-      node.textContent = @string
-      node.dataset.trixPosition = @position
-      node.dataset.trixLength = @string.length
-      node.dataset.trixSerializeContainer = false
+      node = document.createTextNode(@string)
+      @recordNode(node, offset: @string.length)
       nodes.push(node)
     else
       position = @position
@@ -86,19 +80,15 @@ class Trix.PieceView
           nodes.push(node)
 
         if length = substring.length
-          node = document.createElement("span")
-          node.textContent = preserveSpaces(substring)
-          node.dataset.trixPosition = position
-          node.dataset.trixLength = length
-          node.dataset.trixSerializeContainer = false
+          node = document.createTextNode(preserveSpaces(substring))
+          @recordNode(node, offset: position)
           position += length
           nodes.push(node)
     nodes
 
   createBRElementForPosition: (position) ->
     element = document.createElement("br")
-    element.dataset.trixPosition = position
-    element.dataset.trixLength = 1
+    @recordNode(element, offset: position)
     element
 
   createElementsForAttributes = (attributes, parentAttribute) ->
@@ -120,9 +110,10 @@ class Trix.PieceView
             elements.push(element)
 
     unless elements.length
-      span = document.createElement("span")
-      span.dataset.trixSerializeContainer = false
-      elements.push(span)
+      if styles.length
+        elements.push(document.createElement("span"))
+      else
+        elements.push(document.createDocumentFragment())
 
     for style in styles
       elements[0].style[key] = value for key, value of style

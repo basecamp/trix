@@ -1,24 +1,26 @@
 #= require trix/utilities/dom
+#= require trix/views/view
 #= require trix/views/text_view
 
-
-class Trix.BlockView
+class Trix.BlockView extends Trix.View
   constructor: (@block, @blockIndex) ->
     @text = @block.text
     @blockConfig = @getBlockConfig()
 
   render: ->
     @element = document.createElement(@blockConfig.tagName ? "div")
-    @element.dataset.trixBlockIndex = @blockIndex
 
     if @block.isEmpty()
       @element.appendChild(createBRElementForPosition(0))
     else
-      textView = new Trix.TextView @block.text, @blockConfig
+      textView = @createChildView(Trix.TextView, @block.text, @blockConfig)
       @element.appendChild(textView.render())
       @appendExtraNewlineElement()
-
     @element
+
+  recordNode: (node, location = {}) ->
+    location.index = @blockIndex
+    super
 
   getBlockConfig: ->
     return config for key of @block.getAttributes() when (config = Trix.attributes[key])?.block

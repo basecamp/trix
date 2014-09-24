@@ -1,6 +1,7 @@
+#= require trix/views/view
 #= require trix/views/piece_view
 
-class Trix.TextView
+class Trix.TextView extends Trix.View
   constructor: (@text, @options) ->
 
   render: ->
@@ -13,7 +14,7 @@ class Trix.TextView
       @currentPiece = piece
 
       parentAttribute = @getParentAttribute()
-      pieceView = new Trix.PieceView piece, parentAttribute, position
+      pieceView = @createChildView(Trix.PieceView, piece, parentAttribute, position)
       pieceElement = pieceView.render()
 
       if parentAttribute
