@@ -131,18 +131,18 @@ class Trix.SelectionManager
       for offset, nodes of offsets when node in nodes
         index = Number(index)
         offset = Number(offset)
-        if node.nodeType is Node.TEXT_NODE
+        if container.nodeType is Node.TEXT_NODE
           offset += containerOffset unless nodeIsCursorTarget(node)
         else
           offset += 1 unless containerOffset is 0
         return {index, offset}
 
   findContainerAndOffsetForLocation: (location) ->
-    node = @findNodeForLocation(location)
+    [node, nodeOffset] = @findNodeAndOffsetForLocation(location)
 
     if node.nodeType is Node.TEXT_NODE
       container = node
-      offset = location.offset
+      offset = location.offset - nodeOffset
     else
       container = node.parentNode
       offset =
@@ -153,14 +153,22 @@ class Trix.SelectionManager
 
     [container, offset]
 
-  findNodeForLocation: (location) ->
-    node = null
+  findNodeAndOffsetForLocation: (location) ->
     for offset, nodes of @getNodeRecords()[location.index]
-      candidate = nodes[nodes.length - 1]
+      offset = Number(offset)
       break if offset > location.offset
-      node = candidate
-      break if offset is location.offset and nodeIsCursorTarget(node)
-    node
+
+      for candidate in nodes when candidate.nodeType isnt Node.DOCUMENT_FRAGMENT_NODE
+        if location.offset <= offset + nodeLength(candidate)
+          if candidate.nodeType is Node.TEXT_NODE
+            node = candidate
+            nodeOffset = offset
+            break if location.offset is nodeOffset and nodeIsCursorTarget(node)
+          else if not node
+            node = candidate
+            nodeOffset = offset
+
+    [node, nodeOffset]
 
   getLocationRangeAtPoint: ([clientX, clientY]) ->
     if document.caretPositionFromPoint
@@ -201,6 +209,14 @@ class Trix.SelectionManager
       node.textContent is Trix.ZERO_WIDTH_SPACE
     else
       nodeIsCursorTarget(node.firstChild)
+
+  nodeLength = (node) ->
+    if nodeIsCursorTarget(node)
+      0
+    else if node.length?
+      node.length
+    else
+      1
 
   getDOMSelection = ->
     selection = window.getSelection()
