@@ -158,15 +158,14 @@ class Trix.SelectionManager
       offset = Number(offset)
       break if offset > location.offset
 
-      for candidate in nodes when candidate.nodeType isnt Node.DOCUMENT_FRAGMENT_NODE
-        if location.offset <= offset + nodeLength(candidate)
-          if candidate.nodeType is Node.TEXT_NODE
-            node = candidate
-            nodeOffset = offset
-            break if location.offset is nodeOffset and nodeIsCursorTarget(node)
-          else if not node
-            node = candidate
-            nodeOffset = offset
+      for candidate in nodes when location.offset <= offset + nodeLength(candidate)
+        if candidate.nodeType is Node.TEXT_NODE
+          node = candidate
+          nodeOffset = offset
+          break if location.offset is nodeOffset and nodeIsCursorTarget(node)
+        else if not node
+          node = candidate
+          nodeOffset = offset
 
     [node, nodeOffset]
 

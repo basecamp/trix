@@ -12,15 +12,14 @@ class Trix.PieceView extends Trix.View
       @string = @piece.toString()
 
   render: ->
-    elements = createElementsForAttributes(@attributes, @parentAttribute)
-
-    @element = innerElement = elements[0]
-    @recordNode(@element, offset: @position)
-
-    for child in elements[1..]
-      innerElement.appendChild(child)
-      innerElement = child
-      @recordNode(innerElement, offset: @position)
+    elements = @createElementsForAttributes()
+    if elements.length
+      @element = innerElement = elements[0]
+      for child in elements[1..]
+        innerElement.appendChild(child)
+        innerElement = child
+    else
+      @element = innerElement = document.createDocumentFragment()
 
     if @attachment
       attachmentElement = @createAttachmentElement()
@@ -91,32 +90,33 @@ class Trix.PieceView extends Trix.View
     @recordNode(element, offset: position)
     element
 
-  createElementsForAttributes = (attributes, parentAttribute) ->
+  createElementsForAttributes: ->
     elements = []
     styles = []
 
-    for key, value of attributes when config = Trix.attributes[key]
+    for key, value of @attributes when config = Trix.attributes[key]
       if config.style
         styles.push(config.style)
 
       if config.tagName
-        unless config.parent and key is parentAttribute
+        unless config.parent and key is @parentAttribute
           element = document.createElement(config.tagName)
           element.setAttribute(key, value) unless typeof(value) is "boolean"
+          @recordNode(element, offset: @position)
 
           if config.parent
             elements.unshift(element)
           else
             elements.push(element)
 
-    unless elements.length
-      if styles.length
-        elements.push(document.createElement("span"))
-      else
-        elements.push(document.createDocumentFragment())
+    if styles.length
+      unless elements.length
+        span = document.createElement("span")
+        @recordNode(span, offset: @position)
+        elements.push(span)
 
-    for style in styles
-      elements[0].style[key] = value for key, value of style
+      for style in styles
+        elements[0].style[key] = value for key, value of style
 
     elements
 
