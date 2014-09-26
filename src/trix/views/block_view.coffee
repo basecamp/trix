@@ -11,7 +11,9 @@ class Trix.BlockView extends Trix.View
     @element = document.createElement(@blockConfig.tagName ? "div")
 
     if @block.isEmpty()
-      @element.appendChild(createBRElementForPosition(0))
+      br = document.createElement("br")
+      @recordNode(br, offset: 0)
+      @element.appendChild(br)
     else
       textView = @createChildView(Trix.TextView, @block.text, @blockConfig)
       @element.appendChild(textView.render())

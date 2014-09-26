@@ -46,7 +46,7 @@ Trix.DOM = dom =
     if container.nodeType is Node.TEXT_NODE
       container
     else if offset is 0
-      container.firstChild
+      container.firstChild ? container
     else
       container.childNodes.item(offset - 1)
 

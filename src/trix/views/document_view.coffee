@@ -6,6 +6,7 @@ class Trix.DocumentView extends Trix.View
 
   render: ->
     @resetNodeRecords()
+    @recordNode(@element, index: 0, offset: 0)
     @element.removeChild(@element.lastChild) while @element.lastChild
     unless @document.isEmpty()
       @document.eachBlock (block, index) =>
