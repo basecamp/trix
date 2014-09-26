@@ -3,6 +3,7 @@
 #= require trix/controllers/document_controller
 #= require trix/controllers/toolbar_controller
 #= require trix/models/composition
+#= require trix/models/attachment_manager
 #= require trix/models/undo_manager
 #= require trix/models/selection_manager
 #= require trix/observers/mutation_observer
@@ -10,7 +11,6 @@
 class Trix.EditorController extends Trix.AbstractEditorController
   constructor: ->
     super
-    @document.initializeManagedAttachmentsWithDelegate(@delegate)
 
     @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
@@ -18,9 +18,12 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @documentController = new Trix.DocumentController @documentElement, @document
     @documentController.delegate = this
 
-    @composition = new Trix.Composition @document
+    @composition = new Trix.Composition
     @composition.delegate = this
     @composition.selectionDelegate = @selectionManager
+
+    @attachmentManager = new Trix.AttachmentManager @composition
+    @attachmentManager.delegate = this
 
     @undoManager = new Trix.UndoManager @composition
 
@@ -34,6 +37,8 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @toolbarController = new Trix.ToolbarController @toolbarElement
     @toolbarController.delegate = this
     @toolbarController.updateActions()
+
+    @composition.loadDocument(@document)
 
     # Focus last to ensure all focus event handlers are triggered
     @documentController.focus() if @config.autofocus
@@ -51,6 +56,17 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   compositionWillSetLocationRange: ->
     @skipSelectionLock = true
+
+  compositionShouldAcceptFile: (composition, file) ->
+    @delegate?.shouldAcceptFile?(file)
+
+  compositionDidAddAttachment: (composition, attachment) ->
+    managedAttachment = @attachmentManager.addAttachment(attachment)
+    @delegate?.didAddAttachment?(managedAttachment)
+
+  compositionDidRemoveAttachment: (composition, attachment) ->
+    managedAttachment = @attachmentManager.removeAttachment(attachment)
+    @delegate?.didRemoveAttachment?(managedAttachment)
 
   compositionDidStartEditingAttachment: (composition, attachment) ->
     @attachmentLocationRange = @document.getLocationRangeOfAttachment(attachment)

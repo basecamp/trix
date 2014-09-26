@@ -10,35 +10,11 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   constructor: ->
     super
     @attachment = @value
-    if not @isImage() and @attributes.has("url")
-      @attributes = @attributes.add("href", @attributes.get("url"))
-
-  isPending: ->
-    @attachment.file? and not @getURL()?
+    if not @attachment.isImage() and url = @attachment.getURL()
+      @attributes = @attributes.add("href", url)
 
   isSerializable: ->
-    not @isPending()
-
-  isImage: ->
-    /image/.test(@attributes.get("contentType"))
-
-  getMetadata: ->
-    attributes = {}
-    for key in ["contentType", "filename", "filesize", "identifier"]
-      attributes[key] = @attributes.get(key) if @attributes.has(key)
-    attributes
-
-  getURL: ->
-    @attributes.get("url")
-
-  getFilename: ->
-    @attributes.get("filename")
-
-  getFilesize: ->
-    @attributes.get("filesize")
-
-  getExtension: ->
-    @getFilename().match(/\.(\w+)$/)?[1].toLowerCase()
+    not @attachment.isPending()
 
   getWidth: ->
     @attributes.get("width")

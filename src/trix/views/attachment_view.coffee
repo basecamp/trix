@@ -11,10 +11,10 @@ class Trix.AttachmentView
     element.classList.add("attachment")
     element.trixAttachmentId = @attachment.id
 
-    for key, value of @attachmentPiece.getMetadata()
+    for key, value of @attachment.getAttributes()
       element.dataset["trix#{capitalize(key)}"] = value
 
-    if @attachmentPiece.isPending()
+    if @attachment.isPending()
       progress = document.createElement("progress")
       progress.setAttribute("id", "trix-progress-#{@attachment.id}")
       progress.setAttribute("max", 100)

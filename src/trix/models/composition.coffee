@@ -1,9 +1,16 @@
 #= require trix/models/document
 
 class Trix.Composition
-  constructor: (@document = new Trix.Document) ->
+  constructor: (document = new Trix.Document) ->
+    @loadDocument(document)
+
+  loadDocument: (document) ->
+    @document = document
     @document.delegate = this
     @currentAttributes = {}
+
+    for attachment in @document.getAttachments()
+      @delegate?.compositionDidAddAttachment?(this, attachment)
 
   # Snapshots
 
@@ -19,6 +26,12 @@ class Trix.Composition
 
   didEditDocument: (document) ->
     @delegate?.compositionDidChangeDocument?(this, @document)
+
+  documentDidAddAttachment: (document, attachment) ->
+    @delegate?.compositionDidAddAttachment?(this, attachment)
+
+  documentDidRemoveAttachment: (document, attachment) ->
+    @delegate?.compositionDidRemoveAttachment?(this, attachment)
 
   # Responder protocol
 
@@ -79,10 +92,9 @@ class Trix.Composition
       @document.replaceDocument(document)
 
   insertFile: (file) ->
-    if @document.attachments.shouldAcceptFile(file)
-      attachment = new Trix.Attachment file
-      attributes = Trix.Hash.box(@currentAttributes).merge(contentType: file.type, filename: file.name)
-      text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes.toObject())
+    if @delegate?.compositionShouldAcceptFile(this, file)
+      attachment = Trix.Attachment.attachmentForFile(file)
+      text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
       @insertText(text)
 
   deleteInDirectionWithGranularity: (direction, granularity) ->
@@ -261,3 +273,6 @@ class Trix.Composition
 
   getDocument: ->
     @document.copy()
+
+  refreshAttachments: ->
+    @attachments.refresh(@document.getAttachments())

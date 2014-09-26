@@ -71,7 +71,7 @@ class Trix.BlockView
         innerElement.appendChild(attachmentElement)
 
       element.setAttribute("contenteditable", "false")
-      element.setAttribute("data-trix-serialize", "false") if piece.isPending()
+      element.setAttribute("data-trix-serialize", "false") unless piece.isSerializable()
 
       container = document.createDocumentFragment()
       container.appendChild(@createCursorTargetForPosition(position))
@@ -122,13 +122,13 @@ class Trix.BlockView
     {attachment, attributes, position, piece} = @currentRun
 
     piece.element ?= (
-      view = createAttachmentViewForAttachment(piece)
+      view = createAttachmentViewForAttachmentAndPiece(attachment, piece)
       element = view.render()
       element
     )
 
-  createAttachmentViewForAttachment = (piece) ->
-    if piece.isImage()
+  createAttachmentViewForAttachmentAndPiece = (attachment, piece) ->
+    if attachment.isImage()
       new Trix.ImageAttachmentView piece
     else
       new Trix.FileAttachmentView piece

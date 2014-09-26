@@ -1,13 +1,18 @@
 #= require trix/utilities/object
+#= require trix/utilities/collection
 #= require trix/models/block
 #= require trix/models/splittable_list
 #= require trix/models/location_range
-#= require trix/models/managed_attachments
 
 class Trix.Document extends Trix.Object
   @fromJSON: (documentJSON) ->
-    blocks = for blockJSON in documentJSON
+    attachmentsJSON = documentJSON.attachments
+    blocksJSON = documentJSON.blocks
+
+    # TODO: Map attachments
+    blocks = for blockJSON in blocksJSON
       Trix.Block.fromJSON blockJSON
+
     new this blocks
 
   @fromHTML: (html, options) ->
@@ -21,8 +26,13 @@ class Trix.Document extends Trix.Object
     super
     @editDepth = 0
     @editCount = 0
+
     @blockList = new Trix.SplittableList blocks
     @ensureDocumentHasBlock()
+
+    @attachments = new Trix.Collection
+    @attachments.delegate = this
+    @refreshAttachments()
 
   ensureDocumentHasBlock: ->
     if @blockList.length is 0
@@ -30,11 +40,6 @@ class Trix.Document extends Trix.Object
 
   isEmpty: ->
     @blockList.length is 1 and @getBlockAtIndex(0).isEmpty()
-
-  initializeManagedAttachmentsWithDelegate: (delegate) ->
-    @attachments = new Trix.ManagedAttachments this
-    @attachments.delegate = delegate
-    @attachments.refresh()
 
   copy: ->
     new @constructor @blockList.toArray()
@@ -74,7 +79,7 @@ class Trix.Document extends Trix.Object
       if Trix.debug.logEditOperations
         console.groupEnd()
       @delegate?.didEditDocument?(this)
-      @attachments?.refresh()
+      @refreshAttachments()
     this
 
   insertDocumentAtLocationRange: edit "insertDocumentAtLocationRange", (document, locationRange) ->
@@ -301,3 +306,16 @@ class Trix.Document extends Trix.Object
 
   toConsole: ->
     JSON.stringify(JSON.parse(block.text.toConsole()) for block in @blockList.toArray())
+
+  # Attachments collection delegate
+
+  collectionDidAddObject: (collection, object) ->
+    @delegate?.documentDidAddAttachment(this, object)
+
+  collectionDidRemoveObject: (collection, object) ->
+    @delegate?.documentDidRemoveAttachment(this, object)
+
+  # Private
+
+  refreshAttachments: ->
+    @attachments.refresh(@getAttachments())

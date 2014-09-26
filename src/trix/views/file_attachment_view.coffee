@@ -7,13 +7,13 @@ class Trix.FileAttachmentView extends Trix.AttachmentView
   render: ->
     element = super
     element.classList.add("file")
-    if extension = @attachmentPiece.getExtension()
+    if extension = @attachment.getExtension()
       element.classList.add(extension)
 
     caption = document.createElement("figcaption")
-    caption.textContent = @attachmentPiece.getFilename()
+    caption.textContent = @attachment.getFilename()
 
-    if filesize = @attachmentPiece.getFilesize()
+    if filesize = @attachment.getFilesize()
       span = document.createElement("span")
       span.classList.add("size")
       span.textContent = filesize

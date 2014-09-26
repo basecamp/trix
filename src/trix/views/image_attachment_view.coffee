@@ -6,11 +6,11 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
     element.classList.add("image")
     image = document.createElement("img")
 
-    if @attachmentPiece.isPending()
+    if @attachment.isPending()
       @attachment.getPreviewURL (previewURL) =>
         image.src = previewURL
     else
-      image.src = @attachmentPiece.getURL()
+      image.src = @attachment.getURL()
 
     if @attachmentPiece.getWidth()?
       image.width = @attachmentPiece.getWidth()

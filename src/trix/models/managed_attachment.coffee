@@ -1,9 +1,12 @@
+# TODO: ManagedAttachment should merge intrinsic and visual attributes into a single hash
+
 class Trix.ManagedAttachment
-  constructor: (@attachment, @document) ->
+  constructor: (@attachmentManager, @attachment) ->
     {@id, @file} = @attachment
+    {@document} = @attachmentManager
 
   getAttributes: ->
-    @document.getAttachmentPieceForAttachment(@attachment)?.getAttributes()
+    @attachment.getAttributes()
 
   setAttributes: (attributes) ->
     if attributes.url?
