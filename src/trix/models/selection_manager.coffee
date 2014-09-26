@@ -71,7 +71,7 @@ class Trix.SelectionManager
   # Selection observer delegate
 
   selectionDidChange: (range, previousRange) ->
-    if previousRange
+    if range and previousRange
       rangeChange = new Trix.DOMRangeChange({range, previousRange, @element})
 
     if rangeChange?.needsAdjustment()
