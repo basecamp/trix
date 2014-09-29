@@ -57,8 +57,9 @@ class Trix.HTMLParser
       @appendBlockForAttributes({})
 
   processTextNode: (node) ->
-    string = node.textContent.replace(/\s/, " ")
-    @appendStringWithAttributes(string, getAttributes(node.parentNode))
+    unless node.textContent is Trix.ZERO_WIDTH_SPACE
+      string = node.textContent.replace(/\s/, " ")
+      @appendStringWithAttributes(string, getAttributes(node.parentNode))
 
   processElementNode: (node) ->
     switch node.tagName.toLowerCase()
