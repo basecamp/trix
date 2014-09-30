@@ -1,14 +1,20 @@
 #= require trix/models/managed_attachment
 
 class Trix.AttachmentManager
-  constructor: (@editorController) ->
-    {@document} = @editorController
+  constructor: ->
     @managedAttachments = {}
 
-  addAttachment: (attachment) ->
+  manageAttachment: (attachment) ->
     @managedAttachments[attachment.id] ?= new Trix.ManagedAttachment this, attachment
 
-  removeAttachment: (attachment) ->
+  attachmentIsManaged: (attachment) ->
+    attachment.id of @managedAttachments
+
+  requestRemovalOfAttachment: (attachment) ->
+    if @attachmentIsManaged(attachment)
+      @delegate?.attachmentManagerDidRequestRemovalOfAttachment?(attachment)
+
+  unmanageAttachment: (attachment) ->
     managedAttachment = @managedAttachments[attachment.id]
     delete @managedAttachments[attachment.id]
     managedAttachment

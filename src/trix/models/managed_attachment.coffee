@@ -18,8 +18,7 @@ class Trix.ManagedAttachment
     document.getElementById("trix-progress-#{@id}")?.setAttribute("value", value)
 
   remove: ->
-    if range = @document.getLocationRangeOfAttachment(@attachment)
-      @document.removeTextAtLocationRange(range)
+    @attachmentManager.requestRemovalOfAttachment(@attachment)
 
   isImage: ->
     @document.getAttachmentPieceForAttachment(@attachment)?.isImage()

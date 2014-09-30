@@ -60,12 +60,12 @@ class Trix.EditorController extends Trix.AbstractEditorController
   compositionShouldAcceptFile: (file) ->
     @delegate?.shouldAcceptFile?(file)
 
-    managedAttachment = @attachmentManager.addAttachment(attachment)
   compositionDidAddAttachment: (attachment) ->
+    managedAttachment = @attachmentManager.manageAttachment(attachment)
     @delegate?.didAddAttachment?(managedAttachment)
 
-    managedAttachment = @attachmentManager.removeAttachment(attachment)
   compositionDidRemoveAttachment: (attachment) ->
+    managedAttachment = @attachmentManager.unmanageAttachment(attachment)
     @delegate?.didRemoveAttachment?(managedAttachment)
 
   compositionDidStartEditingAttachment: (attachment) ->
@@ -76,6 +76,12 @@ class Trix.EditorController extends Trix.AbstractEditorController
   compositionDidStopEditingAttachment: (attachment) ->
     @documentController.uninstallAttachmentEditor()
     delete @attachmentLocationRange
+
+  # Attachment manager delegate
+
+  attachmentManagerDidRequestRemovalOfAttachment: (attachment) ->
+    @undoManager.recordUndoEntry("Delete Attachment")
+    @composition.removeAttachment(attachment)
 
   # Document controller delegate
 
