@@ -138,6 +138,12 @@ class Trix.Text extends Trix.Object
   eachPiece: (callback) ->
     @pieceList.eachObject(callback)
 
+  eachPieceWithPosition: (callback) ->
+    position = 0
+    @eachPiece (piece) ->
+      callback(piece, position) unless piece.hasAttribute("blockBreak")
+      position += piece.length
+
   getPieces: ->
     @pieceList.toArray()
 

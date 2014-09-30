@@ -10,10 +10,7 @@ class Trix.TextView extends Trix.View
   render: ->
     @element = document.createDocumentFragment()
 
-    position = 0
-    @text.eachPiece (piece) =>
-      return if piece.hasAttribute("blockBreak")
-
+    @text.eachPieceWithPosition (piece, position) =>
       [@previousPiece, @previousAttributes] = [@currentPiece, @currentAttributes]
       [@currentPiece, @currentAttributes] = [piece, piece.getAttributes()]
       @parentAttribute = @findParentAttribute()
@@ -36,7 +33,6 @@ class Trix.TextView extends Trix.View
         @element.appendChild(element)
         @element.appendChild(right) if right?
 
-      position += piece.length
     @element
 
   findParentAttribute: ->
