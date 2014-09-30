@@ -23,17 +23,17 @@ class Trix.TextView extends Trix.View
 
       if piece.attachment
         element.setAttribute("contenteditable", "false") if element.tagName?.toLowerCase() is "a"
-        before = @createCursorTargetForPosition(position)
-        after = @createCursorTargetForPosition(position + 1)
+        beforeElement = @createCursorTargetForPosition(position)
+        afterElement = @createCursorTargetForPosition(position + 1)
 
       if parentAttribute
-        @element.insertBefore(left, @element.lastChild) if left?
+        @element.insertBefore(beforeElement, @element.lastChild) if beforeElement?
         @element.lastChild.appendChild(element)
-        @element.appendChild(right) if right?
+        @element.appendChild(afterElement) if afterElement?
       else
-        @element.appendChild(left) if left?
+        @element.appendChild(beforeElement) if beforeElement?
         @element.appendChild(element)
-        @element.appendChild(right) if right?
+        @element.appendChild(afterElement) if afterElement?
 
     @element
 
