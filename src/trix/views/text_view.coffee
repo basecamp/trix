@@ -13,7 +13,9 @@ class Trix.TextView extends Trix.View
     @text.eachPieceWithPosition (piece, position) =>
       [@previousPiece, @previousAttributes] = [@currentPiece, @currentAttributes]
       [@currentPiece, @currentAttributes] = [piece, piece.getAttributes()]
-      @parentAttribute = @findParentAttribute()
+
+      if parentAttribute = @findParentAttribute()
+        delete @currentAttributes[parentAttribute]
 
       element = @createElementForCurrentPieceWithPosition(position)
       pieceView = @createChildView(Trix.PieceView, piece, position)
@@ -24,7 +26,7 @@ class Trix.TextView extends Trix.View
         before = @createCursorTargetForPosition(position)
         after = @createCursorTargetForPosition(position + 1)
 
-      if @parentAttribute
+      if parentAttribute
         @element.insertBefore(left, @element.lastChild) if left?
         @element.lastChild.appendChild(element)
         @element.appendChild(right) if right?
@@ -49,15 +51,14 @@ class Trix.TextView extends Trix.View
         styles.push(config.style)
 
       if config.tagName
-        unless config.parent and key is @parentAttribute
-          element = document.createElement(config.tagName)
-          element.setAttribute(key, value) unless typeof(value) is "boolean"
-          @recordNode(element, offset: position)
+        element = document.createElement(config.tagName)
+        element.setAttribute(key, value) unless typeof(value) is "boolean"
+        @recordNode(element, offset: position)
 
-          if config.parent
-            elements.unshift(element)
-          else
-            elements.push(element)
+        if config.parent
+          elements.unshift(element)
+        else
+          elements.push(element)
 
     if styles.length
       unless elements.length
