@@ -3,54 +3,23 @@
 #= require trix/views/image_attachment_view
 
 class Trix.PieceView extends Trix.View
-  constructor: (@piece, @parentAttribute, @position) ->
+  constructor: (@piece, @position) ->
     @options = {}
-    @attributes = @piece.getAttributes()
+
     if @piece.attachment
       @attachment = @piece.attachment
     else
       @string = @piece.toString()
 
   render: ->
-    elements = @createElementsForAttributes()
-    if elements.length
-      @element = innerElement = elements[0]
-      for child in elements[1..]
-        innerElement.appendChild(child)
-        innerElement = child
-    else
-      @element = innerElement = document.createDocumentFragment()
-
     if @attachment
-      attachmentElement = @createAttachmentElement()
-
-      if @element.nodeType is Node.DOCUMENT_FRAGMENT_NODE
-        @element = attachmentElement
-      else
-        innerElement.appendChild(attachmentElement)
-
-      @element.setAttribute("contenteditable", "false")
-      @element.setAttribute("data-trix-serialize", "false") if @piece.isPending()
-
-      container = document.createDocumentFragment()
-      container.appendChild(@createCursorTargetForPosition(@position))
-      container.appendChild(@element)
-      container.appendChild(@createCursorTargetForPosition(@position + 1))
-      @element = container
-
+      @element = @createAttachmentElement()
     else if @string
+      @element = document.createDocumentFragment()
       for node in @createStringNodes()
-        innerElement.appendChild(node)
+        @element.appendChild(node)
 
     @element
-
-  createCursorTargetForPosition: (position) ->
-    text = document.createTextNode(Trix.ZERO_WIDTH_SPACE)
-    @recordNode(text, offset: position)
-    span = document.createElement("span")
-    span.appendChild(text)
-    span.dataset.trixSerialze = false
-    span
 
   createAttachmentElement: ->
     view = if @piece.isImage()
@@ -89,36 +58,6 @@ class Trix.PieceView extends Trix.View
     element = document.createElement("br")
     @recordNode(element, offset: position)
     element
-
-  createElementsForAttributes: ->
-    elements = []
-    styles = []
-
-    for key, value of @attributes when config = Trix.attributes[key]
-      if config.style
-        styles.push(config.style)
-
-      if config.tagName
-        unless config.parent and key is @parentAttribute
-          element = document.createElement(config.tagName)
-          element.setAttribute(key, value) unless typeof(value) is "boolean"
-          @recordNode(element, offset: @position)
-
-          if config.parent
-            elements.unshift(element)
-          else
-            elements.push(element)
-
-    if styles.length
-      unless elements.length
-        span = document.createElement("span")
-        @recordNode(span, offset: @position)
-        elements.push(span)
-
-      for style in styles
-        elements[0].style[key] = value for key, value of style
-
-    elements
 
   preserveSpaces = (string) ->
     string

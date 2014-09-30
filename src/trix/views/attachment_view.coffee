@@ -10,12 +10,14 @@ class Trix.AttachmentView extends Trix.View
   render: ->
     element = document.createElement("figure")
     element.classList.add("attachment")
+    element.setAttribute("contenteditable", false)
     element.trixAttachmentId = @attachment.id
 
     for key, value of @attachmentPiece.getMetadata()
       element.dataset["trix#{capitalize(key)}"] = value
 
     if @attachmentPiece.isPending()
+      element.dataset.trixSerialize = false
       progress = document.createElement("progress")
       progress.setAttribute("id", "trix-progress-#{@attachment.id}")
       progress.setAttribute("max", 100)
