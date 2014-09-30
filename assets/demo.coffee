@@ -28,11 +28,9 @@ config =
       inspectorController.incrementRenderCount()
 
 saveAttachment = (attachment) ->
-  attributes = attachment.getAttributes()
-
   item = document.createElement("li")
   item.setAttribute("id", "attachment_#{attachment.id}")
-  item.textContent = "#{attributes.filename ? attributes.url} "
+  item.textContent = "#{attachment.getFilename() ? attachment.getURL()} "
 
   link = document.createElement("a")
   link.setAttribute("href", "#")
@@ -40,7 +38,6 @@ saveAttachment = (attachment) ->
   link.addEventListener "click",  (event) ->
     event.preventDefault()
     attachment.remove()
-    removeAttachment(attachment)
 
   item.appendChild(link)
   document.getElementById("attachments").appendChild(item)
