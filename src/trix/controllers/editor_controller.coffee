@@ -45,35 +45,35 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   # Composition delegate
 
-  compositionDidChangeDocument: (composition, document) ->
+  compositionDidChangeDocument: (document) ->
     @documentController.render()
     @saveSerializedText()
     @toolbarController.updateActions()
 
-  compositionDidChangeCurrentAttributes: (composition, currentAttributes) ->
+  compositionDidChangeCurrentAttributes: (currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
     @toolbarController.updateActions()
 
   compositionWillSetLocationRange: ->
     @skipSelectionLock = true
 
-  compositionShouldAcceptFile: (composition, file) ->
+  compositionShouldAcceptFile: (file) ->
     @delegate?.shouldAcceptFile?(file)
 
-  compositionDidAddAttachment: (composition, attachment) ->
     managedAttachment = @attachmentManager.addAttachment(attachment)
+  compositionDidAddAttachment: (attachment) ->
     @delegate?.didAddAttachment?(managedAttachment)
 
-  compositionDidRemoveAttachment: (composition, attachment) ->
     managedAttachment = @attachmentManager.removeAttachment(attachment)
+  compositionDidRemoveAttachment: (attachment) ->
     @delegate?.didRemoveAttachment?(managedAttachment)
 
-  compositionDidStartEditingAttachment: (composition, attachment) ->
+  compositionDidStartEditingAttachment: (attachment) ->
     @attachmentLocationRange = @document.getLocationRangeOfAttachment(attachment)
     @documentController.installAttachmentEditorForAttachment(attachment)
     @selectionManager.setLocationRange(@attachmentLocationRange)
 
-  compositionDidStopEditingAttachment: (composition, attachment) ->
+  compositionDidStopEditingAttachment: (attachment) ->
     @documentController.uninstallAttachmentEditor()
     delete @attachmentLocationRange
 

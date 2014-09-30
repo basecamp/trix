@@ -10,7 +10,7 @@ class Trix.Composition
     @currentAttributes = {}
 
     for attachment in @document.getAttachments()
-      @delegate?.compositionDidAddAttachment?(this, attachment)
+      @delegate?.compositionDidAddAttachment?(attachment)
 
   # Snapshots
 
@@ -25,13 +25,13 @@ class Trix.Composition
   # Document delegate
 
   didEditDocument: (document) ->
-    @delegate?.compositionDidChangeDocument?(this, @document)
+    @delegate?.compositionDidChangeDocument?(@document)
 
   documentDidAddAttachment: (document, attachment) ->
-    @delegate?.compositionDidAddAttachment?(this, attachment)
+    @delegate?.compositionDidAddAttachment?(attachment)
 
   documentDidRemoveAttachment: (document, attachment) ->
-    @delegate?.compositionDidRemoveAttachment?(this, attachment)
+    @delegate?.compositionDidRemoveAttachment?(attachment)
 
   # Responder protocol
 
@@ -92,7 +92,7 @@ class Trix.Composition
       @document.replaceDocument(document)
 
   insertFile: (file) ->
-    if @delegate?.compositionShouldAcceptFile(this, file)
+    if @delegate?.compositionShouldAcceptFile(file)
       attachment = Trix.Attachment.attachmentForFile(file)
       text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
       @insertText(text)
@@ -192,7 +192,7 @@ class Trix.Composition
     attributes
 
   notifyDelegateOfCurrentAttributesChange: ->
-    @delegate?.compositionDidChangeCurrentAttributes?(this, @currentAttributes)
+    @delegate?.compositionDidChangeCurrentAttributes?(@currentAttributes)
 
   # Selection freezing
 
@@ -262,11 +262,11 @@ class Trix.Composition
     return if attachment is @editingAttachment
     @stopEditingAttachment()
     @editingAttachment = attachment
-    @delegate?.compositionDidStartEditingAttachment(this, @editingAttachment)
+    @delegate?.compositionDidStartEditingAttachment(@editingAttachment)
 
   stopEditingAttachment: ->
     return unless @editingAttachment
-    @delegate?.compositionDidStopEditingAttachment(this, @editingAttachment)
+    @delegate?.compositionDidStopEditingAttachment(@editingAttachment)
     delete @editingAttachment
 
   # Private
