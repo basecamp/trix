@@ -63,6 +63,9 @@ class Trix.DocumentController
   attachmentEditorWillUpdateAttachment: (attachment) ->
     @delegate?.documentControllerWillUpdateAttachment?(attachment)
 
+  attachmentEditorDidRequestRemovalOfAttachment: (attachment) ->
+    @delegate?.documentControllerDidRequestRemovalOfAttachment?(attachment)
+
   # Private
 
   findElementForAttachment: (attachment) ->

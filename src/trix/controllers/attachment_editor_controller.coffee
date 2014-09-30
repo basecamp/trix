@@ -14,7 +14,7 @@ class Trix.AttachmentEditorController
   didClickRemoveButton: (event) =>
     event.preventDefault()
     event.stopPropagation()
-    @attachment.remove()
+    @delegate?.attachmentEditorDidRequestRemovalOfAttachment(@attachment)
 
   uninstall: ->
     @element?.removeChild(@removeButton)

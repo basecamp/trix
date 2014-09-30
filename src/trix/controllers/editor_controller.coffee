@@ -80,8 +80,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
   # Attachment manager delegate
 
   attachmentManagerDidRequestRemovalOfAttachment: (attachment) ->
-    @undoManager.recordUndoEntry("Delete Attachment")
-    @composition.removeAttachment(attachment)
+    @removeAttachment(attachment)
 
   # Document controller delegate
 
@@ -104,6 +103,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   documentControllerWillUpdateAttachment: (attachment) ->
     @undoManager.recordUndoEntry("Edit Attachment", context: attachment.id, consolidatable: true)
+
+  documentControllerDidRequestRemovalOfAttachment: (attachment) ->
+    @removeAttachment(attachment)
 
   # Input controller delegate
 
@@ -203,3 +205,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
   getLocationContext: ->
     locationRange = @selectionManager.getLocationRange()
     if locationRange?.isCollapsed() then locationRange.index else locationRange
+
+  # Private
+
+  removeAttachment: (attachment) ->
+    @undoManager.recordUndoEntry("Delete Attachment")
+    @composition.removeAttachment(attachment)
