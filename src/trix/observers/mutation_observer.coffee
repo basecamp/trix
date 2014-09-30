@@ -1,6 +1,8 @@
 #= require trix/utilities/helpers
+#= require trix/utilities/dom
 
 {defer} = Trix.Helpers
+{DOM} = Trix
 
 class Trix.MutationObserver
   options =
@@ -37,7 +39,7 @@ class Trix.MutationObserver
     node isnt @element and @nodeIsEditable(node)
 
   nodeIsEditable: (node) ->
-    node?.nodeType is Node.ELEMENT_NODE and node.isContentEditable
+    DOM.closestElementNode(node)?.isContentEditable
 
   nodesModifiedByMutation: (mutation) ->
     nodes = []
@@ -47,6 +49,7 @@ class Trix.MutationObserver
       when "characterData"
         # Changes to text nodes should consider the parent element
         nodes.push(mutation.target.parentNode)
+        nodes.push(mutation.target)
       when "childList"
         # Consider each added or removed node
         nodes.push(mutation.addedNodes...)
