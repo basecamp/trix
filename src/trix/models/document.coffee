@@ -6,13 +6,8 @@
 
 class Trix.Document extends Trix.Object
   @fromJSON: (documentJSON) ->
-    attachmentsJSON = documentJSON.attachments
-    blocksJSON = documentJSON.blocks
-
-    # TODO: Map attachments
-    blocks = for blockJSON in blocksJSON
+    blocks = for blockJSON in documentJSON
       Trix.Block.fromJSON blockJSON
-
     new this blocks
 
   @fromHTML: (html, options) ->

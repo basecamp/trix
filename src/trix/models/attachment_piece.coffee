@@ -5,7 +5,7 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   objectReplacementCharacter = "\uFFFC"
 
   @fromJSON: (pieceJSON) ->
-    new this new Trix.Attachment, pieceJSON.attributes
+    new this Trix.Attachment.fromJSON(pieceJSON.attachment), pieceJSON.attributes
 
   constructor: ->
     super
@@ -24,3 +24,8 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
 
   toString: ->
     objectReplacementCharacter
+
+  toJSON: ->
+    json = super
+    json.attachment = @attachment
+    json

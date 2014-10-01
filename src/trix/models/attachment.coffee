@@ -13,6 +13,9 @@ class Trix.Attachment extends Trix.Object
       filesize:    file.size
       contentType: file.type
 
+  @fromJSON: (attachmentJSON) ->
+    new this attachmentJSON.attributes
+
   constructor: (attributes = {}) ->
     super
     @attributes = Trix.Hash.box(attributes)
