@@ -19,7 +19,7 @@ class Trix.DocumentController
     @delegate?.documentControllerDidFocus?()
 
   didClickAttachment: (event, target) =>
-    attachment = @document.getAttachmentById(target.trixAttachmentId)
+    attachment = @findAttachmentForElement(target)
     @delegate?.documentControllerDidSelectAttachment?(attachment)
 
   render: ->
@@ -65,6 +65,10 @@ class Trix.DocumentController
 
   # Private
 
+  findAttachmentForElement: (element) ->
+    return unless piece = @documentView.findObjectForNode(element)
+    @document.getAttachmentById(piece.attachment.id)
+
   findElementForAttachment: (attachment) ->
-    for figure in @element.querySelectorAll("figure")
-      return figure if figure.trixAttachmentId is attachment.id
+    return unless piece = @document.getAttachmentPieceForAttachment(attachment.attachment)
+    @documentView.findNodesForObject(piece)?[0]

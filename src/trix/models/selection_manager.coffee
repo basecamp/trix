@@ -139,7 +139,7 @@ class Trix.SelectionManager
 
   findContainerAndOffsetForLocation: (location) ->
     [node, nodeOffset] = @findNodeAndOffsetForLocation(location)
-
+    return unless node
     if node.nodeType is Node.TEXT_NODE
       container = node
       offset = location.offset - nodeOffset
