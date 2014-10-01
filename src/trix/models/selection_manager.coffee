@@ -13,8 +13,6 @@ class Trix.SelectionManager
     @selectionObserver = new Trix.SelectionObserver @element
     @selectionObserver.delegate = this
 
-  updateNodeLocations: (@nodeLocations) ->
-
   getLocationRange: ->
     @lockedLocationRange ? @currentLocationRange
 
@@ -83,6 +81,9 @@ class Trix.SelectionManager
 
   # Private
 
+  getNodeLocations: ->
+    @delegate?.getNodeLocations()
+
   updateCurrentLocationRange: (domRange = getDOMRange()) ->
     locationRange = @createLocationRangeFromDOMRange(domRange)
     if (@currentLocationRange and not locationRange) or not locationRange?.isEqualTo(@currentLocationRange)
@@ -125,7 +126,7 @@ class Trix.SelectionManager
   findLocationFromContainerAtOffset: (container, containerOffset) ->
     node = DOM.findNodeForContainerAtOffset(container, containerOffset)
 
-    for index, offsets of @nodeLocations
+    for index, offsets of @getNodeLocations()
       for offset, nodes of offsets when node in nodes
         index = Number(index)
         offset = Number(offset)
@@ -152,7 +153,7 @@ class Trix.SelectionManager
     [container, offset]
 
   findNodeAndOffsetForLocation: (location) ->
-    for offset, nodes of @nodeLocations[location.index]
+    for offset, nodes of @getNodeLocations[location.index]
       offset = Number(offset)
       break if offset > location.offset
 

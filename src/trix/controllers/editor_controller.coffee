@@ -70,7 +70,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @mutationObserver.start()
     @selectionManager.unlock() unless @skipSelectionLock
     delete @skipSelectionLock
-    @selectionManager.updateNodeLocations(@documentController.getNodeLocations())
     @delegate?.didRenderDocument?()
 
   documentControllerDidFocus: ->
@@ -120,6 +119,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
     if @attachmentLocationRange and not @attachmentLocationRange.isEqualTo(locationRange)
       @composition.stopEditingAttachment()
     @delegate?.didChangeSelection?()
+
+  getNodeLocations: ->
+    @documentController.getNodeLocations()
 
   # Mutation observer delegate
 
