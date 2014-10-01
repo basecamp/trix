@@ -30,7 +30,7 @@ class Trix.DocumentController
     @documentView.focus()
 
   getNodeLocations: ->
-    @documentView.cache.locations
+    @documentView.getNodeLocations()
 
   # Attachment editor management
 

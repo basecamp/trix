@@ -29,6 +29,9 @@ class Trix.View
     @cache.objects[object.id] = {object, nodes}
     node
 
+  getNodeLocations: ->
+    @cache.locations
+
   findObjectForNode: (node) ->
     return value.object for key, value of @cache.objects when node in value.nodes
 
