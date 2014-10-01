@@ -15,9 +15,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
 
-    @documentController = new Trix.DocumentController @documentElement, @document
-    @documentController.delegate = this
-
     @composition = new Trix.Composition @document
     @composition.delegate = this
     @composition.selectionDelegate = @selectionManager
@@ -35,7 +32,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @toolbarController.delegate = this
     @toolbarController.updateActions()
 
-    # Focus last to ensure all focus event handlers are triggered
+    @documentController = new Trix.DocumentController @documentElement, @document
+    @documentController.delegate = this
+    @documentController.render()
     @documentController.focus() if @config.autofocus
 
   # Composition delegate
@@ -71,6 +70,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @mutationObserver.start()
     @selectionManager.unlock() unless @skipSelectionLock
     delete @skipSelectionLock
+    @selectionManager.updateNodeLocations(@documentController.getNodeLocations())
     @delegate?.didRenderDocument?()
 
   documentControllerDidFocus: ->

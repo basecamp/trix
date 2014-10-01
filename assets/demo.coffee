@@ -24,8 +24,8 @@ config =
       inspectorController.render()
 
     didRenderDocument: ->
-      inspectorController.render()
-      inspectorController.incrementRenderCount()
+      inspectorController?.render()
+      inspectorController?.incrementRenderCount()
 
 saveAttachment = (attachment) ->
   attributes = attachment.getAttributes()

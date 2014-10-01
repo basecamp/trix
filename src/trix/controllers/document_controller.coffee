@@ -13,8 +13,6 @@ class Trix.DocumentController
     DOM.on(@element, "click", "a[contenteditable=false]", (e) -> e.preventDefault())
     DOM.on(@element, "click", "figure.attachment", @didClickAttachment)
 
-    @render()
-
   didFocus: =>
     @delegate?.documentControllerDidFocus?()
 
@@ -30,6 +28,9 @@ class Trix.DocumentController
 
   focus: ->
     @documentView.focus()
+
+  getNodeLocations: ->
+    @documentView.cache.locations
 
   # Attachment editor management
 

@@ -13,9 +13,7 @@ class Trix.SelectionManager
     @selectionObserver = new Trix.SelectionObserver @element
     @selectionObserver.delegate = this
 
-  # FIXME
-  getNodeRecords: ->
-    @delegate.documentController.documentView.cache.locations
+  updateNodeLocations: (@nodeLocations) ->
 
   getLocationRange: ->
     @lockedLocationRange ? @currentLocationRange
@@ -127,7 +125,7 @@ class Trix.SelectionManager
   findLocationFromContainerAtOffset: (container, containerOffset) ->
     node = DOM.findNodeForContainerAtOffset(container, containerOffset)
 
-    for index, offsets of @getNodeRecords()
+    for index, offsets of @nodeLocations
       for offset, nodes of offsets when node in nodes
         index = Number(index)
         offset = Number(offset)
@@ -154,7 +152,7 @@ class Trix.SelectionManager
     [container, offset]
 
   findNodeAndOffsetForLocation: (location) ->
-    for offset, nodes of @getNodeRecords()[location.index]
+    for offset, nodes of @nodeLocations[location.index]
       offset = Number(offset)
       break if offset > location.offset
 
