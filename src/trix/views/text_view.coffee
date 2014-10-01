@@ -35,7 +35,7 @@ class Trix.TextView extends Trix.View
         @element.appendChild(element)
         @element.appendChild(afterElement) if afterElement?
 
-    @element
+    @cacheNode(@element, @text)
 
   findParentAttribute: ->
     if @previousAttributes
@@ -53,7 +53,7 @@ class Trix.TextView extends Trix.View
       if config.tagName
         element = document.createElement(config.tagName)
         element.setAttribute(key, value) unless typeof(value) is "boolean"
-        @recordNode(element, offset: position)
+        @cacheNode(element, offset: position)
 
         if config.parent
           elements.unshift(element)
@@ -63,7 +63,7 @@ class Trix.TextView extends Trix.View
     if styles.length
       unless elements.length
         span = document.createElement("span")
-        @recordNode(span, offset: position)
+        @cacheNode(span, offset: position)
         elements.push(span)
 
       for style in styles
@@ -77,12 +77,11 @@ class Trix.TextView extends Trix.View
       element
     else
       element = document.createDocumentFragment()
-      @recordNode(element, offset: position)
       element
 
   createCursorTargetForPosition: (position) ->
     text = document.createTextNode(Trix.ZERO_WIDTH_SPACE)
-    @recordNode(text, offset: position)
+    @cacheNode(text, offset: position)
     span = document.createElement("span")
     span.appendChild(text)
     span.dataset.trixSerialze = false

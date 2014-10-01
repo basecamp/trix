@@ -9,20 +9,16 @@ class Trix.BlockView extends Trix.View
 
   render: ->
     @element = document.createElement(@blockConfig.tagName ? "div")
-
+    @cacheNode(@element, index: @blockIndex, offset: 0)
     if @block.isEmpty()
       br = document.createElement("br")
-      @recordNode(br, offset: 0)
+      @cacheNode(br, index: @blockIndex, offset: 0)
       @element.appendChild(br)
     else
       textView = @createChildView(Trix.TextView, @block.text, @blockConfig)
       @element.appendChild(textView.render())
       @appendExtraNewlineElement()
     @element
-
-  recordNode: (node, location = {}) ->
-    location.index = @blockIndex
-    super
 
   getBlockConfig: ->
     return config for key of @block.getAttributes() when (config = Trix.attributes[key])?.block

@@ -15,7 +15,7 @@ class Trix.SelectionManager
 
   # FIXME
   getNodeRecords: ->
-    @delegate.documentController.documentView.nodeRecords
+    @delegate.documentController.documentView.cache.locations
 
   getLocationRange: ->
     @lockedLocationRange ? @currentLocationRange

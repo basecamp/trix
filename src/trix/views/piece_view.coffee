@@ -19,7 +19,7 @@ class Trix.PieceView extends Trix.View
       for node in @createStringNodes()
         @element.appendChild(node)
 
-    @element
+    @cacheNode(@element, @piece)
 
   createAttachmentElement: ->
     view = if @piece.isImage()
@@ -37,8 +37,7 @@ class Trix.PieceView extends Trix.View
 
     if @options.plaintext
       node = document.createTextNode(@string)
-      @recordNode(node, offset: @string.length)
-      nodes.push(node)
+      nodes.push(@cacheNode(node, offset: @string.length))
     else
       position = @position
       for substring, index in @string.split("\n")
@@ -49,15 +48,13 @@ class Trix.PieceView extends Trix.View
 
         if length = substring.length
           node = document.createTextNode(preserveSpaces(substring))
-          @recordNode(node, offset: position)
+          nodes.push(@cacheNode(node, offset: position))
           position += length
-          nodes.push(node)
     nodes
 
   createBRElementForPosition: (position) ->
     element = document.createElement("br")
-    @recordNode(element, offset: position)
-    element
+    @cacheNode(element, offset: position)
 
   preserveSpaces = (string) ->
     string
