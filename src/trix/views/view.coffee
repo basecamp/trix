@@ -26,14 +26,14 @@ class Trix.View
       [node.childNodes...]
     else
       [node]
-    @cache.objects[object.toObjectKey()] = {object, nodes}
+    @cache.objects[object.id] = {object, nodes}
     node
 
   findObjectForNode: (node) ->
     return value.object for key, value of @cache.objects when node in value.nodes
 
   findNodesForObject: (object) ->
-    @cache.objects[object.toObjectKey()]?.nodes
+    @cache.objects[object.id]?.nodes
 
   createChildView: (viewClass, args...) ->
     view = new viewClass args...
@@ -43,5 +43,3 @@ class Trix.View
     @childViews.push(view)
     view
 
-  identifierForObject = (object) ->
-    "#{object.constructor.name}:#{object.id}"
