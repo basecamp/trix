@@ -23,3 +23,9 @@ class Trix.Object
 
   toJSONString: ->
     JSON.stringify this
+
+  toObjectKey: ->
+    "#{functionName(@constructor)}:#{@id}"
+
+  functionName = (fn) ->
+    fn.name ? fn.toString().match(/function\s*(\w+)/)?[1]
