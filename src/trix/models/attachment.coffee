@@ -14,7 +14,7 @@ class Trix.Attachment extends Trix.Object
       contentType: file.type
 
   @fromJSON: (attachmentJSON) ->
-    new this attachmentJSON.attributes
+    new this attachmentJSON
 
   constructor: (attributes = {}) ->
     super
@@ -61,4 +61,4 @@ class Trix.Attachment extends Trix.Object
       reader.readAsDataURL(@file)
 
   toJSON: ->
-    attributes: @attributes
+    @attributes
