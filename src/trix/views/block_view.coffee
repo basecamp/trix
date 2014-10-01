@@ -3,8 +3,6 @@
 #= require trix/views/text_view
 
 class Trix.BlockView extends Trix.View
-  textOptionKeys = ["plaintext"]
-
   constructor: (@block, @blockIndex) ->
     @blockConfig = @getBlockConfig()
     @textConfig = @blockConfig.text ? {}
