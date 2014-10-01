@@ -14,19 +14,22 @@ class Trix.TextView extends Trix.View
       [@previousPiece, @previousAttributes] = [@currentPiece, @currentAttributes]
       [@currentPiece, @currentAttributes] = [piece, piece.getAttributes()]
 
-      if parentAttribute = @findParentAttribute()
-        delete @currentAttributes[parentAttribute]
+      if @previousAttributes?.href? and @previousAttributes.href is @currentAttributes.href
+        parentHref = @previousAttributes.href
+        delete @currentAttributes.href
 
-      element = @createElementForCurrentPieceWithPosition(position)
       pieceView = @createChildView(Trix.PieceView, piece, position)
-      DOM.deepestFirstChild(element).appendChild(pieceView.render())
+      if element = @createElementForCurrentPieceWithPosition(position)
+        DOM.deepestFirstChild(element).appendChild(pieceView.render())
+      else
+        element = pieceView.render()
 
       if piece.attachment
         element.setAttribute("contenteditable", "false") if element.tagName?.toLowerCase() is "a"
         beforeElement = @createCursorTargetForPosition(position)
         afterElement = @createCursorTargetForPosition(position + 1)
 
-      if parentAttribute
+      if parentHref
         @element.insertBefore(beforeElement, @element.lastChild) if beforeElement?
         @element.lastChild.appendChild(element)
         @element.appendChild(afterElement) if afterElement?
@@ -37,47 +40,33 @@ class Trix.TextView extends Trix.View
 
     @cacheNode(@element, @text)
 
-  findParentAttribute: ->
-    if @previousAttributes
-      for key, value of @currentAttributes when Trix.attributes[key]?.parent
-        return key if value is @previousAttributes[key]
-
   createElementForCurrentPieceWithPosition: (position) ->
-    elements = []
-    styles = []
-
     for key, value of @currentAttributes when config = Trix.attributes[key]
-      if config.style
-        styles.push(config.style)
-
       if config.tagName
-        element = document.createElement(config.tagName)
-        element.setAttribute(key, value) unless typeof(value) is "boolean"
-        @cacheNode(element, offset: position)
+        configElement = document.createElement(config.tagName)
+        configElement.setAttribute(key, value) unless typeof value is "boolean"
+        @cacheNode(configElement, offset: position)
 
-        if config.parent
-          elements.unshift(element)
+        if element
+          if key is "href"
+            configElement.appendChild(element)
+            element = configElement
+          else
+            DOM.deepestFirstChild(element).appendChild(configElement)
         else
-          elements.push(element)
+          element = configElement
 
-    if styles.length
-      unless elements.length
-        span = document.createElement("span")
-        @cacheNode(span, offset: position)
-        elements.push(span)
+      if config.style
+        if styles
+          styles[key] = val for key, value of config.style
+        else
+          styles = config.style
 
-      for style in styles
-        elements[0].style[key] = value for key, value of style
+    if styles
+      element ?= @cacheNode(document.createElement("span"), offset: position)
+      element.style[key] = value for key, value of styles
 
-    if elements.length
-      element = innerElement = elements[0]
-      for child in elements[1..]
-        innerElement.appendChild(child)
-        innerElement = child
-      element
-    else
-      element = document.createDocumentFragment()
-      element
+    element
 
   createCursorTargetForPosition: (position) ->
     text = document.createTextNode(Trix.ZERO_WIDTH_SPACE)
