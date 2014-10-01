@@ -153,7 +153,7 @@ class Trix.SelectionManager
     [container, offset]
 
   findNodeAndOffsetForLocation: (location) ->
-    for offset, nodes of @getNodeLocations[location.index]
+    for offset, nodes of @getNodeLocations()[location.index]
       offset = Number(offset)
       break if offset > location.offset
 
