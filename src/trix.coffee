@@ -50,7 +50,8 @@
     code:
       block: true
       tagName: "pre"
-      plaintext: true
+      text:
+        plaintext: true
 
   config:
     editorCSS: """

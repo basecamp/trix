@@ -3,9 +3,7 @@
 #= require trix/views/image_attachment_view
 
 class Trix.PieceView extends Trix.View
-  constructor: (@piece, @position) ->
-    @options = {}
-
+  constructor: (@piece, @position, @textConfig) ->
     if @piece.attachment
       @attachment = @piece.attachment
     else
@@ -35,7 +33,7 @@ class Trix.PieceView extends Trix.View
   createStringNodes: ->
     nodes = []
 
-    if @options.plaintext
+    if @textConfig.plaintext
       node = document.createTextNode(@string)
       nodes.push(@cacheNode(node, offset: @string.length))
     else

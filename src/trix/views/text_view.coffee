@@ -5,7 +5,7 @@
 {DOM} = Trix
 
 class Trix.TextView extends Trix.View
-  constructor: (@text, @options) ->
+  constructor: (@text, @textConfig) ->
 
   render: ->
     @element = document.createDocumentFragment()
@@ -18,7 +18,7 @@ class Trix.TextView extends Trix.View
         parentHref = @previousAttributes.href
         delete @currentAttributes.href
 
-      pieceView = @createChildView(Trix.PieceView, piece, position)
+      pieceView = @createChildView(Trix.PieceView, piece, position, @textConfig)
       if element = @createElementForCurrentPieceWithPosition(position)
         DOM.deepestFirstChild(element).appendChild(pieceView.render())
       else
