@@ -4,10 +4,12 @@
 {capitalize} = Trix.Helpers
 
 class Trix.AttachmentView extends Trix.View
-  constructor: (@attachmentPiece) ->
-    {@attachment} = @attachmentPiece
+  constructor: ->
+    super
+    @attachment = @object
+    @attachmentPiece = @options.piece
 
-  render: ->
+  createElement: ->
     element = document.createElement("figure")
     element.classList.add("attachment")
     element.setAttribute("contenteditable", false)

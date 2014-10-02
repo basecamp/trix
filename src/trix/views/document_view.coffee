@@ -2,16 +2,25 @@
 #= require trix/views/block_view
 
 class Trix.DocumentView extends Trix.View
-  constructor: (@element, @document) ->
+  constructor: ->
+    super
+    @document = @object
+    {@element} = @options
+
+    @blockIndex = 0
+    @recordNodeWithLocation(@element, offset: 0)
 
   render: ->
-    @resetCache()
-    @cacheNode(@element, index: 0, offset: 0)
     @element.removeChild(@element.lastChild) while @element.lastChild
+
+    @childViews = []
     unless @document.isEmpty()
-      @document.eachBlock (block, index) =>
-        blockView = @createChildView(Trix.BlockView, block, index)
+      @document.eachBlock (block, @blockIndex) =>
+        blockView = @findOrCreateChildView(Trix.BlockView, block, {@blockIndex})
         @element.appendChild(blockView.render())
+
+    @refreshCache()
+    @element
 
   focus: ->
     @element.focus()

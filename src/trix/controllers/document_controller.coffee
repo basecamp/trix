@@ -7,7 +7,7 @@
 
 class Trix.DocumentController
   constructor: (@element, @document) ->
-    @documentView = new Trix.DocumentView @element, @document
+    @documentView = new Trix.DocumentView @document, {@element}
 
     DOM.on(@element, "focus", @didFocus)
     DOM.on(@element, "click", "a[contenteditable=false]", (e) -> e.preventDefault())
@@ -67,9 +67,8 @@ class Trix.DocumentController
   # Private
 
   findAttachmentForElement: (element) ->
-    return unless piece = @documentView.findObjectForNode(element)
-    @document.getAttachmentById(piece.attachment.id)
+    return unless attachment = @documentView.findObjectForNode(element)
+    @document.getAttachmentById(attachment.id)
 
   findElementForAttachment: (attachment) ->
-    return unless piece = @document.getAttachmentPieceForAttachment(attachment.attachment)
-    @documentView.findNodesForObject(piece)?[0]
+    @documentView.findNodesForObject(attachment.attachment)?[0]

@@ -5,7 +5,10 @@
 {DOM} = Trix
 
 class Trix.TextView extends Trix.View
-  constructor: (@text, @textConfig) ->
+  constructor: ->
+    super
+    @text = @object
+    {@textConfig} = @options
 
   render: ->
     @element = document.createDocumentFragment()
@@ -18,7 +21,7 @@ class Trix.TextView extends Trix.View
         parentHref = @previousAttributes.href
         delete @currentAttributes.href
 
-      pieceView = @createChildView(Trix.PieceView, piece, position, @textConfig)
+      pieceView = @findOrCreateChildView(Trix.PieceView, piece, {position, @textConfig})
       if element = @createElementForCurrentPieceWithPosition(position)
         DOM.deepestFirstChild(element).appendChild(pieceView.render())
       else
@@ -38,14 +41,14 @@ class Trix.TextView extends Trix.View
         @element.appendChild(element)
         @element.appendChild(afterElement) if afterElement?
 
-    @cacheNode(@element, @text)
+    @element
 
   createElementForCurrentPieceWithPosition: (position) ->
     for key, value of @currentAttributes when config = Trix.attributes[key]
       if config.tagName
         configElement = document.createElement(config.tagName)
         configElement.setAttribute(key, value) unless typeof value is "boolean"
-        @cacheNode(configElement, offset: position)
+        @recordNodeWithLocation(configElement, offset: position)
 
         if element
           if key is "href"
@@ -63,14 +66,14 @@ class Trix.TextView extends Trix.View
           styles = config.style
 
     if styles
-      element ?= @cacheNode(document.createElement("span"), offset: position)
+      element ?= @recordNodeWithLocation(document.createElement("span"), offset: position)
       element.style[key] = value for key, value of styles
 
     element
 
   createCursorTargetForPosition: (position) ->
     text = document.createTextNode(Trix.ZERO_WIDTH_SPACE)
-    @cacheNode(text, offset: position)
+    @recordNodeWithLocation(text, offset: position)
     span = document.createElement("span")
     span.appendChild(text)
     span.dataset.trixSerialze = false

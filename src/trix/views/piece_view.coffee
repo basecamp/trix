@@ -3,39 +3,35 @@
 #= require trix/views/image_attachment_view
 
 class Trix.PieceView extends Trix.View
-  constructor: (@piece, @position, @textConfig) ->
+  constructor: ->
+    super
+    @piece = @object
+    {@position, @textConfig} = @options
+    @cacheKey = "#{@cacheKey}@#{@position}"
+
     if @piece.attachment
       @attachment = @piece.attachment
     else
       @string = @piece.toString()
 
-  render: ->
+  createNodes: ->
     if @attachment
-      @element = @createAttachmentElement()
+      [@createAttachmentElement()]
     else if @string
-      @element = document.createDocumentFragment()
-      for node in @createStringNodes()
-        @element.appendChild(node)
-
-    @cacheNode(@element, @piece)
+      @createStringNodes()
 
   createAttachmentElement: ->
-    view = if @piece.isImage()
-      @createChildView(Trix.ImageAttachmentView, @piece)
+    if @piece.isImage()
+      @findOrCreateChildView(Trix.ImageAttachmentView, @piece.attachment, {@piece}).render()
     else
-      @createChildView(Trix.FileAttachmentView, @piece)
-
-    @piece.element ?= (
-      element = view.render()
-      element
-    )
+      @findOrCreateChildView(Trix.FileAttachmentView, @piece.attachment, {@piece}).render()
 
   createStringNodes: ->
     nodes = []
 
     if @textConfig.plaintext
       node = document.createTextNode(@string)
-      nodes.push(@cacheNode(node, offset: @string.length))
+      nodes.push(@recordNodeWithLocation(node, offset: @string.length))
     else
       position = @position
       for substring, index in @string.split("\n")
@@ -46,13 +42,13 @@ class Trix.PieceView extends Trix.View
 
         if length = substring.length
           node = document.createTextNode(preserveSpaces(substring))
-          nodes.push(@cacheNode(node, offset: position))
+          nodes.push(@recordNodeWithLocation(node, offset: position))
           position += length
     nodes
 
   createBRElementForPosition: (position) ->
     element = document.createElement("br")
-    @cacheNode(element, offset: position)
+    @recordNodeWithLocation(element, offset: position)
 
   preserveSpaces = (string) ->
     string

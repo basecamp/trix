@@ -3,22 +3,27 @@
 #= require trix/views/text_view
 
 class Trix.BlockView extends Trix.View
-  constructor: (@block, @blockIndex) ->
+  constructor: ->
+    super
+    @block = @object
+    {@blockIndex} = @options
     @blockConfig = @getBlockConfig()
     @textConfig = @blockConfig.text ? {}
 
-  render: ->
+  createNodes: ->
     @element = document.createElement(@blockConfig.tagName ? "div")
-    @cacheNode(@element, index: @blockIndex, offset: 0)
+    @recordNodeWithLocation(@element, offset: 0)
+
     if @block.isEmpty()
       br = document.createElement("br")
-      @cacheNode(br, index: @blockIndex, offset: 0)
+      @recordNodeWithLocation(br, offset: 0)
       @element.appendChild(br)
     else
-      textView = @createChildView(Trix.TextView, @block.text, @textConfig)
+      textView = @findOrCreateChildView(Trix.TextView, @block.text, {@textConfig})
       @element.appendChild(textView.render())
       @appendExtraNewlineElement()
-    @element
+
+    [@element]
 
   getBlockConfig: ->
     return config for key of @block.getAttributes() when (config = Trix.attributes[key])?.block
