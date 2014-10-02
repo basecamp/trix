@@ -57,8 +57,9 @@ class Trix.HTMLParser
       @appendBlockForAttributes({})
 
   processTextNode: (node) ->
-    string = node.textContent.replace(/\s/, " ")
-    @appendStringWithAttributes(string, getAttributes(node.parentNode))
+    unless node.textContent is Trix.ZERO_WIDTH_SPACE
+      string = node.textContent.replace(/\s/, " ")
+      @appendStringWithAttributes(string, getAttributes(node.parentNode))
 
   processElementNode: (node) ->
     switch node.tagName.toLowerCase()
@@ -118,10 +119,13 @@ class Trix.HTMLParser
     attributes = {}
     style = window.getComputedStyle(element)
 
-    for attribute, config of Trix.attributes when config.parser
-      if value = config.parser({element, style})
-        attributes[attribute] = value
-
+    for attribute, config of Trix.attributes
+      if config.parser
+        if value = config.parser({element, style})
+          attributes[attribute] = value
+      else if config.tagName
+        if element.tagName?.toLowerCase() is config.tagName
+          attributes[attribute] = true
     attributes
 
   getMetadata = (element) ->
