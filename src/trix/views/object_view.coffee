@@ -1,3 +1,7 @@
+#= require trix/utilities/helpers
+
+{defer} = Trix.Helpers
+
 class Trix.ObjectView
   constructor: (@object, @options = {}) ->
     @childViews = []
@@ -43,7 +47,7 @@ class Trix.ObjectView
   refreshCache: ->
     views = @getAllChildViews().concat(this)
     @refreshLocationCacheWithViews(views)
-    @refreshViewCacheWithViews(views)
+    defer => @refreshViewCacheWithViews(views)
 
   refreshLocationCacheWithViews: (views) ->
     @cache.locations = {}
