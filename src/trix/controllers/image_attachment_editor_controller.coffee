@@ -56,5 +56,4 @@ class Trix.ImageAttachmentEditorController extends Trix.AttachmentEditorControll
 
     delete @resizing
 
-    @delegate?.attachmentEditorWillUpdateAttachment(@attachment)
-    @attachment.setAttributes(attributes)
+    @delegate?.attachmentEditorDidRequestUpdatingAttachmentWithAttributes?(@attachment, attributes)

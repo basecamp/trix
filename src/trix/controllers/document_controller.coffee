@@ -60,8 +60,9 @@ class Trix.DocumentController
   didUninstallAttachmentEditor: ->
     delete @attachmentEditor
 
-  attachmentEditorWillUpdateAttachment: (attachment) ->
+  attachmentEditorDidRequestUpdatingAttachmentWithAttributes: (attachment, attributes) ->
     @delegate?.documentControllerWillUpdateAttachment?(attachment)
+    @document.updateAttributesForAttachment(attributes, attachment)
 
   attachmentEditorDidRequestRemovalOfAttachment: (attachment) ->
     @delegate?.documentControllerDidRequestRemovalOfAttachment?(attachment)
