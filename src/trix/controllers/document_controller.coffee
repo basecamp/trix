@@ -21,10 +21,12 @@ class Trix.DocumentController
     @delegate?.documentControllerDidSelectAttachment?(attachment)
 
   render: ->
+    console.time?("DocumentController#render") if Trix.debug.logEditOperations
     @delegate?.documentControllerWillRender?()
     @documentView.render()
     @reinstallAttachmentEditor()
     @delegate?.documentControllerDidRender?()
+    console.timeEnd?("DocumentController#render") if Trix.debug.logEditOperations
 
   focus: ->
     @documentView.focus()
