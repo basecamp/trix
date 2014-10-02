@@ -1,7 +1,7 @@
-#= require trix/views/view
+#= require trix/views/object_view
 #= require trix/views/block_view
 
-class Trix.DocumentView extends Trix.View
+class Trix.DocumentView extends Trix.ObjectView
   constructor: ->
     super
     @document = @object

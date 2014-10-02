@@ -1,4 +1,4 @@
-class Trix.View
+class Trix.ObjectView
   constructor: (@object, @options = {}) ->
     @childViews = []
     @cacheKey = @object.id.toString()

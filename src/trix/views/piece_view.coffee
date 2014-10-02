@@ -1,8 +1,8 @@
-#= require trix/views/view
+#= require trix/views/object_view
 #= require trix/views/file_attachment_view
 #= require trix/views/image_attachment_view
 
-class Trix.PieceView extends Trix.View
+class Trix.PieceView extends Trix.ObjectView
   constructor: ->
     super
     @piece = @object

@@ -1,10 +1,10 @@
-#= require trix/views/view
+#= require trix/views/object_view
 #= require trix/views/piece_view
 #= require trix/utilities/dom
 
 {DOM} = Trix
 
-class Trix.TextView extends Trix.View
+class Trix.TextView extends Trix.ObjectView
   constructor: ->
     super
     @text = @object

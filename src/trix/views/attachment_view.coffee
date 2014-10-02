@@ -1,9 +1,9 @@
-#= require trix/views/view
+#= require trix/views/object_view
 #= require trix/utilities/helpers
 
 {capitalize} = Trix.Helpers
 
-class Trix.AttachmentView extends Trix.View
+class Trix.AttachmentView extends Trix.ObjectView
   constructor: ->
     super
     @attachment = @object
