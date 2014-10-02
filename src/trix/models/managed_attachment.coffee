@@ -1,15 +1,13 @@
 #= require trix/models/attachment
 
-# TODO: ManagedAttachment should merge intrinsic and visual attributes into a single hash
-
 class Trix.ManagedAttachment
   # Forward all Attachment methods
-  for name, value of Trix.Attachment.prototype when typeof value is "function" then do (name, value) =>
-    @::[name] = -> @attachment[name].call(@attachment, arguments)
+  for own name, value of Trix.Attachment.prototype when name isnt "constructor" and typeof value is "function"
+    do (name, value) =>
+      @::[name] = -> @attachment[name].call(@attachment, arguments)
 
   constructor: (@attachmentManager, @attachment) ->
-    {@id, @file} = @attachment
-    {@document} = @attachmentManager
+    {@id} = @attachment
 
   setUploadProgress: (value) ->
     document.getElementById("trix-progress-#{@id}")?.setAttribute("value", value)
