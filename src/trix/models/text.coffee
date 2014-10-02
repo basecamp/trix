@@ -27,7 +27,7 @@ class Trix.Text extends Trix.Object
     @copyWithPieceList @pieceList
 
   copyWithPieceList: (pieceList) ->
-    new @constructor pieceList.consolidate().toArray(), @attributes
+    new @constructor pieceList.consolidate().toArray()
 
   appendText: (text) ->
     @insertTextAtPosition(text, @getLength())
