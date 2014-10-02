@@ -15,7 +15,7 @@ Trix.Piece.registerType "string", class Trix.StringPiece extends Trix.Piece
   # Splittable
 
   canBeConsolidatedWith: (piece) ->
-    piece? and @hasSameAttributesAsPiece(piece)
+    piece? and @hasSameConstructorAs(piece) and @hasSameAttributesAsPiece(piece)
 
   consolidateWith: (piece) ->
     new @constructor @toString() + piece.toString(), @attributes
