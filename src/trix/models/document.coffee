@@ -305,10 +305,17 @@ class Trix.Document extends Trix.Object
   # Attachments collection delegate
 
   collectionDidAddObject: (collection, object) ->
+    object.delegate = this
     @delegate?.documentDidAddAttachment(this, object)
 
   collectionDidRemoveObject: (collection, object) ->
+    delete object.delegate
     @delegate?.documentDidRemoveAttachment(this, object)
+
+  # Attachment delegate
+
+  attachmentDidChangeAttributes: (attachment) ->
+    console.log "Attachment attributes changed for", attachment
 
   # Private
 

@@ -27,7 +27,10 @@ class Trix.Attachment extends Trix.Object
     @attributes.toObject()
 
   setAttributes: (attributes = {}) ->
-    @attributes = @attributes.merge(attributes)
+    newAttributes = @attributes.merge(attributes)
+    unless @attributes.isEqualTo(newAttributes)
+      @attributes = newAttributes
+      @delegate?.attachmentDidChangeAttributes?(this)
 
   isPending: ->
     @file? and not @getURL()
