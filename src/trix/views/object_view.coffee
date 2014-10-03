@@ -5,7 +5,6 @@
 class Trix.ObjectView
   constructor: (@object, @options = {}) ->
     @childViews = []
-    @cacheKey = @object.id.toString()
     @cache = views: {}, locations: {}
 
   render: ->
@@ -18,12 +17,11 @@ class Trix.ObjectView
       element
 
   findOrCreateChildView: (viewClass, object, options) ->
-    pendingView = new viewClass object, options
-    unless view = @cache.views[pendingView.cacheKey]
-      view = pendingView
+    unless view = @cache.views[object.toKey()]
+      view = new viewClass object, options
       view.parentView = this
       view.cache = @cache
-      @cache.views[view.cacheKey] = view
+      @cache.views[object.toKey()] = view
     @childViews.push(view) unless view in @childViews
     view
 
@@ -58,11 +56,11 @@ class Trix.ObjectView
         @cache.locations[nodeLocation.index][nodeLocation.offset].push(nodeLocation.node)
 
   refreshViewCacheWithViews: (views) ->
-    cacheKeys = (view.cacheKey for view in views)
-    delete @cache.views[key] for key of @cache.views when key not in cacheKeys
+    objectKeys = (view.object.toKey() for view in views)
+    delete @cache.views[key] for key of @cache.views when key not in objectKeys
 
   findObjectForNode: (node) ->
     return value.object for key, value of @cache.views when value.nodes and node in value.nodes
 
   findNodesForObject: (object) ->
-    return value.nodes for key, value of @cache.views when value.object is object
+    @cache.views[object.toKey()].nodes
