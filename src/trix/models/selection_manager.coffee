@@ -99,12 +99,8 @@ class Trix.SelectionManager
         @findContainerAndOffsetForLocation(locationRange.end)
 
     range = document.createRange()
-    try
-      range.setStart(rangeStart...)
-      range.setEnd(rangeEnd...)
-    catch err
-      range.setStart(@element, 0)
-      range.setEnd(@element, 0)
+    range.setStart(rangeStart...)
+    range.setEnd(rangeEnd...)
 
     selection = window.getSelection()
     selection.removeAllRanges()
