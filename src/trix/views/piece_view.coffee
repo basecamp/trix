@@ -30,24 +30,18 @@ class Trix.PieceView extends Trix.ObjectView
 
     if @textConfig.plaintext
       node = document.createTextNode(@string)
-      nodes.push(@recordNodeWithLocation(node, offset: @string.length))
+      nodes.push(@recordNodeWithLocation(node, length: @string.length))
     else
-      {position} = @piece
       for substring, index in @string.split("\n")
         if index > 0
-          node = @createBRElementForPosition(position)
-          position++
-          nodes.push(node)
+          element = document.createElement("br")
+          @recordNodeWithLocation(element, length: 1)
+          nodes.push(element)
 
         if length = substring.length
           node = document.createTextNode(preserveSpaces(substring))
-          nodes.push(@recordNodeWithLocation(node, offset: position))
-          position += length
+          nodes.push(@recordNodeWithLocation(node, {length}))
     nodes
-
-  createBRElementForPosition: (position) ->
-    element = document.createElement("br")
-    @recordNodeWithLocation(element, offset: position)
 
   preserveSpaces = (string) ->
     string

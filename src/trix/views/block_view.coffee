@@ -12,7 +12,7 @@ class Trix.BlockView extends Trix.ObjectView
 
   createNodes: ->
     @element = document.createElement(@blockConfig.tagName ? "div")
-    @recordNodeWithLocation(@element, offset: 0)
+    @recordNodeWithLocation(@element, index: @blockIndex, offset: 0)
 
     if @block.isEmpty()
       br = document.createElement("br")

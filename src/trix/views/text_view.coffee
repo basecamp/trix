@@ -21,6 +21,8 @@ class Trix.TextView extends Trix.ObjectView
         parentHref = @previousAttributes.href
         delete @currentAttributes.href
 
+      beforeElement = @createCursorTarget() if piece.attachment
+
       pieceView = @findOrCreateChildView(Trix.PieceView, piece, {@textConfig})
       if element = @createElementForCurrentPiece()
         DOM.deepestFirstChild(element).appendChild(pieceView.render())
@@ -29,8 +31,7 @@ class Trix.TextView extends Trix.ObjectView
 
       if piece.attachment
         element.setAttribute("contenteditable", "false") if element.tagName?.toLowerCase() is "a"
-        beforeElement = @createCursorTargetForPosition(piece.position)
-        afterElement = @createCursorTargetForPosition(piece.position + 1)
+        afterElement = @createCursorTarget()
 
       if parentHref
         nodes.splice(nodes.length - 2, beforeElement) if beforeElement?
@@ -47,7 +48,7 @@ class Trix.TextView extends Trix.ObjectView
       if config.tagName
         configElement = document.createElement(config.tagName)
         configElement.setAttribute(key, value) unless typeof value is "boolean"
-        @recordNodeWithLocation(configElement, offset: @currentPiece.position)
+        @recordNodeWithLocation(configElement)
 
         if element
           if key is "href"
@@ -65,14 +66,14 @@ class Trix.TextView extends Trix.ObjectView
           styles = config.style
 
     if styles
-      element ?= @recordNodeWithLocation(document.createElement("span"), offset: position)
+      element ?= @recordNodeWithLocation(document.createElement("span"))
       element.style[key] = value for key, value of styles
 
     element
 
-  createCursorTargetForPosition: (position) ->
+  createCursorTarget: ->
     text = document.createTextNode(Trix.ZERO_WIDTH_SPACE)
-    @recordNodeWithLocation(text, offset: position)
+    @recordNodeWithLocation(text)
     span = document.createElement("span")
     span.appendChild(text)
     span.dataset.trixSerialze = false

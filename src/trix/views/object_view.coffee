@@ -5,6 +5,7 @@
 class Trix.ObjectView
   constructor: (@object, @options = {}) ->
     @childViews = []
+    @nodeLocations = []
     @cache = views: {}, locations: {}
 
   render: ->
@@ -32,11 +33,11 @@ class Trix.ObjectView
       views = views.concat(childView.getAllChildViews())
     views
 
-  recordNodeWithLocation: (node, {index, offset}) ->
-    @cache.locations.blockIndex = @blockIndex if @blockIndex?
-    index ?= @cache.locations.blockIndex
-    @nodeLocations ?= []
-    @nodeLocations.push({node, index, offset})
+  recordNodeWithLocation: (node, {index, offset, length} = {}) ->
+    @cache.locations.index = index if index?
+    @cache.locations.offset = offset if offset?
+    @nodeLocations.push({node, index: @cache.locations.index, offset: @cache.locations.offset})
+    @cache.locations.offset += length if length?
     node
 
   getNodeLocations: ->
@@ -49,7 +50,7 @@ class Trix.ObjectView
 
   refreshLocationCacheWithViews: (views) ->
     @cache.locations = {}
-    for view in views when view.nodeLocations?
+    for view in views
       for nodeLocation in view.nodeLocations
         @cache.locations[nodeLocation.index] ?= {}
         @cache.locations[nodeLocation.index][nodeLocation.offset] ?= []
