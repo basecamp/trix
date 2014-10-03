@@ -13,7 +13,8 @@ class Trix.TextView extends Trix.ObjectView
   render: ->
     @element = document.createDocumentFragment()
 
-    @text.eachPieceWithPosition (piece, position) =>
+    @text.eachPiece (piece) =>
+      return if piece.hasAttribute("blockBreak")
       [@previousPiece, @previousAttributes] = [@currentPiece, @currentAttributes]
       [@currentPiece, @currentAttributes] = [piece, piece.getAttributes()]
 
@@ -21,16 +22,16 @@ class Trix.TextView extends Trix.ObjectView
         parentHref = @previousAttributes.href
         delete @currentAttributes.href
 
-      pieceView = @findOrCreateChildView(Trix.PieceView, piece, {position, @textConfig})
-      if element = @createElementForCurrentPieceWithPosition(position)
+      pieceView = @findOrCreateChildView(Trix.PieceView, piece, {@textConfig})
+      if element = @createElementForCurrentPiece()
         DOM.deepestFirstChild(element).appendChild(pieceView.render())
       else
         element = pieceView.render()
 
       if piece.attachment
         element.setAttribute("contenteditable", "false") if element.tagName?.toLowerCase() is "a"
-        beforeElement = @createCursorTargetForPosition(position)
-        afterElement = @createCursorTargetForPosition(position + 1)
+        beforeElement = @createCursorTargetForPosition(piece.position)
+        afterElement = @createCursorTargetForPosition(piece.position + 1)
 
       if parentHref
         @element.insertBefore(beforeElement, @element.lastChild) if beforeElement?
@@ -43,12 +44,12 @@ class Trix.TextView extends Trix.ObjectView
 
     @element
 
-  createElementForCurrentPieceWithPosition: (position) ->
+  createElementForCurrentPiece: ->
     for key, value of @currentAttributes when config = Trix.attributes[key]
       if config.tagName
         configElement = document.createElement(config.tagName)
         configElement.setAttribute(key, value) unless typeof value is "boolean"
-        @recordNodeWithLocation(configElement, offset: position)
+        @recordNodeWithLocation(configElement, offset: @currentPiece.position)
 
         if element
           if key is "href"

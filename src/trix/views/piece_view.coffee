@@ -6,8 +6,7 @@ class Trix.PieceView extends Trix.ObjectView
   constructor: ->
     super
     @piece = @object
-    {@position, @textConfig} = @options
-    @cacheKey = "#{@cacheKey}@#{@position}"
+    {@textConfig} = @options
 
     if @piece.attachment
       @attachment = @piece.attachment
@@ -33,7 +32,7 @@ class Trix.PieceView extends Trix.ObjectView
       node = document.createTextNode(@string)
       nodes.push(@recordNodeWithLocation(node, offset: @string.length))
     else
-      position = @position
+      {position} = @piece
       for substring, index in @string.split("\n")
         if index > 0
           node = @createBRElementForPosition(position)

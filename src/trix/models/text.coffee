@@ -20,8 +20,14 @@ class Trix.Text extends Trix.Object
 
   constructor: (pieces = []) ->
     super
-    pieces = (piece for piece in pieces when not piece.isEmpty())
-    @pieceList = new Trix.SplittableList pieces
+    @pieceList = new Trix.SplittableList piecesWithPosition(pieces)
+
+  piecesWithPosition = (pieces) ->
+    position = 0
+    for piece in pieces when not piece.isEmpty()
+      piece.position = position
+      position += piece.length
+      piece
 
   copy: ->
     @copyWithPieceList @pieceList
@@ -137,12 +143,6 @@ class Trix.Text extends Trix.Object
 
   eachPiece: (callback) ->
     @pieceList.eachObject(callback)
-
-  eachPieceWithPosition: (callback) ->
-    position = 0
-    @eachPiece (piece) ->
-      callback(piece, position) unless piece.hasAttribute("blockBreak")
-      position += piece.length
 
   getPieces: ->
     @pieceList.toArray()
