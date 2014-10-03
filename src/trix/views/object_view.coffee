@@ -17,11 +17,11 @@ class Trix.ObjectView
       element
 
   findOrCreateChildView: (viewClass, object, options) ->
-    unless view = @cache.views[object.toKey()]
+    unless view = @cache.views[object.id]
       view = new viewClass object, options
       view.parentView = this
       view.cache = @cache
-      @cache.views[object.toKey()] = view
+      @cache.views[object.id] = view
     @childViews.push(view) unless view in @childViews
     view
 
@@ -56,11 +56,11 @@ class Trix.ObjectView
         @cache.locations[nodeLocation.index][nodeLocation.offset].push(nodeLocation.node)
 
   refreshViewCacheWithViews: (views) ->
-    objectKeys = (view.object.toKey() for view in views)
+    objectKeys = (view.object.id for view in views)
     delete @cache.views[key] for key of @cache.views when key not in objectKeys
 
   findObjectForNode: (node) ->
     return value.object for key, value of @cache.views when value.nodes and node in value.nodes
 
   findNodesForObject: (object) ->
-    @cache.views[object.toKey()].nodes
+    @cache.views[object.id].nodes

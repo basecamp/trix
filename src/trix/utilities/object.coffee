@@ -21,8 +21,5 @@ class Trix.Object
 
   contentsForInspection: ->
 
-  toKey: ->
-    @id.toString()
-
   toJSONString: ->
     JSON.stringify this

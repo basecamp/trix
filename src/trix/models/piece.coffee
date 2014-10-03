@@ -74,12 +74,6 @@ class Trix.Piece extends Trix.Object
   toString: ->
     "NO"
 
-  toKey: ->
-    if @position?
-      "#{super}@#{@position}"
-    else
-      super
-
   toJSON: ->
     type: @constructor.type
     attributes: @getAttributes()
