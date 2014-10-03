@@ -10,9 +10,8 @@ class Trix.TextView extends Trix.ObjectView
     @text = @object
     {@textConfig} = @options
 
-  render: ->
-    @element = document.createDocumentFragment()
-
+  createNodes: ->
+    nodes = []
     @text.eachPiece (piece) =>
       return if piece.hasAttribute("blockBreak")
       [@previousPiece, @previousAttributes] = [@currentPiece, @currentAttributes]
@@ -34,15 +33,14 @@ class Trix.TextView extends Trix.ObjectView
         afterElement = @createCursorTargetForPosition(piece.position + 1)
 
       if parentHref
-        @element.insertBefore(beforeElement, @element.lastChild) if beforeElement?
-        @element.lastChild.appendChild(element)
-        @element.appendChild(afterElement) if afterElement?
+        nodes.splice(nodes.length - 2, beforeElement) if beforeElement?
+        nodes[nodes.length - 1].appendChild(element)
+        nodes.push(afterElement) if afterElement?
       else
-        @element.appendChild(beforeElement) if beforeElement?
-        @element.appendChild(element)
-        @element.appendChild(afterElement) if afterElement?
-
-    @element
+        nodes.push(beforeElement) if beforeElement?
+        nodes.push(element)
+        nodes.push(afterElement) if afterElement?
+    nodes
 
   createElementForCurrentPiece: ->
     for key, value of @currentAttributes when config = Trix.attributes[key]
