@@ -120,7 +120,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
       @composition.stopEditingAttachment()
     @delegate?.didChangeSelection?()
 
-  getNodeLocations: ->
+  selectionManagerDidRequestNodeLocations: ->
     @documentController.getNodeLocations()
 
   # Mutation observer delegate

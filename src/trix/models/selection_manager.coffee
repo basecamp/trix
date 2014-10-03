@@ -82,7 +82,7 @@ class Trix.SelectionManager
   # Private
 
   getNodeLocations: ->
-    @delegate?.getNodeLocations()
+    @delegate?.selectionManagerDidRequestNodeLocations?()
 
   updateCurrentLocationRange: (domRange = getDOMRange()) ->
     locationRange = @createLocationRangeFromDOMRange(domRange)
