@@ -1,20 +1,24 @@
+#= require trix/views/object_view
 #= require trix/utilities/helpers
 
 {capitalize} = Trix.Helpers
 
-class Trix.AttachmentView
-  constructor: (@attachmentPiece) ->
-    {@attachment} = @attachmentPiece
+class Trix.AttachmentView extends Trix.ObjectView
+  constructor: ->
+    super
+    @attachment = @object
+    @attachmentPiece = @options.piece
 
-  render: ->
+  createElement: ->
     element = document.createElement("figure")
     element.classList.add("attachment")
-    element.trixAttachmentId = @attachment.id
+    element.setAttribute("contenteditable", false)
 
     for key, value of @attachment.getAttributes()
       element.dataset["trix#{capitalize(key)}"] = value
 
     if @attachment.isPending()
+      element.dataset.trixSerialize = false
       progress = document.createElement("progress")
       progress.setAttribute("id", "trix-progress-#{@attachment.id}")
       progress.setAttribute("max", 100)

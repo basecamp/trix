@@ -1,16 +1,37 @@
+#= require trix/views/object_view
 #= require trix/views/block_view
+#= require trix/utilities/helpers
 
-class Trix.DocumentView
-  constructor: (@element, @document) ->
-    @element.trixPosition = 0
-    @element.trixIndex = 0
+{defer} = Trix.Helpers
+
+class Trix.DocumentView extends Trix.ObjectView
+  GC_FREQUENCY = 50
+
+  constructor: ->
+    super
+    @document = @object
+    {@element} = @options
+    @renderCount = 0
 
   render: ->
+    @childViews = []
+
     @element.removeChild(@element.lastChild) while @element.lastChild
     unless @document.isEmpty()
-      @document.eachBlock (block, index) =>
-        blockView = new Trix.BlockView block, index
+      @document.eachBlock (block, blockIndex) =>
+        blockView = @findOrCreateChildView(Trix.BlockView, block, {blockIndex})
         @element.appendChild(blockView.render())
+
+    @renderCount++
+    @didRender()
+    @element
+
+  didRender: ->
+    if @renderCount % GC_FREQUENCY is 0
+      defer => @garbageCollectCachedViews()
 
   focus: ->
     @element.focus()
+
+  getBlockElements: ->
+    view.element for view in @childViews

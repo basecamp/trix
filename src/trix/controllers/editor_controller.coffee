@@ -15,10 +15,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
 
-    @documentController = new Trix.DocumentController @documentElement, @document
-    @documentController.delegate = this
-
-    @composition = new Trix.Composition
+    @composition = new Trix.Composition @document
     @composition.delegate = this
     @composition.selectionDelegate = @selectionManager
 
@@ -40,7 +37,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
     @composition.loadDocument(@document)
 
-    # Focus last to ensure all focus event handlers are triggered
+    @documentController = new Trix.DocumentController @documentElement, @document
+    @documentController.delegate = this
+    @documentController.render()
     @documentController.focus() if @config.autofocus
 
   # Composition delegate
@@ -144,6 +143,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
     if @attachmentLocationRange and not @attachmentLocationRange.isEqualTo(locationRange)
       @composition.stopEditingAttachment()
     @delegate?.didChangeSelection?()
+
+  selectionManagerDidRequestBlockElements: ->
+    @documentController.getBlockElements()
 
   # Mutation observer delegate
 

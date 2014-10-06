@@ -81,6 +81,9 @@ class Trix.SelectionManager
 
   # Private
 
+  getBlockElements: ->
+    @delegate?.selectionManagerDidRequestBlockElements?()
+
   updateCurrentLocationRange: (domRange = getDOMRange()) ->
     locationRange = @createLocationRangeFromDOMRange(domRange)
     if (@currentLocationRange and not locationRange) or not locationRange?.isEqualTo(@currentLocationRange)
@@ -96,12 +99,8 @@ class Trix.SelectionManager
         @findContainerAndOffsetForLocation(locationRange.end)
 
     range = document.createRange()
-    try
-      range.setStart(rangeStart...)
-      range.setEnd(rangeEnd...)
-    catch err
-      range.setStart(@element, 0)
-      range.setEnd(@element, 0)
+    range.setStart(rangeStart...)
+    range.setEnd(rangeEnd...)
 
     selection = window.getSelection()
     selection.removeAllRanges()
@@ -120,34 +119,27 @@ class Trix.SelectionManager
     else
       @element.contains(range.startContainer) and @element.contains(range.endContainer)
 
-  findLocationFromContainerAtOffset: (container, offset) ->
-    if container.nodeType is Node.TEXT_NODE
-      index = container.trixIndex
-      offset = if container.trixCursorTarget
-        container.trixPosition
-      else
-        container.trixPosition + offset
-    else
-      if offset is 0
-        index = container.trixIndex
-        offset = container.trixPosition
-      else
-        node = container.childNodes[offset - 1]
-        walker = DOM.createTreeWalker(node)
-        walker.lastChild()
-        index = walker.currentNode.trixIndex
-        offset = walker.currentNode.trixPosition + walker.currentNode.trixLength
-
-    {index, offset}
+  findLocationFromContainerAtOffset: (container, containerOffset) ->
+    node = DOM.findNodeForContainerAtOffset(container, containerOffset)
+    offset = 0
+    for blockElement, index in @getBlockElements() when blockElement.contains(node)
+      walker = DOM.createTreeWalker(blockElement)
+      while walker.nextNode()
+        if walker.currentNode is node
+          if container.nodeType is Node.TEXT_NODE
+            offset += containerOffset unless nodeIsCursorTarget(node)
+          else
+            offset += 1 unless containerOffset is 0
+          return {index, offset}
+        else
+          offset += nodeLength(walker.currentNode)
 
   findContainerAndOffsetForLocation: (location) ->
-    return [@element, 0] if location.index is 0 and location.offset < 1
-
-    node = @findNodeForLocation(location)
-
+    [node, nodeOffset] = @findNodeAndOffsetForLocation(location)
+    return unless node
     if node.nodeType is Node.TEXT_NODE
       container = node
-      offset = location.offset - node.trixPosition
+      offset = location.offset - nodeOffset
     else
       container = node.parentNode
       offset =
@@ -158,37 +150,24 @@ class Trix.SelectionManager
 
     [container, offset]
 
-  findNodeForLocation: (location) ->
-    walker = DOM.createTreeWalker(@element, null, trixNodeFilter)
-    node = walker.currentNode
-    match = null
-
+  findNodeAndOffsetForLocation: (location) ->
+    blockElement = @getBlockElements()[location.index]
+    offset = 0
+    walker = DOM.createTreeWalker(blockElement)
     while walker.nextNode()
-      if walker.currentNode.trixIndex is location.index
-        startPosition = walker.currentNode.trixPosition
-        endPosition = startPosition + walker.currentNode.trixLength
+      length = nodeLength(walker.currentNode)
+      if location.offset <= offset + length
+        if walker.currentNode.nodeType is Node.TEXT_NODE
+          node = walker.currentNode
+          nodeOffset = offset
+          break if location.offset is nodeOffset and nodeIsCursorTarget(node)
+        else if not node
+          node = walker.currentNode
+          nodeOffset = offset
+      offset += length
+      break if offset > location.offset
 
-        if startPosition <= location.offset <= endPosition
-          if walker.currentNode.nodeType is Node.TEXT_NODE
-            match = walker.currentNode
-          else
-            match ?= walker.currentNode
-
-        if match?.trixCursorTarget
-          break
-
-        if match and startPosition > location.offset
-          break
-
-      previousNode = walker.currentNode
-
-    match ? node
-
-  trixNodeFilter = (node) ->
-    if node.trixPosition? and node.trixLength?
-      NodeFilter.FILTER_ACCEPT
-    else
-      NodeFilter.FILTER_SKIP
+    [node, nodeOffset]
 
   getLocationRangeAtPoint: ([clientX, clientY]) ->
     if document.caretPositionFromPoint
@@ -222,6 +201,26 @@ class Trix.SelectionManager
         clientY -= document.body.scrollTop
 
       [clientX, clientY]
+
+  nodeIsCursorTarget = (node) ->
+    return unless node
+    if node.nodeType is Node.TEXT_NODE
+      node.textContent is Trix.ZERO_WIDTH_SPACE
+    else
+      nodeIsCursorTarget(node.firstChild)
+
+  nodeLength = (node) ->
+    if node.nodeType is Node.TEXT_NODE
+      if nodeIsCursorTarget(node)
+        0
+      else if DOM.closestElementNode(node)?.isContentEditable
+        node.length
+      else
+        0
+    else if node.nodeName in ["BR", "FIGURE"]
+      1
+    else
+      0
 
   getDOMSelection = ->
     selection = window.getSelection()

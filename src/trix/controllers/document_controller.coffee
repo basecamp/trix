@@ -7,29 +7,32 @@
 
 class Trix.DocumentController
   constructor: (@element, @document) ->
-    @documentView = new Trix.DocumentView @element, @document
+    @documentView = new Trix.DocumentView @document, {@element}
 
     DOM.on(@element, "focus", @didFocus)
     DOM.on(@element, "click", "a[contenteditable=false]", (e) -> e.preventDefault())
     DOM.on(@element, "click", "figure.attachment", @didClickAttachment)
 
-    @render()
-
   didFocus: =>
     @delegate?.documentControllerDidFocus?()
 
   didClickAttachment: (event, target) =>
-    attachment = @document.getAttachmentById(target.trixAttachmentId)
+    attachment = @findAttachmentForElement(target)
     @delegate?.documentControllerDidSelectAttachment?(attachment)
 
   render: ->
+    console.time?("DocumentController#render") if Trix.debug.logEditOperations
     @delegate?.documentControllerWillRender?()
     @documentView.render()
     @reinstallAttachmentEditor()
     @delegate?.documentControllerDidRender?()
+    console.timeEnd?("DocumentController#render") if Trix.debug.logEditOperations
 
   focus: ->
     @documentView.focus()
+
+  getBlockElements: ->
+    @documentView.getBlockElements()
 
   # Attachment editor management
 
@@ -69,6 +72,9 @@ class Trix.DocumentController
 
   # Private
 
+  findAttachmentForElement: (element) ->
+    return unless attachment = @documentView.findObjectForNode(element)
+    @document.getAttachmentById(attachment.id)
+
   findElementForAttachment: (attachment) ->
-    for figure in @element.querySelectorAll("figure")
-      return figure if figure.trixAttachmentId is attachment.id
+    @documentView.findNodesForObject(attachment.attachment)?[0]

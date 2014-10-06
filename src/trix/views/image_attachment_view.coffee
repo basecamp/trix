@@ -1,8 +1,8 @@
 #= require trix/views/attachment_view
 
 class Trix.ImageAttachmentView extends Trix.AttachmentView
-  render: ->
-    element = super
+  createNodes: ->
+    element = @createElement()
     element.classList.add("image")
     image = document.createElement("img")
 
@@ -17,4 +17,4 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
       image.height = @attachmentPiece.getHeight()
 
     element.appendChild(image)
-    element
+    [element]

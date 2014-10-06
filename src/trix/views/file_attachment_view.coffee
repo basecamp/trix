@@ -4,8 +4,8 @@
 {capitalize} = Trix.Helpers
 
 class Trix.FileAttachmentView extends Trix.AttachmentView
-  render: ->
-    element = super
+  createNodes: ->
+    element = @createElement()
     element.classList.add("file")
     if extension = @attachment.getExtension()
       element.classList.add(extension)
@@ -20,4 +20,4 @@ class Trix.FileAttachmentView extends Trix.AttachmentView
       caption.appendChild(span)
 
     element.appendChild(caption)
-    element
+    [element]

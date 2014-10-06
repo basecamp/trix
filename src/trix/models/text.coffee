@@ -20,8 +20,7 @@ class Trix.Text extends Trix.Object
 
   constructor: (pieces = []) ->
     super
-    pieces = (piece for piece in pieces when not piece.isEmpty())
-    @pieceList = new Trix.SplittableList pieces
+    @pieceList = new Trix.SplittableList (piece for piece in pieces when not piece.isEmpty())
 
   copy: ->
     @copyWithPieceList @pieceList
@@ -134,21 +133,6 @@ class Trix.Text extends Trix.Object
 
   isEqualTo: (text) ->
     super or text?.pieceList?.isEqualTo(@pieceList)
-
-  eachRun: (callback) ->
-    position = 0
-    @pieceList.eachObject (piece) ->
-      id = piece.id
-      attributes = piece.getAttributes()
-      run = {id, attributes, position, piece}
-
-      if piece.attachment
-        run.attachment = piece.attachment
-      else
-        run.string = piece.toString()
-
-      callback(run)
-      position += piece.length
 
   eachPiece: (callback) ->
     @pieceList.eachObject(callback)

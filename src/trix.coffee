@@ -36,7 +36,6 @@
         style["fontStyle"] is "italic"
     href:
       tagName: "a"
-      parent: true
       parser: ({element}) ->
         if link = Trix.DOM.closest(element, "a")
           link.getAttribute("href")
@@ -51,7 +50,8 @@
     code:
       block: true
       tagName: "pre"
-      plaintext: true
+      text:
+        plaintext: true
 
   config:
     editorCSS: """
