@@ -210,11 +210,14 @@ class Trix.SelectionManager
       nodeIsCursorTarget(node.firstChild)
 
   nodeLength = (node) ->
-    if nodeIsCursorTarget(node)
-      0
-    else if node.length?
-      node.length
-    else if node.tagName?.toLowerCase() is "br"
+    if node.nodeType is Node.TEXT_NODE
+      if nodeIsCursorTarget(node)
+        0
+      else if DOM.closestElementNode(node)?.isContentEditable
+        node.length
+      else
+        0
+    else if node.nodeName in ["BR", "FIGURE"]
       1
     else
       0
