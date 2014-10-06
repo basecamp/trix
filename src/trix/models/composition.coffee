@@ -30,6 +30,9 @@ class Trix.Composition
   documentDidAddAttachment: (document, attachment) ->
     @delegate?.compositionDidAddAttachment?(attachment)
 
+  documentDidEditAttachment: (document, attachment) ->
+    @delegate?.compositionDidEditAttachment?(attachment)
+
   documentDidRemoveAttachment: (document, attachment) ->
     @delegate?.compositionDidRemoveAttachment?(attachment)
 

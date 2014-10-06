@@ -12,6 +12,13 @@ class Trix.ObjectView
       element.appendChild(node) for node in @nodes
       element
 
+  reRender: ->
+    oldChild = @nodes[0]
+    delete @nodes
+    element = @render()
+    oldChild.parentNode.replaceChild(element, oldChild)
+    element
+
   findOrCreateChildView: (viewClass, object, options) ->
     unless view = @cache.views[object.id]
       view = new viewClass object, options
@@ -38,3 +45,6 @@ class Trix.ObjectView
 
   findNodesForObject: (object) ->
     @cache.views[object.id].nodes
+
+  getViewForObject: (object) ->
+    @cache.views[object.id]

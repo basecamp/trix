@@ -26,6 +26,9 @@ class Trix.DocumentView extends Trix.ObjectView
     @didRender()
     @element
 
+  renderObject: (object) ->
+    @getViewForObject(object)?.reRender()
+
   didRender: ->
     if @renderCount % GC_FREQUENCY is 0
       defer => @garbageCollectCachedViews()

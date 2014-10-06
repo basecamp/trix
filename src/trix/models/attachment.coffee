@@ -30,7 +30,15 @@ class Trix.Attachment extends Trix.Object
     newAttributes = @attributes.merge(attributes)
     unless @attributes.isEqualTo(newAttributes)
       @attributes = newAttributes
-      @delegate?.attachmentDidChangeAttributes?(this)
+      @delegate?.attachmentDidChange?(this)
+
+  setUploadProgress: (value) ->
+    unless value is @uploadProgress
+      @uploadProgress = value
+      @delegate?.attachmentDidChange?(this)
+
+  getUploadProgress: ->
+    @uploadProgress ? 0
 
   isPending: ->
     @file? and not @getURL()
