@@ -1,7 +1,3 @@
-#= require trix/utilities/helpers
-
-{defer} = Trix.Helpers
-
 class Trix.ObjectView
   constructor: (@object, @options = {}) ->
     @childViews = []
@@ -32,10 +28,7 @@ class Trix.ObjectView
       views = views.concat(childView.getAllChildViews())
     views
 
-  refreshCache: ->
-    defer => @refreshViewCache()
-
-  refreshViewCache: ->
+  garbageCollectCachedViews: ->
     views = @getAllChildViews().concat(this)
     objectKeys = (view.object.id.toString() for view in views)
     delete @cache.views[key] for key of @cache.views when key not in objectKeys
