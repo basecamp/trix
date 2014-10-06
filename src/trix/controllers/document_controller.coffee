@@ -80,4 +80,4 @@ class Trix.DocumentController
     @document.getAttachmentById(attachment.id)
 
   findElementForAttachment: (attachment) ->
-    @documentView.findNodesForObject(attachment.attachment)?[0]
+    @documentView.findNodesForObject(attachment)?[0]
