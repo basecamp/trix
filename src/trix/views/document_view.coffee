@@ -6,7 +6,6 @@ class Trix.DocumentView extends Trix.ObjectView
     super
     @document = @object
     {@element} = @options
-    @recordNodeWithLocation(@element, index: 0, offset: 0)
 
   render: ->
     @element.removeChild(@element.lastChild) while @element.lastChild
@@ -22,3 +21,6 @@ class Trix.DocumentView extends Trix.ObjectView
 
   focus: ->
     @element.focus()
+
+  getBlockElements: ->
+    view.element for view in @childViews

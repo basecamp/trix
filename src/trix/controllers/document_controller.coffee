@@ -31,8 +31,8 @@ class Trix.DocumentController
   focus: ->
     @documentView.focus()
 
-  getNodeLocations: ->
-    @documentView.getNodeLocations()
+  getBlockElements: ->
+    @documentView.getBlockElements()
 
   # Attachment editor management
 

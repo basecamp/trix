@@ -81,8 +81,8 @@ class Trix.SelectionManager
 
   # Private
 
-  getNodeLocations: ->
-    @delegate?.selectionManagerDidRequestNodeLocations?()
+  getBlockElements: ->
+    @delegate?.selectionManagerDidRequestBlockElements?()
 
   updateCurrentLocationRange: (domRange = getDOMRange()) ->
     locationRange = @createLocationRangeFromDOMRange(domRange)
@@ -121,16 +121,18 @@ class Trix.SelectionManager
 
   findLocationFromContainerAtOffset: (container, containerOffset) ->
     node = DOM.findNodeForContainerAtOffset(container, containerOffset)
-
-    for index, offsets of @getNodeLocations()
-      for offset, nodes of offsets when node in nodes
-        index = Number(index)
-        offset = Number(offset)
-        if container.nodeType is Node.TEXT_NODE
-          offset += containerOffset unless nodeIsCursorTarget(node)
+    offset = 0
+    for blockElement, index in @getBlockElements() when blockElement.contains(node)
+      walker = DOM.createTreeWalker(blockElement)
+      while walker.nextNode()
+        if walker.currentNode is node
+          if container.nodeType is Node.TEXT_NODE
+            offset += containerOffset unless nodeIsCursorTarget(node)
+          else
+            offset += 1 unless containerOffset is 0
+          return {index, offset}
         else
-          offset += 1 unless containerOffset is 0
-        return {index, offset}
+          offset += nodeLength(walker.currentNode)
 
   findContainerAndOffsetForLocation: (location) ->
     [node, nodeOffset] = @findNodeAndOffsetForLocation(location)
@@ -149,18 +151,21 @@ class Trix.SelectionManager
     [container, offset]
 
   findNodeAndOffsetForLocation: (location) ->
-    for offset, nodes of @getNodeLocations()[location.index]
-      offset = Number(offset)
-      break if offset > location.offset
-
-      for candidate in nodes when location.offset <= offset + nodeLength(candidate)
-        if candidate.nodeType is Node.TEXT_NODE
-          node = candidate
+    blockElement = @getBlockElements()[location.index]
+    offset = 0
+    walker = DOM.createTreeWalker(blockElement)
+    while walker.nextNode()
+      length = nodeLength(walker.currentNode)
+      if location.offset <= offset + length
+        if walker.currentNode.nodeType is Node.TEXT_NODE
+          node = walker.currentNode
           nodeOffset = offset
           break if location.offset is nodeOffset and nodeIsCursorTarget(node)
         else if not node
-          node = candidate
+          node = walker.currentNode
           nodeOffset = offset
+      offset += length
+      break if offset > location.offset
 
     [node, nodeOffset]
 
@@ -209,8 +214,10 @@ class Trix.SelectionManager
       0
     else if node.length?
       node.length
-    else
+    else if node.tagName?.toLowerCase() is "br"
       1
+    else
+      0
 
   getDOMSelection = ->
     selection = window.getSelection()

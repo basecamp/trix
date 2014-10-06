@@ -48,7 +48,7 @@ class Trix.TextView extends Trix.ObjectView
       if config.tagName
         configElement = document.createElement(config.tagName)
         configElement.setAttribute(key, value) unless typeof value is "boolean"
-        @recordNodeWithLocation(configElement)
+        configElement
 
         if element
           if key is "href"
@@ -66,14 +66,13 @@ class Trix.TextView extends Trix.ObjectView
           styles = config.style
 
     if styles
-      element ?= @recordNodeWithLocation(document.createElement("span"))
+      element ?= document.createElement("span")
       element.style[key] = value for key, value of styles
 
     element
 
   createCursorTarget: ->
     text = document.createTextNode(Trix.ZERO_WIDTH_SPACE)
-    @recordNodeWithLocation(text)
     span = document.createElement("span")
     span.appendChild(text)
     span.dataset.trixSerialze = false
