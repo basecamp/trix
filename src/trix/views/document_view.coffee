@@ -19,7 +19,7 @@ class Trix.DocumentView extends Trix.ObjectView
     @element.removeChild(@element.lastChild) while @element.lastChild
     unless @document.isEmpty()
       @document.eachBlock (block, blockIndex) =>
-        blockView = @findOrCreateChildView(Trix.BlockView, block, {blockIndex})
+        blockView = @findOrCreateCachedChildView(Trix.BlockView, block, {blockIndex})
         @element.appendChild(blockView.render())
 
     @renderCount++
@@ -27,7 +27,7 @@ class Trix.DocumentView extends Trix.ObjectView
     @element
 
   renderObject: (object) ->
-    @getViewForObject(object)?.reRender()
+    @findViewForObject(object)?.reRender()
 
   didRender: ->
     if @renderCount % GC_FREQUENCY is 0

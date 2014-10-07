@@ -19,13 +19,19 @@ class Trix.ObjectView
     oldChild.parentNode.replaceChild(element, oldChild)
     element
 
-  findOrCreateChildView: (viewClass, object, options) ->
-    unless view = @cache.views[object.id]
-      view = new viewClass object, options
-      view.parentView = this
-      view.cache = @cache
-      @cache.views[object.id] = view
-    @childViews.push(view) unless view in @childViews
+  findOrCreateCachedChildView: (viewClass, object, options) ->
+    if view = @cache.views[object.toKey()]
+      @childViews.push(view) unless view in @childViews
+    else
+      view = @createChildView(arguments...)
+      @cache.views[object.toKey()] = view
+    view
+
+  createChildView: (viewClass, object, options) ->
+    view = new viewClass object, options
+    view.parentView = this
+    view.cache = @cache
+    @childViews.push(view)
     view
 
   getAllChildViews: ->
@@ -37,14 +43,14 @@ class Trix.ObjectView
 
   garbageCollectCachedViews: ->
     views = @getAllChildViews().concat(this)
-    objectKeys = (view.object.id.toString() for view in views)
+    objectKeys = (view.object.toKey() for view in views)
     delete @cache.views[key] for key of @cache.views when key not in objectKeys
 
   findObjectForNode: (node) ->
-    return value.object for key, value of @cache.views when value.nodes and node in value.nodes
+    return view.object for view in @getAllChildViews() when view.nodes?[0] is node
+
+  findViewForObject: (object) ->
+    return view for view in @getAllChildViews() when view.object is object
 
   findNodesForObject: (object) ->
-    @cache.views[object.id].nodes
-
-  getViewForObject: (object) ->
-    @cache.views[object.id]
+    @findViewForObject(object)?.nodes

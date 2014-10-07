@@ -23,3 +23,6 @@ class Trix.Object
 
   toJSONString: ->
     JSON.stringify this
+
+  toKey: ->
+    @id.toString()

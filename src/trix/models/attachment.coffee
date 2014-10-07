@@ -73,3 +73,6 @@ class Trix.Attachment extends Trix.Object
 
   toJSON: ->
     @attributes
+
+  toKey: ->
+    [super, @attributes.toKey()].join("/")

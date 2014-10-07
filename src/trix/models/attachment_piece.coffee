@@ -29,3 +29,6 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
     json = super
     json.attachment = @attachment
     json
+
+  toKey: ->
+    [super, @attachment.toKey()].join("/")

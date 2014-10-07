@@ -23,7 +23,7 @@ class Trix.TextView extends Trix.ObjectView
 
       beforeElement = @createCursorTarget() if piece.attachment
 
-      pieceView = @findOrCreateChildView(Trix.PieceView, piece, {@textConfig})
+      pieceView = @findOrCreateCachedChildView(Trix.PieceView, piece, {@textConfig})
       if element = @createElementForCurrentPiece()
         DOM.deepestFirstChild(element).appendChild(pieceView.render())
       else

@@ -21,9 +21,9 @@ class Trix.PieceView extends Trix.ObjectView
 
   createAttachmentElement: ->
     if @attachment.isImage()
-      @findOrCreateChildView(Trix.ImageAttachmentView, @piece.attachment, {@piece}).render()
+      @createChildView(Trix.ImageAttachmentView, @piece.attachment, {@piece}).render()
     else
-      @findOrCreateChildView(Trix.FileAttachmentView, @piece.attachment, {@piece}).render()
+      @createChildView(Trix.FileAttachmentView, @piece.attachment, {@piece}).render()
 
   createStringNodes: ->
     nodes = []
