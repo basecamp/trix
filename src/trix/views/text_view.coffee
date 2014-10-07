@@ -75,5 +75,5 @@ class Trix.TextView extends Trix.ObjectView
     text = document.createTextNode(Trix.ZERO_WIDTH_SPACE)
     span = document.createElement("span")
     span.appendChild(text)
-    span.dataset.trixSerialze = false
+    span.dataset.trixSerialize = false
     span
