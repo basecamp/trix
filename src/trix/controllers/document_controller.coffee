@@ -76,8 +76,7 @@ class Trix.DocumentController
   # Private
 
   findAttachmentForElement: (element) ->
-    return unless attachment = @documentView.findObjectForNode(element)
-    @document.getAttachmentById(attachment.id)
+    @document.getAttachmentById(Number(element.dataset.trixId))
 
   findElementForAttachment: (attachment) ->
     @documentView.findNodesForObject(attachment)?[0]

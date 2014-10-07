@@ -13,6 +13,7 @@ class Trix.AttachmentView extends Trix.ObjectView
     element = document.createElement("figure")
     element.classList.add("attachment")
     element.setAttribute("contenteditable", false)
+    element.dataset.trixId = @attachment.id
 
     for key, value of @attachment.getAttributes()
       element.dataset["trix#{capitalize(key)}"] = value

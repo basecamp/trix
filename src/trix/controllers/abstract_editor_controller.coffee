@@ -22,7 +22,7 @@ class Trix.AbstractEditorController
     @inputElement?.value = @document.toSerializableDocument().toJSONString()
 
   unserializableElementSelector = "[data-trix-serialize=false]"
-  unserializableAttributeNames = ["contenteditable"]
+  unserializableAttributeNames = ["contenteditable", "data-trix-id"]
 
   serializedHTML: ->
     element = @documentElement.cloneNode(true)
