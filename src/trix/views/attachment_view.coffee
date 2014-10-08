@@ -7,6 +7,7 @@ class Trix.AttachmentView extends Trix.ObjectView
   constructor: ->
     super
     @attachment = @object
+    @attachment.uploadProgressDelegate = this
     @attachmentPiece = @options.piece
 
   createElement: ->
@@ -20,9 +21,13 @@ class Trix.AttachmentView extends Trix.ObjectView
 
     if @attachment.isPending()
       element.dataset.trixSerialize = false
-      progress = document.createElement("progress")
-      progress.setAttribute("max", 100)
-      progress.setAttribute("value", @attachment.getUploadProgress())
-      element.appendChild(progress)
+      @progressElement = document.createElement("progress")
+      @progressElement.setAttribute("max", 100)
+      element.appendChild(@progressElement)
 
     element
+
+  # Attachment delegate
+
+  attachmentDidChangeUploadProgress: ->
+    @progressElement?.setAttribute("value", @attachment.getUploadProgress())

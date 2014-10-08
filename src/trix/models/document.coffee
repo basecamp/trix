@@ -314,7 +314,7 @@ class Trix.Document extends Trix.Object
 
   # Attachment delegate
 
-  attachmentDidChange: (attachment) ->
+  attachmentDidChangeAttributes: (attachment) ->
     @delegate?.documentDidEditAttachment(this, attachment)
 
   # Private
