@@ -5,13 +5,10 @@
 {defer} = Trix.Helpers
 
 class Trix.DocumentView extends Trix.ObjectView
-  GC_FREQUENCY = 50
-
   constructor: ->
     super
     @document = @object
     {@element} = @options
-    @renderCount = 0
 
   render: ->
     @childViews = []
@@ -22,7 +19,6 @@ class Trix.DocumentView extends Trix.ObjectView
         blockView = @findOrCreateCachedChildView(Trix.BlockView, block, {blockIndex})
         @element.appendChild(blockView.render())
 
-    @renderCount++
     @didRender()
     @element
 
@@ -30,8 +26,7 @@ class Trix.DocumentView extends Trix.ObjectView
     @findViewForObject(object)?.reRender()
 
   didRender: ->
-    if @renderCount % GC_FREQUENCY is 0
-      defer => @garbageCollectCachedViews()
+    defer => @garbageCollectCachedViews()
 
   focus: ->
     @element.focus()
