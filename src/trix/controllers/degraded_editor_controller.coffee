@@ -13,7 +13,7 @@ class Trix.DegradedEditorController extends Trix.AbstractEditorController
   updateDocument: ->
     @document = Trix.Document.fromHTML(@documentElement.innerHTML)
     @render()
-    @saveSerializedText()
+    @saveSerializedDocument()
 
   render: ->
     view = new Trix.DocumentView @documentElement, @document

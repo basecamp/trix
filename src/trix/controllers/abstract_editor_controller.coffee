@@ -16,7 +16,7 @@ class Trix.AbstractEditorController
     else
       new Trix.Document
 
-  saveSerializedText: ->
+  saveSerializedDocument: ->
     @textareaElement.value = @serializedHTML()
     Trix.DOM.trigger(@textareaElement, "input")
     @inputElement?.value = @document.toSerializableDocument().toJSONString()
