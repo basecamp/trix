@@ -28,8 +28,9 @@ class Trix.DocumentController
     @delegate?.documentControllerDidRender?()
     console.timeEnd?("DocumentController#render") if Trix.debug.logEditOperations
 
-  renderObject: (object) ->
-    @documentView.renderObject(object)
+  rerenderViewForObject: (object) ->
+    @documentView.invalidateViewForObject(object)
+    @render()
 
   focus: ->
     @documentView.focus()

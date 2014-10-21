@@ -12,12 +12,12 @@ class Trix.ObjectView
       element.appendChild(node) for node in @nodes
       element
 
-  reRender: ->
-    oldChild = @nodes[0]
+  invalidate: ->
     delete @nodes
-    element = @render()
-    oldChild.parentNode.replaceChild(element, oldChild)
-    element
+    @parentView?.invalidate()
+
+  invalidateViewForObject: (object) ->
+    @findViewForObject(object)?.invalidate()
 
   findOrCreateCachedChildView: (viewClass, object, options) ->
     if view = @cache.views[object.toKey()]
