@@ -126,10 +126,10 @@ class Trix.SelectionManager
       walker = DOM.createTreeWalker(blockElement)
       while walker.nextNode()
         if walker.currentNode is node
-          if container.nodeType is Node.TEXT_NODE
-            offset += containerOffset unless nodeIsCursorTarget(node)
-          else
-            offset += 1 unless containerOffset is 0
+          if container.nodeType is Node.TEXT_NODE and not nodeIsCursorTarget(walker.currentNode)
+            offset += containerOffset
+          else if containerOffset > 0
+            offset += nodeLength(walker.currentNode)
           return {index, offset}
         else
           offset += nodeLength(walker.currentNode)
