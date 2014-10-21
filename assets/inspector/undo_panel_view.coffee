@@ -36,5 +36,5 @@ class Trix.UndoPanelView extends Trix.InspectorPanelView
   renderEntry: (entry) ->
     element = document.createElement("div")
     element.className = "trix-undo-entry"
-    element.textContent = entry.description
+    element.textContent = "#{entry.description} #{entry.snapshot.selectedRange.inspect()}"
     element
