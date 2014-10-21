@@ -29,7 +29,7 @@ class Trix.TextPanelView extends Trix.InspectorPanelView
 
   renderBlock: (block, index) ->
     element = make("div", className: "block")
-    element.appendChild(@renderTitle("Block", "Index: #{index}"))
+    element.appendChild(@renderTitle("Block #{block.id}", "Index: #{index}"))
     element.appendChild(@renderAttributes(block.attributes))
     element.appendChild(@renderText(block.text))
     element
@@ -37,14 +37,14 @@ class Trix.TextPanelView extends Trix.InspectorPanelView
   renderText: (text) ->
     element = make("div", className: "text")
     pieces = text.pieceList.toArray()
-    element.appendChild(@renderTitle("Text", "Piece Count: #{pieces.length}, Length: #{text.getLength()}"))
+    element.appendChild(@renderTitle("Text #{text.id}", "Piece Count: #{pieces.length}, Length: #{text.getLength()}"))
     for piece, index in pieces
       element.appendChild(@renderPiece(piece, index))
     element
 
   renderPiece: (piece, index) ->
     element = make("div", className: "piece")
-    element.appendChild(@renderTitle("Piece", "Index: #{index}"))
+    element.appendChild(@renderTitle("Piece #{piece.id}", "Index: #{index}"))
     element.appendChild(@renderAttributes(piece.attributes))
     element.appendChild(@renderString(piece.toString()))
     element
@@ -79,7 +79,7 @@ class Trix.TextPanelView extends Trix.InspectorPanelView
     make("div", className: "string", text: JSON.stringify(string))
 
   renderAttachment: (attachment) ->
-    @renderObject("Attachment", attachment.toJSON())
+    @renderObject("Attachment #{attachment.id}", attachment.toJSON())
 
   make = (tagName, options = {}) ->
     element = document.createElement(tagName)
