@@ -46,8 +46,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   compositionDidChangeDocument: (document) ->
     @documentController.render()
-    @saveSerializedText()
-    @toolbarController.updateActions()
 
   compositionDidChangeCurrentAttributes: (currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
@@ -94,6 +92,8 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @mutationObserver.start()
     @selectionManager.unlock() unless @skipSelectionLock
     delete @skipSelectionLock
+    @saveSerializedText()
+    @toolbarController.updateActions()
     @delegate?.didRenderDocument?()
 
   documentControllerDidFocus: ->
