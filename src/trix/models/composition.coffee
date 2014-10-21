@@ -19,6 +19,7 @@ class Trix.Composition
     selectedRange: @getLocationRange()
 
   restoreSnapshot: ({document, selectedRange}) ->
+    @notifyDelegateOfIntentionToSetLocationRange()
     @document.replaceDocument(document)
     @setLocationRange(selectedRange)
 
