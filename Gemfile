@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+gemspec
+
 gem 'rake'
 gem 'sprockets'
 gem 'coffee-script'

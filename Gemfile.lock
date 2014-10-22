@@ -1,3 +1,8 @@
+PATH
+  remote: .
+  specs:
+    trix (0.3.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -49,4 +54,5 @@ DEPENDENCIES
   rack-rewrite
   rake
   sprockets
+  trix!
   uglifier
