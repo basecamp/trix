@@ -46,9 +46,6 @@ class Trix.ObjectView
     objectKeys = (view.object.toKey() for view in views)
     delete @cache.views[key] for key of @cache.views when key not in objectKeys
 
-  findObjectForNode: (node) ->
-    return view.object for view in @getAllChildViews() when view.nodes?[0] is node
-
   findViewForObject: (object) ->
     return view for view in @getAllChildViews() when view.object is object
 

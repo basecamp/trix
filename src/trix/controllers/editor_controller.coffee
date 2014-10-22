@@ -92,7 +92,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @mutationObserver.start()
     @selectionManager.unlock() unless @skipSelectionLock
     delete @skipSelectionLock
-    @saveSerializedText()
+    @saveSerializedDocument()
     @toolbarController.updateActions()
     @delegate?.didRenderDocument?()
 
