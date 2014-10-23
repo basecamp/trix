@@ -5,6 +5,7 @@
 #= require ./render_count_view
 
 {defer} = Trix.Helpers
+editOperationLog = Trix.Logger.get("editOperations")
 
 class Trix.InspectorController
   constructor: (@element, @editorController) ->
@@ -36,7 +37,7 @@ class Trix.InspectorController
     @activePanelView = @createViewForPanel(name)
     @activePanelView.show()
 
-    Trix.debug.logEditOperations = true
+    editOperationLog.enable()
 
   deactivateActivePanel: ->
     return unless @activePanelView
@@ -46,7 +47,7 @@ class Trix.InspectorController
     for input in @element.querySelectorAll("input[name=inspector-panel]")
       input.checked = false
 
-    Trix.debug.logEditOperations = false
+    editOperationLog.disable()
 
   createViewForPanel: (name) ->
     element = @findPanelElement(name)

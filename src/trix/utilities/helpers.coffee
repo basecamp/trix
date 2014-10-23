@@ -16,11 +16,11 @@ Trix.Helpers =
   decapitalize: (string) ->
     string.charAt(0).toLowerCase() + string.substring(1)
 
-  forwardMethods: ({fromConstructor, toConstructor, viaProperty} = {}) ->
-    methods = toConstructor.prototype
-    destination = fromConstructor.prototype
+  forwardMethods: ({ofConstructor, ofObject, onConstructor, toProperty} = {}) ->
+    methods = ofObject ? ofConstructor.prototype
+    destination = onConstructor.prototype
     reservedNames = ["constructor", "toString", "valueOf"]
 
     for name, value of methods when name not in reservedNames and typeof value is "function"
       do (name, value) =>
-        destination[name] = -> value.apply(@[viaProperty], arguments) if @[viaProperty]?
+        destination[name] = -> value.apply(@[toProperty], arguments) if @[toProperty]?

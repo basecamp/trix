@@ -5,7 +5,7 @@
 
 class Trix.ManagedAttachment
   # Forward all Attachment methods
-  forwardMethods fromConstructor: this, toConstructor: Trix.Attachment, viaProperty: "attachment"
+  forwardMethods ofConstructor: Trix.Attachment, onConstructor: this, toProperty: "attachment"
 
   constructor: (@attachmentManager, @attachment) ->
     {@id, @file} = @attachment

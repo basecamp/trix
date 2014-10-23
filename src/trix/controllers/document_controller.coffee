@@ -2,8 +2,10 @@
 #= require trix/controllers/image_attachment_editor_controller
 #= require trix/views/document_view
 #= require trix/utilities/dom
+#= require trix/utilities/logger
 
 {DOM} = Trix
+editOperationLog = Trix.Logger.get("editOperations")
 
 class Trix.DocumentController
   constructor: (@element, @document) ->
@@ -21,12 +23,12 @@ class Trix.DocumentController
     @delegate?.documentControllerDidSelectAttachment?(attachment)
 
   render: ->
-    console.time?("DocumentController#render") if Trix.debug.logEditOperations
+    editOperationLog.time?("DocumentController#render")
     @delegate?.documentControllerWillRender?()
     @documentView.render()
     @reinstallAttachmentEditor()
     @delegate?.documentControllerDidRender?()
-    console.timeEnd?("DocumentController#render") if Trix.debug.logEditOperations
+    editOperationLog.timeEnd?("DocumentController#render")
 
   rerenderViewForObject: (object) ->
     @documentView.invalidateViewForObject(object)

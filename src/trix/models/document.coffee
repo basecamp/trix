@@ -3,6 +3,10 @@
 #= require trix/models/block
 #= require trix/models/splittable_list
 #= require trix/models/location_range
+#= require trix/utilities/helpers
+#= require trix/utilities/logger
+
+editOperationLog = Trix.Logger.get("editOperations")
 
 class Trix.Document extends Trix.Object
   @fromJSON: (documentJSON) ->
@@ -43,10 +47,11 @@ class Trix.Document extends Trix.Object
     @beginEditing()
     fn.apply(this, arguments)
     @ensureDocumentHasBlock()
-    if Trix.debug.logEditOperations
-      console.group(name)
-      console.log(format(object)...) for object in arguments
-      console.groupEnd()
+
+    editOperationLog.group(name)
+    editOperationLog.log(format(object)...) for object in arguments
+    editOperationLog.groupEnd()
+
     @endEditing()
 
   format = (object) ->
@@ -62,19 +67,21 @@ class Trix.Document extends Trix.Object
   beginEditing: ->
     if @editDepth++ is 0
       @editCount++
-      if Trix.debug.logEditOperations
-        console.group("Document #{@id}: Edit operation #{@editCount}")
-        console.groupCollapsed("Backtrace")
-        console.trace()
-        console.groupEnd()
+
+      editOperationLog.group("Document #{@id}: Edit operation #{@editCount}")
+      editOperationLog.groupCollapsed("Backtrace")
+      editOperationLog.trace()
+      editOperationLog.groupEnd()
+
     this
 
   endEditing: ->
     if --@editDepth is 0
-      if Trix.debug.logEditOperations
-        console.groupEnd()
       @delegate?.didEditDocument?(this)
       @refreshAttachments()
+
+      editOperationLog.groupEnd()
+
     this
 
   insertDocumentAtLocationRange: edit "insertDocumentAtLocationRange", (document, locationRange) ->
