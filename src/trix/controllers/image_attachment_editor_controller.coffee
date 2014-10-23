@@ -1,6 +1,6 @@
 #= require trix/controllers/attachment_editor_controller
 
-{handleEvent} = Trix.DOM
+{handleEvent, measureElement} = Trix.DOM
 
 class Trix.ImageAttachmentEditorController extends Trix.AttachmentEditorController
   constructor: ->
@@ -19,7 +19,7 @@ class Trix.ImageAttachmentEditorController extends Trix.AttachmentEditorControll
     @editor.appendChild(@image)
     @editor.appendChild(@handle)
 
-    {width, height} = Trix.DOM.getDimensions(@image)
+    {width, height} = measureElement(@image)
 
     @setStyle(@editor, width: "#{width}px", height: "#{height}px")
     @setStyle(@image, width: "100%", height: "auto")

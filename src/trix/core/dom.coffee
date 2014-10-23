@@ -41,10 +41,6 @@ Trix.DOM = dom =
     else
       node
 
-  getDimensions: (element) ->
-    width:  element.offsetWidth
-    height: element.offsetHeight
-
   createTreeWalker: (root, whatToShow = NodeFilter.SHOW_ALL, filter = null, entityReferenceExpansion = false) ->
     document.createTreeWalker(root, whatToShow, filter, entityReferenceExpansion)
 
@@ -60,6 +56,10 @@ Trix.DOM = dom =
   findElementForContainerAtOffset: (container, offset) ->
     node = dom.findNodeForContainerAtOffset(container, offset)
     dom.findClosestElementFromNode(node)
+
+  measureElement: (element) ->
+    width:  element.offsetWidth
+    height: element.offsetHeight
 
 html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector
