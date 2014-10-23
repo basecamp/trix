@@ -19,7 +19,8 @@ Trix.Helpers =
   forwardMethods: ({fromConstructor, toConstructor, viaProperty} = {}) ->
     methods = toConstructor.prototype
     destination = fromConstructor.prototype
+    reservedNames = ["constructor", "toString", "valueOf"]
 
-    for own name, value of methods when name isnt "constructor" and typeof value is "function"
+    for name, value of methods when name not in reservedNames and typeof value is "function"
       do (name, value) =>
         destination[name] = -> value.apply(@[viaProperty], arguments) if @[viaProperty]?
