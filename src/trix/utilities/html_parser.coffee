@@ -23,7 +23,7 @@ class Trix.HTMLParser
 
   parse: ->
     @createHiddenContainer()
-    walker = Trix.DOM.createTreeWalker(@container)
+    walker = Trix.DOM.walkTree(@container)
     @processNode(walker.currentNode) while walker.nextNode()
     @removeHiddenContainer()
 
@@ -125,7 +125,7 @@ class Trix.HTMLParser
   sanitizeHTML = (html) ->
     container = document.createElement("div")
     container.innerHTML = html
-    walker = Trix.DOM.createTreeWalker(container, NodeFilter.SHOW_ELEMENT)
+    walker = Trix.DOM.walkTree(container, onlyNodesOfType: "element")
 
     while walker.nextNode()
       element = walker.currentNode

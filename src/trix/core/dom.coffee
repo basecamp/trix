@@ -41,9 +41,6 @@ Trix.DOM = dom =
     else
       node
 
-  createTreeWalker: (root, whatToShow = NodeFilter.SHOW_ALL, filter = null, entityReferenceExpansion = false) ->
-    document.createTreeWalker(root, whatToShow, filter, entityReferenceExpansion)
-
   findNodeForContainerAtOffset: (container, offset) ->
     return unless container
     if container.nodeType is Node.TEXT_NODE
@@ -60,6 +57,14 @@ Trix.DOM = dom =
   measureElement: (element) ->
     width:  element.offsetWidth
     height: element.offsetHeight
+
+  walkTree: (tree, {onlyNodesOfType, usingFilter, expandEntityReferences} = {}) ->
+    whatToShow = switch onlyNodesOfType
+      when "element" then NodeFilter.SHOW_ELEMENT
+      when "text" then NodeFilter.SHOW_TEXT
+      else NodeFilter.SHOW_ALL
+
+    document.createTreeWalker(tree, whatToShow, usingFilter, expandEntityReferences is true)
 
 html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector
