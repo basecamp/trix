@@ -1,10 +1,12 @@
+{handleEvent} = Trix.DOM
+
 class Trix.DeviceObserver
   deviceMayHaveVirtualKeyboard = "ontouchstart" of window and "onorientationchange" of window
 
   constructor: (@element) ->
     if deviceMayHaveVirtualKeyboard
-      @element.addEventListener("focus", @didFocus, true)
-      @element.addEventListener("blur", @didBlur, true)
+      handleEvent "focus", onElement: @element, withCallback: @didFocus, inPhase: "capturing"
+      handleEvent "blur", onElement: @element, withCallback: @didBlur, inPhase: "capturing"
 
   didFocus: =>
     @delegate?.deviceDidActivateVirtualKeyboard?()

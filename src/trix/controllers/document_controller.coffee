@@ -2,16 +2,16 @@
 #= require trix/controllers/image_attachment_editor_controller
 #= require trix/views/document_view
 
-{DOM} = Trix
+{handleEvent} = Trix.DOM
 editOperationLog = Trix.Logger.get("editOperations")
 
 class Trix.DocumentController
   constructor: (@element, @document) ->
     @documentView = new Trix.DocumentView @document, {@element}
 
-    DOM.on(@element, "focus", @didFocus)
-    DOM.on(@element, "click", "a[contenteditable=false]", (e) -> e.preventDefault())
-    DOM.on(@element, "click", "figure.attachment", @didClickAttachment)
+    handleEvent "focus", onElement: @element, withCallback: @didFocus
+    handleEvent "click", onElement: @element, matchingSelector: "a[contenteditable=false]", preventDefault: true
+    handleEvent "click", onElement: @element, matchingSelector: "figure.attachment", withCallback: @didClickAttachment
 
   didFocus: =>
     @delegate?.documentControllerDidFocus?()

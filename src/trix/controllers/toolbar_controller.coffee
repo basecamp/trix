@@ -1,3 +1,5 @@
+{handleEvent} = Trix.DOM
+
 class Trix.ToolbarController
   actionButtonSelector = ".button[data-action]"
   attributeButtonSelector = ".button[data-attribute]"
@@ -7,9 +9,10 @@ class Trix.ToolbarController
 
   constructor: (@element) ->
     @attributes = {}
-    Trix.DOM.on(@element, "click", actionButtonSelector, @didClickActionButton)
-    Trix.DOM.on(@element, "click", attributeButtonSelector, @didClickAttributeButton)
-    Trix.DOM.on(@element, "click", dialogButtonSelector, @didClickDialogButton)
+
+    handleEvent "click", onElement: @element, matchingSelector: actionButtonSelector, withCallback: @didClickActionButton
+    handleEvent "click", onElement: @element, matchingSelector: attributeButtonSelector, withCallback: @didClickAttributeButton
+    handleEvent "click", onElement: @element, matchingSelector: dialogButtonSelector, withCallback: @didClickDialogButton
 
   # Event handlers
 

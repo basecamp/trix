@@ -1,11 +1,13 @@
 #= require trix/controllers/abstract_editor_controller
 #= require trix/views/document_view
 
+{handleEvent} = Trix.DOM
+
 class Trix.DegradedEditorController extends Trix.AbstractEditorController
   constructor: ->
     super
     @render()
-    @documentElement.addEventListener("blur", @didBlur)
+    handleEvent "blur", onElement: @documentElement, withCallback: @didBlur
 
   didBlur: =>
     @updateDocument()

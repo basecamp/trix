@@ -1,11 +1,13 @@
-{DOM} = Trix
+{handleEvent} = Trix.DOM
 
 class Trix.SelectionObserver
   events = ["DOMFocusIn", "DOMFocusOut", "mousedown", "keydown"]
 
   constructor: (@element) ->
-    @element.addEventListener(event, @start) for event in events
     @range = getRange()
+
+    for event in events
+      handleEvent event, onElement: @element, withCallback: @start
 
   start: =>
     return if @running

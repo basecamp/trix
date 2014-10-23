@@ -5,13 +5,14 @@
 #= require ./render_count_view
 
 {defer} = Trix.Helpers
+{handleEvent} = Trix.DOM
 editOperationLog = Trix.Logger.get("editOperations")
 
 class Trix.InspectorController
   constructor: (@element, @editorController) ->
     @toolbarElement = @element.querySelector(".trix-inspector-toolbar")
-    Trix.DOM.on(@toolbarElement, "change", @didClickToolbarButton)
-    Trix.DOM.on(@toolbarElement, "click", @didClickToolbar)
+    handleEvent "change", onElement: @toolbarElement, withCallback: @didClickToolbarButton
+    handleEvent "click", onElement: @toolbarElement, withCallback: @didClickToolbar
 
     selectionElement = @element.querySelector(".trix-inspector-selection-view")
     @selectionView = new Trix.SelectionView selectionElement, @editorController

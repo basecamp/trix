@@ -1,16 +1,17 @@
 Trix.DOM = dom =
-  on: (element, eventName, selector, callback, useCapture = false) ->
-    unless callback?
-      callback = selector
-      selector = null
+  handleEvent: (eventName, {onElement, matchingSelector, withCallback, inPhase, preventDefault}) ->
+    element = onElement ? document.documentElement
+    selector = matchingSelector
+    callback = withCallback
+    useCapture = inPhase is "capturing"
 
-    if selector?
-      handler = (event) ->
-        if target = dom.closest(event.target, selector)
-          callback.call(target, event, target)
-    else
-      handler = (event) ->
-        callback.call(element, event, element)
+    handler = (event) ->
+      target = if selector? then dom.closest(event.target, selector) else element
+      withCallback?.call(target, event, target) if target?
+      event.preventDefault() if preventDefault
+
+    handler.destroy = ->
+      element.removeEventListener(eventName, handler, useCapture)
 
     element.addEventListener(eventName, handler, useCapture)
     handler

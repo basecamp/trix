@@ -1,10 +1,12 @@
 #= require ./inspector_panel_view
 
+{handleEvent} = Trix.DOM
+
 class Trix.TextPanelView extends Trix.InspectorPanelView
   constructor: ->
     super
     @document = @editorController.document
-    Trix.DOM.on(@element, "mousedown", ".expandable .title", @didClickExpandableTitle)
+    handleEvent "mousedown", onElement: @element, matchingSelector: ".expandable .title", withCallback: @didClickExpandableTitle
 
   didClickExpandableTitle: (event) ->
     if expandable = Trix.DOM.closest(this, ".expandable")

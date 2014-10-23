@@ -1,5 +1,7 @@
 #= require trix/controllers/attachment_editor_controller
 
+{handleEvent} = Trix.DOM
+
 class Trix.ImageAttachmentEditorController extends Trix.AttachmentEditorController
   constructor: ->
     super
@@ -34,12 +36,14 @@ class Trix.ImageAttachmentEditorController extends Trix.AttachmentEditorControll
     event.preventDefault()
 
     @container.style["cursor"] = window.getComputedStyle(@handle)["cursor"]
-    @container.addEventListener("mousemove", @resize)
-    document.addEventListener("mouseup", @endResize)
 
     @resizing =
       startWidth: @editor.offsetWidth
       startClientX: event.clientX
+      handlers: [
+        handleEvent "mousemove", onElement: @container, withCallback: @resize
+        handleEvent "mouseup", withCallback: @endResize
+      ]
 
   resize: (event) =>
     width = @resizing.startWidth + event.clientX - @resizing.startClientX + "px"
@@ -50,9 +54,8 @@ class Trix.ImageAttachmentEditorController extends Trix.AttachmentEditorControll
     attributes = width: @image.offsetWidth, height: @image.offsetHeight
 
     @container.style["cursor"] = "auto"
-    @container.removeEventListener("mousemove", @resize)
-    document.removeEventListener("mouseup", @endResize)
 
+    handler.destroy() for handler in @resizing.handlers
     delete @resizing
 
     @delegate?.attachmentEditorDidRequestUpdatingAttachmentWithAttributes?(@attachment, attributes)

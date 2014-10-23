@@ -1,6 +1,7 @@
 #= require trix/observers/device_observer
 
 {defer} = Trix.Helpers
+{handleEvent} = Trix.DOM
 
 class Trix.InputController
   pastedFileCount = 0
@@ -17,7 +18,7 @@ class Trix.InputController
     @deviceObserver.delegate = this
 
     for event, handler of @events
-      @element.addEventListener(event, handler.bind(this), true)
+      handleEvent event, onElement: @element, withCallback: handler.bind(this), inPhase: "capturing"
 
   # Device observer delegate
 

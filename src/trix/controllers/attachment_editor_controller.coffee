@@ -1,5 +1,7 @@
 #= require trix/controllers/attachment_editor_controller
 
+{handleEvent} = Trix.DOM
+
 class Trix.AttachmentEditorController
   constructor: (@attachment, @element, @container) ->
     @removeButton = document.createElement("a")
@@ -7,8 +9,9 @@ class Trix.AttachmentEditorController
     @removeButton.setAttribute("title", "Remove")
     @removeButton.classList.add("remove")
     @removeButton.textContent = "⊗"
-    @removeButton.addEventListener("click", @didClickRemoveButton)
     @element.appendChild(@removeButton)
+
+    handleEvent "click", onElement: @removeButton, withCallback: @didClickRemoveButton
 
   didClickRemoveButton: (event) =>
     event.preventDefault()
