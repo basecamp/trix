@@ -1,4 +1,3 @@
-#= require trix/utilities/html_parser
 #= require fixtures
 
 module "Trix.HTMLParser"

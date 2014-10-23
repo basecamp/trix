@@ -1,5 +1,3 @@
-#= require trix/utilities/object
-#= require trix/utilities/hash
 #= require trix/models/attachment_piece
 #= require trix/models/string_piece
 #= require trix/models/splittable_list

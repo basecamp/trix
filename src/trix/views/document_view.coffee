@@ -1,6 +1,5 @@
 #= require trix/views/object_view
 #= require trix/views/block_view
-#= require trix/utilities/helpers
 
 {defer} = Trix.Helpers
 

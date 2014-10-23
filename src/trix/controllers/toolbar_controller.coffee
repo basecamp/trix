@@ -1,5 +1,3 @@
-#= require trix/utilities/dom
-
 class Trix.ToolbarController
   actionButtonSelector = ".button[data-action]"
   attributeButtonSelector = ".button[data-attribute]"

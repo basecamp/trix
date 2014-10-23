@@ -1,5 +1,3 @@
-#= require trix/utilities/object
-
 class Trix.SplittableList extends Trix.Object
   constructor: (objects = []) ->
     super

@@ -1,6 +1,3 @@
-#= require trix/utilities/helpers
-#= require trix/utilities/dom
-
 {defer} = Trix.Helpers
 {DOM} = Trix
 

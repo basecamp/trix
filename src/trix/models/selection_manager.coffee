@@ -1,7 +1,5 @@
 #= require trix/observers/selection_observer
 #= require trix/models/location_range
-#= require trix/utilities/dom
-#= require trix/utilities/helpers
 #= require trix/utilities/dom_range_change
 
 {DOM} = Trix

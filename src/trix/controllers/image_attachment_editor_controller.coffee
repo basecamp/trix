@@ -1,5 +1,4 @@
 #= require trix/controllers/attachment_editor_controller
-#= require trix/utilities/dom
 
 class Trix.ImageAttachmentEditorController extends Trix.AttachmentEditorController
   constructor: ->

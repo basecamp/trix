@@ -1,5 +1,5 @@
 #= require_self
-#= require trix/utilities/dom
+#= require trix/core
 #= require trix/controllers/editor_controller
 #= require trix/controllers/degraded_editor_controller
 

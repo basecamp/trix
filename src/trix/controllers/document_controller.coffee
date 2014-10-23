@@ -1,8 +1,6 @@
 #= require trix/controllers/attachment_editor_controller
 #= require trix/controllers/image_attachment_editor_controller
 #= require trix/views/document_view
-#= require trix/utilities/dom
-#= require trix/utilities/logger
 
 {DOM} = Trix
 editOperationLog = Trix.Logger.get("editOperations")

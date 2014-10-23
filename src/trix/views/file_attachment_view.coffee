@@ -1,5 +1,4 @@
 #= require trix/views/attachment_view
-#= require trix/utilities/helpers
 
 {capitalize} = Trix.Helpers
 

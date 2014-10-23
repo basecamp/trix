@@ -1,5 +1,3 @@
-#= require trix/utilities/object
-
 class Trix.Hash extends Trix.Object
   @fromCommonAttributesOfObjects: (objects = []) ->
     return new this unless objects.length

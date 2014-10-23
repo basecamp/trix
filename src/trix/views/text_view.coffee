@@ -1,6 +1,5 @@
 #= require trix/views/object_view
 #= require trix/views/piece_view
-#= require trix/utilities/dom
 
 {DOM} = Trix
 

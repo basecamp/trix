@@ -1,10 +1,6 @@
-#= require trix/utilities/object
-#= require trix/utilities/collection
 #= require trix/models/block
 #= require trix/models/splittable_list
 #= require trix/models/location_range
-#= require trix/utilities/helpers
-#= require trix/utilities/logger
 
 editOperationLog = Trix.Logger.get("editOperations")
 

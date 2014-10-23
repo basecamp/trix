@@ -1,5 +1,3 @@
-#= require trix/utilities/helpers
-
 {forwardMethods} = Trix.Helpers
 
 class Trix.Logger

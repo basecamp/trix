@@ -1,6 +1,3 @@
-#= require trix/utilities/object
-#= require trix/utilities/hash
-
 class Trix.Piece extends Trix.Object
   @types: {}
 

@@ -1,6 +1,3 @@
-#= require trix/utilities/object
-#= require trix/utilities/hash
-
 class Trix.Attachment extends Trix.Object
   @attachmentForFile: (file) ->
     attachment = new this @attributesForFile(file)

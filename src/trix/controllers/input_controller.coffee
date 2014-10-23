@@ -1,5 +1,4 @@
 #= require trix/observers/device_observer
-#= require trix/utilities/helpers
 
 {defer} = Trix.Helpers
 

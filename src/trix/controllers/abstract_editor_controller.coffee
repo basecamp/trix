@@ -1,7 +1,5 @@
 #= require trix/models/text
 #= require trix/models/document
-#= require trix/utilities/dom
-#= require trix/utilities/html_parser
 
 class Trix.AbstractEditorController
   constructor: (@config) ->

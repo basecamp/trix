@@ -1,5 +1,4 @@
 #= require trix/models/attachment
-#= require trix/utilities/helpers
 
 {forwardMethods} = Trix.Helpers
 

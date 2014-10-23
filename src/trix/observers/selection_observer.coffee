@@ -1,5 +1,3 @@
-#= require trix/utilities/dom
-
 {DOM} = Trix
 
 class Trix.SelectionObserver

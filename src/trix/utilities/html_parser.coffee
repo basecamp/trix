@@ -1,6 +1,4 @@
 #= require trix/models/document
-#= require trix/utilities/dom
-#= require trix/utilities/helpers
 
 {decapitalize} = Trix.Helpers
 

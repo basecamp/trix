@@ -1,6 +1,3 @@
-#= require trix/utilities/dom
-#= require trix/utilities/helpers
-
 {DOM} = Trix
 {memoize} = Trix.Helpers
 
