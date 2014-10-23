@@ -1,6 +1,9 @@
+html = document.documentElement
+match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector
+
 Trix.DOM = dom =
   handleEvent: (eventName, {onElement, matchingSelector, withCallback, inPhase, preventDefault} = {}) ->
-    element = onElement ? document.documentElement
+    element = onElement ? html
     selector = matchingSelector
     callback = withCallback
     useCapture = inPhase is "capturing"
@@ -17,7 +20,7 @@ Trix.DOM = dom =
     handler
 
   triggerEvent: (eventName, {onElement, bubbles, cancelable} = {}) ->
-    element = onElement ? document.documentElement
+    element = onElement ? html
     bubbles = bubbles isnt false
     cancelable = cancelable isnt false
 
@@ -65,6 +68,3 @@ Trix.DOM = dom =
       else NodeFilter.SHOW_ALL
 
     document.createTreeWalker(tree, whatToShow, usingFilter, expandEntityReferences is true)
-
-html = document.documentElement
-match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector
