@@ -1,10 +1,11 @@
 #= require trix/models/attachment
+#= require trix/utilities/helpers
+
+{forwardMethods} = Trix.Helpers
 
 class Trix.ManagedAttachment
   # Forward all Attachment methods
-  for own name, value of Trix.Attachment.prototype when name isnt "constructor" and typeof value is "function"
-    do (name, value) =>
-      @::[name] = -> @attachment[name].apply(@attachment, arguments)
+  forwardMethods fromConstructor: this, toConstructor: Trix.Attachment, viaProperty: "attachment"
 
   constructor: (@attachmentManager, @attachment) ->
     {@id, @file} = @attachment
