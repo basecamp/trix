@@ -9,6 +9,10 @@ class Trix.TextView extends Trix.ObjectView
     @text = @object
     {@textConfig} = @options
 
+  findDeepestFirstChildOfElement = (element) ->
+    element = element.firstChild while element.firstChild
+    element
+
   createNodes: ->
     nodes = []
     @text.eachPiece (piece) =>
@@ -24,7 +28,7 @@ class Trix.TextView extends Trix.ObjectView
 
       pieceView = @findOrCreateCachedChildView(Trix.PieceView, piece, {@textConfig})
       if element = @createElementForCurrentPiece()
-        DOM.deepestFirstChild(element).appendChild(pieceView.render())
+        findDeepestFirstChildOfElement(element).appendChild(pieceView.render())
       else
         element = pieceView.render()
 
@@ -54,7 +58,7 @@ class Trix.TextView extends Trix.ObjectView
             configElement.appendChild(element)
             element = configElement
           else
-            DOM.deepestFirstChild(element).appendChild(configElement)
+            findDeepestFirstChildOfElement(element).appendChild(configElement)
         else
           element = configElement
 

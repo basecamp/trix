@@ -40,10 +40,6 @@ Trix.DOM = dom =
     node = node.parentNode until node.nodeType is Node.ELEMENT_NODE
     node
 
-  deepestFirstChild: (element) ->
-    element = element.firstChild while element.firstChild
-    element
-
   getDimensions: (element) ->
     width:  element.offsetWidth
     height: element.offsetHeight
