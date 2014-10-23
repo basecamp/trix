@@ -1,12 +1,12 @@
 Trix.DOM = dom =
-  handleEvent: (eventName, {onElement, matchingSelector, withCallback, inPhase, preventDefault}) ->
+  handleEvent: (eventName, {onElement, matchingSelector, withCallback, inPhase, preventDefault} = {}) ->
     element = onElement ? document.documentElement
     selector = matchingSelector
     callback = withCallback
     useCapture = inPhase is "capturing"
 
     handler = (event) ->
-      target = if selector? then dom.closest(event.target, selector) else element
+      target = dom.findClosestElementFromNode(event.target, matchingSelector: selector)
       withCallback?.call(target, event, target) if target?
       event.preventDefault() if preventDefault
 
@@ -16,7 +16,7 @@ Trix.DOM = dom =
     element.addEventListener(eventName, handler, useCapture)
     handler
 
-  triggerEvent: (eventName, {onElement, bubbles, cancelable}) ->
+  triggerEvent: (eventName, {onElement, bubbles, cancelable} = {}) ->
     element = onElement ? document.documentElement
     bubbles = bubbles isnt false
     cancelable = cancelable isnt false
@@ -30,15 +30,16 @@ Trix.DOM = dom =
     if element?.nodeType is 1
       match.call(element, selector)
 
-  closest: (element, selector) ->
-    while element
-      return element if dom.elementMatchesSelector(element, selector)
-      element = element.parentNode
-
-  closestElementNode: (node) ->
+  findClosestElementFromNode: (node, {matchingSelector} = {}) ->
     return unless node
     node = node.parentNode until node.nodeType is Node.ELEMENT_NODE
-    node
+
+    if matchingSelector?
+      while node
+        return node if dom.elementMatchesSelector(node, matchingSelector)
+        node = node.parentNode
+    else
+      node
 
   getDimensions: (element) ->
     width:  element.offsetWidth
@@ -57,7 +58,8 @@ Trix.DOM = dom =
       container.childNodes.item(offset - 1)
 
   findElementForContainerAtOffset: (container, offset) ->
-    dom.closestElementNode(dom.findNodeForContainerAtOffset(container, offset))
+    node = dom.findNodeForContainerAtOffset(container, offset)
+    dom.findClosestElementFromNode(node)
 
 html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector

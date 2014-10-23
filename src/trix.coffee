@@ -37,7 +37,7 @@
     href:
       tagName: "a"
       parser: ({element}) ->
-        if link = Trix.DOM.closest(element, "a")
+        if link = Trix.DOM.findClosestElementFromNode(element, matchingSelector: "a")
           link.getAttribute("href")
     underline:
       style: { "text-decoration": "underline" }

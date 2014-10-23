@@ -1,6 +1,6 @@
 #= require ./inspector_panel_view
 
-{handleEvent} = Trix.DOM
+{handleEvent, findClosestElementFromNode} = Trix.DOM
 
 class Trix.TextPanelView extends Trix.InspectorPanelView
   constructor: ->
@@ -9,7 +9,7 @@ class Trix.TextPanelView extends Trix.InspectorPanelView
     handleEvent "mousedown", onElement: @element, matchingSelector: ".expandable .title", withCallback: @didClickExpandableTitle
 
   didClickExpandableTitle: (event) ->
-    if expandable = Trix.DOM.closest(this, ".expandable")
+    if expandable = findClosestElementFromNode(this, matchingSelector: ".expandable")
       expandable.classList.toggle("expanded")
       event.preventDefault()
 

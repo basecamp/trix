@@ -36,7 +36,7 @@ class Trix.MutationObserver
     node isnt @element and @nodeIsEditable(node)
 
   nodeIsEditable: (node) ->
-    DOM.closestElementNode(node)?.isContentEditable
+    DOM.findClosestElementFromNode(node)?.isContentEditable
 
   nodesModifiedByMutation: (mutation) ->
     nodes = []

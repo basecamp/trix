@@ -5,7 +5,7 @@
 #= require ./render_count_view
 
 {defer} = Trix.Helpers
-{handleEvent} = Trix.DOM
+{handleEvent, findClosestElementFromNode} = Trix.DOM
 editOperationLog = Trix.Logger.get("editOperations")
 
 class Trix.InspectorController
@@ -27,7 +27,7 @@ class Trix.InspectorController
     @activatePanel(event.target.value)
 
   didClickToolbar: (event) =>
-    unless Trix.DOM.closest(event.target, "input[name=inspector-panel]")
+    unless findClosestElementFromNode(event.target, matchingSelector: "input[name=inspector-panel]")
       @deactivateActivePanel()
 
   activatePanel: (name) ->

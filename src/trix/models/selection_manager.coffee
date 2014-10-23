@@ -211,7 +211,7 @@ class Trix.SelectionManager
     if node.nodeType is Node.TEXT_NODE
       if nodeIsCursorTarget(node)
         0
-      else if DOM.closestElementNode(node)?.isContentEditable
+      else if DOM.findClosestElementFromNode(node)?.isContentEditable
         node.length
       else
         0

@@ -1,4 +1,4 @@
-{handleEvent} = Trix.DOM
+{handleEvent, findClosestElementFromNode} = Trix.DOM
 
 class Trix.ToolbarController
   actionButtonSelector = ".button[data-action]"
@@ -31,7 +31,7 @@ class Trix.ToolbarController
       @delegate?.toolbarDidToggleAttribute(attributeName)
 
   didClickDialogButton: (event, element) =>
-    dialogElement = Trix.DOM.closest(element, dialogSelector)
+    dialogElement = findClosestElementFromNode(element, matchingSelector: dialogSelector)
     method = element.getAttribute("data-method")
     @[method].call(this, dialogElement)
 
