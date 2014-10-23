@@ -26,13 +26,13 @@ Trix.DOM = dom =
     element.dispatchEvent(event)
     event
 
-  match: (element, selector) ->
+  elementMatchesSelector: (element, selector) ->
     if element?.nodeType is 1
       match.call(element, selector)
 
   closest: (element, selector) ->
     while element
-      return element if dom.match(element, selector)
+      return element if dom.elementMatchesSelector(element, selector)
       element = element.parentNode
 
   closestElementNode: (node) ->
