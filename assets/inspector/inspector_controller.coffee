@@ -1,5 +1,3 @@
-#= require trix/utilities/dom
-#= require trix/utilities/helpers
 #= require ./selection_view
 #= require ./inspector_panel_view
 #= require ./text_panel_view

@@ -1,5 +1,4 @@
 #= require ./inspector_panel_view
-#= require trix/utilities/dom
 
 class Trix.TextPanelView extends Trix.InspectorPanelView
   constructor: ->
