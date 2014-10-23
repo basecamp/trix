@@ -16,6 +16,16 @@ Trix.DOM = dom =
     element.addEventListener(eventName, handler, useCapture)
     handler
 
+  triggerEvent: (eventName, {onElement, bubbles, cancelable}) ->
+    element = onElement ? document.documentElement
+    bubbles = bubbles isnt false
+    cancelable = cancelable isnt false
+
+    event = document.createEvent("Events")
+    event.initEvent(eventName, bubbles, cancelable)
+    element.dispatchEvent(event)
+    event
+
   match: (element, selector) ->
     if element?.nodeType is 1
       match.call(element, selector)
@@ -37,11 +47,6 @@ Trix.DOM = dom =
   getDimensions: (element) ->
     width:  element.offsetWidth
     height: element.offsetHeight
-
-  trigger: (element, eventName) ->
-    event = document.createEvent("Events")
-    event.initEvent(eventName, true, true)
-    element.dispatchEvent(event)
 
   createTreeWalker: (root, whatToShow = NodeFilter.SHOW_ALL, filter = null, entityReferenceExpansion = false) ->
     document.createTreeWalker(root, whatToShow, filter, entityReferenceExpansion)

@@ -1,6 +1,8 @@
 #= require trix/models/text
 #= require trix/models/document
 
+{triggerEvent} = Trix.DOM
+
 class Trix.AbstractEditorController
   constructor: (@config) ->
     {@documentElement, @toolbarElement, @textareaElement, @inputElement, @delegate} = @config
@@ -16,8 +18,8 @@ class Trix.AbstractEditorController
 
   saveSerializedDocument: ->
     @textareaElement.value = @serializedHTML()
-    Trix.DOM.trigger(@textareaElement, "input")
     @inputElement?.value = @document.toSerializableDocument().toJSONString()
+    triggerEvent "input", onElement: @textareaElement
 
   unserializableElementSelector = "[data-trix-serialize=false]"
   unserializableAttributeNames = ["contenteditable", "data-trix-id"]
