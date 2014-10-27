@@ -1,3 +1,3 @@
 #= require qunit
 #= require trix
-#= require_tree ./trix
+#= require_tree ./integration
