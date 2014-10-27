@@ -1,0 +1,27 @@
+<div id="container">
+  <div id="toolbar">
+    <span>
+      <a class="button" href="#" data-attribute="bold">Bold</a>
+      <a class="button" href="#" data-attribute="italic">Italic</a>
+      <a class="button" href="#" data-attribute="href" data-action="link">Link</a>
+    </span>
+
+    <span>
+      <a class="button" href="#" data-attribute="quote">Quote</a>
+      <a class="button" href="#" data-attribute="code">Code</a>
+    </span>
+
+    <span>
+      <a class="button" href="#" data-action="undo">Undo</a>
+      <a class="button" href="#" data-action="redo">Redo</a>
+    </span>
+
+    <div class="dialog" data-attribute="href">
+      <input type="text" name="href" placeholder="Enter a URL...">
+      <input type="button" value="Save link" data-method="setAttribute">
+      <input type="button" value="Unlink" data-method="removeAttribute">
+    </div>
+  </div>
+  <textarea id="content" autofocus placeholder="Say hello..." style="height: 33px"></textarea>
+
+<div>
