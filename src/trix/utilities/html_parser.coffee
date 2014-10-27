@@ -1,5 +1,3 @@
-#= require trix/models/document
-
 {decapitalize} = Trix.Helpers
 
 class Trix.HTMLParser

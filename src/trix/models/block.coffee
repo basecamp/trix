@@ -1,3 +1,5 @@
+#= require trix/models/text
+
 class Trix.Block extends Trix.Object
   @fromJSON: (blockJSON) ->
     text = Trix.Text.fromJSON(blockJSON.text)

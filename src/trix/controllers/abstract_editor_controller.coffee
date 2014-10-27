@@ -1,4 +1,3 @@
-#= require trix/models/text
 #= require trix/models/document
 
 {triggerEvent} = Trix.DOM

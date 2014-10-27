@@ -1,6 +1,7 @@
 #= require trix/models/block
 #= require trix/models/splittable_list
 #= require trix/models/location_range
+#= require trix/utilities/html_parser
 
 editOperationLog = Trix.Logger.get("editOperations")
 
