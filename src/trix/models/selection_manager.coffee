@@ -118,9 +118,13 @@ class Trix.SelectionManager
       @element.contains(range.startContainer) and @element.contains(range.endContainer)
 
   findLocationFromContainerAtOffset: (container, containerOffset) ->
+    blockElements = @getBlockElements()
+    return index: 0, offset: 0 if Object.keys(blockElements).length is 0
+
     node = DOM.findNodeForContainerAtOffset(container, containerOffset)
     offset = 0
-    for blockElement, index in @getBlockElements() when blockElement.contains(node)
+
+    for blockElement, index in blockElements when blockElement.contains(node)
       walker = DOM.walkTree(blockElement)
       while walker.nextNode()
         if walker.currentNode is node
