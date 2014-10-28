@@ -1,12 +1,20 @@
 .trix-inspector
+  position: absolute
+  top: 46px
+  left: 500px
   visibility: hidden
-  display: inline-block
-  min-width: 470px
-  margin-top: 10px
+  width: calc(100% - 520px)
   background: #fff
   border: 1px solid #444
   border-radius: 5px
   overflow: auto
+
+@media only screen and (max-width: 900px)
+  .trix-inspector
+    position: static
+    margin-top: 20px
+    width: 90%
+    min-width: 450px
 
 .trix-inspector-toolbar
   border-bottom: 1px solid #444
