@@ -12,7 +12,11 @@ class Trix.SelectionManager
     @selectionObserver.delegate = this
 
   getLocationRange: ->
-    @lockedLocationRange ? @currentLocationRange
+    if @lockedLocationRange
+      @lockedLocationRange
+    else
+      @selectionObserver.tick()
+      @currentLocationRange
 
   setLocationRange: (start, end) ->
     unless @lockedLocationRange?
