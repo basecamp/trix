@@ -1,4 +1,5 @@
 #= require qunit
 #= require trix
-#= require syn
+#= require ./test_helpers
+#= require_tree ./fixtures
 #= require_tree ./integration

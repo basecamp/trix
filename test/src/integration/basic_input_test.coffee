@@ -1,22 +1,19 @@
-{defer} = Trix.Helpers
+editorModule "Basic input", template: "basic_editor"
 
-module "Basic input",
-  setup: ->
-    document.body.insertAdjacentHTML("beforeend", JST["integration/fixtures/basic_editor"]())
-    window.editor = Trix.install(toolbar: "toolbar", textarea: "content")
-    Syn.click({}, getEditorElement())
+testEditorManipulation "typing", (expectDocument) ->
+  typeCharacters "foo", ->
+    expectDocument "foo\n"
 
-  teardown: ->
-    document.body.removeChild(document.getElementById("container"))
+testEditorManipulation "backspacing", (expectDocument) ->
+  typeCharacters "abc\b", ->
+    expectDocument "ab\n"
 
-asyncTest "typing", ->
-  expect 1
-  defer ->
-    element = getEditorElement()
-    Syn.type "foo", element, ->
-      equal editor.document.toString(), "foo\n"
-      QUnit.start()
+testEditorManipulation "pressing return", (expectDocument) ->
+  typeCharacters "ab\rc", ->
+    expectDocument "ab\nc\n"
 
-getEditorElement = ->
-  document.querySelector("div.trix-editor[contenteditable]")
-
+testEditorManipulation "cursor left", (expectDocument) ->
+  typeCharacters "ac", ->
+    moveCursor "left", ->
+      typeCharacters "b", ->
+        expectDocument "abc\n"
