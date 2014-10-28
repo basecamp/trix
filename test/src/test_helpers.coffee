@@ -69,3 +69,7 @@ createEvent = (type, properties = {}) ->
   selection = window.getSelection()
   selection.modify("move", direction, "character")
   defer(callback)
+
+@selectAll = (callback) ->
+  window.getSelection().selectAllChildren(document.activeElement)
+  defer(callback)

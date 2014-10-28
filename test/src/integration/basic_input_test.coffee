@@ -17,3 +17,9 @@ testEditorManipulation "cursor left", (expectDocument) ->
     moveCursor "left", ->
       typeCharacters "b", ->
         expectDocument "abc\n"
+
+testEditorManipulation "replace entire document", (expectDocument) ->
+  typeCharacters "abc", ->
+    selectAll ->
+      typeCharacters "d", ->
+        expectDocument "d\n"
