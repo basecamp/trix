@@ -14,6 +14,7 @@ module Trix
 
     def sprockets_environment
       @sprockets_environment ||= Sprockets::Environment.new do |env|
+        env.cache = Sprockets::Cache::FileStore.new(root.join("tmp"))
         paths.each do |path|
           env.append_path(path)
         end
