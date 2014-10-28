@@ -4,6 +4,7 @@ module "Basic input",
   setup: ->
     document.body.insertAdjacentHTML("beforeend", JST["integration/fixtures/basic_editor"]())
     window.editor = Trix.install(toolbar: "toolbar", textarea: "content")
+    Syn.click({}, getEditorElement())
 
   teardown: ->
     document.body.removeChild(document.getElementById("container"))
