@@ -1,0 +1,130 @@
+.editor
+  width: 90%
+  max-width: 450px
+  min-height: 300px
+  border: 1px solid #aaa
+  border-radius: 5px
+  padding: 5px 10px
+  outline: 0
+  font-size: 16px
+
+.editor a,
+.editor a:visited
+  color: blue
+
+blockquote
+  margin: 0
+  padding: 0 0 0 20px
+  border-left: 5px solid #ccc
+
+pre
+  font-family: Menlo, Consolas, Courier, monospace
+  font-size: 12px
+  margin: 0
+  padding: 0
+  white-space: pre-wrap
+
+figure.attachment
+  position: relative
+  padding: 0
+  margin: 0
+  display: inline-block
+
+figure.attachment.file
+  border-radius: .4rem
+  border: 1px solid rgba(0,0,0,0.15)
+  font-size: 1em
+  overflow: visible
+  padding: 1rem 1.5rem
+  position: relative
+  text-overflow: ellipsis
+  white-space: nowrap
+
+figure.attachment.file:before
+  position: relative
+  content: ''
+  display: inline-block
+  height: 3.6rem
+  width: 3rem
+  vertical-align: middle
+  z-index: 1
+  background-image: url("/file_icon.png")
+  background-size: auto 100%
+  background-repeat: no-repeat
+
+figure.attachment.file figcaption
+  position: relative
+  white-space: nowrap
+  vertical-align: middle
+  display: inline-block
+  z-index: 1
+
+figure.attachment.file span.size
+  color: #aa9c84
+  margin-left: 1rem
+
+figure.attachment.image img
+  position: relative
+  z-index: 1
+
+figure.attachment progress[value]
+  -webkit-appearance: none
+  appearance: none
+  height: 100%
+  left: 0
+  position: absolute
+  top: 0
+  width: 100%
+
+figure.attachment progress[value]::-webkit-progress-bar
+  background-color: transparent
+  border-radius: .6rem
+  width: 100%
+
+figure.attachment progress[value]::-webkit-progress-value
+  background-color: #e6f6fc
+  border-radius: .4rem 0 0 .4rem
+
+#debug
+  white-space: pre-wrap
+
+.trix-toolbar
+  padding: 10px 0
+  white-space: collapse
+
+.trix-toolbar a.button
+  border: 1px solid #aaa
+  border-radius: 3px
+  padding: 3px 10px
+  color: #333
+  text-decoration: none
+  font-size: 12px
+
+.trix-toolbar a.button.active
+  background: #d3e6fd
+
+.trix-toolbar a.button[data-attribute=bold]
+  font-weight: bold
+
+.trix-toolbar a.button[data-attribute=italic]
+  font-style: italic
+
+.trix-toolbar a.button[data-attribute=href]
+  text-decoration: underline
+
+.trix-toolbar a.button[data-attribute=code]
+  font-family: monospace
+
+.trix-toolbar a.button[disabled]
+  color: #ccc
+  cursor: default
+
+.trix-toolbar > span
+  margin-right: 15px
+
+.trix-toolbar .dialog
+  display: none
+  padding-top: 10px
+
+.trix-toolbar .dialog.active
+  display: block

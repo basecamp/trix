@@ -10,4 +10,4 @@ gem 'ejs'
 gem 'rack-rewrite'
 gem 'listen'
 gem 'uglifier'
-
+gem 'sass'
