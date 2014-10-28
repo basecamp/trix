@@ -69,25 +69,19 @@ namespace :test do
     end
   end
 
-  if has_phantomjs?
-    task :auto => :phantomjs
+  desc "Listen for file changes and run Trix tests in Chrome"
+  task :listen do
+    require "listen"
 
-    desc "Listen for file changes and run Trix tests in PhantomJS"
-    task :listen do
-      require "listen"
+    Listen.to("src/", "test/src", "lib") do |modified, added, removed|
+      files = modified + added + removed
+      puts "\nModified: #{files.join(', ')}"
+      puts "Running tests in Chrome..."
+      `osascript -l JavaScript -e 'Application("Chrome").windows[0].tabs.whose({ url: { _beginsWith: "http://trix.dev/test" } })[0].reload()'`
+    end.start
 
-      Listen.to("src/", "test/src", "lib") do |modified, added, removed|
-        files = modified + added + removed
-        puts "\nModified: #{files.join(', ')}"
-        puts "Starting tests..."
-        system "bin/rake test:auto"
-      end.start
-
-      sleep
-    end
-  else
-    task :auto => :browser
+    sleep
   end
 end
 
-task :default => "test:auto"
+task :default => "test:browser"
