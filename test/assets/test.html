@@ -8,6 +8,13 @@
 <body>
   <div id="qunit"></div>
   <div id="qunit-fixture"></div>
-  <script src="test.js"></script>
+  <script>
+    (function() {
+      var url = "test.js?" + +new Date
+      var el = document.createElement("script")
+      el.src = url
+      document.body.appendChild(el)
+    })()
+  </script>
 </body>
 </html>
