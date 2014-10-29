@@ -1,7 +1,7 @@
 {handleEvent} = Trix.DOM
 
 class Trix.SelectionObserver
-  events = ["DOMFocusIn", "DOMFocusOut", "mousedown", "keydown"]
+  events = ["DOMFocusIn", "DOMFocusOut", "mousedown", "mouseup", "keydown"]
 
   constructor: (@element) ->
     @range = getRange()
@@ -14,7 +14,7 @@ class Trix.SelectionObserver
       @update()
     else
       @running = true
-      requestAnimationFrame(@tick)
+      @tick()
 
   stop: ->
     delete @running
