@@ -20,3 +20,11 @@ class Trix.Logger
     if @console?
       @disabledConsole = @console
       delete @console
+
+  group: ->
+
+  groupEnd: ->
+
+  groupCollapsed: ->
+
+  trace: ->
