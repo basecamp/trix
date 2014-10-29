@@ -10,22 +10,27 @@ class Trix.SelectionObserver
       handleEvent event, onElement: @element, withCallback: @start
 
   start: =>
-    return if @running
-    @running = true
-    requestAnimationFrame(@tick)
+    if @running
+      @update()
+    else
+      @running = true
+      requestAnimationFrame(@tick)
 
   stop: ->
     delete @running
 
   tick: =>
     if document.contains(@element)
-      range = getRange()
-      unless rangesAreEqual(range, @range)
-        @delegate?.selectionDidChange?(range, @range)
-        @range = range
+      @update()
       requestAnimationFrame(@tick)
     else
       @stop()
+
+  update: ->
+    range = getRange()
+    unless rangesAreEqual(range, @range)
+      @delegate?.selectionDidChange?(range, @range)
+      @range = range
 
   getRange = ->
     selection = window.getSelection()
