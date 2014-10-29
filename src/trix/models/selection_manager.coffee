@@ -40,14 +40,14 @@ class Trix.SelectionManager
       else
         textRange.moveStart(granularity, -1)
       textRange.select()
-    @selectionObserver.tick()
+    @selectionObserver.update()
 
   # TODO: Combine with #expandSelectionInDirectionWithGranularity and add IE compatibility
   adjustSelectionInDirectionWithGranularity: (direction, granularity) ->
     return unless selection = getDOMSelection()
     alter = if selection.isCollapsed then "move" else "extend"
     selection.modify(alter, direction, granularity)
-    @selectionObserver.tick()
+    @selectionObserver.update()
 
   lock: ->
     if @lockCount++ is 0
