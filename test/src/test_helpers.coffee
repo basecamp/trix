@@ -69,10 +69,13 @@ createEvent = (type, properties = {}) ->
   event
 
 @moveCursor = (direction, callback) ->
-  selection = window.getSelection()
-  selection.modify("move", direction, "character")
+  document.activeElement.dispatchEvent(createEvent("mousedown"))
+  window.getSelection().modify("move", direction, "character")
+  document.activeElement.dispatchEvent(createEvent("mouseup"))
   defer(callback)
 
 @selectAll = (callback) ->
+  document.activeElement.dispatchEvent(createEvent("mousedown"))
   window.getSelection().selectAllChildren(document.activeElement)
+  document.activeElement.dispatchEvent(createEvent("mouseup"))
   defer(callback)
