@@ -118,6 +118,8 @@ class Trix.SelectionManager
       @element.contains(range.startContainer) and @element.contains(range.endContainer)
 
   findLocationFromContainerAtOffset: (container, containerOffset) ->
+    return index: 0, offset: 0 if container is @element and containerOffset is 0
+
     blockElements = @getBlockElements()
     return index: 0, offset: 0 if Object.keys(blockElements).length is 0
 
@@ -135,6 +137,7 @@ class Trix.SelectionManager
           return {index, offset}
         else
           offset += nodeLength(walker.currentNode)
+      return {index, offset}
 
   findContainerAndOffsetForLocation: (location) ->
     [node, nodeOffset] = @findNodeAndOffsetForLocation(location)
