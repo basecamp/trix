@@ -140,6 +140,7 @@ class Trix.SelectionManager
       return {index, offset}
 
   findContainerAndOffsetForLocation: (location) ->
+    return [@element, 0] if location.index is 0 and location.offset is 0
     [node, nodeOffset] = @findNodeAndOffsetForLocation(location)
     return unless node
     if node.nodeType is Node.TEXT_NODE

@@ -23,3 +23,9 @@ testEditorManipulation "replace entire document", (expectDocument) ->
     selectAll ->
       typeCharacters "d", ->
         expectDocument "d\n"
+
+testEditorManipulation "remove entire document", (expectDocument) ->
+  typeCharacters "abc", ->
+    selectAll ->
+      typeCharacters "\b", ->
+        expectDocument "\n"
