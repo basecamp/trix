@@ -142,7 +142,9 @@ class BrowserSupport
 
 class Installer
   constructor: (@config = {}) ->
-    @setConfigElements()
+    for key in ["textarea", "toolbar"]
+      @config["#{key}Element"] = getElement(@config[key])
+      delete @config[key]
     @config.autofocus ?= @config.textareaElement.hasAttribute("autofocus")
 
   run: ->
@@ -156,11 +158,6 @@ class Installer
         new Trix.EditorController @config
       when "degraded"
         new Trix.DegradedEditorController @config
-
-  setConfigElements: ->
-    for key in "textarea toolbar input".split(" ")
-      @config["#{key}Element"] = getElement(@config[key])
-      delete @config[key]
 
   styleSheetId = "trix-styles"
 
@@ -180,7 +177,6 @@ class Installer
     textarea = @config.textareaElement
 
     element = document.createElement("div")
-    element.innerHTML = textarea.value
     element.setAttribute(key, value) for key, value of documentElementAttributes
 
     if placeholder = textarea.getAttribute("placeholder")

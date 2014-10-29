@@ -3,7 +3,7 @@
 config =
   textarea: "text"
   toolbar: "toolbar"
-  input: "data"
+  format: "json"
   className: "formatted"
   delegate:
     shouldAcceptFile: (file) ->

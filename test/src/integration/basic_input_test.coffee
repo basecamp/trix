@@ -1,4 +1,4 @@
-editorModule "Basic input", template: "basic_editor"
+editorModule "Basic input", template: "basic_editor_empty"
 
 testEditorManipulation "typing", (expectDocument) ->
   typeCharacters "foo", ->

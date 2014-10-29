@@ -1,11 +1,14 @@
 {defer} = Trix.Helpers
 
-@editorModule = (name, {template, setup, teardown} = {}) ->
+@editorModule = (name, {template, setup, teardown, config} = {}) ->
   module name,
+
     setup: ->
       if template?
         document.body.insertAdjacentHTML("beforeend", JST["fixtures/#{template}"]())
-        window.editor = Trix.install(toolbar: "toolbar", textarea: "content")
+        editorConfig = toolbar: "toolbar", textarea: "content"
+        editorConfig[key] = value for key, value of config if config?
+        window.editor = Trix.install(editorConfig)
         getEditorElement().focus()
       setup?()
 
@@ -25,7 +28,7 @@
     defer ->
       callback expectDocument
 
-getEditorElement = ->
+@getEditorElement = ->
   document.querySelector("div.trix-editor[contenteditable]")
 
 @typeCharacters = (string, callback) ->

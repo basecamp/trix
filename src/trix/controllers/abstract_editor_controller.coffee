@@ -4,26 +4,29 @@
 
 class Trix.AbstractEditorController
   constructor: (@config) ->
-    {@documentElement, @toolbarElement, @textareaElement, @inputElement, @delegate} = @config
+    {@documentElement, @toolbarElement, @textareaElement, @delegate} = @config
+    @serializationFormat = @config.format?.toLowerCase() ? "html"
     @document = @createDocument()
 
   createDocument: ->
-    if @documentElement.textContent.trim()
-      Trix.Document.fromHTML(@documentElement.innerHTML)
-    else if @inputElement?.value
-      Trix.Document.fromJSONString(@inputElement.value)
+    input = @textareaElement.value
+    if input.trim()
+      switch @serializationFormat
+        when "html" then Trix.Document.fromHTML(input)
+        when "json" then Trix.Document.fromJSONString(input)
     else
       new Trix.Document
 
   saveSerializedDocument: ->
-    @textareaElement.value = @serializedHTML()
-    @inputElement?.value = @document.toSerializableDocument().toJSONString()
+    @textareaElement.value = switch @serializationFormat
+      when "html" then @toSerializedHTML()
+      when "json" then @document.toSerializableDocument().toJSONString()
     triggerEvent "input", onElement: @textareaElement
 
   unserializableElementSelector = "[data-trix-serialize=false]"
   unserializableAttributeNames = ["contenteditable", "data-trix-id"]
 
-  serializedHTML: ->
+  toSerializedHTML: ->
     element = @documentElement.cloneNode(true)
 
     for el in element.querySelectorAll(unserializableElementSelector)
