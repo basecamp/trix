@@ -55,6 +55,11 @@
 
   config:
     editorCSS: """
+      .trix-editor[contenteditable=true]:empty:not(.focused)::before {
+        content: attr(data-placeholder);
+        color: graytext;
+      }
+
       .trix-editor a[contenteditable=false] {
         cursor: text;
       }
@@ -176,6 +181,9 @@ class Installer
 
     if placeholder = textarea.getAttribute("placeholder")
       element.setAttribute("data-placeholder", placeholder)
+      {handleEvent} = Trix.DOM
+      handleEvent "focus", onElement: element, withCallback: -> element.classList.add("focused")
+      handleEvent "blur",  onElement: element, withCallback: -> element.classList.remove("focused")
 
     element.className = textarea.className
     element.classList.add("trix-editor")
