@@ -72,4 +72,4 @@ Trix.DOM = dom =
       when "text" then NodeFilter.SHOW_TEXT
       else NodeFilter.SHOW_ALL
 
-    document.createTreeWalker(tree, whatToShow, usingFilter, expandEntityReferences is true)
+    document.createTreeWalker(tree, whatToShow, usingFilter ? null, expandEntityReferences is true)
