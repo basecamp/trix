@@ -92,8 +92,6 @@ class Trix.SelectionManager
       @delegate?.locationRangeDidChange?(@currentLocationRange)
 
   setDOMRange: (locationRange) ->
-    return unless locationRange?
-
     rangeStart = @findContainerAndOffsetForLocation(locationRange.start)
     rangeEnd =
       if locationRange.isCollapsed()
@@ -193,10 +191,8 @@ class Trix.SelectionManager
       range = document.body.createTextRange()
       range.moveToPoint(clientX, clientY)
       range.select()
-      return @updateCurrentLocationRange()
 
-    if domRange
-      @createLocationRangeFromDOMRange(domRange)
+    @createLocationRangeFromDOMRange(domRange ? getDOMRange())
 
   getPointAtEndOfSelection: ->
     return unless range = getDOMRange()
