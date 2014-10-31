@@ -74,25 +74,53 @@ typeCharacterInElement = (character, element, callback) ->
       element.dispatchEvent(keyupEvent)
       callback()
 
-createEvent = (type, properties = {}) ->
+@createEvent = (type, properties = {}) ->
   event = document.createEvent("Events")
   event.initEvent(type, true, true)
   for key, value of properties
     event[key] = value
   event
 
-@moveCursor = (direction, callback) ->
+@moveCursor = (options, callback) ->
+  selection = window.getSelection()
+
+  if typeof options is "string"
+    direction = options
+  else
+    direction = options.direction
+    times = options.times
+
+  for i in [0...(times ? 1)]
+    if selection.modify
+      selection.modify("move", direction, "character")
+    else if document.body.createTextRange
+      textRange = document.body.createTextRange()
+      coordinates = getCursorCoordinates()
+      textRange.moveToPoint(coordinates.clientX, coordinates.clientY)
+      textRange.move("character", if direction is "right" then 1 else -1)
+      textRange.select()
+
+  Trix.selectionChangeObserver.update()
+  defer ->
+    callback getCursorCoordinates()
+
+getCursorCoordinates = ->
+  rect = window.getSelection().getRangeAt(0).getClientRects()[0]
+  clientX: rect.left
+  clientY: rect.top + rect.height / 2
+
+@selectInDirection = (direction, callback) ->
   selection = window.getSelection()
   if selection.modify
-    selection.modify("move", direction, "character")
+    selection.modify("extend", direction, "character")
   else if document.body.createTextRange
-    rects = selection.getRangeAt(0).getClientRects()
-    rect = rects[rects.length - 1]
-    x = rect.right
-    y = rect.top + rect.height / 2
     textRange = document.body.createTextRange()
-    textRange.moveToPoint(x, y)
-    textRange.move("character", if direction is "right" then 1 else -1)
+    coordinates = getCursorCoordinates()
+    textRange.moveToPoint(coordinates.clientX, coordinates.clientY)
+    if direction is "left"
+      textRange.moveStart("character", -1)
+    else
+      textRange.moveEnd("character", 1)
     textRange.select()
   Trix.selectionChangeObserver.update()
   defer(callback)
@@ -100,4 +128,10 @@ createEvent = (type, properties = {}) ->
 @selectAll = (callback) ->
   window.getSelection().selectAllChildren(document.activeElement)
   Trix.selectionChangeObserver.update()
+  defer(callback)
+
+@dragToCoordinates = (coordinates, callback) ->
+  document.activeElement.dispatchEvent(createEvent("dragstart"))
+  dropEvent = createEvent("drop", coordinates)
+  document.activeElement.dispatchEvent(dropEvent)
   defer(callback)

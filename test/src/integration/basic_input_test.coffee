@@ -52,3 +52,12 @@ testEditorManipulation "content mutation", (expectDocument) ->
     document.activeElement.appendChild(textNode)
     after 50, ->
       expectDocument "abchi\n"
+
+testEditorManipulation "drag text", (expectDocument) ->
+  typeCharacters "abc", ->
+    moveCursor direction: "left", times: 2, (coordinates) ->
+      moveCursor "right", ->
+        selectInDirection "right", ->
+          dragToCoordinates coordinates, ->
+            expectDocument "acb\n"
+
