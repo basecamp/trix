@@ -1,5 +1,8 @@
 {defer} = Trix.Helpers
 
+@after = (delay, callback) ->
+  setTimeout(callback, delay)
+
 @editorModule = (name, {template, setup, teardown, config} = {}) ->
   module name,
 

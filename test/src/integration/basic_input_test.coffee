@@ -46,3 +46,9 @@ testEditorManipulation "paste file", (expectDocument) ->
   pasteContent "Files", (getAsFile: -> {}), ->
     expectDocument "#{Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER}\n"
 
+testEditorManipulation "content mutation", (expectDocument) ->
+  typeCharacters "abc", ->
+    textNode = document.createTextNode("hi")
+    document.activeElement.appendChild(textNode)
+    after 50, ->
+      expectDocument "abchi\n"
