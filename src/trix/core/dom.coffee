@@ -44,6 +44,11 @@ Trix.DOM = dom =
     else
       node
 
+  elementContainsNode: (element, node) ->
+    while node
+      return true if node is element
+      node = node.parentNode
+
   findNodeForContainerAtOffset: (container, offset) ->
     return unless container
     if container.nodeType is Node.TEXT_NODE

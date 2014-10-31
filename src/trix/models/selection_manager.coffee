@@ -113,9 +113,9 @@ class Trix.SelectionManager
 
   rangeWithinElement: (range) ->
     if range.collapsed
-      @element.contains(range.startContainer)
+      DOM.elementContainsNode(@element, range.startContainer)
     else
-      @element.contains(range.startContainer) and @element.contains(range.endContainer)
+      DOM.elementContainsNode(@element, range.startContainer) and DOM.elementContainsNode(@element, range.endContainer)
 
   findLocationFromContainerAtOffset: (container, containerOffset) ->
     return index: 0, offset: 0 if container is @element and containerOffset is 0
@@ -126,7 +126,7 @@ class Trix.SelectionManager
     node = DOM.findNodeForContainerAtOffset(container, containerOffset)
     offset = 0
 
-    for blockElement, index in blockElements when blockElement.contains(node)
+    for blockElement, index in blockElements when DOM.elementContainsNode(blockElement, node)
       walker = DOM.walkTree(blockElement)
       while walker.nextNode()
         if walker.currentNode is node

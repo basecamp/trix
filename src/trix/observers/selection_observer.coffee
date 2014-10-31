@@ -1,4 +1,4 @@
-{handleEvent} = Trix.DOM
+{DOM} = Trix
 
 class Trix.SelectionObserver
   events = ["DOMFocusIn", "DOMFocusOut", "mousedown", "mouseup", "keydown"]
@@ -7,7 +7,7 @@ class Trix.SelectionObserver
     @range = getRange()
 
     for event in events
-      handleEvent event, onElement: @element, withCallback: @start
+      DOM.handleEvent event, onElement: @element, withCallback: @start
 
   start: =>
     if @running
@@ -20,7 +20,7 @@ class Trix.SelectionObserver
     delete @running
 
   tick: =>
-    if document.contains(@element)
+    if DOM.elementContainsNode(document.documentElement, @element)
       @update()
       requestAnimationFrame(@tick)
     else
