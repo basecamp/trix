@@ -45,13 +45,11 @@ typeCharacterInElement = (character, element, callback) ->
   keyCode = character.toUpperCase().charCodeAt(0)
 
   keydownEvent = createEvent("keydown", keyCode: keyCode, charCode: 0)
-  element.dispatchEvent(keydownEvent)
-  return callback() if keydownEvent.defaultPrevented
+  return callback() unless element.dispatchEvent(keydownEvent)
 
   defer ->
     keypressEvent = createEvent("keypress", keyCode: charCode, charCode: charCode)
-    element.dispatchEvent(keypressEvent)
-    return callback() if keypressEvent.defaultPrevented
+    return callback() unless element.dispatchEvent(keypressEvent)
 
     inputEvent = createEvent("input")
     element.dispatchEvent(inputEvent)
