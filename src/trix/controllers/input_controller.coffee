@@ -90,7 +90,7 @@ class Trix.InputController
 
     paste: (event) ->
       event.preventDefault()
-      paste = event.clipboardData
+      paste = event.clipboardData ? event.testClipboardData
 
       if html = paste.getData("text/html")
         @delegate?.inputControllerWillPasteText()

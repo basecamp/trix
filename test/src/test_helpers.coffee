@@ -31,6 +31,17 @@
 @getEditorElement = ->
   document.querySelector("div.trix-editor[contenteditable]")
 
+@pasteContent = (contentType, value, callback) ->
+  testClipboardData =
+    getData: (type) ->
+      value if type is contentType
+    types: []
+    items: []
+
+  event = createEvent("paste", {testClipboardData})
+  document.activeElement.dispatchEvent(event)
+  defer callback
+
 @typeCharacters = (string, callback) ->
   characters = string.split("")
   do typeNextCharacter = ->

@@ -29,3 +29,15 @@ testEditorManipulation "remove entire document", (expectDocument) ->
     selectAll ->
       typeCharacters "\b", ->
         expectDocument "\n"
+
+testEditorManipulation "paste plain text", (expectDocument) ->
+  typeCharacters "abc", ->
+    moveCursor "left", ->
+      pasteContent "text/plain", "!", ->
+        expectDocument "ab!c\n"
+
+testEditorManipulation "paste html", (expectDocument) ->
+  typeCharacters "abc", ->
+    moveCursor "left", ->
+      pasteContent "text/html", "&lt;", ->
+        expectDocument "ab<c\n"
