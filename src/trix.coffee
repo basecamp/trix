@@ -55,11 +55,6 @@
 
   config:
     editorCSS: """
-      .trix-editor[contenteditable=true]:empty:before {
-        content: attr(data-placeholder);
-        color: graytext;
-      }
-
       .trix-editor a[contenteditable=false] {
         cursor: text;
       }
