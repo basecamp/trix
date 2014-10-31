@@ -68,7 +68,16 @@ createEvent = (type, properties = {}) ->
 
 @moveCursor = (direction, callback) ->
   document.activeElement.dispatchEvent(createEvent("mousedown"))
-  window.getSelection().modify("move", direction, "character")
+  selection = window.getSelection()
+  if selection.modify
+    selection.modify("move", direction, "character")
+  else if document.body.createTextRange
+    rects = selection.getRangeAt(0).getClientRects()
+    rect = rects[rects.length - 1]
+    textRange = document.body.createTextRange()
+    textRange.moveToPoint(rect.right, rect.top)
+    textRange.move("character", if direction is "right" then 1 else -1)
+    textRange.select()
   document.activeElement.dispatchEvent(createEvent("mouseup"))
   defer(callback)
 
