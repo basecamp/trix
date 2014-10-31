@@ -6,7 +6,8 @@
     setup: ->
       if template?
         document.body.insertAdjacentHTML("beforeend", JST["fixtures/#{template}"]())
-        editorConfig = toolbar: "toolbar", textarea: "content"
+        delegate = shouldAcceptFile: -> true
+        editorConfig = toolbar: "toolbar", textarea: "content", delegate: delegate
         editorConfig[key] = value for key, value of config if config?
         window.editor = Trix.install(editorConfig)
         getEditorElement().focus()
@@ -35,8 +36,8 @@
   testClipboardData =
     getData: (type) ->
       value if type is contentType
-    types: []
-    items: []
+    types: [contentType]
+    items: [value]
 
   event = createEvent("paste", {testClipboardData})
   document.activeElement.dispatchEvent(event)

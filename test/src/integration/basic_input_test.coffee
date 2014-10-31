@@ -41,3 +41,8 @@ testEditorManipulation "paste html", (expectDocument) ->
     moveCursor "left", ->
       pasteContent "text/html", "&lt;", ->
         expectDocument "ab<c\n"
+
+testEditorManipulation "paste file", (expectDocument) ->
+  pasteContent "Files", (getAsFile: -> {}), ->
+    expectDocument "#{Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER}\n"
+

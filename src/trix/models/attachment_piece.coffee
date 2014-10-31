@@ -2,7 +2,7 @@
 #= require trix/models/piece
 
 Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Piece
-  objectReplacementCharacter = "\uFFFC"
+  @OBJECT_REPLACEMENT_CHARACTER: "\uFFFC"
 
   @fromJSON: (pieceJSON) ->
     new this Trix.Attachment.fromJSON(pieceJSON.attachment), pieceJSON.attributes
@@ -23,7 +23,7 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
     @attributes.get("height")
 
   toString: ->
-    objectReplacementCharacter
+    @constructor.OBJECT_REPLACEMENT_CHARACTER
 
   toJSON: ->
     json = super
