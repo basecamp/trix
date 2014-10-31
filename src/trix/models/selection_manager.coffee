@@ -92,6 +92,8 @@ class Trix.SelectionManager
       @delegate?.locationRangeDidChange?(@currentLocationRange)
 
   setDOMRange: (locationRange) ->
+    return unless locationRange?
+
     rangeStart = @findContainerAndOffsetForLocation(locationRange.start)
     rangeEnd =
       if locationRange.isCollapsed()
