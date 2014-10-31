@@ -29,8 +29,9 @@ class Trix.SelectionObserver
   update: ->
     range = getRange()
     unless rangesAreEqual(range, @range)
-      @delegate?.selectionDidChange?(range, @range)
+      previousRange = @range
       @range = range
+      @delegate?.selectionDidChange?(range, previousRange)
 
   getRange = ->
     selection = window.getSelection()
