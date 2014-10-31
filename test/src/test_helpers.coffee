@@ -67,22 +67,22 @@ createEvent = (type, properties = {}) ->
   event
 
 @moveCursor = (direction, callback) ->
-  document.activeElement.dispatchEvent(createEvent("mousedown"))
   selection = window.getSelection()
   if selection.modify
     selection.modify("move", direction, "character")
   else if document.body.createTextRange
     rects = selection.getRangeAt(0).getClientRects()
     rect = rects[rects.length - 1]
+    x = rect.right
+    y = rect.top + rect.height / 2
     textRange = document.body.createTextRange()
-    textRange.moveToPoint(rect.right, rect.top)
+    textRange.moveToPoint(x, y)
     textRange.move("character", if direction is "right" then 1 else -1)
     textRange.select()
-  document.activeElement.dispatchEvent(createEvent("mouseup"))
+  Trix.selectionChangeObserver.update()
   defer(callback)
 
 @selectAll = (callback) ->
-  document.activeElement.dispatchEvent(createEvent("mousedown"))
   window.getSelection().selectAllChildren(document.activeElement)
-  document.activeElement.dispatchEvent(createEvent("mouseup"))
+  Trix.selectionChangeObserver.update()
   defer(callback)

@@ -1,6 +1,6 @@
-#= require trix/observers/selection_observer
 #= require trix/models/location_range
 #= require trix/utilities/dom_range_change
+#= require trix/observers/selection_change_observer
 
 {DOM} = Trix
 {memoize} = Trix.Helpers
@@ -8,8 +8,7 @@
 class Trix.SelectionManager
   constructor: (@element) ->
     @lockCount = 0
-    @selectionObserver = new Trix.SelectionObserver @element
-    @selectionObserver.delegate = this
+    Trix.selectionChangeObserver.registerSelectionManager(this)
 
   getLocationRange: ->
     @lockedLocationRange ? @currentLocationRange
@@ -40,14 +39,14 @@ class Trix.SelectionManager
       else
         textRange.moveStart(granularity, -1)
       textRange.select()
-    @selectionObserver.update()
+    Trix.selectionChangeObserver.update()
 
   # TODO: Combine with #expandSelectionInDirectionWithGranularity and add IE compatibility
   adjustSelectionInDirectionWithGranularity: (direction, granularity) ->
     return unless selection = getDOMSelection()
     alter = if selection.isCollapsed then "move" else "extend"
     selection.modify(alter, direction, granularity)
-    @selectionObserver.update()
+    Trix.selectionChangeObserver.update()
 
   lock: ->
     if @lockCount++ is 0
@@ -66,18 +65,22 @@ class Trix.SelectionManager
     @setDOMRange(range)
     range
 
-  # Selection observer delegate
+  # Private
 
-  selectionDidChange: (range, previousRange) ->
-    if range and previousRange
-      rangeChange = new Trix.DOMRangeChange({range, previousRange, @element})
+  selectionDidChange: =>
+    unless DOM.elementContainsNode(document.documentElement, @element)
+      Trix.selectionChangeObserver.unregisterSelectionManager(this)
+
+    previousRange = @range
+    @range = getDOMRange()
+
+    if @range and previousRange
+      rangeChange = new Trix.DOMRangeChange({@range, previousRange, @element})
 
     if rangeChange?.needsAdjustment()
       @adjustSelectionInDirectionWithGranularity(rangeChange.getDirection(), "character")
     else
       @updateCurrentLocationRange()
-
-  # Private
 
   getBlockElements: ->
     @delegate?.selectionManagerDidRequestBlockElements?()
