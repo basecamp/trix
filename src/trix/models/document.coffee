@@ -124,9 +124,27 @@ class Trix.Document extends Trix.Object
   moveTextFromLocationRangeToPosition: edit "moveTextFromLocationRangeToPosition", (locationRange, position) ->
     range = @rangeFromLocationRange(locationRange)
     return if range[0] <= position <= range[1]
+
     document = @getDocumentAtLocationRange(locationRange)
     @removeTextAtLocationRange(locationRange)
-    position -= document.getLength() if range[0] < position
+
+    movingRightward = range[0] < position
+    position -= document.getLength() if movingRightward
+
+    unless @firstBlockInLocationRangeIsEntirelySelected(locationRange)
+      [firstBlock, blocks...] = document.getBlocks()
+      if blocks.length is 0
+        text = firstBlock.getTextWithoutBlockBreak()
+        position += 1 if movingRightward
+      else
+        text = firstBlock.text
+
+      @insertTextAtLocationRange(text, @locationRangeFromPosition(position))
+      return if blocks.length is 0
+
+      document = new Trix.Document blocks
+      position += text.getLength()
+
     @insertDocumentAtLocationRange(document, @locationRangeFromPosition(position))
 
   addAttributeAtLocationRange: edit "addAttributeAtLocationRange", (attribute, value, locationRange) ->
@@ -165,6 +183,15 @@ class Trix.Document extends Trix.Object
     @removeTextAtLocationRange(locationRange)
     blocks = [new Trix.Block] if locationRange.offset is 0
     @blockList = @blockList.insertSplittableListAtPosition(new Trix.SplittableList(blocks), position)
+
+  firstBlockInLocationRangeIsEntirelySelected: (locationRange) ->
+    if locationRange.start.offset is 0 and locationRange.start.index < locationRange.end.index
+      true
+    else if locationRange.start.index is locationRange.end.index
+      length = @getBlockAtIndex(locationRange.start.index).getLength()
+      locationRange.start.offset is 0 and locationRange.end.offset is length
+    else
+      false
 
   expandLocationRangeToLineBreaksAndSplitBlocks: (locationRange) ->
     start = index: locationRange.start.index, offset: locationRange.start.offset
@@ -209,6 +236,9 @@ class Trix.Document extends Trix.Object
 
   getLength: ->
     @blockList.getEndPosition()
+
+  getBlocks: ->
+    @blockList.toArray()
 
   eachBlock: (callback) ->
     @blockList.eachObject(callback)
