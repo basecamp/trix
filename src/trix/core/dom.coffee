@@ -34,8 +34,7 @@ Trix.DOM = dom =
       match.call(element, selector)
 
   findClosestElementFromNode: (node, {matchingSelector} = {}) ->
-    return unless node
-    node = node.parentNode until node.nodeType is Node.ELEMENT_NODE
+    node = node.parentNode until not node? or node.nodeType is Node.ELEMENT_NODE
 
     if matchingSelector?
       while node

@@ -89,8 +89,9 @@ class Trix.InputController
       defer => @responder?.deleteBackward()
 
     paste: (event) ->
-      event.preventDefault()
       paste = event.clipboardData ? event.testClipboardData
+      return if "com.apple.webarchive" in paste.types
+      event.preventDefault()
 
       if html = paste.getData("text/html")
         @delegate?.inputControllerWillPasteText()
