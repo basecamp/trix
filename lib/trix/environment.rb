@@ -90,7 +90,7 @@ module Trix
     end
 
     def dist_path_for(file)
-      dist_path.join(file).to_s
+      dist_path.join(file).realpath.to_s
     end
   end
 end

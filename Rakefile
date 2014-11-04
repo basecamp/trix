@@ -82,6 +82,12 @@ namespace :test do
 
     sleep
   end
+
+  desc "Run Trix tests on a suite of browser VMs"
+  task vm: :dist do
+    require_relative "test/vm_test_runner.rb"
+    Trix::VMTestRunner.new(environment).run
+  end
 end
 
 task :default => "test:browser"
