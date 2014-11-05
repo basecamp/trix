@@ -14,9 +14,6 @@
         editorConfig[key] = value for key, value of config if config?
         window.editor = Trix.install(editorConfig)
 
-        if window.editor.inputController.virtualKeyboardIsActive
-          window.editor.inputController.deviceDidDeactivateVirtualKeyboard()
-
         range = document.createRange()
         range.setStart(getEditorElement(), 0)
         selection = window.getSelection()
