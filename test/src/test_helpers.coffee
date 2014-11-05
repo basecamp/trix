@@ -13,7 +13,13 @@
         editorConfig = toolbar: "toolbar", textarea: "content", delegate: delegate
         editorConfig[key] = value for key, value of config if config?
         window.editor = Trix.install(editorConfig)
-        getEditorElement().focus()
+
+        range = document.createRange()
+        range.setStart(getEditorElement(), 0)
+        selection = window.getSelection()
+        selection.removeAllRanges()
+        selection.addRange(range)
+        Trix.selectionChangeObserver.update()
       setup?()
 
     teardown: ->
