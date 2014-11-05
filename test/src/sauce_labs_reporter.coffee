@@ -1,3 +1,4 @@
+window.global_test_results = {}
 failures = []
 
 QUnit.testStart (testDetails) ->
