@@ -2,10 +2,6 @@ require 'bundler/setup'
 require 'uglifier'
 require File.join(File.dirname(__FILE__) + '/lib/trix/environment')
 
-def has_phantomjs?
-  `which phantomjs` && $?.success?
-end
-
 namespace :trix do
   environment = Trix::Environment.new(".")
   environment.paths = %w( assets src )
@@ -54,19 +50,6 @@ namespace :test do
   desc "Open Trix tests in a browser"
   task :browser => :dist do
     system "open", environment.dist_path_for("test.html")
-  end
-
-  desc "Run Trix tests in PhantomJS"
-  task :phantomjs => :dist do
-    runner = environment.path_for("vendor/runner-list.js")
-    page = environment.dist_path_for("test.html")
-
-    if has_phantomjs?
-      puts "\n# Running:\n"
-      system "phantomjs", runner, page
-    else
-      abort "Please install PhantomJS"
-    end
   end
 
   desc "Listen for file changes and run Trix tests in Chrome"
