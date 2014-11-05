@@ -12,6 +12,8 @@ module Trix
       ["OS X 10.9", "safari", "7"],
       ["OS X 10.9", "firefox", "33"],
       ["OS X 10.9", "googlechrome", "38"],
+      ["OS X 10.9", "iPhone", "8.1"],
+      ["OS X 10.9", "iPhone", "7.1"],
       ["Linux", "firefox", "33"],
       ["Linux", "googlechrome", "38"]
     ]
