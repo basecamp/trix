@@ -63,7 +63,7 @@ class Trix.InputController
       @draggedRange = @responder?.getLocationRange()
 
     dragover: (event) ->
-      event.preventDefault() unless @draggedRange
+      event.preventDefault() if @draggedRange
 
     dragend: (event) ->
       delete @draggedRange
