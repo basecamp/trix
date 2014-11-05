@@ -12,8 +12,8 @@ Dropping a file
 Dropping an image
 Dropping multiple files
 Moving text by drag and drop
-Moving files by drag and drop
 
+Moving files by drag and drop
 Resizing images
 Clicking the "x" button on a file
 Moving the cursor around attachments

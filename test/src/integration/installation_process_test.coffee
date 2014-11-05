@@ -1,4 +1,4 @@
-editorModule "Installation process", template: "basic_editor_html"
+editorModule "Installation process", template: "editor_html"
 
 test "returns an editor controller", ->
   ok window.editor instanceof Trix.EditorController
@@ -16,7 +16,7 @@ test "copies attributes from textarea", ->
   equal element.style.minHeight, "33px"
 
 
-editorModule "Installation process with JSON", template: "basic_editor_json", config: { format: "json" }
+editorModule "Installation process with JSON", template: "editor_json", config: { format: "json" }
 
 test "loads the initial document from input with JSON", ->
   equal getEditorElement().textContent, "Hello JSON"
