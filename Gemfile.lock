@@ -6,11 +6,11 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    aws-s3 (0.6.3)
-      builder
-      mime-types
-      xml-simple
-    builder (3.2.2)
+    aws-sdk (1.57.0)
+      aws-sdk-v1 (= 1.57.0)
+    aws-sdk-v1 (1.57.0)
+      json (~> 1.4)
+      nokogiri (>= 1.4.4)
     celluloid (0.15.2)
       timers (~> 1.1.0)
     celluloid-io (0.15.0)
@@ -32,9 +32,12 @@ GEM
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
     mime-types (2.4.3)
+    mini_portile (0.6.0)
     multi_json (1.7.7)
     netrc (0.8.0)
     nio4r (1.0.0)
+    nokogiri (1.6.3.1)
+      mini_portile (= 0.6.0)
     rack (1.5.2)
     rack-rewrite (1.5.0)
     rake (10.0.4)
@@ -55,13 +58,12 @@ GEM
     uglifier (2.5.1)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
-    xml-simple (1.1.4)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  aws-s3
+  aws-sdk
   coffee-script
   coffee-script-source (~> 1.7.0)
   ejs
