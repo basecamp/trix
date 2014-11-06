@@ -79,6 +79,13 @@ typeCharacterInElement = (character, element, callback) ->
     event[key] = value
   event
 
+@triggerEvent = (element, type, properties) ->
+  element.dispatchEvent(createEvent(type, properties))
+
+@clickElement = (element, callback) ->
+  triggerEvent(element, "click")
+  defer(callback)
+
 @moveCursor = (options, callback) ->
   selection = window.getSelection()
 
