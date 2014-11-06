@@ -43,7 +43,7 @@ testEditorManipulation "paste html", (expectDocument) ->
         expectDocument "ab<c\n"
 
 testEditorManipulation "paste file", (expectDocument) ->
-  pasteContent "Files", (getAsFile: -> {}), ->
+  pasteContent "Files", (createFile()), ->
     expectDocument "#{Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER}\n"
 
 testEditorManipulation "content mutation", (expectDocument) ->

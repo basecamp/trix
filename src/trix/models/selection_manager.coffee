@@ -108,6 +108,7 @@ class Trix.SelectionManager
     selection = window.getSelection()
     selection.removeAllRanges()
     selection.addRange(range)
+    Trix.selectionChangeObserver.update()
 
   createLocationRangeFromDOMRange: (range) ->
     return unless range? and @rangeWithinElement(range)

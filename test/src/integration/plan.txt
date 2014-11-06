@@ -17,6 +17,7 @@ Moving files by drag and drop
 Resizing images
 Clicking the "x" button on a file
 Moving the cursor around attachments
+Selecting around attachments
 
 Text attribute changes
 Block attribute changes

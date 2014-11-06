@@ -30,6 +30,11 @@
     defer ->
       callback expectDocument
 
+@assertLocationRange = (start, end) ->
+  expectedLocationRange = new Trix.LocationRange start, end
+  actualLocationRange = editor.selectionManager.getLocationRange()
+  equal actualLocationRange.inspect(), expectedLocationRange.inspect()
+
 @getEditorElement = ->
   document.querySelector("div.trix-editor[contenteditable]")
 
@@ -43,6 +48,11 @@
   event = createEvent("paste", {testClipboardData})
   document.activeElement.dispatchEvent(event)
   defer callback
+
+@createFile = (properties = {}) ->
+  file = getAsFile: -> {}
+  file[key] = value for key, value of properties
+  file
 
 @typeCharacters = (string, callback) ->
   characters = string.split("")
