@@ -64,13 +64,20 @@ class Trix.HTMLParser
       when "figure"
         if node.classList.contains("attachment")
           attributes = getMetadata(node)
-          textAttributes = getAttributes(node)
-          if image = node.querySelector("img")
-            textAttributes.width = image.width if image.width?
-            textAttributes.height = image.height if image.height?
-          @appendAttachmentForAttributes(attributes, textAttributes)
-          # We have everything we need so avoid processing inner nodes
-          node.innerHTML = ""
+          if Object.keys(attributes).length
+            textAttributes = getAttributes(node)
+            if image = node.querySelector("img")
+              textAttributes.width = image.width if image.width?
+              textAttributes.height = image.height if image.height?
+            @appendAttachmentForAttributes(attributes, textAttributes)
+            # We have everything we need so avoid processing inner nodes
+            node.innerHTML = ""
+      when "img"
+        attributes = url: node.src, contentType: "image"
+        textAttributes = getAttributes(node)
+        textAttributes.width = node.width if node.width?
+        textAttributes.height = node.height if node.height?
+        @appendAttachmentForAttributes(attributes, textAttributes)
 
   appendBlockForAttributes: (attributes) ->
     @text = new Trix.Text
