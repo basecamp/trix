@@ -1,0 +1,15 @@
+#!/bin/sh
+set -ex
+export PATH="$(dirname "$0")/../bin:/local/app/.rbenv/bin:$PATH"
+
+# ENV vars for Sauce Labs and S3
+mkdir -p tmp
+git clone git@github.com:basecamp/trix-rbenv-vars.git tmp/vars --depth 1
+mv tmp/vars/.rbenv-vars ./
+rm -Rf tmp/vars
+
+# Bundle
+bundle install --path .bundle/bundle > /dev/null 2>&1
+
+# Run tests
+rake test:vm

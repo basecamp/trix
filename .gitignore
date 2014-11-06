@@ -1,3 +1,5 @@
 /.assets
+/.bundle
+/.rbenv-vars
 /dist
 /tmp
