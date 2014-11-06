@@ -7,14 +7,10 @@ module Trix
     # http://saucelabs.com/rest/v1/info/platforms/webdriver
     PLATFORMS = [
       ["Windows 2012 R2", "internet explorer", "11"],
-      ["Windows 2012 R2", "googlechrome", "38"],
-      ["Windows 2012", "firefox", "33"],
-      ["OS X 10.9", "safari", "7"],
-      ["OS X 10.9", "firefox", "33"],
-      ["OS X 10.9", "googlechrome", "38"],
-      ["OS X 10.9", "iPhone", "8.1"],
-      ["OS X 10.9", "iPhone", "7.1"],
-      ["Linux", "firefox", "33"],
+      ["Mac 10.9", "safari", "7"],
+      ["Mac 10.9", "firefox", "33"],
+      ["Mac 10.9", "googlechrome", "38"],
+      ["Mac 10.9", "iPad", "8.1"],
       ["Linux", "googlechrome", "38"]
     ]
 
