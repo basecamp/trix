@@ -21,7 +21,7 @@ config =
       removeAttachment(attachment)
 
     didChangeSelection: ->
-      inspectorController.render()
+      inspectorController?.render()
 
     didRenderDocument: ->
       inspectorController?.render()
