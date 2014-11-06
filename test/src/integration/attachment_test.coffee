@@ -6,3 +6,15 @@ testEditorManipulation "moving an image by drag and drop", (expectDocument) ->
     after 1, ->
       dragToCoordinates coordinates, ->
         expectDocument "a#{Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER}b\n"
+
+testEditorManipulation "resizing an image", (expectDocument) ->
+  figure = document.activeElement.querySelector("figure.attachment.image")
+  figure.dispatchEvent(createEvent("click"))
+  ok handle = figure.querySelector(".resize-handle")
+
+  mouseDownOnElementAndMove handle, 5, ->
+    locationRangeOfAttachment = Trix.LocationRange.forLocationWithLength({index: 0, offset: 2}, 1)
+    attributes = editor.document.getCommonAttributesAtLocationRange(locationRangeOfAttachment)
+    equal attributes.width, 15
+    equal attributes.height, 15
+    expectDocument "ab#{Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER}\n"

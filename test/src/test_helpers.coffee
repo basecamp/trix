@@ -27,7 +27,6 @@
     QUnit.start()
 
   asyncTest name, ->
-    expect 1
     defer ->
       callback expectDocument
 
@@ -108,6 +107,11 @@ getCursorCoordinates = ->
   clientX: rect.left
   clientY: rect.top + rect.height / 2
 
+getElementCoordinates = (element) ->
+  rect = element.getBoundingClientRect()
+  clientX: rect.left + rect.width / 2
+  clientY: rect.top + rect.height / 2
+
 @selectInDirection = (direction, callback) ->
   selection = window.getSelection()
   if selection.modify
@@ -134,3 +138,16 @@ getCursorCoordinates = ->
   dropEvent = createEvent("drop", coordinates)
   document.activeElement.dispatchEvent(dropEvent)
   defer(callback)
+
+@mouseDownOnElementAndMove = (element, distance, callback) ->
+  coordinates = getElementCoordinates(element)
+  destination =
+    clientX: coordinates.clientX + distance
+    clientY: coordinates.clientY + distance
+
+  element.dispatchEvent(createEvent("mousedown", coordinates))
+  defer ->
+    element.dispatchEvent(createEvent("mousemove", destination))
+    defer ->
+      element.dispatchEvent(createEvent("mouseup", destination))
+      defer(callback)
