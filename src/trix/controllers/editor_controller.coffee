@@ -40,7 +40,10 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @documentController = new Trix.DocumentController @documentElement, @document
     @documentController.delegate = this
     @documentController.render()
-    @documentController.focus() if @config.autofocus
+
+    if @config.autofocus
+      @documentController.focus()
+      @selectionManager.setLocationRange([0,0])
 
   # Composition delegate
 

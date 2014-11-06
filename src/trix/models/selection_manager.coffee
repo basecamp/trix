@@ -14,12 +14,14 @@ class Trix.SelectionManager
     @lockedLocationRange ? @currentLocationRange
 
   setLocationRange: (start, end) ->
-    unless @lockedLocationRange?
-      locationRange = if start instanceof Trix.LocationRange
-        start
-      else
-        new Trix.LocationRange start, end
+    return if @lockedLocationRange
 
+    locationRange = if start instanceof Trix.LocationRange
+      start
+    else
+      new Trix.LocationRange start, end
+
+    unless locationRange.isEqualTo(@getLocationRange())
       @setDOMRange(locationRange)
       @updateCurrentLocationRange()
 
