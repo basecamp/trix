@@ -5,19 +5,7 @@ class Trix.DOMRangeChange
   constructor: ({@range, @previousRange, @element}) ->
 
   needsAdjustment: ->
-    @canAdjust() and (@isntEditable() or @containsCursorTarget())
-
-  canAdjust: ->
-    if @getDirection() is "backward"
-      if @element.contains(@range.startContainer)
-        firstNode = @element.firstChild ? @element
-        firstNode = firstNode.firstChild while firstNode.firstChild
-        @range.startContainer isnt firstNode
-    else
-      if @element.contains(@range.endContainer)
-        lastNode = @element.lastChild ? @element
-        lastNode = lastNode.lastChild while lastNode.lastChild
-        @range.endContainer isnt lastNode
+    @isntEditable() or @containsCursorTarget()
 
   containsCursorTarget: ->
     range = document.createRange()
