@@ -1,6 +1,7 @@
 require "rest-client"
 require "aws-sdk"
 require "pathname"
+require "timeout"
 
 module Trix
   class VMTestRunner
@@ -13,6 +14,9 @@ module Trix
       ["Mac 10.9", "iPad", "8.1"],
       ["Linux", "googlechrome", "38"]
     ]
+
+    MAX_VM_SECONDS = 90
+    MAX_TOTAL_SECONDS = 300
 
     SAUCE_PARAMS = {
       framework: "qunit",
@@ -30,9 +34,11 @@ module Trix
     end
 
     def run
-      upload_dist
-      start_tests
-      poll_for_completion
+      Timeout::timeout(MAX_TOTAL_SECONDS) do
+        upload_dist
+        start_tests
+        poll_for_completion
+      end
     end
 
     private
@@ -63,17 +69,22 @@ module Trix
           status = post("/js-tests/status", @js_test_params)
           if status["completed"]
             completed = true
-            puts "."
-            print_results(status["js tests"])
+            handle_results(status["js tests"])
           else
             print "."
           end
         end
       end
 
-      def print_results(results)
+      def handle_results(results)
         successes = results.select { |r| r["result"]["failed"] == 0 }
         failures = results - successes
+        print_results(successes, failures)
+        exit(failures.any? ? 1 : 0)
+      end
+
+      def print_results(successes = [], failures = [])
+        puts
 
         successes.each do |success|
           print_result(success, "✓")
