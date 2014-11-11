@@ -7,13 +7,13 @@ keyCodes =
 @after = (delay, callback) ->
   setTimeout(callback, delay)
 
-@editorModule = (name, {template, setup, teardown, config} = {}) ->
+@editorModule = (name, {template, setup, teardown, config, delegate} = {}) ->
   module name,
 
     setup: ->
       if template?
         document.body.insertAdjacentHTML("beforeend", JST["fixtures/#{template}"]())
-        delegate = shouldAcceptFile: -> true
+        delegate ?= shouldAcceptFile: -> true
         editorConfig = toolbar: "toolbar", textarea: "content", delegate: delegate
         editorConfig[key] = value for key, value of config if config?
         window.editor = Trix.install(editorConfig)
