@@ -321,6 +321,9 @@ class Trix.Document extends Trix.Object
   locationRangeFromPosition: (position) ->
     new Trix.LocationRange @blockList.findIndexAndOffsetAtPosition(position)
 
+  locationRangeFromRange: ([start, end]) ->
+    new Trix.LocationRange @blockList.findIndexAndOffsetAtPosition(start), @blockList.findIndexAndOffsetAtPosition(end)
+
   toSerializableDocument: ->
     blocks = []
     @blockList.eachObject (block) ->

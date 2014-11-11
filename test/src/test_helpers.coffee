@@ -1,4 +1,4 @@
-{defer} = Trix.Helpers
+{@defer} = Trix.Helpers
 
 keyCodes =
   left: 37
