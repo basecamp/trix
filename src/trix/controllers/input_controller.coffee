@@ -65,7 +65,8 @@ class Trix.InputController
       @draggedRange = @responder?.getLocationRange()
 
     dragover: (event) ->
-      event.preventDefault() if @draggedRange
+      if @draggedRange or "Files" in event.dataTransfer?.types
+        event.preventDefault()
 
     dragend: (event) ->
       delete @draggedRange
