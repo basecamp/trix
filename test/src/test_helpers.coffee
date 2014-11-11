@@ -175,13 +175,18 @@ getElementCoordinates = (element) ->
 
 @mouseDownOnElementAndMove = (element, distance, callback) ->
   coordinates = getElementCoordinates(element)
-  destination =
-    clientX: coordinates.clientX + distance
-    clientY: coordinates.clientY + distance
+  triggerEvent(element, "mousedown", coordinates)
 
-  element.dispatchEvent(createEvent("mousedown", coordinates))
+  destination = (offset) ->
+    clientX: coordinates.clientX + offset
+    clientY: coordinates.clientY + offset
+
   defer ->
-    element.dispatchEvent(createEvent("mousemove", destination))
-    defer ->
-      element.dispatchEvent(createEvent("mouseup", destination))
-      defer(callback)
+    offset = 0
+    do drag = =>
+      if ++offset <= distance
+        triggerEvent(element, "mousemove", destination(offset))
+        defer(drag)
+      else
+        triggerEvent(element, "mouseup", destination(distance))
+        defer(callback)

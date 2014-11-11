@@ -94,9 +94,10 @@ module Trix
           print_result(failure, "✗")
           (failure["result"]["failures"] || []).each do |fail|
             puts "   #{fail["module"]} - #{fail["name"]}"
-            puts "   expected: #{fail["expected"]}"
-            puts "     actual: #{fail["actual"]}"
-            puts "     source: #{fail["source"]}"
+            puts "    message: #{fail["message"]}" if fail["message"]
+            puts "   expected: #{fail["expected"]}" if fail["expected"]
+            puts "     actual: #{fail["actual"]}" if fail["actual"]
+            puts "     source: #{fail["source"]}" if fail["source"]
             puts
           end
         end
