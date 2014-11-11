@@ -50,8 +50,7 @@ keyCodes =
     types: [contentType]
     items: [value]
 
-  event = createEvent("paste", {testClipboardData})
-  document.activeElement.dispatchEvent(event)
+  triggerEvent(document.activeElement, "paste", {testClipboardData})
   defer callback
 
 @createFile = (properties = {}) ->
@@ -72,19 +71,14 @@ typeCharacterInElement = (character, element, callback) ->
   charCode = character.charCodeAt(0)
   keyCode = character.toUpperCase().charCodeAt(0)
 
-  keydownEvent = createEvent("keydown", keyCode: keyCode, charCode: 0)
-  return callback() unless element.dispatchEvent(keydownEvent)
+  return callback() unless triggerEvent(element, "keydown", keyCode: keyCode, charCode: 0)
 
   defer ->
-    keypressEvent = createEvent("keypress", keyCode: charCode, charCode: charCode)
-    return callback() unless element.dispatchEvent(keypressEvent)
-
-    inputEvent = createEvent("input")
-    element.dispatchEvent(inputEvent)
+    return callback() unless triggerEvent(element, "keypress", keyCode: charCode, charCode: charCode)
+    triggerEvent(element, "input")
 
     defer ->
-      keyupEvent = createEvent("keyup", keyCode: keyCode, charCode: 0)
-      element.dispatchEvent(keyupEvent)
+      triggerEvent(element, "keyup", keyCode: keyCode, charCode: 0)
       callback()
 
 @createEvent = (type, properties = {}) ->
@@ -170,9 +164,9 @@ getElementCoordinates = (element) ->
   defer(callback)
 
 @dragToCoordinates = (coordinates, callback) ->
-  document.activeElement.dispatchEvent(createEvent("dragstart"))
-  dropEvent = createEvent("drop", coordinates)
-  document.activeElement.dispatchEvent(dropEvent)
+  element = document.activeElement
+  triggerEvent(element, "dragstart")
+  triggerEvent(element, "drop", coordinates)
   defer(callback)
 
 @mouseDownOnElementAndMove = (element, distance, callback) ->

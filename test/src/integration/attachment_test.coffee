@@ -2,7 +2,8 @@ editorModule "Attachments", template: "editor_with_image"
 
 editorTest "moving an image by drag and drop", (expectDocument) ->
   moveCursor direction: "right", times: 1, (coordinates) ->
-    document.activeElement.querySelector("img").dispatchEvent(createEvent("click"))
+    img = document.activeElement.querySelector("img")
+    triggerEvent(img, "click")
     after 1, ->
       dragToCoordinates coordinates, ->
         expectDocument "a#{Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER}b\n"
@@ -21,7 +22,7 @@ editorTest "resizing an image", (expectDocument) ->
 
 editorTest "removing an image", (expectDocument) ->
   figure = document.activeElement.querySelector("figure.attachment.image")
-  figure.dispatchEvent(createEvent("click"))
+  triggerEvent(figure, "click")
   closeButton = figure.querySelector(".remove")
   clickElement closeButton, ->
     expectDocument "ab\n"
