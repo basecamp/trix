@@ -17,7 +17,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
     @composition = new Trix.Composition @document
     @composition.delegate = this
-    @composition.selectionDelegate = @selectionManager
 
     @attachmentManager = new Trix.AttachmentManager @composition
     @attachmentManager.delegate = this
@@ -43,7 +42,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
     if @config.autofocus
       @documentController.focus()
-      @selectionManager.setLocationRange([0,0])
+      @setLocationRange([0,0]) unless @getLocationRange()
 
   # Composition delegate
 
@@ -198,6 +197,44 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   # Selection management
 
+  getLocationRange: ->
+    @selectionManager.getLocationRange()
+
+  setLocationRange: (start, end) ->
+    @selectionManager.setLocationRange(start, end)
+
+  setLocationRangeFromPoint: (point) ->
+    @selectionManager.setLocationRangeFromPoint(point)
+
+  getPosition: ->
+    locationRange = @selectionManager.getLocationRange()
+    @document.rangeFromLocationRange(locationRange)[0]
+
+  setPosition: (position) ->
+    locationRange = @document.locationRangeFromPosition(position)
+    @selectionManager.setLocationRange(locationRange)
+
+  currentPositionIsCursorTarget: ->
+    @selectionManager.currentPositionIsCursorTarget()
+
+  adjustPositionInDirection: (direction) ->
+    distance = if direction is "backward" then -1 else 1
+    @setPosition(@getPosition() + distance)
+
+  expandLocationRangeInDirection: (direction) ->
+    locationRange = @selectionManager.getLocationRange()
+    [startPosition, endPosition] = @document.rangeFromLocationRange(locationRange)
+    if direction is "backward"
+      startPosition--
+    else
+      endPosition++
+    startLocation = @document.locationRangeFromPosition(startPosition).start
+    endLocation = @document.locationRangeFromPosition(endPosition).start
+    @setLocationRange(startLocation, endLocation)
+
+  expandSelectionInDirectionWithGranularity: (direction, granularity) ->
+    @selectionManager.expandSelectionInDirectionWithGranularity(direction, granularity)
+
   freezeSelection: ->
     unless @selectionFrozen
       @selectionManager.lock()
@@ -209,6 +246,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
       @composition.thawSelection()
       @selectionManager.unlock()
       delete @selectionFrozen
+
+  preserveSelection: (block) ->
+    @selectionManager.preserveSelection(block)
 
   getLocationContext: ->
     locationRange = @selectionManager.getLocationRange()

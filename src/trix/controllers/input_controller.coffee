@@ -1,17 +1,19 @@
 #= require trix/observers/device_observer
 
 {defer} = Trix.Helpers
-{handleEvent} = Trix.DOM
+{handleEvent, findClosestElementFromNode, findElementForContainerAtOffset} = Trix.DOM
 
 class Trix.InputController
   pastedFileCount = 0
 
   @keyNames:
-    0x08: "backspace"
-    0x0D: "return"
-    0x44: "d"
-    0x48: "h"
-    0x4f: "o"
+    "8": "backspace"
+    "13": "return"
+    "37": "left"
+    "39": "right"
+    "68": "d"
+    "72": "h"
+    "79": "o"
 
   constructor: (@element) ->
     @deviceObserver = new Trix.DeviceObserver @element
@@ -133,6 +135,16 @@ class Trix.InputController
       @responder?.insertLineBreak()
       event.preventDefault()
 
+    left: (event) ->
+      if @inCursorTarget()
+        @delegate?.adjustPositionInDirection("backward")
+        event.preventDefault()
+
+    right: (event) ->
+      if @inCursorTarget()
+        @delegate?.adjustPositionInDirection("forward")
+        event.preventDefault()
+
     control:
       d: (event) ->
         @delegate?.inputControllerWillPerformTyping()
@@ -159,6 +171,19 @@ class Trix.InputController
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString("\n")
         event.preventDefault()
+
+      left: (event) ->
+        if @inCursorTarget()
+          @delegate?.expandLocationRangeInDirection("backward")
+          event.preventDefault()
+
+      right: (event) ->
+        if @inCursorTarget()
+          @delegate?.expandLocationRangeInDirection("forward")
+          event.preventDefault()
+
+  inCursorTarget: ->
+    @delegate?.currentPositionIsCursorTarget()
 
   extensionForFile = (file) ->
     file.type?.match(/\/(\w+)$/)?[1]

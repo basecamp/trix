@@ -1,5 +1,9 @@
 {defer} = Trix.Helpers
 
+keyCodes =
+  left: 37
+  right: 39
+
 @after = (delay, callback) ->
   setTimeout(callback, delay)
 
@@ -97,8 +101,6 @@ typeCharacterInElement = (character, element, callback) ->
   defer(callback)
 
 @moveCursor = (options, callback) ->
-  selection = window.getSelection()
-
   if typeof options is "string"
     direction = options
   else
@@ -106,23 +108,35 @@ typeCharacterInElement = (character, element, callback) ->
     times = options.times
 
   for i in [0...(times ? 1)]
-    if selection.modify
-      selection.modify("move", direction, "character")
-    else if document.body.createTextRange
-      textRange = document.body.createTextRange()
-      coordinates = getCursorCoordinates()
-      textRange.moveToPoint(coordinates.clientX, coordinates.clientY)
-      textRange.move("character", if direction is "right" then 1 else -1)
-      textRange.select()
+    if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction])
+      selection = window.getSelection()
+      if selection.modify
+        selection.modify("move", direction, "character")
+      else if document.body.createTextRange
+        textRange = document.body.createTextRange()
+        coordinates = getCursorCoordinates()
+        textRange.moveToPoint(coordinates.clientX, coordinates.clientY)
+        textRange.move("character", if direction is "right" then 1 else -1)
+        textRange.select()
+      Trix.selectionChangeObserver.update()
 
+  defer ->
+    callback getCursorCoordinates()
+
+@moveCursorToBeginning = (callback) ->
+  range = document.createRange()
+  range.setStart(document.activeElement, 0)
+  selection = window.getSelection()
+  selection.removeAllRanges()
+  selection.addRange(range)
   Trix.selectionChangeObserver.update()
   defer ->
     callback getCursorCoordinates()
 
 getCursorCoordinates = ->
-  rect = window.getSelection().getRangeAt(0).getClientRects()[0]
-  clientX: rect.left
-  clientY: rect.top + rect.height / 2
+  if rect = window.getSelection().getRangeAt(0).getClientRects()[0]
+    clientX: rect.left
+    clientY: rect.top + rect.height / 2
 
 getElementCoordinates = (element) ->
   rect = element.getBoundingClientRect()
@@ -130,19 +144,20 @@ getElementCoordinates = (element) ->
   clientY: rect.top + rect.height / 2
 
 @selectInDirection = (direction, callback) ->
-  selection = window.getSelection()
-  if selection.modify
-    selection.modify("extend", direction, "character")
-  else if document.body.createTextRange
-    textRange = document.body.createTextRange()
-    coordinates = getCursorCoordinates()
-    textRange.moveToPoint(coordinates.clientX, coordinates.clientY)
-    if direction is "left"
-      textRange.moveStart("character", -1)
-    else
-      textRange.moveEnd("character", 1)
-    textRange.select()
-  Trix.selectionChangeObserver.update()
+  if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)
+    selection = window.getSelection()
+    if selection.modify
+      selection.modify("extend", direction, "character")
+    else if document.body.createTextRange
+      textRange = document.body.createTextRange()
+      coordinates = getCursorCoordinates()
+      textRange.moveToPoint(coordinates.clientX, coordinates.clientY)
+      if direction is "left"
+        textRange.moveStart("character", -1)
+      else
+        textRange.moveEnd("character", 1)
+      textRange.select()
+    Trix.selectionChangeObserver.update()
   defer(callback)
 
 @selectAll = (callback) ->

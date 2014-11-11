@@ -79,4 +79,5 @@ class Trix.TextView extends Trix.ObjectView
     span = document.createElement("span")
     span.appendChild(text)
     span.dataset.trixSerialize = false
+    span.dataset.trixCursorTarget = true
     span

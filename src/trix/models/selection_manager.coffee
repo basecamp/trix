@@ -1,5 +1,4 @@
 #= require trix/models/location_range
-#= require trix/utilities/dom_range_change
 #= require trix/observers/selection_change_observer
 
 {DOM} = Trix
@@ -21,9 +20,8 @@ class Trix.SelectionManager
     else
       new Trix.LocationRange start, end
 
-    unless locationRange.isEqualTo(@getLocationRange())
-      @setDOMRange(locationRange)
-      @updateCurrentLocationRange()
+    @setDOMRange(locationRange)
+    @updateCurrentLocationRange()
 
   setLocationRangeFromPoint: (point) ->
     locationRange = @getLocationRangeAtPoint(point)
@@ -40,15 +38,13 @@ class Trix.SelectionManager
         textRange.moveEnd(granularity, 1)
       else
         textRange.moveStart(granularity, -1)
-      textRange.select()
+        textRange.select()
     Trix.selectionChangeObserver.update()
 
-  # TODO: Combine with #expandSelectionInDirectionWithGranularity and add IE compatibility
-  adjustSelectionInDirectionWithGranularity: (direction, granularity) ->
-    return unless selection = getDOMSelection()
-    alter = if selection.isCollapsed then "move" else "extend"
-    selection.modify(alter, direction, granularity)
-    Trix.selectionChangeObserver.update()
+  currentPositionIsCursorTarget: ->
+    location = @getLocationRange().start
+    [node, offset] = @findNodeAndOffsetForLocation(location)
+    nodeIsCursorTarget(node)
 
   lock: ->
     if @lockCount++ is 0
@@ -72,17 +68,7 @@ class Trix.SelectionManager
   selectionDidChange: =>
     unless DOM.elementContainsNode(document.documentElement, @element)
       Trix.selectionChangeObserver.unregisterSelectionManager(this)
-
-    previousRange = @range
-    @range = getDOMRange()
-
-    if @range and previousRange
-      rangeChange = new Trix.DOMRangeChange({@range, previousRange, @element})
-
-    if rangeChange?.needsAdjustment()
-      @adjustSelectionInDirectionWithGranularity(rangeChange.getDirection(), "character")
-    else
-      @updateCurrentLocationRange()
+    @updateCurrentLocationRange()
 
   getBlockElements: ->
     @delegate?.selectionManagerDidRequestBlockElements?()

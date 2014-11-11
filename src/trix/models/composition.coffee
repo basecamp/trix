@@ -129,7 +129,9 @@ class Trix.Composition
 
   removeAttachment: (attachment) ->
     if locationRange = @document.getLocationRangeOfAttachment(attachment)
+      @notifyDelegateOfIntentionToSetLocationRange()
       @document.removeTextAtLocationRange(locationRange)
+      @setLocationRange(locationRange.collapse())
 
   # Current attributes
 
@@ -212,30 +214,28 @@ class Trix.Composition
   # Location range and selection
 
   getLocationRange: ->
-    @selectionDelegate?.getLocationRange?()
+    @delegate?.getLocationRange()
 
   setLocationRange: (start, end) ->
-    @selectionDelegate?.setLocationRange?(start, end)
+    @delegate?.setLocationRange(start, end)
 
   setLocationRangeFromPoint: (point) ->
-    @selectionDelegate?.setLocationRangeFromPoint?(point)
+    @delegate?.setLocationRangeFromPoint(point)
 
   getPosition: ->
-    range = @getLocationRange()
-    @document.rangeFromLocationRange(range)[0]
+    @delegate?.getPosition()
 
   setPosition: (position) ->
-    range = @document.locationRangeFromPosition(position)
-    @setLocationRange(range)
+    @delegate?.setPosition(position)
 
   preserveSelection: (block) ->
-    @selectionDelegate?.preserveSelection?(block) ? block()
+    @delegate?.preserveSelection(block)
 
   notifyDelegateOfIntentionToSetLocationRange: ->
-    @delegate?.compositionWillSetLocationRange?()
+    @delegate?.compositionWillSetLocationRange()
 
   expandSelectionInDirectionWithGranularity: (direction, granularity) ->
-    @selectionDelegate?.expandSelectionInDirectionWithGranularity(direction, granularity)
+    @delegate?.expandSelectionInDirectionWithGranularity(direction, granularity)
 
   expandSelectionForEditing: ->
     for key, value of Trix.attributes when value.parent
