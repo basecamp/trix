@@ -146,6 +146,7 @@ getElementCoordinates = (element) ->
   clientY: rect.top + rect.height / 2
 
 @selectInDirection = (direction, callback) ->
+  getEditorElement().focus()
   if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)
     selection = window.getSelection()
     if selection.modify

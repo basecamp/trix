@@ -23,3 +23,29 @@ asyncTest "move cursor around attachment and text", ->
         moveCursor "left", ->
           assertLocationRange([0,0])
           QUnit.start()
+
+asyncTest "expand selection over attachment", ->
+  after 1, ->
+    editor.composition.insertFile(createFile())
+    assertLocationRange([0,1])
+    selectInDirection "left", ->
+      assertLocationRange([0,0], [0,1])
+      moveCursorToBeginning ->
+        assertLocationRange([0,0])
+        selectInDirection "right", ->
+          assertLocationRange([0,0], [0,1])
+          QUnit.start()
+
+asyncTest "expand selection over attachment and text", ->
+  after 1, ->
+    editor.composition.insertString("a")
+    editor.composition.insertFile(createFile())
+    editor.composition.insertString("b")
+    assertLocationRange([0,3])
+    selectInDirection "left", ->
+      assertLocationRange([0,2], [0,3])
+      selectInDirection "left", ->
+        assertLocationRange([0,1], [0,3])
+        selectInDirection "left", ->
+          assertLocationRange([0,0], [0,3])
+          QUnit.start()
