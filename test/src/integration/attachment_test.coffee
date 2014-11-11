@@ -1,13 +1,13 @@
 editorModule "Attachments", template: "editor_with_image"
 
-testEditorManipulation "moving an image by drag and drop", (expectDocument) ->
+editorTest "moving an image by drag and drop", (expectDocument) ->
   moveCursor direction: "right", times: 1, (coordinates) ->
     document.activeElement.querySelector("img").dispatchEvent(createEvent("click"))
     after 1, ->
       dragToCoordinates coordinates, ->
         expectDocument "a#{Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER}b\n"
 
-testEditorManipulation "resizing an image", (expectDocument) ->
+editorTest "resizing an image", (expectDocument) ->
   figure = document.activeElement.querySelector("figure.attachment.image")
   clickElement figure, ->
     ok handle = figure.querySelector(".resize-handle")
@@ -19,7 +19,7 @@ testEditorManipulation "resizing an image", (expectDocument) ->
       ok attributes.height in [15,16], "expected image height: 15 or 16, actual: #{attributes.height}"
       expectDocument "ab#{Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER}\n"
 
-testEditorManipulation "removing an image", (expectDocument) ->
+editorTest "removing an image", (expectDocument) ->
   figure = document.activeElement.querySelector("figure.attachment.image")
   figure.dispatchEvent(createEvent("click"))
   closeButton = figure.querySelector(".remove")

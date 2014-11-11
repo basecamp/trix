@@ -25,14 +25,15 @@ keyCodes =
         window.editor = null
       teardown?()
 
-@testEditorManipulation = (name, callback) ->
-  expectDocument = (expectedValue) ->
-    equal editor.document.toString(), expectedValue
+@editorTest = (name, callback) ->
+  done = (expectedDocumentValue) ->
+    if expectedDocumentValue
+      equal editor.document.toString(), expectedDocumentValue
     QUnit.start()
 
   asyncTest name, ->
     defer ->
-      callback expectDocument
+      callback done
 
 @assertLocationRange = (start, end) ->
   expectedLocationRange = new Trix.LocationRange start, end
