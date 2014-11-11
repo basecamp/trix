@@ -107,6 +107,8 @@ typeCharacterInElement = (character, element, callback) ->
     direction = options.direction
     times = options.times
 
+  getEditorElement().focus()
+
   for i in [0...(times ? 1)]
     if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction])
       selection = window.getSelection()
