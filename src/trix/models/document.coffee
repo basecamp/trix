@@ -184,6 +184,10 @@ class Trix.Document extends Trix.Object
     blocks = [new Trix.Block] if locationRange.offset is 0
     @blockList = @blockList.insertSplittableListAtPosition(new Trix.SplittableList(blocks), position)
 
+  applyBlockAttributeAtLocationRange: edit "applyBlockAttributeAtLocationRange", (attributeName, value, locationRange) ->
+    locationRange = @expandLocationRangeToLineBreaksAndSplitBlocks(locationRange)
+    @addAttributeAtLocationRange(attributeName, value, locationRange)
+
   firstBlockInLocationRangeIsEntirelySelected: (locationRange) ->
     if locationRange.start.offset is 0 and locationRange.start.index < locationRange.end.index
       true

@@ -178,12 +178,11 @@ class Trix.Composition
     @document.addAttributeAtLocationRange(attributeName, value, range)
 
   setBlockAttribute: (attributeName, value) ->
-    return unless range = @getLocationRange()
+    return unless locationRange = @getLocationRange()
     @notifyDelegateOfIntentionToSetLocationRange()
-    [startPosition, endPosition] = @document.rangeFromLocationRange(range)
+    [startPosition, endPosition] = @document.rangeFromLocationRange(locationRange)
 
-    range = @document.expandLocationRangeToLineBreaksAndSplitBlocks(range)
-    @document.addAttributeAtLocationRange(attributeName, value, range)
+    @document.applyBlockAttributeAtLocationRange(attributeName, value, locationRange)
 
     {start} = @document.locationRangeFromPosition(startPosition)
     {end} = @document.locationRangeFromPosition(endPosition)
