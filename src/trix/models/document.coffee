@@ -338,6 +338,9 @@ class Trix.Document extends Trix.Object
     endLocation = @locationFromPosition(end)
     new Trix.LocationRange startLocation, endLocation
 
+  isEqualTo: (document) ->
+    @blockList.isEqualTo(document?.blockList)
+
   toSerializableDocument: ->
     blocks = []
     @blockList.eachObject (block) ->
