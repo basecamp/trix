@@ -245,10 +245,8 @@ class Trix.Composition
     @delegate?.compositionWillSetLocationRange()
 
   expandSelectionForEditing: ->
-    for key, value of Trix.attributes when value.parent
-      if @hasCurrentAttribute(key)
-        @expandLocationRangeAroundCommonAttribute(key)
-        break
+    if @hasCurrentAttribute("href")
+      @expandLocationRangeAroundCommonAttribute("href")
 
   expandLocationRangeAroundCommonAttribute: (attributeName) ->
     range = @getLocationRange()

@@ -28,6 +28,20 @@ editorTest "applying a link to text", (done) ->
             expectAttributes([2, 3], {})
             done()
 
+editorTest "editing a link", (done) ->
+  editor.composition.insertString("a")
+  text = Trix.Text.textForStringWithAttributes("bc", href: "http://example.com")
+  editor.composition.insertText(text)
+  editor.composition.insertString("d")
+  moveCursor direction: "left", times: 2, ->
+    clickToolbarButton attribute: "href", ->
+      assertLocationRange([0,1], [0,3])
+      typeInToolbarDialog "http://example.org", attribute: "href", ->
+        expectAttributes([0, 1], {})
+        expectAttributes([1, 3], href: "http://example.org")
+        expectAttributes([3, 4], {})
+        done()
+
 editorTest "removing a link", (done) ->
   text = Trix.Text.textForStringWithAttributes("ab", href: "http://example.com")
   editor.composition.insertText(text)
