@@ -63,6 +63,7 @@ keyCodes =
   do typeNextCharacter = ->
     character = characters.shift()
     if character?
+      character = "\r" if character is "\n"
       typeCharacterInElement(character, document.activeElement, typeNextCharacter)
     else
       callback()
