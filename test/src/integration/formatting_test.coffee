@@ -17,6 +17,17 @@ editorTest "applying attributes to text", (done) ->
         expectAttributes([3, 4], blockBreak: true)
         done()
 
+editorTest "applying a link to text", (done) ->
+  typeCharacters "abc", ->
+    moveCursor "left", ->
+      selectInDirection "left", ->
+        clickToolbarButton attribute: "href", ->
+          typeInToolbarDialog "http://example.com", attribute: "href", ->
+            expectAttributes([0, 1], {})
+            expectAttributes([1, 2], href: "http://example.com")
+            expectAttributes([2, 3], {})
+            done()
+
 editorTest "applying block attributes", (done) ->
   typeCharacters "abc", ->
     clickToolbarButton attribute: "quote", ->
@@ -37,7 +48,15 @@ editorTest "applying block attributes to text after newline", (done) ->
       done()
 
 clickToolbarButton = ({attribute, action}, callback) ->
-  button = document.getElementById("toolbar").querySelector("[data-attribute='#{attribute}'], [data-action='#{action}']")
+  button = document.getElementById("toolbar").querySelector(".button[data-attribute='#{attribute}'], .button[data-action='#{action}']")
+  triggerEvent(button, "click")
+  defer(callback)
+
+typeInToolbarDialog = (string, {attribute}, callback) ->
+  dialog = document.getElementById("toolbar").querySelector(".dialog[data-attribute='#{attribute}']")
+  input = dialog.querySelector("input[name='#{attribute}']")
+  button = dialog.querySelector("input[data-method='setAttribute']")
+  input.value = string
   triggerEvent(button, "click")
   defer(callback)
 

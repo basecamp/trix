@@ -173,7 +173,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @toolbarActions[actionName]?.test.call(this)
 
   toolbarDidInvokeAction: (actionName) ->
-    @toolbarActions[actionName]?.perform.call(this)
+    @toolbarActions[actionName]?.perform?.call(this)
 
   toolbarDidToggleAttribute: (attributeName) ->
     @undoManager.recordUndoEntry("Formatting", context: @getLocationContext(), consolidatable: true)
