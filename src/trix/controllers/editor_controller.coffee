@@ -49,7 +49,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
   compositionDidChangeDocument: (document) ->
     @documentController.render()
 
-  compositionDidChangeCurrentAttributes: (currentAttributes) ->
+  compositionDidChangeCurrentAttributes: (@currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
     @toolbarController.updateActions()
 
@@ -114,7 +114,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
   # Input controller delegate
 
   inputControllerWillPerformTyping: ->
-    @undoManager.recordUndoEntry("Typing", context: @getLocationContext(), consolidatable: true)
+    @recordTypingUndoEntry()
 
   inputControllerWillCutText: ->
     @undoManager.recordUndoEntry("Cut")
@@ -138,7 +138,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @mutationObserver.start()
 
   inputControllerDidComposeCharacters: (composedString) ->
-    @undoManager.recordUndoEntry("Typing", context: @getLocationContext(), consolidatable: true)
+    @recordTypingUndoEntry()
     @composition.insertString(composedString)
 
   # Selection manager delegate
@@ -176,17 +176,17 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @toolbarActions[actionName]?.perform?.call(this)
 
   toolbarDidToggleAttribute: (attributeName) ->
-    @undoManager.recordUndoEntry("Formatting", context: @getLocationContext(), consolidatable: true)
+    @recordFormattingUndoEntry()
     @composition.toggleCurrentAttribute(attributeName)
     @documentController.focus()
 
   toolbarDidUpdateAttribute: (attributeName, value) ->
-    @undoManager.recordUndoEntry("Formatting", context: @getLocationContext(), consolidatable: true)
+    @recordFormattingUndoEntry()
     @composition.setCurrentAttribute(attributeName, value)
     @documentController.focus()
 
   toolbarDidRemoveAttribute: (attributeName) ->
-    @undoManager.recordUndoEntry("Formatting", context: @getLocationContext(), consolidatable: true)
+    @recordFormattingUndoEntry()
     @composition.removeCurrentAttribute(attributeName)
     @documentController.focus()
 
@@ -221,3 +221,12 @@ class Trix.EditorController extends Trix.AbstractEditorController
   removeAttachment: (attachment) ->
     @undoManager.recordUndoEntry("Delete Attachment")
     @composition.removeAttachment(attachment)
+
+  recordFormattingUndoEntry: ->
+    locationRange = @selectionManager.getLocationRange()
+    unless locationRange?.isCollapsed()
+      @undoManager.recordUndoEntry("Formatting", context: @getLocationContext(), consolidatable: true)
+
+  recordTypingUndoEntry: ->
+    context = [@getLocationContext(), JSON.stringify(@currentAttributes)]
+    @undoManager.recordUndoEntry("Typing", context: context, consolidatable: true)
