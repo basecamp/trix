@@ -40,10 +40,10 @@
         if link = Trix.DOM.findClosestElementFromNode(element, matchingSelector: "a")
           link.getAttribute("href")
     underline:
-      style: { "text-decoration": "underline" }
+      style: { "textDecoration": "underline" }
       inheritable: true
     frozen:
-      style: { "background-color": "highlight" }
+      style: { "backgroundColor": "highlight" }
     quote:
       block: true
       tagName: "blockquote"
