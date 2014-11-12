@@ -1,8 +1,14 @@
 #= require trix/models/document
 
 class Trix.Composition
-  constructor: (document = new Trix.Document) ->
+  forwardMethodsToSelectionManager = "getLocationRange setLocationRange setLocationRangeFromPoint
+    preserveSelection locationIsCursorTarget expandSelectionInDirectionWithGranularity".split(" ")
+
+  constructor: (document = new Trix.Document, selectionManager) ->
     @loadDocument(document)
+
+    for methodName in forwardMethodsToSelectionManager
+      @[methodName] = selectionManager[methodName].bind(selectionManager)
 
   loadDocument: (document) ->
     @document = document
@@ -213,29 +219,31 @@ class Trix.Composition
 
   # Location range and selection
 
-  getLocationRange: ->
-    @delegate?.getLocationRange()
-
-  setLocationRange: (start, end) ->
-    @delegate?.setLocationRange(start, end)
-
-  setLocationRangeFromPoint: (point) ->
-    @delegate?.setLocationRangeFromPoint(point)
-
   getPosition: ->
-    @delegate?.getPosition()
+    locationRange = @getLocationRange()
+    @document.rangeFromLocationRange(locationRange)[0]
 
   setPosition: (position) ->
-    @delegate?.setPosition(position)
+    locationRange = @document.locationRangeFromPosition(position)
+    @setLocationRange(locationRange)
 
-  preserveSelection: (block) ->
-    @delegate?.preserveSelection(block)
+  adjustPositionInDirection: (direction) ->
+    distance = if direction is "backward" then -1 else 1
+    @setPosition(@getPosition() + distance)
+
+  expandLocationRangeInDirection: (direction) ->
+    locationRange = @getLocationRange()
+    [startPosition, endPosition] = @document.rangeFromLocationRange(locationRange)
+    if direction is "backward"
+      startPosition--
+    else
+      endPosition++
+    startLocation = @document.locationRangeFromPosition(startPosition).start
+    endLocation = @document.locationRangeFromPosition(endPosition).start
+    @setLocationRange(startLocation, endLocation)
 
   notifyDelegateOfIntentionToSetLocationRange: ->
     @delegate?.compositionWillSetLocationRange()
-
-  expandSelectionInDirectionWithGranularity: (direction, granularity) ->
-    @delegate?.expandSelectionInDirectionWithGranularity(direction, granularity)
 
   expandSelectionForEditing: ->
     for key, value of Trix.attributes when value.parent
@@ -259,6 +267,9 @@ class Trix.Composition
       for piece in @document.getDocumentAtLocationRange(range).getAttachmentPieces()
         return true if piece.hasAttribute(attributeName)
       false
+
+  selectionIsInCursorTarget: ->
+    @locationIsCursorTarget(@getLocationRange().start)
 
   # Attachment editing
 

@@ -137,13 +137,13 @@ class Trix.InputController
       event.preventDefault()
 
     left: (event) ->
-      if @inCursorTarget()
-        @delegate?.adjustPositionInDirection("backward")
+      if @selectionIsInCursorTarget()
+        @responder?.adjustPositionInDirection("backward")
         event.preventDefault()
 
     right: (event) ->
-      if @inCursorTarget()
-        @delegate?.adjustPositionInDirection("forward")
+      if @selectionIsInCursorTarget()
+        @responder?.adjustPositionInDirection("forward")
         event.preventDefault()
 
     control:
@@ -174,17 +174,17 @@ class Trix.InputController
         event.preventDefault()
 
       left: (event) ->
-        if @inCursorTarget()
-          @delegate?.expandLocationRangeInDirection("backward")
+        if @selectionIsInCursorTarget()
+          @responder?.expandLocationRangeInDirection("backward")
           event.preventDefault()
 
       right: (event) ->
-        if @inCursorTarget()
-          @delegate?.expandLocationRangeInDirection("forward")
+        if @selectionIsInCursorTarget()
+          @responder?.expandLocationRangeInDirection("forward")
           event.preventDefault()
 
-  inCursorTarget: ->
-    @delegate?.currentPositionIsCursorTarget()
+  selectionIsInCursorTarget: ->
+    @responder?.selectionIsInCursorTarget()
 
   extensionForFile = (file) ->
     file.type?.match(/\/(\w+)$/)?[1]

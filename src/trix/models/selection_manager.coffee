@@ -41,8 +41,7 @@ class Trix.SelectionManager
         textRange.select()
     Trix.selectionChangeObserver.update()
 
-  currentPositionIsCursorTarget: ->
-    location = @getLocationRange().start
+  locationIsCursorTarget: (location) ->
     [node, offset] = @findNodeAndOffsetForLocation(location)
     nodeIsCursorTarget(node)
 

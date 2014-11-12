@@ -15,7 +15,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
 
-    @composition = new Trix.Composition @document
+    @composition = new Trix.Composition @document, @selectionManager
     @composition.delegate = this
 
     @attachmentManager = new Trix.AttachmentManager @composition
@@ -42,7 +42,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
     if @config.autofocus
       @documentController.focus()
-      @setLocationRange([0,0]) unless @getLocationRange()
+      @selectionManager.setLocationRange([0,0]) unless @selectionManager.getLocationRange()
 
   # Composition delegate
 
@@ -197,44 +197,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   # Selection management
 
-  getLocationRange: ->
-    @selectionManager.getLocationRange()
-
-  setLocationRange: (start, end) ->
-    @selectionManager.setLocationRange(start, end)
-
-  setLocationRangeFromPoint: (point) ->
-    @selectionManager.setLocationRangeFromPoint(point)
-
-  getPosition: ->
-    locationRange = @selectionManager.getLocationRange()
-    @document.rangeFromLocationRange(locationRange)[0]
-
-  setPosition: (position) ->
-    locationRange = @document.locationRangeFromPosition(position)
-    @selectionManager.setLocationRange(locationRange)
-
-  currentPositionIsCursorTarget: ->
-    @selectionManager.currentPositionIsCursorTarget()
-
-  adjustPositionInDirection: (direction) ->
-    distance = if direction is "backward" then -1 else 1
-    @setPosition(@getPosition() + distance)
-
-  expandLocationRangeInDirection: (direction) ->
-    locationRange = @selectionManager.getLocationRange()
-    [startPosition, endPosition] = @document.rangeFromLocationRange(locationRange)
-    if direction is "backward"
-      startPosition--
-    else
-      endPosition++
-    startLocation = @document.locationRangeFromPosition(startPosition).start
-    endLocation = @document.locationRangeFromPosition(endPosition).start
-    @setLocationRange(startLocation, endLocation)
-
-  expandSelectionInDirectionWithGranularity: (direction, granularity) ->
-    @selectionManager.expandSelectionInDirectionWithGranularity(direction, granularity)
-
   freezeSelection: ->
     unless @selectionFrozen
       @selectionManager.lock()
@@ -246,9 +208,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
       @composition.thawSelection()
       @selectionManager.unlock()
       delete @selectionFrozen
-
-  preserveSelection: (block) ->
-    @selectionManager.preserveSelection(block)
 
   getLocationContext: ->
     locationRange = @selectionManager.getLocationRange()
