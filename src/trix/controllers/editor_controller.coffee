@@ -99,7 +99,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @delegate?.didRenderDocument?()
 
   documentControllerDidFocus: ->
-    @toolbarController.hideDialog() if @dialogWantsFocus
+    @toolbarController.hideDialog()
 
   documentControllerDidSelectAttachment: (attachment) ->
     locationRange = @document.getLocationRangeOfAttachment(attachment)
@@ -190,15 +190,13 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @composition.removeCurrentAttribute(attributeName)
     @documentController.focus()
 
-  toolbarWillShowDialog: (wantsFocus) ->
-    @dialogWantsFocus = wantsFocus
+  toolbarWillShowDialog: (willFocus) ->
     @composition.expandSelectionForEditing()
-    @freezeSelection() if wantsFocus
+    @freezeSelection() if willFocus
 
   toolbarDidHideDialog: ->
     @documentController.focus()
     @thawSelection()
-    delete @dialogWantsFocus
 
   # Selection management
 
