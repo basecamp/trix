@@ -185,6 +185,11 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @composition.setCurrentAttribute(attributeName, value)
     @documentController.focus()
 
+  toolbarDidRemoveAttribute: (attributeName) ->
+    @undoManager.recordUndoEntry("Formatting", context: @getLocationContext(), consolidatable: true)
+    @composition.removeCurrentAttribute(attributeName)
+    @documentController.focus()
+
   toolbarWillShowDialog: (wantsFocus) ->
     @dialogWantsFocus = wantsFocus
     @composition.expandSelectionForEditing()

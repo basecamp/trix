@@ -6,7 +6,7 @@
 #Current attributes (apply attribute and then type)
 #Attribute states are reflected in the toolbar as the selection changes
 
-editorModule "Host", template: "editor_empty"
+editorModule "Formatting", template: "editor_empty"
 
 editorTest "applying attributes to text", (done) ->
   typeCharacters "abc", ->
@@ -27,6 +27,17 @@ editorTest "applying a link to text", (done) ->
             expectAttributes([1, 2], href: "http://example.com")
             expectAttributes([2, 3], {})
             done()
+
+editorTest "removing a link", (done) ->
+  text = Trix.Text.textForStringWithAttributes("ab", href: "http://example.com")
+  editor.composition.insertText(text)
+  expectAttributes([0, 2], href: "http://example.com")
+  selectInDirection "left", ->
+    selectInDirection "left", ->
+      clickToolbarButton attribute: "href", ->
+        clickToolbarDialogButton method: "removeAttribute", ->
+          expectAttributes([0, 2], {})
+          done()
 
 editorTest "applying block attributes", (done) ->
   typeCharacters "abc", ->
@@ -51,6 +62,11 @@ clickToolbarButton = ({attribute, action}, callback) ->
   button = document.getElementById("toolbar").querySelector(".button[data-attribute='#{attribute}'], .button[data-action='#{action}']")
   triggerEvent(button, "click")
   defer(callback)
+
+clickToolbarDialogButton = ({method}, callback) ->
+  button = document.querySelector("#toolbar .dialog input[type=button][data-method='#{method}']")
+  triggerEvent(button, "click")
+  callback()
 
 typeInToolbarDialog = (string, {attribute}, callback) ->
   dialog = document.getElementById("toolbar").querySelector(".dialog[data-attribute='#{attribute}']")

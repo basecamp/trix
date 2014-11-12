@@ -89,8 +89,8 @@ class Trix.ToolbarController
     @delegate?.toolbarDidUpdateAttribute(attributeName, value)
 
   removeAttribute: (dialogElement) ->
-    getInputForDialog(dialogElement).value = null
-    @setAttribute(dialogElement)
+    attributeName = getAttributeName(dialogElement)
+    @delegate?.toolbarDidRemoveAttribute(attributeName)
 
   hideDialog: ->
     @element.querySelector(activeDialogSelector)?.classList.remove("active")
