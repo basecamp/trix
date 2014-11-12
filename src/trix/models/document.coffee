@@ -322,11 +322,21 @@ class Trix.Document extends Trix.Object
     rightPosition = @blockList.findPositionAtIndexAndOffset(locationRange.end.index, locationRange.end.offset) unless locationRange.isCollapsed()
     [leftPosition, rightPosition ? leftPosition]
 
+  locationFromPosition: (position) ->
+    location = @blockList.findIndexAndOffsetAtPosition(Math.max(0, position))
+    if location.index?
+      location
+    else
+      blocks = @getBlocks()
+      index: blocks.length - 1, offset: blocks[blocks.length - 1].getLength()
+
   locationRangeFromPosition: (position) ->
-    new Trix.LocationRange @blockList.findIndexAndOffsetAtPosition(position)
+    new Trix.LocationRange @locationFromPosition(position)
 
   locationRangeFromRange: ([start, end]) ->
-    new Trix.LocationRange @blockList.findIndexAndOffsetAtPosition(start), @blockList.findIndexAndOffsetAtPosition(end)
+    startLocation = @locationFromPosition(start)
+    endLocation = @locationFromPosition(end)
+    new Trix.LocationRange startLocation, endLocation
 
   toSerializableDocument: ->
     blocks = []

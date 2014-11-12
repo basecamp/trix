@@ -6,7 +6,7 @@
 #Current attributes (apply attribute and then type)
 #Attribute states are reflected in the toolbar as the selection changes
 
-editorModule "Formatting", template: "editor_empty"
+editorModule "Text formatting", template: "editor_empty"
 
 editorTest "applying attributes to text", (done) ->
   typeCharacters "abc", ->
@@ -53,44 +53,31 @@ editorTest "removing a link", (done) ->
           expectAttributes([0, 2], {})
           done()
 
-editorTest "applying block attributes", (done) ->
+editorTest "applying formatting and then typing", (done) ->
+  typeCharacters "a", ->
+    clickToolbarButton attribute: "bold", ->
+      typeCharacters "bcd", ->
+        clickToolbarButton attribute: "bold", ->
+          typeCharacters "e", ->
+            expectAttributes([0, 1], {})
+            expectAttributes([1, 4], bold: true)
+            expectAttributes([4, 5], {})
+            done()
+
+editorTest "applying formatting and then moving the cursor away", (done) ->
   typeCharacters "abc", ->
-    clickToolbarButton attribute: "quote", ->
-      expectAttributes([0, 4], quote: true)
-      done()
+    moveCursor "left", ->
+      ok not isToolbarButtonActive(attribute: "bold")
+      clickToolbarButton attribute: "bold", ->
+        ok isToolbarButtonActive(attribute: "bold")
+        moveCursor "right", ->
+          ok not isToolbarButtonActive(attribute: "bold")
+          moveCursor "left", ->
+            ok not isToolbarButtonActive(attribute: "bold")
+            expectAttributes([0, 3], {})
+            expectAttributes([3, 4], blockBreak: true)
+            done()
 
-# applying block attribute to text with collapsed selection
-# applying block attribute to text across newlines using selection
-# toggling block attribute from quote to code
-# breaking out of a block by pressing return twice
 
-editorTest "applying block attributes to text after newline", (done) ->
-  typeCharacters "a\nbc", ->
-    clickToolbarButton attribute: "quote", ->
-      expectAttributes([0, 1], {})
-      expectAttributes([1, 2], blockBreak: true)
-      expectAttributes([2, 4], quote: true)
-      done()
-
-clickToolbarButton = ({attribute, action}, callback) ->
-  button = document.getElementById("toolbar").querySelector(".button[data-attribute='#{attribute}'], .button[data-action='#{action}']")
-  triggerEvent(button, "click")
-  defer(callback)
-
-clickToolbarDialogButton = ({method}, callback) ->
-  button = document.querySelector("#toolbar .dialog input[type=button][data-method='#{method}']")
-  triggerEvent(button, "click")
-  callback()
-
-typeInToolbarDialog = (string, {attribute}, callback) ->
-  dialog = document.getElementById("toolbar").querySelector(".dialog[data-attribute='#{attribute}']")
-  input = dialog.querySelector("input[name='#{attribute}']")
-  button = dialog.querySelector("input[data-method='setAttribute']")
-  input.value = string
-  triggerEvent(button, "click")
-  defer(callback)
-
-expectAttributes = (range, attributes) ->
-  locationRange = editor.document.locationRangeFromRange(range)
-  commonAttributes = editor.document.getCommonAttributesAtLocationRange(locationRange)
-  deepEqual commonAttributes, attributes
+# toggle current attribute and then move cursor away
+# current attribute at cursor positions in formatted text
