@@ -57,7 +57,7 @@ editorTest "drag text", (expectDocument) ->
   typeCharacters "abc", ->
     moveCursor direction: "left", times: 2, (coordinates) ->
       moveCursor "right", ->
-        selectInDirection "right", ->
+        expandSelection "right", ->
           dragToCoordinates coordinates, ->
             expectDocument "acb\n"
 

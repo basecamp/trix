@@ -25,11 +25,11 @@ editorTest "move cursor around attachment and text", (done) ->
 editorTest "expand selection over attachment", (done) ->
   editor.composition.insertFile(createFile())
   assertLocationRange([0,1])
-  selectInDirection "left", ->
+  expandSelection "left", ->
     assertLocationRange([0,0], [0,1])
     moveCursorToBeginning ->
       assertLocationRange([0,0])
-      selectInDirection "right", ->
+      expandSelection "right", ->
         assertLocationRange([0,0], [0,1])
         done()
 
@@ -38,10 +38,10 @@ editorTest "expand selection over attachment and text", (done) ->
   editor.composition.insertFile(createFile())
   editor.composition.insertString("b")
   assertLocationRange([0,3])
-  selectInDirection "left", ->
+  expandSelection "left", ->
     assertLocationRange([0,2], [0,3])
-    selectInDirection "left", ->
+    expandSelection "left", ->
       assertLocationRange([0,1], [0,3])
-      selectInDirection "left", ->
+      expandSelection "left", ->
         assertLocationRange([0,0], [0,3])
         done()

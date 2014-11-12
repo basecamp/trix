@@ -1,16 +1,8 @@
-#Text attribute changes
-#Block attribute changes
-#Applying a link
-#Editing a link
-#Removing a link
-#Current attributes (apply attribute and then type)
-#Attribute states are reflected in the toolbar as the selection changes
-
 editorModule "Text formatting", template: "editor_empty"
 
 editorTest "applying attributes to text", (done) ->
   typeCharacters "abc", ->
-    selectInDirection "left", ->
+    expandSelection "left", ->
       clickToolbarButton attribute: "bold", ->
         expectAttributes([0, 2], {})
         expectAttributes([2, 3], bold: true)
@@ -20,7 +12,7 @@ editorTest "applying attributes to text", (done) ->
 editorTest "applying a link to text", (done) ->
   typeCharacters "abc", ->
     moveCursor "left", ->
-      selectInDirection "left", ->
+      expandSelection "left", ->
         clickToolbarButton attribute: "href", ->
           typeInToolbarDialog "http://example.com", attribute: "href", ->
             expectAttributes([0, 1], {})
@@ -46,12 +38,26 @@ editorTest "removing a link", (done) ->
   text = Trix.Text.textForStringWithAttributes("ab", href: "http://example.com")
   editor.composition.insertText(text)
   expectAttributes([0, 2], href: "http://example.com")
-  selectInDirection "left", ->
-    selectInDirection "left", ->
+  expandSelection direction: "left", times: 2, ->
+    clickToolbarButton attribute: "href", ->
+      clickToolbarDialogButton method: "removeAttribute", ->
+        expectAttributes([0, 2], {})
+        done()
+
+editorTest "typing after a link", (done) ->
+  typeCharacters "ab", ->
+    expandSelection direction: "left", times: 2, ->
       clickToolbarButton attribute: "href", ->
-        clickToolbarDialogButton method: "removeAttribute", ->
-          expectAttributes([0, 2], {})
-          done()
+        typeInToolbarDialog "http://example.com", attribute: "href", ->
+          moveCursor "right", ->
+            typeCharacters "c", ->
+              expectAttributes([0, 2], href: "http://example.com")
+              expectAttributes([2, 3], {})
+              moveCursor "left", ->
+                ok not isToolbarButtonActive(attribute: "href")
+                moveCursor "left", ->
+                  ok isToolbarButtonActive(attribute: "href")
+                  done()
 
 editorTest "applying formatting and then typing", (done) ->
   typeCharacters "a", ->
@@ -78,6 +84,23 @@ editorTest "applying formatting and then moving the cursor away", (done) ->
             expectAttributes([3, 4], blockBreak: true)
             done()
 
-
-# toggle current attribute and then move cursor away
-# current attribute at cursor positions in formatted text
+editorTest "editing formatted text", (done) ->
+  clickToolbarButton attribute: "bold", ->
+    typeCharacters "ab", ->
+      clickToolbarButton attribute: "bold", ->
+        typeCharacters "c", ->
+          ok not isToolbarButtonActive(attribute: "bold")
+          moveCursor "left", ->
+            ok isToolbarButtonActive(attribute: "bold")
+            moveCursor "left", ->
+              ok isToolbarButtonActive(attribute: "bold")
+              typeCharacters "Z", ->
+                ok isToolbarButtonActive(attribute: "bold")
+                expectAttributes([0, 3], bold: true)
+                expectAttributes([3, 4], {})
+                expectAttributes([4, 5], blockBreak: true)
+                moveCursor "right", ->
+                  ok isToolbarButtonActive(attribute: "bold")
+                  moveCursor "right", ->
+                    ok not isToolbarButtonActive(attribute: "bold")
+                    done()

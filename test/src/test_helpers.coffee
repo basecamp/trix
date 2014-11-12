@@ -140,22 +140,30 @@ getElementCoordinates = (element) ->
   clientX: rect.left + rect.width / 2
   clientY: rect.top + rect.height / 2
 
-@selectInDirection = (direction, callback) ->
+@expandSelection = (options, callback) ->
+  if typeof options is "string"
+    direction = options
+  else
+    direction = options.direction
+    times = options.times
+
   getEditorElement().focus()
-  if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)
-    selection = window.getSelection()
-    if selection.modify
-      selection.modify("extend", direction, "character")
-    else if document.body.createTextRange
-      textRange = document.body.createTextRange()
-      coordinates = getCursorCoordinates()
-      textRange.moveToPoint(coordinates.clientX, coordinates.clientY)
-      if direction is "left"
-        textRange.moveStart("character", -1)
-      else
-        textRange.moveEnd("character", 1)
-      textRange.select()
-    Trix.selectionChangeObserver.update()
+
+  for i in [0...(times ? 1)]
+    if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)
+      selection = window.getSelection()
+      if selection.modify
+        selection.modify("extend", direction, "character")
+      else if document.body.createTextRange
+        textRange = document.body.createTextRange()
+        coordinates = getCursorCoordinates()
+        textRange.moveToPoint(coordinates.clientX, coordinates.clientY)
+        if direction is "left"
+          textRange.moveStart("character", -1)
+        else
+          textRange.moveEnd("character", 1)
+        textRange.select()
+      Trix.selectionChangeObserver.update()
   defer(callback)
 
 @selectAll = (callback) ->
