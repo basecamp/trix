@@ -152,19 +152,8 @@ getElementCoordinates = (element) ->
 
   for i in [0...(times ? 1)]
     if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)
-      selection = window.getSelection()
-      if selection.modify
-        selection.modify("extend", direction, "character")
-      else if document.body.createTextRange
-        textRange = document.body.createTextRange()
-        coordinates = getCursorCoordinates()
-        textRange.moveToPoint(coordinates.clientX, coordinates.clientY)
-        if direction is "left"
-          textRange.moveStart("character", -1)
-        else
-          textRange.moveEnd("character", 1)
-        textRange.select()
-      Trix.selectionChangeObserver.update()
+      editor.composition.expandSelectionInDirection(if direction is "left" then "backward" else "forward")
+  defer(callback)
   defer(callback)
 
 @selectAll = (callback) ->

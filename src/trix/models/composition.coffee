@@ -2,13 +2,13 @@
 
 class Trix.Composition
   forwardMethodsToSelectionManager = "getLocationRange setLocationRange setLocationRangeFromPoint
-    preserveSelection locationIsCursorTarget expandSelectionInDirectionWithGranularity".split(" ")
+    preserveSelection locationIsCursorTarget".split(" ")
 
-  constructor: (document = new Trix.Document, selectionManager) ->
+  constructor: (document = new Trix.Document, @selectionManager) ->
     @loadDocument(document)
 
     for methodName in forwardMethodsToSelectionManager
-      @[methodName] = selectionManager[methodName].bind(selectionManager)
+      @[methodName] = @selectionManager[methodName].bind(@selectionManager)
 
   loadDocument: (document) ->
     @document = document
@@ -79,7 +79,7 @@ class Trix.Composition
           @removeCurrentAttribute(key) for key of block.getAttributes()
         # Break out of block after a newline (and remove the newline)
         when text.endsWithString("\n")
-          @expandSelectionInDirectionWithGranularity("backward", "character")
+          @expandSelectionInDirection("backward")
           @insertDocument()
         # Stay in the block, add a newline
         else
@@ -112,7 +112,10 @@ class Trix.Composition
     range = @getLocationRange()
 
     if range.isCollapsed()
-      @expandSelectionInDirectionWithGranularity(direction, granularity)
+      if granularity is "character"
+        @expandSelectionInDirection(direction)
+      else
+        @selectionManager.expandSelectionInDirectionWithGranularity(direction, granularity)
       range = @getLocationRange()
 
     @document.removeTextAtLocationRange(range)
@@ -232,14 +235,15 @@ class Trix.Composition
 
   expandLocationRangeInDirection: (direction) ->
     locationRange = @getLocationRange()
-    [startPosition, endPosition] = @document.rangeFromLocationRange(locationRange)
-    if direction is "backward"
-      startPosition--
+    [start, end] = @document.rangeFromLocationRange(locationRange)
+    if direction is "backward" then start-- else end++
+    @setLocationRange(@document.locationRangeFromRange([start, end]))
+
+  expandSelectionInDirection: (direction) ->
+    if @shouldExpandInDirectionUsingLocationRange(direction)
+      @expandLocationRangeInDirection(direction)
     else
-      endPosition++
-    startLocation = @document.locationRangeFromPosition(startPosition).start
-    endLocation = @document.locationRangeFromPosition(endPosition).start
-    @setLocationRange(startLocation, endLocation)
+      @selectionManager.expandSelectionInDirectionWithGranularity(direction, "character")
 
   notifyDelegateOfIntentionToSetLocationRange: ->
     @delegate?.compositionWillSetLocationRange()
@@ -282,6 +286,14 @@ class Trix.Composition
     delete @editingAttachment
 
   # Private
+
+  shouldExpandInDirectionUsingLocationRange: (direction) ->
+    position = @getPosition()
+    distance = if direction is "backward" then -1 else 1
+    range = [position, position + distance].sort()
+    locationRange = @document.locationRangeFromRange(range)
+    character = @document.getStringAtLocationRange(locationRange).substr(0, 1)
+    character in ["\n", Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER]
 
   getDocument: ->
     @document.copy()
