@@ -15,8 +15,8 @@ module Trix
       ["Linux", "googlechrome", "38"]
     ]
 
-    MAX_VM_SECONDS = 90
-    MAX_TOTAL_SECONDS = 300
+    MAX_VM_SECONDS = 200
+    MAX_TOTAL_SECONDS = 500
 
     SAUCE_PARAMS = {
       framework: "qunit",
@@ -61,9 +61,9 @@ module Trix
 
         until completed
           if (count += 1) <= 5
-            sleep 2
+            sleep 3
           else
-            sleep 1
+            sleep 2
           end
 
           status = post("/js-tests/status", @js_test_params)
@@ -119,7 +119,7 @@ module Trix
       end
 
       def post(endpoint = "", params = {})
-        response = RestClient.post(sauce_url(endpoint), params.to_json)
+        response = RestClient.post(sauce_url(endpoint), params.to_json, timeout: 30, open_timeout: 30)
         JSON.parse(response)
       end
 
