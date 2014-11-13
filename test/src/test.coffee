@@ -4,4 +4,4 @@
 #= require ./test_helpers
 #= require ./formatting_helpers
 #= require_tree ./fixtures
-#= require_tree ./integration
+#= require_tree ./system

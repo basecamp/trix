@@ -1,4 +1,4 @@
-editorModule "Host", template: "editor_empty"
+editorModule "Host API", template: "editor_empty"
 
 editorTest "files are rejected without a delegate", (expectDocument) ->
   editor.delegate = null
