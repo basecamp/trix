@@ -1,1 +1,5 @@
 /*= require qunit */
+
+#trix_container {
+  height: 150px;
+}

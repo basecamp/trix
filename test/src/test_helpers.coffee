@@ -12,7 +12,7 @@ keyCodes =
 
     setup: ->
       if template?
-        document.body.insertAdjacentHTML("beforeend", JST["fixtures/#{template}"]())
+        document.getElementById("trix_container").innerHTML = JST["fixtures/#{template}"]()
         delegate ?= shouldAcceptFile: -> true
         editorConfig = toolbar: "toolbar", textarea: "content", delegate: delegate
         editorConfig[key] = value for key, value of config if config?
@@ -21,7 +21,7 @@ keyCodes =
 
     teardown: ->
       if template?
-        document.body.removeChild(document.getElementById("container"))
+        document.getElementById("trix_container").innerHTML = ""
         window.editor = null
       teardown?()
 
