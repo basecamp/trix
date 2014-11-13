@@ -154,6 +154,18 @@ getElementCoordinates = (element) ->
     if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)
       editor.composition.expandSelectionInDirection(if direction is "left" then "backward" else "forward")
   defer(callback)
+
+@collapseSelection = (direction, callback) ->
+  selection = window.getSelection()
+  range = selection.getRangeAt(0)
+  newRange = document.createRange()
+  if direction is "left"
+    newRange.setStart(range.startContainer, range.startOffset)
+  else
+    newRange.setStart(range.endContainer, range.endOffset)
+  selection.removeAllRanges()
+  selection.addRange(newRange)
+  Trix.selectionChangeObserver.update()
   defer(callback)
 
 @selectAll = (callback) ->

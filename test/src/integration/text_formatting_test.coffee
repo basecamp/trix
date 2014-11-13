@@ -49,7 +49,8 @@ editorTest "typing after a link", (done) ->
     expandSelection direction: "left", times: 2, ->
       clickToolbarButton attribute: "href", ->
         typeInToolbarDialog "http://example.com", attribute: "href", ->
-          moveCursor "right", ->
+          collapseSelection "right", ->
+            assertLocationRange([0,2])
             typeCharacters "c", ->
               expectAttributes([0, 2], href: "http://example.com")
               expectAttributes([2, 3], {})
