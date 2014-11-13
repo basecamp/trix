@@ -1,4 +1,5 @@
 {@defer} = Trix.Helpers
+@isTouchDevice = "ontouchstart" of window and "onorientationchange" of window
 
 keyCodes =
   left: 37
