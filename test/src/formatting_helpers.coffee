@@ -9,7 +9,7 @@ getToolbarButton = ({attribute, action}) ->
 @clickToolbarDialogButton = ({method}, callback) ->
   button = document.querySelector("#toolbar .dialog input[type=button][data-method='#{method}']")
   triggerEvent(button, "click")
-  callback()
+  defer(callback)
 
 @isToolbarButtonActive = (selector) ->
   button = getToolbarButton(selector)
