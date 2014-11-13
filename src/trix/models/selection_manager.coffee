@@ -32,13 +32,21 @@ class Trix.SelectionManager
     if selection.modify
       selection.modify("extend", direction, granularity)
     else if document.body.createTextRange
-      textRange = document.body.createTextRange()
-      textRange.moveToPoint(@getPointAtEndOfSelection()...)
+      [leftPoint, rightPoint] = @getSelectionEndPoints()
+
+      leftRange = document.body.createTextRange()
+      leftRange.moveToPoint(leftPoint...)
+
+      rightRange = document.body.createTextRange()
+      rightRange.moveToPoint(rightPoint...)
+
       if direction is "forward"
-        textRange.moveEnd(granularity, 1)
+        rightRange.move(granularity, 1)
       else
-        textRange.moveStart(granularity, -1)
-        textRange.select()
+        leftRange.move(granularity, -1)
+
+      leftRange.setEndPoint("EndToEnd", rightRange)
+      leftRange.select()
     Trix.selectionChangeObserver.update()
 
   locationIsCursorTarget: (location) ->
@@ -56,7 +64,7 @@ class Trix.SelectionManager
       @setLocationRange(lockedLocationRange) if lockedLocationRange?
 
   preserveSelection: (block) ->
-    point = @getPointAtEndOfSelection()
+    point = @getSelectionEndPoints()[0]
     block()
     range = @getLocationRangeAtPoint(point)
     @setDOMRange(range)
@@ -182,20 +190,17 @@ class Trix.SelectionManager
 
     @createLocationRangeFromDOMRange(domRange ? getDOMRange())
 
-  getPointAtEndOfSelection: ->
+  getSelectionEndPoints: ->
     return unless range = getDOMRange()
     rects = range.getClientRects()
     if rects.length > 0
-      rect = rects[rects.length - 1]
+      leftRect = rects[0]
+      rightRect = rects[rects.length - 1]
 
-      clientX = rect.right
-      clientY = rect.top + rect.height / 2
+      leftPoint = [leftRect.left, leftRect.top + leftRect.height / 2]
+      rightPoint = [rightRect.right, rightRect.top + rightRect.height / 2]
 
-      if clientRectIsRelativeToBody()
-        clientX -= document.body.scrollLeft
-        clientY -= document.body.scrollTop
-
-      [clientX, clientY]
+      [leftPoint, rightPoint]
 
   nodeIsCursorTarget = (node) ->
     return unless node
