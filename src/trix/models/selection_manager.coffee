@@ -20,8 +20,8 @@ class Trix.SelectionManager
     else
       new Trix.LocationRange start, end
 
-    @currentLocationRange = locationRange
     @setDOMRange(locationRange)
+    @updateCurrentLocationRange(locationRange)
 
   setLocationRangeFromPoint: (point) ->
     locationRange = @getLocationRangeAtPoint(point)
@@ -80,8 +80,9 @@ class Trix.SelectionManager
   getBlockElements: ->
     @delegate?.selectionManagerDidRequestBlockElements?()
 
-  updateCurrentLocationRange: (domRange = getDOMRange()) ->
-    return unless locationRange = @createLocationRangeFromDOMRange(domRange)
+  updateCurrentLocationRange: (locationRange) ->
+    locationRange ?= @createLocationRangeFromDOMRange(getDOMRange())
+    return unless locationRange
     if (@currentLocationRange and not locationRange) or not locationRange?.isEqualTo(@currentLocationRange)
       @currentLocationRange = locationRange
       @delegate?.locationRangeDidChange?(@currentLocationRange)
