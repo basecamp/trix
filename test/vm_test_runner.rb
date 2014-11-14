@@ -20,7 +20,7 @@ module Trix
 
     SAUCE_PARAMS = {
       framework: "qunit",
-      max_duration: 90,
+      max_duration: MAX_VM_SECONDS,
       platforms: PLATFORMS
     }
 
