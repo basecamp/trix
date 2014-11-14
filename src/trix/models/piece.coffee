@@ -9,13 +9,12 @@ class Trix.Piece extends Trix.Object
     if constructor = @types[pieceJSON.type]
       constructor.fromJSON(pieceJSON)
 
-  constructor: (@value, attributes = {}) ->
+  constructor: (value, attributes = {}) ->
     super
     @attributes = Trix.Hash.box(attributes)
-    @length = @toString().length
 
   copyWithAttributes: (attributes) ->
-    new @constructor @value, attributes
+    new @constructor @getValue(), attributes
 
   copyWithAdditionalAttributes: (attributes) ->
     @copyWithAttributes(@attributes.merge(attributes))
@@ -68,17 +67,9 @@ class Trix.Piece extends Trix.Object
   isSerializable: ->
     true
 
-  toString: ->
-    "NO"
-
   toJSON: ->
     type: @constructor.type
     attributes: @getAttributes()
-
-  toConsole: ->
-    stringValue = @toString()
-    stringValue = stringValue.slice(0, 14) + "…" if stringValue.length > 15
-    JSON.stringify(stringValue)
 
   contentsForInspection: ->
     type: @constructor.type

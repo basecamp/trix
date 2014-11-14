@@ -139,7 +139,8 @@ class Trix.SelectionManager
       while walker.nextNode()
         if walker.currentNode is node
           if container.nodeType is Node.TEXT_NODE and not nodeIsCursorTarget(walker.currentNode)
-            offset += containerOffset
+            string = Trix.String.box(walker.currentNode.textContent)
+            offset += string.translateJSOffset(containerOffset)
           else if containerOffset > 0
             offset += nodeLength(walker.currentNode)
           return {index, offset}
@@ -153,7 +154,8 @@ class Trix.SelectionManager
     return unless node
     if node.nodeType is Node.TEXT_NODE
       container = node
-      offset = location.offset - nodeOffset
+      string = Trix.String.box(node.textContent)
+      offset = string.translateOffset(location.offset - nodeOffset)
     else
       container = node.parentNode
       offset =
@@ -223,7 +225,8 @@ class Trix.SelectionManager
       if nodeIsCursorTarget(node)
         0
       else if DOM.findClosestElementFromNode(node)?.isContentEditable
-        node.length
+        string = Trix.String.box(node.textContent)
+        string.length
       else
         0
     else if node.nodeName in ["BR", "FIGURE"]

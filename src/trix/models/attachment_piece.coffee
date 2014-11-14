@@ -7,11 +7,14 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   @fromJSON: (pieceJSON) ->
     new this Trix.Attachment.fromJSON(pieceJSON.attachment), pieceJSON.attributes
 
-  constructor: ->
+  constructor: (@attachment) ->
     super
-    @attachment = @value
+    @length = 1
     if not @attachment.isImage() and url = @attachment.getURL()
       @attributes = @attributes.add("href", url)
+
+  getValue: ->
+    @attachment
 
   isSerializable: ->
     not @attachment.isPending()
@@ -32,3 +35,6 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
 
   toKey: ->
     [super, @attachment.toKey()].join("/")
+
+  toConsole: ->
+    JSON.stringify(@toString())

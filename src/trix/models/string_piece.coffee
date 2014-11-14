@@ -4,12 +4,20 @@ Trix.Piece.registerType "string", class Trix.StringPiece extends Trix.Piece
   @fromJSON: (pieceJSON) ->
     new this pieceJSON.string, pieceJSON.attributes
 
+  constructor: (string) ->
+    super
+    @string = Trix.String.box(string)
+    @length = @string.length
+
+  getValue: ->
+    @string
+
   toString: ->
-    @value
+    @string.toString()
 
   toJSON: ->
     result = super
-    result.string = @value
+    result.string = @string
     result
 
   # Splittable
@@ -28,6 +36,11 @@ Trix.Piece.registerType "string", class Trix.StringPiece extends Trix.Piece
       left = this
       right = null
     else
-      left = new @constructor @value.slice(0, offset), @attributes
-      right = new @constructor @value.slice(offset), @attributes
+      left = new @constructor @string.slice(0, offset), @attributes
+      right = new @constructor @string.slice(offset), @attributes
     [left, right]
+
+  toConsole: ->
+    string = @string
+    string = string.slice(0, 14) + "…" if string.length > 15
+    JSON.stringify(string.toString())
