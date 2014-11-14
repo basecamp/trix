@@ -70,6 +70,9 @@ class Trix.SelectionManager
     @setDOMRange(range)
     range
 
+  clearSelection: ->
+    getDOMSelection()?.removeAllRanges()
+
   # Private
 
   selectionDidChange: =>

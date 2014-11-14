@@ -89,6 +89,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
   documentControllerWillRender: ->
     @mutationObserver.stop()
     @selectionManager.lock() unless @skipSelectionLock
+    @selectionManager.clearSelection()
 
   documentControllerDidRender: ->
     @mutationObserver.start()
