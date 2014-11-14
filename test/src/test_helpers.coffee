@@ -1,11 +1,10 @@
 Trix.env = "test"
 
-{@defer} = Trix.Helpers
-@isTouchDevice = "ontouchstart" of window and "onorientationchange" of window
-
 keyCodes =
   left: 37
   right: 39
+
+{@defer} = Trix.Helpers
 
 @after = (delay, callback) ->
   setTimeout(callback, delay)
@@ -190,12 +189,14 @@ getElementCoordinates = (element) ->
     clientX: coordinates.clientX + offset
     clientY: coordinates.clientY + offset
 
-  defer ->
+  dragSpeed = 20
+
+  after dragSpeed, ->
     offset = 0
     do drag = =>
       if ++offset <= distance
         triggerEvent(element, "mousemove", destination(offset))
-        defer(drag)
+        after(dragSpeed, drag)
       else
         triggerEvent(element, "mouseup", destination(distance))
-        defer(callback)
+        after(dragSpeed, callback)

@@ -8,18 +8,17 @@ editorTest "moving an image by drag and drop", (expectDocument) ->
       dragToCoordinates coordinates, ->
         expectDocument "a#{Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER}b\n"
 
-unless @isTouchDevice
-  editorTest "resizing an image", (expectDocument) ->
-    figure = document.activeElement.querySelector("figure.attachment.image")
-    clickElement figure, ->
-      ok handle = figure.querySelector(".resize-handle")
+editorTest "resizing an image", (expectDocument) ->
+  figure = document.activeElement.querySelector("figure.attachment.image")
+  clickElement figure, ->
+    ok handle = figure.querySelector(".resize-handle")
 
-      mouseDownOnElementAndMove handle, 5, ->
-        locationRangeOfAttachment = Trix.LocationRange.forLocationWithLength({index: 0, offset: 2}, 1)
-        attributes = editor.document.getCommonAttributesAtLocationRange(locationRangeOfAttachment)
-        equal attributes.width, 15
-        ok attributes.height in [15,16], "expected image height: 15 or 16, actual: #{attributes.height}"
-        expectDocument "ab#{Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER}\n"
+    mouseDownOnElementAndMove handle, 5, ->
+      locationRangeOfAttachment = Trix.LocationRange.forLocationWithLength({index: 0, offset: 2}, 1)
+      attributes = editor.document.getCommonAttributesAtLocationRange(locationRangeOfAttachment)
+      equal attributes.width, 15
+      ok attributes.height in [15,16], "expected image height: 15 or 16, actual: #{attributes.height}"
+      expectDocument "ab#{Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER}\n"
 
 editorTest "removing an image", (expectDocument) ->
   figure = document.activeElement.querySelector("figure.attachment.image")
