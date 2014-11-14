@@ -1,4 +1,8 @@
+#= require_self
+#= require_tree ./documents
 #= require ./inspector/inspector_controller
+
+window.trixDocuments = {}
 
 config =
   textarea: "text"
