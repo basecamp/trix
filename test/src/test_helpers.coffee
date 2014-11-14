@@ -125,7 +125,7 @@ typeCharacterInElement = (character, element, callback) ->
 
 @moveCursorToBeginning = (callback) ->
   range = document.createRange()
-  range.setStart(document.activeElement, 0)
+  range.setStart(getEditorElement(), 0)
   selection = window.getSelection()
   selection.removeAllRanges()
   selection.addRange(range)
