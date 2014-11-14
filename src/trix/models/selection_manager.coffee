@@ -2,7 +2,7 @@
 #= require trix/observers/selection_change_observer
 
 {DOM} = Trix
-{memoize} = Trix.Helpers
+{memoize, defer} = Trix.Helpers
 
 class Trix.SelectionManager
   constructor: (@element) ->
@@ -20,8 +20,8 @@ class Trix.SelectionManager
     else
       new Trix.LocationRange start, end
 
+    @currentLocationRange = locationRange
     @setDOMRange(locationRange)
-    @updateCurrentLocationRange()
 
   setLocationRangeFromPoint: (point) ->
     locationRange = @getLocationRangeAtPoint(point)
@@ -98,10 +98,19 @@ class Trix.SelectionManager
     range.setStart(rangeStart...)
     range.setEnd(rangeEnd...)
 
-    selection = window.getSelection()
-    selection.removeAllRanges()
-    selection.addRange(range)
-    Trix.selectionChangeObserver.update()
+    applyRange = ->
+      selection = window.getSelection()
+      selection.removeAllRanges()
+      selection.addRange(range)
+
+    if Trix.env is "test"
+      applyRange()
+    else
+      # Selection#addRange is unreasonably slow in WebKit when performed in the
+      # same call stack as a mouse or key event so defer calling it.
+      # https://code.google.com/p/chromium/issues/detail?id=423170
+      # https://code.google.com/p/chromium/issues/detail?id=138439
+      defer(applyRange)
 
   createLocationRangeFromDOMRange: (range) ->
     return unless range? and @rangeWithinElement(range)
