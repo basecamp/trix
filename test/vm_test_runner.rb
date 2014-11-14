@@ -119,8 +119,12 @@ module Trix
       end
 
       def post(endpoint = "", params = {})
-        response = RestClient.post(sauce_url(endpoint), params.to_json, timeout: 30, open_timeout: 30)
+        tries ||= 3
+        response = RestClient.post(sauce_url(endpoint), params.to_json)
         JSON.parse(response)
+      rescue
+        sleep 1 and retry unless (tries -= 1).zero?
+        raise
       end
 
       def sauce_url(path = "")
