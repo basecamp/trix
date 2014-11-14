@@ -189,7 +189,7 @@ class Installer
     element.classList.add("trix-editor")
     element.classList.add(@config.className.split(" ")...) if @config.className
 
-    element.style.minHeight = window.getComputedStyle(textarea).height
+    element.style.minHeight = textarea.offsetHeight + "px"
     textarea.style["display"] = "none"
     textarea.parentElement.insertBefore(element, textarea)
 
