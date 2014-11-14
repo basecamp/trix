@@ -1,40 +1,40 @@
-class Trix.UCS2String
+class Trix.UTF16String
   @box: (value = "") ->
     if value instanceof this
       value
     else
-      @fromUTF16String(value)
+      @fromUCS2String(value)
 
-  @fromUTF16String: (utf16String) ->
-    new this utf16String, ucs2decode(utf16String)
+  @fromUCS2String: (ucs2String) ->
+    new this ucs2String, ucs2decode(ucs2String)
 
   @fromCodepoints: (codepoints) ->
     new this ucs2encode(codepoints), codepoints
 
-  constructor: (@utf16String, @codepoints) ->
+  constructor: (@ucs2String, @codepoints) ->
     @length = @codepoints.length
-    @utf16Length = @utf16String.length
+    @ucs2Length = @ucs2String.length
 
-  offsetToUTF16Offset: (offset) ->
+  offsetToUCS2Offset: (offset) ->
     ucs2encode(@codepoints.slice(0, offset)).length
 
-  offsetFromUTF16Offset: (utf16Offset) ->
-    ucs2decode(@utf16String.slice(0, utf16Offset)).length
+  offsetFromUCS2Offset: (ucs2Offset) ->
+    ucs2decode(@ucs2String.slice(0, ucs2Offset)).length
 
   slice: ->
     @constructor.fromCodepoints(@codepoints.slice(arguments...))
 
   isEqualTo: (value) ->
-    @constructor.box(value).utf16String is @utf16String
+    @constructor.box(value).ucs2String is @ucs2String
 
   toJSON: ->
-    @utf16String
+    @ucs2String
 
   toKey: ->
-    @utf16String
+    @ucs2String
 
   toString: ->
-    @utf16String
+    @ucs2String
 
 
 # UCS-2 conversion helpers ported from Mathias Bynens' Punycode.js:

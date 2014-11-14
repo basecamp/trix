@@ -6,7 +6,7 @@ Trix.Piece.registerType "string", class Trix.StringPiece extends Trix.Piece
 
   constructor: (string) ->
     super
-    @string = Trix.UCS2String.box(string)
+    @string = Trix.UTF16String.box(string)
     @length = @string.length
 
   getValue: ->
