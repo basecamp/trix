@@ -27,7 +27,7 @@ editorTest "expand selection over attachment", (done) ->
   assertLocationRange([0,1])
   expandSelection "left", ->
     assertLocationRange([0,0], [0,1])
-    moveCursorToBeginning ->
+    moveCursor "left", ->
       assertLocationRange([0,0])
       expandSelection "right", ->
         assertLocationRange([0,0], [0,1])

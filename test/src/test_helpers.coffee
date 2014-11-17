@@ -123,16 +123,6 @@ typeCharacterInElement = (character, element, callback) ->
   defer ->
     callback getCursorCoordinates()
 
-@moveCursorToBeginning = (callback) ->
-  range = document.createRange()
-  range.setStart(getEditorElement(), 0)
-  selection = window.getSelection()
-  selection.removeAllRanges()
-  selection.addRange(range)
-  Trix.selectionChangeObserver.update()
-  defer ->
-    callback getCursorCoordinates()
-
 getCursorCoordinates = ->
   if rect = window.getSelection().getRangeAt(0).getClientRects()[0]
     clientX: rect.left
