@@ -5,24 +5,17 @@ require "timeout"
 
 module Trix
   class VMTestRunner
-    # http://saucelabs.com/rest/v1/info/platforms/webdriver
-    PLATFORMS = [
-      ["Windows 2012 R2", "internet explorer", "11"],
-      ["Mac 10.9", "safari", "7"],
-      ["Mac 10.9", "firefox", "33"],
-      ["Mac 10.9", "googlechrome", "38"],
-      ["Mac 10.9", "iPad", "8.1"],
-      ["Linux", "googlechrome", "38"]
-    ]
-
-    MAX_VM_SECONDS = 200
-    MAX_TOTAL_SECONDS = 500
-
-    SAUCE_PARAMS = {
-      framework: "qunit",
-      max_duration: MAX_VM_SECONDS,
-      platforms: PLATFORMS
+    BROWSERS = {
+      "Safari" => 2,
+      "Google Chrome" => 2,
+      "Firefox" => 2,
+      "Internet Explorer" => 1,
+      "iPad" => 1,
+      "Android" => 1
     }
+
+    MAX_VM_SECONDS = 150
+    MAX_TOTAL_SECONDS = 500
 
     S3_BUCKET = "trix-tests"
     TRIX_TEST_FILE = "test.html"
@@ -51,8 +44,12 @@ module Trix
       end
 
       def start_tests
-        print "Running tests @ #{test_url} in #{PLATFORMS.size} browsers."
-        @js_test_params = post("/js-tests", SAUCE_PARAMS.merge(url: test_url, build: rev))
+        print "Running tests @ #{test_url} in #{platforms.size} browsers."
+        @js_test_params = post("/js-tests", test_params)
+      end
+
+      def test_params
+        { url: test_url, build: rev, platforms: platforms, framework: "qunit", max_duration: MAX_VM_SECONDS }
       end
 
       def poll_for_completion
@@ -131,6 +128,27 @@ module Trix
         user = ENV['SAUCE_USERNAME']
         key = ENV['SAUCE_ACCESS_KEY']
         File.join("https://#{user}:#{key}@saucelabs.com/rest/v1/#{user}/", path)
+      end
+
+      def available_platforms
+        JSON.parse(RestClient.get("http://saucelabs.com/rest/v1/info/platforms/webdriver"))
+      end
+
+      def platforms
+        @platforms ||= [].tap do |platforms|
+          BROWSERS.each do |browser, version_depth|
+            for_browser = available_platforms.select { |p| p["long_name"] == browser }
+            versions = for_browser.map { |p| p["short_version"].to_f }.sort.uniq.last(version_depth)
+            versions.each do |version|
+              ["Mac", "Windows", "Linux"].each do |os|
+                for_os = for_browser.select { |p| p["os"] =~ Regexp.new(os) && p["short_version"].to_f == version }
+                if platform = for_os.sort_by { |p| p["os"] }.last
+                  platforms.push([platform["os"], platform["api_name"], platform["short_version"]])
+                end
+              end
+            end
+          end
+        end
       end
 
       def s3
