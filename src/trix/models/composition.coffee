@@ -170,15 +170,10 @@ class Trix.Composition
     @currentAttributes[attributeName] = value
     @notifyDelegateOfCurrentAttributesChange()
 
-  removeCurrentAttribute: (attributeName) ->
-    range = @getLocationRange()
-    @document.removeAttributeAtLocationRange(attributeName, range)
-    delete @currentAttributes[attributeName]
-    @notifyDelegateOfCurrentAttributesChange()
-
   setTextAttribute: (attributeName, value) ->
-    return unless range = @getLocationRange()
-    @document.addAttributeAtLocationRange(attributeName, value, range)
+    return unless locationRange = @getLocationRange()
+    unless locationRange.isCollapsed()
+      @document.addAttributeAtLocationRange(attributeName, value, locationRange)
 
   setBlockAttribute: (attributeName, value) ->
     return unless locationRange = @getLocationRange()
@@ -190,6 +185,24 @@ class Trix.Composition
     {start} = @document.locationRangeFromPosition(startPosition)
     {end} = @document.locationRangeFromPosition(endPosition)
     @setLocationRange(start, end)
+
+  removeCurrentAttribute: (attributeName) ->
+    if Trix.attributes[attributeName]?.block
+      @removeBlockAttribute(attributeName)
+    else
+      @removeTextAttribute(attributeName)
+
+    delete @currentAttributes[attributeName]
+    @notifyDelegateOfCurrentAttributesChange()
+
+  removeTextAttribute: (attributeName) ->
+    return unless locationRange = @getLocationRange()
+    unless locationRange.isCollapsed()
+      @document.removeAttributeAtLocationRange(attributeName, locationRange)
+
+  removeBlockAttribute: (attributeName) ->
+    return unless locationRange = @getLocationRange()
+    @document.removeAttributeAtLocationRange(attributeName, locationRange)
 
   updateCurrentAttributes: ->
     @currentAttributes =
