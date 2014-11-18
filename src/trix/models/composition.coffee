@@ -82,7 +82,7 @@ class Trix.Composition
       attributes = block.getAttributes()
       if attributes.bullet or attributes.number
         if block.isEmpty()
-          @removeCurrentAttribute(key) for key of block.getAttributes()
+          @removeBlockAttributes()
         else
           @insertBlockBreak()
       else
@@ -90,7 +90,7 @@ class Trix.Composition
         switch
           # Remove block attributes
           when block.isEmpty()
-            @removeCurrentAttribute(key) for key of block.getAttributes()
+            @removeBlockAttributes()
           # Break out of block after a newline (and remove the newline)
           when text.endsWithString("\n")
             @expandSelectionInDirection("backward")
@@ -155,6 +155,11 @@ class Trix.Composition
       @notifyDelegateOfIntentionToSetLocationRange()
       @document.removeTextAtLocationRange(locationRange)
       @setLocationRange(locationRange.collapse())
+
+  removeBlockAttributes: ->
+    range = @getLocationRange()
+    block = @document.getBlockAtIndex(range.end.index)
+    @removeCurrentAttribute(key) for key of block.getAttributes()
 
   # Current attributes
 
