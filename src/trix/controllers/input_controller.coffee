@@ -127,61 +127,62 @@ class Trix.InputController
 
   keys:
     backspace: (event) ->
+      event.preventDefault()
       @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteBackward()
-      event.preventDefault()
 
     return: (event) ->
+      event.preventDefault()
       @delegate?.inputControllerWillPerformTyping()
       @responder?.insertLineBreak()
-      event.preventDefault()
 
     left: (event) ->
       if @selectionIsInCursorTarget()
-        @responder?.adjustPositionInDirection("backward")
         event.preventDefault()
+        @responder?.adjustPositionInDirection("backward")
+
 
     right: (event) ->
       if @selectionIsInCursorTarget()
-        @responder?.adjustPositionInDirection("forward")
         event.preventDefault()
+        @responder?.adjustPositionInDirection("forward")
 
     control:
       d: (event) ->
+        event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
         @responder?.deleteForward()
-        event.preventDefault()
 
       h: (event) ->
         @delegate?.inputControllerWillPerformTyping()
         @backspace(event)
 
       o: (event) ->
+        event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString("\n", updatePosition: false)
-        event.preventDefault()
 
     alt:
       backspace: (event) ->
+        event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
         @responder?.deleteWordBackward()
-        event.preventDefault()
 
     shift:
       return: (event) ->
+        event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString("\n")
-        event.preventDefault()
 
       left: (event) ->
         if @selectionIsInCursorTarget()
-          @responder?.expandLocationRangeInDirection("backward")
           event.preventDefault()
+          @responder?.expandLocationRangeInDirection("backward")
 
       right: (event) ->
         if @selectionIsInCursorTarget()
-          @responder?.expandLocationRangeInDirection("forward")
           event.preventDefault()
+          @responder?.expandLocationRangeInDirection("forward")
 
   selectionIsInCursorTarget: ->
     @responder?.selectionIsInCursorTarget()
