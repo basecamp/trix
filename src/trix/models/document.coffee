@@ -113,11 +113,7 @@ class Trix.Document extends Trix.Object
     block = leftBlock.copyWithText(text)
     blocks = @blockList.toArray()
     affectedBlockCount = rightIndex + 1 - leftIndex
-
-    if block.isEmpty()
-      blocks.splice(leftIndex, affectedBlockCount)
-    else
-      blocks.splice(leftIndex, affectedBlockCount, block)
+    blocks.splice(leftIndex, affectedBlockCount, block)
 
     @blockList = new Trix.SplittableList blocks
 
