@@ -15,24 +15,28 @@ class Trix.DocumentView extends Trix.ObjectView
     @element.removeChild(@element.lastChild) while @element.lastChild
 
     unless @document.isEmpty()
+      previousBlock = null
+      previousListTagName = null
+      listElement = null
+
       @document.eachBlock (block, blockIndex) =>
         blockView = @findOrCreateCachedChildView(Trix.BlockView, block, {blockIndex})
         blockElement = blockView.render()
         {listTagName} = blockView.blockConfig
 
         if listTagName
-          if @listElement and listTagName is @previousListTagName
-            @listElement.appendChild(blockElement)
+          if listElement and listTagName is previousListTagName
+            listElement.appendChild(blockElement)
           else
-            @listElement = document.createElement(listTagName)
-            @listElement.appendChild(blockElement)
-            @element.appendChild(@listElement)
+            listElement = document.createElement(listTagName)
+            listElement.appendChild(blockElement)
+            @element.appendChild(listElement)
         else
-          delete @listElement
+          listElement = null
           @element.appendChild(blockElement)
 
-        @previousBlock = block
-        @previousListTagName = listTagName
+        previousBlock = block
+        previousListTagName = listTagName
 
     @didRender()
     @element
