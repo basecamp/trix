@@ -141,7 +141,6 @@ class Trix.InputController
         event.preventDefault()
         @responder?.adjustPositionInDirection("backward")
 
-
     right: (event) ->
       if @selectionIsInCursorTarget()
         event.preventDefault()
