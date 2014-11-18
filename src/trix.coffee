@@ -52,14 +52,15 @@
       tagName: "pre"
       text:
         plaintext: true
-    unorderedList:
+    bullet:
       block: true
       tagName: "li"
       listTagName: "ul"
-    orderedList:
+    number:
       block: true
       tagName: "li"
       listTagName: "ol"
+
 
   config:
     editorCSS: """

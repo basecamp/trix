@@ -40,27 +40,27 @@ test "code with newline", ->
   expectHTML doc, "<pre>12\n3</pre>"
 
 test "unordered list with one item", ->
-  doc = createDocument(["a", {}, unorderedList: true])
+  doc = createDocument(["a", {}, bullet: true])
   expectHTML doc, "<ul><li>a</li></ul>"
 
 test "unordered list with  bold text", ->
-  doc = createDocument(["a", { bold: true }, unorderedList: true])
+  doc = createDocument(["a", { bold: true }, bullet: true])
   expectHTML doc, "<ul><li><strong>a</strong></li></ul>"
 
 test "unordered list with two items", ->
-  doc = createDocument(["a", {}, unorderedList: true], ["b", {}, unorderedList: true])
+  doc = createDocument(["a", {}, bullet: true], ["b", {}, bullet: true])
   expectHTML doc, "<ul><li>a</li><li>b</li></ul>"
 
 test "unordered list surrounded by unformatted blocks", ->
-  doc = createDocument(["a"], ["b", {}, unorderedList: true], ["c"])
+  doc = createDocument(["a"], ["b", {}, bullet: true], ["c"])
   expectHTML doc, "<div>a</div><ul><li>b</li></ul><div>c</div>"
 
 test "ordered list", ->
-  doc = createDocument(["a", {}, orderedList: true])
+  doc = createDocument(["a", {}, number: true])
   expectHTML doc, "<ol><li>a</li></ol>"
 
 test "ordered list and an unordered list", ->
-  doc = createDocument(["a", {}, unorderedList: true], ["b", {}, orderedList: true])
+  doc = createDocument(["a", {}, bullet: true], ["b", {}, number: true])
   expectHTML doc, "<ul><li>a</li></ul><ol><li>b</li></ol>"
 
 
