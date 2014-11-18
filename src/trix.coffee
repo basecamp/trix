@@ -52,6 +52,14 @@
       tagName: "pre"
       text:
         plaintext: true
+    unorderedList:
+      block: true
+      tagName: "li"
+      listTagName: "ul"
+    orderedList:
+      block: true
+      tagName: "li"
+      listTagName: "ol"
 
   config:
     editorCSS: """

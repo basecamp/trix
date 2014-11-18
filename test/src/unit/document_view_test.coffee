@@ -39,6 +39,30 @@ test "code with newline", ->
   doc = createDocument(["12\n3", {}, code: true])
   expectHTML doc, "<pre>12\n3</pre>"
 
+test "unordered list with one item", ->
+  doc = createDocument(["a", {}, unorderedList: true])
+  expectHTML doc, "<ul><li>a</li></ul>"
+
+test "unordered list with  bold text", ->
+  doc = createDocument(["a", { bold: true }, unorderedList: true])
+  expectHTML doc, "<ul><li><strong>a</strong></li></ul>"
+
+test "unordered list with two items", ->
+  doc = createDocument(["a", {}, unorderedList: true], ["b", {}, unorderedList: true])
+  expectHTML doc, "<ul><li>a</li><li>b</li></ul>"
+
+test "unordered list surrounded by unformatted blocks", ->
+  doc = createDocument(["a"], ["b", {}, unorderedList: true], ["c"])
+  expectHTML doc, "<div>a</div><ul><li>b</li></ul><div>c</div>"
+
+test "ordered list", ->
+  doc = createDocument(["a", {}, orderedList: true])
+  expectHTML doc, "<ol><li>a</li></ol>"
+
+test "ordered list and an unordered list", ->
+  doc = createDocument(["a", {}, unorderedList: true], ["b", {}, orderedList: true])
+  expectHTML doc, "<ul><li>a</li></ul><ol><li>b</li></ol>"
+
 
 createDocument = (parts...) ->
   blocks = for part in parts
