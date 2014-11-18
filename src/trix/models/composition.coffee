@@ -67,23 +67,37 @@ class Trix.Composition
     text = Trix.Text.textForStringWithAttributes(string, @getCurrentTextAttributes())
     @insertText(text, options)
 
+  insertBlockBreak: ->
+    @notifyDelegateOfIntentionToSetLocationRange()
+    position = @getPosition()
+    range = @getLocationRange()
+    @document.insertBlockBreakAtLocationRange(range)
+    @setPosition(position + 1)
+
   insertLineBreak: ->
     range = @getLocationRange()
     block = @document.getBlockAtIndex(range.end.index)
 
     if block.hasAttributes()
-      text = block.text.getTextAtRange([0, range.end.offset])
-      switch
-        # Remove block attributes
-        when block.isEmpty()
+      attributes = block.getAttributes()
+      if attributes.bullet or attributes.number
+        if block.isEmpty()
           @removeCurrentAttribute(key) for key of block.getAttributes()
-        # Break out of block after a newline (and remove the newline)
-        when text.endsWithString("\n")
-          @expandSelectionInDirection("backward")
-          @insertDocument()
-        # Stay in the block, add a newline
         else
-          @insertString("\n")
+          @insertBlockBreak()
+      else
+        text = block.text.getTextAtRange([0, range.end.offset])
+        switch
+          # Remove block attributes
+          when block.isEmpty()
+            @removeCurrentAttribute(key) for key of block.getAttributes()
+          # Break out of block after a newline (and remove the newline)
+          when text.endsWithString("\n")
+            @expandSelectionInDirection("backward")
+            @insertDocument()
+          # Stay in the block, add a newline
+          else
+            @insertString("\n")
     else
       @insertString("\n")
 
