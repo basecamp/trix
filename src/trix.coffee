@@ -80,9 +80,6 @@ class Installer
 
     if placeholder = textarea.getAttribute("placeholder")
       element.setAttribute("data-placeholder", placeholder)
-      {handleEvent} = Trix.DOM
-      handleEvent "focus", onElement: element, withCallback: -> element.classList.add("focused")
-      handleEvent "blur",  onElement: element, withCallback: -> element.classList.remove("focused")
 
     element.className = textarea.className
     element.classList.add("trix-editor")

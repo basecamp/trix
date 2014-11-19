@@ -1,5 +1,5 @@
 Trix.CSS = """
-  .trix-editor[contenteditable=true]:empty:not(.focused)::before {
+  .trix-editor[contenteditable=true]:empty:not(:focus)::before {
     content: attr(data-placeholder);
     color: graytext;
   }
