@@ -12,19 +12,22 @@ class Trix.HTMLParser
   constructor: (@html, {@attachments} = {}) ->
     @blocks = []
 
+  parse: ->
+    try
+      @createHiddenContainer()
+      @container.innerHTML = sanitizeHTML(@html)
+      walker = Trix.DOM.walkTree(@container)
+      @processNode(walker.currentNode) while walker.nextNode()
+    finally
+      @removeHiddenContainer()
+
   createHiddenContainer: ->
-    @container = sanitizeHTML(@html)
+    @container = document.createElement("div")
     @container.style["display"] = "none"
     document.body.appendChild(@container)
 
   removeHiddenContainer: ->
     document.body.removeChild(@container)
-
-  parse: ->
-    @createHiddenContainer()
-    walker = Trix.DOM.walkTree(@container)
-    @processNode(walker.currentNode) while walker.nextNode()
-    @removeHiddenContainer()
 
   processNode: (node) ->
     @appendBlockForNode(node)
@@ -138,15 +141,13 @@ class Trix.HTMLParser
     container = document.createElement("div")
     container.innerHTML = html
     walker = Trix.DOM.walkTree(container, onlyNodesOfType: "element")
-
     while walker.nextNode()
       element = walker.currentNode
       for attribute in [element.attributes...]
         do (attribute) ->
           {name} = attribute
           element.removeAttribute(name) unless name in allowedAttributes or name.indexOf("data-trix") is 0
-
-    container
+    container.innerHTML
 
   nodeIsExtraBR = (node) ->
     previousSibling = node.previousElementSibling
