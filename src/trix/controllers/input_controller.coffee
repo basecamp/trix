@@ -46,6 +46,7 @@ class Trix.InputController
     keypress: (event) ->
       return if @virtualKeyboardIsActive
       return if (event.metaKey or event.ctrlKey) and not event.altKey
+      return if keypressEventIsWebInspectorShortcut(event)
 
       if event.which is null
         character = String.fromCharCode event.keyCode
@@ -188,3 +189,6 @@ class Trix.InputController
 
   extensionForFile = (file) ->
     file.type?.match(/\/(\w+)$/)?[1]
+
+keypressEventIsWebInspectorShortcut = (event) ->
+  event.metaKey and event.altKey and not event.shiftKey and event.keyCode is 94
