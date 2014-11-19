@@ -6,7 +6,7 @@ editorTest "moving an image by drag and drop", (expectDocument) ->
     triggerEvent(img, "click")
     after 1, ->
       dragToCoordinates coordinates, ->
-        expectDocument "a#{Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER}b\n"
+        expectDocument "a#{Trix.OBJECT_REPLACEMENT_CHARACTER}b\n"
 
 editorTest "resizing an image", (expectDocument) ->
   figure = document.activeElement.querySelector("figure.attachment.image")
@@ -18,7 +18,7 @@ editorTest "resizing an image", (expectDocument) ->
       attributes = editor.document.getCommonAttributesAtLocationRange(locationRangeOfAttachment)
       equal attributes.width, 15
       ok attributes.height in [15,16], "expected image height: 15 or 16, actual: #{attributes.height}"
-      expectDocument "ab#{Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER}\n"
+      expectDocument "ab#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
 
 editorTest "removing an image", (expectDocument) ->
   figure = document.activeElement.querySelector("figure.attachment.image")

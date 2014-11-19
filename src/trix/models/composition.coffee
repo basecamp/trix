@@ -325,7 +325,7 @@ class Trix.Composition
     range = [position, position + distance].sort()
     locationRange = @document.locationRangeFromRange(range)
     character = @document.getStringAtLocationRange(locationRange).substr(0, 1)
-    character in ["\n", Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER]
+    character in ["\n", Trix.OBJECT_REPLACEMENT_CHARACTER]
 
   getDocument: ->
     @document.copy()

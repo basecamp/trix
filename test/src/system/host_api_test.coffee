@@ -17,7 +17,7 @@ editorTest "accepting files", (expectDocument) ->
       true
 
   editor.composition.insertFile(createFile(name: "hello.txt"))
-  expectDocument("#{Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER}\n")
+  expectDocument("#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n")
 
 editorTest "removing an attachment", (expectDocument) ->
   editor.delegate = createHostDelegate()

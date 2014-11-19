@@ -44,7 +44,7 @@ editorTest "paste html", (expectDocument) ->
 
 editorTest "paste file", (expectDocument) ->
   pasteContent "Files", (createFile()), ->
-    expectDocument "#{Trix.AttachmentPiece.OBJECT_REPLACEMENT_CHARACTER}\n"
+    expectDocument "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
 
 editorTest "content mutation", (expectDocument) ->
   typeCharacters "abc", ->

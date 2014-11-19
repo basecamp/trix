@@ -1,11 +1,10 @@
 #= require_self
 #= require trix/core
+#= require_tree ./trix/config
 #= require trix/controllers/editor_controller
 #= require trix/controllers/degraded_editor_controller
 
 @Trix =
-  ZERO_WIDTH_SPACE: "\uFEFF"
-
   isSupported: (config = {}) ->
     trixSupport = new BrowserSupport().getTrixSupport()
 
@@ -22,118 +21,6 @@
       installer = new Installer config
       installer.run()
       installer.editor
-
-  textAttributes:
-    bold:
-      tagName: "strong"
-      inheritable: true
-      parser: (element) ->
-        style = window.getComputedStyle(element)
-        style["fontWeight"] is "bold" or style["fontWeight"] >= 700
-    italic:
-      tagName: "em"
-      inheritable: true
-      parser: (element) ->
-        style = window.getComputedStyle(element)
-        style["fontStyle"] is "italic"
-    href:
-      tagName: "a"
-      parser: (element) ->
-        if link = Trix.DOM.findClosestElementFromNode(element, matchingSelector: "a")
-          link.getAttribute("href")
-    underline:
-      style: { "textDecoration": "underline" }
-      inheritable: true
-    frozen:
-      style: { "backgroundColor": "highlight" }
-
-  blockAttributes:
-    quote:
-      tagName: "blockquote"
-    code:
-      tagName: "pre"
-      text:
-        plaintext: true
-    bullet:
-      tagName: "li"
-      listTagName: "ul"
-      test: (element) ->
-        Trix.DOM.tagName(element.parentNode) is @listTagName
-    number:
-      tagName: "li"
-      listTagName: "ol"
-      test: (element) ->
-        Trix.DOM.tagName(element.parentNode) is @listTagName
-
-  config:
-    editorCSS: """
-      .trix-editor[contenteditable=true]:empty:not(.focused)::before {
-        content: attr(data-placeholder);
-        color: graytext;
-      }
-
-      .trix-editor a[contenteditable=false] {
-        cursor: text;
-      }
-
-      .trix-editor .image-editor,
-      .trix-editor .pending-attachment {
-        position: relative;
-        display: inline-block;
-      }
-
-      .trix-editor .image-editor img {
-        outline: 1px dashed #333;
-      }
-
-      .trix-editor .image-editor .resize-handle {
-        position: absolute;
-        width: 8px;
-        height: 8px;
-        border: 1px solid #333;
-        background: white;
-      }
-
-      .trix-editor .image-editor .resize-handle.se {
-        bottom: -4px;
-        right: -4px;
-        cursor: nwse-resize;
-      }
-
-      .trix-editor figure.attachment a.remove {
-        position: absolute;
-        top: -9px;
-        right: -9px;
-        z-index: 2;
-        display: inline-block;
-        padding: 0;
-        margin: 0;
-        width: 18px;
-        height: 18px;
-        line-height: 18px;
-        font-size: 18px;
-        border-radius: 18px;
-        vertical-align: middle;
-        text-align: center;
-        text-decoration: none;
-        background-color: white;
-        color: rgba(0,0,0,0.8);
-      }
-
-      .trix-editor figure.attachment a.remove:hover {
-        color: red;
-      }
-
-      .trix-editor figure.attachment::selection, figure.attachment *::selection {
-        background-color: rgba(0, 0, 0, 0);
-      }
-
-      .trix-editor figure.attachment::-moz-selection, figure.attachment *::-moz-selection {
-        background-color: rgba(0, 0, 0, 0);
-      }
-    """
-
-
 
 class BrowserSupport
   required:
@@ -174,11 +61,11 @@ class Installer
   styleSheetId = "trix-styles"
 
   createStyleSheet: ->
-    if !document.getElementById(styleSheetId) and css = Trix.config.editorCSS
+    if !document.getElementById(styleSheetId) and Trix.CSS
       element = document.createElement("style")
       element.setAttribute("type", "text/css")
       element.setAttribute("id", styleSheetId)
-      element.appendChild(document.createTextNode(css))
+      element.appendChild(document.createTextNode(Trix.CSS))
       document.querySelector("head").appendChild(element)
 
   documentElementAttributes =
