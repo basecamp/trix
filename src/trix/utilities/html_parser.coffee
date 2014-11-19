@@ -130,15 +130,14 @@ class Trix.HTMLParser
     attributes
 
   sanitizeHTML = (html) ->
-    container = document.createElement("div")
-    container.innerHTML = html
-    walker = walkTree(container, onlyNodesOfType: "element")
+    {body} = new DOMParser().parseFromString(html, "text/html")
+    walker = walkTree(body, onlyNodesOfType: "element")
     while walker.nextNode()
       element = walker.currentNode
       for {name} in [element.attributes...]
         unless name in allowedAttributes or name.indexOf("data-trix") is 0
           element.removeAttribute(name)
-    container.innerHTML
+    body.innerHTML
 
   isExtraBR = (element) ->
     previousSibling = element.previousElementSibling
