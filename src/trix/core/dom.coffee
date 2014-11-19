@@ -72,3 +72,6 @@ Trix.DOM = dom =
       else NodeFilter.SHOW_ALL
 
     document.createTreeWalker(tree, whatToShow, usingFilter ? null, expandEntityReferences is true)
+
+  tagName: (element) ->
+    element?.tagName?.toLowerCase()

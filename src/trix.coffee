@@ -27,16 +27,18 @@
     bold:
       tagName: "strong"
       inheritable: true
-      parser: ({style}) ->
+      parser: (element) ->
+        style = window.getComputedStyle(element)
         style["fontWeight"] is "bold" or style["fontWeight"] >= 700
     italic:
       tagName: "em"
       inheritable: true
-      parser: ({style}) ->
+      parser: (element) ->
+        style = window.getComputedStyle(element)
         style["fontStyle"] is "italic"
     href:
       tagName: "a"
-      parser: ({element}) ->
+      parser: (element) ->
         if link = Trix.DOM.findClosestElementFromNode(element, matchingSelector: "a")
           link.getAttribute("href")
     underline:
@@ -56,11 +58,14 @@
       block: true
       tagName: "li"
       listTagName: "ul"
+      test: (element) ->
+        Trix.DOM.tagName(element.parentNode) is @listTagName
     number:
       block: true
       tagName: "li"
       listTagName: "ol"
-
+      test: (element) ->
+        Trix.DOM.tagName(element.parentNode) is @listTagName
 
   config:
     editorCSS: """

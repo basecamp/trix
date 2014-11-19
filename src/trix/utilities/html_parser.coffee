@@ -1,5 +1,5 @@
 {decapitalize} = Trix.Helpers
-{findClosestElementFromNode} = Trix.DOM
+{findClosestElementFromNode, walkTree, tagName} = Trix.DOM
 
 class Trix.HTMLParser
   allowedAttributes = "style href src width height class".split(" ")
@@ -16,7 +16,7 @@ class Trix.HTMLParser
     try
       @createHiddenContainer()
       @container.innerHTML = sanitizeHTML(@html)
-      walker = Trix.DOM.walkTree(@container)
+      walker = walkTree(@container)
       @processNode(walker.currentNode) while walker.nextNode()
     finally
       @removeHiddenContainer()
@@ -30,59 +30,45 @@ class Trix.HTMLParser
     document.body.removeChild(@container)
 
   processNode: (node) ->
-    @appendBlockForNode(node)
     switch node.nodeType
       when Node.TEXT_NODE
         @processTextNode(node)
       when Node.ELEMENT_NODE
-        @processElementNode(node)
+        @appendBlockForElement(node)
+        @processElement(node)
 
-  appendBlockForNode: (node) ->
-    unless @currentBlockElement?.contains(node)
-      if node.nodeType is Node.ELEMENT_NODE
-        switch node.tagName.toLowerCase()
-          when "blockquote"
-            @appendBlockForAttributes(quote: true)
-            @currentBlockElement = node
-          when "pre"
-            @appendBlockForAttributes(code: true)
-            @currentBlockElement = node
-          when "li"
-            if findClosestElementFromNode(node, matchingSelector: "ol")
-              @appendBlockForAttributes(number: true)
-              @currentBlockElement = node
-            else if findClosestElementFromNode(node, matchingSelector: "ul")
-              @appendBlockForAttributes(bullet: true)
-              @currentBlockElement = node
-          when "div"
-            @appendBlockForAttributes()
-            @currentBlockElement = node
+  appendBlockForElement: (element) ->
+    unless @currentBlockElement?.contains(element)
+      attributes = getBlockAttributes(element)
+      if Object.keys(attributes).length or tagName(element) is "div"
+        @appendBlockForAttributes(attributes)
+        @currentBlockElement = element
 
   processTextNode: (node) ->
     unless node.textContent is Trix.ZERO_WIDTH_SPACE
-      @appendStringWithAttributes(node.textContent, getAttributes(node.parentNode))
+      @appendStringWithAttributes(node.textContent, getTextAttributes(node.parentNode))
 
-  processElementNode: (node) ->
-    switch node.tagName.toLowerCase()
+  processElement: (element) ->
+    switch tagName(element)
       when "br"
-        unless nodeIsExtraBR(node)
-          @appendStringWithAttributes("\n", getAttributes(node))
+        unless isExtraBR(element)
+          @appendStringWithAttributes("\n", getTextAttributes(element))
       when "figure"
-        if node.classList.contains("attachment")
-          attributes = getMetadata(node)
+        if element.classList.contains("attachment")
+          attributes = getAttachmentAttributes(element)
           if Object.keys(attributes).length
-            textAttributes = getAttributes(node)
-            if image = node.querySelector("img")
+            textAttributes = getTextAttributes(node)
+            if image = element.querySelector("img")
               textAttributes.width = image.width if image.width?
               textAttributes.height = image.height if image.height?
             @appendAttachmentForAttributes(attributes, textAttributes)
             # We have everything we need so avoid processing inner nodes
-            node.innerHTML = ""
+            element.innerHTML = ""
       when "img"
-        attributes = url: node.src, contentType: "image"
-        textAttributes = getAttributes(node)
-        textAttributes.width = node.width if node.width?
-        textAttributes.height = node.height if node.height?
+        attributes = url: element.src, contentType: "image"
+        textAttributes = getTextAttributes(element)
+        textAttributes.width = element.width if element.width?
+        textAttributes.height = element.height if element.height?
         @appendAttachmentForAttributes(attributes, textAttributes)
 
   appendBlockForAttributes: (attributes) ->
@@ -116,21 +102,27 @@ class Trix.HTMLParser
   getDocument: ->
     new Trix.Document @blocks
 
-  getAttributes = (element) ->
+  getTextAttributes = (element) ->
     attributes = {}
-    style = window.getComputedStyle(element)
-
-    for attribute, config of Trix.attributes
-      unless config.block
-        if config.parser
-          if value = config.parser({element, style})
-            attributes[attribute] = value
-        else if config.tagName
-          if element.tagName?.toLowerCase() is config.tagName
-            attributes[attribute] = true
+    for attribute, config of Trix.attributes when not config.block
+      if config.parser
+        if value = config.parser(element)
+          attributes[attribute] = value
+      else if config.tagName
+        if tagName(element) is config.tagName
+          attributes[attribute] = true
     attributes
 
-  getMetadata = (element) ->
+  getBlockAttributes = (element) ->
+    attributes = {}
+    for attribute, config of Trix.attributes when config.block
+      if tagName(element) is config.tagName
+        if config.test?(element) or not config.test
+          attributes[attribute] = true
+          break
+    attributes
+
+  getAttachmentAttributes = (element) ->
     attributes = {}
     for key, value of element.dataset
       attributeName = decapitalize(key.replace(/^trix/, ''))
@@ -140,7 +132,7 @@ class Trix.HTMLParser
   sanitizeHTML = (html) ->
     container = document.createElement("div")
     container.innerHTML = html
-    walker = Trix.DOM.walkTree(container, onlyNodesOfType: "element")
+    walker = walkTree(container, onlyNodesOfType: "element")
     while walker.nextNode()
       element = walker.currentNode
       for attribute in [element.attributes...]
@@ -149,9 +141,9 @@ class Trix.HTMLParser
           element.removeAttribute(name) unless name in allowedAttributes or name.indexOf("data-trix") is 0
     container.innerHTML
 
-  nodeIsExtraBR = (node) ->
-    previousSibling = node.previousElementSibling
-    node.tagName.toLowerCase() is "br" and
-      (not previousSibling? or node.tagName is previousSibling.tagName) and
-      node is node.parentNode.lastChild and
-      window.getComputedStyle(node.parentNode).display is "block"
+  isExtraBR = (element) ->
+    previousSibling = element.previousElementSibling
+    tagName(element) is "br" and
+      (not previousSibling? or tagName(element) is tagName(previousSibling)) and
+      element is element.parentNode.lastChild and
+      window.getComputedStyle(element.parentNode).display is "block"
