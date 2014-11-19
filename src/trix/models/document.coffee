@@ -35,7 +35,10 @@ class Trix.Document extends Trix.Object
       @blockList = new Trix.SplittableList [new Trix.Block]
 
   isEmpty: ->
-    @blockList.length is 1 and @getBlockAtIndex(0).isEmpty()
+    @blockList.length is 1 and (
+      block = @getBlockAtIndex(0)
+      block.isEmpty() and not block.hasAttributes()
+    )
 
   copy: ->
     new @constructor @blockList.toArray()

@@ -53,3 +53,10 @@ editorTest "breaking out of the middle of a block", (done) ->
           expectBlockAttributes([3, 4], {})
           expectBlockAttributes([4, 6], quote: true)
           done()
+
+editorTest "deleting the only non-block-break character in a block", (done) ->
+  typeCharacters "ab", ->
+    clickToolbarButton attribute: "quote", ->
+      typeCharacters "\b\b", ->
+        expectBlockAttributes([0, 1], quote: true)
+        done()

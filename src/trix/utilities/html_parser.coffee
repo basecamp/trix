@@ -149,7 +149,8 @@ class Trix.HTMLParser
     container
 
   nodeIsExtraBR = (node) ->
+    previousSibling = node.previousElementSibling
     node.tagName.toLowerCase() is "br" and
-      node.tagName is node.previousElementSibling?.tagName and
+      (not previousSibling? or node.tagName is previousSibling.tagName) and
       node is node.parentNode.lastChild and
       window.getComputedStyle(node.parentNode).display is "block"

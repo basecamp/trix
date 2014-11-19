@@ -71,6 +71,10 @@ createDocument = (parts...) ->
     document: createDocument(["a", {}, bullet: true], ["b", {}, number: true])
     html: "<ul><li>a</li></ul><ol><li>b</li></ol>"
 
+  "empty block with attributes":
+    document: createDocument(["", {}, quote: true])
+    html: "<blockquote><br></blockquote>"
+
 @eachFixture = (callback) ->
   for name, details of @fixtures
     callback(name, details)
