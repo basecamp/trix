@@ -1,4 +1,5 @@
 {decapitalize} = Trix.Helpers
+{findClosestElementFromNode} = Trix.DOM
 
 class Trix.HTMLParser
   allowedAttributes = "style href src width height class".split(" ")
@@ -36,25 +37,27 @@ class Trix.HTMLParser
   appendBlockForNode: (node) ->
     unless @currentBlockElement?.contains(node)
       if node.nodeType is Node.ELEMENT_NODE
-        if window.getComputedStyle(node).display is "block"
-          switch node.tagName.toLowerCase()
-            when "blockquote"
-              @appendBlockForAttributes(quote: true)
+        switch node.tagName.toLowerCase()
+          when "blockquote"
+            @appendBlockForAttributes(quote: true)
+            @currentBlockElement = node
+          when "pre"
+            @appendBlockForAttributes(code: true)
+            @currentBlockElement = node
+          when "li"
+            if findClosestElementFromNode(node, matchingSelector: "ol")
+              @appendBlockForAttributes(number: true)
               @currentBlockElement = node
-            when "pre"
-              @appendBlockForAttributes(code: true)
+            else if findClosestElementFromNode(node, matchingSelector: "ul")
+              @appendBlockForAttributes(bullet: true)
               @currentBlockElement = node
-            when "div"
-              @appendBlockForAttributes()
-              @currentBlockElement = node
-
-    unless @blocks.length
-      @appendBlockForAttributes({})
+          when "div"
+            @appendBlockForAttributes()
+            @currentBlockElement = node
 
   processTextNode: (node) ->
     unless node.textContent is Trix.ZERO_WIDTH_SPACE
-      string = node.textContent.replace(/\s/, " ")
-      @appendStringWithAttributes(string, getAttributes(node.parentNode))
+      @appendStringWithAttributes(node.textContent, getAttributes(node.parentNode))
 
   processElementNode: (node) ->
     switch node.tagName.toLowerCase()
@@ -86,7 +89,7 @@ class Trix.HTMLParser
 
   appendStringWithAttributes: (string, attributes) ->
     text = Trix.Text.textForStringWithAttributes(string, attributes)
-    @appendText(@text.appendText(text))
+    @appendText(text)
 
   appendAttachmentForAttributes: (attributes, textAttributes) ->
     attachment = if @attachments and attributes.id
@@ -96,9 +99,13 @@ class Trix.HTMLParser
       new Trix.Attachment attributes
 
     text = Trix.Text.textForAttachmentWithAttributes(attachment, textAttributes)
-    @appendText(@text.appendText(text))
+    @appendText(text)
 
-  appendText: (@text) ->
+  appendText: (text) ->
+    if @blocks.length is 0
+      @appendBlockForAttributes({})
+
+    @text = @text.appendText(text)
     index = @blocks.length - 1
     block = @blocks[index]
     @blocks[index] = block.copyWithText(@text)
