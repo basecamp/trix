@@ -48,7 +48,10 @@ getToolbarButton = ({attribute, action}) ->
   deepEqual block.getAttributes(), attributes
 
 @expectHTML = (trixDocument, html) ->
+  equal getHTML(trixDocument), html
+
+@getHTML = (trixDocument) ->
   element = document.createElement("div")
   view = new Trix.DocumentView trixDocument, {element}
   view.render()
-  equal element.innerHTML, html
+  element.innerHTML

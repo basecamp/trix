@@ -135,10 +135,9 @@ class Trix.HTMLParser
     walker = walkTree(container, onlyNodesOfType: "element")
     while walker.nextNode()
       element = walker.currentNode
-      for attribute in [element.attributes...]
-        do (attribute) ->
-          {name} = attribute
-          element.removeAttribute(name) unless name in allowedAttributes or name.indexOf("data-trix") is 0
+      for {name} in [element.attributes...]
+        unless name in allowedAttributes or name.indexOf("data-trix") is 0
+          element.removeAttribute(name)
     container.innerHTML
 
   isExtraBR = (element) ->
