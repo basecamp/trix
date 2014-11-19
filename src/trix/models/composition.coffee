@@ -180,8 +180,8 @@ class Trix.Composition
         true
 
   setCurrentAttribute: (attributeName, value) ->
-    if Trix.attributes[attributeName]?.block
-      @removeCurrentAttribute(key) for key of @currentAttributes when Trix.attributes[key]?.block
+    if Trix.blockAttributes[attributeName]
+      @removeCurrentAttribute(key) for key of @currentAttributes when Trix.blockAttributes[key]
       @setBlockAttribute(attributeName, value)
     else
       @setTextAttribute(attributeName, value)
@@ -206,7 +206,7 @@ class Trix.Composition
     @setLocationRange(start, end)
 
   removeCurrentAttribute: (attributeName) ->
-    if Trix.attributes[attributeName]?.block
+    if Trix.blockAttributes[attributeName]
       @removeBlockAttribute(attributeName)
     else
       @removeTextAttribute(attributeName)
@@ -234,7 +234,7 @@ class Trix.Composition
 
   getCurrentTextAttributes: ->
     attributes = {}
-    attributes[key] = value for key, value of @currentAttributes when not Trix.attributes[key]?.block
+    attributes[key] = value for key, value of @currentAttributes when Trix.textAttributes[key]
     attributes
 
   notifyDelegateOfCurrentAttributesChange: ->

@@ -47,7 +47,7 @@ class Trix.TextView extends Trix.ObjectView
     nodes
 
   createElementForCurrentPiece: ->
-    for key, value of @currentAttributes when config = Trix.attributes[key]
+    for key, value of @currentAttributes when config = Trix.textAttributes[key]
       if config.tagName
         configElement = document.createElement(config.tagName)
         configElement.setAttribute(key, value) unless typeof value is "boolean"

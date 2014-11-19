@@ -23,7 +23,7 @@ class Trix.BlockView extends Trix.ObjectView
     [@element]
 
   getBlockConfig: ->
-    return config for key of @block.getAttributes() when (config = Trix.attributes[key])?.block
+    return config for key of @block.getAttributes() when config = Trix.blockAttributes[key]
     {}
 
   # A single <br> at the end of a block element has no visual representation

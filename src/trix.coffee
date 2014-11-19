@@ -23,7 +23,7 @@
       installer.run()
       installer.editor
 
-  attributes:
+  textAttributes:
     bold:
       tagName: "strong"
       inheritable: true
@@ -46,22 +46,20 @@
       inheritable: true
     frozen:
       style: { "backgroundColor": "highlight" }
+
+  blockAttributes:
     quote:
-      block: true
       tagName: "blockquote"
     code:
-      block: true
       tagName: "pre"
       text:
         plaintext: true
     bullet:
-      block: true
       tagName: "li"
       listTagName: "ul"
       test: (element) ->
         Trix.DOM.tagName(element.parentNode) is @listTagName
     number:
-      block: true
       tagName: "li"
       listTagName: "ol"
       test: (element) ->

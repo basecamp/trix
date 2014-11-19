@@ -149,7 +149,7 @@ class Trix.Document extends Trix.Object
   addAttributeAtLocationRange: edit "addAttributeAtLocationRange", (attribute, value, locationRange) ->
     @eachBlockAtLocationRange locationRange, (block, range, index) =>
       @blockList = @blockList.editObjectAtIndex index, ->
-        if Trix.attributes[attribute]?.block
+        if Trix.blockAttributes[attribute]
           block.addAttribute(attribute, value)
         else
           if range[0] isnt range[1]
@@ -164,7 +164,7 @@ class Trix.Document extends Trix.Object
 
   removeAttributeAtLocationRange: edit "removeAttributeAtLocationRange", (attribute, locationRange) ->
     @eachBlockAtLocationRange locationRange, (block, range, index) =>
-      if Trix.attributes[attribute]?.block
+      if Trix.blockAttributes[attribute]
         @blockList = @blockList.editObjectAtIndex index, ->
           block.removeAttribute(attribute)
       else if range[0] isnt range[1]
@@ -288,7 +288,7 @@ class Trix.Document extends Trix.Object
     commonAttributes = block.getAttributes()
     attributes = block.text.getAttributesAtPosition(offset)
     attributesLeft = block.text.getAttributesAtPosition(offset - 1)
-    inheritableAttributes = (key for key, value of Trix.attributes when value.inheritable)
+    inheritableAttributes = (key for key, value of Trix.textAttributes when value.inheritable)
 
     for key, value of attributesLeft
       if value is attributes[key] or key in inheritableAttributes

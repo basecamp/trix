@@ -104,7 +104,7 @@ class Trix.HTMLParser
 
   getTextAttributes = (element) ->
     attributes = {}
-    for attribute, config of Trix.attributes when not config.block
+    for attribute, config of Trix.textAttributes
       if config.parser
         if value = config.parser(element)
           attributes[attribute] = value
@@ -115,7 +115,7 @@ class Trix.HTMLParser
 
   getBlockAttributes = (element) ->
     attributes = {}
-    for attribute, config of Trix.attributes when config.block
+    for attribute, config of Trix.blockAttributes
       if tagName(element) is config.tagName
         if config.test?(element) or not config.test
           attributes[attribute] = true
