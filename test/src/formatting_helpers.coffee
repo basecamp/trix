@@ -3,7 +3,7 @@ getToolbarButton = ({attribute, action}) ->
 
 @clickToolbarButton = (selector, callback) ->
   button = getToolbarButton(selector)
-  triggerEvent(button, "click")
+  triggerEvent(button, "mousedown")
   defer(callback)
 
 @clickToolbarDialogButton = ({method}, callback) ->

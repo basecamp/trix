@@ -10,8 +10,8 @@ class Trix.ToolbarController
   constructor: (@element) ->
     @attributes = {}
 
-    handleEvent "click", onElement: @element, matchingSelector: actionButtonSelector, withCallback: @didClickActionButton
-    handleEvent "click", onElement: @element, matchingSelector: attributeButtonSelector, withCallback: @didClickAttributeButton
+    handleEvent "mousedown", onElement: @element, matchingSelector: actionButtonSelector, withCallback: @didClickActionButton
+    handleEvent "mousedown", onElement: @element, matchingSelector: attributeButtonSelector, withCallback: @didClickAttributeButton
     handleEvent "click", onElement: @element, matchingSelector: dialogButtonSelector, withCallback: @didClickDialogButton
 
   # Event handlers
