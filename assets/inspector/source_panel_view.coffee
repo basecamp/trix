@@ -1,11 +1,9 @@
 #= require ./inspector_panel_view
 
-{handleEvent} = Trix.DOM
-
 class Trix.SourcePanelView extends Trix.InspectorPanelView
   constructor: ->
     super
-    handleEvent "click", onElement: @element, matchingSelector: "a.document", withCallback: @didClickDocumentLink
+    @handleEvent "click", onElement: @element, matchingSelector: "a.document", withCallback: @didClickDocumentLink
 
   didClickDocumentLink: (event, target) =>
     event.preventDefault()

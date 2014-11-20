@@ -1,12 +1,12 @@
 #= require ./inspector_panel_view
 
-{handleEvent, findClosestElementFromNode} = Trix.DOM
+{findClosestElementFromNode} = Trix.DOM
 
 class Trix.StructurePanelView extends Trix.InspectorPanelView
   constructor: ->
     super
     @document = @editorController.document
-    handleEvent "mousedown", onElement: @element, matchingSelector: ".expandable .title", withCallback: @didClickExpandableTitle
+    @handleEvent "mousedown", onElement: @element, matchingSelector: ".expandable .title", withCallback: @didClickExpandableTitle
 
   didClickExpandableTitle: (event) ->
     if expandable = findClosestElementFromNode(this, matchingSelector: ".expandable")

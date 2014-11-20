@@ -1,12 +1,11 @@
 #= require ./inspector_panel_view
 
 {defer} = Trix.Helpers
-{handleEvent} = Trix.DOM
 
 class Trix.LoggersPanelView extends Trix.InspectorPanelView
   constructor: ->
     super
-    handleEvent "click", onElement: @element, withCallback: @didClickPanel
+    @handleEvent "click", onElement: @element, withCallback: @didClickPanel
 
   show: ->
     super
