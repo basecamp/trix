@@ -60,13 +60,4 @@ class Trix.TextView extends Trix.ObjectView
     if styles
       element ?= document.createElement("span")
       element.style[key] = value for key, value of styles
-
     element
-
-  createCursorTarget: ->
-    text = document.createTextNode(Trix.ZERO_WIDTH_SPACE)
-    span = document.createElement("span")
-    span.appendChild(text)
-    span.dataset.trixSerialize = false
-    span.dataset.trixCursorTarget = true
-    span

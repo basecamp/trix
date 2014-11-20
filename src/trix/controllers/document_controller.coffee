@@ -2,7 +2,7 @@
 #= require trix/controllers/image_attachment_editor_controller
 #= require trix/views/document_view
 
-{handleEvent} = Trix.DOM
+{handleEvent, tagName} = Trix.DOM
 editOperationLog = Trix.Logger.get("editOperations")
 
 class Trix.DocumentController
@@ -24,6 +24,7 @@ class Trix.DocumentController
     editOperationLog.time?("DocumentController#render")
     @delegate?.documentControllerWillRender?()
     @documentView.render()
+    @addCursorTargetsAroundAttachments()
     @reinstallAttachmentEditor()
     @delegate?.documentControllerDidRender?()
     editOperationLog.timeEnd?("DocumentController#render")
@@ -84,6 +85,18 @@ class Trix.DocumentController
     @delegate?.documentControllerDidRequestRemovalOfAttachment?(attachment)
 
   # Private
+
+  cursorTarget = """
+    <span data-trix-serialize="false" data-trix-cursor-target="true">#{Trix.ZERO_WIDTH_SPACE}</span>
+  """
+
+  addCursorTargetsAroundAttachments: ->
+    for element in @element.querySelectorAll("figure.attachment")
+      if tagName(element.parentNode) is "a"
+        element = element.parentNode
+        element.setAttribute("contenteditable", false)
+      element.insertAdjacentHTML("beforebegin", cursorTarget)
+      element.insertAdjacentHTML("afterend", cursorTarget)
 
   findAttachmentForElement: (element) ->
     @document.getAttachmentById(Number(element.dataset.trixId))
