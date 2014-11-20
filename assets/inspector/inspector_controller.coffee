@@ -1,6 +1,6 @@
 #= require ./selection_view
 #= require ./inspector_panel_view
-#= require ./text_panel_view
+#= require ./structure_panel_view
 #= require ./undo_panel_view
 #= require ./render_count_view
 #= require ./source_panel_view

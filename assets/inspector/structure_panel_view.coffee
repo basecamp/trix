@@ -2,7 +2,7 @@
 
 {handleEvent, findClosestElementFromNode} = Trix.DOM
 
-class Trix.TextPanelView extends Trix.InspectorPanelView
+class Trix.StructurePanelView extends Trix.InspectorPanelView
   constructor: ->
     super
     @document = @editorController.document
