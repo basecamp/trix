@@ -10,6 +10,12 @@ Trix.Helpers =
       @memos ?= {}
       @memos[memo] ?= fn.apply(this, arguments)
 
+  trace: (name, fn) -> ->
+    result = fn.apply(this, arguments)
+    args = (formatValue(arg) for arg in arguments)
+    Trix.Logger.log("methodTraces", name, "(", args..., ") =", result)
+    result
+
   capitalize: (string) ->
     string.charAt(0).toUpperCase() + string.substring(1)
 
@@ -24,3 +30,6 @@ Trix.Helpers =
     for name, value of methods when name not in reservedNames and typeof value is "function"
       do (name, value) =>
         destination[name] = -> value.apply(@[toProperty], arguments) if @[toProperty]?
+
+formatValue = (value) ->
+  value?.inspect?() ? (try JSON.stringify(value)) ? value
