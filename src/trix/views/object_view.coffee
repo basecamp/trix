@@ -64,7 +64,7 @@ class Trix.ObjectView
     @getViewCache()?[object.toKey()] = view
 
   garbageCollectCachedViews: ->
-    if cache = @getViewCache
+    if cache = @getViewCache()
       views = @getAllChildViews().concat(this)
       objectKeys = (view.object.toKey() for view in views)
       delete cache[key] for key of cache when key not in objectKeys
