@@ -14,8 +14,8 @@ module Trix
       "Android" => 1
     }
 
-    MAX_VM_SECONDS = 60 * 3
-    MAX_TOTAL_SECONDS = 60 * 10
+    MAX_VM_SECONDS = 60 * 4
+    MAX_TOTAL_SECONDS = 60 * 20
 
     S3_BUCKET = "trix-tests"
     TRIX_TEST_FILE = "test.html"
