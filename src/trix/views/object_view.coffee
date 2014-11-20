@@ -3,14 +3,8 @@ class Trix.ObjectView
     @childViews = []
     @rootView = this
 
-  render: ->
+  getNodes: ->
     @nodes ?= @createNodes()
-    if @nodes.length is 1
-      @nodes[0]
-    else
-      element = document.createDocumentFragment()
-      element.appendChild(node) for node in @nodes
-      element
 
   invalidate: ->
     delete @nodes

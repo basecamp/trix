@@ -21,7 +21,7 @@ class Trix.DocumentView extends Trix.ObjectView
 
       @document.eachBlock (block, blockIndex) =>
         blockView = @findOrCreateCachedChildView(Trix.BlockView, block, {blockIndex})
-        blockElement = blockView.render()
+        blockElement = blockView.getNodes()[0]
         {listTagName} = blockView.blockConfig
 
         if listTagName

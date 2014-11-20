@@ -1,8 +1,6 @@
 #= require trix/views/object_view
 #= require trix/views/piece_view
 
-{DOM} = Trix
-
 class Trix.TextView extends Trix.ObjectView
   constructor: ->
     super
@@ -19,31 +17,22 @@ class Trix.TextView extends Trix.ObjectView
       return if piece.hasAttribute("blockBreak")
       [@previousPiece, @previousAttributes] = [@currentPiece, @currentAttributes]
       [@currentPiece, @currentAttributes] = [piece, piece.getAttributes()]
+      pieceNodes = @findOrCreateCachedChildView(Trix.PieceView, piece, {@textConfig}).getNodes()
 
       if @previousAttributes?.href? and @previousAttributes.href is @currentAttributes.href
         parentHref = @previousAttributes.href
         delete @currentAttributes.href
 
-      beforeElement = @createCursorTarget() if piece.attachment
-
-      pieceView = @findOrCreateCachedChildView(Trix.PieceView, piece, {@textConfig})
       if element = @createElementForCurrentPiece()
-        findDeepestFirstChildOfElement(element).appendChild(pieceView.render())
-      else
-        element = pieceView.render()
-
-      if piece.attachment
-        element.setAttribute("contenteditable", "false") if element.tagName?.toLowerCase() is "a"
-        afterElement = @createCursorTarget()
+        innerElement = findDeepestFirstChildOfElement(element)
+        innerElement.appendChild(node) for node in pieceNodes
+        pieceNodes = [element]
 
       if parentHref
-        nodes.splice(nodes.length - 2, beforeElement) if beforeElement?
-        nodes[nodes.length - 1].appendChild(element)
-        nodes.push(afterElement) if afterElement?
+        linkElement = nodes[nodes.length - 1]
+        linkElement.appendChild(node) for node in pieceNodes
       else
-        nodes.push(beforeElement) if beforeElement?
-        nodes.push(element)
-        nodes.push(afterElement) if afterElement?
+        nodes.push(node) for node in pieceNodes
     nodes
 
   createElementForCurrentPiece: ->

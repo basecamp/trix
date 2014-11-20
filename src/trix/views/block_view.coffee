@@ -17,7 +17,7 @@ class Trix.BlockView extends Trix.ObjectView
       @element.appendChild(br)
     else
       textView = @findOrCreateCachedChildView(Trix.TextView, @block.text, {@textConfig})
-      @element.appendChild(textView.render())
+      @element.appendChild(node) for node in textView.getNodes()
       @appendExtraNewlineElement()
 
     [@element]
