@@ -102,7 +102,7 @@ figure.attachment progress[value]::-webkit-progress-value
 .trix-toolbar a.button
   border: 1px solid #aaa
   border-radius: 3px
-  padding: 3px 10px
+  padding: 4px 10px
   color: #333
   text-decoration: none
   font-size: 12px
@@ -125,6 +125,32 @@ figure.attachment progress[value]::-webkit-progress-value
 .trix-toolbar a.button[disabled]
   color: #ccc
   cursor: default
+
+.trix-toolbar a.button.list
+  position: relative
+  padding-left: 12px
+
+.trix-toolbar a.button.list::before
+  word-wrap: break-word
+  display: inline-block
+  width: 5px
+  text-rendering: optimizeLegibility
+  font-family: helvetica
+  position: absolute
+
+.trix-toolbar a.button.list.number::before
+  content: '123'
+  font-size: 7px
+  line-height: 6px
+  top: 2px
+  left: 4px
+
+.trix-toolbar a.button.list.bullet::before
+  content: '•••'
+  font-size: 9px
+  line-height: 5px
+  top: 4px
+  left: 5px
 
 .trix-toolbar > span
   margin-right: 15px
