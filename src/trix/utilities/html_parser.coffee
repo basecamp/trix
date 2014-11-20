@@ -130,7 +130,8 @@ class Trix.HTMLParser
     attributes
 
   sanitizeHTML = (html) ->
-    {body} = new DOMParser().parseFromString(html, "text/html")
+    {body} = document.implementation.createHTMLDocument("")
+    body.innerHTML = html
     walker = walkTree(body, onlyNodesOfType: "element")
     while walker.nextNode()
       element = walker.currentNode
