@@ -5,10 +5,15 @@ eachFixture (name, {html}) ->
     expectHTML Trix.HTMLParser.parse(html).getDocument(), html
 
 asyncTest "sanitizes unsafe html", ->
-  window.safeZone = true
-  imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
-  html = """<img onload="window.safeZone = false;" src="#{imageData}">"""
-  Trix.HTMLParser.parse(html)
+  window.unsanitized = []
+  Trix.HTMLParser.parse """
+    <img onload="window.unsanitized.push('img.onload');" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=">
+    <img onerror="window.unsanitized.push('img.onerror');" src="data:image/gif;base64,TOTALLYBOGUS">
+    <script>
+      window.unsanitized.push('script tag');
+    </script>
+  """
   after 20, ->
-    ok window.safeZone, "onload handler was not sanitized"
+    deepEqual window.unsanitized, []
+    delete window.unsanitized
     QUnit.start()
