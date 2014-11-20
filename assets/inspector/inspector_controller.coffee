@@ -4,10 +4,10 @@
 #= require ./undo_panel_view
 #= require ./render_count_view
 #= require ./source_panel_view
+#= require ./loggers_panel_view
 
 {defer} = Trix.Helpers
 {handleEvent, findClosestElementFromNode} = Trix.DOM
-editOperationLog = Trix.Logger.get("editOperations")
 
 class Trix.InspectorController
   constructor: (@element, @editorController) ->
@@ -39,8 +39,6 @@ class Trix.InspectorController
     @activePanelView = @createViewForPanel(name)
     @activePanelView.show()
 
-    editOperationLog.enable()
-
   deactivateActivePanel: ->
     return unless @activePanelView
     @activePanelView.hide()
@@ -48,8 +46,6 @@ class Trix.InspectorController
 
     for input in @element.querySelectorAll("input[name=inspector-panel]")
       input.checked = false
-
-    editOperationLog.disable()
 
   createViewForPanel: (name) ->
     element = @findPanelElement(name)
