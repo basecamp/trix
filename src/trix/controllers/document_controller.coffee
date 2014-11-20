@@ -38,6 +38,15 @@ class Trix.DocumentController
   getBlockElements: ->
     @documentView.getBlockElements()
 
+  isViewCachingEnabled: ->
+    @documentView.isViewCachingEnabled()
+
+  enableViewCaching: ->
+    @documentView.enableViewCaching()
+
+  disableViewCaching: ->
+    @documentView.disableViewCaching()
+
   # Attachment editor management
 
   installAttachmentEditorForAttachment: (attachment) ->

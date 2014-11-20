@@ -1,7 +1,7 @@
 class Trix.ObjectView
   constructor: (@object, @options = {}) ->
     @childViews = []
-    @cache = views: {}
+    @rootView = this
 
   render: ->
     @nodes ?= @createNodes()
@@ -20,17 +20,17 @@ class Trix.ObjectView
     @findViewForObject(object)?.invalidate()
 
   findOrCreateCachedChildView: (viewClass, object, options) ->
-    if view = @cache.views[object.toKey()]
+    if view = @getCachedViewForObject(object)
       @childViews.push(view) unless view in @childViews
     else
       view = @createChildView(arguments...)
-      @cache.views[object.toKey()] = view
+      @cacheViewForObject(view, object)
     view
 
   createChildView: (viewClass, object, options) ->
     view = new viewClass object, options
     view.parentView = this
-    view.cache = @cache
+    view.rootView = @rootView
     @childViews.push(view)
     view
 
@@ -41,13 +41,36 @@ class Trix.ObjectView
       views = views.concat(childView.getAllChildViews())
     views
 
-  garbageCollectCachedViews: ->
-    views = @getAllChildViews().concat(this)
-    objectKeys = (view.object.toKey() for view in views)
-    delete @cache.views[key] for key of @cache.views when key not in objectKeys
-
   findViewForObject: (object) ->
     return view for view in @getAllChildViews() when view.object is object
 
   findNodesForObject: (object) ->
     @findViewForObject(object)?.nodes
+
+  getViewCache: ->
+    if @rootView is this
+      if @isViewCachingEnabled()
+        @viewCache ?= {}
+    else
+      @rootView.getViewCache()
+
+  isViewCachingEnabled: ->
+    @shouldCacheViews isnt false
+
+  enableViewCaching: ->
+    delete @shouldCacheViews
+
+  disableViewCaching: ->
+    @shouldCacheViews = false
+
+  getCachedViewForObject: (object) ->
+    @getViewCache()?[object.toKey()]
+
+  cacheViewForObject: (view, object) ->
+    @getViewCache()?[object.toKey()] = view
+
+  garbageCollectCachedViews: ->
+    if cache = @getViewCache
+      views = @getAllChildViews().concat(this)
+      objectKeys = (view.object.toKey() for view in views)
+      delete cache[key] for key of cache when key not in objectKeys
