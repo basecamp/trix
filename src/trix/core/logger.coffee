@@ -12,8 +12,6 @@ class Trix.Logger
   @log: (name, args...) ->
     @get(name).log(args...)
 
-  forwardMethods ofObject: console, onConstructor: this, toProperty: "console"
-
   constructor: (@name, @console, enabled) ->
     @disable() unless enabled
 
@@ -37,3 +35,5 @@ class Trix.Logger
   groupCollapsed: ->
 
   trace: ->
+
+  forwardMethods ofObject: console, onConstructor: this, toProperty: "console"
