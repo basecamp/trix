@@ -3,6 +3,7 @@
 class Trix.ToolbarController
   actionButtonSelector = ".button[data-action]"
   attributeButtonSelector = ".button[data-attribute]"
+  toolbarButtonSelector = [actionButtonSelector, attributeButtonSelector].join(", ")
   dialogSelector = ".dialog[data-attribute]"
   activeDialogSelector = "#{dialogSelector}.active"
   dialogButtonSelector = "#{dialogSelector} input[data-method]"
@@ -12,6 +13,7 @@ class Trix.ToolbarController
 
     handleEvent "mousedown", onElement: @element, matchingSelector: actionButtonSelector, withCallback: @didClickActionButton
     handleEvent "mousedown", onElement: @element, matchingSelector: attributeButtonSelector, withCallback: @didClickAttributeButton
+    handleEvent "click", onElement: @element, matchingSelector: toolbarButtonSelector, preventDefault: true
     handleEvent "click", onElement: @element, matchingSelector: dialogButtonSelector, withCallback: @didClickDialogButton
 
   # Event handlers
