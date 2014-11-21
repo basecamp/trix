@@ -57,7 +57,7 @@ class Trix.HTMLParser
         if element.classList.contains("attachment")
           attributes = getAttachmentAttributes(element)
           if Object.keys(attributes).length
-            textAttributes = getTextAttributes(node)
+            textAttributes = getTextAttributes(element)
             if image = element.querySelector("img")
               textAttributes.width = image.width if image.width?
               textAttributes.height = image.height if image.height?
