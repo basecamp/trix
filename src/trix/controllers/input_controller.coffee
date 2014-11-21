@@ -15,6 +15,12 @@ class Trix.InputController
     "72": "h"
     "79": "o"
 
+  @keyModifiers:
+    control: "ctrlKey"
+    alt: "altKey"
+    shift: "shiftKey"
+    command: "metaKey"
+
   constructor: (@element) ->
     @deviceObserver = new Trix.DeviceObserver @element
     @deviceObserver.delegate = this
@@ -34,14 +40,17 @@ class Trix.InputController
 
   events:
     keydown: (event) ->
-      if keyName = @constructor.keyNames[event.keyCode]
-        context = switch
-          when event.ctrlKey then @keys.control
-          when event.altKey then @keys.alt
-          when event.shiftKey then @keys.shift
-          else @keys
+      modifiers = (name for name, property of @constructor.keyModifiers when event[property])
 
+      if keyName = @constructor.keyNames[event.keyCode]
+        context = if modifiers.length is 1 then @keys[modifiers[0]] else @keys
         context[keyName]?.call(this, event)
+
+      if modifiers.length
+        if character = String.fromCharCode(event.keyCode).toLowerCase()
+          keys = modifiers.concat(character)
+          if @delegate?.inputControllerDidReceiveKeyboardCommand(keys)
+            event.preventDefault()
 
     keypress: (event) ->
       return if @virtualKeyboardIsActive

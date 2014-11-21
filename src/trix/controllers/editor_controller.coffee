@@ -142,6 +142,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @recordTypingUndoEntry()
     @composition.insertString(composedString)
 
+  inputControllerDidReceiveKeyboardCommand: (keys) ->
+    @toolbarController.applyKeyboardCommand(keys)
+
   # Selection manager delegate
 
   locationRangeDidChange: (locationRange) ->
