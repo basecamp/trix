@@ -46,9 +46,12 @@ class Trix.InputController
         context = if modifiers.length is 1 then @keys[modifiers[0]] else @keys
         context[keyName]?.call(this, event)
 
-      if modifiers.length
+      keyboardCommandTriggers = ["control", "command"]
+
+      if modifiers.some((m) -> m in keyboardCommandTriggers)
         if character = String.fromCharCode(event.keyCode).toLowerCase()
-          keys = modifiers.concat(character)
+          keys = modifiers.filter((m) -> m not in keyboardCommandTriggers)
+          keys.push(character)
           if @delegate?.inputControllerDidReceiveKeyboardCommand(keys)
             event.preventDefault()
 
