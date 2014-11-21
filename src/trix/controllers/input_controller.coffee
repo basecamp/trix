@@ -25,10 +25,21 @@ class Trix.InputController
   # Device observer delegate
 
   deviceDidActivateVirtualKeyboard: ->
-    @virtualKeyboardIsActive = true
+    @enableMobileInputMode()
 
   deviceDidDeactivateVirtualKeyboard: ->
-    delete @virtualKeyboardIsActive
+    @disableMobileInputMode()
+
+  # Mobile input mode
+
+  enableMobileInputMode: ->
+    @mobileInputMode = true
+
+  disableMobileInputMode: ->
+    delete @mobileInputMode
+
+  isMobileInputModeEnabled: ->
+    @mobileInputMode is true
 
   # Input handlers
 
@@ -49,7 +60,7 @@ class Trix.InputController
             event.preventDefault()
 
     keypress: (event) ->
-      return if @virtualKeyboardIsActive
+      return if @isMobileInputModeEnabled()
       return if (event.metaKey or event.ctrlKey) and not event.altKey
       return if keypressEventIsWebInspectorShortcut(event)
 

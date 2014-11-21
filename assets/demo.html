@@ -45,7 +45,7 @@
         <input type="radio" name="inspector-panel" id="inspect-attachments" value="attachments"><label for="inspect-attachments">Attachments</label>
         <input type="radio" name="inspector-panel" id="inspect-undo" value="undo"><label for="inspect-undo">Undo/Redo</label>
         <input type="radio" name="inspector-panel" id="inspect-source" value="source"><label for="inspect-source">Source</label>
-        <input type="radio" name="inspector-panel" id="inspect-rendering" value="rendering"><label for="inspect-rendering">Rendering</label>
+        <input type="radio" name="inspector-panel" id="inspect-debugging" value="debugging"><label for="inspect-debugging">Debugging</label>
         <input type="radio" name="inspector-panel" id="inspect-loggers" value="loggers"><label for="inspect-loggers">Loggers</label>
       </div>
       <div class="trix-inspector-panel" data-inspector-panel-name="structure" data-inspector-panel-view="StructurePanelView">
@@ -59,9 +59,13 @@
         <p>Load document:</p>
         <ul></ul>
       </div>
-      <div class="trix-inspector-panel" data-inspector-panel-name="rendering" data-inspector-panel-view="RenderingPanelView">
+      <div class="trix-inspector-panel" data-inspector-panel-name="debugging" data-inspector-panel-view="DebuggingPanelView">
         <p><label>
-          <input type="checkbox">
+          <input type="checkbox" name="mobileInputMode">
+          Use mobile input mode
+        </label></p>
+        <p><label>
+          <input type="checkbox" name="viewCaching">
           Cache views between renders
         </label></p>
         <p>
