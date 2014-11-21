@@ -75,6 +75,57 @@ createDocument = (parts...) ->
     document: createDocument(["", {}, quote: true])
     html: "<blockquote><br></blockquote>"
 
+  "image attachment": do ->
+    imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
+    attrs = url: imageData, filename: "example.png", filesize: 123, contentType: "image/png"
+    attachment = new Trix.Attachment attrs
+    text = Trix.Text.textForAttachmentWithAttributes(attachment, width: 10, height: 20)
+
+    figureAttrs =
+      "class": "attachment image"
+      "contenteditable": false
+      "data-trix-id": attachment.id
+      "data-trix-url": attrs.url
+      "data-trix-filename": attrs.filename
+      "data-trix-filesize": attrs.filesize
+      "data-trix-content-type": attrs.contentType
+
+    imageAttrs =
+      "src": attrs.url
+      "width": 10
+      "height": 20
+
+    image = document.createElement("img")
+    image.setAttribute(key, val) for key, val of imageAttrs
+    figure = document.createElement("figure")
+    figure.setAttribute(key, val) for key, val of figureAttrs
+    figure.appendChild(image)
+
+    html: "<div>#{figure.outerHTML}</div>"
+    document: new Trix.Document [new Trix.Block text]
+
+  "file attachment": do ->
+    attrs = url: "http://example.com/example.pdf", filename: "example.pdf", filesize: 345, contentType: "application/pdf"
+    attachment = new Trix.Attachment attrs
+    text = Trix.Text.textForAttachmentWithAttributes(attachment)
+
+    figureAttrs =
+      "class": "attachment file pdf"
+      "contenteditable": false
+      "data-trix-id": attachment.id
+      "data-trix-url": attrs.url
+      "data-trix-filename": attrs.filename
+      "data-trix-filesize": attrs.filesize
+      "data-trix-content-type": attrs.contentType
+
+    figure = document.createElement("figure")
+    figure.setAttribute(key, val) for key, val of figureAttrs
+    caption = """<figcaption>#{attrs.filename}<span class="size">#{attrs.filesize}</span></figcaption>"""
+    figure.innerHTML = caption
+
+    html: """<div><a href="#{attrs.url}">#{figure.outerHTML}</a></div>"""
+    document: new Trix.Document [new Trix.Block text]
+
 @eachFixture = (callback) ->
   for name, details of @fixtures
     callback(name, details)
