@@ -6,6 +6,13 @@ getToolbarButton = ({attribute, action}) ->
   triggerEvent(button, "mousedown")
   defer(callback)
 
+@typeToolbarKeyCommand = (selector, callback) ->
+  button = getToolbarButton(selector)
+  if {key} = button.dataset
+    keyCode = key.toUpperCase().charCodeAt(0)
+    triggerEvent(getEditorElement(), "keydown", {keyCode, charCode: 0, metaKey: true})
+  defer(callback)
+
 @clickToolbarDialogButton = ({method}, callback) ->
   button = document.querySelector("#toolbar .dialog input[type=button][data-method='#{method}']")
   triggerEvent(button, "click")

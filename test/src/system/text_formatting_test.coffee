@@ -105,3 +105,8 @@ editorTest "editing formatted text", (done) ->
                   moveCursor "right", ->
                     ok not isToolbarButtonActive(attribute: "bold")
                     done()
+
+editorTest "key command activates toolbar button", (done) ->
+  typeToolbarKeyCommand attribute: "bold", ->
+    ok isToolbarButtonActive(attribute: "bold")
+    done()
