@@ -16,6 +16,13 @@ Trix.Helpers =
     Trix.Logger.log("methodTraces", name, "(", args..., ") =", result)
     result
 
+  benchmark: (name, fn) -> ->
+    logger = Trix.Logger.get("benchmarks")
+    logger.time(name)
+    result = fn.apply(this, arguments)
+    logger.timeEnd(name)
+    result
+
   capitalize: (string) ->
     string.charAt(0).toUpperCase() + string.substring(1)
 

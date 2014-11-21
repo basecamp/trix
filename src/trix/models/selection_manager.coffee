@@ -2,7 +2,7 @@
 #= require trix/observers/selection_change_observer
 
 {DOM} = Trix
-{memoize, defer} = Trix.Helpers
+{memoize, defer, benchmark} = Trix.Helpers
 
 class Trix.SelectionManager
   constructor: (@element) ->
@@ -90,7 +90,7 @@ class Trix.SelectionManager
       @currentLocationRange = locationRange
       @delegate?.locationRangeDidChange?(@currentLocationRange)
 
-  setDOMRange: (locationRange) ->
+  setDOMRange: benchmark "SelectionManager#setDOMRange", (locationRange) ->
     rangeStart = @findContainerAndOffsetForLocation(locationRange.start)
     rangeEnd =
       if locationRange.isCollapsed()
@@ -102,7 +102,7 @@ class Trix.SelectionManager
     range.setStart(rangeStart...)
     range.setEnd(rangeEnd...)
 
-    applyRange = ->
+    applyRange = benchmark "  #setDOMRange -> applyRange", ->
       selection = window.getSelection()
       selection.removeAllRanges()
       selection.addRange(range)

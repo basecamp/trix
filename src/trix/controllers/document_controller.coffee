@@ -3,7 +3,7 @@
 #= require trix/views/document_view
 
 {handleEvent, tagName} = Trix.DOM
-editOperationLog = Trix.Logger.get("editOperations")
+{benchmark} = Trix.Helpers
 
 class Trix.DocumentController
   constructor: (@element, @document) ->
@@ -20,14 +20,12 @@ class Trix.DocumentController
     attachment = @findAttachmentForElement(target)
     @delegate?.documentControllerDidSelectAttachment?(attachment)
 
-  render: ->
-    editOperationLog.time?("DocumentController#render")
+  render: benchmark "DocumentController#render", ->
     @delegate?.documentControllerWillRender?()
     @documentView.render()
     @addCursorTargetsAroundAttachments()
     @reinstallAttachmentEditor()
     @delegate?.documentControllerDidRender?()
-    editOperationLog.timeEnd?("DocumentController#render")
 
   rerenderViewForObject: (object) ->
     @documentView.invalidateViewForObject(object)

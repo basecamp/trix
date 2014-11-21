@@ -36,4 +36,8 @@ class Trix.Logger
 
   trace: ->
 
+  time: ->
+
+  timeEnd: ->
+
   forwardMethods ofObject: console, onConstructor: this, toProperty: "console"
