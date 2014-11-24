@@ -5,6 +5,7 @@ class Trix.ObjectView
 
   getNodes: ->
     @nodes ?= @createNodes()
+    node.cloneNode(true) for node in @nodes
 
   invalidate: ->
     delete @nodes
