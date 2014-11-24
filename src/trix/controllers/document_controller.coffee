@@ -97,4 +97,4 @@ class Trix.DocumentController
     @document.getAttachmentById(Number(element.dataset.trixId))
 
   findElementForAttachment: (attachment) ->
-    @element.querySelector("figure.attachment[data-trix-id='#{attachment.id}']")
+    @documentView.findElementForObject(attachment)

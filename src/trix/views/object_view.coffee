@@ -35,6 +35,13 @@ class Trix.ObjectView
       views = views.concat(childView.getAllChildViews())
     views
 
+  findElement: ->
+    @findElementForObject(@object)
+
+  findElementForObject: (object) ->
+    if id = object?.id
+      @rootView.element.querySelector("[data-trix-id='#{id}']")
+
   findViewForObject: (object) ->
     return view for view in @getAllChildViews() when view.object is object
 
