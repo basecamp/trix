@@ -81,7 +81,8 @@ class Trix.SelectionManager
     @updateCurrentLocationRange()
 
   getBlockElements: ->
-    @delegate?.selectionManagerDidRequestBlockElements?()
+    selector = (config.tagName for key, config of Trix.blockAttributes).join(",")
+    @element.querySelectorAll(selector)
 
   updateCurrentLocationRange: (locationRange) ->
     locationRange ?= @createLocationRangeFromDOMRange(getDOMRange())

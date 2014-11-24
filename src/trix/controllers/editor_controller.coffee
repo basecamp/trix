@@ -153,9 +153,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
       @composition.stopEditingAttachment()
     @delegate?.didChangeSelection?()
 
-  selectionManagerDidRequestBlockElements: ->
-    @documentController.getBlockElements()
-
   # Mutation observer delegate
 
   elementDidMutate: (mutations) ->

@@ -46,6 +46,3 @@ class Trix.DocumentView extends Trix.ObjectView
 
   focus: ->
     @element.focus()
-
-  getBlockElements: ->
-    view.element for view in @childViews

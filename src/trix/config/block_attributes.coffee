@@ -1,4 +1,6 @@
 Trix.blockAttributes =
+  default:
+    tagName: "div"
   quote:
     tagName: "blockquote"
   code:

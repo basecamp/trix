@@ -34,9 +34,6 @@ class Trix.DocumentController
   focus: ->
     @documentView.focus()
 
-  getBlockElements: ->
-    @documentView.getBlockElements()
-
   isViewCachingEnabled: ->
     @documentView.isViewCachingEnabled()
 
