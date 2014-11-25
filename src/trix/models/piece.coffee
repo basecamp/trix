@@ -75,6 +75,14 @@ class Trix.Piece extends Trix.Object
     type: @constructor.type
     attributes: @attributes.inspect()
 
+  # Grouping
+
+  canBeGrouped: ->
+    @hasAttribute("href")
+
+  canBeGroupedWith: (piece) ->
+    @canBeGrouped() and @getAttribute("href") is piece.getAttribute("href")
+
   # Splittable
 
   getLength: ->

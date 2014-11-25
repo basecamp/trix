@@ -1,3 +1,6 @@
+#= require_self
+#= require trix/views/object_group_view
+
 class Trix.ObjectView
   constructor: (@object, @options = {}) ->
     @childViews = []
@@ -6,6 +9,31 @@ class Trix.ObjectView
   getNodes: ->
     @nodes ?= @createNodes()
     node.cloneNode(true) for node in @nodes
+
+  getElement: ->
+    nodes = @getNodes()
+    nodes[0] if nodes.length is 1
+
+  groupObjects: (objects) ->
+    results = []
+    group = null
+    for object in objects
+      if group
+        if object.canBeGroupedWith?(group[0])
+          group.push(object)
+          continue
+        else
+          results.push(new Trix.ObjectGroup group)
+          group = null
+
+      if object.canBeGrouped?()
+        group = [object]
+      else
+        results.push(object)
+
+    if group
+      results.push(new Trix.ObjectGroup group)
+    results
 
   invalidate: ->
     delete @nodes
@@ -22,7 +50,11 @@ class Trix.ObjectView
       @cacheViewForObject(view, object)
     view
 
-  createChildView: (viewClass, object, options) ->
+  createChildView: (viewClass, object, options = {}) ->
+    if object instanceof Trix.ObjectGroup
+      options.viewClass = viewClass
+      viewClass = Trix.ObjectGroupView
+
     view = new viewClass object, options
     view.parentView = this
     view.rootView = @rootView

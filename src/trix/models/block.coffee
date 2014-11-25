@@ -31,6 +31,10 @@ class Trix.Block extends Trix.Object
   hasAttributes: ->
     @attributes.getKeys().length > 0
 
+  getConfig: ->
+    return config for key of @getAttributes() when config = Trix.blockAttributes[key]
+    Trix.blockAttributes.default
+
   findLineBreakInDirectionFromPosition: (direction, position) ->
     string = @toString()
     result = switch direction
@@ -86,6 +90,14 @@ class Trix.Block extends Trix.Object
       @text.getTextAtRange([0, @getBlockBreakPosition()])
     else
       @text.copy()
+
+  # Grouping
+
+  canBeGrouped: ->
+    @getConfig().groupTagName
+
+  canBeGroupedWith: (blockView) ->
+    @canBeGrouped() and @getConfig().groupTagName is blockView.getConfig().groupTagName
 
   # Block breaks
 

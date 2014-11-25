@@ -9,11 +9,11 @@ Trix.blockAttributes =
       plaintext: true
   bullet:
     tagName: "li"
-    listTagName: "ul"
+    groupTagName: "ul"
     test: (element) ->
-      Trix.DOM.tagName(element.parentNode) is @listTagName
+      Trix.DOM.tagName(element.parentNode) is @groupTagName
   number:
     tagName: "li"
-    listTagName: "ol"
+    groupTagName: "ol"
     test: (element) ->
-      Trix.DOM.tagName(element.parentNode) is @listTagName
+      Trix.DOM.tagName(element.parentNode) is @groupTagName

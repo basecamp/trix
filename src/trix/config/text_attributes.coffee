@@ -12,7 +12,7 @@ Trix.textAttributes =
       style = window.getComputedStyle(element)
       style["fontStyle"] is "italic"
   href:
-    tagName: "a"
+    groupTagName: "a"
     parser: (element) ->
       if link = Trix.DOM.findClosestElementFromNode(element, matchingSelector: "a")
         link.getAttribute("href")

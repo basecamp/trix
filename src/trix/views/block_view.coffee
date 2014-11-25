@@ -5,12 +5,11 @@ class Trix.BlockView extends Trix.ObjectView
   constructor: ->
     super
     @block = @object
-    {@blockIndex} = @options
-    @blockConfig = @getBlockConfig()
-    @textConfig = @blockConfig.text ? {}
+    @config = @block.getConfig()
+    @textConfig = @config.text ? {}
 
   createNodes: ->
-    @element = document.createElement(@blockConfig.tagName)
+    @element = document.createElement(@config.tagName)
 
     if @block.isEmpty()
       br = document.createElement("br")
@@ -22,9 +21,8 @@ class Trix.BlockView extends Trix.ObjectView
 
     [@element]
 
-  getBlockConfig: ->
-    return config for key of @block.getAttributes() when config = Trix.blockAttributes[key]
-    Trix.blockAttributes.default
+  createGroupElement: ->
+    document.createElement(@config.groupTagName)
 
   # A single <br> at the end of a block element has no visual representation
   # so add an extra one.
