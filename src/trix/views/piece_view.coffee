@@ -15,27 +15,26 @@ class Trix.PieceView extends Trix.ObjectView
 
   createNodes: ->
     nodes = if @attachment
-      [@createAttachmentElement()]
+      @createAttachmentNodes()
     else
       @createStringNodes()
 
     if element = @createElement()
-      findDeepestFirstChildOfElement(element).appendChild(node) for node in nodes
+      innerElement = findInnerElement(element)
+      innerElement.appendChild(node) for node in nodes
       nodes = [element]
     nodes
 
-  createAttachmentElement: ->
-    if @attachment.isImage()
-      @createChildView(Trix.ImageAttachmentView, @piece.attachment, {@piece}).getElement()
-    else
-      @createChildView(Trix.FileAttachmentView, @piece.attachment, {@piece}).getElement()
+  createAttachmentNodes: ->
+    viewType = if @attachment.isImage() then "Image" else "File"
+    view = @createChildView(Trix["#{viewType}AttachmentView"], @piece.attachment, {@piece})
+    view.getNodes()
 
   createStringNodes: ->
-    nodes = []
     if @textConfig.plaintext
-      node = document.createTextNode(@string)
-      nodes.push(node)
+      [document.createTextNode(@string)]
     else
+      nodes = []
       for substring, index in @string.split("\n")
         if index > 0
           element = document.createElement("br")
@@ -44,30 +43,22 @@ class Trix.PieceView extends Trix.ObjectView
         if length = substring.length
           node = document.createTextNode(preserveSpaces(substring))
           nodes.push(node)
-    nodes
-
-  preserveSpaces = (string) ->
-    string
-      # Replace two spaces with a space and a non-breaking space
-      .replace(/\s{2}/g, " \u00a0")
-      # Replace leading space with a non-breaking space
-      .replace(/^\s{1}/, "\u00a0")
-      # Replace trailing space with a non-breaking space
-      .replace(/\s{1}$/, "\u00a0")
+      nodes
 
   createElement: ->
-    for key, value of @attributes when config = Trix.textAttributes[key]
+    for key of @attributes when config = Trix.textAttributes[key]
       if config.tagName
-        configElement = document.createElement(config.tagName)
+        pendingElement = document.createElement(config.tagName)
 
-        if element
-          findDeepestFirstChildOfElement(element).appendChild(configElement)
+        if innerElement
+          innerElement.appendChild(pendingElement)
+          innerElement = pendingElement
         else
-          element = configElement
+          element = innerElement = pendingElement
 
       if config.style
         if styles
-          styles[key] = val for key, value of config.style
+          styles[key] = value for key, value of config.style
         else
           styles = config.style
 
@@ -83,6 +74,15 @@ class Trix.PieceView extends Trix.ObjectView
         element.setAttribute(key, value)
         return element
 
-  findDeepestFirstChildOfElement = (element) ->
+  preserveSpaces = (string) ->
+    string
+      # Replace two spaces with a space and a non-breaking space
+      .replace(/\s{2}/g, " \u00a0")
+      # Replace leading space with a non-breaking space
+      .replace(/^\s{1}/, "\u00a0")
+      # Replace trailing space with a non-breaking space
+      .replace(/\s{1}$/, "\u00a0")
+
+  findInnerElement = (element) ->
     element = element.firstChild while element.firstChild
     element
