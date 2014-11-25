@@ -46,21 +46,21 @@ class Trix.Composition
   # Responder protocol
 
   insertText: (text, {updatePosition} = updatePosition: true) ->
-    @notifyDelegateOfIntentionToSetLocationRange() if updatePosition
+    if updatePosition
+      @notifyDelegateOfIntentionToSetLocationRange()
+      position = @getPosition()
 
-    range = @getLocationRange()
-    @document.insertTextAtLocationRange(text, range)
+    locationRange = @getLocationRange()
+    @document.insertTextAtLocationRange(text, locationRange)
 
     if updatePosition
-      {index, offset} = range.start
-      offset += text.getLength()
-      @setLocationRange([index, offset])
+      @setPosition(position + text.getLength())
 
   insertDocument: (document = Trix.Document.fromString("")) ->
     @notifyDelegateOfIntentionToSetLocationRange()
     position = @getPosition()
-    range = @getLocationRange()
-    @document.insertDocumentAtLocationRange(document, range)
+    locationRange = @getLocationRange()
+    @document.insertDocumentAtLocationRange(document, locationRange)
     @setPosition(position + document.getLength())
 
   insertString: (string, options) ->
@@ -70,13 +70,13 @@ class Trix.Composition
   insertBlockBreak: ->
     @notifyDelegateOfIntentionToSetLocationRange()
     position = @getPosition()
-    range = @getLocationRange()
-    @document.insertBlockBreakAtLocationRange(range)
+    locationRange = @getLocationRange()
+    @document.insertBlockBreakAtLocationRange(locationRange)
     @setPosition(position + 1)
 
   insertLineBreak: ->
-    range = @getLocationRange()
-    block = @document.getBlockAtIndex(range.end.index)
+    locationRange = @getLocationRange()
+    block = @document.getBlockAtIndex(locationRange.end.index)
 
     if block.hasAttributes()
       attributes = block.getAttributes()
@@ -86,7 +86,7 @@ class Trix.Composition
         else
           @insertBlockBreak()
       else
-        text = block.text.getTextAtRange([0, range.end.offset])
+        text = block.text.getTextAtRange([0, locationRange.end.offset])
         switch
           # Remove block attributes
           when block.isEmpty()
@@ -123,17 +123,17 @@ class Trix.Composition
 
   deleteInDirectionWithGranularity: (direction, granularity) ->
     @notifyDelegateOfIntentionToSetLocationRange()
-    range = @getLocationRange()
+    locationRange = @getLocationRange()
 
-    if range.isCollapsed()
+    if locationRange.isCollapsed()
       if granularity is "character"
         @expandSelectionInDirection(direction)
       else
         @selectionManager.expandSelectionInDirectionWithGranularity(direction, granularity)
-      range = @getLocationRange()
+      locationRange = @getLocationRange()
 
-    @document.removeTextAtLocationRange(range)
-    @setLocationRange(range.collapse())
+    @document.removeTextAtLocationRange(locationRange)
+    @setLocationRange(locationRange.collapse())
 
   deleteBackward: ->
     @deleteInDirectionWithGranularity("backward", "character")
@@ -157,8 +157,8 @@ class Trix.Composition
       @setLocationRange(locationRange.collapse())
 
   removeBlockAttributes: ->
-    range = @getLocationRange()
-    block = @document.getBlockAtIndex(range.end.index)
+    locationRange = @getLocationRange()
+    block = @document.getBlockAtIndex(locationRange.end.index)
     @removeCurrentAttribute(key) for key of block.getAttributes()
 
   # Current attributes
@@ -221,8 +221,8 @@ class Trix.Composition
 
   updateCurrentAttributes: ->
     @currentAttributes =
-      if range = @getLocationRange()
-        @document.getCommonAttributesAtLocationRange(range)
+      if locationRange = @getLocationRange()
+        @document.getCommonAttributesAtLocationRange(locationRange)
       else
         {}
 
@@ -287,19 +287,19 @@ class Trix.Composition
       @expandLocationRangeAroundCommonAttribute("href")
 
   expandLocationRangeAroundCommonAttribute: (attributeName) ->
-    range = @getLocationRange()
+    locationRange = @getLocationRange()
 
-    if range.isInSingleIndex()
-      {index} = range
+    if locationRange.isInSingleIndex()
+      {index} = locationRange
       text = @document.getTextAtIndex(index)
-      textRange = [range.start.offset, range.end.offset]
+      textRange = [locationRange.start.offset, locationRange.end.offset]
       [left, right] = text.getExpandedRangeForAttributeAtRange(attributeName, textRange)
 
       @setLocationRange([index, left], [index, right])
 
   selectionContainsAttachmentWithAttribute: (attributeName) ->
-    if range = @getLocationRange()
-      for piece in @document.getDocumentAtLocationRange(range).getAttachmentPieces()
+    if locationRange = @getLocationRange()
+      for piece in @document.getDocumentAtLocationRange(locationRange).getAttachmentPieces()
         return true if piece.hasAttribute(attributeName)
       false
 

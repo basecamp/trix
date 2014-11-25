@@ -66,9 +66,9 @@ class Trix.SelectionManager
   preserveSelection: (block) ->
     point = @getSelectionEndPoints()[0]
     block()
-    range = @getLocationRangeAtPoint(point)
-    @setDOMRange(range)
-    range
+    locationRange = @getLocationRangeAtPoint(point)
+    @setDOMRange(locationRange)
+    locationRange
 
   clearSelection: ->
     getDOMSelection()?.removeAllRanges()

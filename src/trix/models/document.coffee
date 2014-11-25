@@ -246,20 +246,20 @@ class Trix.Document extends Trix.Object
   eachBlock: (callback) ->
     @blockList.eachObject(callback)
 
-  eachBlockAtLocationRange: (range, callback) ->
-    if range.isInSingleIndex()
-      block = @getBlockAtIndex(range.index)
-      textRange = [range.start.offset, range.end.offset]
-      callback(block, textRange, range.index)
+  eachBlockAtLocationRange: (locationRange, callback) ->
+    if locationRange.isInSingleIndex()
+      block = @getBlockAtIndex(locationRange.index)
+      textRange = [locationRange.start.offset, locationRange.end.offset]
+      callback(block, textRange, locationRange.index)
     else
-      range.eachIndex (index) =>
+      locationRange.eachIndex (index) =>
         block = @getBlockAtIndex(index)
 
         textRange = switch index
-          when range.start.index
-            [range.start.offset, block.text.getLength()]
-          when range.end.index
-            [0, range.end.offset]
+          when locationRange.start.index
+            [locationRange.start.offset, block.text.getLength()]
+          when locationRange.end.index
+            [0, locationRange.end.offset]
           else
             [0, block.text.getLength()]
 
