@@ -2,7 +2,7 @@
 #= require trix/observers/selection_change_observer
 
 {DOM} = Trix
-{memoize, defer, benchmark} = Trix.Helpers
+{defer, benchmark} = Trix.Helpers
 
 class Trix.SelectionManager
   constructor: (@element) ->
@@ -249,15 +249,3 @@ class Trix.SelectionManager
   getClientRects = ->
     rects = getDOMRange()?.getClientRects()
     rects if rects?.length
-
-  # ClientRect position properties should be relative to the viewport,
-  # but in some browsers (like mobile Safari), they're relative to the body.
-  getRectTop = ->
-    getDOMRange().getClientRects()[0].top
-
-  clientRectIsRelativeToBody = memoize ->
-    originalTop = getRectTop()
-    window.scrollBy(0, 1)
-    result = originalTop is getRectTop()
-    window.scrollBy(0, -1)
-    result
