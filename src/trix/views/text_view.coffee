@@ -1,4 +1,3 @@
-#= require trix/views/object_view
 #= require trix/views/piece_view
 
 class Trix.TextView extends Trix.ObjectView

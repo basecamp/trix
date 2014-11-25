@@ -1,5 +1,3 @@
-#= require trix/views/object_view
-
 {capitalize} = Trix.Helpers
 
 class Trix.AttachmentView extends Trix.ObjectView

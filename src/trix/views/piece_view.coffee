@@ -1,4 +1,3 @@
-#= require trix/views/object_view
 #= require trix/views/file_attachment_view
 #= require trix/views/image_attachment_view
 

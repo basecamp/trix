@@ -1,6 +1,3 @@
-#= require_self
-#= require trix/views/object_group_view
-
 class Trix.ObjectView
   constructor: (@object, @options = {}) ->
     @childViews = []
