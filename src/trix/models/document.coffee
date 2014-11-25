@@ -43,6 +43,18 @@ class Trix.Document extends Trix.Object
   copy: ->
     new @constructor @blockList.toArray()
 
+  copyUsingObjectsFromDocument: (sourceDocument) ->
+    objectMap = new Trix.ObjectMap sourceDocument.getObjects()
+    @copyUsingObjectMap(objectMap)
+
+  copyUsingObjectMap: (objectMap) ->
+    blocks = for block in @getBlocks()
+      if mappedBlock = objectMap.find(block)
+        mappedBlock
+      else
+        block.copyUsingObjectMap(objectMap)
+    new @constructor blocks
+
   edit = (name, fn) -> ->
     @beginEditing()
     fn.apply(this, arguments)
@@ -339,6 +351,18 @@ class Trix.Document extends Trix.Object
 
   isEqualTo: (document) ->
     @blockList.isEqualTo(document?.blockList)
+
+  getTexts: ->
+    block.text for block in @getBlocks()
+
+  getPieces: ->
+    pieces = []
+    for text in @getTexts()
+      pieces.push(text.getPieces()...)
+    pieces
+
+  getObjects: ->
+    @getBlocks().concat(@getTexts()).concat(@getPieces())
 
   toSerializableDocument: ->
     blocks = []
