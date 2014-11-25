@@ -1,5 +1,15 @@
 class Trix.ObjectGroup
-  constructor: (@objects) ->
+  constructor: (@objects = []) ->
+
+  canAddObject: (object) ->
+    if object.canBeGrouped?()
+      if @objects.length is 0
+        true
+      else
+        @objects[@objects.length - 1].canBeGroupedWith(object)
+
+  addObject: (object) ->
+    @objects.push(object)
 
   getObjects: ->
     @objects

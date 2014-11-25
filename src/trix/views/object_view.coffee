@@ -16,23 +16,21 @@ class Trix.ObjectView
 
   groupObjects: (objects) ->
     results = []
-    group = null
     for object in objects
-      if group
-        if object.canBeGroupedWith?(group[0])
-          group.push(object)
+      if objectGroup
+        if objectGroup.canAddObject(object)
+          objectGroup.addObject(object)
           continue
         else
-          results.push(new Trix.ObjectGroup group)
-          group = null
+          results.push(objectGroup)
+          objectGroup = null
 
       if object.canBeGrouped?()
-        group = [object]
+        objectGroup = new Trix.ObjectGroup [object]
       else
         results.push(object)
 
-    if group
-      results.push(new Trix.ObjectGroup group)
+    results.push(objectGroup) if objectGroup
     results
 
   invalidate: ->
