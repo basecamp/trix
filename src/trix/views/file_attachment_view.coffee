@@ -1,6 +1,7 @@
 #= require trix/views/attachment_view
 
 {capitalize} = Trix.Helpers
+{makeElement} = Trix.DOM
 
 class Trix.FileAttachmentView extends Trix.AttachmentView
   createNodes: ->
@@ -9,13 +10,10 @@ class Trix.FileAttachmentView extends Trix.AttachmentView
     if extension = @attachment.getExtension()
       element.classList.add(extension)
 
-    caption = document.createElement("figcaption")
-    caption.textContent = @attachment.getFilename()
+    caption = makeElement(tagName: "figcaption", textContent: @attachment.getFilename())
 
     if filesize = @attachment.getFilesize()
-      span = document.createElement("span")
-      span.classList.add("size")
-      span.textContent = filesize
+      span = makeElement(tagName: "span", className: "size", textContent: filesize)
       caption.appendChild(span)
 
     element.appendChild(caption)

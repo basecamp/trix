@@ -1,17 +1,12 @@
 #= require trix/controllers/attachment_editor_controller
 
-{handleEvent, measureElement} = Trix.DOM
+{handleEvent, measureElement, makeElement} = Trix.DOM
 
 class Trix.ImageAttachmentEditorController extends Trix.AttachmentEditorController
   constructor: ->
     super
-    @editor = document.createElement("div")
-    @editor.setAttribute("contenteditable", false)
-    @editor.classList.add("image-editor")
-
-    @handle = document.createElement("div")
-    @handle.classList.add("resize-handle")
-    @handle.classList.add("se")
+    @editor = makeElement(tagName: "div", className: "image-editor", editable: false)
+    @handle = makeElement(tagName: "div", className: "resize-handle se")
     @handle.addEventListener("mousedown", @startResize)
 
     @image = @element.querySelector("img")

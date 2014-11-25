@@ -1,5 +1,5 @@
 {decapitalize} = Trix.Helpers
-{findClosestElementFromNode, walkTree, tagName} = Trix.DOM
+{findClosestElementFromNode, walkTree, tagName, makeElement} = Trix.DOM
 
 class Trix.HTMLParser
   allowedAttributes = "style href src width height class".split(" ")
@@ -22,8 +22,7 @@ class Trix.HTMLParser
       @removeHiddenContainer()
 
   createHiddenContainer: ->
-    @container = document.createElement("div")
-    @container.style["display"] = "none"
+    @container = makeElement(tagName: "div", style: { display: "none" })
     document.body.appendChild(@container)
 
   removeHiddenContainer: ->

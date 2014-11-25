@@ -1,6 +1,8 @@
 #= require trix/views/file_attachment_view
 #= require trix/views/image_attachment_view
 
+{makeElement} = Trix.DOM
+
 class Trix.PieceView extends Trix.ObjectView
   constructor: ->
     super
@@ -37,7 +39,7 @@ class Trix.PieceView extends Trix.ObjectView
       nodes = []
       for substring, index in @string.split("\n")
         if index > 0
-          element = document.createElement("br")
+          element = makeElement("br")
           nodes.push(element)
 
         if length = substring.length
@@ -48,7 +50,7 @@ class Trix.PieceView extends Trix.ObjectView
   createElement: ->
     for key of @attributes when config = Trix.textAttributes[key]
       if config.tagName
-        pendingElement = document.createElement(config.tagName)
+        pendingElement = makeElement(config.tagName)
 
         if innerElement
           innerElement.appendChild(pendingElement)
@@ -63,16 +65,17 @@ class Trix.PieceView extends Trix.ObjectView
           styles = config.style
 
     if styles
-      element ?= document.createElement("span")
+      element ?= makeElement("span")
       element.style[key] = value for key, value of styles
     element
 
   createGroupElement: ->
     for key, value of @attributes when config = Trix.textAttributes[key]
       if config.groupTagName
-        element = document.createElement(config.groupTagName)
-        element.setAttribute(key, value)
-        return element
+        attributes = {}
+        attributes[key] = value
+        return makeElement(config.groupTagName, attributes)
+
 
   preserveSpaces = (string) ->
     string

@@ -1,10 +1,12 @@
 #= require trix/views/attachment_view
 
+{makeElement} = Trix.DOM
+
 class Trix.ImageAttachmentView extends Trix.AttachmentView
   createNodes: ->
     element = @createElement()
     element.classList.add("image")
-    image = document.createElement("img")
+    image = makeElement("img")
 
     if @attachment.isPending()
       @attachment.getPreviewURL (previewURL) =>

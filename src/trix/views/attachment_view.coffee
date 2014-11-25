@@ -1,4 +1,5 @@
 {capitalize} = Trix.Helpers
+{makeElement} = Trix.DOM
 
 class Trix.AttachmentView extends Trix.ObjectView
   constructor: ->
@@ -8,20 +9,17 @@ class Trix.AttachmentView extends Trix.ObjectView
     @attachmentPiece = @options.piece
 
   createElement: ->
-    element = document.createElement("figure")
-    element.classList.add("attachment")
-    element.setAttribute("contenteditable", false)
-    element.dataset.trixId = @attachment.id
+    dataAttributes = @attachment.getAttributes()
+    dataAttributes.id = @attachment.id
+    dataAttributes.serialize = false if @attachment.isPending()
+    data = {}
+    data["trix#{capitalize(key)}"] = value for key, value of dataAttributes
 
-    for key, value of @attachment.getAttributes()
-      element.dataset["trix#{capitalize(key)}"] = value
+    element = makeElement({tagName: "figure", className: "attachment", editable: false, data})
 
     if @attachment.isPending()
-      element.dataset.trixSerialize = false
-      progressElement = document.createElement("progress")
-      progressElement.setAttribute("max", 100)
+      progressElement = makeElement("progress", max: 100)
       element.appendChild(progressElement)
-
     element
 
   findProgressElement: ->

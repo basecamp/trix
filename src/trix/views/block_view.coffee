@@ -1,5 +1,7 @@
 #= require trix/views/text_view
 
+{makeElement} = Trix.DOM
+
 class Trix.BlockView extends Trix.ObjectView
   constructor: ->
     super
@@ -8,11 +10,10 @@ class Trix.BlockView extends Trix.ObjectView
     @textConfig = @config.text ? {}
 
   createNodes: ->
-    @element = document.createElement(@config.tagName)
+    @element = makeElement(@config.tagName)
 
     if @block.isEmpty()
-      br = document.createElement("br")
-      @element.appendChild(br)
+      @element.appendChild(makeElement("br"))
     else
       textView = @findOrCreateCachedChildView(Trix.TextView, @block.text, {@textConfig})
       @element.appendChild(node) for node in textView.getNodes()
@@ -21,7 +22,7 @@ class Trix.BlockView extends Trix.ObjectView
     [@element]
 
   createGroupElement: ->
-    document.createElement(@config.groupTagName)
+    makeElement(@config.groupTagName)
 
   # A single <br> at the end of a block element has no visual representation
   # so add an extra one.
@@ -29,4 +30,4 @@ class Trix.BlockView extends Trix.ObjectView
     if string = @block.toString()
       # A newline followed by the block break newline
       if /\n\n$/.test(string)
-        @element.appendChild(document.createElement("br"))
+        @element.appendChild(makeElement("br"))

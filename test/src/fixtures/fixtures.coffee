@@ -81,24 +81,19 @@ createDocument = (parts...) ->
     attachment = new Trix.Attachment attrs
     text = Trix.Text.textForAttachmentWithAttributes(attachment, width: 10, height: 20)
 
-    figureAttrs =
-      "class": "attachment image"
-      "contenteditable": false
-      "data-trix-id": attachment.id
-      "data-trix-url": attrs.url
-      "data-trix-filename": attrs.filename
-      "data-trix-filesize": attrs.filesize
-      "data-trix-content-type": attrs.contentType
+    image = Trix.DOM.makeElement("img", src: attrs.url, width: 10, height: 20)
 
-    imageAttrs =
-      "src": attrs.url
-      "width": 10
-      "height": 20
+    figure = Trix.DOM.makeElement
+      tagName: "figure"
+      className: "attachment image"
+      editable: false
+      data:
+        trixUrl: attrs.url
+        trixFilename: attrs.filename
+        trixFilesize: attrs.filesize
+        trixContentType: attrs.contentType
+        trixId: attachment.id
 
-    image = document.createElement("img")
-    image.setAttribute(key, val) for key, val of imageAttrs
-    figure = document.createElement("figure")
-    figure.setAttribute(key, val) for key, val of figureAttrs
     figure.appendChild(image)
 
     html: "<div>#{figure.outerHTML}</div>"
@@ -109,17 +104,17 @@ createDocument = (parts...) ->
     attachment = new Trix.Attachment attrs
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
-    figureAttrs =
-      "class": "attachment file pdf"
-      "contenteditable": false
-      "data-trix-id": attachment.id
-      "data-trix-url": attrs.url
-      "data-trix-filename": attrs.filename
-      "data-trix-filesize": attrs.filesize
-      "data-trix-content-type": attrs.contentType
+    figure = Trix.DOM.makeElement
+      tagName: "figure"
+      className: "attachment file pdf"
+      editable: false
+      data:
+        trixUrl: attrs.url
+        trixFilename: attrs.filename
+        trixFilesize: attrs.filesize
+        trixContentType: attrs.contentType
+        trixId: attachment.id
 
-    figure = document.createElement("figure")
-    figure.setAttribute(key, val) for key, val of figureAttrs
     caption = """<figcaption>#{attrs.filename}<span class="size">#{attrs.filesize}</span></figcaption>"""
     figure.innerHTML = caption
 
