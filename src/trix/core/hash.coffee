@@ -12,7 +12,8 @@ class Trix.Hash extends Trix.Object
   @box: (values) ->
     box(values)
 
-  constructor: (@values = {}) ->
+  constructor: (values = {}) ->
+    @values = copy(values)
     super
 
   add: (key, value) ->
@@ -53,8 +54,7 @@ class Trix.Hash extends Trix.Object
   toArray: ->
     (@array ?= (
       result = []
-      keys = (key for key of @values).sort()
-      result.push key, @values[key] for key in keys
+      result.push(key, value) for key, value of @values
       result
     )).slice(0)
 
@@ -80,15 +80,16 @@ class Trix.Hash extends Trix.Object
 
   copy = (object, keyToRemove) ->
     result = {}
-    for key, value of object when key isnt keyToRemove
-      result[key] = value
+    sortedKeys = Object.keys(object).sort()
+    for key in sortedKeys when key isnt keyToRemove
+      result[key] = object[key]
     result
 
   box = (object) ->
     if object instanceof Trix.Hash
       object
     else
-      new Trix.Hash copy(object)
+      new Trix.Hash object
 
   unbox = (object) ->
     if object instanceof Trix.Hash

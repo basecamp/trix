@@ -88,10 +88,10 @@ createDocument = (parts...) ->
       className: "attachment image"
       editable: false
       data:
-        trixUrl: attrs.url
+        trixContentType: attrs.contentType
         trixFilename: attrs.filename
         trixFilesize: attrs.filesize
-        trixContentType: attrs.contentType
+        trixUrl: attrs.url
         trixId: attachment.id
 
     figure.appendChild(image)
@@ -109,10 +109,10 @@ createDocument = (parts...) ->
       className: "attachment file pdf"
       editable: false
       data:
-        trixUrl: attrs.url
+        trixContentType: attrs.contentType
         trixFilename: attrs.filename
         trixFilesize: attrs.filesize
-        trixContentType: attrs.contentType
+        trixUrl: attrs.url
         trixId: attachment.id
 
     caption = """<figcaption>#{attrs.filename}<span class="size">#{attrs.filesize}</span></figcaption>"""
