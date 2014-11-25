@@ -54,9 +54,6 @@ class Trix.ObjectView
   findViewForObject: (object) ->
     return view for view in @getAllChildViews() when view.object is object
 
-  findNodesForObject: (object) ->
-    @findViewForObject(object)?.nodes
-
   getViewCache: ->
     if @rootView is this
       if @isViewCachingEnabled()
