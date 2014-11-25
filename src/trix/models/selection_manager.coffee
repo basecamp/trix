@@ -234,7 +234,7 @@ class Trix.SelectionManager
         string.length
       else
         0
-    else if node.nodeName in ["BR", "FIGURE"]
+    else if DOM.tagName(node) in ["br", "figure"]
       1
     else
       0
