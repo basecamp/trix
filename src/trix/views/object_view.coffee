@@ -14,25 +14,6 @@ class Trix.ObjectView
     nodes = @getNodes()
     nodes[0] if nodes.length is 1
 
-  groupObjects: (objects) ->
-    results = []
-    for object in objects
-      if objectGroup
-        if objectGroup.canAddObject(object)
-          objectGroup.addObject(object)
-          continue
-        else
-          results.push(objectGroup)
-          objectGroup = null
-
-      if object.canBeGrouped?()
-        objectGroup = new Trix.ObjectGroup [object]
-      else
-        results.push(object)
-
-    results.push(objectGroup) if objectGroup
-    results
-
   invalidate: ->
     delete @nodes
     @parentView?.invalidate()

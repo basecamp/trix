@@ -10,7 +10,8 @@ class Trix.TextView extends Trix.ObjectView
   createNodes: ->
     nodes = []
     pieces = (piece for piece in @text.getPieces() when not piece.hasAttribute("blockBreak"))
-    for object in @groupObjects(pieces)
+    objects = Trix.ObjectGroup.groupObjects(pieces)
+    for object in objects
       view = @findOrCreateCachedChildView(Trix.PieceView, object, {@textConfig})
       nodes.push(node) for node in view.getNodes()
     nodes

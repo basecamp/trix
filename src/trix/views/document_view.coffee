@@ -15,7 +15,8 @@ class Trix.DocumentView extends Trix.ObjectView
     @element.removeChild(@element.lastChild) while @element.lastChild
 
     unless @document.isEmpty()
-      for object in @groupObjects(@document.getBlocks())
+      objects = Trix.ObjectGroup.groupObjects(@document.getBlocks())
+      for object in objects
         view = @findOrCreateCachedChildView(Trix.BlockView, object)
         @element.appendChild(view.getElement())
 
