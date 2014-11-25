@@ -34,7 +34,7 @@ class Trix.ObjectGroup
   getObjects: ->
     @objects
 
-  toKey: ->
+  getCacheKey: ->
     keys = ["objectGroup"]
-    keys.push(object.toKey()) for object in @getObjects()
+    keys.push(object.getCacheKey()) for object in @getObjects()
     keys.join("/")

@@ -31,8 +31,8 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
     json.attachment = @attachment
     json
 
-  toKey: ->
-    [super, @attachment.toKey()].join("/")
+  getCacheKey: ->
+    [super, @attachment.getCacheKey()].join("/")
 
   toConsole: ->
     JSON.stringify(@toString())

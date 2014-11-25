@@ -24,5 +24,5 @@ class Trix.Object
   toJSONString: ->
     JSON.stringify this
 
-  toKey: ->
+  getCacheKey: ->
     @id.toString()

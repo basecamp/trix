@@ -30,7 +30,7 @@ class Trix.UTF16String
   toJSON: ->
     @ucs2String
 
-  toKey: ->
+  getCacheKey: ->
     @ucs2String
 
   toString: ->
