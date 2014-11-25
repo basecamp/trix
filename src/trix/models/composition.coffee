@@ -197,13 +197,9 @@ class Trix.Composition
   setBlockAttribute: (attributeName, value) ->
     return unless locationRange = @getLocationRange()
     @notifyDelegateOfIntentionToSetLocationRange()
-    [startPosition, endPosition] = @document.rangeFromLocationRange(locationRange)
-
+    range = @document.rangeFromLocationRange(locationRange)
     @document.applyBlockAttributeAtLocationRange(attributeName, value, locationRange)
-
-    {start} = @document.locationRangeFromPosition(startPosition)
-    {end} = @document.locationRangeFromPosition(endPosition)
-    @setLocationRange(start, end)
+    @setRange(range)
 
   removeCurrentAttribute: (attributeName) ->
     if Trix.blockAttributes[attributeName]
@@ -253,9 +249,16 @@ class Trix.Composition
 
   # Location range and selection
 
-  getPosition: ->
+  getRange: ->
     locationRange = @getLocationRange()
-    @document.rangeFromLocationRange(locationRange)[0]
+    @document.rangeFromLocationRange(locationRange)
+
+  setRange: (range) ->
+    locationRange = @document.locationRangeFromRange(range)
+    @setLocationRange(locationRange)
+
+  getPosition: ->
+    @getRange()[0]
 
   setPosition: (position) ->
     locationRange = @document.locationRangeFromPosition(position)
@@ -266,10 +269,9 @@ class Trix.Composition
     @setPosition(@getPosition() + distance)
 
   expandLocationRangeInDirection: (direction) ->
-    locationRange = @getLocationRange()
-    [start, end] = @document.rangeFromLocationRange(locationRange)
-    if direction is "backward" then start-- else end++
-    @setLocationRange(@document.locationRangeFromRange([start, end]))
+    range = @getRange()
+    if direction is "backward" then range[0]-- else range[1]++
+    @setRange(range)
 
   expandSelectionInDirection: (direction) ->
     if @shouldExpandInDirectionUsingLocationRange(direction)
