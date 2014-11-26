@@ -12,5 +12,5 @@ class Trix.TextView extends Trix.ObjectView
     objects = Trix.ObjectGroup.groupObjects(pieces)
     for object in objects
       view = @findOrCreateCachedChildView(Trix.PieceView, object, {@textConfig})
-      nodes.push(node) for node in view.getNodes()
+      nodes.push(view.getNodes()...)
     nodes
