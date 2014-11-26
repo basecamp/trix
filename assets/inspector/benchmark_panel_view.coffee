@@ -28,8 +28,10 @@ class Trix.BenchmarkPanelView extends Trix.InspectorPanelView
       input.disabled = true for input in @getInputElements()
 
     suite.on "cycle", (event) =>
-      element = @getBenchmarkElement(event.target.name)
-      element.querySelector(".results").textContent = "↳ #{event.target.toString()}"
+      benchmark = event.target
+      mean = (benchmark.stats.mean * 1000).toFixed(3)
+      element = @getBenchmarkElement(benchmark.name)
+      element.querySelector(".results").textContent = "↳ Mean: #{mean}ms; #{benchmark}"
 
     suite.on "complete", =>
       input.disabled = false for input in @getInputElements()
