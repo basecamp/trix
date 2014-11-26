@@ -6,6 +6,7 @@
 #= require ./source_panel_view
 #= require ./debugging_panel_view
 #= require ./loggers_panel_view
+#= require ./benchmark_panel_view
 
 {defer} = Trix.Helpers
 {handleEvent, findClosestElementFromNode} = Trix.DOM

@@ -47,6 +47,7 @@
         <input type="radio" name="inspector-panel" id="inspect-source" value="source"><label for="inspect-source">Source</label>
         <input type="radio" name="inspector-panel" id="inspect-debugging" value="debugging"><label for="inspect-debugging">Debugging</label>
         <input type="radio" name="inspector-panel" id="inspect-loggers" value="loggers"><label for="inspect-loggers">Loggers</label>
+        <input type="radio" name="inspector-panel" id="inspect-benchmark" value="benchmark"><label for="inspect-benchmark">Benchmark</label>
       </div>
       <div class="trix-inspector-panel" data-inspector-panel-name="structure" data-inspector-panel-view="StructurePanelView">
       </div>
@@ -73,6 +74,17 @@
         </p>
       </div>
       <div class="trix-inspector-panel" data-inspector-panel-name="loggers" data-inspector-panel-view="LoggersPanelView">
+      </div>
+      <div class="trix-inspector-panel trix-benchmark-panel" data-inspector-panel-name="benchmark" data-inspector-panel-view="BenchmarkPanelView">
+        <ol>
+          <li class="benchmark">
+            <textarea class="code" name="code"></textarea>
+            <div class="results"></div>
+          </li>
+        </ol>
+        <p>
+          <button class="add">Add another benchmark</button> <button class="run">Run benchmarks</button>
+        </p>
       </div>
     </div>
 

@@ -8,6 +8,7 @@
   border: 1px solid #444
   border-radius: 5px
   overflow: auto
+  font-family: Lucida Grande, sans-serif
 
 @media only screen and (max-width: 900px)
   .trix-inspector
@@ -20,7 +21,6 @@
   border-bottom: 1px solid #444
   background: linear-gradient(to bottom, rgba(211,211,211,1) 0%,rgba(206,206,206,1) 2%,rgba(172,172,172,1) 98%,rgba(172,172,172,1) 100%)
   padding: 5px 10px
-  font-family: Lucida Grande, sans-serif
   font-size: 11px
   color: #333
   text-shadow: 0px 1px #ddd
@@ -141,3 +141,25 @@ textarea.debug
   padding: 5px 10px
   outline: 0
   font-size: 12px
+
+.trix-benchmark-panel
+  padding: 5px
+  font-size: 14px
+
+  li.benchmark
+    padding: 5px
+    font-size: 12px
+
+    textarea
+      box-sizing: border-box
+      width: 100%
+      min-height: 100px
+      margin: 0
+      padding: 5px
+      font-family: menlo, monospaced
+
+    .results
+      margin-top: 2px
+
+  li.fastest
+    border: 2px solid green
