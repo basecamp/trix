@@ -9,7 +9,7 @@ class Trix.HTMLParser
     parser.parse()
     parser
 
-  constructor: (@html, {@attachments} = {}) ->
+  constructor: (@html) ->
     @blocks = []
 
   parse: ->
@@ -80,12 +80,7 @@ class Trix.HTMLParser
     @appendText(text)
 
   appendAttachmentForAttributes: (attributes, textAttributes) ->
-    attachment = if @attachments and attributes.id
-      @attachments.get(attributes.id)
-    else
-      delete attributes.id
-      new Trix.Attachment attributes
-
+    attachment = new Trix.Attachment attributes
     text = Trix.Text.textForAttachmentWithAttributes(attachment, textAttributes)
     @appendText(text)
 
@@ -125,7 +120,9 @@ class Trix.HTMLParser
     attributes = {}
     for key, value of element.dataset
       attributeName = decapitalize(key.replace(/^trix/, ''))
-      attributes[attributeName] = value
+      unless attributeName is "id"
+        value = Number(value) if attributeName is "filesize"
+        attributes[attributeName] = value
     attributes
 
   sanitizeHTML = (html) ->

@@ -102,7 +102,7 @@ class Trix.Composition
       @insertString("\n")
 
   insertHTML: (html) ->
-    document = Trix.Document.fromHTML(html, { attachments: @document.attachments })
+    document = Trix.Document.fromHTML(html)
     block = document.getBlockAtIndex(0)
 
     if document.blockList.length is 1 and not block.hasAttributes()
@@ -112,7 +112,7 @@ class Trix.Composition
 
   replaceHTML: (html) ->
     @preserveSelection =>
-      document = Trix.Document.fromHTML(html, { attachments: @document.attachments })
+      document = Trix.Document.fromHTML(html)
       @document.replaceDocument(document.copyUsingObjectsFromDocument(@document))
 
   insertFile: (file) ->

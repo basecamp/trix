@@ -11,8 +11,8 @@ class Trix.Document extends Trix.Object
       Trix.Block.fromJSON blockJSON
     new this blocks
 
-  @fromHTML: (html, options) ->
-    Trix.HTMLParser.parse(html, options).getDocument()
+  @fromHTML: (html) ->
+    Trix.HTMLParser.parse(html).getDocument()
 
   @fromString: (string, textAttributes) ->
     text = Trix.Text.textForStringWithAttributes(string, textAttributes)

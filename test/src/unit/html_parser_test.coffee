@@ -2,8 +2,8 @@ module "Trix.HTMLParser"
 
 eachFixture (name, {html, document}) ->
   test name, ->
-    {attachments} = document
-    expectHTML Trix.HTMLParser.parse(html, {attachments}).getDocument(), html
+    parsedDocument = Trix.HTMLParser.parse(html).getDocument()
+    expectHTML parsedDocument.copyUsingObjectsFromDocument(document), html
 
 asyncTest "sanitizes unsafe html", ->
   window.unsanitized = []
