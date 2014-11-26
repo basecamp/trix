@@ -42,7 +42,8 @@ editorTest "setting an attachment's URL", (done) ->
 
   attachment = editor.document.getAttachments()[0]
   equal attachment.getURL(), url
-  ok document.activeElement.querySelector("figure[data-trix-url='#{url}']")
+  element = document.activeElement.querySelector("figure[data-trix-id='#{managedAttachment.id}']")
+  equal JSON.parse(element.dataset.trixAttachment).url, url
   done()
 
 editorTest "setting an attachment's upload progress", (done) ->

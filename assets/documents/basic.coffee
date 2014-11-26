@@ -103,7 +103,7 @@ trixDocuments.basic = [
             "filename": "Basecamp.pdf",
             "identifier": "dcd7027677de68739253b9114f6973b7",
             "url": "/attachments/dcd7027677de68739253b9114f6973b7",
-            "filesize": "1.96 MB"
+            "filesize": 1992294
           }
         }
       ],

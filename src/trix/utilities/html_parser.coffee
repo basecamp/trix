@@ -1,4 +1,3 @@
-{decapitalize} = Trix.Helpers
 {findClosestElementFromNode, walkTree, tagName, makeElement} = Trix.DOM
 
 class Trix.HTMLParser
@@ -117,13 +116,7 @@ class Trix.HTMLParser
     attributes
 
   getAttachmentAttributes = (element) ->
-    attributes = {}
-    for key, value of element.dataset
-      attributeName = decapitalize(key.replace(/^trix/, ''))
-      unless attributeName is "id"
-        value = Number(value) if attributeName is "filesize"
-        attributes[attributeName] = value
-    attributes
+    JSON.parse(element.dataset.trixAttachment)
 
   sanitizeHTML = (html) ->
     {body} = document.implementation.createHTMLDocument("")

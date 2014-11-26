@@ -88,10 +88,7 @@ createDocument = (parts...) ->
       className: "attachment image"
       editable: false
       data:
-        trixContentType: attrs.contentType
-        trixFilename: attrs.filename
-        trixFilesize: attrs.filesize
-        trixUrl: attrs.url
+        trixAttachment: JSON.stringify(attachment)
         trixId: attachment.id
 
     figure.appendChild(image)
@@ -100,7 +97,7 @@ createDocument = (parts...) ->
     document: new Trix.Document [new Trix.Block text]
 
   "file attachment": do ->
-    attrs = url: "http://example.com/example.pdf", filename: "example.pdf", filesize: 345, contentType: "application/pdf"
+    attrs = url: "http://example.com/example.pdf", filename: "example.pdf", filesize: "345", contentType: "application/pdf"
     attachment = new Trix.Attachment attrs
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
@@ -109,10 +106,7 @@ createDocument = (parts...) ->
       className: "attachment file pdf"
       editable: false
       data:
-        trixContentType: attrs.contentType
-        trixFilename: attrs.filename
-        trixFilesize: attrs.filesize
-        trixUrl: attrs.url
+        trixAttachment: JSON.stringify(attachment)
         trixId: attachment.id
 
     caption = """<figcaption>#{attrs.filename}<span class="size">#{attrs.filesize}</span></figcaption>"""

@@ -1,6 +1,5 @@
 #= require trix/views/attachment_view
 
-{capitalize} = Trix.Helpers
 {makeElement} = Trix.DOM
 
 class Trix.FileAttachmentView extends Trix.AttachmentView

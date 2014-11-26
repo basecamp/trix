@@ -1,4 +1,3 @@
-{capitalize} = Trix.Helpers
 {makeElement} = Trix.DOM
 
 class Trix.AttachmentView extends Trix.ObjectView
@@ -9,11 +8,12 @@ class Trix.AttachmentView extends Trix.ObjectView
     @attachmentPiece = @options.piece
 
   createElement: ->
-    dataAttributes = @attachment.getAttributes()
-    dataAttributes.id = @attachment.id
-    dataAttributes.serialize = false if @attachment.isPending()
-    data = {}
-    data["trix#{capitalize(key)}"] = value for key, value of dataAttributes
+    data =
+      trixAttachment: JSON.stringify(@attachment)
+      trixId: @attachment.id
+
+    if @attachment.isPending()
+      data.trixSerialize = false
 
     element = makeElement({tagName: "figure", className: "attachment", editable: false, data})
 

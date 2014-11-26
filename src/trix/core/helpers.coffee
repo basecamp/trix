@@ -23,12 +23,6 @@ Trix.Helpers =
     logger.timeEnd(name)
     result
 
-  capitalize: (string) ->
-    string.charAt(0).toUpperCase() + string.substring(1)
-
-  decapitalize: (string) ->
-    string.charAt(0).toLowerCase() + string.substring(1)
-
   forwardMethods: ({ofConstructor, ofObject, onConstructor, toProperty} = {}) ->
     methods = ofObject ? ofConstructor.prototype
     destination = onConstructor.prototype
