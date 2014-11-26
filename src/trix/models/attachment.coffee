@@ -69,7 +69,7 @@ class Trix.Attachment extends Trix.Object
       @uploadProgressDelegate?.attachmentDidChangeUploadProgress?(this)
 
   toJSON: ->
-    @attributes
+    @getAttributes()
 
   getCacheKey: ->
     [super, @attributes.getCacheKey()].join("/")
