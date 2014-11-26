@@ -8,7 +8,7 @@ class Trix.BenchmarkPanelView extends Trix.InspectorPanelView
     super
     @handleEvent "click", onElement: @element, matchingSelector: "button.run", withCallback: @run, preventDefault: true
     @handleEvent "click", onElement: @element, matchingSelector: "button.add", withCallback: @addBenchmark, preventDefault: true
-    @addBenchmark() if @element.querySelectorAll("li.benchmark").length < 2
+    @addBenchmark() if @getBenchmarkElements().length < 2
 
   addBenchmark: =>
     element = @getBenchmarkElement(0)
@@ -20,6 +20,8 @@ class Trix.BenchmarkPanelView extends Trix.InspectorPanelView
     suite = new Benchmark.Suite
 
     for element, index in @getBenchmarkElements()
+      element.classList.remove("fastest")
+      element.querySelector(".results").textContent = ""
       textarea = element.querySelector("textarea")
       if textarea.value
         suite.add("#{index}", textarea.value)

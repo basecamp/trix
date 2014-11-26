@@ -143,17 +143,23 @@ textarea.debug
   font-size: 12px
 
 .trix-benchmark-panel
-  padding: 5px
+  padding: 10px
   font-size: 14px
 
+  ol
+    list-style-type: none
+    margin: 0
+    padding: 0
+
   li.benchmark
-    padding: 5px
+    margin: 0 0 10px 0
+    padding: 0
     font-size: 12px
 
     textarea
       box-sizing: border-box
       width: 100%
-      min-height: 100px
+      min-height: 80px
       margin: 0
       padding: 5px
       font-family: menlo, monospaced
@@ -161,5 +167,6 @@ textarea.debug
     .results
       margin-top: 2px
 
-  li.fastest
-    border: 2px solid green
+    &.fastest .results
+      font-weight: bold
+      color: green
