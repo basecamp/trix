@@ -1,7 +1,5 @@
 #= require ./inspector_panel_view
 
-{capitalize} = Trix.Helpers
-
 class Trix.DebuggingPanelView extends Trix.InspectorPanelView
   constructor: ->
     super
@@ -39,3 +37,5 @@ class Trix.DebuggingPanelView extends Trix.InspectorPanelView
   didClickRenderButton: =>
     @documentController.render()
 
+  capitalize = (string) ->
+    string.charAt(0).toUpperCase() + string.substring(1)
