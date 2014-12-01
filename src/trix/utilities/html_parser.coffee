@@ -37,10 +37,11 @@ class Trix.HTMLParser
 
   appendBlockForElement: (element) ->
     unless @currentBlockElement?.contains(element)
-      attributes = getBlockAttributes(element)
-      if Object.keys(attributes).length or tagName(element) is "div"
-        @appendBlockForAttributes(attributes)
-        @currentBlockElement = element
+      if element.firstChild?.nodeType is Node.TEXT_NODE or element.textContent is ""
+        attributes = getBlockAttributes(element)
+        if attributes.length or tagName(element) is Trix.blockAttributes.default.tagName
+          @appendBlockForAttributes(attributes)
+          @currentBlockElement = element
 
   processTextNode: (node) ->
     unless node.textContent is Trix.ZERO_WIDTH_SPACE
@@ -107,13 +108,14 @@ class Trix.HTMLParser
     attributes
 
   getBlockAttributes = (element) ->
-    attributes = {}
-    for attribute, config of Trix.blockAttributes
-      if tagName(element) is config.tagName
-        if config.test?(element) or not config.test
-          attributes[attribute] = true
-          break
-    attributes
+    attributes = []
+    while element
+      for attribute, config of Trix.blockAttributes when attribute isnt "default"
+        if tagName(element) is config.tagName
+          if config.test?(element) or not config.test
+            attributes.push(attribute)
+      element = element.parentNode
+    attributes.reverse()
 
   getAttachmentAttributes = (element) ->
     JSON.parse(element.dataset.trixAttachment)

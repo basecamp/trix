@@ -5,10 +5,10 @@ class Trix.Block extends Trix.Object
     text = Trix.Text.fromJSON(blockJSON.text)
     new this text, blockJSON.attributes
 
-  constructor: (text = new Trix.Text, attributes = {}) ->
+  constructor: (text = new Trix.Text, attributes = []) ->
     super
     @text = applyBlockBreakToText(text)
-    @attributes = Trix.Hash.box(attributes)
+    @attributes = Trix.List.box(attributes)
 
   isEmpty: ->
     textIsBlockBreak(@text)
@@ -32,14 +32,13 @@ class Trix.Block extends Trix.Object
     @copyWithAttributes @attributes.remove(attribute)
 
   getAttributes: ->
-    @attributes.toObject()
+    @attributes.toArray()
 
   hasAttributes: ->
-    @attributes.getKeys().length > 0
+    @attributes.length
 
   getConfig: ->
-    return config for key of @getAttributes() when config = Trix.blockAttributes[key]
-    Trix.blockAttributes.default
+    Trix.blockAttributes[@getAttributes()[0]] ? Trix.blockAttributes.default
 
   findLineBreakInDirectionFromPosition: (direction, position) ->
     string = @toString()

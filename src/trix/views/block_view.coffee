@@ -10,24 +10,33 @@ class Trix.BlockView extends Trix.ObjectView
     @textConfig = @config.text ? {}
 
   createNodes: ->
-    @element = makeElement(@config.tagName)
+    tagNames = (Trix.blockAttributes[attribute] for attribute in @block.getAttributes())
+    tagNames.push(@config.tagName) unless tagNames.length
+
+    for tagName in tagNames
+      if innerElement
+        pendingElement = makeElement(tagName)
+        innerElement.appendChild(pendingElement)
+        innerElement = pendingElement
+      else
+        element = innerElement = makeElement(tagName)
 
     if @block.isEmpty()
-      @element.appendChild(makeElement("br"))
+      innerElement.appendChild(makeElement("br"))
     else
       textView = @findOrCreateCachedChildView(Trix.TextView, @block.text, {@textConfig})
-      @element.appendChild(node) for node in textView.getNodes()
-      @appendExtraNewlineElement()
+      innerElement.appendChild(node) for node in textView.getNodes()
+      @appendExtraNewlineElement(innerElement)
 
-    [@element]
+    [element]
 
   createGroupElement: ->
     makeElement(@config.groupTagName)
 
   # A single <br> at the end of a block element has no visual representation
   # so add an extra one.
-  appendExtraNewlineElement: ->
+  appendExtraNewlineElement: (element) ->
     if string = @block.toString()
       # A newline followed by the block break newline
       if /\n\n$/.test(string)
-        @element.appendChild(makeElement("br"))
+        element.appendChild(makeElement("br"))

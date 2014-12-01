@@ -80,7 +80,7 @@ class Trix.Composition
 
     if block.hasAttributes()
       attributes = block.getAttributes()
-      if attributes.bullet or attributes.number
+      if "bullet" in attributes or "number" in attributes
         if block.isEmpty()
           @removeBlockAttributes()
         else
@@ -159,7 +159,7 @@ class Trix.Composition
   removeBlockAttributes: ->
     locationRange = @getLocationRange()
     block = @document.getBlockAtIndex(locationRange.end.index)
-    @removeCurrentAttribute(key) for key of block.getAttributes()
+    @removeCurrentAttribute(key) for key in block.getAttributes()
 
   # Current attributes
 
@@ -181,7 +181,6 @@ class Trix.Composition
 
   setCurrentAttribute: (attributeName, value) ->
     if Trix.blockAttributes[attributeName]
-      @removeCurrentAttribute(key) for key of @currentAttributes when Trix.blockAttributes[key]
       @setBlockAttribute(attributeName, value)
     else
       @setTextAttribute(attributeName, value)

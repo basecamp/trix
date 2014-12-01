@@ -36,43 +36,47 @@ createDocument = (parts...) ->
     html: """<div><a href="http://example.com">ab<em>c</em></a></div>"""
 
   "quote formatted block":
-    document: createDocument(["abc", {}, quote: true])
+    document: createDocument(["abc", {}, ["quote"]])
     html: "<blockquote>abc</blockquote>"
 
   "code formatted block":
-    document: createDocument(["123", {}, code: true])
+    document: createDocument(["123", {}, ["code"]])
     html: "<pre>123</pre>"
 
+  "quote and code formatted block":
+    document: createDocument(["ab3", {}, ["quote", "code"]])
+    html: "<blockquote><pre>ab3</pre></blockquote>"
+
   "code with newline":
-    document: createDocument(["12\n3", {}, code: true])
+    document: createDocument(["12\n3", {}, ["code"]])
     html: "<pre>12\n3</pre>"
 
   "unordered list with one item":
-    document: createDocument(["a", {}, bullet: true])
+    document: createDocument(["a", {}, ["bullet"]])
     html: "<ul><li>a</li></ul>"
 
   "unordered list with  bold text":
-    document: createDocument(["a", { bold: true }, bullet: true])
+    document: createDocument(["a", { bold: true }, ["bullet"]])
     html: "<ul><li><strong>a</strong></li></ul>"
 
   "unordered list with two items":
-    document: createDocument(["a", {}, bullet: true], ["b", {}, bullet: true])
+    document: createDocument(["a", {}, ["bullet"]], ["b", {}, ["bullet"]])
     html: "<ul><li>a</li><li>b</li></ul>"
 
   "unordered list surrounded by unformatted blocks":
-    document: createDocument(["a"], ["b", {}, bullet: true], ["c"])
+    document: createDocument(["a"], ["b", {}, ["bullet"]], ["c"])
     html: "<div>a</div><ul><li>b</li></ul><div>c</div>"
 
   "ordered list":
-    document: createDocument(["a", {}, number: true])
+    document: createDocument(["a", {}, ["number"]])
     html: "<ol><li>a</li></ol>"
 
   "ordered list and an unordered list":
-    document: createDocument(["a", {}, bullet: true], ["b", {}, number: true])
+    document: createDocument(["a", {}, ["bullet"]], ["b", {}, ["number"]])
     html: "<ul><li>a</li></ul><ol><li>b</li></ol>"
 
   "empty block with attributes":
-    document: createDocument(["", {}, quote: true])
+    document: createDocument(["", {}, ["quote"]])
     html: "<blockquote><br></blockquote>"
 
   "image attachment": do ->

@@ -287,7 +287,7 @@ class Trix.Document extends Trix.Object
       @eachBlockAtLocationRange locationRange, (block, textRange) ->
         unless textRange[0] is textRange[1]
           textAttributes.push(block.text.getCommonAttributesAtRange(textRange))
-          blockAttributes.push(block.getAttributes())
+          blockAttributes.push(block.attributes.toObject())
 
       Trix.Hash.fromCommonAttributesOfObjects(textAttributes)
         .merge(Trix.Hash.fromCommonAttributesOfObjects(blockAttributes))
@@ -297,7 +297,7 @@ class Trix.Document extends Trix.Object
     block = @getBlockAtIndex(index)
     return {} unless block
 
-    commonAttributes = block.getAttributes()
+    commonAttributes = block.attributes.toObject()
     attributes = block.text.getAttributesAtPosition(offset)
     attributesLeft = block.text.getAttributesAtPosition(offset - 1)
     inheritableAttributes = (key for key, value of Trix.textAttributes when value.inheritable)
