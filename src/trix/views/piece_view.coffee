@@ -1,7 +1,7 @@
 #= require trix/views/file_attachment_view
 #= require trix/views/image_attachment_view
 
-{makeElement} = Trix.DOM
+{makeElement, findInnerElement} = Trix.DOM
 
 class Trix.PieceView extends Trix.ObjectView
   constructor: ->
@@ -85,7 +85,3 @@ class Trix.PieceView extends Trix.ObjectView
       .replace(/^\s{1}/, "\u00a0")
       # Replace trailing space with a non-breaking space
       .replace(/\s{1}$/, "\u00a0")
-
-  findInnerElement = (element) ->
-    element = element.firstChild while element.firstChild
-    element

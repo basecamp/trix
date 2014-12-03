@@ -11,6 +11,9 @@ class Trix.ObjectView
     nodes = @getNodes()
     nodes[0] if nodes.length is 1
 
+  getInnerElement: ->
+    @getElement()
+
   invalidate: ->
     delete @nodes
     @parentView?.invalidate()

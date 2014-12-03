@@ -43,6 +43,10 @@ Trix.DOM = dom =
     else
       node
 
+  findInnerElement: (element) ->
+    element = element.firstElementChild while element?.firstElementChild
+    element
+
   elementContainsNode: (element, node) ->
     while node
       return true if node is element

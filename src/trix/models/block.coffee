@@ -38,7 +38,8 @@ class Trix.Block extends Trix.Object
     @attributes.length
 
   getConfig: ->
-    Trix.blockAttributes[@getAttributes()[0]] ? Trix.blockAttributes.default
+    attributes = @getAttributes()
+    Trix.blockAttributes[attributes[attributes.length - 1]] ? Trix.blockAttributes.default
 
   findLineBreakInDirectionFromPosition: (direction, position) ->
     string = @toString()
@@ -98,11 +99,11 @@ class Trix.Block extends Trix.Object
 
   # Grouping
 
-  canBeGrouped: ->
-    @getConfig().groupTagName
+  canBeGrouped: (depth) ->
+    @getAttributes()[depth]
 
-  canBeGroupedWith: (blockView) ->
-    @canBeGrouped() and @getConfig().groupTagName is blockView.getConfig().groupTagName
+  canBeGroupedWith: (block, depth) ->
+    @getAttributes()[depth] is block.getAttributes()[depth]
 
   # Block breaks
 

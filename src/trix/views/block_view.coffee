@@ -10,8 +10,30 @@ class Trix.BlockView extends Trix.ObjectView
     @textConfig = @config.text ? {}
 
   createNodes: ->
-    tagNames = (Trix.blockAttributes[attribute] for attribute in @block.getAttributes())
-    tagNames.push(@config.tagName) unless tagNames.length
+    if @block.isEmpty()
+      nodes = [makeElement("br")]
+    else
+      textView = @findOrCreateCachedChildView(Trix.TextView, @block.text, {@textConfig})
+      nodes = textView.getNodes()
+      nodes.push(makeElement("br")) if @shouldAddExtraNewlineElement()
+    nodes
+
+  getElement: ->
+    element = makeElement(@config.tagName)
+    element.appendChild(node) for node in @getNodes()
+    element
+
+  getInnerElement: ->
+    if @config.groupTagName
+      @getElement()
+    else
+      element = document.createDocumentFragment()
+      element.appendChild(node) for node in @getNodes()
+      element
+
+  createGroupElement: (depth = 0) ->
+    tagNames = for attribute in @block.getAttributes()[depth..] when config = Trix.blockAttributes[attribute]
+      config.groupTagName ? config.tagName
 
     for tagName in tagNames
       if innerElement
@@ -20,23 +42,12 @@ class Trix.BlockView extends Trix.ObjectView
         innerElement = pendingElement
       else
         element = innerElement = makeElement(tagName)
+    element
 
-    if @block.isEmpty()
-      innerElement.appendChild(makeElement("br"))
-    else
-      textView = @findOrCreateCachedChildView(Trix.TextView, @block.text, {@textConfig})
-      innerElement.appendChild(node) for node in textView.getNodes()
-      @appendExtraNewlineElement(innerElement)
-
-    [element]
-
-  createGroupElement: ->
-    makeElement(@config.groupTagName)
 
   # A single <br> at the end of a block element has no visual representation
   # so add an extra one.
-  appendExtraNewlineElement: (element) ->
+  shouldAddExtraNewlineElement:->
     if string = @block.toString()
       # A newline followed by the block break newline
-      if /\n\n$/.test(string)
-        element.appendChild(makeElement("br"))
+      /\n\n$/.test(string)

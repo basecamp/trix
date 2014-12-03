@@ -43,10 +43,6 @@ createDocument = (parts...) ->
     document: createDocument(["123", {}, ["code"]])
     html: "<pre>123</pre>"
 
-  "quote and code formatted block":
-    document: createDocument(["ab3", {}, ["quote", "code"]])
-    html: "<blockquote><pre>ab3</pre></blockquote>"
-
   "code with newline":
     document: createDocument(["12\n3", {}, ["code"]])
     html: "<pre>12\n3</pre>"
@@ -118,6 +114,30 @@ createDocument = (parts...) ->
 
     html: """<div><a href="#{attrs.url}">#{figure.outerHTML}</a></div>"""
     document: new Trix.Document [new Trix.Block text]
+
+  "nested quote and code formatted block":
+    document: createDocument(["ab3", {}, ["quote", "code"]])
+    html: "<blockquote><pre>ab3</pre></blockquote>"
+
+  "nested code and quote formatted block":
+    document: createDocument(["ab3", {}, ["code", "quote"]])
+    html: "<pre><blockquote>ab3</blockquote></pre>"
+
+  "nested quote and list":
+    document: createDocument(["ab3", {}, ["quote", "bullet"]])
+    html: "<blockquote><ul><li>ab3</li></ul></blockquote>"
+
+  "nested quote and list with two items":
+    document: createDocument(["a", {}, ["quote", "bullet"]], ["b", {}, ["quote", "bullet"]])
+    html: "<blockquote><ul><li>a</li><li>b</li></ul></blockquote>"
+
+  "nested unordered lists":
+    document: createDocument(["a", {}, ["bullet"]], ["b", {}, ["bullet", "bullet"]], ["c", {}, ["bullet", "bullet"]])
+    html: "<ul><li>a<ul><li>b</li><li>c</li></ul></li></ul>"
+
+  "nested lists":
+    document: createDocument(["a", {}, ["number"]], ["b", {}, ["number", "bullet"]], ["c", {}, ["number", "bullet"]])
+    html: "<ol><li>a<ul><li>b</li><li>c</li></ul></li></ol>"
 
 @eachFixture = (callback) ->
   for name, details of @fixtures
