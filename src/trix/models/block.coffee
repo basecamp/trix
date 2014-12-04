@@ -37,10 +37,6 @@ class Trix.Block extends Trix.Object
   hasAttributes: ->
     @attributes.length
 
-  getConfig: ->
-    attributes = @getAttributes()
-    Trix.blockAttributes[attributes[attributes.length - 1]] ? Trix.blockAttributes.default
-
   findLineBreakInDirectionFromPosition: (direction, position) ->
     string = @toString()
     result = switch direction

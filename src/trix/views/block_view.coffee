@@ -6,7 +6,9 @@ class Trix.BlockView extends Trix.ObjectView
   constructor: ->
     super
     @block = @object
-    @config = @block.getConfig()
+    @attributes = @block.getAttributes()
+    attribute = @attributes[@attributes.length - 1]
+    @config = Trix.blockAttributes[attribute] ? Trix.blockAttributes.default
     @textConfig = @config.text ? {}
 
   createNodes: ->
@@ -25,7 +27,7 @@ class Trix.BlockView extends Trix.ObjectView
       nodes
 
   createContainerElement: (depth = 0) ->
-    attribute = @block.getAttributes()[depth]
+    attribute = @attributes[depth]
     config = Trix.blockAttributes[attribute]
     makeElement(config.groupTagName ? config.tagName)
 
