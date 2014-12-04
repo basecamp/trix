@@ -36,12 +36,11 @@ class Trix.HTMLParser
         @processElement(node)
 
   appendBlockForElement: (element) ->
-    unless @currentBlockElement?.contains(element)
-      if element.firstChild?.nodeType is Node.TEXT_NODE or element.textContent is ""
-        attributes = getBlockAttributes(element)
-        if attributes.length or tagName(element) is Trix.blockAttributes.default.tagName
-          @appendBlockForAttributes(attributes)
-          @currentBlockElement = element
+    if element.firstChild?.nodeType is Node.TEXT_NODE or element.textContent is ""
+      attributes = getBlockAttributes(element)
+      if attributes.length or tagName(element) is Trix.blockAttributes.default.tagName
+        @appendBlockForAttributes(attributes)
+        @currentBlockElement = element
 
   processTextNode: (node) ->
     unless node.textContent is Trix.ZERO_WIDTH_SPACE
