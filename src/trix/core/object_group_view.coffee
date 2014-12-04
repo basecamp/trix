@@ -16,17 +16,17 @@ class Trix.ObjectGroupView extends Trix.ObjectView
     @childViews
 
   createNodes: ->
-    container = @createContainerElement()
+    element = @createContainerElement()
+    innerElement = findInnerElement(element)
 
     for view in @getChildViews()
-      element = if view instanceof @constructor
-        findInnerElement(container)
+      parent = if view instanceof @constructor
+        findInnerElement(innerElement)
       else
-        container
+        innerElement
 
-      for node in view.getNodes()
-        element.appendChild(node)
-    [container]
+      parent.appendChild(node) for node in view.getNodes()
+    [element]
 
   createContainerElement: (depth = @objectGroup.depth) ->
     @getChildViews()[0].createContainerElement(depth)
