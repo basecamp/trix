@@ -19,7 +19,7 @@ class Trix.BlockView extends Trix.ObjectView
       nodes = textView.getNodes()
       nodes.push(makeElement("br")) if @shouldAddExtraNewlineElement()
 
-    if @config.groupTagName
+    if @config.groupTagName or @attributes.length is 0
       element = makeElement(@config.tagName)
       element.appendChild(node) for node in nodes
       [element]
@@ -30,11 +30,6 @@ class Trix.BlockView extends Trix.ObjectView
     attribute = @attributes[depth]
     config = Trix.blockAttributes[attribute]
     makeElement(config.groupTagName ? config.tagName)
-
-  getElement: ->
-    element = makeElement(@config.tagName)
-    element.appendChild(node) for node in @getNodes()
-    element
 
   # A single <br> at the end of a block element has no visual representation
   # so add an extra one.

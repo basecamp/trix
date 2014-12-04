@@ -17,7 +17,7 @@ class Trix.DocumentView extends Trix.ObjectView
       objects = Trix.ObjectGroup.groupObjects(@document.getBlocks())
       for object in objects
         view = @findOrCreateCachedChildView(Trix.BlockView, object)
-        @element.appendChild(view.getElement())
+        @element.appendChild(node) for node in view.getNodes()
 
     @didRender()
 
