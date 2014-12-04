@@ -69,13 +69,12 @@ class Trix.PieceView extends Trix.ObjectView
       element.style[key] = value for key, value of styles
     element
 
-  createGroupElement: ->
+  createContainerElement: ->
     for key, value of @attributes when config = Trix.textAttributes[key]
       if config.groupTagName
         attributes = {}
         attributes[key] = value
         return makeElement(config.groupTagName, attributes)
-
 
   preserveSpaces = (string) ->
     string

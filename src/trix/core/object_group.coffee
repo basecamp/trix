@@ -37,8 +37,7 @@ class Trix.ObjectGroup
     @objects
 
   finalize: ->
-    if @objects.length > 1
-      @objects = @groupObjects()
+    @objects = @groupObjects()
 
   groupObjects: ->
     @constructor.groupObjects(@objects, @depth + 1)

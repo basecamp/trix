@@ -16,34 +16,23 @@ class Trix.BlockView extends Trix.ObjectView
       textView = @findOrCreateCachedChildView(Trix.TextView, @block.text, {@textConfig})
       nodes = textView.getNodes()
       nodes.push(makeElement("br")) if @shouldAddExtraNewlineElement()
-    nodes
+
+    if @config.groupTagName
+      element = makeElement(@config.tagName)
+      element.appendChild(node) for node in nodes
+      [element]
+    else
+      nodes
+
+  createContainerElement: (depth = 0) ->
+    attribute = @block.getAttributes()[depth]
+    config = Trix.blockAttributes[attribute]
+    makeElement(config.groupTagName ? config.tagName)
 
   getElement: ->
     element = makeElement(@config.tagName)
     element.appendChild(node) for node in @getNodes()
     element
-
-  getInnerElement: ->
-    if @config.groupTagName
-      @getElement()
-    else
-      element = document.createDocumentFragment()
-      element.appendChild(node) for node in @getNodes()
-      element
-
-  createGroupElement: (depth = 0) ->
-    tagNames = for attribute in @block.getAttributes()[depth..] when config = Trix.blockAttributes[attribute]
-      config.groupTagName ? config.tagName
-
-    for tagName in tagNames
-      if innerElement
-        pendingElement = makeElement(tagName)
-        innerElement.appendChild(pendingElement)
-        innerElement = pendingElement
-      else
-        element = innerElement = makeElement(tagName)
-    element
-
 
   # A single <br> at the end of a block element has no visual representation
   # so add an extra one.
