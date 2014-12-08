@@ -80,10 +80,6 @@ class Trix.SelectionManager
       Trix.selectionChangeObserver.unregisterSelectionManager(this)
     @updateCurrentLocationRange()
 
-  getBlockElements: ->
-    selector = (config.tagName for key, config of Trix.blockAttributes).join(",")
-    @element.querySelectorAll(selector)
-
   updateCurrentLocationRange: (locationRange) ->
     locationRange ?= @createLocationRangeFromDOMRange(getDOMRange())
     return unless locationRange
@@ -133,25 +129,22 @@ class Trix.SelectionManager
   findLocationFromContainerAtOffset: (container, containerOffset) ->
     return index: 0, offset: 0 if container is @element and containerOffset is 0
 
-    blockElements = @getBlockElements()
-    return index: 0, offset: 0 if Object.keys(blockElements).length is 0
-
     node = DOM.findNodeForContainerAtOffset(container, containerOffset)
+    {element, index} = @findBlockElementAndIndexForNode(node)
     offset = 0
 
-    for blockElement, index in blockElements when DOM.elementContainsNode(blockElement, node)
-      walker = DOM.walkTree(blockElement)
-      while walker.nextNode()
-        if walker.currentNode is node
-          if container.nodeType is Node.TEXT_NODE and not nodeIsCursorTarget(walker.currentNode)
-            string = Trix.UTF16String.box(walker.currentNode.textContent)
-            offset += string.offsetFromUCS2Offset(containerOffset)
-          else if containerOffset > 0
-            offset += nodeLength(walker.currentNode)
-          return {index, offset}
-        else
+    walker = DOM.walkTree(element)
+    while walker.nextNode()
+      if walker.currentNode is node
+        if container.nodeType is Node.TEXT_NODE and not nodeIsCursorTarget(walker.currentNode)
+          string = Trix.UTF16String.box(walker.currentNode.textContent)
+          offset += string.offsetFromUCS2Offset(containerOffset)
+        else if containerOffset > 0
           offset += nodeLength(walker.currentNode)
-      return {index, offset}
+        return {index, offset}
+      else
+        offset += nodeLength(walker.currentNode)
+    return {index, offset}
 
   findContainerAndOffsetForLocation: (location) ->
     return [@element, 0] if location.index is 0 and location.offset is 0
@@ -172,7 +165,7 @@ class Trix.SelectionManager
     [container, offset]
 
   findNodeAndOffsetForLocation: (location) ->
-    blockElement = @getBlockElements()[location.index]
+    blockElement = @findBlockElementForLocation(location)
     offset = 0
     walker = DOM.walkTree(blockElement)
     while walker.nextNode()
@@ -217,6 +210,32 @@ class Trix.SelectionManager
       rightPoint = [rightRect.right, rightRect.top + rightRect.height / 2]
 
       [leftPoint, rightPoint]
+
+  # Block elements
+
+  getBlockElements: ->
+    tagNames = for key, config of Trix.blockAttributes
+      config.tagName ? config.groupTagName
+    selector = tagNames.join(":not([class]),")
+    elements = []
+    index = 0
+    for element in @element.querySelectorAll(selector)
+      unless element.querySelector(selector)
+        elements.push({element, index})
+        index++
+    elements
+
+  findBlockElementAndIndexForNode: (node) ->
+    for elementWithIndex in @getBlockElements()
+      if DOM.elementContainsNode(elementWithIndex.element, node)
+        {element, index} = elementWithIndex
+    {element, index}
+
+  findBlockElementForLocation: (location) ->
+    for elementWithIndex in @getBlockElements()
+      if elementWithIndex.index is location.index
+        element = elementWithIndex.element
+    element
 
   nodeIsCursorTarget = (node) ->
     return unless node
