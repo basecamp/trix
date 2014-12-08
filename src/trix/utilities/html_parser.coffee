@@ -109,10 +109,11 @@ class Trix.HTMLParser
   getBlockAttributes = (element) ->
     attributes = []
     while element
-      for attribute, config of Trix.blockAttributes when attribute isnt "default"
-        if tagName(element) is config.groupTagName or config.tagName
+      for attribute, config of Trix.blockAttributes when config.parse isnt false
+        if tagName(element) is config.tagName
           if config.test?(element) or not config.test
             attributes.push(attribute)
+            attributes.push(config.parentAttribute) if config.parentAttribute
       element = element.parentNode
     attributes.reverse()
 

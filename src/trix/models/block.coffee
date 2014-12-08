@@ -98,8 +98,14 @@ class Trix.Block extends Trix.Object
   canBeGrouped: (depth) ->
     @getAttributes()[depth]
 
-  canBeGroupedWith: (block, depth) ->
-    @getAttributes()[depth] is block.getAttributes()[depth]
+  canBeGroupedWith: (otherBlock, depth) ->
+    attributes = @getAttributes()
+    otherAttributes = otherBlock.getAttributes()
+    if attributes[depth] is otherAttributes[depth]
+      if attributes[depth] in ["bullet", "number"] and otherAttributes[depth + 1] not in ["bulletList", "numberList"]
+        false
+      else
+        true
 
   # Block breaks
 

@@ -1,19 +1,26 @@
-Trix.blockAttributes =
+Trix.blockAttributes = attributes =
   default:
     tagName: "div"
+    parse: false
   quote:
-    groupTagName: "blockquote"
+    tagName: "blockquote"
   code:
-    groupTagName: "pre"
+    tagName: "pre"
     text:
       plaintext: true
+  bulletList:
+    tagName: "ul"
+    parse: false
   bullet:
     tagName: "li"
-    groupTagName: "ul"
+    parentAttribute: "bulletList"
     test: (element) ->
-      Trix.DOM.tagName(element.parentNode) is @groupTagName
+      Trix.DOM.tagName(element.parentNode) is attributes[@parentAttribute].tagName
+  numberList:
+    tagName: "ol"
+    parse: false
   number:
     tagName: "li"
-    groupTagName: "ol"
+    parentAttribute: "numberList"
     test: (element) ->
-      Trix.DOM.tagName(element.parentNode) is @groupTagName
+      Trix.DOM.tagName(element.parentNode) is attributes[@parentAttribute].tagName

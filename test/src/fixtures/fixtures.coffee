@@ -48,27 +48,27 @@ createDocument = (parts...) ->
     html: "<pre>12\n3</pre>"
 
   "unordered list with one item":
-    document: createDocument(["a", {}, ["bullet"]])
+    document: createDocument(["a", {}, ["bulletList", "bullet"]])
     html: "<ul><li>a</li></ul>"
 
   "unordered list with  bold text":
-    document: createDocument(["a", { bold: true }, ["bullet"]])
+    document: createDocument(["a", { bold: true }, ["bulletList", "bullet"]])
     html: "<ul><li><strong>a</strong></li></ul>"
 
   "unordered list with two items":
-    document: createDocument(["a", {}, ["bullet"]], ["b", {}, ["bullet"]])
+    document: createDocument(["a", {}, ["bulletList", "bullet"]], ["b", {}, ["bulletList", "bullet"]])
     html: "<ul><li>a</li><li>b</li></ul>"
 
   "unordered list surrounded by unformatted blocks":
-    document: createDocument(["a"], ["b", {}, ["bullet"]], ["c"])
+    document: createDocument(["a"], ["b", {}, ["bulletList", "bullet"]], ["c"])
     html: "<div>a</div><ul><li>b</li></ul><div>c</div>"
 
   "ordered list":
-    document: createDocument(["a", {}, ["number"]])
+    document: createDocument(["a", {}, ["numberList", "number"]])
     html: "<ol><li>a</li></ol>"
 
   "ordered list and an unordered list":
-    document: createDocument(["a", {}, ["bullet"]], ["b", {}, ["number"]])
+    document: createDocument(["a", {}, ["bulletList", "bullet"]], ["b", {}, ["numberList", "number"]])
     html: "<ul><li>a</li></ul><ol><li>b</li></ol>"
 
   "empty block with attributes":
@@ -124,27 +124,27 @@ createDocument = (parts...) ->
     html: "<pre><blockquote>ab3</blockquote></pre>"
 
   "nested quote and list":
-    document: createDocument(["ab3", {}, ["quote", "bullet"]])
+    document: createDocument(["ab3", {}, ["quote", "bulletList", "bullet"]])
     html: "<blockquote><ul><li>ab3</li></ul></blockquote>"
 
   "nested list and quote":
-    document: createDocument(["ab3", {}, ["bullet", "quote"]])
+    document: createDocument(["ab3", {}, ["bulletList", "bullet", "quote"]])
     html: "<ul><li><blockquote>ab3</blockquote></li></ul>"
 
   "nested lists and quotes":
-    document: createDocument(["a", {}, ["bullet", "quote"]], ["b", {}, ["bullet", "quote"]])
+    document: createDocument(["a", {}, ["bulletList", "bullet", "quote"]], ["b", {}, ["bulletList", "bullet", "quote"]])
     html: "<ul><li><blockquote>a</blockquote></li><li><blockquote>b</blockquote></li></ul>"
 
   "nested quote and list with two items":
-    document: createDocument(["a", {}, ["quote", "bullet"]], ["b", {}, ["quote", "bullet"]])
+    document: createDocument(["a", {}, ["quote", "bulletList", "bullet"]], ["b", {}, ["quote", "bulletList", "bullet"]])
     html: "<blockquote><ul><li>a</li><li>b</li></ul></blockquote>"
 
   "nested unordered lists":
-    document: createDocument(["a", {}, ["bullet"]], ["b", {}, ["bullet", "bullet"]], ["c", {}, ["bullet", "bullet"]])
+    document: createDocument(["a", {}, ["bulletList", "bullet"]], ["b", {}, ["bulletList", "bullet", "bulletList", "bullet"]], ["c", {}, ["bulletList", "bullet", "bulletList", "bullet"]])
     html: "<ul><li>a<ul><li>b</li><li>c</li></ul></li></ul>"
 
   "nested lists":
-    document: createDocument(["a", {}, ["number"]], ["b", {}, ["number", "bullet"]], ["c", {}, ["number", "bullet"]])
+    document: createDocument(["a", {}, ["numberList", "number"]], ["b", {}, ["numberList", "number", "bulletList", "bullet"]], ["c", {}, ["numberList", "number", "bulletList", "bullet"]])
     html: "<ol><li>a<ul><li>b</li><li>c</li></ul></li></ol>"
 
 @eachFixture = (callback) ->
