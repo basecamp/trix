@@ -215,12 +215,11 @@ class Trix.SelectionManager
 
   getBlockElements: ->
     tagNames = for key, config of Trix.blockAttributes
-      config.tagName ? config.groupTagName
-    selector = tagNames.join(":not([class]),")
+      config.tagName
     elements = []
     index = 0
-    for element in @element.querySelectorAll(selector)
-      unless element.querySelector(selector)
+    for element in @element.querySelectorAll(tagNames.join(","))
+      unless DOM.tagName(element.firstChild) in tagNames
         elements.push({element, index})
         index++
     elements
