@@ -56,6 +56,10 @@ class Trix.Composition
     if updatePosition
       @setPosition(position + text.getLength())
 
+  insertBlock: (block = new Trix.Block) ->
+    document = new Trix.Document [block]
+    @insertDocument(document)
+
   insertDocument: (document = Trix.Document.fromString("")) ->
     @notifyDelegateOfIntentionToSetLocationRange()
     position = @getPosition()
@@ -80,9 +84,10 @@ class Trix.Composition
 
     if block.hasAttributes()
       attributes = block.getAttributes()
-      if "bullet" in attributes or "number" in attributes
+      blockConfig = Trix.blockAttributes[block.getLastAttribute()]
+      if blockConfig?.parentAttribute
         if block.isEmpty()
-          @removeBlockAttributes()
+          @removeLastBlockAttribute()
         else
           @insertBlockBreak()
       else
@@ -90,11 +95,12 @@ class Trix.Composition
         switch
           # Remove block attributes
           when block.isEmpty()
-            @removeBlockAttributes()
+            @removeLastBlockAttribute()
           # Break out of block after a newline (and remove the newline)
           when text.endsWithString("\n")
             @expandSelectionInDirection("backward")
-            @insertDocument()
+            newBlock = block.removeLastAttribute().copyWithoutText()
+            @insertBlock(newBlock)
           # Stay in the block, add a newline
           else
             @insertString("\n")
@@ -156,10 +162,10 @@ class Trix.Composition
       @document.removeTextAtLocationRange(locationRange)
       @setLocationRange(locationRange.collapse())
 
-  removeBlockAttributes: ->
+  removeLastBlockAttribute: ->
     locationRange = @getLocationRange()
     block = @document.getBlockAtIndex(locationRange.end.index)
-    @removeCurrentAttribute(key) for key in block.getAttributes()
+    @removeCurrentAttribute(block.getLastAttribute())
 
   # Current attributes
 

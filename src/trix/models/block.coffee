@@ -16,6 +16,9 @@ class Trix.Block extends Trix.Object
   copyWithText: (text) ->
     new @constructor text, @attributes
 
+  copyWithoutText: ->
+    @copyWithText(null)
+
   copyWithAttributes: (attributes) ->
     new @constructor @text, attributes
 
@@ -40,6 +43,12 @@ class Trix.Block extends Trix.Object
     else
       @attributes.remove(attribute)
     @copyWithAttributes attributes
+
+  removeLastAttribute: ->
+    @removeAttribute(@getLastAttribute())
+
+  getLastAttribute: ->
+    @attributes.toArray().slice(-1)[0]
 
   getAttributes: ->
     @attributes.toArray()
