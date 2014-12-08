@@ -218,6 +218,23 @@ class Trix.Composition
     return unless locationRange = @getLocationRange()
     @document.removeAttributeAtLocationRange(attributeName, locationRange)
 
+  increaseBlockAttributeLevel: ->
+    locationRange = @getLocationRange()
+    attributes = @document.getBlockAtIndex(locationRange.index).getAttributes()
+    if attributes.length
+      @setBlockAttribute(attributes[attributes.length - 1])
+
+  decreaseBlockAttributeLevel: ->
+    locationRange = @getLocationRange()
+    attributes = @document.getBlockAtIndex(locationRange.index).getAttributes()
+    if attributes.length
+      @removeBlockAttribute(attributes[attributes.length - 1])
+      @updateCurrentAttributes()
+
+  canChangeBlockAttributeLevel: ->
+    if locationRange = @getLocationRange()
+      @document.getBlockAtIndex(locationRange.index).getAttributes().length
+
   updateCurrentAttributes: ->
     @currentAttributes =
       if locationRange = @getLocationRange()
