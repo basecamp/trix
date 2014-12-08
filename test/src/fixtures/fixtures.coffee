@@ -127,6 +127,14 @@ createDocument = (parts...) ->
     document: createDocument(["ab3", {}, ["quote", "bullet"]])
     html: "<blockquote><ul><li>ab3</li></ul></blockquote>"
 
+  "nested list and quote":
+    document: createDocument(["ab3", {}, ["bullet", "quote"]])
+    html: "<ul><li><blockquote>ab3</blockquote></li></ul>"
+
+  "nested lists and quotes":
+    document: createDocument(["a", {}, ["bullet", "quote"]], ["b", {}, ["bullet", "quote"]])
+    html: "<ul><li><blockquote>a</blockquote></li><li><blockquote>b</blockquote></li></ul>"
+
   "nested quote and list with two items":
     document: createDocument(["a", {}, ["quote", "bullet"]], ["b", {}, ["quote", "bullet"]])
     html: "<blockquote><ul><li>a</li><li>b</li></ul></blockquote>"

@@ -18,18 +18,52 @@ class Trix.BlockView extends Trix.ObjectView
       textView = @findOrCreateCachedChildView(Trix.TextView, @block.text, {@textConfig})
       nodes = textView.getNodes()
       nodes.push(makeElement("br")) if @shouldAddExtraNewlineElement()
+    nodes
 
-    if @config.groupTagName or @attributes.length is 0
-      element = makeElement(@config.tagName)
-      element.appendChild(node) for node in nodes
+  getNodes: (depths = [0]) ->
+    nodes = super
+
+    for attribute, index in @attributes.slice(depths[0])
+      config = Trix.blockAttributes[attribute]
+      tagName = if index is 0
+        config.tagName
+      else
+        config.tagName ? config.groupTagName
+
+      if tagName
+        pendingElement = makeElement(tagName)
+
+        if innerElement
+          innerElement.appendChild(pendingElement)
+          innerElement = pendingElement
+        else
+          element = innerElement = pendingElement
+
+    if innerElement
+      innerElement.appendChild(node) for node in nodes
       [element]
     else
-      nodes
+      if @attributes.length is 0
+        element = makeElement(@config.tagName)
+        element.appendChild(node) for node in nodes
+        [element]
+      else
+        nodes
 
-  createContainerElement: (depth = 0) ->
-    attribute = @attributes[depth]
-    config = Trix.blockAttributes[attribute]
-    makeElement(config.groupTagName ? config.tagName)
+  createContainerElement: (depths = [0]) ->
+    for depth, index in depths
+      attribute = @attributes[depth]
+      config = Trix.blockAttributes[attribute]
+
+      if index is 0 or config.tagName
+        pendingElement = makeElement(config.groupTagName)
+
+        if innerElement
+          innerElement.appendChild(pendingElement)
+          innerElement = pendingElement
+        else
+          element = innerElement = pendingElement
+    element
 
   # A single <br> at the end of a block element has no visual representation
   # so add an extra one.

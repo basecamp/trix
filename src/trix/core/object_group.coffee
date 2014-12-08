@@ -22,6 +22,7 @@ class Trix.ObjectGroup
     objects
 
   constructor: (@objects = [], @depth = 0) ->
+    @depths = [@depth]
 
   canAddObject: (object) ->
     if object.canBeGrouped?(@depth)
@@ -37,7 +38,14 @@ class Trix.ObjectGroup
     @objects
 
   finalize: ->
-    @objects = @groupObjects()
+    objects = @groupObjects()
+    if not (objects.length is 1 and objects[0] instanceof @constructor and objects[0].getObjects().length is @getObjects().length)
+      @objects = objects
+    else
+      @depths.push(@depth + 1)
+
+  getDepths: ->
+    @depths
 
   groupObjects: ->
     @constructor.groupObjects(@objects, @depth + 1)

@@ -2,9 +2,9 @@ Trix.blockAttributes =
   default:
     tagName: "div"
   quote:
-    tagName: "blockquote"
+    groupTagName: "blockquote"
   code:
-    tagName: "pre"
+    groupTagName: "pre"
     text:
       plaintext: true
   bullet:

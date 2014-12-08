@@ -110,7 +110,7 @@ class Trix.HTMLParser
     attributes = []
     while element
       for attribute, config of Trix.blockAttributes when attribute isnt "default"
-        if tagName(element) is config.tagName
+        if tagName(element) is config.groupTagName or config.tagName
           if config.test?(element) or not config.test
             attributes.push(attribute)
       element = element.parentNode
