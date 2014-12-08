@@ -12,13 +12,14 @@ class Trix.List extends Trix.Object
     @length = @items.length
     super
 
-  add: (item) ->
-    new @constructor @items.concat(item)
+  add: (items...) ->
+    new @constructor @items.concat(items)
 
-  remove: (item) ->
-    items = copy(@items)
-    items.splice(items.lastIndexOf(item), 1)
-    new @constructor items
+  remove: (items...) ->
+    newItems = copy(@items)
+    for item in items
+      newItems.splice(newItems.lastIndexOf(item), 1)
+    new @constructor newItems
 
   toArray: ->
     copy(@items)

@@ -25,11 +25,21 @@ class Trix.Block extends Trix.Object
     else
       @copyWithText(@text.copyUsingObjectMap(objectMap))
 
-  addAttribute: (attribute, value) ->
-    @copyWithAttributes @attributes.add(attribute, value)
+  addAttribute: (attribute) ->
+    {parentAttribute} = Trix.blockAttributes[attribute]
+    attributes = if parentAttribute
+      @attributes.add(parentAttribute, attribute)
+    else
+      @attributes.add(attribute)
+    @copyWithAttributes attributes
 
   removeAttribute: (attribute) ->
-    @copyWithAttributes @attributes.remove(attribute)
+    {parentAttribute} = Trix.blockAttributes[attribute]
+    attributes = if parentAttribute
+      @attributes.remove(attribute, parentAttribute)
+    else
+      @attributes.remove(attribute)
+    @copyWithAttributes attributes
 
   getAttributes: ->
     @attributes.toArray()
