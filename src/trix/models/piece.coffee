@@ -77,8 +77,8 @@ class Trix.Piece extends Trix.Object
 
   # Grouping
 
-  canBeGrouped: (depth) ->
-    depth is 0 and @hasAttribute("href")
+  canBeGrouped: ->
+    @hasAttribute("href")
 
   canBeGroupedWith: (piece) ->
     @getAttribute("href") is piece.getAttribute("href")

@@ -21,5 +21,5 @@ class Trix.ObjectGroupView extends Trix.ObjectView
 
     [element]
 
-  createContainerElement: (depth = @objectGroup.depth) ->
+  createContainerElement: (depth = @objectGroup.getDepth()) ->
     @getChildViews()[0].createContainerElement(depth)
