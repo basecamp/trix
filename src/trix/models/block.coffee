@@ -48,7 +48,7 @@ class Trix.Block extends Trix.Object
     @removeAttribute(@getLastAttribute())
 
   getLastAttribute: ->
-    @attributes.toArray().slice(-1)[0]
+    @attributes.getLast()
 
   getAttributes: ->
     @attributes.toArray()

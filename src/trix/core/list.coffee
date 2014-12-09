@@ -21,6 +21,9 @@ class Trix.List extends Trix.Object
       newItems.splice(newItems.lastIndexOf(item), 1)
     new @constructor newItems
 
+  getLast: ->
+    @items[@items.length - 1]
+
   toArray: ->
     copy(@items)
 
