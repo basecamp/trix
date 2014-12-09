@@ -1,7 +1,5 @@
 #= require ./object_view
 
-{findInnerElement, makeElement} = Trix.DOM
-
 class Trix.ObjectGroupView extends Trix.ObjectView
   constructor: ->
     super

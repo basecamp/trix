@@ -33,7 +33,7 @@ class Trix.PieceView extends Trix.ObjectView
     view.getNodes()
 
   createStringNodes: ->
-    if @textConfig.plaintext
+    if @textConfig?.plaintext
       [document.createTextNode(@string)]
     else
       nodes = []
