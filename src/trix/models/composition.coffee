@@ -226,15 +226,15 @@ class Trix.Composition
 
   increaseBlockAttributeLevel: ->
     locationRange = @getLocationRange()
-    attributes = @document.getBlockAtIndex(locationRange.index).getAttributes()
-    if attributes.length
-      @setBlockAttribute(attributes[attributes.length - 1])
+    block = @document.getBlockAtIndex(locationRange.index)
+    if attribute = block.getLastAttribute()
+      @setBlockAttribute(attribute)
 
   decreaseBlockAttributeLevel: ->
     locationRange = @getLocationRange()
-    attributes = @document.getBlockAtIndex(locationRange.index).getAttributes()
-    if attributes.length
-      @removeBlockAttribute(attributes[attributes.length - 1])
+    block = @document.getBlockAtIndex(locationRange.index)
+    if attribute = block.getLastAttribute()
+      @removeBlockAttribute(attribute)
       @updateCurrentAttributes()
 
   canChangeBlockAttributeLevel: ->
