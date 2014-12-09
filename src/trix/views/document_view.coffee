@@ -1,6 +1,7 @@
 #= require trix/views/block_view
 
 {defer} = Trix.Helpers
+{walkTree} = Trix.DOM
 
 class Trix.DocumentView extends Trix.ObjectView
   constructor: ->
@@ -26,3 +27,15 @@ class Trix.DocumentView extends Trix.ObjectView
 
   focus: ->
     @element.focus()
+
+  getBlockComments: ->
+    blockComments = []
+    walker = walkTree(@element, onlyNodesOfType: "comment")
+    while walker.nextNode()
+      comment = walker.currentNode
+      if @isBlockComment(comment)
+        blockComments.push(comment)
+    blockComments
+
+  isBlockComment: (comment) ->
+    comment.data.match(/blockId/)

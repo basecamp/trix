@@ -28,7 +28,8 @@ class Trix.Document extends Trix.Object
 
     @attachments = new Trix.Collection
     @attachments.delegate = this
-    @refreshAttachments()
+
+    @refresh()
 
   ensureDocumentHasBlock: ->
     if @blockList.length is 0
@@ -89,8 +90,8 @@ class Trix.Document extends Trix.Object
 
   endEditing: ->
     if --@editDepth is 0
+      @refresh()
       @delegate?.didEditDocument?(this)
-      @refreshAttachments()
 
       editOperationLog.groupEnd()
 
@@ -252,6 +253,14 @@ class Trix.Document extends Trix.Object
   getLength: ->
     @blockList.getEndPosition()
 
+  getBlockById: (id) ->
+    index = @blockIds.indexOf(id)
+    @getBlockAtIndex(index) if index isnt -1
+
+  getIndexOfBlock: (block) ->
+    index = @blockIds.indexOf(block.id)
+    index if index isnt -1
+
   getBlocks: ->
     @blockList.toArray()
 
@@ -402,5 +411,12 @@ class Trix.Document extends Trix.Object
 
   # Private
 
+  refresh: ->
+    @refreshAttachments()
+    @refreshBlockIds()
+
   refreshAttachments: ->
     @attachments.refresh(@getAttachments())
+
+  refreshBlockIds: ->
+    @blockIds = (block.id for block in @getBlocks())

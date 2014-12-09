@@ -9,12 +9,14 @@ class Trix.BlockView extends Trix.ObjectView
     @attributes = @block.getAttributes()
 
   createNodes: ->
+    comment = document.createComment("{\"blockId\":#{@block.id}}")
+    nodes = [comment]
     if @block.isEmpty()
-      nodes = [makeElement("br")]
+      nodes.push(makeElement("br"))
     else
       textConfig = Trix.blockAttributes[@block.getLastAttribute()]?.text
       textView = @findOrCreateCachedChildView(Trix.TextView, @block.text, {textConfig})
-      nodes = textView.getNodes()
+      nodes.push(textView.getNodes()...)
       nodes.push(makeElement("br")) if @shouldAddExtraNewlineElement()
 
     if @attributes.length

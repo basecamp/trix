@@ -130,11 +130,16 @@ class Trix.SelectionManager
     return index: 0, offset: 0 if container is @element and containerOffset is 0
 
     node = DOM.findNodeForContainerAtOffset(container, containerOffset)
-    {element, index} = @findBlockElementAndIndexForNode(node)
+    index = 0
     offset = 0
 
-    walker = DOM.walkTree(element)
+    walker = DOM.walkTree(@element)
     while walker.nextNode()
+      if walker.currentNode.nodeType is Node.COMMENT_NODE
+        {blockIndex} = JSON.parse(walker.currentNode.data)
+        index = blockIndex
+        offset = 0
+
       if walker.currentNode is node
         if container.nodeType is Node.TEXT_NODE and not nodeIsCursorTarget(walker.currentNode)
           string = Trix.UTF16String.box(walker.currentNode.textContent)
@@ -156,32 +161,44 @@ class Trix.SelectionManager
       offset = string.offsetToUCS2Offset(location.offset - nodeOffset)
     else
       container = node.parentNode
-      offset =
-        if location.offset is 0
-          0
-        else
-          [node.parentNode.childNodes...].indexOf(node) + 1
+      offset = [node.parentNode.childNodes...].indexOf(node) + 1
 
     [container, offset]
 
   findNodeAndOffsetForLocation: (location) ->
-    blockElement = @findBlockElementForLocation(location)
     offset = 0
-    walker = DOM.walkTree(blockElement)
-    while walker.nextNode()
-      length = nodeLength(walker.currentNode)
+    for currentNode in @getNodesForIndex(location.index)
+      length = nodeLength(currentNode)
       if location.offset <= offset + length
-        if walker.currentNode.nodeType is Node.TEXT_NODE
-          node = walker.currentNode
+        if currentNode.nodeType is Node.TEXT_NODE
+          node = currentNode
           nodeOffset = offset
           break if location.offset is nodeOffset and nodeIsCursorTarget(node)
         else if not node
-          node = walker.currentNode
+          node = currentNode
           nodeOffset = offset
       offset += length
       break if offset > location.offset
 
     [node, nodeOffset]
+
+  getNodesForIndex: (index) ->
+    nodes = []
+    walker = DOM.walkTree(@element)
+    recordingNodes = false
+
+    while walker.nextNode()
+      node = walker.currentNode
+      if node.nodeType is Node.COMMENT_NODE
+        {blockIndex} = JSON.parse(node.data)
+        if blockIndex is index
+          recordingNodes = true
+        else if recordingNodes
+          break
+      else if recordingNodes
+        nodes.push(node)
+
+    nodes
 
   getLocationRangeAtPoint: ([clientX, clientY]) ->
     if document.caretPositionFromPoint
