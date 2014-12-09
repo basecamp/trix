@@ -188,11 +188,11 @@ class Trix.Composition
   setCurrentAttribute: (attributeName, value) ->
     if Trix.blockAttributes[attributeName]
       @setBlockAttribute(attributeName, value)
+      @updateCurrentAttributes()
     else
       @setTextAttribute(attributeName, value)
-
-    @currentAttributes[attributeName] = value
-    @notifyDelegateOfCurrentAttributesChange()
+      @currentAttributes[attributeName] = value
+      @notifyDelegateOfCurrentAttributesChange()
 
   setTextAttribute: (attributeName, value) ->
     return unless locationRange = @getLocationRange()
@@ -209,11 +209,11 @@ class Trix.Composition
   removeCurrentAttribute: (attributeName) ->
     if Trix.blockAttributes[attributeName]
       @removeBlockAttribute(attributeName)
+      @updateCurrentAttributes()
     else
       @removeTextAttribute(attributeName)
-
-    delete @currentAttributes[attributeName]
-    @notifyDelegateOfCurrentAttributesChange()
+      delete @currentAttributes[attributeName]
+      @notifyDelegateOfCurrentAttributesChange()
 
   removeTextAttribute: (attributeName) ->
     return unless locationRange = @getLocationRange()
@@ -228,14 +228,13 @@ class Trix.Composition
     locationRange = @getLocationRange()
     block = @document.getBlockAtIndex(locationRange.index)
     if attribute = block.getLastAttribute()
-      @setBlockAttribute(attribute)
+      @setCurrentAttribute(attribute)
 
   decreaseBlockAttributeLevel: ->
     locationRange = @getLocationRange()
     block = @document.getBlockAtIndex(locationRange.index)
     if attribute = block.getLastAttribute()
-      @removeBlockAttribute(attribute)
-      @updateCurrentAttributes()
+      @removeCurrentAttribute(attribute)
 
   canChangeBlockAttributeLevel: ->
     if locationRange = @getLocationRange()

@@ -7,7 +7,6 @@ editorTest "applying block attributes", (done) ->
       ok isToolbarButtonActive(attribute: "quote")
       clickToolbarButton attribute: "code", ->
         expectBlockAttributes([0, 4], ["quote", "code"])
-        ok isToolbarButtonActive(attribute: "quote")
         ok isToolbarButtonActive(attribute: "code")
         clickToolbarButton attribute: "code", ->
           expectBlockAttributes([0, 4], ["quote"])
