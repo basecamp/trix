@@ -31,17 +31,17 @@ class Trix.Block extends Trix.Object
   addAttribute: (attribute) ->
     {parentAttribute} = Trix.blockAttributes[attribute]
     attributes = if parentAttribute
-      @attributes.add(parentAttribute, attribute)
+      @attributes.push(parentAttribute, attribute)
     else
-      @attributes.add(attribute)
+      @attributes.push(attribute)
     @copyWithAttributes attributes
 
   removeAttribute: (attribute) ->
     {parentAttribute} = Trix.blockAttributes[attribute]
     attributes = if parentAttribute
-      @attributes.remove(attribute, parentAttribute)
+      @attributes.pop(attribute, parentAttribute)
     else
-      @attributes.remove(attribute)
+      @attributes.pop(attribute)
     @copyWithAttributes attributes
 
   removeLastAttribute: ->

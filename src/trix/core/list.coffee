@@ -12,14 +12,16 @@ class Trix.List extends Trix.Object
     @length = @items.length
     super
 
-  add: (items...) ->
-    new @constructor @items.concat(items)
+  push: (itemsToAdd...) ->
+    new @constructor @items.concat(itemsToAdd)
 
-  remove: (items...) ->
-    newItems = copy(@items)
-    for item in items
-      newItems.splice(newItems.lastIndexOf(item), 1)
-    new @constructor newItems
+  pop: (itemsToRemove...) ->
+    items = copy(@items)
+    if itemsToRemove.length
+      items.pop() for item in itemsToRemove when items[items.length - 1] is item
+    else
+      items.pop()
+    new @constructor items
 
   getLast: ->
     @items[@items.length - 1]
