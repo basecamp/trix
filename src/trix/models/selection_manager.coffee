@@ -134,26 +134,28 @@ class Trix.SelectionManager
         index = containerOffset - 1
         offset += nodeLength(node) for node in @getNodesForIndex(index)
     else
-      node = DOM.findNodeForContainerAtOffset(container, containerOffset)
+      targetNode = DOM.findNodeForContainerAtOffset(container, containerOffset)
       walker = DOM.walkTree(@element)
 
       while walker.nextNode()
-        if nodeIsBlockStartComment(walker.currentNode)
+        node = walker.currentNode
+
+        if nodeIsBlockStartComment(node)
           if currentBlockComment
             index++
           else
-            currentBlockComment = walker.currentNode
-          offset = 0
+            currentBlockComment = node
+            offset = 0
 
-        if walker.currentNode is node
-          if container.nodeType is Node.TEXT_NODE and not nodeIsCursorTarget(walker.currentNode)
-            string = Trix.UTF16String.box(walker.currentNode.textContent)
+        if node is targetNode
+          if container.nodeType is Node.TEXT_NODE and not nodeIsCursorTarget(node)
+            string = Trix.UTF16String.box(node.textContent)
             offset += string.offsetFromUCS2Offset(containerOffset)
           else if containerOffset > 0
-            offset += nodeLength(walker.currentNode)
+            offset += nodeLength(node)
           return {index, offset}
         else
-          offset += nodeLength(walker.currentNode)
+          offset += nodeLength(node)
 
     {index, offset}
 
