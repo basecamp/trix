@@ -161,8 +161,7 @@ class Trix.SelectionManager
       offset = string.offsetToUCS2Offset(location.offset - nodeOffset)
     else
       container = node.parentNode
-      offset = [node.parentNode.childNodes...].indexOf(node) + 1
-
+      offset = [node.parentNode.childNodes...].indexOf(node) + (if location.offset is 0 then 0 else 1)
     [container, offset]
 
   findNodeAndOffsetForLocation: (location) ->
