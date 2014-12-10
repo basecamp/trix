@@ -230,31 +230,6 @@ class Trix.SelectionManager
 
       [leftPoint, rightPoint]
 
-  # Block elements
-
-  getBlockElements: ->
-    tagNames = for key, config of Trix.blockAttributes
-      config.tagName
-    elements = []
-    index = 0
-    for element in @element.querySelectorAll(tagNames.join(","))
-      unless DOM.tagName(element.firstChild) in tagNames
-        elements.push({element, index})
-        index++
-    elements
-
-  findBlockElementAndIndexForNode: (node) ->
-    for elementWithIndex in @getBlockElements()
-      if DOM.elementContainsNode(elementWithIndex.element, node)
-        {element, index} = elementWithIndex
-    {element, index}
-
-  findBlockElementForLocation: (location) ->
-    for elementWithIndex in @getBlockElements()
-      if elementWithIndex.index is location.index
-        element = elementWithIndex.element
-    element
-
   nodeIsCursorTarget = (node) ->
     return unless node
     if node.nodeType is Node.TEXT_NODE

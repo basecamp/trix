@@ -253,14 +253,6 @@ class Trix.Document extends Trix.Object
   getLength: ->
     @blockList.getEndPosition()
 
-  getBlockById: (id) ->
-    index = @blockIds.indexOf(id)
-    @getBlockAtIndex(index) if index isnt -1
-
-  getIndexOfBlock: (block) ->
-    index = @blockIds.indexOf(block.id)
-    index if index isnt -1
-
   getBlocks: ->
     @blockList.toArray()
 
