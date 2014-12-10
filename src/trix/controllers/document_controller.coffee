@@ -24,7 +24,6 @@ class Trix.DocumentController
     @delegate?.documentControllerWillRender?()
     @documentView.render()
     @addCursorTargetsAroundAttachments()
-    @rewriteBlockComments()
     @reinstallAttachmentEditor()
     @delegate?.documentControllerDidRender?()
 
@@ -93,13 +92,6 @@ class Trix.DocumentController
         element.setAttribute("contenteditable", false)
       element.insertAdjacentHTML("beforebegin", cursorTarget)
       element.insertAdjacentHTML("afterend", cursorTarget)
-
-  rewriteBlockComments: ->
-    for comment in @documentView.getBlockComments()
-      {blockId} = JSON.parse(comment.data)
-      block = @document.getBlockById(blockId)
-      index = @document.getIndexOfBlock(block)
-      comment.data = "{\"blockIndex\":#{index}}"
 
   findAttachmentForElement: (element) ->
     @document.getAttachmentById(Number(element.dataset.trixId))

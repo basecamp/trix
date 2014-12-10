@@ -9,7 +9,7 @@ class Trix.BlockView extends Trix.ObjectView
     @attributes = @block.getAttributes()
 
   createNodes: ->
-    comment = document.createComment("{\"blockId\":#{@block.id}}")
+    comment = document.createComment("block")
     nodes = [comment]
     if @block.isEmpty()
       nodes.push(makeElement("br"))

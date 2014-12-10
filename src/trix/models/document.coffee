@@ -413,10 +413,6 @@ class Trix.Document extends Trix.Object
 
   refresh: ->
     @refreshAttachments()
-    @refreshBlockIds()
 
   refreshAttachments: ->
     @attachments.refresh(@getAttachments())
-
-  refreshBlockIds: ->
-    @blockIds = (block.id for block in @getBlocks())

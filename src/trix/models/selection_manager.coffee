@@ -128,16 +128,15 @@ class Trix.SelectionManager
 
   findLocationFromContainerAtOffset: (container, containerOffset) ->
     return index: 0, offset: 0 if container is @element and containerOffset is 0
-
     node = DOM.findNodeForContainerAtOffset(container, containerOffset)
-    index = 0
-    offset = 0
-
     walker = DOM.walkTree(@element)
+
     while walker.nextNode()
-      if walker.currentNode.nodeType is Node.COMMENT_NODE
-        {blockIndex} = JSON.parse(walker.currentNode.data)
-        index = blockIndex
+      if nodeIsBlockStartComment(walker.currentNode)
+        if index?
+          index++
+        else
+          index = 0
         offset = 0
 
       if walker.currentNode is node
@@ -149,7 +148,7 @@ class Trix.SelectionManager
         return {index, offset}
       else
         offset += nodeLength(walker.currentNode)
-    return {index, offset}
+    {index, offset}
 
   findContainerAndOffsetForLocation: (location) ->
     return [@element, 0] if location.index is 0 and location.offset is 0
@@ -188,8 +187,12 @@ class Trix.SelectionManager
 
     while walker.nextNode()
       node = walker.currentNode
-      if node.nodeType is Node.COMMENT_NODE
-        {blockIndex} = JSON.parse(node.data)
+      if nodeIsBlockStartComment(node)
+        if blockIndex?
+          blockIndex++
+        else
+          blockIndex = 0
+
         if blockIndex is index
           recordingNodes = true
         else if recordingNodes
@@ -272,6 +275,9 @@ class Trix.SelectionManager
       1
     else
       0
+
+  nodeIsBlockStartComment = (node) ->
+    node.nodeType is Node.COMMENT_NODE and node.data is "block"
 
   getDOMSelection = ->
     selection = window.getSelection()
