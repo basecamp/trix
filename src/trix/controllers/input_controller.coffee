@@ -7,7 +7,8 @@ class Trix.InputController
   pastedFileCount = 0
 
   @keyNames:
-    "8": "backspace"
+    "8":  "backspace"
+    "9":  "tab"
     "13": "return"
     "37": "left"
     "39": "right"
@@ -152,6 +153,11 @@ class Trix.InputController
       event.preventDefault()
       @delegate?.inputControllerWillPerformTyping()
       @responder?.insertLineBreak()
+
+    tab: (event) ->
+      if @responder?.canChangeBlockAttributeLevel()
+        @responder?.increaseBlockAttributeLevel()
+        event.preventDefault()
 
     left: (event) ->
       if @selectionIsInCursorTarget()
