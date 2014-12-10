@@ -123,12 +123,24 @@ class Trix.HTMLParser
   sanitizeHTML = (html) ->
     {body} = document.implementation.createHTMLDocument("")
     body.innerHTML = html
-    walker = walkTree(body, onlyNodesOfType: "element")
+
+    commentNodes = []
+    walker = walkTree(body)
+
     while walker.nextNode()
-      element = walker.currentNode
-      for {name} in [element.attributes...]
-        unless name in allowedAttributes or name.indexOf("data-trix") is 0
-          element.removeAttribute(name)
+      node = walker.currentNode
+      switch node.nodeType
+        when Node.ELEMENT_NODE
+          element = node
+          for {name} in [element.attributes...]
+            unless name in allowedAttributes or name.indexOf("data-trix") is 0
+              element.removeAttribute(name)
+        when Node.COMMENT_NODE
+          commentNodes.push(node)
+
+    for node in commentNodes
+      node.parentNode.removeChild(node)
+
     body.innerHTML
 
   isExtraBR = (element) ->
