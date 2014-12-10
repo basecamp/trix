@@ -127,27 +127,34 @@ class Trix.SelectionManager
       DOM.elementContainsNode(@element, range.startContainer) and DOM.elementContainsNode(@element, range.endContainer)
 
   findLocationFromContainerAtOffset: (container, containerOffset) ->
-    return index: 0, offset: 0 if container is @element and containerOffset is 0
-    node = DOM.findNodeForContainerAtOffset(container, containerOffset)
-    walker = DOM.walkTree(@element)
+    index = offset = 0
 
-    while walker.nextNode()
-      if nodeIsBlockStartComment(walker.currentNode)
-        if index?
-          index++
+    if container is @element
+      if containerOffset > 0
+        index = containerOffset - 1
+        offset += nodeLength(node) for node in @getNodesForIndex(index)
+    else
+      node = DOM.findNodeForContainerAtOffset(container, containerOffset)
+      walker = DOM.walkTree(@element)
+
+      while walker.nextNode()
+        if nodeIsBlockStartComment(walker.currentNode)
+          if currentBlockComment
+            index++
+          else
+            currentBlockComment = walker.currentNode
+          offset = 0
+
+        if walker.currentNode is node
+          if container.nodeType is Node.TEXT_NODE and not nodeIsCursorTarget(walker.currentNode)
+            string = Trix.UTF16String.box(walker.currentNode.textContent)
+            offset += string.offsetFromUCS2Offset(containerOffset)
+          else if containerOffset > 0
+            offset += nodeLength(walker.currentNode)
+          return {index, offset}
         else
-          index = 0
-        offset = 0
-
-      if walker.currentNode is node
-        if container.nodeType is Node.TEXT_NODE and not nodeIsCursorTarget(walker.currentNode)
-          string = Trix.UTF16String.box(walker.currentNode.textContent)
-          offset += string.offsetFromUCS2Offset(containerOffset)
-        else if containerOffset > 0
           offset += nodeLength(walker.currentNode)
-        return {index, offset}
-      else
-        offset += nodeLength(walker.currentNode)
+
     {index, offset}
 
   findContainerAndOffsetForLocation: (location) ->
