@@ -1,38 +1,35 @@
 class Trix.ObjectGroup
-  @groupObjects: (ungroupedObjects = []) ->
+  @groupObjects: (ungroupedObjects = [], {depth, asTree} = {}) ->
+    depth ?= 0 if asTree
     objects = []
     for object in ungroupedObjects
-      if objectGroup
-        if objectGroup.canAddObject(object)
-          objectGroup.addObject(object)
+      if group
+        if group[group.length - 1].canBeGroupedWith?(object, depth)
+          group.push(object)
           continue
         else
-          objects.push(objectGroup)
-          objectGroup = null
+          objects.push(new this group, {depth, asTree})
+          group = null
 
-      if object.canBeGrouped?()
-        objectGroup = new this [object]
+      if object.canBeGrouped?(depth)
+        group = [object]
       else
         objects.push(object)
 
-    if objectGroup
-      objects.push(objectGroup)
+    if group
+      objects.push(new this group, {depth, asTree})
     objects
 
-  constructor: (@objects = []) ->
-
-  canAddObject: (object) ->
-    if object.canBeGrouped?()
-      if @objects.length is 0
-        true
-      else
-        @objects[@objects.length - 1].canBeGroupedWith(object)
-
-  addObject: (object) ->
-    @objects.push(object)
+  constructor: (@objects = [], {depth, asTree}) ->
+    if asTree
+      @depth = depth
+      @objects = @constructor.groupObjects(@objects, {asTree, depth: @depth + 1})
 
   getObjects: ->
     @objects
+
+  getDepth: ->
+    @depth
 
   getCacheKey: ->
     keys = ["objectGroup"]

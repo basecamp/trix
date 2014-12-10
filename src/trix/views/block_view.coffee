@@ -6,28 +6,32 @@ class Trix.BlockView extends Trix.ObjectView
   constructor: ->
     super
     @block = @object
-    @config = @block.getConfig()
-    @textConfig = @config.text ? {}
+    @attributes = @block.getAttributes()
 
   createNodes: ->
-    @element = makeElement(@config.tagName)
-
+    comment = document.createComment("block")
+    nodes = [comment]
     if @block.isEmpty()
-      @element.appendChild(makeElement("br"))
+      nodes.push(makeElement("br"))
     else
-      textView = @findOrCreateCachedChildView(Trix.TextView, @block.text, {@textConfig})
-      @element.appendChild(node) for node in textView.getNodes()
-      @appendExtraNewlineElement()
+      textConfig = Trix.blockAttributes[@block.getLastAttribute()]?.text
+      textView = @findOrCreateCachedChildView(Trix.TextView, @block.text, {textConfig})
+      nodes.push(textView.getNodes()...)
+      nodes.push(makeElement("br")) if @shouldAddExtraNewlineElement()
 
-    [@element]
+    if @attributes.length
+      nodes
+    else
+      element = makeElement(Trix.blockAttributes.default.tagName)
+      element.appendChild(node) for node in nodes
+      [element]
 
-  createGroupElement: ->
-    makeElement(@config.groupTagName)
+  createContainerElement: (depth) ->
+    attribute = @attributes[depth]
+    config = Trix.blockAttributes[attribute]
+    makeElement(config.tagName)
 
   # A single <br> at the end of a block element has no visual representation
   # so add an extra one.
-  appendExtraNewlineElement: ->
-    if string = @block.toString()
-      # A newline followed by the block break newline
-      if /\n\n$/.test(string)
-        @element.appendChild(makeElement("br"))
+  shouldAddExtraNewlineElement:->
+    /\n\n$/.test(@block.toString())

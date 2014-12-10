@@ -28,7 +28,8 @@ class Trix.Document extends Trix.Object
 
     @attachments = new Trix.Collection
     @attachments.delegate = this
-    @refreshAttachments()
+
+    @refresh()
 
   ensureDocumentHasBlock: ->
     if @blockList.length is 0
@@ -89,8 +90,8 @@ class Trix.Document extends Trix.Object
 
   endEditing: ->
     if --@editDepth is 0
+      @refresh()
       @delegate?.didEditDocument?(this)
-      @refreshAttachments()
 
       editOperationLog.groupEnd()
 
@@ -287,7 +288,7 @@ class Trix.Document extends Trix.Object
       @eachBlockAtLocationRange locationRange, (block, textRange) ->
         unless textRange[0] is textRange[1]
           textAttributes.push(block.text.getCommonAttributesAtRange(textRange))
-          blockAttributes.push(block.getAttributes())
+          blockAttributes.push(attributesForBlock(block))
 
       Trix.Hash.fromCommonAttributesOfObjects(textAttributes)
         .merge(Trix.Hash.fromCommonAttributesOfObjects(blockAttributes))
@@ -297,7 +298,7 @@ class Trix.Document extends Trix.Object
     block = @getBlockAtIndex(index)
     return {} unless block
 
-    commonAttributes = block.getAttributes()
+    commonAttributes = attributesForBlock(block)
     attributes = block.text.getAttributesAtPosition(offset)
     attributesLeft = block.text.getAttributesAtPosition(offset - 1)
     inheritableAttributes = (key for key, value of Trix.textAttributes when value.inheritable)
@@ -307,6 +308,12 @@ class Trix.Document extends Trix.Object
         commonAttributes[key] = value
 
     commonAttributes
+
+  attributesForBlock = (block) ->
+    attributes = {}
+    if attributeName = block.getLastAttribute()
+      attributes[attributeName] = true
+    attributes
 
   getAttachmentById: (attachmentId) ->
     @attachments.get(attachmentId)
@@ -395,6 +402,9 @@ class Trix.Document extends Trix.Object
     @delegate?.documentDidEditAttachment(this, attachment)
 
   # Private
+
+  refresh: ->
+    @refreshAttachments()
 
   refreshAttachments: ->
     @attachments.refresh(@getAttachments())

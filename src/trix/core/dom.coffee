@@ -43,6 +43,10 @@ Trix.DOM = dom =
     else
       node
 
+  findInnerElement: (element) ->
+    element = element.firstElementChild while element?.firstElementChild
+    element
+
   elementContainsNode: (element, node) ->
     while node
       return true if node is element
@@ -68,7 +72,8 @@ Trix.DOM = dom =
   walkTree: (tree, {onlyNodesOfType, usingFilter, expandEntityReferences} = {}) ->
     whatToShow = switch onlyNodesOfType
       when "element" then NodeFilter.SHOW_ELEMENT
-      when "text" then NodeFilter.SHOW_TEXT
+      when "text"    then NodeFilter.SHOW_TEXT
+      when "comment" then NodeFilter.SHOW_COMMENT
       else NodeFilter.SHOW_ALL
 
     document.createTreeWalker(tree, whatToShow, usingFilter ? null, expandEntityReferences is true)

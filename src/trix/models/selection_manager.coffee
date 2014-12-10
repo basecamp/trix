@@ -80,10 +80,6 @@ class Trix.SelectionManager
       Trix.selectionChangeObserver.unregisterSelectionManager(this)
     @updateCurrentLocationRange()
 
-  getBlockElements: ->
-    selector = (config.tagName for key, config of Trix.blockAttributes).join(",")
-    @element.querySelectorAll(selector)
-
   updateCurrentLocationRange: (locationRange) ->
     locationRange ?= @createLocationRangeFromDOMRange(getDOMRange())
     return unless locationRange
@@ -131,27 +127,37 @@ class Trix.SelectionManager
       DOM.elementContainsNode(@element, range.startContainer) and DOM.elementContainsNode(@element, range.endContainer)
 
   findLocationFromContainerAtOffset: (container, containerOffset) ->
-    return index: 0, offset: 0 if container is @element and containerOffset is 0
+    index = offset = 0
 
-    blockElements = @getBlockElements()
-    return index: 0, offset: 0 if Object.keys(blockElements).length is 0
+    if container is @element
+      if containerOffset > 0
+        index = containerOffset - 1
+        offset += nodeLength(node) for node in @getNodesForIndex(index)
+    else
+      targetNode = DOM.findNodeForContainerAtOffset(container, containerOffset)
+      walker = DOM.walkTree(@element)
 
-    node = DOM.findNodeForContainerAtOffset(container, containerOffset)
-    offset = 0
-
-    for blockElement, index in blockElements when DOM.elementContainsNode(blockElement, node)
-      walker = DOM.walkTree(blockElement)
       while walker.nextNode()
-        if walker.currentNode is node
-          if container.nodeType is Node.TEXT_NODE and not nodeIsCursorTarget(walker.currentNode)
-            string = Trix.UTF16String.box(walker.currentNode.textContent)
+        node = walker.currentNode
+
+        if nodeIsBlockStartComment(node)
+          if currentBlockComment
+            index++
+          else
+            currentBlockComment = node
+            offset = 0
+
+        if node is targetNode
+          if container.nodeType is Node.TEXT_NODE and not nodeIsCursorTarget(node)
+            string = Trix.UTF16String.box(node.textContent)
             offset += string.offsetFromUCS2Offset(containerOffset)
           else if containerOffset > 0
-            offset += nodeLength(walker.currentNode)
+            offset += nodeLength(node)
           return {index, offset}
         else
-          offset += nodeLength(walker.currentNode)
-      return {index, offset}
+          offset += nodeLength(node)
+
+    {index, offset}
 
   findContainerAndOffsetForLocation: (location) ->
     return [@element, 0] if location.index is 0 and location.offset is 0
@@ -163,32 +169,47 @@ class Trix.SelectionManager
       offset = string.offsetToUCS2Offset(location.offset - nodeOffset)
     else
       container = node.parentNode
-      offset =
-        if location.offset is 0
-          0
-        else
-          [node.parentNode.childNodes...].indexOf(node) + 1
-
+      offset = [node.parentNode.childNodes...].indexOf(node) + (if location.offset is 0 then 0 else 1)
     [container, offset]
 
   findNodeAndOffsetForLocation: (location) ->
-    blockElement = @getBlockElements()[location.index]
     offset = 0
-    walker = DOM.walkTree(blockElement)
-    while walker.nextNode()
-      length = nodeLength(walker.currentNode)
+    for currentNode in @getNodesForIndex(location.index)
+      length = nodeLength(currentNode)
       if location.offset <= offset + length
-        if walker.currentNode.nodeType is Node.TEXT_NODE
-          node = walker.currentNode
+        if currentNode.nodeType is Node.TEXT_NODE
+          node = currentNode
           nodeOffset = offset
           break if location.offset is nodeOffset and nodeIsCursorTarget(node)
         else if not node
-          node = walker.currentNode
+          node = currentNode
           nodeOffset = offset
       offset += length
       break if offset > location.offset
 
     [node, nodeOffset]
+
+  getNodesForIndex: (index) ->
+    nodes = []
+    walker = DOM.walkTree(@element)
+    recordingNodes = false
+
+    while walker.nextNode()
+      node = walker.currentNode
+      if nodeIsBlockStartComment(node)
+        if blockIndex?
+          blockIndex++
+        else
+          blockIndex = 0
+
+        if blockIndex is index
+          recordingNodes = true
+        else if recordingNodes
+          break
+      else if recordingNodes
+        nodes.push(node)
+
+    nodes
 
   getLocationRangeAtPoint: ([clientX, clientY]) ->
     if document.caretPositionFromPoint
@@ -238,6 +259,9 @@ class Trix.SelectionManager
       1
     else
       0
+
+  nodeIsBlockStartComment = (node) ->
+    node.nodeType is Node.COMMENT_NODE and node.data is "block"
 
   getDOMSelection = ->
     selection = window.getSelection()

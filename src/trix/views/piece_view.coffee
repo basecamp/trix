@@ -1,7 +1,7 @@
 #= require trix/views/file_attachment_view
 #= require trix/views/image_attachment_view
 
-{makeElement} = Trix.DOM
+{makeElement, findInnerElement} = Trix.DOM
 
 class Trix.PieceView extends Trix.ObjectView
   constructor: ->
@@ -33,7 +33,7 @@ class Trix.PieceView extends Trix.ObjectView
     view.getNodes()
 
   createStringNodes: ->
-    if @textConfig.plaintext
+    if @textConfig?.plaintext
       [document.createTextNode(@string)]
     else
       nodes = []
@@ -69,13 +69,12 @@ class Trix.PieceView extends Trix.ObjectView
       element.style[key] = value for key, value of styles
     element
 
-  createGroupElement: ->
+  createContainerElement: ->
     for key, value of @attributes when config = Trix.textAttributes[key]
       if config.groupTagName
         attributes = {}
         attributes[key] = value
         return makeElement(config.groupTagName, attributes)
-
 
   preserveSpaces = (string) ->
     string
@@ -85,7 +84,3 @@ class Trix.PieceView extends Trix.ObjectView
       .replace(/^\s{1}/, "\u00a0")
       # Replace trailing space with a non-breaking space
       .replace(/\s{1}$/, "\u00a0")
-
-  findInnerElement = (element) ->
-    element = element.firstChild while element.firstChild
-    element

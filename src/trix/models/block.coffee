@@ -5,16 +5,19 @@ class Trix.Block extends Trix.Object
     text = Trix.Text.fromJSON(blockJSON.text)
     new this text, blockJSON.attributes
 
-  constructor: (text = new Trix.Text, attributes = {}) ->
+  constructor: (text = new Trix.Text, attributes = []) ->
     super
     @text = applyBlockBreakToText(text)
-    @attributes = Trix.Hash.box(attributes)
+    @attributes = Trix.List.box(attributes)
 
   isEmpty: ->
     textIsBlockBreak(@text)
 
   copyWithText: (text) ->
     new @constructor text, @attributes
+
+  copyWithoutText: ->
+    @copyWithText(null)
 
   copyWithAttributes: (attributes) ->
     new @constructor @text, attributes
@@ -25,21 +28,33 @@ class Trix.Block extends Trix.Object
     else
       @copyWithText(@text.copyUsingObjectMap(objectMap))
 
-  addAttribute: (attribute, value) ->
-    @copyWithAttributes @attributes.add(attribute, value)
+  addAttribute: (attribute) ->
+    {parentAttribute} = Trix.blockAttributes[attribute]
+    attributes = if parentAttribute
+      @attributes.push(parentAttribute, attribute)
+    else
+      @attributes.push(attribute)
+    @copyWithAttributes attributes
 
   removeAttribute: (attribute) ->
-    @copyWithAttributes @attributes.remove(attribute)
+    {parentAttribute} = Trix.blockAttributes[attribute]
+    attributes = if parentAttribute
+      @attributes.pop(attribute, parentAttribute)
+    else
+      @attributes.pop(attribute)
+    @copyWithAttributes attributes
+
+  removeLastAttribute: ->
+    @removeAttribute(@getLastAttribute())
+
+  getLastAttribute: ->
+    @attributes.getLast()
 
   getAttributes: ->
-    @attributes.toObject()
+    @attributes.toArray()
 
   hasAttributes: ->
-    @attributes.getKeys().length > 0
-
-  getConfig: ->
-    return config for key of @getAttributes() when config = Trix.blockAttributes[key]
-    Trix.blockAttributes.default
+    @attributes.length
 
   findLineBreakInDirectionFromPosition: (direction, position) ->
     string = @toString()
@@ -99,11 +114,17 @@ class Trix.Block extends Trix.Object
 
   # Grouping
 
-  canBeGrouped: ->
-    @getConfig().groupTagName
+  canBeGrouped: (depth) ->
+    @getAttributes()[depth]
 
-  canBeGroupedWith: (blockView) ->
-    @canBeGrouped() and @getConfig().groupTagName is blockView.getConfig().groupTagName
+  canBeGroupedWith: (otherBlock, depth) ->
+    attributes = @getAttributes()
+    otherAttributes = otherBlock.getAttributes()
+    if attributes[depth] is otherAttributes[depth]
+      if attributes[depth] in ["bullet", "number"] and otherAttributes[depth + 1] not in ["bulletList", "numberList"]
+        false
+      else
+        true
 
   # Block breaks
 

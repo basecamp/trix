@@ -7,10 +7,6 @@ class Trix.ObjectView
     @nodes ?= @createNodes()
     node.cloneNode(true) for node in @nodes
 
-  getElement: ->
-    nodes = @getNodes()
-    nodes[0] if nodes.length is 1
-
   invalidate: ->
     delete @nodes
     @parentView?.invalidate()

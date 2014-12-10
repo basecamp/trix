@@ -31,7 +31,7 @@ class Trix.StructurePanelView extends Trix.InspectorPanelView
   renderBlock: (block, index) ->
     element = make("div", className: "block")
     element.appendChild(@renderTitle("Block #{block.id}", "Index: #{index}"))
-    element.appendChild(@renderAttributes(block.attributes))
+    element.appendChild(@renderBlockAttributes(block.attributes))
     element.appendChild(@renderText(block.text))
     element
 
@@ -58,6 +58,11 @@ class Trix.StructurePanelView extends Trix.InspectorPanelView
 
   renderAttributes: (attributes) ->
     @renderObject("Attributes", attributes.toObject())
+
+  renderBlockAttributes: (attributes) ->
+    element = make("div", className: "block_attributes")
+    element.appendChild(@renderString(attributes.toArray()))
+    element
 
   renderObject: (title, object) ->
     element = make("div", className: "object expandable")

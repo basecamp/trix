@@ -36,9 +36,9 @@ class Trix.HTMLParser
         @processElement(node)
 
   appendBlockForElement: (element) ->
-    unless @currentBlockElement?.contains(element)
+    if element.firstChild?.nodeType is Node.TEXT_NODE or element.textContent is ""
       attributes = getBlockAttributes(element)
-      if Object.keys(attributes).length or tagName(element) is "div"
+      if attributes.length or tagName(element) is Trix.blockAttributes.default.tagName
         @appendBlockForAttributes(attributes)
         @currentBlockElement = element
 
@@ -107,13 +107,15 @@ class Trix.HTMLParser
     attributes
 
   getBlockAttributes = (element) ->
-    attributes = {}
-    for attribute, config of Trix.blockAttributes
-      if tagName(element) is config.tagName
-        if config.test?(element) or not config.test
-          attributes[attribute] = true
-          break
-    attributes
+    attributes = []
+    while element
+      for attribute, config of Trix.blockAttributes when config.parse isnt false
+        if tagName(element) is config.tagName
+          if config.test?(element) or not config.test
+            attributes.push(attribute)
+            attributes.push(config.parentAttribute) if config.parentAttribute
+      element = element.parentNode
+    attributes.reverse()
 
   getAttachmentAttributes = (element) ->
     JSON.parse(element.dataset.trixAttachment)
@@ -121,12 +123,24 @@ class Trix.HTMLParser
   sanitizeHTML = (html) ->
     {body} = document.implementation.createHTMLDocument("")
     body.innerHTML = html
-    walker = walkTree(body, onlyNodesOfType: "element")
+
+    commentNodes = []
+    walker = walkTree(body)
+
     while walker.nextNode()
-      element = walker.currentNode
-      for {name} in [element.attributes...]
-        unless name in allowedAttributes or name.indexOf("data-trix") is 0
-          element.removeAttribute(name)
+      node = walker.currentNode
+      switch node.nodeType
+        when Node.ELEMENT_NODE
+          element = node
+          for {name} in [element.attributes...]
+            unless name in allowedAttributes or name.indexOf("data-trix") is 0
+              element.removeAttribute(name)
+        when Node.COMMENT_NODE
+          commentNodes.push(node)
+
+    for node in commentNodes
+      node.parentNode.removeChild(node)
+
     body.innerHTML
 
   isExtraBR = (element) ->

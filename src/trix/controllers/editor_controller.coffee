@@ -169,6 +169,12 @@ class Trix.EditorController extends Trix.AbstractEditorController
       perform: -> @undoManager.redo()
     link:
       test: -> @composition.canSetCurrentAttribute("href")
+    increaseBlockLevel:
+      test: -> @composition.canChangeBlockAttributeLevel()
+      perform: -> @composition.increaseBlockAttributeLevel()
+    decreaseBlockLevel:
+      test: -> @composition.canChangeBlockAttributeLevel()
+      perform: -> @composition.decreaseBlockAttributeLevel()
 
   toolbarCanInvokeAction: (actionName) ->
     @toolbarActions[actionName]?.test.call(this)
