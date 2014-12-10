@@ -145,7 +145,7 @@ class Trix.SelectionManager
             index++
           else
             currentBlockComment = node
-            offset = 0
+          offset = 0
 
         if node is targetNode
           if container.nodeType is Node.TEXT_NODE and not nodeIsCursorTarget(node)
