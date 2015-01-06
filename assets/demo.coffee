@@ -32,7 +32,9 @@ config =
       inspectorController?.incrementRenderCount()
 
     didThrowError: (error, details) ->
-      console.error "Trix error:", error, details
+      document.getElementById("trix-debug").classList.add("error")
+      @errors ?= []
+      @errors.push({error, details})
 
 saveAttachment = (attachment) ->
   item = document.createElement("li")
@@ -89,6 +91,15 @@ installTrix = ->
     inspectorElement.style.visibility = "visible"
 
     window.inspectorController = new Trix.InspectorController inspectorElement, window.controller
+
+    document.getElementById("trix-debug").addEventListener "click", (event) ->
+      event.preventDefault()
+      prompt "Debug information:", "/* Copy and paste this: */" + JSON.stringify
+        locationRange: controller.selectionManager.getLocationRange()
+        document: controller.document
+        html: controller.documentElement.innerHTML
+        errors: [error.stack.split("\n"), details] for {error, details} in config.delegate.errors
+      , null, 2
 
   else
     config.mode = "degraded"
