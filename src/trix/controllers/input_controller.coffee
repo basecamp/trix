@@ -20,8 +20,16 @@ class Trix.InputController
     @deviceObserver = new Trix.DeviceObserver @element
     @deviceObserver.delegate = this
 
-    for event, handler of @events
-      handleEvent event, onElement: @element, withCallback: handler.bind(this), inPhase: "capturing"
+    for eventName of @events
+      handleEvent eventName, onElement: @element, withCallback: @handlerFor(eventName), inPhase: "capturing"
+
+  handlerFor: (eventName) ->
+    (event) =>
+      try
+        @events[eventName].call(this, event)
+      catch error
+        @delegate?.inputControllerDidThrowError?(error, {event, eventName})
+        throw error
 
   # Device observer delegate
 

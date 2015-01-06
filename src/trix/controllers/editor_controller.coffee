@@ -145,6 +145,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
   inputControllerDidReceiveKeyboardCommand: (keys) ->
     @toolbarController.applyKeyboardCommand(keys)
 
+  inputControllerDidThrowError: (error, details) ->
+    @delegate?.didThrowError?(error, details)
+
   # Selection manager delegate
 
   locationRangeDidChange: (locationRange) ->

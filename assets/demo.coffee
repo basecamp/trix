@@ -31,6 +31,9 @@ config =
       inspectorController?.render()
       inspectorController?.incrementRenderCount()
 
+    didThrowError: (error, details) ->
+      console.error "Trix error:", error, details
+
 saveAttachment = (attachment) ->
   item = document.createElement("li")
   item.setAttribute("id", "attachment_#{attachment.id}")
