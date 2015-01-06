@@ -28,7 +28,7 @@ class Trix.InputController
       try
         @events[eventName].call(this, event)
       catch error
-        @delegate?.inputControllerDidThrowError?(error, {event, eventName})
+        @delegate?.inputControllerDidThrowError?(error, {eventName})
         throw error
 
   # Device observer delegate
