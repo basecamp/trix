@@ -57,6 +57,18 @@ blockComment = "<!--block-->"
     document: createDocument(["a", { bold: true }, ["bulletList", "bullet"]])
     html: "<ul><li>#{blockComment}<strong>a</strong></li></ul>"
 
+  "unordered list with partially formatted text":
+    document: new Trix.Document [
+        new Trix.Block(
+          new Trix.Text([
+            new Trix.StringPiece("a")
+            new Trix.StringPiece("b", italic: true)
+          ]),
+          ["bulletList", "bullet"]
+        )
+      ]
+    html: "<ul><li>#{blockComment}a<em>b</em></li></ul>"
+
   "unordered list with two items":
     document: createDocument(["a", {}, ["bulletList", "bullet"]], ["b", {}, ["bulletList", "bullet"]])
     html: "<ul><li>#{blockComment}a</li><li>#{blockComment}b</li></ul>"

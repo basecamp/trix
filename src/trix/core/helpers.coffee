@@ -32,5 +32,11 @@ Trix.Helpers =
       do (name, value) =>
         destination[name] = -> value.apply(@[toProperty], arguments) if @[toProperty]?
 
+  arraysAreEqual: (a, b) ->
+    return false unless a.length is b.length
+    for value, index in a
+      return false unless value is b[index]
+    true
+
 formatValue = (value) ->
   value?.inspect?() ? (try JSON.stringify(value)) ? value

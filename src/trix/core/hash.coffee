@@ -1,3 +1,7 @@
+#= require ./helpers
+
+{arraysAreEqual} = Trix.Helpers
+
 class Trix.Hash extends Trix.Object
   @fromCommonAttributesOfObjects: (objects = []) ->
     return new this unless objects.length
@@ -44,12 +48,7 @@ class Trix.Hash extends Trix.Object
     key for key in @getKeys() when @values[key] is hash.values[key]
 
   isEqualTo: (values) ->
-    thisArray = @toArray()
-    thatArray = box(values).toArray()
-    return false unless thisArray.length is thatArray.length
-    for value, index in thisArray
-      return false unless value is thatArray[index]
-    true
+    arraysAreEqual(@toArray(), box(values).toArray())
 
   toArray: ->
     (@array ?= (

@@ -1,4 +1,5 @@
-{findClosestElementFromNode, walkTree, tagName, makeElement} = Trix.DOM
+{findClosestElementFromNode, walkTree, tagName, makeElement, elementContainsNode} = Trix.DOM
+{arraysAreEqual} = Trix.Helpers
 
 class Trix.HTMLParser
   allowedAttributes = "style href src width height class".split(" ")
@@ -39,8 +40,9 @@ class Trix.HTMLParser
     if element.firstChild?.nodeType is Node.TEXT_NODE or element.textContent is ""
       attributes = getBlockAttributes(element)
       if attributes.length or tagName(element) is Trix.blockAttributes.default.tagName
-        @appendBlockForAttributes(attributes)
-        @currentBlockElement = element
+        unless elementContainsNode(@currentBlockElement, element) and arraysAreEqual(attributes, @currentBlock.getAttributes())
+          @currentBlock = @appendBlockForAttributes(attributes)
+          @currentBlockElement = element
 
   processTextNode: (node) ->
     unless node.textContent is Trix.ZERO_WIDTH_SPACE
@@ -73,6 +75,7 @@ class Trix.HTMLParser
     @text = new Trix.Text
     block = new Trix.Block @text, attributes
     @blocks.push(block)
+    block
 
   appendStringWithAttributes: (string, attributes) ->
     text = Trix.Text.textForStringWithAttributes(string, attributes)

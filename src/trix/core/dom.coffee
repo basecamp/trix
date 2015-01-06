@@ -48,6 +48,7 @@ Trix.DOM = dom =
     element
 
   elementContainsNode: (element, node) ->
+    return unless element and node
     while node
       return true if node is element
       node = node.parentNode
