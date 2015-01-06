@@ -159,7 +159,11 @@ class Trix.EditorController extends Trix.AbstractEditorController
   # Mutation observer delegate
 
   elementDidMutate: (mutations) ->
-    @composition.replaceHTML(@documentElement.innerHTML)
+    try
+      @composition.replaceHTML(@documentElement.innerHTML)
+    catch error
+      @delegate?.didThrowError?(error, {mutations})
+      throw error
 
   # Toolbar controller delegate
 
