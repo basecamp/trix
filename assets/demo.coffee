@@ -98,7 +98,7 @@ installTrix = ->
         locationRange: controller.selectionManager.getLocationRange()
         document: controller.document
         html: controller.documentElement.innerHTML
-        errors: [error.stack.split("\n"), details] for {error, details} in config.delegate.errors
+        errors: [error.stack.split("\n"), details] for {error, details} in config.delegate.errors ? []
       , null, 2
 
   else
