@@ -39,10 +39,9 @@ class Trix.HTMLParser
   appendBlockForElement: (element) ->
     if element.firstChild?.nodeType is Node.TEXT_NODE or tagName(element.firstChild) is "br"
       attributes = getBlockAttributes(element)
-      if attributes.length or tagName(element) is Trix.blockAttributes.default.tagName
-        unless elementContainsNode(@currentBlockElement, element) and arraysAreEqual(attributes, @currentBlock.getAttributes())
-          @currentBlock = @appendBlockForAttributes(attributes)
-          @currentBlockElement = element
+      unless elementContainsNode(@currentBlockElement, element) and arraysAreEqual(attributes, @currentBlock.getAttributes())
+        @currentBlock = @appendBlockForAttributes(attributes)
+        @currentBlockElement = element
 
   processTextNode: (node) ->
     unless node.textContent is Trix.ZERO_WIDTH_SPACE

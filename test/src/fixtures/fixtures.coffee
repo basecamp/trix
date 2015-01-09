@@ -165,6 +165,10 @@ blockComment = "<!--block-->"
     document: createDocument(["\na", {}, ["quote"]], ["\nb", {}, []], ["\nc", {}, ["quote"]])
     html: "<blockquote>#{blockComment}<br>a</blockquote><div>#{blockComment}<br>b</div><blockquote>#{blockComment}<br>c</blockquote>"
 
+  "blocks beginning with formatted text":
+    document: createDocument(["a", { bold: true }, ["quote"]], ["b", { italic: true }, []], ["c", { bold: true }, ["quote"]])
+    html: "<blockquote>#{blockComment}<strong>a</strong></blockquote><div>#{blockComment}<em>b</em></div><blockquote>#{blockComment}<strong>c</strong></blockquote>"
+
 @eachFixture = (callback) ->
   for name, details of @fixtures
     callback(name, details)
