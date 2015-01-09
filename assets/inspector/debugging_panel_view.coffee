@@ -5,7 +5,8 @@ class Trix.DebuggingPanelView extends Trix.InspectorPanelView
     super
     {@documentController, @inputController} = @editorController
     @handleEvent "click", onElement: @element, matchingSelector: "label", withCallback: @didClickCheckbox
-    @handleEvent "click", onElement: @element, matchingSelector: "button", withCallback: @didClickRenderButton
+    @handleEvent "click", onElement: @element, matchingSelector: "button[data-action=render]", withCallback: @didClickRenderButton
+    @handleEvent "click", onElement: @element, matchingSelector: "button[data-action=parse]", withCallback: @didClickParseButton
 
   render: =>
     super
@@ -36,6 +37,9 @@ class Trix.DebuggingPanelView extends Trix.InspectorPanelView
 
   didClickRenderButton: =>
     @documentController.render()
+
+  didClickParseButton: =>
+    @editorController.composition.replaceHTML(@editorController.documentElement.innerHTML)
 
   capitalize = (string) ->
     string.charAt(0).toUpperCase() + string.substring(1)
