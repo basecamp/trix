@@ -356,6 +356,25 @@ class Trix.Document extends Trix.Object
     endLocation = @locationFromPosition(end)
     new Trix.LocationRange startLocation, endLocation
 
+  clampLocationRange: (locationRange) ->
+    new Trix.LocationRange @clampLocation(locationRange.start), @clampLocation(locationRange.end)
+
+  clampLocation: (location) ->
+    index = location.index
+    lastIndex = @getBlocks().length - 1
+    block = @getBlockAtIndex(Math.min(index, lastIndex))
+
+    offset = location.offset
+    lastOffset = block.getLength() - 1
+
+    if index > lastIndex
+      index = lastIndex
+      offset = lastOffset
+    else if offset > lastOffset
+      offset = lastOffset
+
+    {index, offset}
+
   isEqualTo: (document) ->
     @blockList.isEqualTo(document?.blockList)
 
