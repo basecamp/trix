@@ -173,9 +173,14 @@ class Trix.SelectionManager
     [container, offset]
 
   findNodeAndOffsetForLocation: (location) ->
+    index = Math.min(location.index, @getBlockCount())
     offset = 0
-    for currentNode in @getNodesForIndex(location.index)
+
+    for currentNode in @getNodesForIndex(index)
       length = nodeLength(currentNode)
+      lastNode = currentNode
+      lastOffset = offset
+
       if location.offset <= offset + length
         if currentNode.nodeType is Node.TEXT_NODE
           node = currentNode
@@ -184,10 +189,15 @@ class Trix.SelectionManager
         else if not node
           node = currentNode
           nodeOffset = offset
+
       offset += length
       break if offset > location.offset
 
-    [node, nodeOffset]
+    if node?
+      nodeOffset = lastOffset if index < location.index
+      [node, nodeOffset]
+    else
+      [lastNode, lastOffset]
 
   getNodesForIndex: (index) ->
     nodes = []
@@ -210,6 +220,16 @@ class Trix.SelectionManager
         nodes.push(node)
 
     nodes
+
+  getBlockCount: ->
+    walker = DOM.walkTree(@element)
+    blockCount = 0
+
+    while walker.nextNode()
+      node = walker.currentNode
+      blockCount++ if nodeIsBlockStartComment(node)
+
+    blockCount
 
   getLocationRangeAtPoint: ([clientX, clientY]) ->
     if document.caretPositionFromPoint
