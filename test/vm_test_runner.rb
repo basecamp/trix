@@ -17,6 +17,8 @@ module Trix
     MAX_VM_SECONDS = 60 * 4
     MAX_TOTAL_SECONDS = 60 * 20
 
+    MAX_REQUEST_SECONDS = 30
+
     S3_BUCKET = "trix-tests"
     TRIX_TEST_FILE = "test.html"
 
@@ -45,7 +47,7 @@ module Trix
 
       def start_tests
         print "Running tests @ #{test_url} in #{platforms.size} browsers."
-        @js_test_params = post("/js-tests", test_params)
+        @js_test_params = post_to_sauce("/js-tests", test_params)
       end
 
       def test_params
@@ -63,7 +65,7 @@ module Trix
             sleep 2
           end
 
-          status = post("/js-tests/status", @js_test_params)
+          status = post_to_sauce("/js-tests/status", @js_test_params)
           if status["completed"]
             completed = true
             handle_results(status["js tests"])
@@ -115,13 +117,9 @@ module Trix
         @rev ||= `git rev-parse HEAD`.chomp
       end
 
-      def post(endpoint = "", params = {})
-        tries ||= 3
-        response = RestClient.post(sauce_url(endpoint), params.to_json)
+      def post_to_sauce(endpoint = "", params = {})
+        response = request(sauce_url(endpoint), method: :post, payload: params.to_json)
         JSON.parse(response)
-      rescue
-        sleep 1 and retry unless (tries -= 1).zero?
-        raise
       end
 
       def sauce_url(path = "")
@@ -131,7 +129,7 @@ module Trix
       end
 
       def available_platforms
-        JSON.parse(RestClient.get("http://saucelabs.com/rest/v1/info/platforms/webdriver"))
+        JSON.parse(request("http://saucelabs.com/rest/v1/info/platforms/webdriver", method: :get))
       end
 
       def platforms
@@ -149,6 +147,15 @@ module Trix
             end
           end
         end
+      end
+
+      def request(url, options = {})
+        options.merge! url: url, timeout: MAX_REQUEST_SECONDS, open_timeout: MAX_REQUEST_SECONDS
+        tries ||= 3
+        RestClient::Request.execute(options)
+      rescue
+        sleep 1 and retry unless (tries -= 1).zero?
+        raise
       end
 
       def s3
