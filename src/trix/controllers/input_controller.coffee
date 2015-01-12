@@ -91,13 +91,20 @@ class Trix.InputController
     dragstart: (event) ->
       target = event.target
       @draggedRange = @responder?.getLocationRange()
+      @delegate?.inputControllerDidStartDrag?()
 
     dragover: (event) ->
       if @draggedRange or "Files" in event.dataTransfer?.types
         event.preventDefault()
+        draggingPoint = [event.clientX, event.clientY]
+        if draggingPoint.toString() isnt @draggingPoint?.toString()
+          @draggingPoint = draggingPoint
+          @delegate?.inputControllerDidReceiveDragOverPoint?(@draggingPoint)
 
     dragend: (event) ->
+      @delegate?.inputControllerDidCancelDrag?()
       delete @draggedRange
+      delete @draggingPoint
 
     drop: (event) ->
       event.preventDefault()
@@ -114,6 +121,9 @@ class Trix.InputController
         for file in files
           if @responder?.insertFile(file)
             file.trixInserted = true
+
+      delete @draggedRange
+      delete @draggingPoint
 
     cut: (event) ->
       @delegate?.inputControllerWillCutText()

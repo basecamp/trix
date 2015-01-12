@@ -145,6 +145,16 @@ class Trix.EditorController extends Trix.AbstractEditorController
   inputControllerDidReceiveKeyboardCommand: (keys) ->
     @toolbarController.applyKeyboardCommand(keys)
 
+  inputControllerDidStartDrag: ->
+    @locationRangeBeforeDrag = @selectionManager.getLocationRange()
+
+  inputControllerDidReceiveDragOverPoint: (point) ->
+    @selectionManager.setLocationRangeFromPoint(point)
+
+  inputControllerDidCancelDrag: ->
+    @selectionManager.setLocationRange(@locationRangeBeforeDrag)
+    delete @locationRangeBeforeDrag
+
   inputControllerDidThrowError: (error, details) ->
     @delegate?.didThrowError?(error, details)
 
