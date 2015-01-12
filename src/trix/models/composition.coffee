@@ -1,7 +1,7 @@
 #= require trix/models/document
 
 class Trix.Composition
-  forwardMethodsToSelectionManager = "getLocationRange setLocationRangeFromPoint
+  forwardMethodsToSelectionManager = "getLocationRange setLocationRange setLocationRangeFromPoint
     preserveSelection locationIsCursorTarget".split(" ")
 
   constructor: (document = new Trix.Document, @selectionManager) ->
@@ -277,10 +277,6 @@ class Trix.Composition
   setRange: (range) ->
     locationRange = @document.locationRangeFromRange(range)
     @setLocationRange(locationRange)
-
-  setLocationRange: (locationRange) ->
-    locationRange = @document.clampLocationRange(locationRange)
-    @selectionManager.setLocationRange(locationRange)
 
   getPosition: ->
     @getRange()[0]
