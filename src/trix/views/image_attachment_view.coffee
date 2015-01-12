@@ -1,6 +1,6 @@
 #= require trix/views/attachment_view
 
-{makeElement} = Trix.DOM
+{makeElement, measureElement} = Trix.DOM
 
 class Trix.ImageAttachmentView extends Trix.AttachmentView
   createNodes: ->
@@ -17,6 +17,11 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
     if @attachmentPiece.getWidth()?
       image.width = @attachmentPiece.getWidth()
       image.height = @attachmentPiece.getHeight()
+    else
+      image.addEventListener "load", ->
+        {width, height} = measureElement(image)
+        image.width = width
+        image.height = height
 
     element.appendChild(image)
     [element]
