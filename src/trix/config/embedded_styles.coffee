@@ -55,12 +55,4 @@ Trix.CSS = """
   .trix-editor figure.attachment a.remove:hover {
     color: red;
   }
-
-  .trix-editor figure.attachment::selection, figure.attachment *::selection {
-    background-color: rgba(0, 0, 0, 0);
-  }
-
-  .trix-editor figure.attachment::-moz-selection, figure.attachment *::-moz-selection {
-    background-color: rgba(0, 0, 0, 0);
-  }
 """
