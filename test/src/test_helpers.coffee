@@ -95,8 +95,10 @@ typeCharacterInElement = (character, element, callback) ->
   element.dispatchEvent(createEvent(type, properties))
 
 @clickElement = (element, callback) ->
-  triggerEvent(element, "click")
-  defer(callback)
+  if triggerEvent(element, "mousedown")
+    if triggerEvent(element, "mouseup")
+      triggerEvent(element, "click")
+      defer(callback)
 
 @moveCursor = (options, callback) ->
   if typeof options is "string"

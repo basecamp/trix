@@ -11,7 +11,7 @@ class Trix.DocumentController
 
     handleEvent "focus", onElement: @element, withCallback: @didFocus
     handleEvent "click", onElement: @element, matchingSelector: "a[contenteditable=false]", preventDefault: true
-    handleEvent "click", onElement: @element, matchingSelector: "figure.attachment", withCallback: @didClickAttachment
+    handleEvent "mousedown", onElement: @element, matchingSelector: "figure.attachment", withCallback: @didClickAttachment
 
   didFocus: =>
     @delegate?.documentControllerDidFocus?()
