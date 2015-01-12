@@ -76,13 +76,14 @@ module Trix
       end
 
       def handle_results(results)
-        successes = results.select { |r| r["result"]["failed"] == 0 }
-        failures = results - successes
-        print_results(successes, failures)
-        exit(failures.any? ? 1 : 0)
+        incompletes = results.select { |r| r["result"].nil? }
+        successes = (results - incompletes).select { |r| r["result"]["failed"] == 0 }
+        failures = results - incompletes - successes
+        print_results(successes, failures, incompletes)
+        exit(failures.any? || incompletes.any? ? 1 : 0)
       end
 
-      def print_results(successes = [], failures = [])
+      def print_results(successes = [], failures = [], incompletes = [])
         puts
 
         successes.each do |success|
@@ -99,6 +100,10 @@ module Trix
             puts "     source: #{fail["source"]}" if fail["source"]
             puts
           end
+        end
+
+        incompletes.each do |incomplete|
+          puts " ? Incomplete: #{incomplete}"
         end
       end
 
