@@ -25,8 +25,8 @@ class Trix.SelectionManager
       locationRange
 
   setLocationRangeFromPoint: (point) ->
-    locationRange = @getLocationRangeAtPoint(point)
-    @setLocationRange(locationRange)
+    if locationRange = @getLocationRangeAtPoint(point)
+      @setLocationRange(locationRange)
 
   expandSelectionInDirectionWithGranularity: (direction, granularity) ->
     return unless selection = getDOMSelection()
