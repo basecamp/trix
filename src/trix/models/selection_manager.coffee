@@ -20,8 +20,9 @@ class Trix.SelectionManager
     else
       new Trix.LocationRange start, end
 
-    @setDOMRange(locationRange)
-    @updateCurrentLocationRange(locationRange)
+    if locationRange = @setDOMRange(locationRange)
+      @updateCurrentLocationRange(locationRange)
+      locationRange
 
   setLocationRangeFromPoint: (point) ->
     locationRange = @getLocationRangeAtPoint(point)
@@ -95,6 +96,8 @@ class Trix.SelectionManager
       else
         @findContainerAndOffsetForLocation(locationRange.end)
 
+    return unless rangeStart? and rangeEnd?
+
     range = document.createRange()
     range.setStart(rangeStart...)
     range.setEnd(rangeEnd...)
@@ -112,6 +115,8 @@ class Trix.SelectionManager
       # https://code.google.com/p/chromium/issues/detail?id=423170
       # https://code.google.com/p/chromium/issues/detail?id=138439
       defer(applyRange)
+
+    locationRange
 
   createLocationRangeFromDOMRange: (range) ->
     return unless range? and @rangeWithinElement(range)
