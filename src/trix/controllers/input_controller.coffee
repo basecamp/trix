@@ -58,9 +58,10 @@ class Trix.InputController
         context = @keys
         for modifier in ["ctrl", "alt", "shift"] when event["#{modifier}Key"]
           modifier = "control" if modifier is "ctrl"
-          if handler = @keys[modifier][keyName]
-            handler.call(this, event)
-            break
+          context = @keys[modifier]
+          break if context[keyName]
+        context[keyName]?.call(this, event)
+
 
       if event.ctrlKey or event.metaKey
         if character = String.fromCharCode(event.keyCode).toLowerCase()
