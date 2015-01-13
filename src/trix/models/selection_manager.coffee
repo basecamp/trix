@@ -107,14 +107,11 @@ class Trix.SelectionManager
       selection.removeAllRanges()
       selection.addRange(range)
 
-    if Trix.env is "test"
-      applyRange()
-    else
-      # Selection#addRange is unreasonably slow in WebKit when performed in the
-      # same call stack as a mouse or key event so defer calling it.
-      # https://code.google.com/p/chromium/issues/detail?id=423170
-      # https://code.google.com/p/chromium/issues/detail?id=138439
-      defer(applyRange)
+    # Selection#addRange is unreasonably slow in WebKit when performed in the
+    # same call stack as a mouse or key event so defer calling it.
+    # https://code.google.com/p/chromium/issues/detail?id=423170
+    # https://code.google.com/p/chromium/issues/detail?id=138439
+    defer(applyRange)
 
     locationRange
 

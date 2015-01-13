@@ -1,13 +1,11 @@
-Trix.env = "test"
-
 keyCodes =
   left: 37
   right: 39
 
-{@defer} = Trix.Helpers
+@after = (defer, callback) ->
+  setTimeout(callback, defer)
 
-@after = (delay, callback) ->
-  setTimeout(callback, delay)
+@defer = (callback) -> after 1, callback
 
 @editorModule = (name, {template, setup, teardown, config, delegate} = {}) ->
   module name,
@@ -62,7 +60,7 @@ keyCodes =
 
 @typeCharacters = (string, callback) ->
   characters = string.split("")
-  do typeNextCharacter = ->
+  do typeNextCharacter = -> defer ->
     character = characters.shift()
     if character?
       character = "\r" if character is "\n"
@@ -94,7 +92,7 @@ typeCharacterInElement = (character, element, callback) ->
 @triggerEvent = (element, type, properties) ->
   element.dispatchEvent(createEvent(type, properties))
 
-@clickElement = (element, callback) ->
+@clickElement = (element, callback) -> defer ->
   if triggerEvent(element, "mousedown")
     if triggerEvent(element, "mouseup")
       triggerEvent(element, "click")
@@ -107,9 +105,10 @@ typeCharacterInElement = (character, element, callback) ->
     direction = options.direction
     times = options.times
 
+  times ?= 1
   getEditorElement().focus()
 
-  for i in [0...(times ? 1)]
+  do move = -> defer ->
     if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction])
       selection = window.getSelection()
       if selection.modify
@@ -122,8 +121,10 @@ typeCharacterInElement = (character, element, callback) ->
         textRange.select()
       Trix.selectionChangeObserver.update()
 
-  defer ->
-    callback getCursorCoordinates()
+    if --times is 0
+      callback(getCursorCoordinates())
+    else
+      move()
 
 getCursorCoordinates = ->
   if rect = window.getSelection().getRangeAt(0).getClientRects()[0]
@@ -135,19 +136,24 @@ getElementCoordinates = (element) ->
   clientX: rect.left + rect.width / 2
   clientY: rect.top + rect.height / 2
 
-@expandSelection = (options, callback) ->
+@expandSelection = (options, callback) -> defer ->
   if typeof options is "string"
     direction = options
   else
     direction = options.direction
     times = options.times
 
+  times ?= 1
   getEditorElement().focus()
 
-  for i in [0...(times ? 1)]
+  do expand = -> defer ->
     if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)
       editor.composition.expandSelectionInDirection(if direction is "left" then "backward" else "forward")
-  defer(callback)
+
+    if --times is 0
+      callback()
+    else
+      expand()
 
 @collapseSelection = (direction, callback) ->
   selection = window.getSelection()
