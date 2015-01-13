@@ -102,10 +102,11 @@ class Trix.SelectionManager
     range.setStart(rangeStart...)
     range.setEnd(rangeEnd...)
 
-    applyRange = benchmark "  #setDOMRange -> applyRange", ->
-      selection = window.getSelection()
-      selection.removeAllRanges()
-      selection.addRange(range)
+    applyRange = benchmark "  #setDOMRange -> applyRange", =>
+      if document.activeElement is @element
+        selection = window.getSelection()
+        selection.removeAllRanges()
+        selection.addRange(range)
 
     # Selection#addRange is unreasonably slow in WebKit when performed in the
     # same call stack as a mouse or key event so defer calling it.

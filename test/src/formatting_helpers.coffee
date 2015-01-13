@@ -1,6 +1,9 @@
 getToolbarButton = ({attribute, action}) ->
   document.getElementById("toolbar").querySelector(".button[data-attribute='#{attribute}'], .button[data-action='#{action}']")
 
+getToolbarDialog = ({attribute, action}) ->
+  document.getElementById("toolbar").querySelector(".dialog[data-attribute='#{attribute}'], .dialog[data-action='#{action}']")
+
 @clickToolbarButton = (selector, callback) ->
   button = getToolbarButton(selector)
   triggerEvent(button, "mousedown")
@@ -23,12 +26,16 @@ getToolbarButton = ({attribute, action}) ->
   button.classList.contains("active")
 
 @typeInToolbarDialog = (string, {attribute}, callback) ->
-  dialog = document.getElementById("toolbar").querySelector(".dialog[data-attribute='#{attribute}']")
+  dialog = getToolbarDialog({attribute})
   input = dialog.querySelector("input[name='#{attribute}']")
   button = dialog.querySelector("input[data-method='setAttribute']")
   input.value = string
   triggerEvent(button, "click")
   defer(callback)
+
+@isToolbarDialogActive = (selector) ->
+  dialog = getToolbarDialog(selector)
+  dialog.classList.contains("active")
 
 @expectAttributes = (range, attributes) ->
   locationRange = editor.document.locationRangeFromRange(range)

@@ -14,6 +14,7 @@ editorTest "applying a link to text", (done) ->
     moveCursor "left", ->
       expandSelection "left", ->
         clickToolbarButton attribute: "href", ->
+          ok isToolbarDialogActive(attribute: "href")
           typeInToolbarDialog "http://example.com", attribute: "href", ->
             expectAttributes([0, 1], {})
             expectAttributes([1, 2], href: "http://example.com")
@@ -27,6 +28,7 @@ editorTest "editing a link", (done) ->
   editor.composition.insertString("d")
   moveCursor direction: "left", times: 2, ->
     clickToolbarButton attribute: "href", ->
+      ok isToolbarDialogActive(attribute: "href")
       assertLocationRange([0,1], [0,3])
       typeInToolbarDialog "http://example.org", attribute: "href", ->
         expectAttributes([0, 1], {})
