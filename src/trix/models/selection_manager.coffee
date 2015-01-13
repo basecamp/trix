@@ -265,6 +265,7 @@ class Trix.SelectionManager
     selection = window.getSelection()
     selection.removeAllRanges()
     selection.addRange(domRange)
+    Trix.selectionChangeObserver.update()
 
   getClientRects = ->
     rects = getDOMRange()?.getClientRects()

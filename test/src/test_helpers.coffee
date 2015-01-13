@@ -92,7 +92,7 @@ typeCharacterInElement = (character, element, callback) ->
 @triggerEvent = (element, type, properties) ->
   element.dispatchEvent(createEvent(type, properties))
 
-@clickElement = (element, callback) -> defer ->
+@clickElement = (element, callback) ->
   if triggerEvent(element, "mousedown")
     if triggerEvent(element, "mouseup")
       triggerEvent(element, "click")
