@@ -13,10 +13,12 @@ module Trix
       { browser: "Android",           version_depth: 1, platforms: ["Linux"] }
     ]
 
-    MAX_VM_SECONDS = 60 * 4
-    MAX_TOTAL_SECONDS = 60 * 20
-
-    MAX_REQUEST_SECONDS = 30
+    # Timeouts in seconds
+    TIMEOUTS = {
+      total: 60 * 20,
+      single_vm: 60 * 4,
+      api_request: { timeout: 30, open: 30 }
+    }
 
     S3_BUCKET = "trix-tests"
     TRIX_TEST_FILE = "test.html"
@@ -28,7 +30,7 @@ module Trix
     end
 
     def run
-      Timeout::timeout(MAX_TOTAL_SECONDS) do
+      Timeout::timeout(TIMEOUTS[:total]) do
         upload_dist
         start_tests
         poll_for_completion
@@ -50,7 +52,7 @@ module Trix
       end
 
       def test_params
-        { url: test_url, build: rev, platforms: platforms, framework: "qunit", max_duration: MAX_VM_SECONDS }
+        { url: test_url, build: rev, platforms: platforms, framework: "qunit", max_duration: TIMEOUTS[:single_vm] }
       end
 
       def poll_for_completion
@@ -154,7 +156,7 @@ module Trix
       end
 
       def request(url, options = {})
-        options.merge! url: url, timeout: MAX_REQUEST_SECONDS, open_timeout: MAX_REQUEST_SECONDS
+        options.merge! url: url, timeout: TIMEOUTS[:api_request][:timeout], open_timeout: TIMEOUTS[:api_request][:open]
         tries ||= 3
         RestClient::Request.execute(options)
       rescue
