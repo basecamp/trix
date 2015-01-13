@@ -94,9 +94,11 @@ typeCharacterInElement = (character, element, callback) ->
 
 @clickElement = (element, callback) ->
   if triggerEvent(element, "mousedown")
-    if triggerEvent(element, "mouseup")
-      triggerEvent(element, "click")
-      defer(callback)
+    defer ->
+      if triggerEvent(element, "mouseup")
+        defer ->
+          triggerEvent(element, "click")
+          defer(callback)
 
 @moveCursor = (options, callback) ->
   if typeof options is "string"
