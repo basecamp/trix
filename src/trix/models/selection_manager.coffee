@@ -20,9 +20,13 @@ class Trix.SelectionManager
     else
       new Trix.LocationRange start, end
 
-    if locationRange = @setDOMRange(locationRange)
+    if domRange = @createDOMRangeFromLocationRange(locationRange)
+      # Selection#addRange is unreasonably slow in WebKit when performed in the
+      # same call stack as a mouse or key event so defer calling it.
+      # https://code.google.com/p/chromium/issues/detail?id=423170
+      # https://code.google.com/p/chromium/issues/detail?id=138439
+      defer => setDOMRange(domRange) if document.activeElement is @element
       @updateCurrentLocationRange(locationRange)
-      locationRange
 
   setLocationRangeFromPoint: (point) ->
     if locationRange = @getLocationRangeAtPoint(point)
@@ -68,8 +72,7 @@ class Trix.SelectionManager
     point = @getSelectionEndPoints()[0]
     block()
     locationRange = @getLocationRangeAtPoint(point)
-    @setDOMRange(locationRange)
-    locationRange
+    @setLocationRange(locationRange)
 
   clearSelection: ->
     getDOMSelection()?.removeAllRanges()
@@ -88,33 +91,18 @@ class Trix.SelectionManager
       @currentLocationRange = locationRange
       @delegate?.locationRangeDidChange?(@currentLocationRange)
 
-  setDOMRange: benchmark "SelectionManager#setDOMRange", (locationRange) ->
+  createDOMRangeFromLocationRange: (locationRange) ->
     rangeStart = @findContainerAndOffsetForLocation(locationRange.start)
-    rangeEnd =
-      if locationRange.isCollapsed()
-        rangeStart
-      else
-        @findContainerAndOffsetForLocation(locationRange.end)
+    rangeEnd = if locationRange.isCollapsed()
+      rangeStart
+    else
+      @findContainerAndOffsetForLocation(locationRange.end)
 
-    return unless rangeStart? and rangeEnd?
-
-    range = document.createRange()
-    range.setStart(rangeStart...)
-    range.setEnd(rangeEnd...)
-
-    applyRange = benchmark "  #setDOMRange -> applyRange", =>
-      if document.activeElement is @element
-        selection = window.getSelection()
-        selection.removeAllRanges()
-        selection.addRange(range)
-
-    # Selection#addRange is unreasonably slow in WebKit when performed in the
-    # same call stack as a mouse or key event so defer calling it.
-    # https://code.google.com/p/chromium/issues/detail?id=423170
-    # https://code.google.com/p/chromium/issues/detail?id=138439
-    defer(applyRange)
-
-    locationRange
+    if rangeStart? and rangeEnd?
+      range = document.createRange()
+      range.setStart(rangeStart...)
+      range.setEnd(rangeEnd...)
+      range
 
   createLocationRangeFromDOMRange: (range) ->
     return unless range? and @rangeWithinElement(range)
@@ -272,6 +260,11 @@ class Trix.SelectionManager
 
   getDOMRange = ->
     getDOMSelection()?.getRangeAt(0)
+
+  setDOMRange = (domRange) ->
+    selection = window.getSelection()
+    selection.removeAllRanges()
+    selection.addRange(domRange)
 
   getClientRects = ->
     rects = getDOMRange()?.getClientRects()
