@@ -5,14 +5,13 @@ require "timeout"
 
 module Trix
   class VMTestRunner
-    BROWSERS = {
-      "Safari" => 2,
-      "Google Chrome" => 2,
-      "Firefox" => 2,
-      "Internet Explorer" => 1,
-      "iPad" => 1,
-      "Android" => 1
-    }
+    TESTS = [
+      { browser: "Safari",            version_depth: 2, platforms: ["Mac", "Windows"] },
+      { browser: "Google Chrome",     version_depth: 2, platforms: ["Mac", "Windows"] },
+      { browser: "Internet Explorer", version_depth: 1, platforms: ["Windows"] },
+      { browser: "iPad",              version_depth: 1, platforms: ["Mac"] },
+      { browser: "Android",           version_depth: 1, platforms: ["Linux"] }
+    ]
 
     MAX_VM_SECONDS = 60 * 4
     MAX_TOTAL_SECONDS = 60 * 20
@@ -139,11 +138,11 @@ module Trix
 
       def platforms
         @platforms ||= [].tap do |platforms|
-          BROWSERS.each do |browser, version_depth|
-            for_browser = available_platforms.select { |p| p["long_name"] == browser }
-            versions = for_browser.map { |p| p["short_version"].to_f }.sort.uniq.last(version_depth)
+          TESTS.each do |test|
+            for_browser = available_platforms.select { |p| p["long_name"] == test[:browser] }
+            versions = for_browser.map { |p| p["short_version"].to_f }.sort.uniq.last(test[:version_depth])
             versions.each do |version|
-              ["Mac", "Windows", "Linux"].each do |os|
+              test[:platforms].each do |os|
                 for_os = for_browser.select { |p| p["os"] =~ Regexp.new(os) && p["short_version"].to_f == version }
                 if platform = for_os.sort_by { |p| p["os"] }.last
                   platforms.push([platform["os"], platform["api_name"], platform["short_version"]])
