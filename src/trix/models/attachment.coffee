@@ -1,5 +1,3 @@
-{bytesToHumanSize} = Trix.Helpers
-
 class Trix.Attachment extends Trix.Object
   @attachmentForFile: (file) ->
     attachment = new this @attributesForFile(file)
@@ -49,7 +47,7 @@ class Trix.Attachment extends Trix.Object
   getFormattedFilesize: ->
     filesize = @attributes.get("filesize")
     switch typeof filesize
-      when "number" then bytesToHumanSize(filesize, prefix: "si")
+      when "number" then Trix.config.fileSize.formatter(filesize)
       when "string" then filesize
       else ""
 

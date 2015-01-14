@@ -38,19 +38,5 @@ Trix.Helpers =
       return false unless value is b[index]
     true
 
-  bytesToHumanSize: (bytes, {precision, prefix} = {}) ->
-    return "0 Bytes" if bytes is 0
-    return "1 Byte" if bytes is 1
-    sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB"]
-    base = if prefix is "si" then 1000 else 1024
-    exp = Math.floor(Math.log(bytes) / Math.log(base))
-    humanSize = bytes / Math.pow(base, exp)
-    "#{formatNumber(humanSize, precision)} #{sizes[exp]}"
-
-formatNumber = (number, precision = 2) ->
-  string = number.toFixed(precision)
-  withoutInsignificantZeros = string.replace(/0*$/, "").replace(/\.$/, "")
-  withoutInsignificantZeros
-
 formatValue = (value) ->
   value?.inspect?() ? (try JSON.stringify(value)) ? value

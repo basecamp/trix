@@ -5,6 +5,8 @@
 #= require trix/controllers/degraded_editor_controller
 
 @Trix =
+  config: {}
+
   isSupported: (config = {}) ->
     trixSupport = new BrowserSupport().getTrixSupport()
 
