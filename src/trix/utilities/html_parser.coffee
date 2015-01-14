@@ -37,7 +37,7 @@ class Trix.HTMLParser
         @processElement(node)
 
   appendBlockForElement: (element) ->
-    if element.firstChild?.nodeType is Node.TEXT_NODE or tagName(element.firstChild) is "br"
+    if isBlockElement(element) and not isBlockElement(element.firstChild)
       attributes = getBlockAttributes(element)
       unless elementContainsNode(@currentBlockElement, element) and arraysAreEqual(attributes, @currentBlock.getAttributes())
         @currentBlock = @appendBlockForAttributes(attributes)
@@ -144,6 +144,11 @@ class Trix.HTMLParser
       node.parentNode.removeChild(node)
 
     body.innerHTML
+
+  isBlockElement = (element) ->
+    return unless element?.nodeType is Node.ELEMENT_NODE
+    blockTagNames = (value.tagName for key, value of Trix.blockAttributes)
+    tagName(element) in blockTagNames or window.getComputedStyle(element).display is "block"
 
   isExtraBR = (element) ->
     previousSibling = element.previousElementSibling
