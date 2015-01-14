@@ -48,7 +48,7 @@ class Trix.HTMLParser
     tagName(element) in @getBlockTagNames() or window.getComputedStyle(element).display is "block"
 
   getBlockTagNames: ->
-    @blockTagNames ?= (value.tagName for key, value of Trix.blockAttributes)
+    @blockTagNames ?= (value.tagName for key, value of Trix.config.blockAttributes)
 
   processTextNode: (node) ->
     unless node.textContent is Trix.ZERO_WIDTH_SPACE
@@ -106,7 +106,7 @@ class Trix.HTMLParser
 
   getTextAttributes = (element) ->
     attributes = {}
-    for attribute, config of Trix.textAttributes
+    for attribute, config of Trix.config.textAttributes
       if config.parser
         if value = config.parser(element)
           attributes[attribute] = value
@@ -118,7 +118,7 @@ class Trix.HTMLParser
   getBlockAttributes = (element) ->
     attributes = []
     while element
-      for attribute, config of Trix.blockAttributes when config.parse isnt false
+      for attribute, config of Trix.config.blockAttributes when config.parse isnt false
         if tagName(element) is config.tagName
           if config.test?(element) or not config.test
             attributes.push(attribute)

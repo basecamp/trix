@@ -29,7 +29,7 @@ class Trix.Block extends Trix.Object
       @copyWithText(@text.copyUsingObjectMap(objectMap))
 
   addAttribute: (attribute) ->
-    {parentAttribute} = Trix.blockAttributes[attribute]
+    {parentAttribute} = Trix.config.blockAttributes[attribute]
     attributes = if parentAttribute
       @attributes.push(parentAttribute, attribute)
     else
@@ -37,7 +37,7 @@ class Trix.Block extends Trix.Object
     @copyWithAttributes attributes
 
   removeAttribute: (attribute) ->
-    {parentAttribute} = Trix.blockAttributes[attribute]
+    {parentAttribute} = Trix.config.blockAttributes[attribute]
     attributes = if parentAttribute
       @attributes.pop(attribute, parentAttribute)
     else

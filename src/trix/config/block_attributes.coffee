@@ -1,4 +1,4 @@
-Trix.blockAttributes = attributes =
+Trix.config.blockAttributes = attributes =
   default:
     tagName: "div"
     parse: false

@@ -84,7 +84,7 @@ class Trix.Composition
 
     if block.hasAttributes()
       attributes = block.getAttributes()
-      blockConfig = Trix.blockAttributes[block.getLastAttribute()]
+      blockConfig = Trix.config.blockAttributes[block.getLastAttribute()]
       if blockConfig?.parentAttribute
         if block.isEmpty()
           @removeLastBlockAttribute()
@@ -186,7 +186,7 @@ class Trix.Composition
         true
 
   setCurrentAttribute: (attributeName, value) ->
-    if Trix.blockAttributes[attributeName]
+    if Trix.config.blockAttributes[attributeName]
       @setBlockAttribute(attributeName, value)
       @updateCurrentAttributes()
     else
@@ -207,7 +207,7 @@ class Trix.Composition
     @setRange(range)
 
   removeCurrentAttribute: (attributeName) ->
-    if Trix.blockAttributes[attributeName]
+    if Trix.config.blockAttributes[attributeName]
       @removeBlockAttribute(attributeName)
       @updateCurrentAttributes()
     else
@@ -251,7 +251,7 @@ class Trix.Composition
 
   getCurrentTextAttributes: ->
     attributes = {}
-    attributes[key] = value for key, value of @currentAttributes when Trix.textAttributes[key]
+    attributes[key] = value for key, value of @currentAttributes when Trix.config.textAttributes[key]
     attributes
 
   notifyDelegateOfCurrentAttributesChange: ->

@@ -1,4 +1,4 @@
-Trix.textAttributes =
+Trix.config.textAttributes =
   bold:
     tagName: "strong"
     inheritable: true
