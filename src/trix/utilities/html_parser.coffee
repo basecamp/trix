@@ -11,6 +11,8 @@ class Trix.HTMLParser
 
   constructor: (@html) ->
     @blocks = []
+    @blockElements = []
+    @processedElements = []
 
   parse: ->
     try
@@ -18,6 +20,7 @@ class Trix.HTMLParser
       @container.innerHTML = sanitizeHTML(@html)
       walker = walkTree(@container)
       @processNode(walker.currentNode) while walker.nextNode()
+      @translateBlockElementMarginsToNewlines()
     finally
       @removeHiddenContainer()
 
@@ -40,7 +43,7 @@ class Trix.HTMLParser
     if @isBlockElement(element) and not @isBlockElement(element.firstChild)
       attributes = getBlockAttributes(element)
       unless elementContainsNode(@currentBlockElement, element) and arraysAreEqual(attributes, @currentBlock.getAttributes())
-        @currentBlock = @appendBlockForAttributes(attributes)
+        @currentBlock = @appendBlockForAttributes(attributes, element)
         @currentBlockElement = element
 
   isBlockElement: (element) ->
@@ -59,6 +62,7 @@ class Trix.HTMLParser
       when "br"
         unless isExtraBR(element)
           @appendStringWithAttributes("\n", getTextAttributes(element))
+        @processedElements.push(element)
       when "figure"
         if element.classList.contains("attachment")
           attributes = getAttachmentAttributes(element)
@@ -70,17 +74,20 @@ class Trix.HTMLParser
             @appendAttachmentForAttributes(attributes, textAttributes)
             # We have everything we need so avoid processing inner nodes
             element.innerHTML = ""
+          @processedElements.push(element)
       when "img"
         attributes = url: element.src, contentType: "image"
         textAttributes = getTextAttributes(element)
         textAttributes.width = element.width if element.width?
         textAttributes.height = element.height if element.height?
         @appendAttachmentForAttributes(attributes, textAttributes)
+        @processedElements.push(element)
 
-  appendBlockForAttributes: (attributes) ->
+  appendBlockForAttributes: (attributes, element) ->
     @text = new Trix.Text
     block = new Trix.Block @text, attributes
     @blocks.push(block)
+    @blockElements.push(element)
     block
 
   appendStringWithAttributes: (string, attributes) ->
@@ -98,8 +105,36 @@ class Trix.HTMLParser
 
     @text = @text.appendText(text)
     index = @blocks.length - 1
+    @replaceTextForBlockAtIndex(@text, index)
+
+  replaceTextForBlockAtIndex: (text, index) ->
     block = @blocks[index]
-    @blocks[index] = block.copyWithText(@text)
+    @blocks[index] = block.copyWithText(text)
+
+  getMarginOfBlockElementAtIndex: (index) ->
+    if element = @blockElements[index]
+      unless tagName(element) in @getBlockTagNames() or element in @processedElements
+        getBlockElementMargin(element)
+
+  getMarginOfDefaultBlockElement: ->
+    element = makeElement(Trix.config.blockAttributes.default.tagName)
+    @container.appendChild(element)
+    getBlockElementMargin(element)
+
+  translateBlockElementMarginsToNewlines: ->
+    defaultMargin = @getMarginOfDefaultBlockElement()
+    textForNewline = Trix.Text.textForStringWithAttributes("\n")
+
+    for block, index in @blocks when margin = @getMarginOfBlockElementAtIndex(index)
+      text = block.getTextWithoutBlockBreak()
+
+      if margin.top > defaultMargin.top * 2
+        newText = text.insertTextAtPosition(textForNewline, 0)
+        @replaceTextForBlockAtIndex(newText, index)
+
+      if margin.bottom > defaultMargin.bottom * 2
+        newText = text.appendText(textForNewline)
+        @replaceTextForBlockAtIndex(newText, index)
 
   getDocument: ->
     new Trix.Document @blocks
@@ -158,3 +193,8 @@ class Trix.HTMLParser
       (not previousSibling? or tagName(element) is tagName(previousSibling)) and
       element is element.parentNode.lastChild and
       window.getComputedStyle(element.parentNode).display is "block"
+
+  getBlockElementMargin = (element) ->
+    style = window.getComputedStyle(element)
+    if style.display is "block"
+      top: parseInt(style.marginTop), bottom: parseInt(style.marginBottom)
