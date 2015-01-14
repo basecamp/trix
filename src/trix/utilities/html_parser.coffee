@@ -37,11 +37,18 @@ class Trix.HTMLParser
         @processElement(node)
 
   appendBlockForElement: (element) ->
-    if isBlockElement(element) and not isBlockElement(element.firstChild)
+    if @isBlockElement(element) and not @isBlockElement(element.firstChild)
       attributes = getBlockAttributes(element)
       unless elementContainsNode(@currentBlockElement, element) and arraysAreEqual(attributes, @currentBlock.getAttributes())
         @currentBlock = @appendBlockForAttributes(attributes)
         @currentBlockElement = element
+
+  isBlockElement: (element) ->
+    return unless element?.nodeType is Node.ELEMENT_NODE
+    tagName(element) in @getBlockTagNames() or window.getComputedStyle(element).display is "block"
+
+  getBlockTagNames: ->
+    @blockTagNames ?= (value.tagName for key, value of Trix.blockAttributes)
 
   processTextNode: (node) ->
     unless node.textContent is Trix.ZERO_WIDTH_SPACE
@@ -144,11 +151,6 @@ class Trix.HTMLParser
       node.parentNode.removeChild(node)
 
     body.innerHTML
-
-  isBlockElement = (element) ->
-    return unless element?.nodeType is Node.ELEMENT_NODE
-    blockTagNames = (value.tagName for key, value of Trix.blockAttributes)
-    tagName(element) in blockTagNames or window.getComputedStyle(element).display is "block"
 
   isExtraBR = (element) ->
     previousSibling = element.previousElementSibling
