@@ -135,10 +135,10 @@ class Trix.InputController
       event.preventDefault()
 
       if html = paste.getData("text/html")
-        @delegate?.inputControllerWillPasteText()
+        @delegate?.inputControllerWillPasteText({paste, html})
         @responder?.insertHTML(html)
       else if string = paste.getData("text/plain")
-        @delegate?.inputControllerWillPasteText()
+        @delegate?.inputControllerWillPasteText({paste, string})
         @responder?.insertString(string)
 
       if "Files" in paste.types

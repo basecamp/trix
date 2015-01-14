@@ -36,6 +36,11 @@ config =
       @errors ?= []
       @errors.push({error, details})
 
+    didPaste: (paste) ->
+      @pastes ?= []
+      @pastes.push(paste)
+      console.log @pastes
+
 saveAttachment = (attachment) ->
   item = document.createElement("li")
   item.setAttribute("id", "attachment_#{attachment.id}")
@@ -94,11 +99,17 @@ installTrix = ->
 
     document.getElementById("trix-debug").addEventListener "click", (event) ->
       event.preventDefault()
+
+      errors = []
+      for {error, details} in config.delegate.errors ? []
+        errors.push([error.stack.split("\n"), details])
+
       prompt "Debug information:", "/* Copy and paste this: */" + JSON.stringify
         locationRange: controller.selectionManager.getLocationRange()
         document: controller.document
         html: controller.documentElement.innerHTML
-        errors: [error.stack.split("\n"), details] for {error, details} in config.delegate.errors ? []
+        errors: errors
+        pastes: config.delegate.pastes
       , null, 2
 
   else

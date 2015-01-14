@@ -120,8 +120,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
   inputControllerWillCutText: ->
     @undoManager.recordUndoEntry("Cut")
 
-  inputControllerWillPasteText: ->
+  inputControllerWillPasteText: (paste) ->
     @undoManager.recordUndoEntry("Paste")
+    @delegate?.didPaste?(paste)
 
   inputControllerWillMoveText: ->
     @undoManager.recordUndoEntry("Move")
