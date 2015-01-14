@@ -7,6 +7,7 @@ class Trix.ToolbarController
   dialogSelector = ".dialog[data-attribute]"
   activeDialogSelector = "#{dialogSelector}.active"
   dialogButtonSelector = "#{dialogSelector} input[data-method]"
+  dialogInputSelector = "#{dialogSelector} input[type=text]"
 
   constructor: (@element) ->
     @attributes = {}
@@ -15,6 +16,7 @@ class Trix.ToolbarController
     handleEvent "mousedown", onElement: @element, matchingSelector: attributeButtonSelector, withCallback: @didClickAttributeButton
     handleEvent "click", onElement: @element, matchingSelector: toolbarButtonSelector, preventDefault: true
     handleEvent "click", onElement: @element, matchingSelector: dialogButtonSelector, withCallback: @didClickDialogButton
+    handleEvent "keydown", onElement: @element, matchingSelector: dialogInputSelector, withCallback: @didKeyDownDialogInput
 
   # Event handlers
 
@@ -36,6 +38,13 @@ class Trix.ToolbarController
     dialogElement = findClosestElementFromNode(element, matchingSelector: dialogSelector)
     method = element.getAttribute("data-method")
     @[method].call(this, dialogElement)
+
+  didKeyDownDialogInput: (event, element) =>
+    if event.keyCode is 13 # Enter key
+      event.preventDefault()
+      attribute = element.getAttribute("name")
+      dialog = @getDialogForAttributeName(attribute)
+      @setAttribute(dialog)
 
   # Action buttons
 
