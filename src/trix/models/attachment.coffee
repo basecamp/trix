@@ -1,3 +1,5 @@
+{bytesToHumanSize} = Trix.Helpers
+
 class Trix.Attachment extends Trix.Object
   @attachmentForFile: (file) ->
     attachment = new this @attributesForFile(file)
@@ -43,6 +45,13 @@ class Trix.Attachment extends Trix.Object
 
   getFilesize: ->
     @attributes.get("filesize") ? 0
+
+  getFormattedFilesize: ->
+    filesize = @attributes.get("filesize")
+    switch typeof filesize
+      when "number" then bytesToHumanSize(filesize, prefix: "si")
+      when "string" then filesize
+      else ""
 
   getExtension: ->
     @getFilename().match(/\.(\w+)$/)?[1].toLowerCase()
