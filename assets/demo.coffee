@@ -39,7 +39,6 @@ config =
     didPaste: (paste) ->
       @pastes ?= []
       @pastes.push(paste)
-      console.log @pastes
 
 saveAttachment = (attachment) ->
   item = document.createElement("li")
