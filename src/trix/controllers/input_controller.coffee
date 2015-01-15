@@ -1,4 +1,5 @@
 #= require trix/observers/device_observer
+#= require trix/operations/file_verification_operation
 
 {defer} = Trix.Helpers
 {handleEvent, findClosestElementFromNode, findElementForContainerAtOffset} = Trix.DOM
@@ -49,6 +50,16 @@ class Trix.InputController
 
   isMobileInputModeEnabled: ->
     @mobileInputMode is true
+
+  # File verification
+
+  attachFiles: (files) ->
+    operations = (new Trix.FileVerificationOperation(file) for file in files)
+    Promise.all(operations).then (files) =>
+      @delegate?.inputControllerWillAttachFiles()
+      for file in files
+        if @responder?.insertFile(file)
+          file.trixInserted = true
 
   # Input handlers
 
@@ -118,10 +129,7 @@ class Trix.InputController
         delete @draggedRange
 
       else if files = event.dataTransfer.files
-        @delegate?.inputControllerWillAttachFiles()
-        for file in files
-          if @responder?.insertFile(file)
-            file.trixInserted = true
+        @attachFiles(event.dataTransfer.files)
 
       delete @draggedRange
       delete @draggingPoint
