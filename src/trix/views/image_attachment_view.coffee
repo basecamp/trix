@@ -5,13 +5,13 @@
 {makeElement, measureElement} = Trix.DOM
 
 class Trix.ImageAttachmentView extends Trix.AttachmentView
-  getResource: ->
-    if @attachment.resource?.isLoaded()
-      @attachment.resource
-    else if @attachment.previewResource?
-      @attachment.previewResource
+  getPreloadOperation: ->
+    if @attachment.preloadOperation?.hasSucceeded()
+      @attachment.preloadOperation
+    else if @attachment.previewPreloadOperation?
+      @attachment.previewPreloadOperation
     else
-      @attachment.resource
+      @attachment.preloadOperation
 
   createNodes: ->
     element = @createElement()
@@ -21,8 +21,8 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
     element.appendChild(image)
     @refresh(element)
 
-    if resource = @attachment.resource
-      resource.performWhenLoaded =>
+    if operation = @attachment.preloadOperation
+      operation.then =>
         @refresh(element)
         @refresh()
 
@@ -33,13 +33,13 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
       @updateAttributesForImage(image)
 
   updateAttributesForImage: (image) ->
-    resource = @getResource()
-    image.src = resource.url
+    operation = @getPreloadOperation()
+    image.src = operation.url
 
     if @attachmentPiece.getWidth()?
       image.width = @attachmentPiece.getWidth()
       image.height = @attachmentPiece.getHeight()
     else
-      resource.getImageDimensions ({width, height}) ->
-        image.width = width
-        image.height = height
+      operation.then (result) ->
+        image.width = result.width
+        image.height = result.height
