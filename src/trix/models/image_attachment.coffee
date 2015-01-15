@@ -1,5 +1,5 @@
 #= require trix/models/attachment
-#= require trix/models/preload_image_operation
+#= require trix/operations/image_preload_operation
 
 class Trix.ImageAttachment extends Trix.Attachment
   isImage: ->
@@ -16,12 +16,12 @@ class Trix.ImageAttachment extends Trix.Attachment
   didChangeAttributes: ->
     url = @getURL()
     if url? and not @preloadOperation
-      @preloadOperation = new Trix.PreloadImageOperation url
+      @preloadOperation = new Trix.ImagePreloadOperation url
       @preloadOperation.then => @releaseFile()
 
   createPreviewPreloadOperationForFile: (file) ->
     previewObjectURL = URL.createObjectURL(file)
-    @previewPreloadOperation = new Trix.PreloadImageOperation previewObjectURL
+    @previewPreloadOperation = new Trix.ImagePreloadOperation previewObjectURL
 
   releasePreviewPreload: ->
     URL.revokeObjectURL(@previewPreloadOperation.url)

@@ -18,14 +18,14 @@ class Trix.Operation
   getPromise: ->
     @promise ?= new Promise (resolve, reject) =>
       @performing = true
-      @perform (@succeeded, value) =>
+      @perform (@succeeded, result) =>
         delete @performing
         @performed = true
 
         if @succeeded
-          resolve(value)
+          resolve(result)
         else
-          reject(value)
+          reject(result)
 
   perform: (callback) ->
     callback(false)

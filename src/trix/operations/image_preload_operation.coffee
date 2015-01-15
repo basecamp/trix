@@ -1,6 +1,4 @@
-#= require trix/models/operation
-
-class Trix.PreloadImageOperation extends Trix.Operation
+class Trix.ImagePreloadOperation extends Trix.Operation
   constructor: (@url) ->
 
   perform: (callback) ->
