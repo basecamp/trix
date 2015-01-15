@@ -1,27 +1,45 @@
 #= require trix/views/attachment_view
+#= require trix/models/image_attachment
 
+{defer} = Trix.Helpers
 {makeElement, measureElement} = Trix.DOM
 
 class Trix.ImageAttachmentView extends Trix.AttachmentView
+  getResource: ->
+    if @attachment.resource?.isLoaded()
+      @attachment.resource
+    else if @attachment.previewResource?
+      @attachment.previewResource
+    else
+      @attachment.resource
+
   createNodes: ->
     element = @createElement()
     element.classList.add("image")
-    image = makeElement("img")
 
-    if @attachment.isPending()
-      @attachment.getPreviewURL (previewURL) =>
-        image.src = previewURL
-    else
-      image.src = @attachment.getURL()
+    image = makeElement("img")
+    element.appendChild(image)
+    @refresh(element)
+
+    if resource = @attachment.resource
+      resource.performWhenLoaded =>
+        @refresh(element)
+        @refresh()
+
+    [element]
+
+  refresh: (element = @findElement()) ->
+    if image = element?.querySelector("img")
+      @updateAttributesForImage(image)
+
+  updateAttributesForImage: (image) ->
+    resource = @getResource()
+    image.src = resource.url
 
     if @attachmentPiece.getWidth()?
       image.width = @attachmentPiece.getWidth()
       image.height = @attachmentPiece.getHeight()
     else
-      image.addEventListener "load", ->
-        {width, height} = measureElement(image)
+      resource.getImageDimensions ({width, height}) ->
         image.width = width
         image.height = height
-
-    element.appendChild(image)
-    [element]

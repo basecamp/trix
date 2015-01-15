@@ -95,7 +95,7 @@ class Trix.HTMLParser
     @appendText(text)
 
   appendAttachmentForAttributes: (attributes, textAttributes) ->
-    attachment = new Trix.Attachment attributes
+    attachment = Trix.Attachment.attachmentForAttributes(attributes)
     text = Trix.Text.textForAttachmentWithAttributes(attachment, textAttributes)
     @appendText(text)
 

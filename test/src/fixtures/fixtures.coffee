@@ -92,7 +92,7 @@ blockComment = "<!--block-->"
   "image attachment": do ->
     imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
     attrs = url: imageData, filename: "example.png", filesize: 123, contentType: "image/png"
-    attachment = new Trix.Attachment attrs
+    attachment = Trix.Attachment.attachmentForAttributes(attrs)
     text = Trix.Text.textForAttachmentWithAttributes(attachment, width: 10, height: 20)
 
     image = Trix.DOM.makeElement("img", src: attrs.url, width: 10, height: 20)

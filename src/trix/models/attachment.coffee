@@ -1,8 +1,20 @@
 class Trix.Attachment extends Trix.Object
+  @constructorForContentType: (contentType) ->
+    if /image/.test(contentType)
+      Trix.ImageAttachment
+    else
+      Trix.Attachment
+
   @attachmentForFile: (file) ->
-    attachment = new this @attributesForFile(file)
-    attachment.file = file
+    attributes = @attributesForFile(file)
+    attachment = @attachmentForAttributes(attributes)
+    attachment.setFile(file)
     attachment
+
+  @attachmentForAttributes: (attributes) ->
+    contentType = Trix.Hash.box(attributes).get("contentType")
+    constructor = @constructorForContentType(contentType)
+    new constructor attributes
 
   @attributesForFile: (file) ->
     new Trix.Hash
@@ -11,11 +23,12 @@ class Trix.Attachment extends Trix.Object
       contentType: file.type
 
   @fromJSON: (attachmentJSON) ->
-    new this attachmentJSON
+    @attachmentForAttributes(attachmentJSON)
 
   constructor: (attributes = {}) ->
     super
     @attributes = Trix.Hash.box(attributes)
+    @didChangeAttributes()
 
   getAttribute: (attribute) ->
     @attributes.get(attribute)
@@ -27,13 +40,16 @@ class Trix.Attachment extends Trix.Object
     newAttributes = @attributes.merge(attributes)
     unless @attributes.isEqualTo(newAttributes)
       @attributes = newAttributes
+      @didChangeAttributes()
       @delegate?.attachmentDidChangeAttributes?(this)
+
+  didChangeAttributes: ->
 
   isPending: ->
     @file? and not @getURL()
 
   isImage: ->
-    /image/.test(@getContentType())
+    false
 
   getURL: ->
     @attributes.get("url")
@@ -57,15 +73,13 @@ class Trix.Attachment extends Trix.Object
   getContentType: ->
     @attributes.get("contentType")
 
-  getPreviewURL: (callback) ->
-    if @previewURL?
-      callback(@previewURL)
-    else if @file?
-      reader = new FileReader
-      reader.onload = (event) =>
-        return unless @file?
-        callback(@previewURL = event.target.result)
-      reader.readAsDataURL(@file)
+  getFile: ->
+    @file
+
+  setFile: (@file) ->
+
+  releaseFile: ->
+    delete @file
 
   getUploadProgress: ->
     @uploadProgress ? 0
