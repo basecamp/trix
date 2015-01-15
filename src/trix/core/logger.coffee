@@ -40,4 +40,4 @@ class Trix.Logger
 
   timeEnd: ->
 
-  forwardMethods ofObject: console, onConstructor: this, toProperty: "console"
+  forwardMethods ofObject: console?.__proto__, onConstructor: this, toProperty: "console"

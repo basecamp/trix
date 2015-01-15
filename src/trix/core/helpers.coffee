@@ -23,14 +23,26 @@ Trix.Helpers =
     logger.timeEnd(name)
     result
 
-  forwardMethods: ({ofConstructor, ofObject, onConstructor, toProperty} = {}) ->
-    methods = ofObject ? ofConstructor.prototype
+  forwardMethods: ({ofConstructor, ofObject, onConstructor, toMethod, toProperty} = {}) ->
+    source = ofObject ? ofConstructor.prototype
+    methodNames = Object.getOwnPropertyNames(source)
     destination = onConstructor.prototype
     reservedNames = ["constructor", "toString", "valueOf"]
 
-    for name, value of methods when name not in reservedNames and typeof value is "function"
-      do (name, value) =>
-        destination[name] = -> value.apply(@[toProperty], arguments) if @[toProperty]?
+    forward = (object, name, value, args) ->
+      subject = if toMethod?
+        object[toMethod]?()
+      else if toProperty?
+        object[toProperty]
+
+      if subject?
+        value.apply(subject, args)
+
+    for name in methodNames when name not in reservedNames
+      do (name) =>
+        value = source[name]
+        if typeof value is "function"
+          destination[name] = -> forward(this, name, value, arguments)
 
   arraysAreEqual: (a, b) ->
     return false unless a.length is b.length
