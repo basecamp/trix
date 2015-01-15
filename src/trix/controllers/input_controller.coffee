@@ -74,6 +74,7 @@ class Trix.InputController
       return if @isMobileInputModeEnabled()
       return if (event.metaKey or event.ctrlKey) and not event.altKey
       return if keypressEventIsWebInspectorShortcut(event)
+      return if keypressEventIsPasteAndMatchStyleShortcut(event)
 
       if event.which is null
         character = String.fromCharCode event.keyCode
@@ -234,3 +235,6 @@ class Trix.InputController
 
 keypressEventIsWebInspectorShortcut = (event) ->
   event.metaKey and event.altKey and not event.shiftKey and event.keyCode is 94
+
+keypressEventIsPasteAndMatchStyleShortcut = (event) ->
+  event.metaKey and event.altKey and event.shiftKey and event.keyCode is 9674
