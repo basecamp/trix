@@ -33,8 +33,15 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
       @updateAttributesForImage(image)
 
   updateAttributesForImage: (image) ->
+    attachmentURL = @attachment.getURL()
     operation = @getPreloadOperation()
-    image.src = operation.url
+    image.src = url = operation.url
+
+    if url is attachmentURL
+      image.removeAttribute("data-trix-serialized-attributes")
+    else
+      serializedAttributes = JSON.stringify(src: attachmentURL)
+      image.setAttribute("data-trix-serialized-attributes", serializedAttributes)
 
     if @attachmentPiece.getWidth()?
       image.width = @attachmentPiece.getWidth()
