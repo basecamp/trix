@@ -2,9 +2,9 @@ Trix.config.fileSize =
   prefix: "IEC"
   precision: 2
   lang:
-    byte: "Byte"
-    bytes: "#{@byte}s"
-    sizes: [@bytes, "KB", "MB", "GB", "TB", "PB"]
+    byte:  byte = "Byte"
+    bytes: bytes = "#{byte}s"
+    sizes: [bytes, "KB", "MB", "GB", "TB", "PB"]
 
   formatter: (number) ->
     switch number
