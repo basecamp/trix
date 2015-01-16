@@ -6,7 +6,7 @@ root = Pathname.new(File.dirname(__FILE__))
 
 require root.join('lib/trix/environment')
 environment = Trix::Environment.new(root)
-environment.paths = %w( assets src test/assets test/src test/vendor )
+environment.paths = %w( assets polyfills src test/assets test/src test/vendor )
 
 require root.join('lib/trix/attachment_server')
 Trix::AttachmentServer.root = root.join('tmp/attachments')
