@@ -212,9 +212,13 @@ class Trix.SelectionManager
       domRange = document.caretRangeFromPoint(clientX, clientY)
 
     else if document.body.createTextRange
-      range = document.body.createTextRange()
-      range.moveToPoint(clientX, clientY)
-      range.select()
+      # IE 11 throws "Unspecified error" when using moveToPoint
+      # during a drag-and-drop operation. We'll do our best to
+      # map the point to a location range and fall back to the
+      # current location range if there's a problem.
+      try
+        domRange = document.body.createTextRange()
+        domRange.moveToPoint(clientX, clientY)
 
     @createLocationRangeFromDOMRange(domRange ? getDOMRange())
 
