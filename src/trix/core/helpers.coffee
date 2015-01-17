@@ -25,7 +25,7 @@ Trix.Helpers =
 
   forwardMethods: ({ofConstructor, ofObject, onConstructor, toMethod, toProperty} = {}) ->
     source = ofObject ? ofConstructor.prototype
-    methodNames = Object.getOwnPropertyNames(source)
+    methodNames = getPropertyNames(source)
     destination = onConstructor.prototype
     reservedNames = ["constructor", "toString", "valueOf"]
 
@@ -52,3 +52,11 @@ Trix.Helpers =
 
 formatValue = (value) ->
   value?.inspect?() ? (try JSON.stringify(value)) ? value
+
+getPropertyNames = (object) ->
+  result = {}
+  while object
+    for name in Object.getOwnPropertyNames(object)
+      result[name] = true
+    object = object.__proto__
+  Object.keys(result)
