@@ -9,7 +9,7 @@ class Trix.FileVerificationOperation extends Trix.Operation
 
     reader.onload = =>
       reader.onerror = null
-      reader.abort()
+      try reader.abort()
       callback(true, @file)
 
     reader.readAsArrayBuffer(@file)
