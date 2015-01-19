@@ -140,6 +140,7 @@ class Trix.InputController
 
     paste: (event) ->
       paste = event.clipboardData ? event.testClipboardData
+      return unless paste?
       return if "com.apple.webarchive" in paste.types
       event.preventDefault()
 
