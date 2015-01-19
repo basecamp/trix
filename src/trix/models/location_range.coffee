@@ -59,7 +59,7 @@ class Trix.LocationRange
       @toArray()
 
   toString: ->
-    @toJSON().toString()
+    JSON.stringify(@toJSON())
 
   inspect: ->
     locations = if @isCollapsed() then [@start] else [@start, @end]
