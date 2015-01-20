@@ -17,7 +17,9 @@ class Trix.HTMLParser
   parse: ->
     try
       @createHiddenContainer()
-      @container.innerHTML = sanitizeHTML(@html)
+      html = sanitizeHTML(@html)
+      html = trimInsignificantWhitespace(html)
+      @container.innerHTML = html
       walker = walkTree(@container)
       @processNode(walker.currentNode) while walker.nextNode()
       @translateBlockElementMarginsToNewlines()
@@ -186,6 +188,9 @@ class Trix.HTMLParser
       node.parentNode.removeChild(node)
 
     body.innerHTML
+
+  trimInsignificantWhitespace = (html) ->
+    html.replace(/^\s*<meta[^>]*>/i, "")
 
   isExtraBR = (element) ->
     previousSibling = element.previousElementSibling

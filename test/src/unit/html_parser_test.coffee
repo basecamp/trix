@@ -10,6 +10,11 @@ test "parses unfamiliar html", ->
   expectedHTML = """<div><!--block--><em>abc</em>d</div><div><!--block-->123<a href="http://example.com">45<strong>6</strong></a>x<br>y</div><div><!--block-->9</div>"""
   expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
+test "ignores leading whitespace before <meta> tag", ->
+  html = """ \n <meta charset="UTF-8"><pre>abc</pre>"""
+  expectedHTML = """<pre><!--block-->abc</pre>"""
+  expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
 test "translates block element margins to newlines", ->
   html = """<p style="margin: 0 0 1em 0">a</p><p style="margin: 0">b</p><article style="margin: 1em 0 0 0">c</article>"""
   expectedHTML = """<div><!--block-->a<br><br></div><div><!--block-->b</div><div><!--block--><br>c</div>"""
