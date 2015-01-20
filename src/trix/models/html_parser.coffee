@@ -71,8 +71,8 @@ class Trix.HTMLParser
           if Object.keys(attributes).length
             textAttributes = getTextAttributes(element)
             if image = element.querySelector("img")
-              textAttributes.width = image.width if image.width?
-              textAttributes.height = image.height if image.height?
+              dimensions = getImageDimensions(element)
+              textAttributes[key] = value for key, value of getImageDimensions(image)
             @appendAttachmentForAttributes(attributes, textAttributes)
             # We have everything we need so avoid processing inner nodes
             element.innerHTML = ""
@@ -80,8 +80,7 @@ class Trix.HTMLParser
       when "img"
         attributes = url: element.src, contentType: "image"
         textAttributes = getTextAttributes(element)
-        textAttributes.width = element.width if element.width?
-        textAttributes.height = element.height if element.height?
+        textAttributes[key] = value for key, value of getImageDimensions(element)
         @appendAttachmentForAttributes(attributes, textAttributes)
         @processedElements.push(element)
 
@@ -203,3 +202,12 @@ class Trix.HTMLParser
     style = window.getComputedStyle(element)
     if style.display is "block"
       top: parseInt(style.marginTop), bottom: parseInt(style.marginBottom)
+
+  getImageDimensions = (element) ->
+    width = element.getAttribute("width")
+    height = element.getAttribute("height")
+    dimensions = {}
+    dimensions.width = parseInt(width, 10) if width
+    dimensions.height = parseInt(height, 10) if height
+    dimensions
+

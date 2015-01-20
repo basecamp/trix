@@ -110,6 +110,27 @@ blockComment = "<!--block-->"
     html: "<div>#{blockComment}#{figure.outerHTML}</div>"
     document: new Trix.Document [new Trix.Block text]
 
+  "image attachment without dimensions": do ->
+    imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
+    attrs = url: imageData, filename: "example2.png", filesize: 123, contentType: "image/png"
+    attachment = Trix.Attachment.attachmentForAttributes(attrs)
+    text = Trix.Text.textForAttachmentWithAttributes(attachment)
+
+    image = Trix.DOM.makeElement("img", src: attrs.url)
+
+    figure = Trix.DOM.makeElement
+      tagName: "figure"
+      className: "attachment image"
+      editable: false
+      data:
+        trixAttachment: JSON.stringify(attachment)
+        trixId: attachment.id
+
+    figure.appendChild(image)
+
+    html: "<div>#{blockComment}#{figure.outerHTML}</div>"
+    document: new Trix.Document [new Trix.Block text]
+
   "file attachment": do ->
     attrs = url: "http://example.com/example.pdf", filename: "example.pdf", filesize: "345", contentType: "application/pdf"
     attachment = new Trix.Attachment attrs
