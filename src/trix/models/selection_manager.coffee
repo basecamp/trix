@@ -220,6 +220,7 @@ class Trix.SelectionManager
       try
         domRange = document.body.createTextRange()
         domRange.moveToPoint(clientX, clientY)
+        domRange.select()
 
     @createLocationRangeFromDOMRange(domRange ? getDOMRange())
 
