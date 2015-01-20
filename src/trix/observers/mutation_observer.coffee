@@ -10,6 +10,7 @@ class Trix.MutationObserver
 
   constructor: (@element) ->
     @observer = new window.MutationObserver @didMutate
+    @reset()
     @start()
 
   start: ->
@@ -20,8 +21,8 @@ class Trix.MutationObserver
 
   didMutate: (mutations) =>
     significantMutations = @findSignificantMutations(mutations)
-    if significantMutations.length
-      defer => @delegate?.elementDidMutate?(significantMutations)
+    @mutations.push(significantMutations...)
+    @notifyDelegateOnce()
 
   # Private
 
@@ -52,3 +53,14 @@ class Trix.MutationObserver
         nodes.push(mutation.addedNodes...)
         nodes.push(mutation.removedNodes...)
     nodes
+
+  reset: ->
+    @mutations = []
+
+  notifyDelegateOnce: ->
+    if @mutations.length
+      clearTimeout(@timeout)
+      @timeout = setTimeout =>
+        @delegate?.elementDidMutate?(@mutations)
+        @reset()
+      , 1
