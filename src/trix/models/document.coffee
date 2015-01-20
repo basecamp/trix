@@ -198,6 +198,8 @@ class Trix.Document extends Trix.Object
 
   applyBlockAttributeAtLocationRange: edit "applyBlockAttributeAtLocationRange", (attributeName, value, locationRange) ->
     locationRange = @expandLocationRangeToLineBreaksAndSplitBlocks(locationRange)
+    if Trix.config.blockAttributes[attributeName].parentAttribute
+      locationRange = @convertLineBreaksToBlockBreaksInLocationRange(locationRange)
     @addAttributeAtLocationRange(attributeName, value, locationRange)
 
   firstBlockInLocationRangeIsEntirelySelected: (locationRange) ->
@@ -235,6 +237,19 @@ class Trix.Document extends Trix.Object
           @insertBlockBreakAtLocationRange(Trix.LocationRange.forLocationWithLength(end, 1))
 
     new Trix.LocationRange start, end
+
+  convertLineBreaksToBlockBreaksInLocationRange: (locationRange) ->
+    string = @getStringAtLocationRange(locationRange).slice(0, -1)
+    range = @rangeFromLocationRange(locationRange)
+    position = range[0]
+
+    @edit =>
+      string.replace /.*?\n/g, (match) =>
+        position += Trix.UTF16String.fromUCS2String(match).length
+        locationRange = @locationRangeFromRange([position - 1, position])
+        @insertBlockBreakAtLocationRange(locationRange)
+
+    @locationRangeFromRange(range)
 
   getDocumentAtLocationRange: (locationRange) ->
     range = @rangeFromLocationRange(locationRange)

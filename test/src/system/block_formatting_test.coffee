@@ -36,6 +36,24 @@ editorTest "applying block attributes to text between newlines", (done) ->
           expectBlockAttributes([11, 13], [])
           done()
 
+editorTest "applying bullets to text with newlines", (done) ->
+  typeCharacters """
+    abc
+    def
+    ghi
+    jkl
+    mno
+  """, ->
+    moveCursor direction: "left", times: 2, ->
+      expandSelection direction: "left", times: 15, ->
+        clickToolbarButton attribute: "bullet", ->
+          expectBlockAttributes([0, 4], ["bulletList", "bullet"])
+          expectBlockAttributes([4, 8], ["bulletList", "bullet"])
+          expectBlockAttributes([8, 12], ["bulletList", "bullet"])
+          expectBlockAttributes([12, 16], ["bulletList", "bullet"])
+          expectBlockAttributes([16, 20], ["bulletList", "bullet"])
+          done()
+
 editorTest "breaking out of the end of a block", (done) ->
   typeCharacters "abc", ->
     clickToolbarButton attribute: "quote", ->
