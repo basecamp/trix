@@ -92,6 +92,13 @@ class Trix.HTMLParser
         textAttributes[key] = value for key, value of getImageDimensions(element)
         @appendAttachmentForAttributes(attributes, textAttributes)
         @processedElements.push(element)
+      when "tr"
+        unless element.parentNode.firstChild is element
+          @appendStringWithAttributes("\n")
+      when "td"
+        unless element.parentNode.firstChild is element
+          @appendStringWithAttributes(" ")
+
 
   appendBlockForAttributes: (attributes, element) ->
     @text = new Trix.Text
