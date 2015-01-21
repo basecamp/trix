@@ -25,6 +25,11 @@ test "parses entire HTML document", ->
   expectedHTML = """<div><!--block--><strong>abc</strong></div>"""
   expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
+test "parses inline element following block element", ->
+  html = """<blockquote>abc</blockquote><strong>123</strong>"""
+  expectedHTML = """<blockquote><!--block-->abc</blockquote><div><!--block--><strong>123</strong></div>"""
+  expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
 test "translates block element margins to newlines", ->
   html = """<p style="margin: 0 0 1em 0">a</p><p style="margin: 0">b</p><article style="margin: 1em 0 0 0">c</article>"""
   expectedHTML = """<div><!--block-->a<br><br></div><div><!--block-->b</div><div><!--block--><br>c</div>"""

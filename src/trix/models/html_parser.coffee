@@ -53,6 +53,10 @@ class Trix.HTMLParser
         @currentBlock = @appendBlockForAttributes(attributes, element)
         @currentBlockElement = element
 
+    else if @currentBlockElement and not elementContainsNode(@currentBlockElement, element) and not @isBlockElement(element)
+        @currentBlock = @appendBlockForAttributes({})
+        @currentBlockElement = null
+
   isBlockElement: (element) ->
     return unless element?.nodeType is Node.ELEMENT_NODE
     tagName(element) in @getBlockTagNames() or window.getComputedStyle(element).display is "block"
