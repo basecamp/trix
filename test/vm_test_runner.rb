@@ -8,6 +8,7 @@ module Trix
     TESTS = [
       { browser: "Safari",            version_depth: 2, platforms: ["Mac", "Windows"] },
       { browser: "Google Chrome",     version_depth: 2, platforms: ["Mac", "Windows"] },
+      { browser: "Firefox",           version_depth: 2, platforms: ["Mac", "Windows"] },
       { browser: "Internet Explorer", version_depth: 1, platforms: ["Windows"] },
       { browser: "iPad",              version_depth: 1, platforms: ["Mac"] },
       { browser: "Android",           version_depth: 1, platforms: ["Linux"] }
