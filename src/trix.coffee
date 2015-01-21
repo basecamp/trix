@@ -85,7 +85,10 @@ class Installer
 
     element.className = textarea.className
     element.classList.add("trix-editor")
-    element.classList.add(@config.className.split(" ")...) if @config.className
+
+    if @config.className
+      for className in @config.className.split(" ")
+        element.classList.add(className)
 
     element.style.minHeight = textarea.offsetHeight + "px"
     textarea.style["display"] = "none"
