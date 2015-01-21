@@ -20,11 +20,17 @@ class Trix.HTMLParser
       html = sanitizeHTML(@html)
       html = trimInsignificantWhitespace(html)
       @container.innerHTML = html
-      walker = walkTree(@container)
+      walker = walkTree(@container, usingFilter: nodeFilter)
       @processNode(walker.currentNode) while walker.nextNode()
       @translateBlockElementMarginsToNewlines()
     finally
       @removeHiddenContainer()
+
+  nodeFilter = (node) ->
+    if tagName(node) is "style"
+      NodeFilter.FILTER_REJECT
+    else
+      NodeFilter.FILTER_ACCEPT
 
   createHiddenContainer: ->
     @container = makeElement(tagName: "div", style: { display: "none" })
@@ -166,8 +172,12 @@ class Trix.HTMLParser
     JSON.parse(element.dataset.trixAttachment)
 
   sanitizeHTML = (html) ->
-    {body} = document.implementation.createHTMLDocument("")
-    body.innerHTML = html
+    doc = document.implementation.createHTMLDocument("")
+    doc.documentElement.innerHTML = html
+    {body, head} = doc
+
+    for style in head.querySelectorAll("style")
+      body.appendChild(style)
 
     commentNodes = []
     walker = walkTree(body)
