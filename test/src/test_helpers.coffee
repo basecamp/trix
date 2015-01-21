@@ -150,7 +150,7 @@ getElementCoordinates = (element) ->
 
   do expand = -> defer ->
     if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)
-      editor.composition.expandSelectionInDirection(if direction is "left" then "backward" else "forward")
+      editor.composition.expandLocationRangeInDirection(if direction is "left" then "backward" else "forward")
 
     if --times is 0
       callback()
