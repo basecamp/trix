@@ -178,7 +178,7 @@ class Trix.HTMLParser
     for style in head.querySelectorAll("style")
       body.appendChild(style)
 
-    commentNodes = []
+    nodesToRemove = []
     walker = walkTree(body)
 
     while walker.nextNode()
@@ -190,9 +190,12 @@ class Trix.HTMLParser
             unless name in allowedAttributes or name.indexOf("data-trix") is 0
               element.removeAttribute(name)
         when Node.COMMENT_NODE
-          commentNodes.push(node)
+          nodesToRemove.push(node)
+        when Node.TEXT_NODE
+          unless node.data.match(/\S/)
+            nodesToRemove.push(node)
 
-    for node in commentNodes
+    for node in nodesToRemove
       node.parentNode.removeChild(node)
 
     body.innerHTML

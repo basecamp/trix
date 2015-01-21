@@ -15,6 +15,11 @@ test "ignores leading whitespace before <meta> tag", ->
   expectedHTML = """<pre><!--block-->abc</pre>"""
   expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
+test "ignores whitespace between block elements", ->
+  html = """<div>a</div> \n <div>b</div>"""
+  expectedHTML = """<div><!--block-->a</div><div><!--block-->b</div>"""
+  expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
 test "parses entire HTML document", ->
   html = """<html><head><style>.bold {font-weight: bold}</style></head><body><span class="bold">abc</span></body></html>"""
   expectedHTML = """<div><!--block--><strong>abc</strong></div>"""
