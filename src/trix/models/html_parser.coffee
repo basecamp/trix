@@ -203,7 +203,7 @@ class Trix.HTMLParser
         when Node.COMMENT_NODE
           nodesToRemove.push(node)
         when Node.TEXT_NODE
-          unless node.data.match(/\S/)
+          if node.data.match(/^\s*$/) and node.parentNode is body
             nodesToRemove.push(node)
 
     for node in nodesToRemove
