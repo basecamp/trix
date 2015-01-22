@@ -8,8 +8,11 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   constructor: (@attachment) ->
     super
     @length = 1
-    if not @attachment.isImage() and url = @attachment.getURL()
-      @attributes = @attributes.add("href", url)
+    @ensureAttachmentExclusivelyHasAttribute("href")
+
+  ensureAttachmentExclusivelyHasAttribute: (attribute) ->
+    if @hasAttribute(attribute) and @attachment.hasAttribute(attribute)
+      @attributes = @attributes.remove(attribute)
 
   getValue: ->
     @attachment
@@ -22,6 +25,9 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
 
   getHeight: ->
     @attributes.get("height")
+
+  canBeGrouped: ->
+    super and not @attachment.hasAttribute("href")
 
   toString: ->
     Trix.OBJECT_REPLACEMENT_CHARACTER

@@ -14,7 +14,7 @@ Trix.config.textAttributes =
   href:
     groupTagName: "a"
     parser: (element) ->
-      if link = Trix.DOM.findClosestElementFromNode(element, matchingSelector: "a")
+      if link = Trix.DOM.findClosestElementFromNode(element, matchingSelector: "a:not([data-trix-attachment])")
         link.getAttribute("href")
   underline:
     style: { "textDecoration": "underline" }

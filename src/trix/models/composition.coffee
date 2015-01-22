@@ -320,8 +320,8 @@ class Trix.Composition
 
   selectionContainsAttachmentWithAttribute: (attributeName) ->
     if locationRange = @getLocationRange()
-      for piece in @document.getDocumentAtLocationRange(locationRange).getAttachmentPieces()
-        return true if piece.hasAttribute(attributeName)
+      for attachment in @document.getDocumentAtLocationRange(locationRange).getAttachments()
+        return true if attachment.hasAttribute(attributeName)
       false
 
   selectionIsInCursorTarget: ->

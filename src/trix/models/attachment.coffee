@@ -33,6 +33,9 @@ class Trix.Attachment extends Trix.Object
   getAttribute: (attribute) ->
     @attributes.get(attribute)
 
+  hasAttribute: (attribute) ->
+    @attributes.has(attribute)
+
   getAttributes: ->
     @attributes.toObject()
 
@@ -46,13 +49,16 @@ class Trix.Attachment extends Trix.Object
   didChangeAttributes: ->
 
   isPending: ->
-    @file? and not @getURL()
+    @file? and not (@getURL() or @getHref())
 
   isImage: ->
     false
 
   getURL: ->
     @attributes.get("url")
+
+  getHref: ->
+    @attributes.get("href")
 
   getFilename: ->
     @attributes.get("filename") ? "Untitled"

@@ -48,9 +48,10 @@ module Trix
       end
 
       def response_for_key(key)
-        filesize = File.size(root.join(key))
-        response = JSON.dump(identifier: key, url: "/attachments/#{key}", filesize: filesize)
-        [200, {'Content-Type' => 'application/json'}, [response]]
+        path = root.join(key)
+        attributes = { identifier: key, filesize: File.size(path) }
+        attributes[is_image(path) ? :url : :href] = "/attachments/#{key}"
+        [200, {'Content-Type' => 'application/json'}, [JSON.dump(attributes)]]
       end
 
       def bad_request
@@ -67,6 +68,10 @@ module Trix
           path = root.join(filename)
           path.readable? ? JSON.parse(path.read) : {}
         end
+      end
+
+      def is_image(path)
+        `file --mime #{path}`.chomp =~ /image/
       end
   end
 end

@@ -1,4 +1,4 @@
-{findClosestElementFromNode, walkTree, tagName, makeElement, elementContainsNode} = Trix.DOM
+{findClosestElementFromNode, walkTree, tagName, makeElement, elementContainsNode, elementMatchesSelector} = Trix.DOM
 {arraysAreEqual} = Trix.Helpers
 
 class Trix.HTMLParser
@@ -69,35 +69,35 @@ class Trix.HTMLParser
       @appendStringWithAttributes(node.textContent, getTextAttributes(node.parentNode))
 
   processElement: (element) ->
-    switch tagName(element)
-      when "br"
-        unless isExtraBR(element)
-          @appendStringWithAttributes("\n", getTextAttributes(element))
-        @processedElements.push(element)
-      when "figure"
-        if element.classList.contains("attachment")
-          attributes = getAttachmentAttributes(element)
-          if Object.keys(attributes).length
-            textAttributes = getTextAttributes(element)
-            if image = element.querySelector("img")
-              dimensions = getImageDimensions(element)
-              textAttributes[key] = value for key, value of getImageDimensions(image)
-            @appendAttachmentForAttributes(attributes, textAttributes)
-            # We have everything we need so avoid processing inner nodes
-            element.innerHTML = ""
-          @processedElements.push(element)
-      when "img"
-        attributes = url: element.src, contentType: "image"
+    if elementMatchesSelector(element, "[data-trix-attachment]")
+      attributes = getAttachmentAttributes(element)
+      if Object.keys(attributes).length
         textAttributes = getTextAttributes(element)
-        textAttributes[key] = value for key, value of getImageDimensions(element)
+        if image = element.querySelector("img")
+          dimensions = getImageDimensions(element)
+          textAttributes[key] = value for key, value of getImageDimensions(image)
         @appendAttachmentForAttributes(attributes, textAttributes)
-        @processedElements.push(element)
-      when "tr"
-        unless element.parentNode.firstChild is element
-          @appendStringWithAttributes("\n")
-      when "td"
-        unless element.parentNode.firstChild is element
-          @appendStringWithAttributes(" ")
+        # We have everything we need so avoid processing inner nodes
+        element.innerHTML = ""
+      @processedElements.push(element)
+    else
+      switch tagName(element)
+        when "br"
+          unless isExtraBR(element)
+            @appendStringWithAttributes("\n", getTextAttributes(element))
+          @processedElements.push(element)
+        when "img"
+          attributes = url: element.src, contentType: "image"
+          textAttributes = getTextAttributes(element)
+          textAttributes[key] = value for key, value of getImageDimensions(element)
+          @appendAttachmentForAttributes(attributes, textAttributes)
+          @processedElements.push(element)
+        when "tr"
+          unless element.parentNode.firstChild is element
+            @appendStringWithAttributes("\n")
+        when "td"
+          unless element.parentNode.firstChild is element
+            @appendStringWithAttributes(" ")
 
 
   appendBlockForAttributes: (attributes, element) ->

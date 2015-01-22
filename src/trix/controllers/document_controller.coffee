@@ -86,10 +86,7 @@ class Trix.DocumentController
   """
 
   addCursorTargetsAroundAttachments: ->
-    for element in @element.querySelectorAll("figure.attachment")
-      if tagName(element.parentNode) is "a"
-        element = element.parentNode
-        element.setAttribute("contenteditable", false)
+    for element in @element.querySelectorAll("[data-trix-attachment]")
       element.insertAdjacentHTML("beforebegin", cursorTarget)
       element.insertAdjacentHTML("afterend", cursorTarget)
 

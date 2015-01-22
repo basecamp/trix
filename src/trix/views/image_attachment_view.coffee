@@ -13,24 +13,23 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
     else
       @attachment.preloadOperation
 
-  createNodes: ->
-    element = @createElement()
-    element.classList.add("image")
-
+  createContentNodes: ->
     image = makeElement("img")
-    element.appendChild(image)
-    @refresh(element)
+    @refresh(image)
 
     if operation = @attachment.preloadOperation
       operation.then =>
-        @refresh(element)
+        @refresh(image)
         @refresh()
 
-    [element]
+    [image]
 
-  refresh: (element = @findElement()) ->
-    if image = element?.querySelector("img")
-      @updateAttributesForImage(image)
+  getClassName: ->
+    [super, "image"].join(" ")
+
+  refresh: (image) ->
+    image ?= @findElement()?.querySelector("img")
+    @updateAttributesForImage(image) if image
 
   updateAttributesForImage: (image) ->
     attachmentURL = @attachment.getURL()

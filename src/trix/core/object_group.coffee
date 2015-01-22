@@ -4,7 +4,7 @@ class Trix.ObjectGroup
     objects = []
     for object in ungroupedObjects
       if group
-        if group[group.length - 1].canBeGroupedWith?(object, depth)
+        if object.canBeGrouped?(depth) and group[group.length - 1].canBeGroupedWith?(object, depth)
           group.push(object)
           continue
         else

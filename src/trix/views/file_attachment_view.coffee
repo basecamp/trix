@@ -3,17 +3,17 @@
 {makeElement} = Trix.DOM
 
 class Trix.FileAttachmentView extends Trix.AttachmentView
-  createNodes: ->
-    element = @createElement()
-    element.classList.add("file")
-    if extension = @attachment.getExtension()
-      element.classList.add(extension)
-
+  createContentNodes: ->
     caption = makeElement(tagName: "figcaption", textContent: @attachment.getFilename())
 
     if filesize = @attachment.getFormattedFilesize()
       span = makeElement(tagName: "span", className: "size", textContent: filesize)
       caption.appendChild(span)
 
-    element.appendChild(caption)
-    [element]
+    [caption]
+
+  getClassName: ->
+    names = [super, "file"]
+    if extension = @attachment.getExtension()
+      names.push(extension)
+    names.join(" ")

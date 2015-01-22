@@ -46,6 +46,16 @@ editorTest "removing a link", (done) ->
         expectAttributes([0, 2], {})
         done()
 
+editorTest "applying a link to an attachment with a host-provided href", (done) ->
+  editor.composition.insertDocument(fixtures["file attachment"].document)
+  typeCharacters "a", ->
+    ok not isToolbarButtonDisabled(attribute: "href")
+    expandSelection "left", ->
+      ok not isToolbarButtonDisabled(attribute: "href")
+      expandSelection "left", ->
+        ok isToolbarButtonDisabled(attribute: "href")
+        done()
+
 editorTest "typing after a link", (done) ->
   typeCharacters "ab", ->
     expandSelection direction: "left", times: 2, ->

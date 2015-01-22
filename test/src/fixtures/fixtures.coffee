@@ -100,11 +100,13 @@ blockComment = "<!--block-->"
     figure = Trix.DOM.makeElement
       tagName: "figure"
       className: "attachment image"
-      editable: false
-      data:
-        trixAttachment: JSON.stringify(attachment)
-        trixId: attachment.id
 
+    data =
+      trixAttachment: JSON.stringify(attachment)
+      trixId: attachment.id
+
+    figure.dataset[key] = value for key, value of data
+    figure.setAttribute("contenteditable", false)
     figure.appendChild(image)
 
     html: "<div>#{blockComment}#{figure.outerHTML}</div>"
@@ -121,33 +123,40 @@ blockComment = "<!--block-->"
     figure = Trix.DOM.makeElement
       tagName: "figure"
       className: "attachment image"
-      editable: false
-      data:
-        trixAttachment: JSON.stringify(attachment)
-        trixId: attachment.id
 
+    data =
+      trixAttachment: JSON.stringify(attachment)
+      trixId: attachment.id
+
+    figure.dataset[key] = value for key, value of data
+    figure.setAttribute("contenteditable", false)
     figure.appendChild(image)
 
     html: "<div>#{blockComment}#{figure.outerHTML}</div>"
     document: new Trix.Document [new Trix.Block text]
 
   "file attachment": do ->
-    attrs = url: "http://example.com/example.pdf", filename: "example.pdf", filesize: "345", contentType: "application/pdf"
+    attrs = href: "http://example.com/example.pdf", filename: "example.pdf", filesize: "345", contentType: "application/pdf"
     attachment = new Trix.Attachment attrs
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
     figure = Trix.DOM.makeElement
       tagName: "figure"
       className: "attachment file pdf"
-      editable: false
-      data:
-        trixAttachment: JSON.stringify(attachment)
-        trixId: attachment.id
+
+    data =
+      trixAttachment: JSON.stringify(attachment)
+      trixId: attachment.id
+
+    link = Trix.DOM.makeElement("a", href: attrs.href)
+    link.dataset[key] = value for key, value of data
+    link.setAttribute("contenteditable", false)
+    link.appendChild(figure)
 
     caption = """<figcaption>#{attrs.filename}<span class="size">#{attrs.filesize}</span></figcaption>"""
     figure.innerHTML = caption
 
-    html: """<div>#{blockComment}<a href="#{attrs.url}">#{figure.outerHTML}</a></div>"""
+    html: """<div>#{blockComment}#{link.outerHTML}</div>"""
     document: new Trix.Document [new Trix.Block text]
 
   "nested quote and code formatted block":
