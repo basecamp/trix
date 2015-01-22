@@ -69,7 +69,8 @@ class Trix.SelectionManager
       @setLocationRange(lockedLocationRange) if lockedLocationRange?
 
   preserveSelection: (block) ->
-    point = @getSelectionEndPoints()[0]
+    return block() unless endPoints = @getSelectionEndPoints()
+    point = endPoints[0]
     locationRange = @getLocationRange()
     block()
     locationRangeAtPoint = @getLocationRangeAtPoint(point)
