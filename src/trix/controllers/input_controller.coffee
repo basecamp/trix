@@ -73,8 +73,7 @@ class Trix.InputController
           break if context[keyName]
         context[keyName]?.call(this, event)
 
-
-      if event.ctrlKey or event.metaKey
+      if keyEventIsKeyboardCommand(event)
         if character = String.fromCharCode(event.keyCode).toLowerCase()
           keys = (modifier for modifier in ["alt", "shift"] when event["#{modifier}Key"])
           keys.push(character)
@@ -84,8 +83,8 @@ class Trix.InputController
     keypress: (event) ->
       return if @isMobileInputModeEnabled()
       return if (event.metaKey or event.ctrlKey) and not event.altKey
-      return if keypressEventIsWebInspectorShortcut(event)
-      return if keypressEventIsPasteAndMatchStyleShortcut(event)
+      return if keyEventIsWebInspectorShortcut(event)
+      return if keyEventIsPasteAndMatchStyleShortcut(event)
 
       if event.which is null
         character = String.fromCharCode event.keyCode
@@ -242,8 +241,11 @@ class Trix.InputController
   extensionForFile = (file) ->
     file.type?.match(/\/(\w+)$/)?[1]
 
-keypressEventIsWebInspectorShortcut = (event) ->
+keyEventIsWebInspectorShortcut = (event) ->
   event.metaKey and event.altKey and not event.shiftKey and event.keyCode is 94
 
-keypressEventIsPasteAndMatchStyleShortcut = (event) ->
+keyEventIsPasteAndMatchStyleShortcut = (event) ->
   event.metaKey and event.altKey and event.shiftKey and event.keyCode is 9674
+
+keyEventIsKeyboardCommand = (event) ->
+  if /Mac|^iP/.test(navigator.platform) then event.metaKey else event.ctrlKey
