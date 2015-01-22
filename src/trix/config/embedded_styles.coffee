@@ -32,6 +32,10 @@ Trix.CSS = """
     cursor: nwse-resize;
   }
 
+  .trix-editor figure.attachment {
+    max-width: 100%;
+  }
+
   .trix-editor figure.attachment a.remove {
     position: absolute;
     top: -9px;
