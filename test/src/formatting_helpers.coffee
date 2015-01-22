@@ -13,7 +13,7 @@ getToolbarDialog = ({attribute, action}) ->
   button = getToolbarButton(selector)
   if {key} = button.dataset
     keyCode = key.toUpperCase().charCodeAt(0)
-    triggerEvent(getEditorElement(), "keydown", {keyCode, charCode: 0, metaKey: true})
+    triggerEvent(getEditorElement(), "keydown", {keyCode, charCode: 0, metaKey: true, ctrlKey: true})
   defer(callback)
 
 @clickToolbarDialogButton = ({method}, callback) ->
