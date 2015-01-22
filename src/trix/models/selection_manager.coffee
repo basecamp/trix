@@ -69,12 +69,22 @@ class Trix.SelectionManager
       @setLocationRange(lockedLocationRange) if lockedLocationRange?
 
   preserveSelection: (block) ->
-    return block() unless endPoints = @getSelectionEndPoints()
-    point = endPoints[0]
+    endPoints = @getSelectionEndPoints()
     locationRange = @getLocationRange()
     block()
-    locationRangeAtPoint = @getLocationRangeAtPoint(point)
-    @setLocationRange(locationRangeAtPoint ? locationRange)
+
+    if endPoints
+      start = @getLocationRangeAtPoint(endPoints[0])
+      end = @getLocationRangeAtPoint(endPoints[1])
+
+    if start and end
+      @setLocationRange(start, end)
+    else if start
+      @setLocationRange(start)
+    else if end
+      @setLocationRange(end)
+    else if locationRange
+      @setLocationRange(locationRange)
 
   clearSelection: ->
     getDOMSelection()?.removeAllRanges()
