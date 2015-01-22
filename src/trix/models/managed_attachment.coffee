@@ -3,10 +3,8 @@
 {forwardMethods} = Trix.Helpers
 
 class Trix.ManagedAttachment
-  # Forward all Attachment methods
-  forwardMethods ofConstructor: Trix.Attachment, onConstructor: this, toProperty: "attachment"
-
   constructor: (@attachmentManager, @attachment) ->
+    forwardMethods ofObject: @attachment, toObject: this
     {@id, @file} = @attachment
 
   remove: ->

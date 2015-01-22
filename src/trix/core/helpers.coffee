@@ -23,10 +23,10 @@ Trix.Helpers =
     logger.timeEnd(name)
     result
 
-  forwardMethods: ({ofConstructor, ofObject, onConstructor, toMethod, toProperty} = {}) ->
+  forwardMethods: ({ofConstructor, ofObject, onConstructor, toObject, toMethod, toProperty} = {}) ->
     source = ofObject ? ofConstructor.prototype
     methodNames = getPropertyNames(source)
-    destination = onConstructor.prototype
+    destination = toObject ? onConstructor.prototype
     reservedNames = ["constructor", "toString", "valueOf"]
 
     forward = (object, name, value, args) ->
@@ -34,6 +34,8 @@ Trix.Helpers =
         object[toMethod]?()
       else if toProperty?
         object[toProperty]
+      else
+        source
 
       if subject?
         value.apply(subject, args)
