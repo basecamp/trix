@@ -32,7 +32,10 @@ class Trix.Composition
   # Document delegate
 
   didEditDocument: (document) ->
-    @delegate?.compositionDidChangeDocument?(@document)
+    if @skipRender
+      delete @skipRender
+    else
+      @delegate?.compositionDidChangeDocument?(@document)
 
   documentDidAddAttachment: (document, attachment) ->
     @delegate?.compositionDidAddAttachment?(attachment)
@@ -67,9 +70,22 @@ class Trix.Composition
     @document.insertDocumentAtLocationRange(document, locationRange)
     @setPosition(position + document.getLength())
 
-  insertString: (string, options) ->
-    text = Trix.Text.textForStringWithAttributes(string, @getCurrentTextAttributes())
-    @insertText(text, options)
+  insertString: (string) ->
+    attributes = @getCurrentTextAttributes()
+    text = Trix.Text.textForStringWithAttributes(string, attributes)
+    @skipRender = not @currentTextAttributesRequireRender()
+    @insertText(text, updatePosition: not @skipRender)
+
+  currentTextAttributesRequireRender: ->
+    locationRange = @getLocationRange()
+    return unless locationRange.isCollapsed()
+    return true if Object.keys(@getCurrentTextAttributes()).length
+    {index, offset} = locationRange
+    unless offset is 0
+      offset--
+      locationRangeLeft = new Trix.LocationRange {index, offset}, locationRange.end
+      for key, value of @document.getCommonAttributesAtLocationRange(locationRangeLeft)
+        return true if Trix.config.textAttributes[key]
 
   insertBlockBreak: ->
     @notifyDelegateOfIntentionToSetLocationRange()

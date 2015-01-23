@@ -45,9 +45,8 @@ class Trix.MutationObserver
       when "attributes"
         nodes.push(mutation.target)
       when "characterData"
-        # Changes to text nodes should consider the parent element
-        nodes.push(mutation.target.parentNode)
-        nodes.push(mutation.target)
+        # Intentionally allowing characterData mutations
+        true
       when "childList"
         # Consider each added or removed node
         nodes.push(mutation.addedNodes...)

@@ -92,7 +92,6 @@ class Trix.InputController
         character = String.fromCharCode event.charCode
 
       if character?
-        event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(character)
 
