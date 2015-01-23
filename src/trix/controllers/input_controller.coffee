@@ -1,4 +1,3 @@
-#= require trix/observers/device_observer
 #= require trix/operations/file_verification_operation
 
 {defer} = Trix.Helpers
