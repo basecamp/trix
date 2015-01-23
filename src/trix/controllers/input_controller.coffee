@@ -18,9 +18,6 @@ class Trix.InputController
     "79": "o"
 
   constructor: (@element) ->
-    @deviceObserver = new Trix.DeviceObserver @element
-    @deviceObserver.delegate = this
-
     for eventName of @events
       handleEvent eventName, onElement: @element, withCallback: @handlerFor(eventName), inPhase: "capturing"
 
@@ -32,24 +29,10 @@ class Trix.InputController
         @delegate?.inputControllerDidThrowError?(error, {eventName})
         throw error
 
-  # Device observer delegate
-
-  deviceDidActivateVirtualKeyboard: ->
-    @enableMobileInputMode()
-
-  deviceDidDeactivateVirtualKeyboard: ->
-    @disableMobileInputMode()
-
   # Mobile input mode
 
-  enableMobileInputMode: ->
-    @mobileInputMode = true
-
-  disableMobileInputMode: ->
-    delete @mobileInputMode
-
   isMobileInputModeEnabled: ->
-    @mobileInputMode is true
+    Trix.config.useMobileInputMode()
 
   # File verification
 
