@@ -33,6 +33,10 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @updateLocationRange()
     @render()
 
+  loadDocument: (document) ->
+    return if @document is document
+    @setEditor(new Trix.Editor document, @selectionManager)
+
   # Composition delegate
 
   compositionDidChangeDocument: (document) ->
