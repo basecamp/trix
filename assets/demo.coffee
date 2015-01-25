@@ -32,6 +32,7 @@ config =
       inspectorController?.incrementRenderCount()
 
     didThrowError: (error, details) ->
+      console.error("Trix error: %s\n%s", error.toString(), error.stack)
       document.getElementById("trix-debug").classList.add("error")
       @errors ?= []
       @errors.push({error, details})
