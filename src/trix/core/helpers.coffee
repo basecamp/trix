@@ -49,11 +49,3 @@ Trix.Helpers =
 
 formatValue = (value) ->
   value?.inspect?() ? (try JSON.stringify(value)) ? value
-
-getPropertyNames = (object) ->
-  result = {}
-  while object
-    for name in Object.getOwnPropertyNames(object)
-      result[name] = true
-    object = object.__proto__
-  Object.keys(result)
