@@ -1,10 +1,10 @@
-{forwardMethod} = Trix.Helpers
+{proxyMethod} = Trix.Helpers
 
 class Trix.BasicObject
-  @forward: (expression) ->
-    forwardMethod argumentsForForwardExpression.call(this, expression)...
+  @proxy: (expression) ->
+    proxyMethod argumentsForProxyExpression.call(this, expression)...
 
-  @forwardExpressionPattern = ///
+  proxyExpressionPattern = ///
     ^
       (.+?)
         (\(\))?
@@ -14,9 +14,9 @@ class Trix.BasicObject
     $
   ///
 
-  argumentsForForwardExpression = (expression) ->
-    unless match = expression.match(@forwardExpressionPattern)
-      throw new Error "can't parse forward expression: #{expression}"
+  argumentsForProxyExpression = (expression) ->
+    unless match = expression.match(proxyExpressionPattern)
+      throw new Error "can't parse @proxy expression: #{expression}"
 
     name = match[4]
     args = onConstructor: this

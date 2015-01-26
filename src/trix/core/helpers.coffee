@@ -23,7 +23,7 @@ Trix.Helpers =
     logger.timeEnd(name)
     result
 
-  forwardMethod: forwardMethod = (name, {onConstructor, onObject, toObject, toMethod, toProperty, optional} = {}) ->
+  proxyMethod: (name, {onConstructor, onObject, toObject, toMethod, toProperty, optional} = {}) ->
     destination = onObject ? onConstructor.prototype
     destination[name] = ->
       object = if toObject?
@@ -37,9 +37,6 @@ Trix.Helpers =
         object?[name]?.apply(object, arguments)
       else
         object[name].apply(object, arguments)
-
-  forwardDelegateMethod: (name, {onConstructor, onObject} = {}) ->
-    forwardMethod name, {onConstructor, onObject, toProperty: "delegate", optional: true}
 
   arraysAreEqual: (a, b) ->
     return false unless a.length is b.length

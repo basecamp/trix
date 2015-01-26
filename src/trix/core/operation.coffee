@@ -33,5 +33,5 @@ class Trix.Operation extends Trix.BasicObject
     delete @performed
     delete @succeeded
 
-  @forward "getPromise().then"
-  @forward "getPromise().catch"
+  @proxy "getPromise().then"
+  @proxy "getPromise().catch"

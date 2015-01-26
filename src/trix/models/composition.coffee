@@ -264,13 +264,13 @@ class Trix.Composition extends Trix.BasicObject
 
   # Location range and selection
 
-  @forward "getSelectionManager().getLocationRange"
-  @forward "getSelectionManager().setLocationRange"
-  @forward "getSelectionManager().setLocationRangeFromPoint"
-  @forward "getSelectionManager().preserveSelection"
-  @forward "getSelectionManager().locationIsCursorTarget"
-  @forward "getSelectionManager().expandSelectionInDirectionWithGranularity"
-  @forward "delegate?.getSelectionManager"
+  @proxy "getSelectionManager().getLocationRange"
+  @proxy "getSelectionManager().setLocationRange"
+  @proxy "getSelectionManager().setLocationRangeFromPoint"
+  @proxy "getSelectionManager().preserveSelection"
+  @proxy "getSelectionManager().locationIsCursorTarget"
+  @proxy "getSelectionManager().expandSelectionInDirectionWithGranularity"
+  @proxy "delegate?.getSelectionManager"
 
   getRange: ->
     locationRange = @getLocationRange()
