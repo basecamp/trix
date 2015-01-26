@@ -15,9 +15,6 @@ class Trix.Editor
 
     @composition.loadDocument(@document)
 
-  getLocationRange: ->
-    @locationRange
-
   # Forward attachment manager
 
   manageAttachment: (attachment) ->

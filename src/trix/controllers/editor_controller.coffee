@@ -156,6 +156,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
   # Selection manager delegate
 
   locationRangeDidChange: (locationRange) ->
+    @editor.locationRange = locationRange
     @composition.updateCurrentAttributes()
     if @attachmentLocationRange and not @attachmentLocationRange.isEqualTo(locationRange)
       @composition.stopEditingAttachment()
@@ -261,8 +262,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @documentController.render()
 
   updateLocationRange: ->
-    locationRange = @editor.getLocationRange()
-    @selectionManager.setLocationRange(locationRange ? [0, 0])
+    @selectionManager.setLocationRange(@editor.locationRange ? [0, 0])
 
   render: ->
     @documentController.render()
