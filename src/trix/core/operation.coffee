@@ -1,6 +1,6 @@
 {forwardMethod} = Trix.Helpers
 
-class Trix.Operation
+class Trix.Operation extends Trix.BasicObject
   isPerforming: ->
     @performing is true
 

@@ -1,4 +1,4 @@
-class Trix.LocationRange
+class Trix.LocationRange extends Trix.BasicObject
   @forLocationWithLength: (location, length) ->
     locationWithLength = index: location.index, offset: location.offset + length
 

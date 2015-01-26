@@ -1,6 +1,6 @@
 {forwardMethod} = Trix.Helpers
 
-class Trix.Logger
+class Trix.Logger extends Trix.BasicObject
   loggers = {}
 
   @getLoggers: ->

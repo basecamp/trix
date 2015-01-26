@@ -1,7 +1,7 @@
 {findClosestElementFromNode, walkTree, tagName, makeElement, elementContainsNode, elementMatchesSelector} = Trix.DOM
 {arraysAreEqual} = Trix.Helpers
 
-class Trix.HTMLParser
+class Trix.HTMLParser extends Trix.BasicObject
   allowedAttributes = "style href src width height class".split(" ")
 
   @parse: (html, options) ->

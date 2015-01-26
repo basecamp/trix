@@ -5,7 +5,7 @@
 {handleEvent, tagName} = Trix.DOM
 {benchmark} = Trix.Helpers
 
-class Trix.DocumentController
+class Trix.DocumentController extends Trix.BasicObject
   constructor: (@element, @document) ->
     @documentView = new Trix.DocumentView @document, {@element}
 

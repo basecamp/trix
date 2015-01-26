@@ -2,7 +2,7 @@
 
 {forwardMethod, forwardDelegateMethod} = Trix.Helpers
 
-class Trix.Composition
+class Trix.Composition extends Trix.BasicObject
   constructor: (document = new Trix.Document) ->
     @loadDocument(document)
 

@@ -2,7 +2,7 @@
 
 {forwardMethod} = Trix.Helpers
 
-class Trix.ManagedAttachment
+class Trix.ManagedAttachment extends Trix.BasicObject
   constructor: (@attachmentManager, @attachment) ->
     {@id, @file} = @attachment
 

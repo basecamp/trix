@@ -3,7 +3,7 @@
 {defer} = Trix.Helpers
 {handleEvent, findClosestElementFromNode, findElementForContainerAtOffset} = Trix.DOM
 
-class Trix.InputController
+class Trix.InputController extends Trix.BasicObject
   pastedFileCount = 0
 
   @keyNames:
