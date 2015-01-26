@@ -133,9 +133,10 @@ class Trix.Composition
       @insertDocument(document)
 
   replaceHTML: (html) ->
-    @preserveSelection =>
-      document = Trix.Document.fromHTML(html)
-      @document.replaceDocument(document.copyUsingObjectsFromDocument(@document))
+    document = Trix.Document.fromHTML(html).copyUsingObjectsFromDocument(@document)
+    unless document.isEqualTo(@document)
+      @preserveSelection =>
+        @document.replaceDocument(document)
 
   insertFile: (file) ->
     if @delegate?.compositionShouldAcceptFile(file)

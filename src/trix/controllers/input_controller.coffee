@@ -170,6 +170,8 @@ class Trix.InputController
         @delegate?.inputControllerDidComposeCharacters?(@composedString) if @composedString
         delete @composedString
         delete @composing
+      else
+        @responder?.replaceHTML(@element.innerHTML)
 
   keys:
     backspace: (event) ->
