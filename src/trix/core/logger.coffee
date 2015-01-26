@@ -1,5 +1,3 @@
-{forwardMethod} = Trix.Helpers
-
 class Trix.Logger extends Trix.BasicObject
   loggers = {}
 
@@ -28,13 +26,12 @@ class Trix.Logger extends Trix.BasicObject
   isEnabled: ->
     @console?
 
-  forwardMethod "log", onConstructor: this, toProperty: "console", optional: true
-  forwardMethod "warn", onConstructor: this, toProperty: "console", optional: true
-  forwardMethod "error", onConstructor: this, toProperty: "console", optional: true
-  forwardMethod "trace", onConstructor: this, toProperty: "console", optional: true
-  forwardMethod "group", onConstructor: this, toProperty: "console", optional: true
-  forwardMethod "groupEnd", onConstructor: this, toProperty: "console", optional: true
-  forwardMethod "groupCollapsed", onConstructor: this, toProperty: "console", optional: true
-  forwardMethod "trace", onConstructor: this, toProperty: "console", optional: true
-  forwardMethod "time", onConstructor: this, toProperty: "console", optional: true
-  forwardMethod "timeEnd", onConstructor: this, toProperty: "console", optional: true
+  @forward "console?.log"
+  @forward "console?.warn"
+  @forward "console?.error"
+  @forward "console?.group"
+  @forward "console?.groupEnd"
+  @forward "console?.groupCollapsed"
+  @forward "console?.trace"
+  @forward "console?.time"
+  @forward "console?.timeEnd"

@@ -3,8 +3,6 @@
 #= require trix/models/attachment_manager
 #= require trix/models/undo_manager
 
-{forwardMethod, forwardDelegateMethod} = Trix.Helpers
-
 class Trix.Editor extends Trix.Object
   @fromJSON: (json) ->
     document = Trix.Document.fromJSON(json.document)
@@ -28,30 +26,30 @@ class Trix.Editor extends Trix.Object
 
   # Forward attachment manager
 
-  forwardMethod "manageAttachment", onConstructor: this, toProperty: "attachmentManager"
-  forwardMethod "unmanageAttachment", onConstructor: this, toProperty: "attachmentManager"
+  @forward "attachmentManager.manageAttachment"
+  @forward "attachmentManager.unmanageAttachment"
 
   # Forward undo manager
 
-  forwardMethod "recordUndoEntry", onConstructor: this, toProperty: "undoManager"
-  forwardMethod "undo", onConstructor: this, toProperty: "undoManager"
-  forwardMethod "redo", onConstructor: this, toProperty: "undoManager"
-  forwardMethod "canUndo", onConstructor: this, toProperty: "undoManager"
-  forwardMethod "canRedo", onConstructor: this, toProperty: "undoManager"
+  @forward "undoManager.recordUndoEntry"
+  @forward "undoManager.undo"
+  @forward "undoManager.redo"
+  @forward "undoManager.canUndo"
+  @forward "undoManager.canRedo"
 
   # Forward composition delegate
 
-  forwardDelegateMethod "compositionDidChangeDocument", onConstructor: this
-  forwardDelegateMethod "compositionDidChangeCurrentAttributes", onConstructor: this
-  forwardDelegateMethod "compositionWillSetLocationRange", onConstructor: this
-  forwardDelegateMethod "compositionShouldAcceptFile", onConstructor: this
-  forwardDelegateMethod "compositionDidAddAttachment", onConstructor: this
-  forwardDelegateMethod "compositionDidEditAttachment", onConstructor: this
-  forwardDelegateMethod "compositionDidRemoveAttachment", onConstructor: this
-  forwardDelegateMethod "compositionDidStartEditingAttachment", onConstructor: this
-  forwardDelegateMethod "compositionDidStopEditingAttachment", onConstructor: this
-  forwardDelegateMethod "getSelectionManager", onConstructor: this
+  @forward "delegate?.compositionDidChangeDocument"
+  @forward "delegate?.compositionDidChangeCurrentAttributes"
+  @forward "delegate?.compositionWillSetLocationRange"
+  @forward "delegate?.compositionShouldAcceptFile"
+  @forward "delegate?.compositionDidAddAttachment"
+  @forward "delegate?.compositionDidEditAttachment"
+  @forward "delegate?.compositionDidRemoveAttachment"
+  @forward "delegate?.compositionDidStartEditingAttachment"
+  @forward "delegate?.compositionDidStopEditingAttachment"
+  @forward "delegate?.getSelectionManager"
 
   # Forward attachment manager delegate
 
-  forwardDelegateMethod "attachmentManagerDidRequestRemovalOfAttachment", onConstructor: this
+  @forward "delegate?.attachmentManagerDidRequestRemovalOfAttachment"

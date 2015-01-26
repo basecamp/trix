@@ -1,7 +1,5 @@
 #= require trix/models/document
 
-{forwardMethod, forwardDelegateMethod} = Trix.Helpers
-
 class Trix.Composition extends Trix.BasicObject
   constructor: (document = new Trix.Document) ->
     @loadDocument(document)
@@ -266,13 +264,13 @@ class Trix.Composition extends Trix.BasicObject
 
   # Location range and selection
 
-  forwardMethod "getLocationRange", onConstructor: this, toMethod: "getSelectionManager"
-  forwardMethod "setLocationRange", onConstructor: this, toMethod: "getSelectionManager"
-  forwardMethod "setLocationRangeFromPoint", onConstructor: this, toMethod: "getSelectionManager"
-  forwardMethod "preserveSelection", onConstructor: this, toMethod: "getSelectionManager"
-  forwardMethod "locationIsCursorTarget", onConstructor: this, toMethod: "getSelectionManager"
-  forwardMethod "expandSelectionInDirectionWithGranularity", onConstructor: this, toMethod: "getSelectionManager"
-  forwardDelegateMethod "getSelectionManager", onConstructor: this
+  @forward "getSelectionManager().getLocationRange"
+  @forward "getSelectionManager().setLocationRange"
+  @forward "getSelectionManager().setLocationRangeFromPoint"
+  @forward "getSelectionManager().preserveSelection"
+  @forward "getSelectionManager().locationIsCursorTarget"
+  @forward "getSelectionManager().expandSelectionInDirectionWithGranularity"
+  @forward "delegate?.getSelectionManager"
 
   getRange: ->
     locationRange = @getLocationRange()

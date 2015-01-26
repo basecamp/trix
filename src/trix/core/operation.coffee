@@ -1,5 +1,3 @@
-{forwardMethod} = Trix.Helpers
-
 class Trix.Operation extends Trix.BasicObject
   isPerforming: ->
     @performing is true
@@ -35,5 +33,5 @@ class Trix.Operation extends Trix.BasicObject
     delete @performed
     delete @succeeded
 
-  forwardMethod "then", onConstructor: this, toMethod: "getPromise"
-  forwardMethod "catch", onConstructor: this, toMethod: "getPromise"
+  @forward "getPromise().then"
+  @forward "getPromise().catch"
