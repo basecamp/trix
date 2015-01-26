@@ -23,28 +23,20 @@ Trix.Helpers =
     logger.timeEnd(name)
     result
 
-  forwardMethods: ({ofConstructor, ofObject, onConstructor, toObject, toMethod, toProperty} = {}) ->
-    source = ofObject ? ofConstructor.prototype
-    methodNames = getPropertyNames(source)
-    destination = toObject ? onConstructor.prototype
-    reservedNames = ["constructor", "toString", "valueOf"]
-
-    forward = (object, name, value, args) ->
-      subject = if toMethod?
-        object[toMethod]?()
+  proxyMethod: (name, {onConstructor, onObject, toObject, toMethod, toProperty, optional} = {}) ->
+    destination = onObject ? onConstructor.prototype
+    destination[name] = ->
+      object = if toObject?
+        toObject
+      else if toMethod?
+        if optional then @[toMethod]?() else @[toMethod]()
       else if toProperty?
-        object[toProperty]
+        @[toProperty]
+
+      if optional
+        object?[name]?.apply(object, arguments)
       else
-        source
-
-      if subject?
-        value.apply(subject, args)
-
-    for name in methodNames when name not in reservedNames
-      do (name) =>
-        value = source[name]
-        if typeof value is "function"
-          destination[name] = -> forward(this, name, value, arguments)
+        object[name].apply(object, arguments)
 
   arraysAreEqual: (a, b) ->
     return false unless a.length is b.length
@@ -54,11 +46,3 @@ Trix.Helpers =
 
 formatValue = (value) ->
   value?.inspect?() ? (try JSON.stringify(value)) ? value
-
-getPropertyNames = (object) ->
-  result = {}
-  while object
-    for name in Object.getOwnPropertyNames(object)
-      result[name] = true
-    object = object.__proto__
-  Object.keys(result)

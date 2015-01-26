@@ -2,7 +2,7 @@
 
 {triggerEvent} = Trix.DOM
 
-class Trix.AbstractEditorController
+class Trix.AbstractEditorController extends Trix.BasicObject
   constructor: (@config) ->
     {@documentElement, @toolbarElement, @textareaElement, @delegate} = @config
     @serializationFormat = @config.format?.toLowerCase() ? "html"

@@ -1,14 +1,8 @@
 #= require trix/models/document
 
-class Trix.Composition
-  forwardMethodsToSelectionManager = "getLocationRange setLocationRange setLocationRangeFromPoint
-    preserveSelection locationIsCursorTarget".split(" ")
-
-  constructor: (document = new Trix.Document, @selectionManager) ->
+class Trix.Composition extends Trix.BasicObject
+  constructor: (document = new Trix.Document) ->
     @loadDocument(document)
-
-    for methodName in forwardMethodsToSelectionManager
-      @[methodName] = @selectionManager[methodName].bind(@selectionManager)
 
   loadDocument: (document) ->
     @document = document
@@ -151,7 +145,7 @@ class Trix.Composition
       if granularity is "character"
         @expandSelectionInDirection(direction)
       else
-        @selectionManager.expandSelectionInDirectionWithGranularity(direction, granularity)
+        @expandSelectionInDirectionWithGranularity(direction, granularity)
       locationRange = @getLocationRange()
 
     @document.removeTextAtLocationRange(locationRange)
@@ -286,6 +280,14 @@ class Trix.Composition
 
   # Location range and selection
 
+  @proxy "getSelectionManager().getLocationRange"
+  @proxy "getSelectionManager().setLocationRange"
+  @proxy "getSelectionManager().setLocationRangeFromPoint"
+  @proxy "getSelectionManager().preserveSelection"
+  @proxy "getSelectionManager().locationIsCursorTarget"
+  @proxy "getSelectionManager().expandSelectionInDirectionWithGranularity"
+  @proxy "delegate?.getSelectionManager"
+
   getRange: ->
     locationRange = @getLocationRange()
     @document.rangeFromLocationRange(locationRange)
@@ -314,7 +316,7 @@ class Trix.Composition
     if @shouldExpandInDirectionUsingLocationRange(direction)
       @expandLocationRangeInDirection(direction)
     else
-      @selectionManager.expandSelectionInDirectionWithGranularity(direction, "character")
+      @expandSelectionInDirectionWithGranularity(direction, "character")
 
   notifyDelegateOfIntentionToSetLocationRange: ->
     @render = true

@@ -1,7 +1,7 @@
 {defer} = Trix.Helpers
 {DOM} = Trix
 
-class Trix.MutationObserver
+class Trix.MutationObserver extends Trix.BasicObject
   options =
     attributes: true
     childList: true

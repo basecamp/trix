@@ -1,4 +1,6 @@
-class Trix.Object
+#= require trix/core/basic_object
+
+class Trix.Object extends Trix.BasicObject
   id = 0
 
   @fromJSONString: (jsonString) ->

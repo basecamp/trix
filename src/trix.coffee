@@ -5,7 +5,9 @@
 #= require trix/controllers/degraded_editor_controller
 
 @Trix =
-  config: {}
+  config:
+    useMobileInputMode: ->
+      /iPhone|iPad|Android|Windows Phone/.test(navigator.userAgent)
 
   isSupported: (config = {}) ->
     trixSupport = new BrowserSupport().getTrixSupport()

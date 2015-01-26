@@ -2,10 +2,8 @@
 #= require trix/controllers/input_controller
 #= require trix/controllers/document_controller
 #= require trix/controllers/toolbar_controller
-#= require trix/models/composition
-#= require trix/models/attachment_manager
-#= require trix/models/undo_manager
 #= require trix/models/selection_manager
+#= require trix/models/editor
 #= require trix/observers/mutation_observer
 
 class Trix.EditorController extends Trix.AbstractEditorController
@@ -15,39 +13,37 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
 
-    @composition = new Trix.Composition @document, @selectionManager
-    @composition.delegate = this
+    @setEditor(new Trix.Editor @document)
 
-    @attachmentManager = new Trix.AttachmentManager @composition
-    @attachmentManager.delegate = this
+    @documentController.focus() if @config.autofocus
 
-    @undoManager = new Trix.UndoManager @composition
+  setEditor: (editor) ->
+    return if @editor is editor
+    delete @editor?.delegate
+    @editor = editor
+    @editor.delegate = this
 
-    @inputController = new Trix.InputController @documentElement
-    @inputController.delegate = this
-    @inputController.responder = @composition
+    @composition = @editor.composition
+    @document = @composition.document
 
-    @mutationObserver = new Trix.MutationObserver @documentElement
-    @mutationObserver.delegate = this
+    @createMutationObserver()
+    @createInputController()
+    @createToolbarController()
+    @createDocumentController()
+    @updateLocationRange()
 
-    @toolbarController = new Trix.ToolbarController @toolbarElement
-    @toolbarController.delegate = this
-    @toolbarController.updateActions()
+    @delegate?.didSetEditor?(editor)
+    @render()
 
-    @composition.loadDocument(@document)
-
-    @documentController = new Trix.DocumentController @documentElement, @document
-    @documentController.delegate = this
-    @documentController.render()
-
-    if @config.autofocus
-      @documentController.focus()
-      @selectionManager.setLocationRange([0,0]) unless @selectionManager.getLocationRange()
+  loadDocument: (document) ->
+    return if @document is document
+    @setEditor(new Trix.Editor document)
 
   # Composition delegate
 
   compositionDidChangeDocument: (document) ->
     @documentController.render()
+    @delegate?.didChangeDocument?(document)
 
   compositionDidChangeCurrentAttributes: (@currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
@@ -60,14 +56,14 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @delegate?.shouldAcceptFile?(file)
 
   compositionDidAddAttachment: (attachment) ->
-    managedAttachment = @attachmentManager.manageAttachment(attachment)
+    managedAttachment = @editor.manageAttachment(attachment)
     @delegate?.didAddAttachment?(managedAttachment)
 
   compositionDidEditAttachment: (attachment) ->
     @documentController.rerenderViewForObject(attachment)
 
   compositionDidRemoveAttachment: (attachment) ->
-    managedAttachment = @attachmentManager.unmanageAttachment(attachment)
+    managedAttachment = @editor.unmanageAttachment(attachment)
     @delegate?.didRemoveAttachment?(managedAttachment)
 
   compositionDidStartEditingAttachment: (attachment) ->
@@ -78,6 +74,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
   compositionDidStopEditingAttachment: (attachment) ->
     @documentController.uninstallAttachmentEditor()
     delete @attachmentLocationRange
+
+  getSelectionManager: ->
+    @selectionManager
 
   # Attachment manager delegate
 
@@ -107,7 +106,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @composition.editAttachment(attachment)
 
   documentControllerWillUpdateAttachment: (attachment) ->
-    @undoManager.recordUndoEntry("Edit Attachment", context: attachment.id, consolidatable: true)
+    @editor.recordUndoEntry("Edit Attachment", context: attachment.id, consolidatable: true)
 
   documentControllerDidRequestRemovalOfAttachment: (attachment) ->
     @removeAttachment(attachment)
@@ -118,17 +117,17 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @recordTypingUndoEntry()
 
   inputControllerWillCutText: ->
-    @undoManager.recordUndoEntry("Cut")
+    @editor.recordUndoEntry("Cut")
 
   inputControllerWillPasteText: (paste) ->
-    @undoManager.recordUndoEntry("Paste")
+    @editor.recordUndoEntry("Paste")
     @delegate?.didPaste?(paste)
 
   inputControllerWillMoveText: ->
-    @undoManager.recordUndoEntry("Move")
+    @editor.recordUndoEntry("Move")
 
   inputControllerWillAttachFiles: ->
-    @undoManager.recordUndoEntry("Drop Files")
+    @editor.recordUndoEntry("Drop Files")
 
   inputControllerWillStartComposition: ->
     @mutationObserver.stop()
@@ -162,6 +161,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
   # Selection manager delegate
 
   locationRangeDidChange: (locationRange) ->
+    @editor.locationRange = locationRange
     @composition.updateCurrentAttributes()
     if @attachmentLocationRange and not @attachmentLocationRange.isEqualTo(locationRange)
       @composition.stopEditingAttachment()
@@ -180,11 +180,11 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   toolbarActions:
     undo:
-      test: -> @undoManager.canUndo()
-      perform: -> @undoManager.undo()
+      test: -> @editor.canUndo()
+      perform: -> @editor.undo()
     redo:
-      test: -> @undoManager.canRedo()
-      perform: -> @undoManager.redo()
+      test: -> @editor.canRedo()
+      perform: -> @editor.redo()
     link:
       test: -> @composition.canSetCurrentAttribute("href")
     increaseBlockLevel:
@@ -243,15 +243,44 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   # Private
 
+  createMutationObserver: ->
+    return if @mutationObserver
+    @mutationObserver = new Trix.MutationObserver @documentElement
+    @mutationObserver.delegate = this
+
+  createInputController: ->
+    unless @inputController
+      @inputController = new Trix.InputController @documentElement
+      @inputController.delegate = this
+    @inputController.responder = @composition
+
+  createToolbarController: ->
+    unless @toolbarController
+      @toolbarController = new Trix.ToolbarController @toolbarElement
+      @toolbarController.delegate = this
+    @toolbarController.updateActions()
+
+  createDocumentController: ->
+    delete @documentController?.delegate
+    @documentController = new Trix.DocumentController @documentElement, @document
+    @documentController.delegate = this
+    @documentController.render()
+
+  updateLocationRange: ->
+    @selectionManager.setLocationRange(@editor.locationRange ? [0, 0])
+
+  render: ->
+    @documentController.render()
+
   removeAttachment: (attachment) ->
-    @undoManager.recordUndoEntry("Delete Attachment")
+    @editor.recordUndoEntry("Delete Attachment")
     @composition.removeAttachment(attachment)
 
   recordFormattingUndoEntry: ->
     locationRange = @selectionManager.getLocationRange()
     unless locationRange?.isCollapsed()
-      @undoManager.recordUndoEntry("Formatting", context: @getLocationContext(), consolidatable: true)
+      @editor.recordUndoEntry("Formatting", context: @getLocationContext(), consolidatable: true)
 
   recordTypingUndoEntry: ->
     context = [@getLocationContext(), JSON.stringify(@currentAttributes)]
-    @undoManager.recordUndoEntry("Typing", context: context, consolidatable: true)
+    @editor.recordUndoEntry("Typing", context: context, consolidatable: true)

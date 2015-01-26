@@ -1,4 +1,4 @@
-class Trix.Collection
+class Trix.Collection extends Trix.BasicObject
   constructor: (objects) ->
     @objects = {}
     @refresh(objects)

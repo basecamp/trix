@@ -2,7 +2,7 @@
 
 {handleEvent, makeElement} = Trix.DOM
 
-class Trix.AttachmentEditorController
+class Trix.AttachmentEditorController extends Trix.BasicObject
   constructor: (@attachment, @element, @container) ->
     @removeButton = makeElement(tagName: "a", textContent: "⊗", className: "remove", attributes: { href: "#", title: "Remove" })
     @element.appendChild(@removeButton)

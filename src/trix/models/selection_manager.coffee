@@ -4,7 +4,7 @@
 {DOM} = Trix
 {defer, benchmark} = Trix.Helpers
 
-class Trix.SelectionManager
+class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
     @lockCount = 0
     Trix.selectionChangeObserver.registerSelectionManager(this)

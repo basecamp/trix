@@ -1,6 +1,4 @@
-{forwardMethods} = Trix.Helpers
-
-class Trix.Logger
+class Trix.Logger extends Trix.BasicObject
   loggers = {}
 
   @getLoggers: ->
@@ -28,16 +26,12 @@ class Trix.Logger
   isEnabled: ->
     @console?
 
-  group: ->
-
-  groupEnd: ->
-
-  groupCollapsed: ->
-
-  trace: ->
-
-  time: ->
-
-  timeEnd: ->
-
-  forwardMethods ofObject: console?.__proto__, onConstructor: this, toProperty: "console"
+  @proxy "console?.log"
+  @proxy "console?.warn"
+  @proxy "console?.error"
+  @proxy "console?.group"
+  @proxy "console?.groupEnd"
+  @proxy "console?.groupCollapsed"
+  @proxy "console?.trace"
+  @proxy "console?.time"
+  @proxy "console?.timeEnd"

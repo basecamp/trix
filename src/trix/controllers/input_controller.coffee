@@ -1,10 +1,9 @@
-#= require trix/observers/device_observer
 #= require trix/operations/file_verification_operation
 
 {defer} = Trix.Helpers
 {handleEvent, findClosestElementFromNode, findElementForContainerAtOffset} = Trix.DOM
 
-class Trix.InputController
+class Trix.InputController extends Trix.BasicObject
   pastedFileCount = 0
 
   @keyNames:
@@ -18,9 +17,6 @@ class Trix.InputController
     "79": "o"
 
   constructor: (@element) ->
-    @deviceObserver = new Trix.DeviceObserver @element
-    @deviceObserver.delegate = this
-
     for eventName of @events
       handleEvent eventName, onElement: @element, withCallback: @handlerFor(eventName), inPhase: "capturing"
 
@@ -32,24 +28,10 @@ class Trix.InputController
         @delegate?.inputControllerDidThrowError?(error, {eventName})
         throw error
 
-  # Device observer delegate
-
-  deviceDidActivateVirtualKeyboard: ->
-    @enableMobileInputMode()
-
-  deviceDidDeactivateVirtualKeyboard: ->
-    @disableMobileInputMode()
-
   # Mobile input mode
 
-  enableMobileInputMode: ->
-    @mobileInputMode = true
-
-  disableMobileInputMode: ->
-    delete @mobileInputMode
-
   isMobileInputModeEnabled: ->
-    @mobileInputMode is true
+    Trix.config.useMobileInputMode()
 
   # File verification
 

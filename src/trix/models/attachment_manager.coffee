@@ -1,6 +1,6 @@
 #= require trix/models/managed_attachment
 
-class Trix.AttachmentManager
+class Trix.AttachmentManager extends Trix.BasicObject
   constructor: ->
     @managedAttachments = {}
 

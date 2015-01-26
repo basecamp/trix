@@ -26,15 +26,6 @@ class Trix.DebuggingPanelView extends Trix.InspectorPanelView
   viewCachingCheckboxIsChecked: ->
     @documentController.isViewCachingEnabled()
 
-  didClickMobileInputModeCheckbox: (checked) ->
-    if checked
-      @inputController.enableMobileInputMode()
-    else
-      @inputController.disableMobileInputMode()
-
-  mobileInputModeCheckboxIsChecked: ->
-    @inputController.isMobileInputModeEnabled()
-
   didClickRenderButton: =>
     @documentController.render()
 

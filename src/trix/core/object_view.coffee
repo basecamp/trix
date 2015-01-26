@@ -1,4 +1,4 @@
-class Trix.ObjectView
+class Trix.ObjectView extends Trix.BasicObject
   constructor: (@object, @options = {}) ->
     @childViews = []
     @rootView = this

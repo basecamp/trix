@@ -1,4 +1,4 @@
-class Trix.ObjectMap
+class Trix.ObjectMap extends Trix.BasicObject
   constructor: (objects = []) ->
     @objects = {}
     for object in objects
