@@ -8,7 +8,7 @@
 class Trix.Editor extends Trix.Object
   @fromJSON: (json) ->
     document = Trix.Document.fromJSON(json.document)
-    locationRange = Trix.LocationRange.fromJSON(json.locationRange)
+    locationRange = Trix.LocationRange.fromJSON(json.locationRange) if json.locationRange?
     new this document, locationRange
 
   constructor: (@document, @locationRange) ->
