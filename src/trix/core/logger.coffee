@@ -1,4 +1,4 @@
-{forwardMethods} = Trix.Helpers
+{forwardMethod} = Trix.Helpers
 
 class Trix.Logger
   loggers = {}
@@ -28,16 +28,13 @@ class Trix.Logger
   isEnabled: ->
     @console?
 
-  group: ->
-
-  groupEnd: ->
-
-  groupCollapsed: ->
-
-  trace: ->
-
-  time: ->
-
-  timeEnd: ->
-
-  forwardMethods ofObject: console?.__proto__, onConstructor: this, toProperty: "console"
+  forwardMethod "log", onConstructor: this, toProperty: "console", optional: true
+  forwardMethod "warn", onConstructor: this, toProperty: "console", optional: true
+  forwardMethod "error", onConstructor: this, toProperty: "console", optional: true
+  forwardMethod "trace", onConstructor: this, toProperty: "console", optional: true
+  forwardMethod "group", onConstructor: this, toProperty: "console", optional: true
+  forwardMethod "groupEnd", onConstructor: this, toProperty: "console", optional: true
+  forwardMethod "groupCollapsed", onConstructor: this, toProperty: "console", optional: true
+  forwardMethod "trace", onConstructor: this, toProperty: "console", optional: true
+  forwardMethod "time", onConstructor: this, toProperty: "console", optional: true
+  forwardMethod "timeEnd", onConstructor: this, toProperty: "console", optional: true

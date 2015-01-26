@@ -3,6 +3,8 @@
 #= require trix/models/attachment_manager
 #= require trix/models/undo_manager
 
+{forwardMethod, forwardDelegateMethod} = Trix.Helpers
+
 class Trix.Editor
   constructor: (@document, @selectionManager) ->
     @composition = new Trix.Composition @document, @selectionManager
@@ -17,59 +19,29 @@ class Trix.Editor
 
   # Forward attachment manager
 
-  manageAttachment: (attachment) ->
-    @attachmentManager.manageAttachment(attachment)
-
-  unmanageAttachment: (attachment) ->
-    @attachmentManager.unmanageAttachment(attachment)
+  forwardMethod "manageAttachment", onConstructor: this, toProperty: "attachmentManager"
+  forwardMethod "unmanageAttachment", onConstructor: this, toProperty: "attachmentManager"
 
   # Forward undo manager
 
-  recordUndoEntry: ->
-    @undoManager.recordUndoEntry(arguments...)
-
-  undo: ->
-    @undoManager.undo()
-
-  redo: ->
-    @undoManager.redo()
-
-  canUndo: ->
-    @undoManager.canUndo()
-
-  canRedo: ->
-    @undoManager.canRedo()
+  forwardMethod "recordUndoEntry", onConstructor: this, toProperty: "undoManager"
+  forwardMethod "undo", onConstructor: this, toProperty: "undoManager"
+  forwardMethod "redo", onConstructor: this, toProperty: "undoManager"
+  forwardMethod "canUndo", onConstructor: this, toProperty: "undoManager"
+  forwardMethod "canRedo", onConstructor: this, toProperty: "undoManager"
 
   # Forward composition delegate
 
-  compositionDidChangeDocument: (document) ->
-    @delegate?.compositionDidChangeDocument?(document)
-
-  compositionDidChangeCurrentAttributes: (currentAttributes) ->
-    @delegate?.compositionDidChangeCurrentAttributes?(currentAttributes)
-
-  compositionWillSetLocationRange: ->
-    @delegate?.compositionWillSetLocationRange?()
-
-  compositionShouldAcceptFile: (file) ->
-    @delegate?.compositionShouldAcceptFile?(file)
-
-  compositionDidAddAttachment: (attachment) ->
-    @delegate?.compositionDidAddAttachment?(attachment)
-
-  compositionDidEditAttachment: (attachment) ->
-    @delegate?.compositionDidEditAttachment?(attachment)
-
-  compositionDidRemoveAttachment: (attachment) ->
-    @delegate?.compositionDidRemoveAttachment?(attachment)
-
-  compositionDidStartEditingAttachment: (attachment) ->
-    @delegate?.compositionDidStartEditingAttachment?(attachment)
-
-  compositionDidStopEditingAttachment: (attachment) ->
-    @delegate?.compositionDidStopEditingAttachment?(attachment)
+  forwardDelegateMethod "compositionDidChangeDocument", onConstructor: this
+  forwardDelegateMethod "compositionDidChangeCurrentAttributes", onConstructor: this
+  forwardDelegateMethod "compositionWillSetLocationRange", onConstructor: this
+  forwardDelegateMethod "compositionShouldAcceptFile", onConstructor: this
+  forwardDelegateMethod "compositionDidAddAttachment", onConstructor: this
+  forwardDelegateMethod "compositionDidEditAttachment", onConstructor: this
+  forwardDelegateMethod "compositionDidRemoveAttachment", onConstructor: this
+  forwardDelegateMethod "compositionDidStartEditingAttachment", onConstructor: this
+  forwardDelegateMethod "compositionDidStopEditingAttachment", onConstructor: this
 
   # Forward attachment manager delegate
 
-  attachmentManagerDidRequestRemovalOfAttachment: (attachment) ->
-    @delegate?.attachmentManagerDidRequestRemovalOfAttachment?(attachment)
+  forwardDelegateMethod "attachmentManagerDidRequestRemovalOfAttachment", onConstructor: this

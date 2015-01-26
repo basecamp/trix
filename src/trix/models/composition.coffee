@@ -1,14 +1,10 @@
 #= require trix/models/document
 
-class Trix.Composition
-  forwardMethodsToSelectionManager = "getLocationRange setLocationRange setLocationRangeFromPoint
-    preserveSelection locationIsCursorTarget".split(" ")
+{forwardMethod} = Trix.Helpers
 
+class Trix.Composition
   constructor: (document = new Trix.Document, @selectionManager) ->
     @loadDocument(document)
-
-    for methodName in forwardMethodsToSelectionManager
-      @[methodName] = @selectionManager[methodName].bind(@selectionManager)
 
   loadDocument: (document) ->
     @document = document
@@ -269,6 +265,12 @@ class Trix.Composition
     @hasCurrentAttribute("frozen")
 
   # Location range and selection
+
+  forwardMethod "getLocationRange", onConstructor: this, toProperty: "selectionManager"
+  forwardMethod "setLocationRange", onConstructor: this, toProperty: "selectionManager"
+  forwardMethod "setLocationRangeFromPoint", onConstructor: this, toProperty: "selectionManager"
+  forwardMethod "preserveSelection", onConstructor: this, toProperty: "selectionManager"
+  forwardMethod "locationIsCursorTarget", onConstructor: this, toProperty: "selectionManager"
 
   getRange: ->
     locationRange = @getLocationRange()
