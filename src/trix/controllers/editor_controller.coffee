@@ -267,7 +267,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @documentController.render()
 
   updateLocationRange: ->
-    @selectionManager.setLocationRange(@editor.locationRange ? [0, 0])
+    @selectionManager.setLocationRange(@editor.locationRange) if @editor.locationRange
 
   render: ->
     @documentController.render()

@@ -27,3 +27,4 @@ class Trix.DocumentView extends Trix.ObjectView
 
   focus: ->
     @element.focus()
+    Trix.selectionChangeObserver.update()
