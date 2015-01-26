@@ -5,8 +5,13 @@
 
 {forwardMethod, forwardDelegateMethod} = Trix.Helpers
 
-class Trix.Editor
-  constructor: (@document) ->
+class Trix.Editor extends Trix.Object
+  @fromJSON: (json) ->
+    document = Trix.Document.fromJSON(json.document)
+    locationRange = Trix.LocationRange.fromJSON(json.locationRange)
+    new this document, locationRange
+
+  constructor: (@document, @locationRange) ->
     @composition = new Trix.Composition @document
     @composition.delegate = this
 
@@ -16,6 +21,10 @@ class Trix.Editor
     @undoManager = new Trix.UndoManager @composition
 
     @composition.loadDocument(@document)
+
+  toJSON: ->
+    document: @document
+    locationRange: @locationRange
 
   # Forward attachment manager
 

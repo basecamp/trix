@@ -11,6 +11,9 @@ class Trix.LocationRange
 
     new this start, end
 
+  @fromJSON: (json) ->
+    new this json...
+
   constructor: (start, end) ->
     @start = parse(start)
     @end = parse(end)
@@ -53,17 +56,13 @@ class Trix.LocationRange
     [@start, @end]
 
   toJSON: ->
-    if @isCollapsed()
-      @start
-    else
-      @toArray()
+    if @isCollapsed() then [@start] else [@start, @end]
 
   toString: ->
     JSON.stringify(@toJSON())
 
   inspect: ->
-    locations = if @isCollapsed() then [@start] else [@start, @end]
-    strings = ("#{location.index}/#{location.offset}" for location in locations)
+    strings = ("#{location.index}/#{location.offset}" for location in @toJSON())
     "(#{strings.join(" — ")})"
 
   toConsole: ->
