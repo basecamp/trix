@@ -31,6 +31,8 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @createToolbarController()
     @createDocumentController()
     @updateLocationRange()
+
+    @delegate?.didSetEditor?(editor)
     @render()
 
   loadDocument: (document) ->
