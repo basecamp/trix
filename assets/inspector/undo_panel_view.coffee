@@ -3,7 +3,7 @@
 class Trix.UndoPanelView extends Trix.InspectorPanelView
   constructor: ->
     super
-    {@undoManager} = @editorController
+    {@undoManager} = @editor
 
   getUndoEntries: ->
     @undoManager.undoEntries

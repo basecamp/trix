@@ -3,6 +3,7 @@
 class Trix.InspectorPanelView
   constructor: (@element, @editorController) ->
     @handlers = []
+    {@editor} = @editorController
 
   destroy: ->
     @hide()
