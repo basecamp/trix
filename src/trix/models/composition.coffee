@@ -32,9 +32,8 @@ class Trix.Composition
   # Document delegate
 
   didEditDocument: (document) ->
-    if @skipRender
-      delete @skipRender
-    else
+    if @render
+      delete @render
       @delegate?.compositionDidChangeDocument?(@document)
 
   documentDidAddAttachment: (document, attachment) ->
@@ -70,11 +69,11 @@ class Trix.Composition
     @document.insertDocumentAtLocationRange(document, locationRange)
     @setPosition(position + document.getLength())
 
-  insertString: (string) ->
+  insertString: (string, options = {}) ->
     attributes = @getCurrentTextAttributes()
     text = Trix.Text.textForStringWithAttributes(string, attributes)
-    @skipRender = not @currentTextAttributesRequireRender()
-    @insertText(text, updatePosition: not @skipRender)
+    updatePosition = options.updatePosition ? @currentTextAttributesRequireRender()
+    @insertText(text, {updatePosition})
 
   currentTextAttributesRequireRender: ->
     locationRange = @getLocationRange()
@@ -119,9 +118,9 @@ class Trix.Composition
             @insertBlock(newBlock)
           # Stay in the block, add a newline
           else
-            @insertString("\n")
+            @insertString("\n", updatePosition: true)
     else
-      @insertString("\n")
+      @insertString("\n", updatePosition: true)
 
   insertHTML: (html) ->
     document = Trix.Document.fromHTML(html)
@@ -318,6 +317,7 @@ class Trix.Composition
       @selectionManager.expandSelectionInDirectionWithGranularity(direction, "character")
 
   notifyDelegateOfIntentionToSetLocationRange: ->
+    @render = true
     @delegate?.compositionWillSetLocationRange()
 
   expandSelectionForEditing: ->
