@@ -13,7 +13,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
 
-    @setEditor(new Trix.Editor @document, @selectionManager)
+    @setEditor(new Trix.Editor @document)
 
     @documentController.focus() if @config.autofocus
 
@@ -35,7 +35,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   loadDocument: (document) ->
     return if @document is document
-    @setEditor(new Trix.Editor document, @selectionManager)
+    @setEditor(new Trix.Editor document)
 
   # Composition delegate
 
@@ -72,6 +72,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
   compositionDidStopEditingAttachment: (attachment) ->
     @documentController.uninstallAttachmentEditor()
     delete @attachmentLocationRange
+
+  getSelectionManager: ->
+    @selectionManager
 
   # Attachment manager delegate
 

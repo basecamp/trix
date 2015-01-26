@@ -6,8 +6,8 @@
 {forwardMethod, forwardDelegateMethod} = Trix.Helpers
 
 class Trix.Editor
-  constructor: (@document, @selectionManager) ->
-    @composition = new Trix.Composition @document, @selectionManager
+  constructor: (@document) ->
+    @composition = new Trix.Composition @document
     @composition.delegate = this
 
     @attachmentManager = new Trix.AttachmentManager @composition
@@ -41,6 +41,7 @@ class Trix.Editor
   forwardDelegateMethod "compositionDidRemoveAttachment", onConstructor: this
   forwardDelegateMethod "compositionDidStartEditingAttachment", onConstructor: this
   forwardDelegateMethod "compositionDidStopEditingAttachment", onConstructor: this
+  forwardDelegateMethod "getSelectionManager", onConstructor: this
 
   # Forward attachment manager delegate
 

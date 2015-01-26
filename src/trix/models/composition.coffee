@@ -1,9 +1,9 @@
 #= require trix/models/document
 
-{forwardMethod} = Trix.Helpers
+{forwardMethod, forwardDelegateMethod} = Trix.Helpers
 
 class Trix.Composition
-  constructor: (document = new Trix.Document, @selectionManager) ->
+  constructor: (document = new Trix.Document) ->
     @loadDocument(document)
 
   loadDocument: (document) ->
@@ -131,7 +131,7 @@ class Trix.Composition
       if granularity is "character"
         @expandSelectionInDirection(direction)
       else
-        @selectionManager.expandSelectionInDirectionWithGranularity(direction, granularity)
+        @expandSelectionInDirectionWithGranularity(direction, granularity)
       locationRange = @getLocationRange()
 
     @document.removeTextAtLocationRange(locationRange)
@@ -266,11 +266,13 @@ class Trix.Composition
 
   # Location range and selection
 
-  forwardMethod "getLocationRange", onConstructor: this, toProperty: "selectionManager"
-  forwardMethod "setLocationRange", onConstructor: this, toProperty: "selectionManager"
-  forwardMethod "setLocationRangeFromPoint", onConstructor: this, toProperty: "selectionManager"
-  forwardMethod "preserveSelection", onConstructor: this, toProperty: "selectionManager"
-  forwardMethod "locationIsCursorTarget", onConstructor: this, toProperty: "selectionManager"
+  forwardMethod "getLocationRange", onConstructor: this, toMethod: "getSelectionManager"
+  forwardMethod "setLocationRange", onConstructor: this, toMethod: "getSelectionManager"
+  forwardMethod "setLocationRangeFromPoint", onConstructor: this, toMethod: "getSelectionManager"
+  forwardMethod "preserveSelection", onConstructor: this, toMethod: "getSelectionManager"
+  forwardMethod "locationIsCursorTarget", onConstructor: this, toMethod: "getSelectionManager"
+  forwardMethod "expandSelectionInDirectionWithGranularity", onConstructor: this, toMethod: "getSelectionManager"
+  forwardDelegateMethod "getSelectionManager", onConstructor: this
 
   getRange: ->
     locationRange = @getLocationRange()
@@ -300,7 +302,7 @@ class Trix.Composition
     if @shouldExpandInDirectionUsingLocationRange(direction)
       @expandLocationRangeInDirection(direction)
     else
-      @selectionManager.expandSelectionInDirectionWithGranularity(direction, "character")
+      @expandSelectionInDirectionWithGranularity(direction, "character")
 
   notifyDelegateOfIntentionToSetLocationRange: ->
     @delegate?.compositionWillSetLocationRange()
