@@ -7,42 +7,11 @@
     <link rel="stylesheet" type="text/css" href="inspector.css">
     <script type="text/javascript" src="polyfills.js"></script>
     <script type="text/javascript" src="trix.js"></script>
-    <script type="text/javascript" src="demo.js"></script>
   </head>
   <body>
-    <div class="trix-toolbar" id="toolbar" style="display: none;">
-      <span>
-        <a class="button" href="#" data-attribute="bold" data-key="b">Bold</a>
-        <a class="button" href="#" data-attribute="italic" data-key="i">Italic</a>
-        <a class="button" href="#" data-attribute="href" data-action="link" data-key="k">Link</a>
-      </span>
-
-      <span>
-        <a class="button" href="#" data-attribute="quote" data-key="alt+q">Quote</a>
-        <a class="button" href="#" data-attribute="code" data-key="alt+c">Code</a>
-        <a class="button list bullet" href="#" data-attribute="bullet" data-key="shift+b">Bullet</a>
-        <a class="button list number" href="#" data-attribute="number" data-key="shift+n">Number</a>
-        <a class="button" href="#" data-action="decreaseBlockLevel">[</a>
-        <a class="button" href="#" data-action="increaseBlockLevel">]</a>
-      </span>
-
-      <span>
-        <a class="button" href="#" data-action="undo" data-key="z">Undo</a>
-        <a class="button" href="#" data-action="redo" data-key="shift+z">Redo</a>
-      </span>
-
-      <span>
-        <a class="button" href="#" id="trix-debug">Debug</a>
-      </span>
-
-      <div class="dialog" data-attribute="href">
-        <input type="text" name="href" placeholder="Enter a URL...">
-        <input type="button" value="Save link" data-method="setAttribute">
-        <input type="button" value="Unlink" data-method="removeAttribute">
-      </div>
-    </div>
-
-    <textarea id="text" class="editor" placeholder="Type some rich text!" autofocus></textarea>
+    <trix-editor>
+      <textarea placeholder="Type some rich text!" autofocus></textarea>
+    </trix-editor>
 
     <div id="inspector" class="trix-inspector">
       <div class="trix-inspector-toolbar">

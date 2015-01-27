@@ -1,6 +1,11 @@
 memos = 0
 
 Trix.Helpers =
+  extend: (object, properties) ->
+    for key, value of properties
+      object[key] = value
+    object
+
   defer: (fn) ->
     setTimeout fn, 1
 

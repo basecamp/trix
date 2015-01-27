@@ -1,8 +1,8 @@
 {handleEvent, triggerEvent, findClosestElementFromNode} = Trix.DOM
 
 class Trix.ToolbarController extends Trix.BasicObject
-  actionButtonSelector = ".button[data-action]"
-  attributeButtonSelector = ".button[data-attribute]"
+  actionButtonSelector = "[data-action]"
+  attributeButtonSelector = "[data-attribute]"
   toolbarButtonSelector = [actionButtonSelector, attributeButtonSelector].join(", ")
   dialogSelector = ".dialog[data-attribute]"
   activeDialogSelector = "#{dialogSelector}.active"
