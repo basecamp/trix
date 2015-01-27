@@ -27,8 +27,10 @@ config =
     didChangeSelection: ->
       inspectorController?.render()
 
-    didRenderDocument: ->
+    didChangeDocument: ->
       inspectorController?.render()
+
+    didRenderDocument: ->
       inspectorController?.incrementRenderCount()
 
     didThrowError: (error, details) ->

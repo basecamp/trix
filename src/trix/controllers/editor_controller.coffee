@@ -42,15 +42,11 @@ class Trix.EditorController extends Trix.AbstractEditorController
   # Composition delegate
 
   compositionDidChangeDocument: (document) ->
-    @documentController.render()
     @delegate?.didChangeDocument?(document)
 
   compositionDidChangeCurrentAttributes: (@currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
     @toolbarController.updateActions()
-
-  compositionWillSetLocationRange: ->
-    @skipSelectionLock = true
 
   compositionShouldAcceptFile: (file) ->
     @delegate?.shouldAcceptFile?(file)
@@ -87,13 +83,12 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   documentControllerWillRender: ->
     @mutationObserver.stop()
-    @selectionManager.lock() unless @skipSelectionLock
+    @selectionManager.lock()
     @selectionManager.clearSelection()
 
   documentControllerDidRender: ->
     @mutationObserver.start()
-    @selectionManager.unlock() unless @skipSelectionLock
-    delete @skipSelectionLock
+    @selectionManager.unlock()
     @saveSerializedDocument()
     @toolbarController.updateActions()
     @delegate?.didRenderDocument?()
@@ -142,6 +137,12 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @recordTypingUndoEntry()
     @composition.insertString(composedString)
 
+  inputControllerWillInsertCharacter: (character) ->
+    @mutationObserver.stop()
+
+  inputControllerDidInsertCharacter: (character) ->
+    @mutationObserver.start()
+
   inputControllerDidReceiveKeyboardCommand: (keys) ->
     @toolbarController.applyKeyboardCommand(keys)
 
@@ -158,6 +159,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
   inputControllerDidThrowError: (error, details) ->
     @delegate?.didThrowError?(error, details)
 
+  inputControllerDidReceiveInput: ->
+    @documentController.render()
+
   # Selection manager delegate
 
   locationRangeDidChange: (locationRange) ->
@@ -170,8 +174,10 @@ class Trix.EditorController extends Trix.AbstractEditorController
   # Mutation observer delegate
 
   elementDidMutate: (mutations) ->
+    console.log "elementDidMutate", mutations
     try
       @composition.replaceHTML(@documentElement.innerHTML)
+      @documentController.render()
     catch error
       @delegate?.didThrowError?(error, {mutations})
       throw error

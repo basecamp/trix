@@ -1,7 +1,7 @@
 #= require trix/views/block_view
 
 {defer} = Trix.Helpers
-{walkTree} = Trix.DOM
+{walkTree, makeElement} = Trix.DOM
 
 class Trix.DocumentView extends Trix.ObjectView
   constructor: ->
@@ -12,14 +12,19 @@ class Trix.DocumentView extends Trix.ObjectView
   render: ->
     @childViews = []
 
-    @element.removeChild(@element.lastChild) while @element.lastChild
+    @shadowElement = makeElement("div")
 
     unless @document.isEmpty()
       objects = Trix.ObjectGroup.groupObjects(@document.getBlocks(), asTree: true)
       for object in objects
         view = @findOrCreateCachedChildView(Trix.BlockView, object)
-        @element.appendChild(node) for node in view.getNodes()
+        @shadowElement.appendChild(node) for node in view.getNodes()
 
+  isSynced: ->
+    @shadowElement.innerHTML is @element.innerHTML
+
+  sync: ->
+    @element.innerHTML = @shadowElement.innerHTML
     @didRender()
 
   didRender: ->

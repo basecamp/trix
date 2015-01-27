@@ -330,6 +330,9 @@ class Trix.Document extends Trix.Object
       attributes[attributeName] = true
     attributes
 
+  getTextAttributesAtLocation: ({index, offset}) ->
+    @getTextAtIndex(index).getAttributesAtPosition(offset)
+
   getAttachmentById: (attachmentId) ->
     @attachments.get(attachmentId)
 

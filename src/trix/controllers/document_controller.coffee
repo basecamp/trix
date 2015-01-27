@@ -21,11 +21,15 @@ class Trix.DocumentController extends Trix.BasicObject
     @delegate?.documentControllerDidSelectAttachment?(attachment)
 
   render: benchmark "DocumentController#render", ->
-    @delegate?.documentControllerWillRender?()
     @documentView.render()
-    @addCursorTargetsAroundAttachments()
-    @reinstallAttachmentEditor()
-    @delegate?.documentControllerDidRender?()
+
+    unless @documentView.isSynced()
+      console.log "documentView out of sync"
+      @delegate?.documentControllerWillRender?()
+      @documentView.sync()
+      @addCursorTargetsAroundAttachments()
+      @reinstallAttachmentEditor()
+      @delegate?.documentControllerDidRender?()
 
   rerenderViewForObject: (object) ->
     @documentView.invalidateViewForObject(object)

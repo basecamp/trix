@@ -19,16 +19,13 @@ class Trix.Composition extends Trix.BasicObject
     selectedRange: @getLocationRange()
 
   restoreSnapshot: ({document, selectedRange}) ->
-    @notifyDelegateOfIntentionToSetLocationRange()
     @document.replaceDocument(document)
     @setLocationRange(selectedRange)
 
   # Document delegate
 
   didEditDocument: (document) ->
-    if @render
-      delete @render
-      @delegate?.compositionDidChangeDocument?(@document)
+    @delegate?.compositionDidChangeDocument?(@document)
 
   documentDidAddAttachment: (document, attachment) ->
     @delegate?.compositionDidAddAttachment?(attachment)
@@ -41,9 +38,8 @@ class Trix.Composition extends Trix.BasicObject
 
   # Responder protocol
 
-  insertText: (text, {updatePosition} = updatePosition: true) ->
+  insertText: (text, {updatePosition} = updatePosition: false) ->
     if updatePosition
-      @notifyDelegateOfIntentionToSetLocationRange()
       position = @getPosition()
 
     locationRange = @getLocationRange()
@@ -57,7 +53,6 @@ class Trix.Composition extends Trix.BasicObject
     @insertDocument(document)
 
   insertDocument: (document = Trix.Document.fromString("")) ->
-    @notifyDelegateOfIntentionToSetLocationRange()
     position = @getPosition()
     locationRange = @getLocationRange()
     @document.insertDocumentAtLocationRange(document, locationRange)
@@ -66,22 +61,17 @@ class Trix.Composition extends Trix.BasicObject
   insertString: (string, options = {}) ->
     attributes = @getCurrentTextAttributes()
     text = Trix.Text.textForStringWithAttributes(string, attributes)
-    updatePosition = options.updatePosition ? @currentTextAttributesRequireRender()
-    @insertText(text, {updatePosition})
+    options.updatePosition ?= @currentLocationIsTextAttributeBoundary()
+    @insertText(text, options)
 
-  currentTextAttributesRequireRender: ->
-    locationRange = @getLocationRange()
-    return unless locationRange.isCollapsed()
+  currentLocationIsTextAttributeBoundary: ->
     return true if Object.keys(@getCurrentTextAttributes()).length
-    {index, offset} = locationRange
-    unless offset is 0
-      offset--
-      locationRangeLeft = new Trix.LocationRange {index, offset}, locationRange.end
-      for key, value of @document.getCommonAttributesAtLocationRange(locationRangeLeft)
-        return true if Trix.config.textAttributes[key]
+    {index, offset} = @getLocationRange()
+    return if offset is 0
+    leftAttributes = @document.getTextAttributesAtLocation({index, offset: offset - 1})
+    Object.keys(leftAttributes).length
 
   insertBlockBreak: ->
-    @notifyDelegateOfIntentionToSetLocationRange()
     position = @getPosition()
     locationRange = @getLocationRange()
     @document.insertBlockBreakAtLocationRange(locationRange)
@@ -131,6 +121,8 @@ class Trix.Composition extends Trix.BasicObject
       @preserveSelection =>
         @document.replaceDocument(document)
 
+    console.log "#replaceHTML with '#{html}', Document = #{JSON.stringify(@document.toString())}"
+
   insertFile: (file) ->
     if @delegate?.compositionShouldAcceptFile(file)
       attachment = Trix.Attachment.attachmentForFile(file)
@@ -138,7 +130,6 @@ class Trix.Composition extends Trix.BasicObject
       @insertText(text)
 
   deleteInDirectionWithGranularity: (direction, granularity) ->
-    @notifyDelegateOfIntentionToSetLocationRange()
     locationRange = @getLocationRange()
 
     if locationRange.isCollapsed()
@@ -161,14 +152,12 @@ class Trix.Composition extends Trix.BasicObject
     @deleteInDirectionWithGranularity("backward", "word")
 
   moveTextFromLocationRange: (locationRange) ->
-    @notifyDelegateOfIntentionToSetLocationRange()
     position = @getPosition()
     @document.moveTextFromLocationRangeToPosition(locationRange, position)
     @setPosition(position)
 
   removeAttachment: (attachment) ->
     if locationRange = @document.getLocationRangeOfAttachment(attachment)
-      @notifyDelegateOfIntentionToSetLocationRange()
       @document.removeTextAtLocationRange(locationRange)
       @setLocationRange(locationRange.collapse())
 
@@ -211,7 +200,6 @@ class Trix.Composition extends Trix.BasicObject
 
   setBlockAttribute: (attributeName, value) ->
     return unless locationRange = @getLocationRange()
-    @notifyDelegateOfIntentionToSetLocationRange()
     range = @document.rangeFromLocationRange(locationRange)
     @document.applyBlockAttributeAtLocationRange(attributeName, value, locationRange)
     @setRange(range)
@@ -281,12 +269,15 @@ class Trix.Composition extends Trix.BasicObject
   # Location range and selection
 
   @proxy "getSelectionManager().getLocationRange"
-  @proxy "getSelectionManager().setLocationRange"
   @proxy "getSelectionManager().setLocationRangeFromPoint"
   @proxy "getSelectionManager().preserveSelection"
   @proxy "getSelectionManager().locationIsCursorTarget"
   @proxy "getSelectionManager().expandSelectionInDirectionWithGranularity"
   @proxy "delegate?.getSelectionManager"
+
+  setLocationRange: (args...) ->
+    @delegate.delegate.documentController.render()
+    @getSelectionManager().setLocationRange(args...)
 
   getRange: ->
     locationRange = @getLocationRange()
@@ -317,10 +308,6 @@ class Trix.Composition extends Trix.BasicObject
       @expandLocationRangeInDirection(direction)
     else
       @expandSelectionInDirectionWithGranularity(direction, "character")
-
-  notifyDelegateOfIntentionToSetLocationRange: ->
-    @render = true
-    @delegate?.compositionWillSetLocationRange()
 
   expandSelectionForEditing: ->
     if @hasCurrentAttribute("href")

@@ -23,15 +23,16 @@ class Trix.InputController extends Trix.BasicObject
   handlerFor: (eventName) ->
     (event) =>
       try
+        console.group(eventName)
+        Trix.selectionChangeObserver.update()
+        console.log new Date().getTime()
         @events[eventName].call(this, event)
+        console.groupEnd()
+        console.log "Document: #{JSON.stringify(@responder.document.toString())}"
+        console.log "HTML: '#{@element.innerHTML}'"
       catch error
         @delegate?.inputControllerDidThrowError?(error, {eventName})
         throw error
-
-  # Mobile input mode
-
-  isMobileInputModeEnabled: ->
-    Trix.config.useMobileInputMode()
 
   # File verification
 
@@ -53,7 +54,11 @@ class Trix.InputController extends Trix.BasicObject
           modifier = "control" if modifier is "ctrl"
           context = @keys[modifier]
           break if context[keyName]
-        context[keyName]?.call(this, event)
+
+        if context[keyName]?
+          console.log {context, keyName}
+          context[keyName].call(this, event)
+          @delegate?.inputControllerDidReceiveInput?()
 
       if keyEventIsKeyboardCommand(event)
         if character = String.fromCharCode(event.keyCode).toLowerCase()
@@ -63,7 +68,6 @@ class Trix.InputController extends Trix.BasicObject
             event.preventDefault()
 
     keypress: (event) ->
-      return if @isMobileInputModeEnabled()
       return if (event.metaKey or event.ctrlKey) and not event.altKey
       return if keyEventIsWebInspectorShortcut(event)
       return if keyEventIsPasteAndMatchStyleShortcut(event)
@@ -74,6 +78,9 @@ class Trix.InputController extends Trix.BasicObject
         character = String.fromCharCode event.charCode
 
       if character?
+        console.log "character = \"#{character}\""
+        @character = character
+        @delegate?.inputControllerWillInsertCharacter()
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(character)
 
@@ -147,13 +154,19 @@ class Trix.InputController extends Trix.BasicObject
       @delegate?.inputControllerWillEndComposition?()
       @composedString = event.data
 
+    keyup: (event) ->
+
     input: (event) ->
       if @composing and @composedString?
         @delegate?.inputControllerDidComposeCharacters?(@composedString) if @composedString
         delete @composedString
         delete @composing
+      else if @character?
+        console.log "character = '#{@character}'"
+        @delegate?.inputControllerDidInsertCharacter?(@character)
+        delete @character
       else
-        @responder?.replaceHTML(@element.innerHTML)
+        console.log "no character"
 
   keys:
     backspace: (event) ->

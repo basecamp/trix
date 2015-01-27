@@ -45,8 +45,9 @@ class Trix.MutationObserver extends Trix.BasicObject
       when "attributes"
         nodes.push(mutation.target)
       when "characterData"
-        # Intentionally allowing characterData mutations
-        true
+        # Changes to text nodes should consider the parent element
+        nodes.push(mutation.target.parentNode)
+        nodes.push(mutation.target)
       when "childList"
         # Consider each added or removed node
         nodes.push(mutation.addedNodes...)
