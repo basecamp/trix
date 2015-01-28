@@ -10,7 +10,6 @@ class Trix.MutationObserver extends Trix.BasicObject
 
   constructor: (@element) ->
     @observer = new window.MutationObserver @didMutate
-    @reset()
     @start()
 
   start: ->
@@ -21,8 +20,7 @@ class Trix.MutationObserver extends Trix.BasicObject
 
   didMutate: (mutations) =>
     significantMutations = @findSignificantMutations(mutations)
-    @mutations.push(significantMutations...)
-    @notifyDelegateOnce()
+    @delegate?.elementDidMutate?(significantMutations)
 
   # Private
 
@@ -53,14 +51,3 @@ class Trix.MutationObserver extends Trix.BasicObject
         nodes.push(mutation.addedNodes...)
         nodes.push(mutation.removedNodes...)
     nodes
-
-  reset: ->
-    @mutations = []
-
-  notifyDelegateOnce: ->
-    if @mutations.length
-      clearTimeout(@timeout)
-      @timeout = setTimeout =>
-        @delegate?.elementDidMutate?(@mutations)
-        @reset()
-      , 20

@@ -1,3 +1,4 @@
+#= require trix/observers/mutation_observer
 #= require trix/operations/file_verification_operation
 
 {defer} = Trix.Helpers
@@ -17,6 +18,9 @@ class Trix.InputController extends Trix.BasicObject
     "79": "o"
 
   constructor: (@element) ->
+    @mutationObserver = new Trix.MutationObserver @element
+    @mutationObserver.delegate = this
+
     for eventName of @events
       handleEvent eventName, onElement: @element, withCallback: @handlerFor(eventName), inPhase: "capturing"
 
@@ -33,6 +37,35 @@ class Trix.InputController extends Trix.BasicObject
       catch error
         @delegate?.inputControllerDidThrowError?(error, {eventName})
         throw error
+
+  # Render cycle
+
+  editorWillRender: ->
+    @rendering = true
+
+  editorDidRender: ->
+    delete @rendering
+
+  requestRender: ->
+    @delegate?.inputControllerDidRequestRender?()
+
+  # Mutation observer delegate
+
+  elementDidMutate: (mutations) ->
+    ignoringMutations = @isIgnoringMutations()
+    console.log "Mutation#{[" (ignored)" if ignoringMutations]}:", mutations
+    return if ignoringMutations
+
+    defer =>
+      try
+        @responder?.replaceHTML(@element.innerHTML)
+        @requestRender()
+      catch error
+        @delegate?.inputControllerDidThrowError?(error, {mutations})
+        throw error
+
+  isIgnoringMutations: ->
+    @rendering or @composing
 
   # File verification
 
@@ -58,7 +91,6 @@ class Trix.InputController extends Trix.BasicObject
         if context[keyName]?
           console.log {context, keyName}
           context[keyName].call(this, event)
-          @delegate?.inputControllerDidReceiveInput?()
 
       if keyEventIsKeyboardCommand(event)
         if character = String.fromCharCode(event.keyCode).toLowerCase()
@@ -83,7 +115,6 @@ class Trix.InputController extends Trix.BasicObject
       if character?
         console.log "character = \"#{character}\""
         @character = character
-        @delegate?.inputControllerWillInsertCharacter()
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(character)
 
@@ -166,11 +197,7 @@ class Trix.InputController extends Trix.BasicObject
         delete @composing
       else if @character?
         console.log "character = '#{@character}'"
-        @delegate?.inputControllerDidInsertCharacter?(@character)
         delete @character
-      else if @returnPressed?
-        delete @returnPressed
-        @delegate.documentController.render()
       else
         console.log "no character"
 

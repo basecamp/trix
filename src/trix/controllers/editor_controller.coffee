@@ -4,7 +4,6 @@
 #= require trix/controllers/toolbar_controller
 #= require trix/models/selection_manager
 #= require trix/models/editor
-#= require trix/observers/mutation_observer
 
 class Trix.EditorController extends Trix.AbstractEditorController
   constructor: ->
@@ -26,7 +25,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @composition = @editor.composition
     @document = @composition.document
 
-    @createMutationObserver()
     @createInputController()
     @createToolbarController()
     @createDocumentController()
@@ -82,12 +80,12 @@ class Trix.EditorController extends Trix.AbstractEditorController
   # Document controller delegate
 
   documentControllerWillRender: ->
-    @mutationObserver.stop()
+    @inputController.editorWillRender()
     @selectionManager.lock()
     @selectionManager.clearSelection()
 
   documentControllerDidRender: ->
-    @mutationObserver.start()
+    @inputController.editorDidRender()
     @selectionManager.unlock()
     @saveSerializedDocument()
     @toolbarController.updateActions()
@@ -125,23 +123,15 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @editor.recordUndoEntry("Drop Files")
 
   inputControllerWillStartComposition: ->
-    @mutationObserver.stop()
     @selectionManager.lock()
 
   inputControllerWillEndComposition: ->
     @documentController.render()
     @selectionManager.unlock()
-    @mutationObserver.start()
 
   inputControllerDidComposeCharacters: (composedString) ->
     @recordTypingUndoEntry()
     @composition.insertString(composedString)
-
-  inputControllerWillInsertCharacter: (character) ->
-    @mutationObserver.stop()
-
-  inputControllerDidInsertCharacter: (character) ->
-    @mutationObserver.start()
 
   inputControllerDidReceiveKeyboardCommand: (keys) ->
     @toolbarController.applyKeyboardCommand(keys)
@@ -159,7 +149,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
   inputControllerDidThrowError: (error, details) ->
     @delegate?.didThrowError?(error, details)
 
-  inputControllerDidReceiveInput: ->
+  inputControllerDidRequestRender: ->
     @documentController.render()
 
   # Selection manager delegate
@@ -170,17 +160,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
     if @attachmentLocationRange and not @attachmentLocationRange.isEqualTo(locationRange)
       @composition.stopEditingAttachment()
     @delegate?.didChangeSelection?()
-
-  # Mutation observer delegate
-
-  elementDidMutate: (mutations) ->
-    console.log "elementDidMutate", mutations
-    try
-      @composition.replaceHTML(@documentElement.innerHTML)
-      @documentController.render()
-    catch error
-      @delegate?.didThrowError?(error, {mutations})
-      throw error
 
   # Toolbar controller delegate
 
@@ -248,11 +227,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
     if locationRange?.isCollapsed() then locationRange.index else locationRange
 
   # Private
-
-  createMutationObserver: ->
-    return if @mutationObserver
-    @mutationObserver = new Trix.MutationObserver @documentElement
-    @mutationObserver.delegate = this
 
   createInputController: ->
     unless @inputController
