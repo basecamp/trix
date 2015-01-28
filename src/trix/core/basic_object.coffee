@@ -1,25 +1,23 @@
-{proxyMethod} = Trix.Helpers
-
 class Trix.BasicObject
-  @proxy: (expression) ->
-    proxyMethod argumentsForProxyExpression.call(this, expression)...
+  @proxyMethod: (expression) ->
+    {name, toMethod, toProperty, optional} = parseProxyMethodExpression(expression)
 
-  proxyExpressionPattern = ///
-    ^
-      (.+?)
-        (\(\))?
-        (\?)?
-      \.
-      (.+?)
-    $
-  ///
+    @::[name] = ->
+      object = if toMethod?
+        if optional then @[toMethod]?() else @[toMethod]()
+      else if toProperty?
+        @[toProperty]
 
-  argumentsForProxyExpression = (expression) ->
-    unless match = expression.match(proxyExpressionPattern)
-      throw new Error "can't parse @proxy expression: #{expression}"
+      if optional
+        object?[name]?.apply(object, arguments)
+      else
+        object[name].apply(object, arguments)
 
-    name = match[4]
-    args = onConstructor: this
+  parseProxyMethodExpression = (expression) ->
+    unless match = expression.match(proxyMethodExpressionPattern)
+      throw new Error "can't parse @proxyMethod expression: #{expression}"
+
+    args = name: match[4]
 
     if match[2]?
       args.toMethod = match[1]
@@ -29,4 +27,14 @@ class Trix.BasicObject
     if match[3]?
       args.optional = true
 
-    [name, args]
+    args
+
+  proxyMethodExpressionPattern = ///
+    ^
+      (.+?)
+        (\(\))?
+        (\?)?
+      \.
+      (.+?)
+    $
+  ///

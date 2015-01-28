@@ -23,21 +23,6 @@ Trix.Helpers =
     logger.timeEnd(name)
     result
 
-  proxyMethod: (name, {onConstructor, onObject, toObject, toMethod, toProperty, optional} = {}) ->
-    destination = onObject ? onConstructor.prototype
-    destination[name] = ->
-      object = if toObject?
-        toObject
-      else if toMethod?
-        if optional then @[toMethod]?() else @[toMethod]()
-      else if toProperty?
-        @[toProperty]
-
-      if optional
-        object?[name]?.apply(object, arguments)
-      else
-        object[name].apply(object, arguments)
-
   arraysAreEqual: (a, b) ->
     return false unless a.length is b.length
     for value, index in a

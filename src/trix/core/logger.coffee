@@ -26,12 +26,12 @@ class Trix.Logger extends Trix.BasicObject
   isEnabled: ->
     @console?
 
-  @proxy "console?.log"
-  @proxy "console?.warn"
-  @proxy "console?.error"
-  @proxy "console?.group"
-  @proxy "console?.groupEnd"
-  @proxy "console?.groupCollapsed"
-  @proxy "console?.trace"
-  @proxy "console?.time"
-  @proxy "console?.timeEnd"
+  @proxyMethod "console?.log"
+  @proxyMethod "console?.warn"
+  @proxyMethod "console?.error"
+  @proxyMethod "console?.group"
+  @proxyMethod "console?.groupEnd"
+  @proxyMethod "console?.groupCollapsed"
+  @proxyMethod "console?.trace"
+  @proxyMethod "console?.time"
+  @proxyMethod "console?.timeEnd"
