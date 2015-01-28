@@ -68,6 +68,9 @@ class Trix.InputController extends Trix.BasicObject
             event.preventDefault()
 
     keypress: (event) ->
+      if @keydownHandled
+        delete @keydownHandled
+        return
       return if (event.metaKey or event.ctrlKey) and not event.altKey
       return if keyEventIsWebInspectorShortcut(event)
       return if keyEventIsPasteAndMatchStyleShortcut(event)
@@ -165,19 +168,23 @@ class Trix.InputController extends Trix.BasicObject
         console.log "character = '#{@character}'"
         @delegate?.inputControllerDidInsertCharacter?(@character)
         delete @character
+      else if @returnPressed?
+        delete @returnPressed
+        @delegate.documentController.render()
       else
         console.log "no character"
 
   keys:
     backspace: (event) ->
-      event.preventDefault()
       @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteBackward()
+      @keydownHandled = true
 
     return: (event) ->
-      event.preventDefault()
       @delegate?.inputControllerWillPerformTyping()
       @responder?.insertLineBreak()
+      @keydownHandled = true
+      @returnPressed = true
 
     tab: (event) ->
       if @responder?.canChangeBlockAttributeLevel()
