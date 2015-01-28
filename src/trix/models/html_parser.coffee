@@ -57,6 +57,18 @@ class Trix.HTMLParser extends Trix.BasicObject
         @currentBlock = @appendBlockForAttributes({})
         @currentBlockElement = null
 
+  isExtraBR: (element) ->
+    return unless tagName(element) is "br"
+
+    previousSibling = element.previousElementSibling
+    nextSibling = element.nextElementSibling
+    isLastChild = not nextSibling
+    isOnlyChild = isLastChild and not previousSibling
+    previousSiblingIsBR = tagName(previousSibling) is "br"
+    parentIsBlock = @isBlockElement(element.parentNode)
+
+    parentIsBlock and (isOnlyChild or (isLastChild and previousSiblingIsBR))
+
   isBlockElement: (element) ->
     return unless element?.nodeType is Node.ELEMENT_NODE
     tagName(element) in @getBlockTagNames() or window.getComputedStyle(element).display is "block"
@@ -83,7 +95,7 @@ class Trix.HTMLParser extends Trix.BasicObject
     else
       switch tagName(element)
         when "br"
-          unless isExtraBR(element)
+          unless @isExtraBR(element)
             @appendStringWithAttributes("\n", getTextAttributes(element))
           @processedElements.push(element)
         when "img"
@@ -210,13 +222,6 @@ class Trix.HTMLParser extends Trix.BasicObject
       node.parentNode.removeChild(node)
 
     body.innerHTML
-
-  isExtraBR = (element) ->
-    previousSibling = element.previousElementSibling
-    tagName(element) is "br" and
-      (not previousSibling? or tagName(element) is tagName(previousSibling)) and
-      element is element.parentNode.lastChild and
-      window.getComputedStyle(element.parentNode).display is "block"
 
   getBlockElementMargin = (element) ->
     style = window.getComputedStyle(element)
