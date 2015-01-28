@@ -63,4 +63,4 @@ class Trix.MutationObserver extends Trix.BasicObject
       @timeout = setTimeout =>
         @delegate?.elementDidMutate?(@mutations)
         @reset()
-      , 1
+      , 20
