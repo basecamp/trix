@@ -1,6 +1,6 @@
 #= require trix/views/text_view
 
-{makeElement} = Trix.DOM
+{makeElement} = Trix
 
 class Trix.BlockView extends Trix.ObjectView
   constructor: ->

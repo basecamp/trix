@@ -26,30 +26,30 @@ class Trix.Editor extends Trix.Object
 
   # Forward attachment manager
 
-  @proxy "attachmentManager.manageAttachment"
-  @proxy "attachmentManager.unmanageAttachment"
+  @proxyMethod "attachmentManager.manageAttachment"
+  @proxyMethod "attachmentManager.unmanageAttachment"
 
   # Forward undo manager
 
-  @proxy "undoManager.recordUndoEntry"
-  @proxy "undoManager.undo"
-  @proxy "undoManager.redo"
-  @proxy "undoManager.canUndo"
-  @proxy "undoManager.canRedo"
+  @proxyMethod "undoManager.recordUndoEntry"
+  @proxyMethod "undoManager.undo"
+  @proxyMethod "undoManager.redo"
+  @proxyMethod "undoManager.canUndo"
+  @proxyMethod "undoManager.canRedo"
 
   # Forward composition delegate
 
-  @proxy "delegate?.compositionDidChangeDocument"
-  @proxy "delegate?.compositionDidChangeCurrentAttributes"
-  @proxy "delegate?.compositionWillSetLocationRange"
-  @proxy "delegate?.compositionShouldAcceptFile"
-  @proxy "delegate?.compositionDidAddAttachment"
-  @proxy "delegate?.compositionDidEditAttachment"
-  @proxy "delegate?.compositionDidRemoveAttachment"
-  @proxy "delegate?.compositionDidStartEditingAttachment"
-  @proxy "delegate?.compositionDidStopEditingAttachment"
-  @proxy "delegate?.getSelectionManager"
+  @proxyMethod "delegate?.compositionDidChangeDocument"
+  @proxyMethod "delegate?.compositionDidChangeCurrentAttributes"
+  @proxyMethod "delegate?.compositionWillSetLocationRange"
+  @proxyMethod "delegate?.compositionShouldAcceptFile"
+  @proxyMethod "delegate?.compositionDidAddAttachment"
+  @proxyMethod "delegate?.compositionDidEditAttachment"
+  @proxyMethod "delegate?.compositionDidRemoveAttachment"
+  @proxyMethod "delegate?.compositionDidStartEditingAttachment"
+  @proxyMethod "delegate?.compositionDidStopEditingAttachment"
+  @proxyMethod "delegate?.getSelectionManager"
 
   # Forward attachment manager delegate
 
-  @proxy "delegate?.attachmentManagerDidRequestRemovalOfAttachment"
+  @proxyMethod "delegate?.attachmentManagerDidRequestRemovalOfAttachment"

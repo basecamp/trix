@@ -95,9 +95,9 @@ blockComment = "<!--block-->"
     attachment = Trix.Attachment.attachmentForAttributes(attrs)
     text = Trix.Text.textForAttachmentWithAttributes(attachment, width: 10, height: 20)
 
-    image = Trix.DOM.makeElement("img", src: attrs.url, width: 10, height: 20)
+    image = Trix.makeElement("img", src: attrs.url, width: 10, height: 20)
 
-    figure = Trix.DOM.makeElement
+    figure = Trix.makeElement
       tagName: "figure"
       className: "attachment image"
 
@@ -118,9 +118,9 @@ blockComment = "<!--block-->"
     attachment = Trix.Attachment.attachmentForAttributes(attrs)
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
-    image = Trix.DOM.makeElement("img", src: attrs.url)
+    image = Trix.makeElement("img", src: attrs.url)
 
-    figure = Trix.DOM.makeElement
+    figure = Trix.makeElement
       tagName: "figure"
       className: "attachment image"
 
@@ -140,7 +140,7 @@ blockComment = "<!--block-->"
     attachment = new Trix.Attachment attrs
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
-    figure = Trix.DOM.makeElement
+    figure = Trix.makeElement
       tagName: "figure"
       className: "attachment file pdf"
 
@@ -148,7 +148,7 @@ blockComment = "<!--block-->"
       trixAttachment: JSON.stringify(attachment)
       trixId: attachment.id
 
-    link = Trix.DOM.makeElement("a", href: attrs.href)
+    link = Trix.makeElement("a", href: attrs.href)
     link.dataset[key] = value for key, value of data
     link.setAttribute("contenteditable", false)
     link.appendChild(figure)

@@ -1,7 +1,6 @@
 #= require trix/views/block_view
 
-{defer} = Trix.Helpers
-{walkTree} = Trix.DOM
+{defer, walkTree} = Trix
 
 class Trix.DocumentView extends Trix.ObjectView
   constructor: ->

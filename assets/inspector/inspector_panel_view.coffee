@@ -1,4 +1,4 @@
-{handleEvent} = Trix.DOM
+{handleEvent} = Trix
 
 class Trix.InspectorPanelView
   constructor: (@element, @editorController) ->

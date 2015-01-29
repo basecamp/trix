@@ -15,7 +15,7 @@ Trix.config.blockAttributes = attributes =
     tagName: "li"
     parentAttribute: "bulletList"
     test: (element) ->
-      Trix.DOM.tagName(element.parentNode) is attributes[@parentAttribute].tagName
+      Trix.tagName(element.parentNode) is attributes[@parentAttribute].tagName
   numberList:
     tagName: "ol"
     parse: false
@@ -23,4 +23,4 @@ Trix.config.blockAttributes = attributes =
     tagName: "li"
     parentAttribute: "numberList"
     test: (element) ->
-      Trix.DOM.tagName(element.parentNode) is attributes[@parentAttribute].tagName
+      Trix.tagName(element.parentNode) is attributes[@parentAttribute].tagName
