@@ -38,7 +38,7 @@ class Trix.Composition extends Trix.BasicObject
 
   # Responder protocol
 
-  insertText: (text, {updatePosition} = updatePosition: false) ->
+  insertText: (text, {updatePosition} = updatePosition: true) ->
     if updatePosition
       position = @getPosition()
 
@@ -58,7 +58,7 @@ class Trix.Composition extends Trix.BasicObject
     @document.insertDocumentAtLocationRange(document, locationRange)
     @setPosition(position + document.getLength())
 
-  insertString: (string, options = {}) ->
+  insertString: (string, options) ->
     attributes = @getCurrentTextAttributes()
     text = Trix.Text.textForStringWithAttributes(string, attributes)
     @insertText(text, options)
@@ -94,9 +94,9 @@ class Trix.Composition extends Trix.BasicObject
             @insertBlock(newBlock)
           # Stay in the block, add a newline
           else
-            @insertString("\n", updatePosition: true)
+            @insertString("\n")
     else
-      @insertString("\n", updatePosition: true)
+      @insertString("\n")
 
   insertHTML: (html) ->
     document = Trix.Document.fromHTML(html)
@@ -261,12 +261,14 @@ class Trix.Composition extends Trix.BasicObject
   # Location range and selection
 
   @proxyMethod "getSelectionManager().getLocationRange"
-  @proxyMethod "getSelectionManager().setLocationRange"
   @proxyMethod "getSelectionManager().setLocationRangeFromPoint"
   @proxyMethod "getSelectionManager().preserveSelection"
   @proxyMethod "getSelectionManager().locationIsCursorTarget"
   @proxyMethod "getSelectionManager().expandSelectionInDirectionWithGranularity"
   @proxyMethod "delegate?.getSelectionManager"
+
+  setLocationRange: (locationRange) ->
+    @delegate?.compositionDidRequestLocationRange?(locationRange)
 
   getRange: ->
     locationRange = @getLocationRange()

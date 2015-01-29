@@ -71,6 +71,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @documentController.uninstallAttachmentEditor()
     delete @attachmentLocationRange
 
+  compositionDidRequestLocationRange: (locationRange) ->
+    @requestedLocationRange = locationRange
+
   getSelectionManager: ->
     @selectionManager
 
@@ -86,7 +89,10 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   documentControllerWillRender: ->
     @inputController.editorWillRender()
-    @selectionManager.lock()
+    if @requestedLocationRange?
+      @selectionManager.lockToLocationRange(@requestedLocationRange)
+    else
+      @selectionManager.lock()
     @selectionManager.clearSelection()
 
   documentControllerDidRender: ->
@@ -131,7 +137,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @selectionManager.lock()
 
   inputControllerWillEndComposition: ->
-    @documentController.render()
+    @render()
     @selectionManager.unlock()
 
   inputControllerDidComposeCharacters: (composedString) ->
@@ -155,7 +161,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @delegate?.didThrowError?(error, details)
 
   inputControllerDidRequestRender: ->
-    @documentController.render()
+    @render()
 
   # Selection manager delegate
 
@@ -193,19 +199,19 @@ class Trix.EditorController extends Trix.AbstractEditorController
   toolbarDidToggleAttribute: (attributeName) ->
     @recordFormattingUndoEntry()
     @composition.toggleCurrentAttribute(attributeName)
-    @documentController.render()
+    @render()
     @documentController.focus()
 
   toolbarDidUpdateAttribute: (attributeName, value) ->
     @recordFormattingUndoEntry()
     @composition.setCurrentAttribute(attributeName, value)
-    @documentController.render()
+    @render()
     @documentController.focus()
 
   toolbarDidRemoveAttribute: (attributeName) ->
     @recordFormattingUndoEntry()
     @composition.removeCurrentAttribute(attributeName)
-    @documentController.render()
+    @render()
     @documentController.focus()
 
   toolbarWillShowDialog: (willFocus) ->
@@ -252,13 +258,14 @@ class Trix.EditorController extends Trix.AbstractEditorController
     delete @documentController?.delegate
     @documentController = new Trix.DocumentController @documentElement, @document
     @documentController.delegate = this
-    @documentController.render()
+    @render()
 
   updateLocationRange: ->
     @setLocationRange(@editor.locationRange) if @editor.locationRange
 
   render: ->
     @documentController.render()
+    delete @requestedLocationRange
 
   removeAttachment: (attachment) ->
     @editor.recordUndoEntry("Delete Attachment")
