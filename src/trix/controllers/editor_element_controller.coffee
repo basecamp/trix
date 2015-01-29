@@ -45,7 +45,9 @@ class Trix.EditorElementController extends Trix.Controller
 
   save: ->
     if serializer = serializers[@contentType]
-      @inputElement.value = serializer.call(this)
+      value = serializer.call(this)
+      @inputElement.value = value
+      @element.setAttribute("value", value)
     else
       throw new Error "unknown content type: '#{@contentType}'"
 
