@@ -61,15 +61,7 @@ class Trix.Composition extends Trix.BasicObject
   insertString: (string, options = {}) ->
     attributes = @getCurrentTextAttributes()
     text = Trix.Text.textForStringWithAttributes(string, attributes)
-    options.updatePosition ?= @currentLocationIsTextAttributeBoundary()
     @insertText(text, options)
-
-  currentLocationIsTextAttributeBoundary: ->
-    return true if Object.keys(@getCurrentTextAttributes()).length
-    {index, offset} = @getLocationRange()
-    return if offset is 0
-    leftAttributes = @document.getTextAttributesAtLocation({index, offset: offset - 1})
-    Object.keys(leftAttributes).length
 
   insertBlockBreak: ->
     position = @getPosition()
@@ -269,15 +261,12 @@ class Trix.Composition extends Trix.BasicObject
   # Location range and selection
 
   @proxy "getSelectionManager().getLocationRange"
+  @proxy "getSelectionManager().setLocationRange"
   @proxy "getSelectionManager().setLocationRangeFromPoint"
   @proxy "getSelectionManager().preserveSelection"
   @proxy "getSelectionManager().locationIsCursorTarget"
   @proxy "getSelectionManager().expandSelectionInDirectionWithGranularity"
   @proxy "delegate?.getSelectionManager"
-
-  setLocationRange: (args...) ->
-    @delegate.delegate.documentController.render()
-    @getSelectionManager().setLocationRange(args...)
 
   getRange: ->
     locationRange = @getLocationRange()

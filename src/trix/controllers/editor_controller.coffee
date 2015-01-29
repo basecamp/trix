@@ -188,16 +188,19 @@ class Trix.EditorController extends Trix.AbstractEditorController
   toolbarDidToggleAttribute: (attributeName) ->
     @recordFormattingUndoEntry()
     @composition.toggleCurrentAttribute(attributeName)
+    @documentController.render()
     @documentController.focus()
 
   toolbarDidUpdateAttribute: (attributeName, value) ->
     @recordFormattingUndoEntry()
     @composition.setCurrentAttribute(attributeName, value)
+    @documentController.render()
     @documentController.focus()
 
   toolbarDidRemoveAttribute: (attributeName) ->
     @recordFormattingUndoEntry()
     @composition.removeCurrentAttribute(attributeName)
+    @documentController.render()
     @documentController.focus()
 
   toolbarWillShowDialog: (willFocus) ->
