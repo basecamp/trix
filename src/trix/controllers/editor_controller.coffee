@@ -43,6 +43,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   compositionDidChangeDocument: (document) ->
     @delegate?.didChangeDocument?(document)
+    @inputController.editorDidChangeDocument(document)
 
   compositionDidChangeCurrentAttributes: (@currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)

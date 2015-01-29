@@ -30,9 +30,9 @@ class Trix.InputController extends Trix.BasicObject
         Trix.selectionChangeObserver.update()
         console.log new Date().getTime()
         @events[eventName].call(this, event)
-        console.groupEnd()
         console.log "Document: #{JSON.stringify(@responder.document.toString())}"
         console.log "HTML: '#{@element.innerHTML}'"
+        console.groupEnd()
       catch error
         @delegate?.inputControllerDidThrowError?(error, {eventName})
         throw error
@@ -40,10 +40,13 @@ class Trix.InputController extends Trix.BasicObject
   # Render cycle
 
   editorWillRender: ->
-    @rendering = true
+    @mutationObserver.stop()
 
   editorDidRender: ->
-    delete @rendering
+    @mutationObserver.start()
+
+  editorDidChangeDocument: ->
+    @documentChanged = true
 
   requestRender: ->
     @delegate?.inputControllerDidRequestRender?()
@@ -52,22 +55,24 @@ class Trix.InputController extends Trix.BasicObject
 
   elementDidMutate: (mutations) ->
     ignoringMutations = @isIgnoringMutations()
-    console.log "Mutation#{[" (ignored)" if ignoringMutations]}:", mutations
-    return if ignoringMutations
+    shouldReplaceHTML = not @documentChanged
+    delete @documentChanged
 
     defer =>
-      try
-        if @character?
-          delete @charter
-        else
-          @responder?.replaceHTML(@element.innerHTML)
-        @requestRender()
-      catch error
-        @delegate?.inputControllerDidThrowError?(error, {mutations})
-        throw error
+      console.group "Mutation#{[" (ignored)" if ignoringMutations]}:", mutations
+      unless ignoringMutations
+        try
+          if shouldReplaceHTML
+            console.log "Document is stale, replacing HTML"
+            @responder?.replaceHTML(@element.innerHTML)
+          @requestRender()
+        catch error
+          @delegate?.inputControllerDidThrowError?(error, {mutations})
+          throw error
+      console.groupEnd()
 
   isIgnoringMutations: ->
-    @rendering or @composing
+    @composing
 
   # File verification
 
@@ -116,7 +121,6 @@ class Trix.InputController extends Trix.BasicObject
 
       if character?
         console.log "character = \"#{character}\""
-        @character = character
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(character)
 
@@ -197,10 +201,6 @@ class Trix.InputController extends Trix.BasicObject
         @delegate?.inputControllerDidComposeCharacters?(@composedString) if @composedString
         delete @composedString
         delete @composing
-      else if @character?
-        console.log "character = '#{@character}'"
-      else
-        console.log "no character"
 
   keys:
     backspace: (event) ->
