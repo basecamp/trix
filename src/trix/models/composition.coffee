@@ -89,7 +89,7 @@ class Trix.Composition extends Trix.BasicObject
             @removeLastBlockAttribute()
           # Break out of block after a newline (and remove the newline)
           when text.endsWithString("\n")
-            @expandSelectionInDirection("backward")
+            @expandSelectionInDirectionWithGranularity("backward", "character")
             newBlock = block.removeLastAttribute().copyWithoutText()
             @insertBlock(newBlock)
           # Stay in the block, add a newline
@@ -121,27 +121,19 @@ class Trix.Composition extends Trix.BasicObject
       text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
       @insertText(text)
 
-  deleteInDirectionWithGranularity: (direction, granularity) ->
+  deleteInDirection: (direction) ->
     locationRange = @getLocationRange()
 
     if locationRange.isCollapsed()
-      if granularity is "character"
-        @expandSelectionInDirection(direction)
+      range = @getRange()
+      if direction is "backward"
+        range[0]--
       else
-        @expandSelectionInDirectionWithGranularity(direction, granularity)
-      locationRange = @getLocationRange()
+        range[1]++
+      locationRange = @document.locationRangeFromRange(range)
 
     @document.removeTextAtLocationRange(locationRange)
     @setLocationRange(locationRange.collapse())
-
-  deleteBackward: ->
-    @deleteInDirectionWithGranularity("backward", "character")
-
-  deleteForward: ->
-    @deleteInDirectionWithGranularity("forward", "character")
-
-  deleteWordBackward: ->
-    @deleteInDirectionWithGranularity("backward", "word")
 
   moveTextFromLocationRange: (locationRange) ->
     position = @getPosition()
@@ -294,12 +286,6 @@ class Trix.Composition extends Trix.BasicObject
     if direction is "backward" then range[0]-- else range[1]++
     @setRange(range)
 
-  expandSelectionInDirection: (direction) ->
-    if @shouldExpandInDirectionUsingLocationRange(direction)
-      @expandLocationRangeInDirection(direction)
-    else
-      @expandSelectionInDirectionWithGranularity(direction, "character")
-
   expandSelectionForEditing: ->
     if @hasCurrentAttribute("href")
       @expandLocationRangeAroundCommonAttribute("href")
@@ -338,14 +324,6 @@ class Trix.Composition extends Trix.BasicObject
     delete @editingAttachment
 
   # Private
-
-  shouldExpandInDirectionUsingLocationRange: (direction) ->
-    position = @getPosition()
-    distance = if direction is "backward" then -1 else 1
-    range = [position, position + distance].sort()
-    locationRange = @document.locationRangeFromRange(range)
-    character = @document.getStringAtLocationRange(locationRange).substr(0, 1)
-    character in ["\n", Trix.OBJECT_REPLACEMENT_CHARACTER]
 
   getDocument: ->
     @document.copy()

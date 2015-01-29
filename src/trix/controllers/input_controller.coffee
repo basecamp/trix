@@ -205,7 +205,7 @@ class Trix.InputController extends Trix.BasicObject
   keys:
     backspace: (event) ->
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.deleteBackward()
+      @responder?.deleteInDirection("backward")
       @keydownHandled = true
 
     return: (event) ->
@@ -231,9 +231,8 @@ class Trix.InputController extends Trix.BasicObject
 
     control:
       d: (event) ->
-        event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
-        @responder?.deleteForward()
+        @responder?.deleteInDirection("forward")
 
       h: (event) ->
         @delegate?.inputControllerWillPerformTyping()

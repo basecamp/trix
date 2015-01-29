@@ -10,7 +10,7 @@ class Trix.SelectionManager extends Trix.BasicObject
     Trix.selectionChangeObserver.registerSelectionManager(this)
 
   getLocationRange: ->
-    Trix.selectionChangeObserver.update()
+    @updateCurrentLocationRange()
     @lockedLocationRange ? @currentLocationRange
 
   setLocationRange: (start, end) ->
