@@ -14,7 +14,8 @@ stylesheetElement = do ->
 
 loadStylesheet = ->
   unless stylesheetElement.parentNode
-    document.querySelector("head").appendChild(stylesheetElement)
+    head = document.querySelector("head")
+    head.insertBefore(stylesheetElement, head.firstChild)
 
 setContentEditable = (element) ->
   unless element.hasAttribute("contenteditable")
