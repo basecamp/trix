@@ -1,67 +1,40 @@
-#= require ./trix_toolbar_element
+#= require trix/elements/trix_toolbar_element
+#= require trix/elements/trix_document_element
+#= require trix/controllers/editor_controller
+#= require trix/controllers/editor_element_controller
 
-prototype = Trix.extend.call Object.create(HTMLElement.prototype),
+{makeElement} = Trix
+
+Trix.defineElement "trix-editor",
   createdCallback: ->
-    loadStylesheet()
-
     toolbarElement = findOrCreateToolbarElement(this)
-    textareaElement = findOrCreateTextareaElement(this)
-    documentElement = createDocumentElement(this, textareaElement)
+    documentElement = findOrCreateDocumentElement(this)
+    inputElement = findOrCreateInputElement(this)
 
     @editorController = new Trix.EditorController
       toolbarElement: toolbarElement
-      textareaElement: textareaElement
       documentElement: documentElement
-      autofocus: textareaElement.hasAttribute("autofocus")
-
-stylesheetElement = do ->
-  element = document.createElement("style")
-  element.setAttribute("type", "text/css")
-  element.appendChild(document.createTextNode(Trix.CSS))
-  element
-
-loadStylesheet = ->
-  unless stylesheetElement.parentNode
-    document.querySelector("head").appendChild(stylesheetElement)
+      autofocus: @hasAttribute("autofocus")
+      delegate: new Trix.EditorElementController this, documentElement, inputElement
 
 findOrCreateToolbarElement = (parentElement) ->
   unless element = parentElement.querySelector("trix-toolbar")
-    element = document.createElement("trix-toolbar")
-    element.innerHTML = TrixToolbarElement.defaultToolbarHTML
+    element = makeElement("trix-toolbar")
     parentElement.insertBefore(element, parentElement.firstChild)
   element
 
-findOrCreateTextareaElement = (parentElement) ->
-  unless element = parentElement.querySelector("textarea")
-    element = document.createElement("textarea")
+findOrCreateDocumentElement = (parentElement) ->
+  unless element = parentElement.querySelector("trix-document")
+    element = makeElement("trix-document")
     parentElement.insertBefore(element, null)
   element
 
-createDocumentElement = (parentElement, textareaElement) ->
-  element = document.createElement("div")
-  element.setAttribute("contenteditable", "true")
-
-  if placeholder = textareaElement.getAttribute("placeholder")
-    element.setAttribute("data-placeholder", placeholder)
-
-  element.className = textareaElement.className
-  element.classList.add("trix-editor")
-  element.style.minHeight = textareaElement.offsetHeight + "px"
-  disableObjectResizing(element)
-
-  textareaElement.style["display"] = "none"
-  textareaElement.parentElement.insertBefore(element, textareaElement)
+findOrCreateInputElement = (parentElement) ->
+  unless element = parentElement.querySelector("input[type=hidden]")
+    name = parentElement.getAttribute("name")
+    value = parentElement.getAttribute("value")
+    element = makeElement("input", type: "hidden")
+    element.name = name if name?
+    element.value = value if value?
+    parentElement.insertBefore(element, null)
   element
-
-disableObjectResizing = (element) ->
-  if element instanceof FocusEvent
-    event = element
-    document.execCommand("enableObjectResizing", false, false)
-    event.target.removeEventListener("focus", disableObjectResizing)
-  else
-    {handleEvent} = Trix
-    if document.queryCommandSupported?("enableObjectResizing")
-      handleEvent "focus", onElement: element, withCallback: disableObjectResizing, inPhase: "capturing"
-    handleEvent "mscontrolselect", onElement: element, preventDefault: true
-
-@TrixEditorElement = document.registerElement("trix-editor", {prototype})

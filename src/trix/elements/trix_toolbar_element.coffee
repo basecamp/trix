@@ -1,5 +1,8 @@
-@TrixToolbarElement = document.registerElement("trix-toolbar", prototype: Object.create(HTMLElement.prototype))
-@TrixToolbarElement.defaultToolbarHTML = """
+Trix.defineElement "trix-toolbar",
+  createdCallback: ->
+    @innerHTML = defaultToolbarHTML unless @innerHTML.length
+
+defaultToolbarHTML = """
   <span class="button_group">
     <button type="button" class="bold" data-attribute="bold" data-key="b">Bold</button>
     <button type="button" class="italic" data-attribute="italic" data-key="i">Italic</button>

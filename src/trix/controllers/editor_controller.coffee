@@ -1,4 +1,4 @@
-#= require trix/controllers/abstract_editor_controller
+#= require trix/controllers/controller
 #= require trix/controllers/input_controller
 #= require trix/controllers/document_controller
 #= require trix/controllers/toolbar_controller
@@ -6,9 +6,10 @@
 #= require trix/models/editor
 #= require trix/observers/mutation_observer
 
-class Trix.EditorController extends Trix.AbstractEditorController
-  constructor: ->
-    super
+class Trix.EditorController extends Trix.Controller
+  constructor: (@config) ->
+    {@documentElement, @toolbarElement, @document, @delegate} = @config
+    @document ?= new Trix.Document
 
     @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
@@ -99,7 +100,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @mutationObserver.start()
     @selectionManager.unlock() unless @skipSelectionLock
     delete @skipSelectionLock
-    @saveSerializedDocument()
     @toolbarController.updateActions()
     @delegate?.didRenderDocument?()
 

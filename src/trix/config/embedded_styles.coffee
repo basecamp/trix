@@ -1,24 +1,30 @@
 Trix.CSS = """
-  .trix-editor[contenteditable=true]:empty:not(:focus)::before {
+  trix-document {
+    display: block;
+    width: 300px;
+    height: 150px;
+  }
+
+  trix-document:empty:not(:focus)::before {
     content: attr(data-placeholder);
     color: graytext;
   }
 
-  .trix-editor a[contenteditable=false] {
+  trix-document a[contenteditable=false] {
     cursor: text;
   }
 
-  .trix-editor .image-editor,
-  .trix-editor .pending-attachment {
+  trix-document .image-editor,
+  trix-document .pending-attachment {
     position: relative;
     display: inline-block;
   }
 
-  .trix-editor .image-editor img {
+  trix-document .image-editor img {
     outline: 1px dashed #333;
   }
 
-  .trix-editor .image-editor .resize-handle {
+  trix-document .image-editor .resize-handle {
     position: absolute;
     width: 8px;
     height: 8px;
@@ -26,17 +32,17 @@ Trix.CSS = """
     background: white;
   }
 
-  .trix-editor .image-editor .resize-handle.se {
+  trix-document .image-editor .resize-handle.se {
     bottom: -4px;
     right: -4px;
     cursor: nwse-resize;
   }
 
-  .trix-editor figure.attachment {
+  trix-document figure.attachment {
     max-width: 100%;
   }
 
-  .trix-editor figure.attachment a.remove {
+  trix-document figure.attachment a.remove {
     position: absolute;
     top: -9px;
     right: -9px;
@@ -56,7 +62,7 @@ Trix.CSS = """
     color: rgba(0,0,0,0.8);
   }
 
-  .trix-editor figure.attachment a.remove:hover {
+  trix-document figure.attachment a.remove:hover {
     color: red;
   }
 """

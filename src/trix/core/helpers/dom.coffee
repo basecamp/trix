@@ -115,3 +115,8 @@ Trix.extend
       element.textContent = options.textContent
 
     element
+
+  defineElement: (tagName, properties = {}) ->
+    constructorName = Trix.convertDashesToCamelCase(tagName, initial: true) + "Element"
+    prototype = Trix.extend.call(Object.create(HTMLDivElement.prototype), properties)
+    window[constructorName] = document.registerElement(tagName, {prototype})
