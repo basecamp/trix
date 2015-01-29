@@ -88,6 +88,7 @@ class Trix.InputController extends Trix.BasicObject
 
   events:
     keydown: (event) ->
+      delete @keypressHandled
       if keyName = @constructor.keyNames[event.keyCode]
         context = @keys
         for modifier in ["ctrl", "alt", "shift"] when event["#{modifier}Key"]
@@ -107,9 +108,7 @@ class Trix.InputController extends Trix.BasicObject
             event.preventDefault()
 
     keypress: (event) ->
-      if @keydownHandled
-        delete @keydownHandled
-        return
+      return if @keypressHandled
       return if (event.metaKey or event.ctrlKey) and not event.altKey
       return if keyEventIsWebInspectorShortcut(event)
       return if keyEventIsPasteAndMatchStyleShortcut(event)
@@ -121,6 +120,7 @@ class Trix.InputController extends Trix.BasicObject
 
       if character?
         console.log "character = \"#{character}\""
+        @keypressHandled = true
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(character)
 
@@ -201,18 +201,21 @@ class Trix.InputController extends Trix.BasicObject
         @delegate?.inputControllerDidComposeCharacters?(@composedString) if @composedString
         delete @composedString
         delete @composing
+      else if not @keypressHandled
+        @responder?.replaceHTML(@element.innerHTML)
+        @requestRender()
+      delete @keypressHandled
 
   keys:
     backspace: (event) ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteInDirection("backward")
-      @keydownHandled = true
+      @keypressHandled = true
 
     return: (event) ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.insertLineBreak()
-      @keydownHandled = true
-      @returnPressed = true
+      @keypressHandled = true
 
     tab: (event) ->
       if @responder?.canChangeBlockAttributeLevel()

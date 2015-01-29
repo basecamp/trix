@@ -28,7 +28,7 @@ class Trix.SelectionManager extends Trix.BasicObject
       # same call stack as a mouse or key event so defer calling it.
       # https://code.google.com/p/chromium/issues/detail?id=423170
       # https://code.google.com/p/chromium/issues/detail?id=138439
-      defer => setDOMRange(domRange) if document.activeElement is @element
+      setDOMRange(domRange) if document.activeElement is @element
       @updateCurrentLocationRange(locationRange)
 
   setLocationRangeFromPoint: (point) ->
