@@ -1,5 +1,4 @@
-{defer} = Trix.Helpers
-{DOM} = Trix
+{defer, findClosestElementFromNode} = Trix
 
 class Trix.MutationObserver extends Trix.BasicObject
   options =
@@ -35,7 +34,7 @@ class Trix.MutationObserver extends Trix.BasicObject
     node isnt @element and @nodeIsEditable(node)
 
   nodeIsEditable: (node) ->
-    DOM.findClosestElementFromNode(node)?.isContentEditable
+    findClosestElementFromNode(node)?.isContentEditable
 
   nodesModifiedByMutation: (mutation) ->
     nodes = []

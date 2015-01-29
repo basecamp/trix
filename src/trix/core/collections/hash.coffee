@@ -1,6 +1,4 @@
-#= require ./helpers
-
-{arraysAreEqual} = Trix.Helpers
+{arraysAreEqual} = Trix
 
 class Trix.Hash extends Trix.Object
   @fromCommonAttributesOfObjects: (objects = []) ->

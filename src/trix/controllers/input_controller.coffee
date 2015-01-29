@@ -1,8 +1,7 @@
 #= require trix/observers/mutation_observer
 #= require trix/operations/file_verification_operation
 
-{defer} = Trix.Helpers
-{handleEvent, findClosestElementFromNode, findElementForContainerAtOffset} = Trix.DOM
+{handleEvent, findClosestElementFromNode, findElementForContainerAtOffset, defer} = Trix
 
 class Trix.InputController extends Trix.BasicObject
   pastedFileCount = 0

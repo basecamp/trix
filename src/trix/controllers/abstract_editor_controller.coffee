@@ -1,8 +1,9 @@
+#= require trix/controllers/controller
 #= require trix/models/document
 
-{triggerEvent} = Trix.DOM
+{triggerEvent} = Trix
 
-class Trix.AbstractEditorController extends Trix.BasicObject
+class Trix.AbstractEditorController extends Trix.Controller
   constructor: (@config) ->
     {@documentElement, @toolbarElement, @textareaElement, @delegate} = @config
     @serializationFormat = @config.format?.toLowerCase() ? "html"

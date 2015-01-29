@@ -1,6 +1,6 @@
 #= require ./inspector_panel_view
 
-{defer} = Trix.Helpers
+{defer} = Trix
 
 class Trix.LoggersPanelView extends Trix.InspectorPanelView
   constructor: ->

@@ -1,7 +1,7 @@
 #= require trix/controllers/abstract_editor_controller
 #= require trix/views/document_view
 
-{handleEvent} = Trix.DOM
+{handleEvent} = Trix
 
 class Trix.DegradedEditorController extends Trix.AbstractEditorController
   constructor: ->

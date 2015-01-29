@@ -1,4 +1,4 @@
-{makeElement} = Trix.DOM
+{makeElement} = Trix
 
 class Trix.AttachmentView extends Trix.ObjectView
   constructor: ->

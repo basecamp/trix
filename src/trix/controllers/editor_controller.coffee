@@ -14,7 +14,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
     @setEditor(new Trix.Editor @document)
 
-    @documentController.focus() if @config.autofocus
+    if @config.autofocus
+      @documentController.focus()
+      @setLocationRange([0, 0]) unless @getLocationRange()
 
   setEditor: (editor) ->
     return if @editor is editor
@@ -71,6 +73,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   getSelectionManager: ->
     @selectionManager
+
+  @proxyMethod "getSelectionManager().setLocationRange"
+  @proxyMethod "getSelectionManager().getLocationRange"
 
   # Attachment manager delegate
 
@@ -250,7 +255,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
     @documentController.render()
 
   updateLocationRange: ->
-    @selectionManager.setLocationRange(@editor.locationRange ? [0, 0])
+    @setLocationRange(@editor.locationRange) if @editor.locationRange
 
   render: ->
     @documentController.render()

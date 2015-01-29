@@ -8,8 +8,7 @@
 #= require ./loggers_panel_view
 #= require ./benchmark_panel_view
 
-{defer} = Trix.Helpers
-{handleEvent, findClosestElementFromNode} = Trix.DOM
+{defer, handleEvent, findClosestElementFromNode} = Trix
 
 class Trix.InspectorController
   constructor: (@element, @editorController) ->

@@ -1,6 +1,6 @@
 #= require ./inspector_panel_view
 
-{findClosestElementFromNode} = Trix.DOM
+{findClosestElementFromNode} = Trix
 
 class Trix.StructurePanelView extends Trix.InspectorPanelView
   constructor: ->

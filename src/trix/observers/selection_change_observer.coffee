@@ -1,5 +1,3 @@
-{DOM} = Trix
-
 class Trix.SelectionChangeObserver extends Trix.BasicObject
   constructor: ->
     @selectionManagers = []

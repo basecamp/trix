@@ -26,7 +26,7 @@ class Trix.Document extends Trix.Object
     @blockList = new Trix.SplittableList blocks
     @ensureDocumentHasBlock()
 
-    @attachments = new Trix.Collection
+    @attachments = new Trix.Set
     @attachments.delegate = this
 
     @refresh()

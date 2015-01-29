@@ -2,8 +2,7 @@
 #= require trix/controllers/image_attachment_editor_controller
 #= require trix/views/document_view
 
-{handleEvent, tagName} = Trix.DOM
-{benchmark} = Trix.Helpers
+{handleEvent, tagName, benchmark} = Trix
 
 class Trix.DocumentController extends Trix.BasicObject
   constructor: (@element, @document) ->

@@ -1,7 +1,7 @@
 #= require trix/views/file_attachment_view
 #= require trix/views/image_attachment_view
 
-{makeElement, findInnerElement} = Trix.DOM
+{makeElement, findInnerElement} = Trix
 
 class Trix.PieceView extends Trix.ObjectView
   constructor: ->

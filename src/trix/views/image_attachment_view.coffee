@@ -1,8 +1,7 @@
 #= require trix/views/attachment_view
 #= require trix/models/image_attachment
 
-{defer} = Trix.Helpers
-{makeElement, measureElement} = Trix.DOM
+{defer, makeElement, measureElement} = Trix
 
 class Trix.ImageAttachmentView extends Trix.AttachmentView
   getPreloadOperation: ->

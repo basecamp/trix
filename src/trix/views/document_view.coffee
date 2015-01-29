@@ -1,7 +1,6 @@
 #= require trix/views/block_view
 
-{defer} = Trix.Helpers
-{walkTree, makeElement} = Trix.DOM
+{defer, walkTree, makeElement} = Trix
 
 class Trix.DocumentView extends Trix.ObjectView
   constructor: ->
@@ -32,3 +31,4 @@ class Trix.DocumentView extends Trix.ObjectView
 
   focus: ->
     @element.focus()
+    Trix.selectionChangeObserver.update()
