@@ -1,6 +1,4 @@
-memos = 0
-
-Trix.Helpers =
+Trix.extend
   defer: (fn) ->
     setTimeout fn, 1
 
@@ -23,11 +21,7 @@ Trix.Helpers =
     logger.timeEnd(name)
     result
 
-  arraysAreEqual: (a, b) ->
-    return false unless a.length is b.length
-    for value, index in a
-      return false unless value is b[index]
-    true
+memos = 0
 
 formatValue = (value) ->
   value?.inspect?() ? (try JSON.stringify(value)) ? value

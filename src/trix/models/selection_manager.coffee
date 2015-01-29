@@ -1,8 +1,8 @@
 #= require trix/models/location_range
 #= require trix/observers/selection_change_observer
 
-{DOM} = Trix
-{defer, benchmark} = Trix.Helpers
+{defer, benchmark, tagName, walkTree, findNodeForContainerAtOffset,
+ findClosestElementFromNode, elementContainsNode} = Trix
 
 class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
@@ -92,7 +92,7 @@ class Trix.SelectionManager extends Trix.BasicObject
   # Private
 
   selectionDidChange: =>
-    unless DOM.elementContainsNode(document.documentElement, @element)
+    unless Trix.elementContainsNode(document.documentElement, @element)
       Trix.selectionChangeObserver.unregisterSelectionManager(this)
     @updateCurrentLocationRange()
 
@@ -125,9 +125,9 @@ class Trix.SelectionManager extends Trix.BasicObject
 
   rangeWithinElement: (range) ->
     if range.collapsed
-      DOM.elementContainsNode(@element, range.startContainer)
+      elementContainsNode(@element, range.startContainer)
     else
-      DOM.elementContainsNode(@element, range.startContainer) and DOM.elementContainsNode(@element, range.endContainer)
+      elementContainsNode(@element, range.startContainer) and elementContainsNode(@element, range.endContainer)
 
   findLocationFromContainerAtOffset: (container, containerOffset) ->
     index = offset = 0
@@ -137,8 +137,8 @@ class Trix.SelectionManager extends Trix.BasicObject
         index = containerOffset - 1
         offset += nodeLength(node) for node in @getNodesForIndex(index)
     else
-      targetNode = DOM.findNodeForContainerAtOffset(container, containerOffset)
-      walker = DOM.walkTree(@element)
+      targetNode = findNodeForContainerAtOffset(container, containerOffset)
+      walker = walkTree(@element)
 
       while walker.nextNode()
         node = walker.currentNode
@@ -194,7 +194,7 @@ class Trix.SelectionManager extends Trix.BasicObject
 
   getNodesForIndex: (index) ->
     nodes = []
-    walker = DOM.walkTree(@element)
+    walker = walkTree(@element)
     recordingNodes = false
 
     while walker.nextNode()
@@ -258,12 +258,12 @@ class Trix.SelectionManager extends Trix.BasicObject
     if node.nodeType is Node.TEXT_NODE
       if nodeIsCursorTarget(node)
         0
-      else if DOM.findClosestElementFromNode(node)?.isContentEditable
+      else if findClosestElementFromNode(node)?.isContentEditable
         string = Trix.UTF16String.box(node.textContent)
         string.length
       else
         0
-    else if DOM.tagName(node) in ["br", "figure"]
+    else if tagName(node) in ["br", "figure"]
       1
     else
       0

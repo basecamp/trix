@@ -1,3 +1,4 @@
-#= require trix/core/helpers
 #= require trix/core/object
-#= require_tree .
+#= require trix/core/helpers
+#= require trix/core/collections
+#= require trix/core/utilities

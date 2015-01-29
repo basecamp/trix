@@ -1,7 +1,7 @@
 html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector
 
-Trix.DOM = dom =
+Trix.extend
   handleEvent: (eventName, {onElement, matchingSelector, withCallback, inPhase, preventDefault} = {}) ->
     element = onElement ? html
     selector = matchingSelector
@@ -9,7 +9,7 @@ Trix.DOM = dom =
     useCapture = inPhase is "capturing"
 
     handler = (event) ->
-      target = dom.findClosestElementFromNode(event.target, matchingSelector: selector)
+      target = Trix.findClosestElementFromNode(event.target, matchingSelector: selector)
       withCallback?.call(target, event, target) if target?
       event.preventDefault() if preventDefault
 
@@ -38,7 +38,7 @@ Trix.DOM = dom =
 
     if matchingSelector?
       while node
-        return node if dom.elementMatchesSelector(node, matchingSelector)
+        return node if Trix.elementMatchesSelector(node, matchingSelector)
         node = node.parentNode
     else
       node
@@ -63,8 +63,8 @@ Trix.DOM = dom =
       container.childNodes.item(offset - 1)
 
   findElementForContainerAtOffset: (container, offset) ->
-    node = dom.findNodeForContainerAtOffset(container, offset)
-    dom.findClosestElementFromNode(node)
+    node = Trix.findNodeForContainerAtOffset(container, offset)
+    Trix.findClosestElementFromNode(node)
 
   measureElement: (element) ->
     width:  element.offsetWidth

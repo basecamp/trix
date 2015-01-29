@@ -1,5 +1,3 @@
-#= require ./object_view
-
 class Trix.ObjectGroupView extends Trix.ObjectView
   constructor: ->
     super

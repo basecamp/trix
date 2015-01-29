@@ -1,6 +1,6 @@
 #= require trix/views/attachment_view
 
-{makeElement} = Trix.DOM
+{makeElement} = Trix
 
 class Trix.FileAttachmentView extends Trix.AttachmentView
   createContentNodes: ->

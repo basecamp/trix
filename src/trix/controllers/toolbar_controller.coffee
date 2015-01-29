@@ -1,4 +1,4 @@
-{handleEvent, triggerEvent, findClosestElementFromNode} = Trix.DOM
+{handleEvent, triggerEvent, findClosestElementFromNode} = Trix
 
 class Trix.ToolbarController extends Trix.BasicObject
   actionButtonSelector = ".button[data-action]"

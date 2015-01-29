@@ -1,6 +1,6 @@
 #= require trix/controllers/attachment_editor_controller
 
-{handleEvent, makeElement} = Trix.DOM
+{handleEvent, makeElement} = Trix
 
 class Trix.AttachmentEditorController extends Trix.BasicObject
   constructor: (@attachment, @element, @container) ->
