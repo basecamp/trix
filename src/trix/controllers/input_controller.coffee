@@ -58,7 +58,10 @@ class Trix.InputController extends Trix.BasicObject
 
     defer =>
       try
-        @responder?.replaceHTML(@element.innerHTML)
+        if @character?
+          delete @charter
+        else
+          @responder?.replaceHTML(@element.innerHTML)
         @requestRender()
       catch error
         @delegate?.inputControllerDidThrowError?(error, {mutations})
@@ -197,7 +200,6 @@ class Trix.InputController extends Trix.BasicObject
         delete @composing
       else if @character?
         console.log "character = '#{@character}'"
-        delete @character
       else
         console.log "no character"
 
