@@ -1,15 +1,14 @@
-.editor
-  width: 90%
-  max-width: 450px
-  min-height: 300px
+trix-document
+  width: 640px
+  min-height: 320px
   border: 1px solid #aaa
   border-radius: 5px
   padding: 5px 10px
   outline: 0
   font-size: 16px
 
-.editor a,
-.editor a:visited
+trix-document a,
+trix-document a:visited
   color: blue
 
 blockquote
@@ -100,47 +99,52 @@ figure.attachment progress[value]::-webkit-progress-value
 #debug
   white-space: pre-wrap
 
-.trix-toolbar
+trix-toolbar
+  display: block
   padding: 10px 0
   white-space: collapse
 
-.trix-toolbar a.button
+trix-toolbar button
+  background: white
   border: 1px solid #aaa
   border-radius: 3px
   padding: 4px 10px
+  margin: 0
   color: #333
   text-decoration: none
   font-size: 12px
+  line-height: 14px
+  vertical-align: middle
 
-.trix-toolbar a.button.active
+trix-toolbar button.active
   background: #d3e6fd
 
-.trix-toolbar a.button.error
+trix-toolbar button.error
   border-color: red
   color: red
   font-weight: bold
 
-.trix-toolbar a.button[data-attribute=bold]
+trix-toolbar button[data-attribute=bold]
   font-weight: bold
 
-.trix-toolbar a.button[data-attribute=italic]
+trix-toolbar button[data-attribute=italic]
   font-style: italic
 
-.trix-toolbar a.button[data-attribute=href]
+trix-toolbar button[data-attribute=href]
   text-decoration: underline
 
-.trix-toolbar a.button[data-attribute=code]
+trix-toolbar button[data-attribute=code]
   font-family: monospace
 
-.trix-toolbar a.button[disabled]
+trix-toolbar button[disabled]
   color: #ccc
   cursor: default
 
-.trix-toolbar a.button.list
+trix-toolbar button.list
   position: relative
   padding-left: 12px
 
-.trix-toolbar a.button.list::before
+trix-toolbar button.list::before
   word-wrap: break-word
   display: inline-block
   width: 5px
@@ -148,26 +152,26 @@ figure.attachment progress[value]::-webkit-progress-value
   font-family: helvetica
   position: absolute
 
-.trix-toolbar a.button.list.number::before
+trix-toolbar button.list.number::before
   content: '123'
   font-size: 7px
   line-height: 6px
   top: 2px
   left: 4px
 
-.trix-toolbar a.button.list.bullet::before
+trix-toolbar button.list.bullet::before
   content: '•••'
   font-size: 9px
   line-height: 5px
   top: 4px
   left: 5px
 
-.trix-toolbar > span
+trix-toolbar > span
   margin-right: 15px
 
-.trix-toolbar .dialog
+trix-toolbar .dialog
   display: none
   padding-top: 10px
 
-.trix-toolbar .dialog.active
+trix-toolbar .dialog.active
   display: block
