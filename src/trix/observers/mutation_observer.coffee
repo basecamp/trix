@@ -12,6 +12,7 @@ class Trix.MutationObserver extends Trix.BasicObject
     @start()
 
   start: ->
+    @html = @element.innerHTML
     @observer.observe(@element, options)
 
   stop: ->
@@ -19,7 +20,12 @@ class Trix.MutationObserver extends Trix.BasicObject
 
   didMutate: (mutations) =>
     significantMutations = @findSignificantMutations(mutations)
-    @delegate?.elementDidMutate?(significantMutations)
+    return unless significantMutations.length
+
+    html = @element.innerHTML
+    if @html isnt html
+      @html = html
+      @delegate?.elementDidMutate?()
 
   # Private
 
