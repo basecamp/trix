@@ -30,8 +30,11 @@ keyCodes =
 
   asyncTest name, ->
     defer ->
-      window.editor = @getEditorElement().editorController
-      callback done
+      if callback.length is 0
+        callback()
+        done()
+      else
+        callback done
 
 @getEditorElement = ->
   document.querySelector("trix-editor")

@@ -70,6 +70,7 @@ class Trix.EditorElementController extends Trix.Controller
     triggerEvent(@inputElement, "input")
 
   shouldAcceptFile: (document) ->
+    true
 
   didAddAttachment: (managedAttachment) ->
 
