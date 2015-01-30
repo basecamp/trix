@@ -149,6 +149,7 @@ class Trix.Composition extends Trix.BasicObject
     locationRange = @getLocationRange()
     block = @document.getBlockAtIndex(locationRange.end.index)
     @removeCurrentAttribute(block.getLastAttribute())
+    @setLocationRange(locationRange.collapse())
 
   # Current attributes
 
