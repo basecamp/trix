@@ -19,7 +19,7 @@ loadStylesheet = ->
 
 setContentEditable = (element) ->
   unless element.hasAttribute("contenteditable")
-    element.setAttribute("contenteditable", "true")
+    element.setAttribute("contenteditable", "")
 
 disableObjectResizing = (element) ->
   if element instanceof FocusEvent

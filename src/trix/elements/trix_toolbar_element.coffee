@@ -22,7 +22,7 @@ defaultToolbarHTML = """
     <button type="button" class="redo" href="#" data-action="redo" data-key="shift+z">Redo</button>
   </span>
 
-  <div class="dialog" data-attribute="href" style="display: none">
+  <div class="dialog" data-attribute="href">
     <input type="text" name="href" placeholder="Enter a URL...">
     <input type="button" value="Save link" data-method="setAttribute">
     <input type="button" value="Unlink" data-method="removeAttribute">

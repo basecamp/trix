@@ -22,10 +22,10 @@ editorTest "applying a link to text", (done) ->
             done()
 
 editorTest "editing a link", (done) ->
-  editor.composition.insertString("a")
+  getComposition().insertString("a")
   text = Trix.Text.textForStringWithAttributes("bc", href: "http://example.com")
-  editor.composition.insertText(text)
-  editor.composition.insertString("d")
+  getComposition().insertText(text)
+  getComposition().insertString("d")
   moveCursor direction: "left", times: 2, ->
     clickToolbarButton attribute: "href", ->
       ok isToolbarDialogActive(attribute: "href")
@@ -38,7 +38,7 @@ editorTest "editing a link", (done) ->
 
 editorTest "removing a link", (done) ->
   text = Trix.Text.textForStringWithAttributes("ab", href: "http://example.com")
-  editor.composition.insertText(text)
+  getComposition().insertText(text)
   expectAttributes([0, 2], href: "http://example.com")
   expandSelection direction: "left", times: 2, ->
     clickToolbarButton attribute: "href", ->
@@ -47,7 +47,7 @@ editorTest "removing a link", (done) ->
         done()
 
 editorTest "applying a link to an attachment with a host-provided href", (done) ->
-  editor.composition.insertDocument(fixtures["file attachment"].document)
+  getComposition().insertDocument(fixtures["file attachment"].document)
   typeCharacters "a", ->
     ok not isToolbarButtonDisabled(attribute: "href")
     expandSelection "left", ->

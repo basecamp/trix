@@ -75,7 +75,7 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   applyKeyboardCommand: (keys) ->
     keyString = JSON.stringify(keys.sort())
-    for button in @element.querySelectorAll(".button[data-key]")
+    for button in @element.querySelectorAll("[data-key]")
       buttonKeys = button.getAttribute("data-key").split("+")
       buttonKeyString = JSON.stringify(buttonKeys.sort())
       if buttonKeyString is keyString

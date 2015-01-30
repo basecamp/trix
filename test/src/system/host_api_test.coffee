@@ -2,12 +2,12 @@ editorModule "Host API", template: "editor_empty"
 
 editorTest "files are rejected without a delegate", (expectDocument) ->
   editor.delegate = null
-  editor.composition.insertFile(createFile())
+  getComposition().insertFile(createFile())
   expectDocument("\n")
 
 editorTest "rejecting files", (expectDocument) ->
   editor.delegate = shouldAcceptFile: -> false
-  editor.composition.insertFile(createFile())
+  getComposition().insertFile(createFile())
   expectDocument("\n")
 
 editorTest "accepting files", (expectDocument) ->
@@ -16,17 +16,17 @@ editorTest "accepting files", (expectDocument) ->
       equal file.name, "hello.txt"
       true
 
-  editor.composition.insertFile(createFile(name: "hello.txt"))
+  getComposition().insertFile(createFile(name: "hello.txt"))
   expectDocument("#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n")
 
 editorTest "removing an attachment", (expectDocument) ->
   editor.delegate = createHostDelegate()
 
-  editor.composition.insertString("abc")
-  editor.composition.insertFile(createFile())
+  getComposition().insertString("abc")
+  getComposition().insertFile(createFile())
   equal editor.delegate.attachments.length, 1
 
-  editor.composition.insertString("def")
+  getComposition().insertString("def")
   editor.delegate.attachments[0].remove()
   equal editor.delegate.attachments.length, 0
 
@@ -34,13 +34,13 @@ editorTest "removing an attachment", (expectDocument) ->
 
 editorTest "setting an attachment's URL", (done) ->
   editor.delegate = createHostDelegate()
-  editor.composition.insertFile(createFile(name: "hello.txt"))
+  getComposition().insertFile(createFile(name: "hello.txt"))
 
   url = "http://example.com/hello.txt"
   managedAttachment = editor.delegate.attachments[0]
   managedAttachment.setAttributes({url})
 
-  attachment = editor.document.getAttachments()[0]
+  attachment = getDocument().getAttachments()[0]
   equal attachment.getURL(), url
   element = document.activeElement.querySelector("figure[data-trix-id='#{managedAttachment.id}']")
   equal JSON.parse(element.dataset.trixAttachment).url, url
@@ -48,7 +48,7 @@ editorTest "setting an attachment's URL", (done) ->
 
 editorTest "setting an attachment's upload progress", (done) ->
   editor.delegate = createHostDelegate()
-  editor.composition.insertFile(createFile(name: "hello.txt"))
+  getComposition().insertFile(createFile(name: "hello.txt"))
   managedAttachment = editor.delegate.attachments[0]
 
   managedAttachment.setUploadProgress(40)
