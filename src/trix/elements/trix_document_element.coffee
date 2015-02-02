@@ -5,7 +5,6 @@ Trix.defineElement class extends Trix.Element
 
   @defaultCSS: """
     trix-document {
-      display: block;
       width: 300px;
       height: 150px;
     }

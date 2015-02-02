@@ -13,12 +13,14 @@ class Trix.Element extends HTMLElement
 
   loadStylesheet: ->
     tagName = @tagName.toLowerCase()
-    return unless @constructor.defaultCSS?
     return if document.querySelector("style[data-tag-name='#{tagName}']")
 
+    css = "#{tagName} { display: block }\n"
+    css += @constructor.defaultCSS if @constructor.defaultCSS?
+
     element = makeElement("style", type: "text/css")
-    element.textContent = @constructor.defaultCSS
     element.setAttribute("data-tag-name", tagName)
+    element.textContent = css
 
     head = document.querySelector("head")
     head.insertBefore(element, head.firstChild)
