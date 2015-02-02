@@ -89,6 +89,12 @@ class Trix.SelectionManager extends Trix.BasicObject
   clearSelection: ->
     getDOMSelection()?.removeAllRanges()
 
+  focus: ->
+    return if @getLocationRange()
+    locationRange = new Trix.LocationRange [0,0]
+    domRange = @createDOMRangeFromLocationRange(locationRange)
+    setDOMRange(domRange)
+
   # Private
 
   selectionDidChange: =>

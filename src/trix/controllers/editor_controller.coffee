@@ -18,7 +18,7 @@ class Trix.EditorController extends Trix.Controller
 
     if @config.autofocus
       @documentController.focus()
-      @setLocationRange([0, 0]) unless @getLocationRange()
+      @selectionManager.focus()
 
   setEditor: (editor) ->
     return if @editor is editor
