@@ -67,7 +67,7 @@ class Trix.EditorElementController extends Trix.Controller
 
   didChangeDocument: (document) ->
     @save()
-    triggerEvent(@inputElement, "input")
+    triggerEvent("input", onElement: @element)
 
   shouldAcceptFile: (document) ->
     true
