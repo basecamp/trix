@@ -19,6 +19,8 @@ class Trix.DocumentView extends Trix.ObjectView
         view = @findOrCreateCachedChildView(Trix.BlockView, object)
         @shadowElement.appendChild(node) for node in view.getNodes()
 
+      @addCursorTargetsAroundAttachments()
+
   isSynced: ->
     @shadowElement.innerHTML is @element.innerHTML
 
@@ -32,3 +34,12 @@ class Trix.DocumentView extends Trix.ObjectView
   focus: ->
     @element.focus()
     Trix.selectionChangeObserver.update()
+
+  cursorTarget = """
+    <span data-trix-serialize="false" data-trix-cursor-target="true">#{Trix.ZERO_WIDTH_SPACE}</span>
+  """
+
+  addCursorTargetsAroundAttachments: ->
+    for element in @shadowElement.querySelectorAll("[data-trix-attachment]")
+      element.insertAdjacentHTML("beforebegin", cursorTarget)
+      element.insertAdjacentHTML("afterend", cursorTarget)

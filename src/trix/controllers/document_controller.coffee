@@ -26,7 +26,6 @@ class Trix.DocumentController extends Trix.BasicObject
       console.log "documentView out of sync"
       @delegate?.documentControllerWillRender?()
       @documentView.sync()
-      @addCursorTargetsAroundAttachments()
       @reinstallAttachmentEditor()
       @delegate?.documentControllerDidRender?()
 
@@ -83,15 +82,6 @@ class Trix.DocumentController extends Trix.BasicObject
     @delegate?.documentControllerDidRequestRemovalOfAttachment?(attachment)
 
   # Private
-
-  cursorTarget = """
-    <span data-trix-serialize="false" data-trix-cursor-target="true">#{Trix.ZERO_WIDTH_SPACE}</span>
-  """
-
-  addCursorTargetsAroundAttachments: ->
-    for element in @element.querySelectorAll("[data-trix-attachment]")
-      element.insertAdjacentHTML("beforebegin", cursorTarget)
-      element.insertAdjacentHTML("afterend", cursorTarget)
 
   findAttachmentForElement: (element) ->
     @document.getAttachmentById(Number(element.dataset.trixId))
