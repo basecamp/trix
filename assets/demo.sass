@@ -7,171 +7,170 @@ trix-document
   outline: 0
   font-size: 16px
 
-trix-document a,
-trix-document a:visited
-  color: blue
+  a, a:visited
+    color: blue
 
-blockquote
-  margin: 0 0 0 5px
-  padding: 0 0 0 10px
-  border-left: 5px solid #ccc
+  blockquote
+    margin: 0 0 0 5px
+    padding: 0 0 0 10px
+    border-left: 5px solid #ccc
 
-pre
-  font-family: Menlo, Consolas, Courier, monospace
-  font-size: 12px
-  margin: 0
-  padding: 10px
-  white-space: pre-wrap
-  background-color: rgba(204, 204, 204, 0.3)
+  pre
+    font-family: Menlo, Consolas, Courier, monospace
+    font-size: 12px
+    margin: 0
+    padding: 10px
+    white-space: pre-wrap
+    background-color: rgba(204, 204, 204, 0.3)
 
-ul, ol, li
-  margin: 0
-  padding: 0
+  ul, ol, li
+    margin: 0
+    padding: 0
 
-  li
-    margin-left: 20px
+    li
+      margin-left: 20px
 
-img
-  max-width: 100%
-  height: auto
+  img
+    max-width: 100%
+    height: auto
 
-figure.attachment
-  position: relative
-  padding: 0
-  margin: 0
-  display: inline-block
+  figure.attachment
+    position: relative
+    padding: 0
+    margin: 0
+    display: inline-block
 
-figure.attachment.file
-  border-radius: .4rem
-  border: 1px solid rgba(0,0,0,0.15)
-  font-size: 1em
-  overflow: visible
-  padding: 1rem 1.5rem
-  position: relative
-  text-overflow: ellipsis
-  white-space: nowrap
+    progress[value]
+      -webkit-appearance: none
+      appearance: none
+      height: 100%
+      left: 0
+      position: absolute
+      top: 0
+      width: 100%
 
-figure.attachment.file:before
-  position: relative
-  content: ''
-  display: inline-block
-  height: 3.6rem
-  width: 3rem
-  vertical-align: middle
-  z-index: 1
-  background-image: url("/file_icon.png")
-  background-size: auto 100%
-  background-repeat: no-repeat
+    progress[value]::-webkit-progress-bar
+      background-color: transparent
+      border-radius: .6rem
+      width: 100%
 
-figure.attachment.file figcaption
-  position: relative
-  white-space: nowrap
-  vertical-align: middle
-  display: inline-block
-  z-index: 1
+    progress[value]::-webkit-progress-value
+      background-color: #e6f6fc
+      border-radius: .4rem 0 0 .4rem
 
-figure.attachment.file span.size
-  color: #aa9c84
-  margin-left: 1rem
+    &.image img
+      position: relative
+      z-index: 1
 
-figure.attachment.image img
-  position: relative
-  z-index: 1
+    &.file
+      border-radius: .4rem
+      border: 1px solid rgba(0,0,0,0.15)
+      font-size: 1em
+      overflow: visible
+      padding: 1rem 1.5rem
+      position: relative
+      text-overflow: ellipsis
+      white-space: nowrap
 
-figure.attachment progress[value]
-  -webkit-appearance: none
-  appearance: none
-  height: 100%
-  left: 0
-  position: absolute
-  top: 0
-  width: 100%
+      &::before
+        position: relative
+        content: ''
+        display: inline-block
+        height: 3.6rem
+        width: 3rem
+        vertical-align: middle
+        z-index: 1
+        background-image: url("/file_icon.png")
+        background-size: auto 100%
+        background-repeat: no-repeat
 
-figure.attachment progress[value]::-webkit-progress-bar
-  background-color: transparent
-  border-radius: .6rem
-  width: 100%
+      figcaption
+        position: relative
+        white-space: nowrap
+        vertical-align: middle
+        display: inline-block
+        z-index: 1
 
-figure.attachment progress[value]::-webkit-progress-value
-  background-color: #e6f6fc
-  border-radius: .4rem 0 0 .4rem
-
-#debug
-  white-space: pre-wrap
+      span.size
+        color: #aa9c84
+        margin-left: 1rem
 
 trix-toolbar
   display: block
   padding: 10px 0
   white-space: collapse
 
-trix-toolbar button
-  background: white
-  border: 1px solid #aaa
-  border-radius: 3px
-  padding: 4px 10px
-  margin: 0
-  color: #333
-  text-decoration: none
-  font-size: 12px
-  line-height: 14px
-  vertical-align: middle
+  > span
+    margin-right: 15px
 
-trix-toolbar button.active
-  background: #d3e6fd
+  .dialog
+    display: none
+    padding-top: 10px
 
-trix-toolbar button.error
-  border-color: red
-  color: red
-  font-weight: bold
+  .dialog.active
+    display: block
 
-trix-toolbar button[data-attribute=bold]
-  font-weight: bold
+  button
+    background: white
+    border: 1px solid #aaa
+    border-radius: 3px
+    padding: 4px 10px
+    margin: 0
+    color: #333
+    text-decoration: none
+    font-size: 12px
+    line-height: 14px
+    vertical-align: middle
 
-trix-toolbar button[data-attribute=italic]
-  font-style: italic
+    &.active
+      background: #d3e6fd
 
-trix-toolbar button[data-attribute=href]
-  text-decoration: underline
+    &.error
+      border-color: red
+      color: red
+      font-weight: bold
 
-trix-toolbar button[data-attribute=code]
-  font-family: monospace
+    &[data-attribute=bold]
+      font-weight: bold
 
-trix-toolbar button[disabled]
-  color: #ccc
-  cursor: default
+    &[data-attribute=italic]
+      font-style: italic
 
-trix-toolbar button.list
-  position: relative
-  padding-left: 12px
+    &[data-attribute=href]
+      text-decoration: underline
 
-trix-toolbar button.list::before
-  word-wrap: break-word
-  display: inline-block
-  width: 5px
-  text-rendering: optimizeLegibility
-  font-family: helvetica
-  position: absolute
+    &[data-attribute=code]
+      font-family: monospace
 
-trix-toolbar button.list.numbers::before
-  content: '123'
-  font-size: 7px
-  line-height: 6px
-  top: 4px
-  left: 5px
+    &[disabled]
+      color: #ccc
+      cursor: default
 
-trix-toolbar button.list.bullets::before
-  content: '•••'
-  font-size: 9px
-  line-height: 6px
-  top: 5px
-  left: 6px
+    &.list
+      position: relative
+      padding-left: 13px
 
-trix-toolbar > span
-  margin-right: 15px
+    &.list::before
+      word-wrap: break-word
+      display: inline-block
+      width: 5px
+      text-rendering: optimizeLegibility
+      font-family: helvetica
+      position: absolute
 
-trix-toolbar .dialog
-  display: none
-  padding-top: 10px
+    &.list.numbers::before
+      content: '123'
+      font-size: 7px
+      line-height: 6px
+      top: 4px
+      left: 5px
 
-trix-toolbar .dialog.active
-  display: block
+    &.list.bullets::before
+      content: '•••'
+      font-size: 9px
+      line-height: 6px
+      top: 4px
+      left: 5px
+
+#debug
+  white-space: pre-wrap
