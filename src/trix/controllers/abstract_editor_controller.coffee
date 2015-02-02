@@ -25,7 +25,7 @@ class Trix.AbstractEditorController extends Trix.Controller
     triggerEvent "input", onElement: @textareaElement
 
   unserializableElementSelector = "[data-trix-serialize=false]"
-  unserializableAttributeNames = ["contenteditable", "data-trix-id"]
+  unserializableAttributeNames = ["contenteditable", "data-trix-id", "data-trix-mutable"]
   serializedAttributesAttribute = "data-trix-serialized-attributes"
   serializedAttributesSelector = "[#{serializedAttributesAttribute}]"
 

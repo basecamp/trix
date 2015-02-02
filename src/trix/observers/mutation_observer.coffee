@@ -1,6 +1,8 @@
 {defer, findClosestElementFromNode} = Trix
 
 class Trix.MutationObserver extends Trix.BasicObject
+  mutableSelector = "[data-trix-mutable]"
+
   options =
     attributes: true
     childList: true
@@ -37,10 +39,10 @@ class Trix.MutationObserver extends Trix.BasicObject
     false
 
   nodeIsSignificant: (node) ->
-    node isnt @element and @nodeIsEditable(node)
+    node isnt @element and not @nodeIsMutable(node)
 
-  nodeIsEditable: (node) ->
-    findClosestElementFromNode(node)?.isContentEditable
+  nodeIsMutable: (node) ->
+    findClosestElementFromNode(node, matchingSelector: mutableSelector)
 
   nodesModifiedByMutation: (mutation) ->
     nodes = []

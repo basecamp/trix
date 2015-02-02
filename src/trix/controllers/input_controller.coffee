@@ -80,9 +80,8 @@ class Trix.InputController extends Trix.BasicObject
     operations = (new Trix.FileVerificationOperation(file) for file in files)
     Promise.all(operations).then (files) =>
       @delegate?.inputControllerWillAttachFiles()
-      for file in files
-        if @responder?.insertFile(file)
-          file.trixInserted = true
+      @responder?.insertFile(file) for file in files
+      @requestRender()
 
   # Input handlers
 
