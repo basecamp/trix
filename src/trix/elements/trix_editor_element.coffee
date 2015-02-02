@@ -5,8 +5,12 @@
 
 {makeElement} = Trix
 
-Trix.defineElement "trix-editor",
+Trix.defineElement class extends Trix.Element
+  @tagName: "trix-editor"
+
   createdCallback: ->
+    super
+
     toolbarElement = findOrCreateToolbarElement(this)
     documentElement = findOrCreateDocumentElement(this)
     inputElement = findOrCreateInputElement(this)
@@ -17,24 +21,24 @@ Trix.defineElement "trix-editor",
       autofocus: @hasAttribute("autofocus")
       delegate: new Trix.EditorElementController this, documentElement, inputElement
 
-findOrCreateToolbarElement = (parentElement) ->
-  unless element = parentElement.querySelector("trix-toolbar")
-    element = makeElement("trix-toolbar")
-    parentElement.insertBefore(element, parentElement.firstChild)
-  element
+  findOrCreateToolbarElement = (parentElement) ->
+    unless element = parentElement.querySelector("trix-toolbar")
+      element = makeElement("trix-toolbar")
+      parentElement.insertBefore(element, parentElement.firstChild)
+    element
 
-findOrCreateDocumentElement = (parentElement) ->
-  unless element = parentElement.querySelector("trix-document")
-    element = makeElement("trix-document")
-    parentElement.insertBefore(element, null)
-  element
+  findOrCreateDocumentElement = (parentElement) ->
+    unless element = parentElement.querySelector("trix-document")
+      element = makeElement("trix-document")
+      parentElement.insertBefore(element, null)
+    element
 
-findOrCreateInputElement = (parentElement) ->
-  unless element = parentElement.querySelector("input[type=hidden]")
-    name = parentElement.getAttribute("name")
-    value = parentElement.getAttribute("value")
-    element = makeElement("input", type: "hidden")
-    element.name = name if name?
-    element.value = value if value?
-    parentElement.insertBefore(element, null)
-  element
+  findOrCreateInputElement = (parentElement) ->
+    unless element = parentElement.querySelector("input[type=hidden]")
+      name = parentElement.getAttribute("name")
+      value = parentElement.getAttribute("value")
+      element = makeElement("input", type: "hidden")
+      element.name = name if name?
+      element.value = value if value?
+      parentElement.insertBefore(element, null)
+    element

@@ -1,3 +1,6 @@
+#= require_self
+#= require trix/elements/element
+
 html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector
 
@@ -116,7 +119,8 @@ Trix.extend
 
     element
 
-  defineElement: (tagName, properties = {}) ->
+  defineElement: (constructor) ->
+    tagName = constructor.tagName
     constructorName = Trix.convertDashesToCamelCase(tagName, initial: true) + "Element"
-    prototype = Trix.extend.call(Object.create(HTMLDivElement.prototype), properties)
-    window[constructorName] = document.registerElement(tagName, {prototype})
+    registeredConstructor = document.registerElement(tagName, prototype: constructor.prototype)
+    window[constructorName] = Trix.extend.call(registeredConstructor, constructor)

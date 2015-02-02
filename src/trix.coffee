@@ -1,6 +1,6 @@
 #= require_self
 #= require trix/core
-#= require_tree ./trix/config
+#= require trix/config
 #= require trix/elements/trix_editor_element
 
 @Trix =
