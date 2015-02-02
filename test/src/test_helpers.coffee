@@ -48,6 +48,9 @@ keyCodes =
 @getEditorController = ->
   getEditorElement().editorController
 
+@getEditor = ->
+  getEditorController().editor
+
 @getDocument = ->
   getEditorController().document
 

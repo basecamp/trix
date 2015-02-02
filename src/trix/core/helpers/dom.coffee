@@ -22,13 +22,14 @@ Trix.extend
     element.addEventListener(eventName, handler, useCapture)
     handler
 
-  triggerEvent: (eventName, {onElement, bubbles, cancelable} = {}) ->
+  triggerEvent: (eventName, {onElement, bubbles, cancelable, attributes} = {}) ->
     element = onElement ? html
     bubbles = bubbles isnt false
     cancelable = cancelable isnt false
 
     event = document.createEvent("Events")
     event.initEvent(eventName, bubbles, cancelable)
+    Trix.extend.call(event, attributes) if attributes?
     element.dispatchEvent(event)
     event
 
