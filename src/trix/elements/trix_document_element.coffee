@@ -10,7 +10,7 @@ Trix.defineElement class extends Trix.Element
     }
 
     trix-document:empty:not(:focus)::before {
-      content: attr(data-placeholder);
+      content: attr(placeholder);
       color: graytext;
     }
 
