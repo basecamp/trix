@@ -83,3 +83,4 @@ class Trix.EditorElementController extends Trix.Controller
   didThrowError: (error, details) ->
 
   didChangeSelection: ->
+    triggerEvent("selectionchange", onElement: @element, bubbles: false)
