@@ -251,7 +251,7 @@ class Trix.Composition extends Trix.BasicObject
   hasFrozenSelection: ->
     @hasCurrentAttribute("frozen")
 
-  # Location range and selection
+  # Location range
 
   @proxyMethod "getSelectionManager().getLocationRange"
   @proxyMethod "getSelectionManager().setLocationRangeFromPoint"
@@ -260,8 +260,8 @@ class Trix.Composition extends Trix.BasicObject
   @proxyMethod "getSelectionManager().expandSelectionInDirectionWithGranularity"
   @proxyMethod "delegate?.getSelectionManager"
 
-  setLocationRange: (locationRange) ->
-    @delegate?.compositionDidRequestLocationRange?(locationRange)
+  setLocationRange: ->
+    @delegate?.compositionDidRequestLocationRange?(arguments...)
 
   getRange: ->
     locationRange = @getLocationRange()
@@ -278,20 +278,27 @@ class Trix.Composition extends Trix.BasicObject
     locationRange = @document.locationRangeFromPosition(position)
     @setLocationRange(locationRange)
 
-  adjustPositionInDirection: (direction) ->
-    distance = if direction is "backward" then -1 else 1
-    @setPosition(@getPosition() + distance)
+  # Selection
 
-  expandLocationRangeInDirection: (direction) ->
+  setSelectionForLocationRange: ->
+    @getSelectionManager().setLocationRange(arguments...)
+
+  moveCursorInDirection: (direction) ->
+    distance = if direction is "backward" then -1 else 1
+    locationRange = @document.locationRangeFromPosition(@getPosition() + distance)
+    @setSelectionForLocationRange(locationRange)
+
+  expandSelectionInDirection: (direction) ->
     range = @getRange()
     if direction is "backward" then range[0]-- else range[1]++
-    @setRange(range)
+    locationRange = @document.locationRangeFromRange(range)
+    @setSelectionForLocationRange(locationRange)
 
   expandSelectionForEditing: ->
     if @hasCurrentAttribute("href")
-      @expandLocationRangeAroundCommonAttribute("href")
+      @expandSelectionAroundCommonAttribute("href")
 
-  expandLocationRangeAroundCommonAttribute: (attributeName) ->
+  expandSelectionAroundCommonAttribute: (attributeName) ->
     locationRange = @getLocationRange()
 
     if locationRange.isInSingleIndex()
@@ -300,7 +307,7 @@ class Trix.Composition extends Trix.BasicObject
       textRange = [locationRange.start.offset, locationRange.end.offset]
       [left, right] = text.getExpandedRangeForAttributeAtRange(attributeName, textRange)
 
-      @setLocationRange([index, left], [index, right])
+      @setSelectionForLocationRange([index, left], [index, right])
 
   selectionContainsAttachmentWithAttribute: (attributeName) ->
     if locationRange = @getLocationRange()

@@ -224,12 +224,12 @@ class Trix.InputController extends Trix.BasicObject
     left: (event) ->
       if @selectionIsInCursorTarget()
         event.preventDefault()
-        @responder?.adjustPositionInDirection("backward")
+        @responder?.moveCursorInDirection("backward")
 
     right: (event) ->
       if @selectionIsInCursorTarget()
         event.preventDefault()
-        @responder?.adjustPositionInDirection("forward")
+        @responder?.moveCursorInDirection("forward")
 
     control:
       d: (event) ->
@@ -260,12 +260,12 @@ class Trix.InputController extends Trix.BasicObject
       left: (event) ->
         if @selectionIsInCursorTarget()
           event.preventDefault()
-          @responder?.expandLocationRangeInDirection("backward")
+          @responder?.expandSelectionInDirection("backward")
 
       right: (event) ->
         if @selectionIsInCursorTarget()
           event.preventDefault()
-          @responder?.expandLocationRangeInDirection("forward")
+          @responder?.expandSelectionInDirection("forward")
 
   selectionIsInCursorTarget: ->
     @responder?.selectionIsInCursorTarget()
