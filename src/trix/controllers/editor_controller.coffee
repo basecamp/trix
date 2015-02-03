@@ -43,7 +43,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   compositionDidChangeDocument: (document) ->
     @delegate?.didChangeDocument?(document)
-    @inputController.editorDidChangeDocument(document)
 
   compositionDidChangeCurrentAttributes: (@currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
@@ -133,17 +132,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   inputControllerWillAttachFiles: ->
     @editor.recordUndoEntry("Drop Files")
-
-  inputControllerWillStartComposition: ->
-    @selectionManager.lock()
-
-  inputControllerWillEndComposition: ->
-    @render()
-    @selectionManager.unlock()
-
-  inputControllerDidComposeCharacters: (composedString) ->
-    @recordTypingUndoEntry()
-    @composition.insertString(composedString)
 
   inputControllerDidReceiveKeyboardCommand: (keys) ->
     @toolbarController.applyKeyboardCommand(keys)

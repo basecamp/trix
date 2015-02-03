@@ -7,6 +7,7 @@ class Trix.MutationObserver extends Trix.BasicObject
     attributes: true
     childList: true
     characterData: true
+    characterDataOldValue: true
     subtree: true
 
   constructor: (@element) ->
@@ -14,20 +15,23 @@ class Trix.MutationObserver extends Trix.BasicObject
     @start()
 
   start: ->
-    @html = @element.innerHTML
     @observer.observe(@element, options)
 
   stop: ->
     @observer.disconnect()
 
   didMutate: (mutations) =>
-    significantMutations = @findSignificantMutations(mutations)
-    return unless significantMutations.length
+    clearTimeout(@debounce)
 
-    html = @element.innerHTML
-    if @html isnt html
-      @html = html
-      @delegate?.elementDidMutate?()
+    @mutations ?= []
+    @mutations.push(mutations...)
+
+    @debounce = setTimeout =>
+      significantMutations = @findSignificantMutations(@mutations)
+      return unless significantMutations.length
+      @delegate?.elementDidMutate?(summarizeMutations(significantMutations))
+      @mutations = []
+    , 1
 
   # Private
 
@@ -58,3 +62,30 @@ class Trix.MutationObserver extends Trix.BasicObject
         nodes.push(mutation.addedNodes...)
         nodes.push(mutation.removedNodes...)
     nodes
+
+  summarizeMutations = (mutations) ->
+    summarizeCharacterDataMutations(mutations)
+
+  summarizeCharacterDataMutations = (mutations) ->
+    summary = {}
+    textMutations = (mutation for mutation in mutations when mutation.type is "characterData")
+    if textMutations.length
+      [startMutation, ..., endMutation] = textMutations
+      oldString = normalizeSpaces(startMutation.oldValue)
+      newString = normalizeSpaces(endMutation.target.data)
+
+      if stringAdded = stringDifference(newString, oldString)
+        summary.stringAdded = stringAdded
+
+      if stringRemoved = stringDifference(oldString, newString)
+        summary.stringRemoved = stringRemoved
+    summary
+
+  stringDifference = (a, b) ->
+    for index in [0...a.length]
+      if a.charAt(index) isnt b.charAt(index)
+        return a.slice(index)
+    ""
+
+  normalizeSpaces = (string) ->
+    string.replace(/\s/g, " ")

@@ -26,13 +26,7 @@ class Trix.InputController extends Trix.BasicObject
   handlerFor: (eventName) ->
     (event) =>
       try
-        console.group(eventName)
-        Trix.selectionChangeObserver.update()
-        console.log new Date().getTime()
         @events[eventName].call(this, event)
-        console.log "Document: #{JSON.stringify(@responder.document.toString())}"
-        console.log "HTML: '#{@element.innerHTML}'"
-        console.groupEnd()
       catch error
         @delegate?.inputControllerDidThrowError?(error, {eventName})
         throw error
@@ -45,34 +39,27 @@ class Trix.InputController extends Trix.BasicObject
   editorDidRender: ->
     @mutationObserver.start()
 
-  editorDidChangeDocument: ->
-    @documentChanged = true
-
   requestRender: ->
     @delegate?.inputControllerDidRequestRender?()
+    @resetInput()
+
+  resetInput: ->
+    delete @input
 
   # Mutation observer delegate
 
-  elementDidMutate: (mutations) ->
-    ignoringMutations = @isIgnoringMutations()
-    shouldReplaceHTML = not @documentChanged
-    delete @documentChanged
-
-    defer =>
-      console.group "Mutation#{[" (ignored)" if ignoringMutations]}:", mutations
-      unless ignoringMutations
-        try
-          if shouldReplaceHTML
-            console.log "Document is stale, replacing HTML"
-            @responder?.replaceHTML(@element.innerHTML)
-          @requestRender()
-        catch error
-          @delegate?.inputControllerDidThrowError?(error, {mutations})
-          throw error
+  elementDidMutate: ({stringAdded, stringRemoved}) ->
+    try
+      console.group "Mutation: #{JSON.stringify({@input, stringAdded, stringRemoved})}"
+      unhandledAddition = stringAdded? and stringAdded isnt @input
+      unhandledDeletion = stringRemoved? and @input isnt "backspace"
+      if unhandledAddition or unhandledDeletion
+        @responder?.replaceHTML(@element.innerHTML)
+      @requestRender()
       console.groupEnd()
-
-  isIgnoringMutations: ->
-    @composing
+    catch error
+      @delegate?.inputControllerDidThrowError?(error, {mutations})
+      throw error
 
   # File verification
 
@@ -87,7 +74,7 @@ class Trix.InputController extends Trix.BasicObject
 
   events:
     keydown: (event) ->
-      delete @keypressHandled
+      @resetInput()
       if keyName = @constructor.keyNames[event.keyCode]
         context = @keys
         for modifier in ["ctrl", "alt", "shift"] when event["#{modifier}Key"]
@@ -96,7 +83,6 @@ class Trix.InputController extends Trix.BasicObject
           break if context[keyName]
 
         if context[keyName]?
-          console.log {context, keyName}
           context[keyName].call(this, event)
 
       if keyEventIsKeyboardCommand(event)
@@ -107,7 +93,7 @@ class Trix.InputController extends Trix.BasicObject
             event.preventDefault()
 
     keypress: (event) ->
-      return if @keypressHandled
+      return if @input?
       return if (event.metaKey or event.ctrlKey) and not event.altKey
       return if keyEventIsWebInspectorShortcut(event)
       return if keyEventIsPasteAndMatchStyleShortcut(event)
@@ -118,10 +104,9 @@ class Trix.InputController extends Trix.BasicObject
         character = String.fromCharCode event.charCode
 
       if character?
-        console.log "character = \"#{character}\""
-        @keypressHandled = true
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(character)
+        @input = character
 
     dragenter: (event) ->
       event.preventDefault()
@@ -186,35 +171,24 @@ class Trix.InputController extends Trix.BasicObject
             file.trixInserted = true
 
     compositionstart: (event) ->
-      @delegate?.inputControllerWillStartComposition?()
-      @composing = true
+      @mutationObserver.stop()
 
     compositionend: (event) ->
-      @delegate?.inputControllerWillEndComposition?()
-      @composedString = event.data
-
-    keyup: (event) ->
-
-    input: (event) ->
-      if @composing and @composedString?
-        @delegate?.inputControllerDidComposeCharacters?(@composedString) if @composedString
-        delete @composedString
-        delete @composing
-      else if not @keypressHandled
-        @responder?.replaceHTML(@element.innerHTML)
-        @requestRender()
-      delete @keypressHandled
+      if (composedString = event.data)?
+        @delegate?.inputControllerWillPerformTyping()
+        @responder?.insertString(composedString)
+      @mutationObserver.start()
 
   keys:
     backspace: (event) ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteInDirection("backward")
-      @keypressHandled = true
+      @input = "backspace"
 
     return: (event) ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.insertLineBreak()
-      @keypressHandled = true
+      @input = "return"
 
     tab: (event) ->
       if @responder?.canChangeBlockAttributeLevel()
