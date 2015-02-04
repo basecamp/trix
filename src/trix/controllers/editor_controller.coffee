@@ -90,20 +90,23 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   # Document controller delegate
 
-  documentControllerWillRender: ->
-    @inputController.editorWillRender()
+  documentControllerWillRenderDocumentElement: ->
+    @inputController.editorWillRenderDocumentElement()
     if @requestedLocationRange?
       @selectionManager.lockToLocationRange(@requestedLocationRange)
     else
       @selectionManager.lock()
     @selectionManager.clearSelection()
 
-  documentControllerDidRender: ->
-    @inputController.editorDidRender()
+  documentControllerDidRenderDocumentElement: ->
+    @inputController.editorDidRenderDocumentElement()
     @selectionManager.unlock()
-    @saveSerializedDocument()
     @toolbarController.updateActions()
-    @delegate?.didRenderDocument?()
+    @delegate?.didRenderDocumentElement?()
+
+  documentControllerDidRender: ->
+    @saveSerializedDocument()
+    delete @requestedLocationRange
 
   documentControllerDidFocus: ->
     @toolbarController.hideDialog()
@@ -259,7 +262,6 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   render: ->
     @documentController.render()
-    delete @requestedLocationRange
 
   removeAttachment: (attachment) ->
     @editor.recordUndoEntry("Delete Attachment")

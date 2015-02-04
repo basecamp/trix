@@ -33,10 +33,10 @@ class Trix.InputController extends Trix.BasicObject
 
   # Render cycle
 
-  editorWillRender: ->
+  editorWillRenderDocumentElement: ->
     @mutationObserver.stop()
 
-  editorDidRender: ->
+  editorDidRenderDocumentElement: ->
     @mutationObserver.start()
 
   requestRender: ->

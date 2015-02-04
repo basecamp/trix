@@ -30,7 +30,7 @@ config =
     didChangeDocument: ->
       inspectorController?.render()
 
-    didRenderDocument: ->
+    didRenderDocumentElement: ->
       inspectorController?.incrementRenderCount()
 
     didThrowError: (error, details) ->

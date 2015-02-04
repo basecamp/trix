@@ -24,10 +24,12 @@ class Trix.DocumentController extends Trix.BasicObject
 
     unless @documentView.isSynced()
       console.log "documentView out of sync"
-      @delegate?.documentControllerWillRender?()
+      @delegate?.documentControllerWillRenderDocumentElement?()
       @documentView.sync()
       @reinstallAttachmentEditor()
-      @delegate?.documentControllerDidRender?()
+      @delegate?.documentControllerDidRenderDocumentElement?()
+
+    @delegate?.documentControllerDidRender?()
 
   rerenderViewForObject: (object) ->
     @documentView.invalidateViewForObject(object)
