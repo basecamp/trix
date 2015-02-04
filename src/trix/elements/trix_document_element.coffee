@@ -5,8 +5,8 @@ Trix.defineElement class extends Trix.Element
 
   @defaultCSS: """
     %t {
-      width: 300px;
-      height: 150px;
+      min-width: 300px;
+      min-height: 150px;
     }
 
     %t:empty:not(:focus)::before {

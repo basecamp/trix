@@ -70,14 +70,14 @@ class Trix.EditorElementController extends Trix.Controller
     triggerEvent("input", onElement: @element)
 
   shouldAcceptFile: (file) ->
-    event = triggerEvent("beforeattach", onElement: @element, attributes: {file})
+    event = triggerEvent("trix-file-accept", onElement: @element, attributes: {file})
     not event.defaultPrevented
 
   didAddAttachment: (attachment) ->
-    triggerEvent("attach", onElement: @element, attributes: {attachment})
+    triggerEvent("trix-attachment-add", onElement: @element, attributes: {attachment})
 
   didRemoveAttachment: (attachment) ->
-    triggerEvent("unattach", onElement: @element, attributes: {attachment})
+    triggerEvent("trix-attachment-remove", onElement: @element, attributes: {attachment})
 
   didRenderDocument: ->
 
