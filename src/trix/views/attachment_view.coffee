@@ -28,10 +28,19 @@ class Trix.AttachmentView extends Trix.ObjectView
 
     element.dataset[key] = value for key, value of data
     element.setAttribute("contenteditable", false)
-    [element]
+
+    [@createCursorTarget(), element, @createCursorTarget()]
 
   getClassName: ->
     "attachment"
+
+  createCursorTarget: ->
+    makeElement
+      tagName: "span"
+      textContent: Trix.ZERO_WIDTH_SPACE
+      data:
+        trixCursorTarget: true
+        trixSerialize: false
 
   findProgressElement: ->
     @findElement()?.querySelector("progress")
