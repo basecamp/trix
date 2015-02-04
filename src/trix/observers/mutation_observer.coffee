@@ -64,22 +64,35 @@ class Trix.MutationObserver extends Trix.BasicObject
     nodes
 
   summarizeMutations = (mutations) ->
-    summarizeCharacterDataMutations(mutations)
+    summarizeTextMutations(mutations)
 
-  summarizeCharacterDataMutations = (mutations) ->
-    summary = {}
-    textMutations = (mutation for mutation in mutations when mutation.type is "characterData")
-    if textMutations.length
-      [startMutation, ..., endMutation] = textMutations
+  summarizeTextMutations = (mutations) ->
+    additions = []
+    deletions = []
+
+    characterMutations = (mutation for mutation in mutations when mutation.type is "characterData")
+    if characterMutations.length
+      [startMutation, ..., endMutation] = characterMutations
       oldString = normalizeSpaces(startMutation.oldValue)
       newString = normalizeSpaces(endMutation.target.data)
 
-      if stringAdded = stringDifference(newString, oldString)
-        summary.stringAdded = stringAdded
+      additions.push(stringDifference(newString, oldString))
+      deletions.push(stringDifference(oldString, newString))
 
-      if stringRemoved = stringDifference(oldString, newString)
-        summary.stringRemoved = stringRemoved
+    for node in getRemovedTextNodes(mutations)
+      deletions.push(node.data)
+
+    summary = {}
+    summary.textAdded = added if added = additions.join("")
+    summary.textDeleted = deleted if deleted = deletions.join("")
     summary
+
+  getRemovedTextNodes = (mutations) ->
+    nodes = []
+    for mutation in mutations when mutation.type is "childList"
+      for node in mutation.removedNodes when node.nodeType is Node.TEXT_NODE
+        nodes.push(node)
+    nodes
 
   stringDifference = (a, b) ->
     leftIndex = 0

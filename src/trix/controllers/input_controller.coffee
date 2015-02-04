@@ -48,11 +48,11 @@ class Trix.InputController extends Trix.BasicObject
 
   # Mutation observer delegate
 
-  elementDidMutate: ({stringAdded, stringRemoved}) ->
+  elementDidMutate: ({textAdded, textDeleted}) ->
     try
-      console.group "Mutation: #{JSON.stringify({@input, stringAdded, stringRemoved})}"
-      unhandledAddition = stringAdded? and stringAdded isnt @input
-      unhandledDeletion = stringRemoved? and @input isnt "backspace"
+      console.group "Mutation: #{JSON.stringify({@input, textAdded, textDeleted})}"
+      unhandledAddition = textAdded? and textAdded isnt @input
+      unhandledDeletion = textDeleted? and @input isnt "backspace"
       if unhandledAddition or unhandledDeletion
         @responder?.replaceHTML(@element.innerHTML)
       @requestRender()
