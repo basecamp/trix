@@ -4,31 +4,31 @@ Trix.defineElement class extends Trix.Element
   @tagName: "trix-document"
 
   @defaultCSS: """
-    trix-document {
+    %t {
       width: 300px;
       height: 150px;
     }
 
-    trix-document:empty:not(:focus)::before {
+    %t:empty:not(:focus)::before {
       content: attr(placeholder);
       color: graytext;
     }
 
-    trix-document a[contenteditable=false] {
+    %t a[contenteditable=false] {
       cursor: text;
     }
 
-    trix-document .image-editor,
-    trix-document .pending-attachment {
+    %t .image-editor,
+    %t .pending-attachment {
       position: relative;
       display: inline-block;
     }
 
-    trix-document .image-editor img {
+    %t .image-editor img {
       outline: 1px dashed #333;
     }
 
-    trix-document .image-editor .resize-handle {
+    %t .image-editor .resize-handle {
       position: absolute;
       width: 8px;
       height: 8px;
@@ -36,17 +36,17 @@ Trix.defineElement class extends Trix.Element
       background: white;
     }
 
-    trix-document .image-editor .resize-handle.se {
+    %t .image-editor .resize-handle.se {
       bottom: -4px;
       right: -4px;
       cursor: nwse-resize;
     }
 
-    trix-document figure.attachment {
+    %t figure.attachment {
       max-width: 100%;
     }
 
-    trix-document figure.attachment a.remove {
+    %t figure.attachment a.remove {
       position: absolute;
       top: -9px;
       right: -9px;
@@ -66,7 +66,7 @@ Trix.defineElement class extends Trix.Element
       color: rgba(0,0,0,0.8);
     }
 
-    trix-document figure.attachment a.remove:hover {
+    %t figure.attachment a.remove:hover {
       color: red;
     }
   """

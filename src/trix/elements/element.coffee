@@ -15,13 +15,14 @@ class Trix.Element extends HTMLElement
     tagName = @tagName.toLowerCase()
     return if document.querySelector("style[data-tag-name='#{tagName}']")
 
-    css = "#{tagName} { display: block }\n"
-    css += @constructor.defaultCSS if @constructor.defaultCSS?
-
     element = makeElement("style", type: "text/css")
     element.setAttribute("data-tag-name", tagName)
-    element.textContent = css
+    element.textContent = @getDefaultCSS()
 
     head = document.querySelector("head")
     head.insertBefore(element, head.firstChild)
     element
+
+  getDefaultCSS: (css = @constructor.defaultCSS) ->
+    css = "%t { display: block }\n#{[css]}"
+    css.replace(/%t/g, @tagName.toLowerCase())

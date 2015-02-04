@@ -1,6 +1,20 @@
 Trix.defineElement class extends Trix.Element
   @tagName: "trix-toolbar"
 
+  @defaultCSS: """
+    %t {
+      white-space: collapse;
+    }
+
+    %t .dialog {
+      display: none;
+    }
+
+    %t .dialog.active {
+      display: block;
+    }
+  """
+
   @defaultHTML: """
     <span class="button_group">
       <button type="button" class="bold" data-attribute="bold" data-key="b">Bold</button>
