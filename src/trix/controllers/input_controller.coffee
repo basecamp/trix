@@ -212,7 +212,7 @@ class Trix.InputController extends Trix.BasicObject
 
       h: (event) ->
         @delegate?.inputControllerWillPerformTyping()
-        @backspace(event)
+        @keys.backspace.call(this, event)
 
       o: (event) ->
         event.preventDefault()
