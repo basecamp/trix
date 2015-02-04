@@ -41,5 +41,6 @@ class Trix.DocumentView extends Trix.ObjectView
 
   addCursorTargetsAroundAttachments: ->
     for element in @shadowElement.querySelectorAll("[data-trix-attachment]")
-      element.insertAdjacentHTML("beforebegin", cursorTarget)
-      element.insertAdjacentHTML("afterend", cursorTarget)
+      unless element.previousSibling?.dataset?.trixCursorTarget
+        element.insertAdjacentHTML("beforebegin", cursorTarget)
+        element.insertAdjacentHTML("afterend", cursorTarget)
