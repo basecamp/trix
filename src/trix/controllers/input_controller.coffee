@@ -218,6 +218,7 @@ class Trix.InputController extends Trix.BasicObject
         event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString("\n", updatePosition: false)
+        @requestRender()
 
     alt:
       backspace: (event) ->
