@@ -82,10 +82,18 @@ class Trix.MutationObserver extends Trix.BasicObject
     summary
 
   stringDifference = (a, b) ->
-    for index in [0...a.length]
-      if a.charAt(index) isnt b.charAt(index)
-        return a.slice(index)
-    ""
+    leftIndex = 0
+    rightIndexA = a.length
+    rightIndexB = b.length
+
+    while leftIndex < rightIndexA and a.charAt(leftIndex) is b.charAt(leftIndex)
+      leftIndex++
+
+    while rightIndexA > leftIndex and a.charAt(rightIndexA - 1) is b.charAt(rightIndexB - 1)
+      rightIndexA--
+      rightIndexB--
+
+    a.slice(leftIndex, rightIndexA)
 
   normalizeSpaces = (string) ->
     string.replace(/\s/g, " ")
