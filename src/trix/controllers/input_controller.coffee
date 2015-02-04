@@ -221,9 +221,8 @@ class Trix.InputController extends Trix.BasicObject
 
     alt:
       backspace: (event) ->
-        event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
-        @responder?.deleteWordBackward()
+        @input = "alt+backspace"
 
     shift:
       return: (event) ->
