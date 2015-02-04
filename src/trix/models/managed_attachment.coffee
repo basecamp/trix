@@ -10,6 +10,7 @@ class Trix.ManagedAttachment extends Trix.BasicObject
   @proxyMethod "attachment.getAttribute"
   @proxyMethod "attachment.hasAttribute"
   @proxyMethod "attachment.setAttribute"
+  @proxyMethod "attachment.getAttributes"
   @proxyMethod "attachment.setAttributes"
   @proxyMethod "attachment.isPending"
   @proxyMethod "attachment.isImage"

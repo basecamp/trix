@@ -9,8 +9,8 @@ class Trix.SourcePanelView extends Trix.InspectorPanelView
     event.preventDefault()
     {documentKey} = target.dataset
     document = Trix.Document.fromJSON(window.trixDocuments[documentKey])
-    @editorController.undoManager.recordUndoEntry("Load Document", context: documentKey)
-    @editorController.document.replaceDocument(document)
+    @editor.undoManager.recordUndoEntry("Load Document", context: documentKey)
+    @editor.document.replaceDocument(document)
 
   render: ->
     html = ""
