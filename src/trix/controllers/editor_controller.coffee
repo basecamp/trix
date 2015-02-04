@@ -64,6 +64,8 @@ class Trix.EditorController extends Trix.Controller
 
   compositionDidEditAttachment: (attachment) ->
     @documentController.rerenderViewForObject(attachment)
+    managedAttachment = @editor.manageAttachment(attachment)
+    @delegate?.didEditAttachment?(managedAttachment)
 
   compositionDidRemoveAttachment: (attachment) ->
     managedAttachment = @editor.unmanageAttachment(attachment)
