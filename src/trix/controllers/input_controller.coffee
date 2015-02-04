@@ -227,9 +227,9 @@ class Trix.InputController extends Trix.BasicObject
 
     shift:
       return: (event) ->
-        event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString("\n")
+        @input = "shift+return"
 
       left: (event) ->
         if @selectionIsInCursorTarget()
