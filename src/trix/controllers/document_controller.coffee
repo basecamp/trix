@@ -2,7 +2,7 @@
 #= require trix/controllers/image_attachment_editor_controller
 #= require trix/views/document_view
 
-{handleEvent, tagName, benchmark} = Trix
+{handleEvent, tagName, benchmark, findClosestElementFromNode}  = Trix
 
 class Trix.DocumentController extends Trix.BasicObject
   constructor: (@element, @document) ->
@@ -11,6 +11,7 @@ class Trix.DocumentController extends Trix.BasicObject
     handleEvent "focus", onElement: @element, withCallback: @didFocus
     handleEvent "click", onElement: @element, matchingSelector: "a[contenteditable=false]", preventDefault: true
     handleEvent "mousedown", onElement: @element, matchingSelector: "figure.attachment", withCallback: @didClickAttachment
+    handleEvent "click", onElement: @element, matchingSelector: "a figure.attachment", preventDefault: true
 
   didFocus: =>
     @delegate?.documentControllerDidFocus?()
