@@ -15,6 +15,7 @@ class Trix.MutationObserver extends Trix.BasicObject
     @start()
 
   start: ->
+    @reset()
     @observer.observe(@element, options)
 
   stop: ->
@@ -22,18 +23,18 @@ class Trix.MutationObserver extends Trix.BasicObject
 
   didMutate: (mutations) =>
     clearTimeout(@debounce)
-
-    @mutations ?= []
-    @mutations.push(mutations...)
+    @mutations.push(@findSignificantMutations(mutations)...)
 
     @debounce = setTimeout =>
-      significantMutations = @findSignificantMutations(@mutations)
-      return unless significantMutations.length
-      @delegate?.elementDidMutate?(summarizeMutations(significantMutations))
-      @mutations = []
+      if @mutations.length
+        @delegate?.elementDidMutate?(@getMutationSummary())
+        @reset()
     , 1
 
   # Private
+
+  reset: ->
+    @mutations = []
 
   findSignificantMutations: (mutations) ->
     mutation for mutation in mutations when @mutationIsSignificant(mutation)
@@ -63,14 +64,15 @@ class Trix.MutationObserver extends Trix.BasicObject
         nodes.push(mutation.removedNodes...)
     nodes
 
-  summarizeMutations = (mutations) ->
-    summarizeTextMutations(mutations)
+  getMutationSummary: ->
+    @getTextMutationSummary()
 
-  summarizeTextMutations = (mutations) ->
+  getTextMutationSummary: ->
     additions = []
     deletions = []
 
-    characterMutations = (mutation for mutation in mutations when mutation.type is "characterData")
+    characterMutations = @getMutationsByType("characterData")
+
     if characterMutations.length
       [startMutation, ..., endMutation] = characterMutations
       oldString = normalizeSpaces(startMutation.oldValue)
@@ -79,7 +81,7 @@ class Trix.MutationObserver extends Trix.BasicObject
       additions.push(stringDifference(newString, oldString))
       deletions.push(stringDifference(oldString, newString))
 
-    for node in getRemovedTextNodes(mutations)
+    for node in @getRemovedTextNodes()
       deletions.push(node.data)
 
     summary = {}
@@ -87,12 +89,13 @@ class Trix.MutationObserver extends Trix.BasicObject
     summary.textDeleted = deleted if deleted = deletions.join("")
     summary
 
-  getRemovedTextNodes = (mutations) ->
-    nodes = []
-    for mutation in mutations when mutation.type is "childList"
+  getMutationsByType: (type) ->
+    mutation for mutation in @mutations when mutation.type is type
+
+  getRemovedTextNodes: ->
+    for mutation in @getMutationsByType("childList")
       for node in mutation.removedNodes when node.nodeType is Node.TEXT_NODE
-        nodes.push(node)
-    nodes
+        node
 
   stringDifference = (a, b) ->
     leftIndex = 0
