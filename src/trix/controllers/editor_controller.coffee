@@ -74,6 +74,9 @@ class Trix.EditorController extends Trix.AbstractEditorController
   compositionDidRequestLocationRange: (locationRange) ->
     @requestedLocationRange = locationRange
 
+  compositionDidRestoreSnapshot: ->
+    @render()
+
   getSelectionManager: ->
     @selectionManager
 

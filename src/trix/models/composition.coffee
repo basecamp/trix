@@ -21,6 +21,7 @@ class Trix.Composition extends Trix.BasicObject
   restoreSnapshot: ({document, selectedRange}) ->
     @document.replaceDocument(document)
     @setLocationRange(selectedRange)
+    @delegate?.compositionDidRestoreSnapshot?()
 
   # Document delegate
 
