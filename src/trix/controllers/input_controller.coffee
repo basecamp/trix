@@ -52,7 +52,7 @@ class Trix.InputController extends Trix.BasicObject
     try
       console.group "Mutation: #{JSON.stringify({@input, textAdded, textDeleted})}"
       unhandledAddition = textAdded? and textAdded isnt @input
-      unhandledDeletion = textDeleted? and @input isnt "backspace"
+      unhandledDeletion = textDeleted? and @input isnt "delete"
       if unhandledAddition or unhandledDeletion
         @responder?.replaceHTML(@element.innerHTML)
       @requestRender()
@@ -147,7 +147,7 @@ class Trix.InputController extends Trix.BasicObject
 
     cut: (event) ->
       @delegate?.inputControllerWillCutText()
-      defer => @responder?.deleteBackward()
+      @deleteInDirection("backward")
 
     paste: (event) ->
       paste = event.clipboardData ? event.testClipboardData
@@ -182,8 +182,7 @@ class Trix.InputController extends Trix.BasicObject
   keys:
     backspace: (event) ->
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.deleteInDirection("backward")
-      @input = "backspace"
+      @deleteInDirection("backward")
 
     return: (event) ->
       @delegate?.inputControllerWillPerformTyping()
@@ -208,11 +207,11 @@ class Trix.InputController extends Trix.BasicObject
     control:
       d: (event) ->
         @delegate?.inputControllerWillPerformTyping()
-        @responder?.deleteInDirection("forward")
+        @deleteInDirection("forward")
 
       h: (event) ->
         @delegate?.inputControllerWillPerformTyping()
-        @keys.backspace.call(this, event)
+        @deleteInDirection("backward")
 
       o: (event) ->
         event.preventDefault()
@@ -240,6 +239,10 @@ class Trix.InputController extends Trix.BasicObject
         if @selectionIsInCursorTarget()
           event.preventDefault()
           @responder?.expandSelectionInDirection("forward")
+
+  deleteInDirection: (direction) ->
+    @responder?.deleteInDirection(direction)
+    @input = "delete"
 
   selectionIsInCursorTarget: ->
     @responder?.selectionIsInCursorTarget()
