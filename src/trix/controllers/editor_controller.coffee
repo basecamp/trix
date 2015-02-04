@@ -218,12 +218,14 @@ class Trix.EditorController extends Trix.AbstractEditorController
       @selectionManager.lock()
       @composition.freezeSelection()
       @selectionFrozen = true
+      @render()
 
   thawSelection: ->
     if @selectionFrozen
       @composition.thawSelection()
       @selectionManager.unlock()
       delete @selectionFrozen
+      @render()
 
   getLocationContext: ->
     locationRange = @selectionManager.getLocationRange()
