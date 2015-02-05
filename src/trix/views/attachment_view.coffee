@@ -26,7 +26,7 @@ class Trix.AttachmentView extends Trix.ObjectView
     else
       element = figure
 
-    figure.dataset[key] = value for key, value of data
+    element.dataset[key] = value for key, value of data
     element.setAttribute("contenteditable", false)
     [element]
 

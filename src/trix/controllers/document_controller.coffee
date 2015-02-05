@@ -10,8 +10,8 @@ class Trix.DocumentController extends Trix.BasicObject
 
     handleEvent "focus", onElement: @element, withCallback: @didFocus
     handleEvent "click", onElement: @element, matchingSelector: "a[contenteditable=false]", preventDefault: true
-    handleEvent "mousedown", onElement: @element, matchingSelector: "figure.attachment", withCallback: @didClickAttachment
-    handleEvent "click", onElement: @element, matchingSelector: "a figure.attachment", preventDefault: true
+    handleEvent "mousedown", onElement: @element, matchingSelector: "[data-trix-attachment]", withCallback: @didClickAttachment
+    handleEvent "click", onElement: @element, matchingSelector: "a[data-trix-attachment]", preventDefault: true
 
   didFocus: =>
     @delegate?.documentControllerDidFocus?()
@@ -94,4 +94,10 @@ class Trix.DocumentController extends Trix.BasicObject
     @document.getAttachmentById(Number(element.dataset.trixId))
 
   findElementForAttachment: (attachment) ->
-    @documentView.findElementForObject(attachment)
+    element = @documentView.findElementForObject(attachment)
+    selector = "figure.attachment"
+
+    if Trix.elementMatchesSelector(element, selector)
+      element
+    else
+      element?.querySelector(selector)

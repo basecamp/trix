@@ -44,6 +44,7 @@ uploadAttachment = (attachment) ->
           attachment.setUploadProgress(progress)
           if progress is 100
             attributes = JSON.parse(xhr.responseText)
+            attributes.href = attributes.url
             attachment.setAttributes(attributes)
           else
             progress += 5
