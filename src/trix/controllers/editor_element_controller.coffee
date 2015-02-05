@@ -43,6 +43,7 @@ class Trix.EditorElementController extends Trix.Controller
     @save()
 
   didRenderDocument: ->
+    triggerEvent("trix-render", onElement: @element)
 
   didPaste: (paste) ->
 

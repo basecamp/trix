@@ -1,13 +1,33 @@
-document.addEventListener "trix-attachment-add", (event) ->
-  {attachment} = event
-  if {file} = attachment
-    uploadAttachment(attachment)
-  else
-    saveAttachment(attachment)
+#= require_self
+#= require ./documents
+#= require ./inspector/inspector_controller
 
-document.addEventListener "trix-attachment-remove", (event) ->
-  {attachment} = event
-  removeAttachment(attachment)
+{handleEvent, defer} = Trix
+
+addEventListener "DOMContentLoaded", ->
+  defer ->
+    editorElement = document.querySelector("trix-editor")
+    inspectorElement = document.querySelector("#inspector")
+    inspectorController = new Trix.InspectorController inspectorElement, editorElement.editorController
+    inspectorElement.style.visibility = "visible"
+
+    handleEvent "selectionchange", onElement: editorElement, withCallback: ->
+      inspectorController.render()
+
+    handleEvent "trix-render", onElement: editorElement, withCallback: ->
+      inspectorController.render()
+      inspectorController.incrementRenderCount()
+
+    handleEvent "trix-attachment-add", onElement: editorElement, withCallback: (event) ->
+      {attachment} = event
+      if {file} = attachment
+        uploadAttachment(attachment)
+      else
+        saveAttachment(attachment)
+
+    handleEvent "trix-attachment-remove", onElement: editorElement, withCallback: (event) ->
+      {attachment} = event
+      removeAttachment(attachment)
 
 saveAttachment = (attachment) ->
   item = document.createElement("li")
