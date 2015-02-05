@@ -22,11 +22,7 @@ class Trix.SelectionManager extends Trix.BasicObject
       new Trix.LocationRange start, end
 
     if domRange = @createDOMRangeFromLocationRange(locationRange)
-      # Selection#addRange is unreasonably slow in WebKit when performed in the
-      # same call stack as a mouse or key event so defer calling it.
-      # https://code.google.com/p/chromium/issues/detail?id=423170
-      # https://code.google.com/p/chromium/issues/detail?id=138439
-      setDOMRange(domRange) if document.activeElement is @element
+      setDOMRange(domRange)
       @updateCurrentLocationRange(locationRange)
 
   setLocationRangeFromPoint: (point) ->
