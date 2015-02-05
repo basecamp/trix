@@ -127,7 +127,7 @@ class Trix.InputController extends Trix.BasicObject
       if character?
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(character)
-        @setInputSummary(textAdded: character, didDelete: @responder?.selectionIsExpanded())
+        @setInputSummary(textAdded: character, didDelete: @selectionIsExpanded())
 
     dragenter: (event) ->
       event.preventDefault()
@@ -198,7 +198,7 @@ class Trix.InputController extends Trix.BasicObject
       if (composedString = event.data)?
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(composedString)
-        @setInputSummary(textAdded: composedString, didDelete: @responder?.selectionIsExpanded())
+        @setInputSummary(textAdded: composedString, didDelete: @selectionIsExpanded())
       @mutationObserver.start()
 
   keys:
@@ -252,22 +252,23 @@ class Trix.InputController extends Trix.BasicObject
       left: (event) ->
         if @selectionIsInCursorTarget()
           event.preventDefault()
-          @responder?.expandSelectionInDirection("backward")
+          @expandSelectionInDirection("backward")
 
       right: (event) ->
         if @selectionIsInCursorTarget()
           event.preventDefault()
-          @responder?.expandSelectionInDirection("forward")
+          @expandSelectionInDirection("forward")
 
   deleteInDirection: (direction) ->
     @responder?.deleteInDirection(direction)
     @setInputSummary(didDelete: true)
 
-  selectionIsInCursorTarget: ->
-    @responder?.selectionIsInCursorTarget()
+  @proxyMethod "responder?.expandSelectionInDirection"
+  @proxyMethod "responder?.selectionIsInCursorTarget"
+  @proxyMethod "responder?.selectionIsExpanded"
 
-  extensionForFile = (file) ->
-    file.type?.match(/\/(\w+)$/)?[1]
+extensionForFile = (file) ->
+  file.type?.match(/\/(\w+)$/)?[1]
 
 keyEventIsWebInspectorShortcut = (event) ->
   event.metaKey and event.altKey and not event.shiftKey and event.keyCode is 94
