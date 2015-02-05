@@ -93,9 +93,11 @@ class Trix.MutationObserver extends Trix.BasicObject
     mutation for mutation in @mutations when mutation.type is type
 
   getRemovedTextNodes: ->
+    nodes = []
     for mutation in @getMutationsByType("childList")
       for node in mutation.removedNodes when node.nodeType is Node.TEXT_NODE
-        node
+        nodes.push(node)
+    nodes
 
   stringDifference = (a, b) ->
     leftIndex = 0
