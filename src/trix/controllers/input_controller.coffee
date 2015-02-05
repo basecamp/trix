@@ -3,6 +3,8 @@
 
 {handleEvent, findClosestElementFromNode, findElementForContainerAtOffset, defer} = Trix
 
+inputLog = Trix.Logger.get("input")
+
 class Trix.InputController extends Trix.BasicObject
   pastedFileCount = 0
 
@@ -29,7 +31,9 @@ class Trix.InputController extends Trix.BasicObject
     (event) =>
       try
         @eventName = eventName
+        inputLog.group(eventName)
         @events[eventName].call(this, event)
+        inputLog.groupEnd()
       catch error
         @delegate?.inputControllerDidThrowError?(error, {eventName})
         throw error
@@ -37,6 +41,7 @@ class Trix.InputController extends Trix.BasicObject
   setInputSummary: (summary = {}) ->
     @inputSummary.eventName = @eventName
     @inputSummary[key] = value for key, value of summary
+    inputLog.log("#setInputSummary", JSON.stringify(@inputSummary))
     @inputSummary
 
   resetInputSummary: ->
@@ -57,16 +62,16 @@ class Trix.InputController extends Trix.BasicObject
 
   elementDidMutate: (mutationSummary) ->
     try
-      console.group "Mutation"
-      console.log JSON.stringify {mutationSummary, @inputSummary}
-      if @mutationIsExpected(mutationSummary)
-        console.log "mutation matches input"
-      else
-        console.log "mutation doesn't match input, replacing HTML"
+      inputLog.group("Mutation")
+      inputLog.log("mutationSummary =", JSON.stringify(mutationSummary))
+
+      unless @mutationIsExpected(mutationSummary)
+        inputLog.log("mutation doesn't match input, replacing HTML")
         @responder?.replaceHTML(@element.innerHTML)
       @resetInputSummary()
       @requestRender()
-      console.groupEnd()
+
+      inputLog.groupEnd()
     catch error
       @delegate?.inputControllerDidThrowError?(error, {mutationSummary})
       throw error

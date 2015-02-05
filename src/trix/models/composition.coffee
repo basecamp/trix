@@ -114,8 +114,6 @@ class Trix.Composition extends Trix.BasicObject
       @preserveSelection =>
         @document.replaceDocument(document)
 
-    console.log "#replaceHTML with '#{html}', Document = #{JSON.stringify(@document.toString())}"
-
   insertFile: (file) ->
     if @delegate?.compositionShouldAcceptFile(file)
       attachment = Trix.Attachment.attachmentForFile(file)
