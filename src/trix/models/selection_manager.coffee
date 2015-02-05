@@ -97,6 +97,12 @@ class Trix.SelectionManager extends Trix.BasicObject
   clearSelection: ->
     getDOMSelection()?.removeAllRanges()
 
+  selectionIsCollapsed: ->
+    getDOMRange()?.collapsed is true
+
+  selectionIsExpanded: ->
+    not @selectionIsCollapsed()
+
   # Private
 
   selectionDidChange: =>

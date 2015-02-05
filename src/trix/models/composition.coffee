@@ -259,6 +259,7 @@ class Trix.Composition extends Trix.BasicObject
   @proxyMethod "getSelectionManager().preserveSelection"
   @proxyMethod "getSelectionManager().locationIsCursorTarget"
   @proxyMethod "getSelectionManager().expandSelectionInDirectionWithGranularity"
+  @proxyMethod "getSelectionManager().selectionIsExpanded"
   @proxyMethod "delegate?.getSelectionManager"
 
   setLocationRange: ->

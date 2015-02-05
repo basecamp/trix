@@ -17,6 +17,8 @@ class Trix.InputController extends Trix.BasicObject
     "79": "o"
 
   constructor: (@element) ->
+    @resetInputSummary()
+
     @mutationObserver = new Trix.MutationObserver @element
     @mutationObserver.delegate = this
 
@@ -26,10 +28,19 @@ class Trix.InputController extends Trix.BasicObject
   handlerFor: (eventName) ->
     (event) =>
       try
+        @eventName = eventName
         @events[eventName].call(this, event)
       catch error
         @delegate?.inputControllerDidThrowError?(error, {eventName})
         throw error
+
+  setInputSummary: (summary = {}) ->
+    @inputSummary.eventName = @eventName
+    @inputSummary[key] = value for key, value of summary
+    @inputSummary
+
+  resetInputSummary: ->
+    @inputSummary = {}
 
   # Render cycle
 
@@ -41,25 +52,30 @@ class Trix.InputController extends Trix.BasicObject
 
   requestRender: ->
     @delegate?.inputControllerDidRequestRender?()
-    @resetInput()
-
-  resetInput: ->
-    delete @input
 
   # Mutation observer delegate
 
-  elementDidMutate: ({textAdded, textDeleted}) ->
+  elementDidMutate: (mutationSummary) ->
     try
-      console.group "Mutation: #{JSON.stringify({@input, textAdded, textDeleted})}"
-      unhandledAddition = textAdded? and textAdded isnt @input
-      unhandledDeletion = textDeleted? and @input isnt "delete"
-      if unhandledAddition or unhandledDeletion
+      console.group "Mutation"
+      console.log JSON.stringify {mutationSummary, @inputSummary}
+      if @mutationIsExpected(mutationSummary)
+        console.log "mutation matches input"
+      else
+        console.log "mutation doesn't match input, replacing HTML"
         @responder?.replaceHTML(@element.innerHTML)
+      @resetInputSummary()
       @requestRender()
       console.groupEnd()
     catch error
-      @delegate?.inputControllerDidThrowError?(error, {mutations})
+      @delegate?.inputControllerDidThrowError?(error, {mutationSummary})
       throw error
+
+  mutationIsExpected: (mutationSummary) ->
+    return unless @inputSummary
+    unhandledAddition = mutationSummary.textAdded? and mutationSummary.textAdded isnt @inputSummary.textAdded
+    unhandledDeletion = mutationSummary.textDeleted? and not @inputSummary.didDelete
+    not (unhandledAddition or unhandledDeletion)
 
   # File verification
 
@@ -74,15 +90,20 @@ class Trix.InputController extends Trix.BasicObject
 
   events:
     keydown: (event) ->
-      @resetInput()
+      return if @inputSummary.eventName is "compositionend"
+      @resetInputSummary()
+
       if keyName = @constructor.keyNames[event.keyCode]
         context = @keys
         for modifier in ["ctrl", "alt", "shift"] when event["#{modifier}Key"]
           modifier = "control" if modifier is "ctrl"
           context = @keys[modifier]
-          break if context[keyName]
+          if context[keyName]
+            keyModifier = modifier
+            break
 
         if context[keyName]?
+          @setInputSummary({keyName, keyModifier})
           context[keyName].call(this, event)
 
       if keyEventIsKeyboardCommand(event)
@@ -93,7 +114,7 @@ class Trix.InputController extends Trix.BasicObject
             event.preventDefault()
 
     keypress: (event) ->
-      return if @input?
+      return if @inputSummary.eventName?
       return if (event.metaKey or event.ctrlKey) and not event.altKey
       return if keyEventIsWebInspectorShortcut(event)
       return if keyEventIsPasteAndMatchStyleShortcut(event)
@@ -106,7 +127,7 @@ class Trix.InputController extends Trix.BasicObject
       if character?
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(character)
-        @input = character
+        @setInputSummary(textAdded: character, didDelete: @responder?.selectionIsExpanded())
 
     dragenter: (event) ->
       event.preventDefault()
@@ -177,6 +198,7 @@ class Trix.InputController extends Trix.BasicObject
       if (composedString = event.data)?
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(composedString)
+        @setInputSummary(textAdded: composedString, didDelete: @responder?.selectionIsExpanded())
       @mutationObserver.start()
 
   keys:
@@ -187,7 +209,6 @@ class Trix.InputController extends Trix.BasicObject
     return: (event) ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.insertLineBreak()
-      @input = "return"
 
     tab: (event) ->
       if @responder?.canChangeBlockAttributeLevel()
@@ -222,13 +243,11 @@ class Trix.InputController extends Trix.BasicObject
     alt:
       backspace: (event) ->
         @delegate?.inputControllerWillPerformTyping()
-        @input = "alt+backspace"
 
     shift:
       return: (event) ->
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString("\n")
-        @input = "shift+return"
 
       left: (event) ->
         if @selectionIsInCursorTarget()
@@ -242,7 +261,7 @@ class Trix.InputController extends Trix.BasicObject
 
   deleteInDirection: (direction) ->
     @responder?.deleteInDirection(direction)
-    @input = "delete"
+    @setInputSummary(didDelete: true)
 
   selectionIsInCursorTarget: ->
     @responder?.selectionIsInCursorTarget()
