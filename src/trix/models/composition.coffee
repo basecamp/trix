@@ -90,7 +90,7 @@ class Trix.Composition extends Trix.BasicObject
             @removeLastBlockAttribute()
           # Break out of block after a newline (and remove the newline)
           when text.endsWithString("\n")
-            @expandSelectionInDirectionWithGranularity("backward", "character")
+            @expandSelectionInDirection("backward")
             newBlock = block.removeLastAttribute().copyWithoutText()
             @insertBlock(newBlock)
           # Stay in the block, add a newline
