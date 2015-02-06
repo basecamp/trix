@@ -58,16 +58,9 @@ class Trix.HTMLParser extends Trix.BasicObject
         @currentBlockElement = null
 
   isExtraBR: (element) ->
-    return unless tagName(element) is "br"
-
-    previousSibling = element.previousElementSibling
-    nextSibling = element.nextElementSibling
-    isLastChild = not nextSibling
-    isOnlyChild = isLastChild and not previousSibling
-    previousSiblingIsBR = tagName(previousSibling) is "br"
-    parentIsBlock = @isBlockElement(element.parentNode)
-
-    parentIsBlock and (isOnlyChild or (isLastChild and previousSiblingIsBR))
+    tagName(element) is "br" and
+      @isBlockElement(element.parentNode) and
+      element.parentNode.lastChild is element
 
   isBlockElement: (element) ->
     return unless element?.nodeType is Node.ELEMENT_NODE
