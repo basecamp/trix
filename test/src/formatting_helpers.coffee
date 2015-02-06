@@ -68,7 +68,4 @@ getToolbarDialog = ({attribute, action}) ->
   equal getHTML(trixDocument), html
 
 @getHTML = (trixDocument) ->
-  element = document.createElement("div")
-  view = new Trix.DocumentView trixDocument, {element}
-  view.render()
-  element.innerHTML
+  Trix.DocumentView.render(trixDocument).innerHTML

@@ -8,6 +8,7 @@ class Trix.DocumentView extends Trix.ObjectView
     element.removeAttribute("contenteditable")
     view = new this document, {element}
     view.render()
+    view.sync()
     element
 
   constructor: ->
