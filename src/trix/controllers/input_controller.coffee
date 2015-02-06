@@ -207,6 +207,9 @@ class Trix.InputController extends Trix.BasicObject
         @setInputSummary(textAdded: composedString, didDelete: @selectionIsExpanded())
       @mutationObserver.start()
 
+    input: (event) ->
+      event.stopPropagation()
+
   keys:
     backspace: (event) ->
       @delegate?.inputControllerWillPerformTyping()

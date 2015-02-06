@@ -40,13 +40,13 @@ editorTest "element triggers input events when the document changes", (done) ->
   element.addEventListener "input", (event) -> eventCount++
 
   typeCharacters "a", ->
-    ok eventCount is 1
+    equal eventCount, 1
     moveCursor "left", ->
-      ok eventCount is 1
+      equal eventCount, 1
       typeCharacters "bcd", ->
-        ok eventCount is 4
+        equal eventCount, 4
         clickToolbarButton action: "undo", ->
-          ok eventCount is 5
+          equal eventCount, 5
           done()
 
 editorTest "element triggers selectionchange events when the location range changes", (done) ->
