@@ -29,28 +29,6 @@ class Trix.SelectionManager extends Trix.BasicObject
     if locationRange = @getLocationRangeAtPoint(point)
       @setLocationRange(locationRange)
 
-  expandSelectionInDirectionWithGranularity: (direction, granularity) ->
-    return unless selection = getDOMSelection()
-    if selection.modify
-      selection.modify("extend", direction, granularity)
-    else if document.body.createTextRange
-      [leftPoint, rightPoint] = @getSelectionEndPoints()
-
-      leftRange = document.body.createTextRange()
-      leftRange.moveToPoint(leftPoint...)
-
-      rightRange = document.body.createTextRange()
-      rightRange.moveToPoint(rightPoint...)
-
-      if direction is "forward"
-        rightRange.move(granularity, 1)
-      else
-        leftRange.move(granularity, -1)
-
-      leftRange.setEndPoint("EndToEnd", rightRange)
-      leftRange.select()
-    Trix.selectionChangeObserver.update()
-
   locationIsCursorTarget: (location) ->
     [node, offset] = @findNodeAndOffsetForLocation(location)
     nodeIsCursorTarget(node)
