@@ -9,9 +9,8 @@ editorTest "moving an image by drag and drop", (expectDocument) ->
         expectDocument "a#{Trix.OBJECT_REPLACEMENT_CHARACTER}b\n"
 
 editorTest "resizing an image", (expectDocument) ->
-  figure = document.activeElement.querySelector("figure.attachment.image")
-  clickElement figure, ->
-    ok handle = figure.querySelector(".resize-handle")
+  clickElement getFigure(), ->
+    ok handle = getFigure().querySelector(".resize-handle")
 
     mouseDownOnElementAndMove handle, 5, ->
       locationRangeOfAttachment = Trix.LocationRange.forLocationWithLength({index: 0, offset: 2}, 1)
@@ -21,8 +20,10 @@ editorTest "resizing an image", (expectDocument) ->
       expectDocument "ab#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
 
 editorTest "removing an image", (expectDocument) ->
-  figure = document.activeElement.querySelector("figure.attachment.image")
-  clickElement figure, ->
-    closeButton = figure.querySelector(".remove")
+  clickElement getFigure(), ->
+    closeButton = getFigure().querySelector(".remove")
     clickElement closeButton, ->
       expectDocument "ab\n"
+
+getFigure = ->
+  document.activeElement.querySelector("figure.attachment.image")
