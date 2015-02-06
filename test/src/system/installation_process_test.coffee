@@ -9,8 +9,10 @@ editorTest "creates a contenteditable element", ->
 editorTest "loads the initial document", ->
   equal getDocumentElement().textContent, "Hello world"
 
-editorTest "sets value attribute", ->
-  equal getEditorElement().getAttribute("value"), "<div><!--block-->Hello world</div>"
+editorTest "sets value attribute", (done) ->
+  defer ->
+    equal getEditorElement().getAttribute("value"), "<div><!--block-->Hello world</div>"
+    done()
 
 editorModule "Installation process", template: "editor_json"
 
