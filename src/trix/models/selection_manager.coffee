@@ -208,7 +208,7 @@ class Trix.SelectionManager extends Trix.BasicObject
 
   getNodesForIndex: (index) ->
     nodes = []
-    walker = walkTree(@element)
+    walker = walkTree(@element, usingFilter: emptyTextNodeFilter)
     recordingNodes = false
 
     while walker.nextNode()
@@ -284,6 +284,15 @@ class Trix.SelectionManager extends Trix.BasicObject
 
   nodeIsBlockStartComment = (node) ->
     node.nodeType is Node.COMMENT_NODE and node.data is "block"
+
+  nodeIsEmptyTextNode = (node) ->
+    node.nodeType is Node.TEXT_NODE and node.data is ""
+
+  emptyTextNodeFilter = (node) ->
+    if nodeIsEmptyTextNode(node)
+      NodeFilter.FILTER_REJECT
+    else
+      NodeFilter.FILTER_ACCEPT
 
   getDOMSelection = ->
     selection = window.getSelection()
