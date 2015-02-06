@@ -52,10 +52,10 @@ editorTest "setting an attachment's upload progress", (done) ->
   managedAttachment = getEditorController().delegate.attachments[0]
 
   managedAttachment.setUploadProgress(40)
-  equal document.activeElement.querySelector("progress").value, 40
+  equal document.activeElement.querySelector("progress")?.value, 40
 
   managedAttachment.setUploadProgress(77)
-  equal document.activeElement.querySelector("progress").value, 77
+  equal document.activeElement.querySelector("progress")?.value, 77
 
   managedAttachment.setAttributes(url: "http://example")
   ok not document.activeElement.querySelector("progress")
