@@ -78,6 +78,7 @@ class Trix.InputController extends Trix.BasicObject
 
   mutationIsExpected: (mutationSummary) ->
     return unless @inputSummary
+    return true if @inputSummary.keyName is "return"
     unhandledAddition = mutationSummary.textAdded? and mutationSummary.textAdded isnt @inputSummary.textAdded
     unhandledDeletion = mutationSummary.textDeleted? and not @inputSummary.didDelete
     not (unhandledAddition or unhandledDeletion)
