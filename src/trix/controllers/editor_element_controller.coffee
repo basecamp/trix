@@ -43,7 +43,7 @@ class Trix.EditorElementController extends Trix.Controller
     triggerEvent("trix-attachment-remove", onElement: @element, attributes: {attachment})
     @save()
 
-  didRenderDocument: ->
+  didRenderDocumentElement: ->
     triggerEvent("trix-render", onElement: @element)
 
   didPaste: (paste) ->
