@@ -1,6 +1,6 @@
 #= require trix/controllers/controller
 
-{triggerEvent} = Trix
+{triggerEvent, defer} = Trix
 
 class Trix.EditorElementController extends Trix.Controller
   constructor: (@element, @documentElement, @inputElement) ->
@@ -24,8 +24,9 @@ class Trix.EditorElementController extends Trix.Controller
       @loaded = true
 
   didChangeDocument: (document) ->
-    @save()
-    triggerEvent("input", onElement: @element)
+    defer =>
+      @save()
+      triggerEvent("input", onElement: @element)
 
   shouldAcceptFile: (file) ->
     event = triggerEvent("trix-file-accept", onElement: @element, attributes: {file})

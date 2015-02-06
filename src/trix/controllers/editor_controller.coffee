@@ -108,7 +108,6 @@ class Trix.EditorController extends Trix.Controller
     @delegate?.didRenderDocumentElement?()
 
   documentControllerDidRender: ->
-    @saveSerializedDocument()
     delete @requestedLocationRange
 
   documentControllerDidFocus: ->
