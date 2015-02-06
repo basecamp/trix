@@ -1,3 +1,5 @@
+#= require trix/core/helpers/global
+
 Trix.config.useMobileInputMode = -> false
 
 keyCodes =
@@ -36,27 +38,6 @@ keyCodes =
         done()
       else
         callback done
-
-@getEditorElement = ->
-  document.querySelector("trix-editor")
-
-@getToolbarElement = ->
-  getEditorElement().querySelector("trix-toolbar")
-
-@getDocumentElement = ->
-  getEditorElement().querySelector("trix-document")
-
-@getEditorController = ->
-  getEditorElement().editorController
-
-@getEditor = ->
-  getEditorController().editor
-
-@getDocument = ->
-  getEditorController().document
-
-@getComposition = ->
-  getEditorController().composition
 
 @assertLocationRange = (start, end) ->
   expectedLocationRange = new Trix.LocationRange start, end

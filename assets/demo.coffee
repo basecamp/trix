@@ -1,4 +1,5 @@
 #= require_self
+#= require trix/core/helpers/global
 #= require ./documents
 #= require ./inspector/inspector_controller
 
