@@ -1,7 +1,5 @@
 #= require trix/core/helpers/global
 
-Trix.config.useMobileInputMode = -> false
-
 keyCodes =
   left: 37
   right: 39
