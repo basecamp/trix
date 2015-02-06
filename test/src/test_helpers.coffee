@@ -15,7 +15,6 @@ keyCodes =
   module name,
 
     setup: ->
-      Trix.Logger.get("input")?.enable()
       if template?
         document.getElementById("trix-container").innerHTML = JST["fixtures/#{template}"]()
       setup?()
