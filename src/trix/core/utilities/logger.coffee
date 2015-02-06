@@ -11,20 +11,37 @@ class Trix.Logger extends Trix.BasicObject
     @get(name).log(args...)
 
   constructor: (@name, @console, enabled) ->
+    enabled = readLoggerEnabledStateFromSessionStorage(@name) unless enabled?
     @disable() unless enabled
 
   enable: ->
     if @disabledConsole? and not @isEnabled()
       @console = @disabledConsole
       delete @disabledConsole
+      writeLoggerEnabledStateToSessionStorage(@name, true)
 
   disable: ->
     if @isEnabled()
       @disabledConsole = @console
       delete @console
+      writeLoggerEnabledStateToSessionStorage(@name, false)
 
   isEnabled: ->
     @console?
+
+  readLoggerEnabledStateFromSessionStorage = (name) ->
+    key = keyForLoggerName(name)
+    window.sessionStorage?[key] is "true"
+
+  writeLoggerEnabledStateToSessionStorage = (name, enabled) ->
+    key = keyForLoggerName(name)
+    if enabled
+      window.sessionStorage?[key] = "true"
+    else
+      delete window.sessionStorage?[key]
+
+  keyForLoggerName = (name) ->
+    "trix/loggers/#{name}/enabled"
 
   @proxyMethod "console?.log"
   @proxyMethod "console?.warn"
@@ -35,3 +52,4 @@ class Trix.Logger extends Trix.BasicObject
   @proxyMethod "console?.trace"
   @proxyMethod "console?.time"
   @proxyMethod "console?.timeEnd"
+
