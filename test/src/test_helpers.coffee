@@ -13,6 +13,7 @@ keyCodes =
   module name,
 
     setup: ->
+      Trix.Logger.get("input")?.enable()
       if template?
         document.getElementById("trix-container").innerHTML = JST["fixtures/#{template}"]()
       setup?()
@@ -95,11 +96,42 @@ typeCharacterInElement = (character, element, callback) ->
 
   defer ->
     return callback() unless triggerEvent(element, "keypress", keyCode: charCode, charCode: charCode)
-    triggerEvent(element, "input")
+    insertCharacter character, ->
+      triggerEvent(element, "input")
 
-    defer ->
-      triggerEvent(element, "keyup", keyCode: keyCode, charCode: 0)
+      defer ->
+        triggerEvent(element, "keyup", keyCode: keyCode, charCode: 0)
+        callback()
+
+insertCharacter = (character, callback) ->
+  if range = getDOMRange()
+    range.deleteContents() unless range.collapsed
+
+  if character is "\b"
+    expandSelection "left", ->
+      getDOMRange()?.deleteContents()
       callback()
+  else
+    node = if character is "\r"
+      document.createElement("br")
+    else
+      document.createTextNode(character)
+
+    if range = getDOMRange()
+      range.insertNode(node)
+
+    range = document.createRange()
+    range.selectNode(node)
+    range.collapse(false)
+    selection = window.getSelection()
+    selection.removeAllRanges()
+    selection.addRange(range)
+    defer(callback)
+
+getDOMRange = ->
+  selection = window.getSelection()
+  if selection.rangeCount
+    selection.getRangeAt(0)
 
 @createEvent = (type, properties = {}) ->
   event = document.createEvent("Events")
@@ -169,7 +201,7 @@ getElementCoordinates = (element) ->
 
   do expand = -> defer ->
     if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)
-      getComposition().expandLocationRangeInDirection(if direction is "left" then "backward" else "forward")
+      getComposition().expandSelectionInDirection(if direction is "left" then "backward" else "forward")
 
     if --times is 0
       callback()
