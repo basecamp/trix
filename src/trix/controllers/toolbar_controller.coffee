@@ -1,8 +1,8 @@
 {handleEvent, triggerEvent, findClosestElementFromNode} = Trix
 
 class Trix.ToolbarController extends Trix.BasicObject
-  actionButtonSelector = ".button[data-action]"
-  attributeButtonSelector = ".button[data-attribute]"
+  actionButtonSelector = "button[data-action]"
+  attributeButtonSelector = "button[data-attribute]"
   toolbarButtonSelector = [actionButtonSelector, attributeButtonSelector].join(", ")
   dialogSelector = ".dialog[data-attribute]"
   activeDialogSelector = "#{dialogSelector}.active"
@@ -75,7 +75,7 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   applyKeyboardCommand: (keys) ->
     keyString = JSON.stringify(keys.sort())
-    for button in @element.querySelectorAll(".button[data-key]")
+    for button in @element.querySelectorAll("[data-key]")
       buttonKeys = button.getAttribute("data-key").split("+")
       buttonKeyString = JSON.stringify(buttonKeys.sort())
       if buttonKeyString is keyString

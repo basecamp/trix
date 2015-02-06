@@ -4,6 +4,9 @@ class Trix.AttachmentManager extends Trix.BasicObject
   constructor: ->
     @managedAttachments = {}
 
+  getAttachments: ->
+    attachment for id, attachment of @managedAttachments
+
   manageAttachment: (attachment) ->
     @managedAttachments[attachment.id] ?= new Trix.ManagedAttachment this, attachment
 

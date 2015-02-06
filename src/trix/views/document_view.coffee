@@ -1,8 +1,15 @@
 #= require trix/views/block_view
 
-{defer, walkTree, makeElement} = Trix
+{defer, makeElement} = Trix
 
 class Trix.DocumentView extends Trix.ObjectView
+  @render: (document) ->
+    element = makeElement("trix-document")
+    element.removeAttribute("contenteditable")
+    view = new this document, {element}
+    view.render()
+    element
+
   constructor: ->
     super
     @document = @object

@@ -14,36 +14,53 @@ keyCodes =
 
     setup: ->
       if template?
-        document.getElementById("trix_container").innerHTML = JST["fixtures/#{template}"]()
-        delegate ?= shouldAcceptFile: -> true
-        editorConfig = toolbar: "toolbar", textarea: "content", delegate: delegate
-        editorConfig[key] = value for key, value of config if config?
-        window.editor = Trix.install(editorConfig)
+        document.getElementById("trix-container").innerHTML = JST["fixtures/#{template}"]()
       setup?()
 
     teardown: ->
       if template?
-        document.getElementById("trix_container").innerHTML = ""
-        window.editor = null
+        document.getElementById("trix-container").innerHTML = ""
       teardown?()
 
 @editorTest = (name, callback) ->
   done = (expectedDocumentValue) ->
     if expectedDocumentValue
-      equal editor.document.toString(), expectedDocumentValue
+      equal getDocument().toString(), expectedDocumentValue
     QUnit.start()
 
   asyncTest name, ->
     defer ->
-      callback done
+      if callback.length is 0
+        callback()
+        done()
+      else
+        callback done
+
+@getEditorElement = ->
+  document.querySelector("trix-editor")
+
+@getToolbarElement = ->
+  getEditorElement().querySelector("trix-toolbar")
+
+@getDocumentElement = ->
+  getEditorElement().querySelector("trix-document")
+
+@getEditorController = ->
+  getEditorElement().editorController
+
+@getEditor = ->
+  getEditorController().editor
+
+@getDocument = ->
+  getEditorController().document
+
+@getComposition = ->
+  getEditorController().composition
 
 @assertLocationRange = (start, end) ->
   expectedLocationRange = new Trix.LocationRange start, end
-  actualLocationRange = editor.selectionManager.getLocationRange()
+  actualLocationRange = getEditorController().getLocationRange()
   equal actualLocationRange.inspect(), expectedLocationRange.inspect()
-
-@getEditorElement = ->
-  document.querySelector("div.trix-editor[contenteditable]")
 
 @pasteContent = (contentType, value, callback) ->
   testClipboardData =
@@ -110,7 +127,7 @@ typeCharacterInElement = (character, element, callback) ->
     times = options.times
 
   times ?= 1
-  getEditorElement().focus()
+  getDocumentElement().focus()
 
   do move = -> defer ->
     if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction])
@@ -148,11 +165,11 @@ getElementCoordinates = (element) ->
     times = options.times
 
   times ?= 1
-  getEditorElement().focus()
+  getDocumentElement().focus()
 
   do expand = -> defer ->
     if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)
-      editor.composition.expandLocationRangeInDirection(if direction is "left" then "backward" else "forward")
+      getComposition().expandLocationRangeInDirection(if direction is "left" then "backward" else "forward")
 
     if --times is 0
       callback()

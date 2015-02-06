@@ -1,47 +1,33 @@
 #= require_self
-#= require_tree ./documents
+#= require ./documents
 #= require ./inspector/inspector_controller
 
-window.trixDocuments = {}
+{handleEvent, defer} = Trix
 
-config =
-  textarea: "text"
-  toolbar: "toolbar"
-  format: "json"
-  className: "formatted"
-  delegate:
-    shouldAcceptFile: (file) ->
-      true
+addEventListener "DOMContentLoaded", ->
+  defer ->
+    editorElement = document.querySelector("trix-editor")
+    inspectorElement = document.querySelector("#inspector")
+    inspectorController = new Trix.InspectorController inspectorElement, editorElement.editorController
+    inspectorElement.style.visibility = "visible"
 
-    didAddAttachment: (attachment) ->
-      console.log "Host received attachment:", attachment
-      if file = attachment.file
+    handleEvent "selectionchange", onElement: editorElement, withCallback: ->
+      inspectorController.render()
+
+    handleEvent "trix-render", onElement: editorElement, withCallback: ->
+      inspectorController.render()
+      inspectorController.incrementRenderCount()
+
+    handleEvent "trix-attachment-add", onElement: editorElement, withCallback: (event) ->
+      {attachment} = event
+      if {file} = attachment
         uploadAttachment(attachment)
       else
         saveAttachment(attachment)
 
-    didRemoveAttachment: (attachment) ->
-      console.log "Host received removed attachment:", attachment
+    handleEvent "trix-attachment-remove", onElement: editorElement, withCallback: (event) ->
+      {attachment} = event
       removeAttachment(attachment)
-
-    didChangeSelection: ->
-      inspectorController?.render()
-
-    didChangeDocument: ->
-      inspectorController?.render()
-
-    didRenderDocumentElement: ->
-      inspectorController?.incrementRenderCount()
-
-    didThrowError: (error, details) ->
-      console.error("Trix error: %s\n%s", error.toString(), error.stack)
-      document.getElementById("trix-debug").classList.add("error")
-      @errors ?= []
-      @errors.push({error, details})
-
-    didPaste: (paste) ->
-      @pastes ?= []
-      @pastes.push(paste)
 
 saveAttachment = (attachment) ->
   item = document.createElement("li")
@@ -78,6 +64,7 @@ uploadAttachment = (attachment) ->
           attachment.setUploadProgress(progress)
           if progress is 100
             attributes = JSON.parse(xhr.responseText)
+            attributes.href = attributes.url
             attachment.setAttributes(attributes)
           else
             progress += 5
@@ -86,37 +73,3 @@ uploadAttachment = (attachment) ->
       else
         console.warn "Host failed to upload file:", file
   xhr.send(file)
-
-installTrix = ->
-  if Trix.isSupported(config)
-    window.controller = Trix.install(config)
-
-    toolbarElement = document.getElementById("toolbar")
-    toolbarElement.style.display = "block"
-
-    inspectorElement = document.getElementById("inspector")
-    inspectorElement.style.visibility = "visible"
-
-    window.inspectorController = new Trix.InspectorController inspectorElement, window.controller
-
-    document.getElementById("trix-debug").addEventListener "click", (event) ->
-      event.preventDefault()
-
-      errors = []
-      for {error, details} in config.delegate.errors ? []
-        errors.push([error.stack.split("\n"), details])
-
-      prompt "Debug information:", "/* Copy and paste this: */" + JSON.stringify
-        locationRange: controller.selectionManager.getLocationRange()
-        document: controller.document
-        html: controller.documentElement.innerHTML
-        errors: errors
-        pastes: config.delegate.pastes
-      , null, 2
-
-  else
-    config.mode = "degraded"
-    if Trix.isSupported(config)
-      window.controller = Trix.install(config)
-
-document.addEventListener "DOMContentLoaded", installTrix

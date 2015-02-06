@@ -28,6 +28,7 @@ class Trix.Editor extends Trix.Object
 
   @proxyMethod "attachmentManager.manageAttachment"
   @proxyMethod "attachmentManager.unmanageAttachment"
+  @proxyMethod "attachmentManager.getAttachments"
 
   # Forward undo manager
 

@@ -19,5 +19,8 @@ Trix.config.textAttributes =
   underline:
     style: { "textDecoration": "underline" }
     inheritable: true
+  strike:
+    tagName: "del"
+    inheritable: true
   frozen:
     style: { "backgroundColor": "highlight" }

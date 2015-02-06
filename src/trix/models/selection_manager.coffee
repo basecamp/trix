@@ -97,6 +97,12 @@ class Trix.SelectionManager extends Trix.BasicObject
   selectionIsExpanded: ->
     not @selectionIsCollapsed()
 
+  focus: ->
+    return if @getLocationRange()
+    locationRange = new Trix.LocationRange [0,0]
+    domRange = @createDOMRangeFromLocationRange(locationRange)
+    setDOMRange(domRange)
+
   # Private
 
   selectionDidChange: =>

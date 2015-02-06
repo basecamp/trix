@@ -1,7 +1,7 @@
 editorModule "Cursor movement", template: "editor_empty"
 
 editorTest "move cursor around attachment", (done) ->
-  editor.composition.insertFile(createFile())
+  getComposition().insertFile(createFile())
   assertLocationRange([0,1])
   moveCursor "left", ->
     assertLocationRange([0,0])
@@ -10,9 +10,9 @@ editorTest "move cursor around attachment", (done) ->
       done()
 
 editorTest "move cursor around attachment and text", (done) ->
-  editor.composition.insertString("a")
-  editor.composition.insertFile(createFile())
-  editor.composition.insertString("b")
+  getComposition().insertString("a")
+  getComposition().insertFile(createFile())
+  getComposition().insertString("b")
   assertLocationRange([0,3])
   moveCursor "left", ->
     assertLocationRange([0,2])
@@ -23,7 +23,7 @@ editorTest "move cursor around attachment and text", (done) ->
         done()
 
 editorTest "expand selection over attachment", (done) ->
-  editor.composition.insertFile(createFile())
+  getComposition().insertFile(createFile())
   assertLocationRange([0,1])
   expandSelection "left", ->
     assertLocationRange([0,0], [0,1])
@@ -34,9 +34,9 @@ editorTest "expand selection over attachment", (done) ->
         done()
 
 editorTest "expand selection over attachment and text", (done) ->
-  editor.composition.insertString("a")
-  editor.composition.insertFile(createFile())
-  editor.composition.insertString("b")
+  getComposition().insertString("a")
+  getComposition().insertFile(createFile())
+  getComposition().insertString("b")
   assertLocationRange([0,3])
   expandSelection "left", ->
     assertLocationRange([0,2], [0,3])

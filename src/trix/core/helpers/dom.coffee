@@ -1,3 +1,6 @@
+#= require_self
+#= require trix/elements/element
+
 html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector
 
@@ -19,13 +22,14 @@ Trix.extend
     element.addEventListener(eventName, handler, useCapture)
     handler
 
-  triggerEvent: (eventName, {onElement, bubbles, cancelable} = {}) ->
+  triggerEvent: (eventName, {onElement, bubbles, cancelable, attributes} = {}) ->
     element = onElement ? html
     bubbles = bubbles isnt false
     cancelable = cancelable isnt false
 
     event = document.createEvent("Events")
     event.initEvent(eventName, bubbles, cancelable)
+    Trix.extend.call(event, attributes) if attributes?
     element.dispatchEvent(event)
     event
 
@@ -115,3 +119,9 @@ Trix.extend
       element.textContent = options.textContent
 
     element
+
+  defineElement: (constructor) ->
+    tagName = constructor.tagName
+    constructorName = Trix.convertDashesToCamelCase(tagName, initial: true) + "Element"
+    registeredConstructor = document.registerElement(tagName, prototype: constructor.prototype)
+    window[constructorName] = Trix.extend.call(registeredConstructor, constructor)

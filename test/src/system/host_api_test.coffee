@@ -1,55 +1,55 @@
 editorModule "Host API", template: "editor_empty"
 
 editorTest "files are rejected without a delegate", (expectDocument) ->
-  editor.delegate = null
-  editor.composition.insertFile(createFile())
+  getEditorController().delegate = null
+  getComposition().insertFile(createFile())
   expectDocument("\n")
 
 editorTest "rejecting files", (expectDocument) ->
-  editor.delegate = shouldAcceptFile: -> false
-  editor.composition.insertFile(createFile())
+  getEditorController().delegate = shouldAcceptFile: -> false
+  getComposition().insertFile(createFile())
   expectDocument("\n")
 
 editorTest "accepting files", (expectDocument) ->
-  editor.delegate =
+  getEditorController().delegate =
     shouldAcceptFile: (file) ->
       equal file.name, "hello.txt"
       true
 
-  editor.composition.insertFile(createFile(name: "hello.txt"))
+  getComposition().insertFile(createFile(name: "hello.txt"))
   expectDocument("#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n")
 
 editorTest "removing an attachment", (expectDocument) ->
-  editor.delegate = createHostDelegate()
+  getEditorController().delegate = createHostDelegate()
 
-  editor.composition.insertString("abc")
-  editor.composition.insertFile(createFile())
-  equal editor.delegate.attachments.length, 1
+  getComposition().insertString("abc")
+  getComposition().insertFile(createFile())
+  equal getEditorController().delegate.attachments.length, 1
 
-  editor.composition.insertString("def")
-  editor.delegate.attachments[0].remove()
-  equal editor.delegate.attachments.length, 0
+  getComposition().insertString("def")
+  getEditorController().delegate.attachments[0].remove()
+  equal getEditorController().delegate.attachments.length, 0
 
   expectDocument "abcdef\n"
 
 editorTest "setting an attachment's URL", (done) ->
-  editor.delegate = createHostDelegate()
-  editor.composition.insertFile(createFile(name: "hello.txt"))
+  getEditorController().delegate = createHostDelegate()
+  getComposition().insertFile(createFile(name: "hello.txt"))
 
   url = "http://example.com/hello.txt"
-  managedAttachment = editor.delegate.attachments[0]
+  managedAttachment = getEditorController().delegate.attachments[0]
   managedAttachment.setAttributes({url})
 
-  attachment = editor.document.getAttachments()[0]
+  attachment = getDocument().getAttachments()[0]
   equal attachment.getURL(), url
   element = document.activeElement.querySelector("figure[data-trix-id='#{managedAttachment.id}']")
   equal JSON.parse(element.dataset.trixAttachment).url, url
   done()
 
 editorTest "setting an attachment's upload progress", (done) ->
-  editor.delegate = createHostDelegate()
-  editor.composition.insertFile(createFile(name: "hello.txt"))
-  managedAttachment = editor.delegate.attachments[0]
+  getEditorController().delegate = createHostDelegate()
+  getComposition().insertFile(createFile(name: "hello.txt"))
+  managedAttachment = getEditorController().delegate.attachments[0]
 
   managedAttachment.setUploadProgress(40)
   equal document.activeElement.querySelector("progress").value, 40

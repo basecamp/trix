@@ -15,7 +15,7 @@ editorTest "resizing an image", (expectDocument) ->
 
     mouseDownOnElementAndMove handle, 5, ->
       locationRangeOfAttachment = Trix.LocationRange.forLocationWithLength({index: 0, offset: 2}, 1)
-      attributes = editor.document.getCommonAttributesAtLocationRange(locationRangeOfAttachment)
+      attributes = getDocument().getCommonAttributesAtLocationRange(locationRangeOfAttachment)
       equal attributes.width, 15
       ok attributes.height in [15,16], "expected image height: 15 or 16, actual: #{attributes.height}"
       expectDocument "ab#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"

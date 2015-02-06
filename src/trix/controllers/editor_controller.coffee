@@ -1,13 +1,14 @@
-#= require trix/controllers/abstract_editor_controller
+#= require trix/controllers/controller
 #= require trix/controllers/input_controller
 #= require trix/controllers/document_controller
 #= require trix/controllers/toolbar_controller
 #= require trix/models/selection_manager
 #= require trix/models/editor
 
-class Trix.EditorController extends Trix.AbstractEditorController
-  constructor: ->
-    super
+class Trix.EditorController extends Trix.Controller
+  constructor: (@config) ->
+    {@documentElement, @toolbarElement, @document, @delegate} = @config
+    @document ?= new Trix.Document
 
     @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
@@ -16,7 +17,7 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
     if @config.autofocus
       @documentController.focus()
-      @setLocationRange([0, 0]) unless @getLocationRange()
+      @selectionManager.focus()
 
   setEditor: (editor) ->
     return if @editor is editor
@@ -57,6 +58,8 @@ class Trix.EditorController extends Trix.AbstractEditorController
 
   compositionDidEditAttachment: (attachment) ->
     @documentController.rerenderViewForObject(attachment)
+    managedAttachment = @editor.manageAttachment(attachment)
+    @delegate?.didEditAttachment?(managedAttachment)
 
   compositionDidRemoveAttachment: (attachment) ->
     managedAttachment = @editor.unmanageAttachment(attachment)
