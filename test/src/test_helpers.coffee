@@ -66,6 +66,25 @@ keyCodes =
     else
       callback()
 
+@insertString = (string) ->
+  getComposition().insertString(string)
+  render()
+
+@insertText = (text) ->
+  getComposition().insertText(text)
+  render()
+
+@insertDocument = (document) ->
+  getComposition().insertDocument(document)
+  render()
+
+@insertFile = (file) ->
+  getComposition().insertFile(file)
+  render()
+
+render = ->
+  getEditorController().render()
+
 typeCharacterInElement = (character, element, callback) ->
   charCode = character.charCodeAt(0)
   keyCode = character.toUpperCase().charCodeAt(0)

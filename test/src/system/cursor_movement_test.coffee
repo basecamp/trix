@@ -45,14 +45,3 @@ editorTest "expand selection over attachment and text", (done) ->
       expandSelection "left", ->
         assertLocationRange([0,0], [0,3])
         done()
-
-insertString = (string) ->
-  getComposition().insertString(string)
-  render()
-
-insertFile = (file) ->
-  getComposition().insertFile(file)
-  render()
-
-render = ->
-  getEditorController().render()
