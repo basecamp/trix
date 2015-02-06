@@ -48,4 +48,5 @@ class Trix.AttachmentView extends Trix.ObjectView
   # Attachment delegate
 
   attachmentDidChangeUploadProgress: ->
-    @findProgressElement()?.setAttribute("value", @attachment.getUploadProgress())
+    if element = @findProgressElement()
+      element.value = @attachment.getUploadProgress()
