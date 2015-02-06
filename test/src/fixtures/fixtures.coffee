@@ -6,6 +6,7 @@ createDocument = (parts...) ->
   new Trix.Document blocks
 
 blockComment = "<!--block-->"
+cursorTarget = """<span data-trix-cursor-target="true" data-trix-serialize="false">#{Trix.ZERO_WIDTH_SPACE}</span>"""
 
 @fixtures =
   "bold text":
@@ -109,7 +110,7 @@ blockComment = "<!--block-->"
     figure.setAttribute("contenteditable", false)
     figure.appendChild(image)
 
-    html: "<div>#{blockComment}#{figure.outerHTML}</div>"
+    html: "<div>#{blockComment}#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"
     document: new Trix.Document [new Trix.Block text]
 
   "image attachment without dimensions": do ->
@@ -119,6 +120,7 @@ blockComment = "<!--block-->"
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
     image = Trix.makeElement("img", src: attrs.url)
+    image.dataset.trixMutable = true
 
     figure = Trix.makeElement
       tagName: "figure"
@@ -132,7 +134,7 @@ blockComment = "<!--block-->"
     figure.setAttribute("contenteditable", false)
     figure.appendChild(image)
 
-    html: "<div>#{blockComment}#{figure.outerHTML}</div>"
+    html: "<div>#{blockComment}#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"
     document: new Trix.Document [new Trix.Block text]
 
   "file attachment": do ->
@@ -156,7 +158,7 @@ blockComment = "<!--block-->"
     caption = """<figcaption>#{attrs.filename}<span class="size">#{attrs.filesize}</span></figcaption>"""
     figure.innerHTML = caption
 
-    html: """<div>#{blockComment}#{link.outerHTML}</div>"""
+    html: """<div>#{blockComment}#{cursorTarget}#{link.outerHTML}#{cursorTarget}</div>"""
     document: new Trix.Document [new Trix.Block text]
 
   "nested quote and code formatted block":
