@@ -1,4 +1,4 @@
-{handleEvent} = Trix
+{handleEvent, handleEventOnce} = Trix
 
 Trix.defineElement class extends Trix.Element
   @tagName: "trix-document"
@@ -73,19 +73,24 @@ Trix.defineElement class extends Trix.Element
 
   createdCallback: ->
     super
-    setContentEditable(this)
-    disableObjectResizing(this)
+    makeEditable(this)
 
-  setContentEditable = (element) ->
-    unless element.hasAttribute("contenteditable")
-      element.setAttribute("contenteditable", "")
+  makeEditable = (element) ->
+    return if element.hasAttribute("contenteditable")
+    element.setAttribute("contenteditable", "")
+    handleEventOnce("focus", onElement: element, withCallback: -> configureContentEditable(element))
+
+  configureContentEditable = (element) ->
+    disableObjectResizing(element)
+    setDefaultParagraphSeparator(element)
 
   disableObjectResizing = (element) ->
-    if element instanceof FocusEvent
-      event = element
+    if document.queryCommandSupported?("enableObjectResizing")
       document.execCommand("enableObjectResizing", false, false)
-      event.target.removeEventListener("focus", disableObjectResizing)
-    else
-      if document.queryCommandSupported?("enableObjectResizing")
-        handleEvent "focus", onElement: element, withCallback: disableObjectResizing, inPhase: "capturing"
-      handleEvent "mscontrolselect", onElement: element, preventDefault: true
+      handleEvent("mscontrolselect", onElement: element, preventDefault: true)
+
+  setDefaultParagraphSeparator = (element) ->
+    if document.queryCommandSupported?("DefaultParagraphSeparator")
+      {tagName} = Trix.config.blockAttributes.default
+      if tagName in ["div", "p"]
+        document.execCommand("DefaultParagraphSeparator", false, tagName)
