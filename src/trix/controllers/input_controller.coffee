@@ -165,6 +165,7 @@ class Trix.InputController extends Trix.BasicObject
         @delegate?.inputControllerWillMoveText()
         @responder?.moveTextFromLocationRange(@draggedRange)
         delete @draggedRange
+        @requestRender()
 
       else if files = event.dataTransfer.files
         @attachFiles(event.dataTransfer.files)
