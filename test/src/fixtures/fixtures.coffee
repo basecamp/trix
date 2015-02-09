@@ -6,7 +6,12 @@ createDocument = (parts...) ->
   new Trix.Document blocks
 
 blockComment = "<!--block-->"
-cursorTarget = """<span data-trix-cursor-target="true" data-trix-serialize="false">#{Trix.ZERO_WIDTH_SPACE}</span>"""
+
+cursorTarget = Trix.makeElement(
+  tagName: "span"
+  textContent: Trix.ZERO_WIDTH_SPACE
+  data: trixCursorTarget: true, trixSerialize: false
+).outerHTML
 
 @fixtures =
   "bold text":
