@@ -54,6 +54,7 @@ trixDocuments.basic = [
           "attachment": {
             "contentType": "image/png",
             "url": "basecamp.png",
+            "href": "basecamp.png",
             "filename": "basecamp.png",
             "identifier": "Attachment:1"
           }
@@ -103,6 +104,7 @@ trixDocuments.basic = [
             "filename": "Basecamp.pdf",
             "identifier": "dcd7027677de68739253b9114f6973b7",
             "url": "/attachments/dcd7027677de68739253b9114f6973b7",
+            "href": "/attachments/dcd7027677de68739253b9114f6973b7",
             "filesize": 1992294
           }
         }
