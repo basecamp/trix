@@ -268,6 +268,7 @@ class Trix.EditorController extends Trix.Controller
   removeAttachment: (attachment) ->
     @editor.recordUndoEntry("Delete Attachment")
     @composition.removeAttachment(attachment)
+    @render()
 
   recordFormattingUndoEntry: ->
     locationRange = @selectionManager.getLocationRange()
