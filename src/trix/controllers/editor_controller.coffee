@@ -5,6 +5,8 @@
 #= require trix/models/selection_manager
 #= require trix/models/editor
 
+{defer} = Trix
+
 class Trix.EditorController extends Trix.Controller
   constructor: (@config) ->
     {@documentElement, @toolbarElement, @document, @delegate} = @config
@@ -68,7 +70,7 @@ class Trix.EditorController extends Trix.Controller
   compositionDidStartEditingAttachment: (attachment) ->
     @attachmentLocationRange = @document.getLocationRangeOfAttachment(attachment)
     @documentController.installAttachmentEditorForAttachment(attachment)
-    @selectionManager.setLocationRange(@attachmentLocationRange)
+    defer => @selectionManager.setLocationRange(@attachmentLocationRange)
 
   compositionDidStopEditingAttachment: (attachment) ->
     @documentController.uninstallAttachmentEditor()
