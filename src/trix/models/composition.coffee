@@ -141,6 +141,7 @@ class Trix.Composition extends Trix.BasicObject
 
   removeAttachment: (attachment) ->
     if locationRange = @document.getLocationRangeOfAttachment(attachment)
+      @stopEditingAttachment()
       @document.removeTextAtLocationRange(locationRange)
       @setLocationRange(locationRange.collapse())
 
