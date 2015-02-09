@@ -36,7 +36,6 @@ Trix.extend
     event.initEvent(eventName, bubbles, cancelable)
     Trix.extend.call(event, attributes) if attributes?
     element.dispatchEvent(event)
-    event
 
   elementMatchesSelector: (element, selector) ->
     if element?.nodeType is 1
