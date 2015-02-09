@@ -13,7 +13,7 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
       @attachment.preloadOperation
 
   createContentNodes: ->
-    image = makeElement("img")
+    image = makeElement("img", src: "", "data-trix-mutable": true)
     @refresh(image)
 
     if operation = @attachment.preloadOperation
@@ -45,7 +45,6 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
       image.width = @attachmentPiece.getWidth()
       image.height = @attachmentPiece.getHeight()
     else
-      image.dataset.trixMutable = true
       operation.then (result) ->
         image.width = result.width
         image.height = result.height

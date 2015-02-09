@@ -6,6 +6,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
   constructor: (@attachment, @element, @container) ->
     @removeButton = makeElement(tagName: "a", textContent: "⊗", className: "remove", attributes: { href: "#", title: "Remove" })
     @element.appendChild(@removeButton)
+    @element.dataset.trixMutable = true
 
     handleEvent "click", onElement: @removeButton, withCallback: @didClickRemoveButton
 
@@ -17,3 +18,4 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
   uninstall: ->
     @element?.removeChild(@removeButton)
     @delegate?.didUninstallAttachmentEditor(this)
+    delete @element.dataset.trixMutable

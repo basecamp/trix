@@ -101,7 +101,7 @@ cursorTarget = Trix.makeElement(
     attachment = Trix.Attachment.attachmentForAttributes(attrs)
     text = Trix.Text.textForAttachmentWithAttributes(attachment, width: 10, height: 20)
 
-    image = Trix.makeElement("img", src: attrs.url, width: 10, height: 20)
+    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 10, height: 20)
 
     figure = Trix.makeElement
       tagName: "figure"
@@ -124,8 +124,7 @@ cursorTarget = Trix.makeElement(
     attachment = Trix.Attachment.attachmentForAttributes(attrs)
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
-    image = Trix.makeElement("img", src: attrs.url)
-    image.dataset.trixMutable = true
+    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true)
 
     figure = Trix.makeElement
       tagName: "figure"
