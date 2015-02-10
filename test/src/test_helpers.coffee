@@ -101,34 +101,45 @@ typeCharacterInElement = (character, element, callback) ->
         callback()
 
 insertCharacter = (character, callback) ->
-  if range = getDOMRange()
-    range.deleteContents() unless range.collapsed
-
-  if character is "\b"
-    expandSelection "left", ->
-      getDOMRange()?.deleteContents()
-      callback()
-  else
-    node = if character is "\r"
-      document.createElement("br")
+  switch character
+    when "\b"
+      backspace(callback)
+    when "\r"
+      node = document.createElement("br")
+      insertNode(node, callback)
     else
-      document.createTextNode(character)
+      node = document.createTextNode(character)
+      insertNode(node, callback)
 
-    if range = getDOMRange()
-      range.insertNode(node)
+backspace = (callback) ->
+  if getDOMRange()?.collapsed
+    expandSelection("left", callback)
+  else
+    deleteSelection()
+    callback()
 
-    range = document.createRange()
-    range.selectNode(node)
-    range.collapse(false)
-    selection = window.getSelection()
-    selection.removeAllRanges()
-    selection.addRange(range)
-    defer(callback)
+deleteSelection = ->
+  getDOMRange()?.deleteContents()
+
+insertNode = (node, callback) ->
+  deleteSelection()
+  getDOMRange()?.insertNode(node)
+
+  range = document.createRange()
+  range.selectNode(node)
+  range.collapse(false)
+  setDOMRange(range)
+  callback?()
 
 getDOMRange = ->
   selection = window.getSelection()
   if selection.rangeCount
     selection.getRangeAt(0)
+
+setDOMRange = (range) ->
+  selection = window.getSelection()
+  selection.removeAllRanges()
+  selection.addRange(range)
 
 @createEvent = (type, properties = {}) ->
   event = document.createEvent("Events")
