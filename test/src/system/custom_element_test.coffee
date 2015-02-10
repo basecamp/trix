@@ -55,7 +55,7 @@ editorTest "element triggers selectionchange events when the location range chan
   element.addEventListener "selectionchange", (event) -> eventCount++
 
   typeCharacters "a", ->
-    ok eventCount is 1
+    equal eventCount, 1
     moveCursor "left", ->
-      ok eventCount is 2
+      equal eventCount, 2
       done()
