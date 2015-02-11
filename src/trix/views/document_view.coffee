@@ -15,6 +15,7 @@ class Trix.DocumentView extends Trix.ObjectView
     super
     @document = @object
     {@element} = @options
+    @elementStore = new Trix.ElementStore
 
   render: ->
     @childViews = []
@@ -31,12 +32,32 @@ class Trix.DocumentView extends Trix.ObjectView
     @shadowElement.innerHTML is @element.innerHTML
 
   sync: ->
-    @element.innerHTML = @shadowElement.innerHTML
-    @didRender()
-
-  didRender: ->
-    defer => @garbageCollectCachedViews()
+    fragment = @createDocumentFragmentForSync()
+    @element.removeChild(@element.lastChild) while @element.lastChild
+    @element.appendChild(fragment)
+    @didSync()
 
   focus: ->
     @element.focus()
     Trix.selectionChangeObserver.update()
+
+  # Private
+
+  didSync: ->
+    @elementStore.reset(findImages(@element))
+    defer => @garbageCollectCachedViews()
+
+  createDocumentFragmentForSync: ->
+    fragment = document.createDocumentFragment()
+
+    for node in @shadowElement.childNodes
+      fragment.appendChild(node.cloneNode(true))
+
+    for image in findImages(fragment)
+      if storedImage = @elementStore.remove(image)
+        image.parentNode.replaceChild(storedImage, image)
+
+    fragment
+
+  findImages = (element) ->
+    element.querySelectorAll("img")
