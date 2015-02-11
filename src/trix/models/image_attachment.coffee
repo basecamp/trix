@@ -26,6 +26,7 @@ class Trix.ImageAttachment extends Trix.Attachment
     @previewPreloadOperation = new Trix.ImagePreloadOperation previewObjectURL
 
   releasePreviewPreload: ->
-    URL.revokeObjectURL(@previewPreloadOperation.url)
-    @previewPreloadOperation.release()
-    delete @previewPreloadOperation
+    if @previewPreloadOperation
+      URL.revokeObjectURL(@previewPreloadOperation.url)
+      @previewPreloadOperation.release()
+      delete @previewPreloadOperation

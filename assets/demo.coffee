@@ -22,7 +22,7 @@ addEventListener "DOMContentLoaded", ->
     handleEvent "trix-attachment-add", onElement: editorElement, withCallback: (event) ->
       {attachment} = event
       console.log "HOST: attachment added", attachment
-      if {file} = attachment
+      if attachment.file
         uploadAttachment(attachment)
       else
         saveAttachment(attachment)
