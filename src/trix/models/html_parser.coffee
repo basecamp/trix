@@ -53,11 +53,11 @@ class Trix.HTMLParser extends Trix.BasicObject
     if @isBlockElement(element) and not @isBlockElement(element.firstChild)
       attributes = getBlockAttributes(element)
       unless elementContainsNode(@currentBlockElement, element) and arraysAreEqual(attributes, @currentBlock.attributes)
-        @currentBlock = @appendBlockForAttributes(attributes, element)
+        @currentBlock = @appendBlockForAttributesWithElement(attributes, element)
         @currentBlockElement = element
 
     else if @currentBlockElement and not elementContainsNode(@currentBlockElement, element) and not @isBlockElement(element)
-        @currentBlock = @appendBlockForAttributes({})
+        @currentBlock = @appendEmptyBlock()
         @currentBlockElement = null
 
   isExtraBR: (element) ->
@@ -107,11 +107,14 @@ class Trix.HTMLParser extends Trix.BasicObject
           unless element.parentNode.firstChild is element
             @appendStringWithAttributes(" ")
 
-  appendBlockForAttributes: (attributes, element) ->
+  appendBlockForAttributesWithElement: (attributes, element) ->
     @blockElements.push(element)
     block = blockForAttributes(attributes)
     @blocks.push(block)
     block
+
+  appendEmptyBlock: ->
+    @appendBlockForAttributesWithElement({}, null)
 
   appendStringWithAttributes: (string, attributes) ->
     @appendPiece(pieceForString(string, attributes))
@@ -121,7 +124,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   appendPiece: (piece) ->
     if @blocks.length is 0
-      @appendBlockForAttributes({})
+      @appendEmptyBlock()
     @blocks[@blocks.length - 1].text.push(piece)
 
   appendStringToTextAtIndex: (string, index) ->
