@@ -97,34 +97,11 @@ cursorTarget = Trix.makeElement(
 
   "image attachment": do ->
     imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
-    attrs = url: imageData, filename: "example.png", filesize: 123, contentType: "image/png"
-    attachment = Trix.Attachment.attachmentForAttributes(attrs)
-    text = Trix.Text.textForAttachmentWithAttributes(attachment, width: 10, height: 20)
-
-    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 10, height: 20)
-
-    figure = Trix.makeElement
-      tagName: "figure"
-      className: "attachment image"
-
-    data =
-      trixAttachment: JSON.stringify(attachment)
-      trixId: attachment.id
-
-    figure.dataset[key] = value for key, value of data
-    figure.setAttribute("contenteditable", false)
-    figure.appendChild(image)
-
-    html: "<div>#{blockComment}#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"
-    document: new Trix.Document [new Trix.Block text]
-
-  "image attachment without dimensions": do ->
-    imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
-    attrs = url: imageData, filename: "example2.png", filesize: 123, contentType: "image/png"
+    attrs = url: imageData, filename: "example.png", filesize: 123, contentType: "image/png", width: 10, height: 20
     attachment = Trix.Attachment.attachmentForAttributes(attrs)
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
-    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true)
+    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 10, height: 20)
 
     figure = Trix.makeElement
       tagName: "figure"

@@ -79,8 +79,9 @@ class Trix.HTMLParser extends Trix.BasicObject
       if Object.keys(attributes).length
         textAttributes = getTextAttributes(element)
         if image = element.querySelector("img")
-          dimensions = getImageDimensions(element)
-          textAttributes[key] = value for key, value of getImageDimensions(image)
+          for key, value of getImageDimensions(image)
+            if value isnt attributes[key]
+              textAttributes[key] = value
         @appendAttachmentForAttributes(attributes, textAttributes)
         # We have everything we need so avoid processing inner nodes
         element.innerHTML = ""
@@ -93,9 +94,8 @@ class Trix.HTMLParser extends Trix.BasicObject
           @processedElements.push(element)
         when "img"
           attributes = url: element.src, contentType: "image"
-          textAttributes = getTextAttributes(element)
-          textAttributes[key] = value for key, value of getImageDimensions(element)
-          @appendAttachmentForAttributes(attributes, textAttributes)
+          attributes[key] = value for key, value of getImageDimensions(element)
+          @appendAttachmentForAttributes(attributes, getTextAttributes(element))
           @processedElements.push(element)
         when "tr"
           unless element.parentNode.firstChild is element
