@@ -1,4 +1,4 @@
-{arraysAreEqual, makeElement, tagName, walkTree,
+{arraysAreEqual, benchmark, makeElement, tagName, walkTree,
  findClosestElementFromNode, elementContainsNode, elementMatchesSelector} = Trix
 
 class Trix.HTMLParser extends Trix.BasicObject
@@ -14,7 +14,10 @@ class Trix.HTMLParser extends Trix.BasicObject
     @blockElements = []
     @processedElements = []
 
-  parse: ->
+  getDocument: ->
+    Trix.Document.fromJSON(@blocks)
+
+  parse: benchmark "HTMLParser#parse", ->
     try
       @createHiddenContainer()
       html = sanitizeHTML(@html)
@@ -49,7 +52,7 @@ class Trix.HTMLParser extends Trix.BasicObject
   appendBlockForElement: (element) ->
     if @isBlockElement(element) and not @isBlockElement(element.firstChild)
       attributes = getBlockAttributes(element)
-      unless elementContainsNode(@currentBlockElement, element) and arraysAreEqual(attributes, @currentBlock.getAttributes())
+      unless elementContainsNode(@currentBlockElement, element) and arraysAreEqual(attributes, @currentBlock.attributes)
         @currentBlock = @appendBlockForAttributes(attributes, element)
         @currentBlockElement = element
 
@@ -104,34 +107,40 @@ class Trix.HTMLParser extends Trix.BasicObject
           unless element.parentNode.firstChild is element
             @appendStringWithAttributes(" ")
 
-
   appendBlockForAttributes: (attributes, element) ->
-    @text = new Trix.Text
-    block = new Trix.Block @text, attributes
-    @blocks.push(block)
     @blockElements.push(element)
+    block = blockForAttributes(attributes)
+    @blocks.push(block)
     block
 
   appendStringWithAttributes: (string, attributes) ->
-    text = Trix.Text.textForStringWithAttributes(string, attributes)
-    @appendText(text)
+    @appendPiece(pieceForString(string, attributes))
 
-  appendAttachmentForAttributes: (attributes, textAttributes) ->
-    attachment = Trix.Attachment.attachmentForAttributes(attributes)
-    text = Trix.Text.textForAttachmentWithAttributes(attachment, textAttributes)
-    @appendText(text)
+  appendAttachmentForAttributes: (attachment, attributes) ->
+    @appendPiece(pieceForAttachment(attachment, attributes))
 
-  appendText: (text) ->
+  appendPiece: (piece) ->
     if @blocks.length is 0
       @appendBlockForAttributes({})
+    @blocks[@blocks.length - 1].text.push(piece)
 
-    @text = @text.appendText(text)
-    index = @blocks.length - 1
-    @replaceTextForBlockAtIndex(@text, index)
+  appendStringToTextAtIndex: (string, index) ->
+    {text} = @blocks[index]
+    piece = text[text.length - 1]
 
-  replaceTextForBlockAtIndex: (text, index) ->
-    block = @blocks[index]
-    @blocks[index] = block.copyWithText(text)
+    if piece?.type is "string"
+      piece.string += string
+    else
+      text.push(pieceForString(string))
+
+  prependStringToTextAtIndex: (string, index) ->
+    {text} = @blocks[index]
+    piece = text[0]
+
+    if piece?.type is "string"
+      piece.string = string + piece.string
+    else
+      text.unshift(pieceForString(string))
 
   getMarginOfBlockElementAtIndex: (index) ->
     if element = @blockElements[index]
@@ -145,21 +154,25 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   translateBlockElementMarginsToNewlines: ->
     defaultMargin = @getMarginOfDefaultBlockElement()
-    textForNewline = Trix.Text.textForStringWithAttributes("\n")
 
     for block, index in @blocks when margin = @getMarginOfBlockElementAtIndex(index)
-      text = block.getTextWithoutBlockBreak()
-
       if margin.top > defaultMargin.top * 2
-        newText = text.insertTextAtPosition(textForNewline, 0)
-        @replaceTextForBlockAtIndex(newText, index)
+        @prependStringToTextAtIndex("\n", index)
 
       if margin.bottom > defaultMargin.bottom * 2
-        newText = text.appendText(textForNewline)
-        @replaceTextForBlockAtIndex(newText, index)
+        @appendStringToTextAtIndex("\n", index)
 
-  getDocument: ->
-    new Trix.Document @blocks
+  pieceForString = (string, attributes = {}) ->
+    type = "string"
+    {string, attributes, type}
+
+  pieceForAttachment = (attachment, attributes = {}) ->
+    type = "attachment"
+    {attachment, attributes, type}
+
+  blockForAttributes = (attributes = {}) ->
+    text = []
+    {text, attributes}
 
   getTextAttributes = (element) ->
     attributes = {}
@@ -228,4 +241,3 @@ class Trix.HTMLParser extends Trix.BasicObject
     dimensions.width = parseInt(width, 10) if width
     dimensions.height = parseInt(height, 10) if height
     dimensions
-
