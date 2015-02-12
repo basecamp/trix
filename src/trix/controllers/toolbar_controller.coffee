@@ -23,7 +23,11 @@ class Trix.ToolbarController extends Trix.BasicObject
   didClickActionButton: (event, element) =>
     event.preventDefault()
     actionName = getActionName(element)
-    @delegate?.toolbarDidInvokeAction(actionName)
+
+    if @getDialogForAttributeName(actionName)
+      @toggleDialog(actionName)
+    else
+      @delegate?.toolbarDidInvokeAction(actionName)
 
   didClickAttributeButton: (event, element) =>
     event.preventDefault()

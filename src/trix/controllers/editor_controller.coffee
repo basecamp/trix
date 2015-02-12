@@ -186,7 +186,8 @@ class Trix.EditorController extends Trix.Controller
       perform: -> @composition.decreaseBlockAttributeLevel()
 
   toolbarCanInvokeAction: (actionName) ->
-    @toolbarActions[actionName]?.test.call(this)
+    action = @toolbarActions[actionName]
+    not action? or action.test.call(this)
 
   toolbarDidInvokeAction: (actionName) ->
     @toolbarActions[actionName]?.perform?.call(this)
