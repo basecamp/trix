@@ -198,6 +198,8 @@ class Trix.InputController extends Trix.BasicObject
           if @responder?.insertFile(file)
             file.trixInserted = true
 
+      @requestRender()
+
     compositionstart: (event) ->
       @mutationObserver.stop()
 
