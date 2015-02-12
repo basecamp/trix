@@ -29,14 +29,10 @@ class Trix.InputController extends Trix.BasicObject
 
   handlerFor: (eventName) ->
     (event) =>
-      try
-        @eventName = eventName
-        inputLog.group(eventName)
-        @events[eventName].call(this, event)
-        inputLog.groupEnd()
-      catch error
-        @delegate?.inputControllerDidThrowError?(error, {eventName})
-        throw error
+      @eventName = eventName
+      inputLog.group(eventName)
+      @events[eventName].call(this, event)
+      inputLog.groupEnd()
 
   setInputSummary: (summary = {}) ->
     @inputSummary.eventName = @eventName
@@ -61,20 +57,16 @@ class Trix.InputController extends Trix.BasicObject
   # Mutation observer delegate
 
   elementDidMutate: (mutationSummary) ->
-    try
-      inputLog.group("Mutation")
-      inputLog.log("mutationSummary =", JSON.stringify(mutationSummary))
+    inputLog.group("Mutation")
+    inputLog.log("mutationSummary =", JSON.stringify(mutationSummary))
 
-      unless @mutationIsExpected(mutationSummary)
-        inputLog.log("mutation doesn't match input, replacing HTML")
-        @responder?.replaceHTML(@element.innerHTML)
-      @resetInputSummary()
-      @requestRender()
+    unless @mutationIsExpected(mutationSummary)
+      inputLog.log("mutation doesn't match input, replacing HTML")
+      @responder?.replaceHTML(@element.innerHTML)
+    @resetInputSummary()
+    @requestRender()
 
-      inputLog.groupEnd()
-    catch error
-      @delegate?.inputControllerDidThrowError?(error, {mutationSummary})
-      throw error
+    inputLog.groupEnd()
 
   mutationIsExpected: (mutationSummary) ->
     return unless @inputSummary

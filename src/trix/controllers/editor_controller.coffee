@@ -135,7 +135,6 @@ class Trix.EditorController extends Trix.Controller
 
   inputControllerWillPasteText: (paste) ->
     @editor.recordUndoEntry("Paste")
-    @delegate?.didPaste?(paste)
 
   inputControllerWillMoveText: ->
     @editor.recordUndoEntry("Move")
@@ -155,9 +154,6 @@ class Trix.EditorController extends Trix.Controller
   inputControllerDidCancelDrag: ->
     @selectionManager.setLocationRange(@locationRangeBeforeDrag)
     delete @locationRangeBeforeDrag
-
-  inputControllerDidThrowError: (error, details) ->
-    @delegate?.didThrowError?(error, details)
 
   inputControllerDidRequestRender: ->
     @render()

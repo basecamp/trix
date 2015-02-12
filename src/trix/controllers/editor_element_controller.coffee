@@ -45,9 +45,5 @@ class Trix.EditorElementController extends Trix.Controller
   didRenderDocumentElement: ->
     triggerEvent("trix-render", onElement: @element)
 
-  didPaste: (paste) ->
-
-  didThrowError: (error, details) ->
-
   didChangeSelection: ->
     triggerEvent("selectionchange", onElement: @element, bubbles: false)
