@@ -1,4 +1,4 @@
-{defer, findClosestElementFromNode} = Trix
+{defer, findClosestElementFromNode, normalizeSpaces} = Trix
 
 class Trix.MutationObserver extends Trix.BasicObject
   mutableSelector = "[data-trix-mutable]"
@@ -112,6 +112,3 @@ class Trix.MutationObserver extends Trix.BasicObject
       rightIndexB--
 
     a.slice(leftIndex, rightIndexA)
-
-  normalizeSpaces = (string) ->
-    string.replace(/\s/g, " ")

@@ -1,4 +1,4 @@
-{arraysAreEqual, benchmark, makeElement, tagName, walkTree,
+{arraysAreEqual, benchmark, normalizeSpaces, makeElement, tagName, walkTree,
  findClosestElementFromNode, elementContainsNode, elementMatchesSelector} = Trix
 
 class Trix.HTMLParser extends Trix.BasicObject
@@ -73,8 +73,8 @@ class Trix.HTMLParser extends Trix.BasicObject
     @blockTagNames ?= (value.tagName for key, value of Trix.config.blockAttributes)
 
   processTextNode: (node) ->
-    unless node.textContent is Trix.ZERO_WIDTH_SPACE
-      @appendStringWithAttributes(node.textContent, getTextAttributes(node.parentNode))
+    if string = normalizeSpaces(node.data)
+      @appendStringWithAttributes(string, getTextAttributes(node.parentNode))
 
   processElement: (element) ->
     if elementMatchesSelector(element, "[data-trix-attachment]")

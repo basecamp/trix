@@ -1,4 +1,9 @@
 Trix.extend
+  normalizeSpaces: (string) ->
+    string
+      .replace(///#{Trix.ZERO_WIDTH_SPACE}///g, "")
+      .replace(///#{Trix.NON_BREAKING_SPACE}///g, " ")
+
   convertDashesToCamelCase: (string, {initial} = {}) ->
     if initial
       pattern = initialDashesToCamelCasePattern

@@ -29,7 +29,7 @@ class Trix.DocumentView extends Trix.ObjectView
         @shadowElement.appendChild(node) for node in view.getNodes()
 
   isSynced: ->
-    @shadowElement.innerHTML is @element.innerHTML
+    elementsHaveEqualHTML(@shadowElement, @element)
 
   sync: ->
     fragment = @createDocumentFragmentForSync()
@@ -61,3 +61,9 @@ class Trix.DocumentView extends Trix.ObjectView
 
   findImages = (element) ->
     element.querySelectorAll("img")
+
+  elementsHaveEqualHTML = (element, otherElement) ->
+    ignoreSpaces(element.innerHTML) is ignoreSpaces(otherElement.innerHTML)
+
+  ignoreSpaces = (html) ->
+    html.replace(/&nbsp;/g, " ")

@@ -43,6 +43,50 @@ cursorTarget = Trix.makeElement(
       ]
     html: """<div>#{blockComment}<a href="http://example.com">ab<em>c</em></a></div>"""
 
+  "spaces 1":
+    document: createDocument([" a"])
+    html: """<div>#{blockComment}&nbsp;a</div>"""
+
+  "spaces 2":
+    document: createDocument(["  a"])
+    html: """<div>#{blockComment}&nbsp; a</div>"""
+
+  "spaces 3":
+    document: createDocument(["   a"])
+    html: """<div>#{blockComment}&nbsp; &nbsp;a</div>"""
+
+  "spaces 4":
+    document: createDocument([" a "])
+    html: """<div>#{blockComment}&nbsp;a&nbsp;</div>"""
+
+  "spaces 5":
+    document: createDocument(["a  b"])
+    html: """<div>#{blockComment}a&nbsp; b</div>"""
+
+  "spaces 6":
+    document: createDocument(["a   b"])
+    html: """<div>#{blockComment}a &nbsp; b</div>"""
+
+  "spaces 7":
+    document: createDocument(["a    b"])
+    html: """<div>#{blockComment}a&nbsp; &nbsp; b</div>"""
+
+  "spaces 8":
+    document: createDocument(["a b "])
+    html: """<div>#{blockComment}a b&nbsp;</div>"""
+
+  "spaces 9":
+    document: createDocument(["a b c"])
+    html: """<div>#{blockComment}a b c</div>"""
+
+  "spaces 10":
+    document: createDocument(["a "])
+    html: """<div>#{blockComment}a&nbsp;</div>"""
+
+  "spaces 11":
+    document: createDocument(["a  "])
+    html: """<div>#{blockComment}a &nbsp;</div>"""
+
   "quote formatted block":
     document: createDocument(["abc", {}, ["quote"]])
     html: "<blockquote>#{blockComment}abc</blockquote>"
