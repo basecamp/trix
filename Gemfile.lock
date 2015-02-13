@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    trix (0.6.0)
+    trix (0.7.0)
 
 GEM
   remote: https://rubygems.org/
