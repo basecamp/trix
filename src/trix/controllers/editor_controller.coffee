@@ -169,7 +169,7 @@ class Trix.EditorController extends Trix.Controller
 
   # Toolbar controller delegate
 
-  toolbarActions:
+  @toolbarActions:
     undo:
       test: -> @editor.canUndo()
       perform: -> @editor.undo()
@@ -186,11 +186,10 @@ class Trix.EditorController extends Trix.Controller
       perform: -> @composition.decreaseBlockAttributeLevel()
 
   toolbarCanInvokeAction: (actionName) ->
-    action = @toolbarActions[actionName]
-    not action? or action.test.call(this)
+    @constructor.toolbarActions[actionName]?.test?.call(this)
 
   toolbarDidInvokeAction: (actionName) ->
-    @toolbarActions[actionName]?.perform?.call(this)
+    @constructor.toolbarActions[actionName]?.perform?.call(this)
 
   toolbarDidToggleAttribute: (attributeName) ->
     @recordFormattingUndoEntry()

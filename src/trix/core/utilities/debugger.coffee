@@ -45,7 +45,7 @@ DEBUG_METHODS =
 
 TrixToolbarElement::constructor.defaultHTML += """
   <span class="button_group">
-    <button type="button" data-action="debug">?</button>
+    <button type="button" class="debug" data-action="debug" data-error-content="☠">ℹ</button>
   </span>
 
   <div class="dialog" data-attribute="debug">
@@ -56,8 +56,8 @@ TrixToolbarElement::constructor.defaultHTML += """
 
 TrixToolbarElement::constructor.defaultCSS += """
   %t button[data-action=debug].error {
-    font-weight: bold;
     border: 1px solid red;
+    color: red;
   }
 
   %t .dialog[data-attribute=debug] {
@@ -81,6 +81,8 @@ TrixToolbarElement::constructor.defaultCSS += """
   }
 """
 
+Trix.EditorController.toolbarActions.debug = test: -> true
+
 
 {tagName, findClosestElementFromNode, handleEvent} = Trix
 
@@ -102,7 +104,7 @@ setDebugInfo = ({element, error, focus}) ->
 
   if error?
     buttonElement.classList.add("error")
-    buttonElement.textContent = "!!"
+    buttonElement.textContent = buttonElement.dataset.errorContent
     info += "Error: #{error.message}\n  #{error.stack}"
 
   info += """
@@ -124,7 +126,7 @@ setDebugInfo = ({element, error, focus}) ->
   textareaElement.select() if focus?
 
 reportError = (error) ->
-  console.error "Trix error!", error
+  console.error "Trix error!"
   console.log error.stack
 
   element = document.activeElement
