@@ -7,7 +7,6 @@
 class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
     @lockCount = 0
-    Trix.selectionChangeObserver.registerSelectionManager(this)
 
   getLocationRange: ->
     @updateCurrentLocationRange()
@@ -84,8 +83,6 @@ class Trix.SelectionManager extends Trix.BasicObject
   # Private
 
   selectionDidChange: =>
-    unless Trix.elementContainsNode(document.documentElement, @element)
-      Trix.selectionChangeObserver.unregisterSelectionManager(this)
     @updateCurrentLocationRange()
 
   updateCurrentLocationRange: (locationRange) ->

@@ -42,6 +42,12 @@ class Trix.EditorController extends Trix.Controller
     return if @document is document
     @setEditor(new Trix.Editor document)
 
+  registerSelectionManager: ->
+    Trix.selectionChangeObserver.registerSelectionManager(@selectionManager)
+
+  unregisterSelectionManager: ->
+    Trix.selectionChangeObserver.unregisterSelectionManager(@selectionManager)
+
   # Composition delegate
 
   compositionDidChangeDocument: (document) ->

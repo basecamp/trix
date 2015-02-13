@@ -11,6 +11,10 @@ class Trix.Element extends HTMLElement
     @loadStylesheet()
     @innerHTML = @constructor.defaultHTML if @constructor.defaultHTML? and @innerHTML is ""
 
+  attachedCallback: ->
+
+  detachedCallback: ->
+
   loadStylesheet: ->
     tagName = @tagName.toLowerCase()
     return if document.querySelector("style[data-tag-name='#{tagName}']")

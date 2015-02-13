@@ -21,6 +21,14 @@ Trix.defineElement class extends Trix.Element
       autofocus: @hasAttribute("autofocus")
       delegate: new Trix.EditorElementController this, documentElement, inputElement
 
+  attachedCallback: ->
+    super
+    @editorController.registerSelectionManager()
+
+  detachedCallback: ->
+    super
+    @editorController.unregisterSelectionManager()
+
   findOrCreateToolbarElement = (parentElement) ->
     unless element = parentElement.querySelector("trix-toolbar")
       element = makeElement("trix-toolbar")
