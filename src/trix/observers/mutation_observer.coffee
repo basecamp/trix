@@ -107,7 +107,7 @@ class Trix.MutationObserver extends Trix.BasicObject
     while leftIndex < rightIndexA and a.charAt(leftIndex) is b.charAt(leftIndex)
       leftIndex++
 
-    while rightIndexA > leftIndex and a.charAt(rightIndexA - 1) is b.charAt(rightIndexB - 1)
+    while rightIndexA > leftIndex + 1 and a.charAt(rightIndexA - 1) is b.charAt(rightIndexB - 1)
       rightIndexA--
       rightIndexB--
 
