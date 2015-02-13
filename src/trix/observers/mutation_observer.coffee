@@ -100,15 +100,18 @@ class Trix.MutationObserver extends Trix.BasicObject
     nodes
 
   stringDifference = (a, b) ->
+    a = Trix.UTF16String.box(a)
+    b = Trix.UTF16String.box(b)
+
     leftIndex = 0
     rightIndexA = a.length
     rightIndexB = b.length
 
-    while leftIndex < rightIndexA and a.charAt(leftIndex) is b.charAt(leftIndex)
+    while leftIndex < rightIndexA and a.charAt(leftIndex).isEqualTo(b.charAt(leftIndex))
       leftIndex++
 
-    while rightIndexA > leftIndex + 1 and a.charAt(rightIndexA - 1) is b.charAt(rightIndexB - 1)
+    while rightIndexA > leftIndex + 1 and a.charAt(rightIndexA - 1).isEqualTo(b.charAt(rightIndexB - 1))
       rightIndexA--
       rightIndexB--
 
-    a.slice(leftIndex, rightIndexA)
+    a.slice(leftIndex, rightIndexA).toString()

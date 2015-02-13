@@ -24,6 +24,9 @@ class Trix.UTF16String extends Trix.BasicObject
   slice: ->
     @constructor.fromCodepoints(@codepoints.slice(arguments...))
 
+  charAt: (offset) ->
+    @slice(offset, offset + 1)
+
   isEqualTo: (value) ->
     @constructor.box(value).ucs2String is @ucs2String
 
