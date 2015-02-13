@@ -1,13 +1,47 @@
 # This file is not included in the main Trix bundle and
 # should be explicitly required to enable the debugger.
 
-{tagName, findClosestElementFromNode, handleEvent} = Trix
+DEBUG_METHODS =
+  "Trix.AttachmentEditorController": "
+    didClickRemoveButton
+    uninstall
+  "
 
-buttonSelector = "button[data-action=debug]"
+  "Trix.DocumentController": "
+    didClickAttachment
+  "
 
-handleEvent "click", onElement: document, matchingSelector: buttonSelector, withCallback: (event) ->
-  setDebugInfo(element: event.target, focus: true)
-  event.preventDefault()
+  "Trix.EditorController": "
+    setEditor
+    loadDocument
+  "
+
+  "Trix.ImageAttachmentEditorController": "
+    startResize
+    resize
+    endResize
+  "
+
+  "Trix.InputController": "
+    elementDidMutate
+    events.keydown
+    events.keypress
+    events.dragstart
+    events.dragover
+    events.dragend
+    events.drop
+    events.cut
+    events.paste
+    events.compositionstart
+    events.compositionend
+  "
+
+  "Trix.ToolbarController": "
+    didClickActionButton
+    didClickAttributeButton
+    didClickDialogButton
+    didKeyDownDialogInput
+  "
 
 TrixToolbarElement::constructor.defaultHTML += """
   <span class="button_group">
@@ -46,6 +80,15 @@ TrixToolbarElement::constructor.defaultCSS += """
     border: none;
   }
 """
+
+
+{tagName, findClosestElementFromNode, handleEvent} = Trix
+
+buttonSelector = "button[data-action=debug]"
+
+handleEvent "click", onElement: document, matchingSelector: buttonSelector, withCallback: (event) ->
+  setDebugInfo(element: event.target, focus: true)
+  event.preventDefault()
 
 setDebugInfo = ({element, error, focus}) ->
   editorElement = findClosestElementFromNode(element, matchingSelector: "trix-editor")
@@ -98,9 +141,31 @@ wrapFunctionWithErrorHandler = (fn) ->
       reportError(error)
   trixDebugWrapper
 
-wrapTrixMethodsWithErrorHandler = ->
-  for className, constructor of Trix when constructor.prototype instanceof Trix.BasicObject
-    for methodName, method of constructor.prototype when typeof method is "function" and methodName isnt "constructor"
-      constructor::[methodName] = wrapFunctionWithErrorHandler(method)
+installMethodDebugger = (className, methodName) ->
+  [objectName, constructorNames...] = className.split(".")
+  [propertyNames..., methodName] = methodName.split(".")
 
-wrapTrixMethodsWithErrorHandler()
+  object = @[objectName]
+  object = object[constructorName] for constructorName in constructorNames
+  object = object.prototype
+  object = object[propertyName] for propertyName in propertyNames
+
+  if typeof object?[methodName] is "function"
+    object[methodName] = wrapFunctionWithErrorHandler(object[methodName])
+  else
+    throw new Error "Can't install on non-function"
+
+install = ->
+  console.groupCollapsed("Trix debugger")
+
+  for className, methodNames of DEBUG_METHODS
+    for methodName in methodNames.split(/\s/)
+      try
+        installMethodDebugger(className, methodName)
+        console.log "✓ #{className}##{methodName}"
+      catch error
+        console.warn "✗ #{className}##{methodName}:", error.message
+
+  console.groupEnd()
+
+install()
