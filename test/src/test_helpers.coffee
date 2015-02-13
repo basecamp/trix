@@ -1,4 +1,4 @@
-Trix.config.useMobileInputMode = -> false
+#= require trix/core/helpers/global
 
 keyCodes =
   left: 37
@@ -36,27 +36,6 @@ keyCodes =
       else
         callback done
 
-@getEditorElement = ->
-  document.querySelector("trix-editor")
-
-@getToolbarElement = ->
-  getEditorElement().querySelector("trix-toolbar")
-
-@getDocumentElement = ->
-  getEditorElement().querySelector("trix-document")
-
-@getEditorController = ->
-  getEditorElement().editorController
-
-@getEditor = ->
-  getEditorController().editor
-
-@getDocument = ->
-  getEditorController().document
-
-@getComposition = ->
-  getEditorController().composition
-
 @assertLocationRange = (start, end) ->
   expectedLocationRange = new Trix.LocationRange start, end
   actualLocationRange = getEditorController().getLocationRange()
@@ -87,6 +66,25 @@ keyCodes =
     else
       callback()
 
+@insertString = (string) ->
+  getComposition().insertString(string)
+  render()
+
+@insertText = (text) ->
+  getComposition().insertText(text)
+  render()
+
+@insertDocument = (document) ->
+  getComposition().insertDocument(document)
+  render()
+
+@insertFile = (file) ->
+  getComposition().insertFile(file)
+  render()
+
+render = ->
+  getEditorController().render()
+
 typeCharacterInElement = (character, element, callback) ->
   charCode = character.charCodeAt(0)
   keyCode = character.toUpperCase().charCodeAt(0)
@@ -95,11 +93,53 @@ typeCharacterInElement = (character, element, callback) ->
 
   defer ->
     return callback() unless triggerEvent(element, "keypress", keyCode: charCode, charCode: charCode)
-    triggerEvent(element, "input")
+    insertCharacter character, ->
+      triggerEvent(element, "input")
 
-    defer ->
-      triggerEvent(element, "keyup", keyCode: keyCode, charCode: 0)
-      callback()
+      defer ->
+        triggerEvent(element, "keyup", keyCode: keyCode, charCode: 0)
+        callback()
+
+insertCharacter = (character, callback) ->
+  switch character
+    when "\b"
+      backspace(callback)
+    when "\r"
+      node = document.createElement("br")
+      insertNode(node, callback)
+    else
+      node = document.createTextNode(character)
+      insertNode(node, callback)
+
+backspace = (callback) ->
+  if getDOMRange()?.collapsed
+    expandSelection("left", callback)
+  else
+    deleteSelection()
+    callback()
+
+deleteSelection = ->
+  getDOMRange()?.deleteContents()
+
+insertNode = (node, callback) ->
+  deleteSelection()
+  getDOMRange()?.insertNode(node)
+
+  range = document.createRange()
+  range.selectNode(node)
+  range.collapse(false)
+  setDOMRange(range)
+  callback?()
+
+getDOMRange = ->
+  selection = window.getSelection()
+  if selection.rangeCount
+    selection.getRangeAt(0)
+
+setDOMRange = (range) ->
+  selection = window.getSelection()
+  selection.removeAllRanges()
+  selection.addRange(range)
 
 @createEvent = (type, properties = {}) ->
   event = document.createEvent("Events")
@@ -169,7 +209,7 @@ getElementCoordinates = (element) ->
 
   do expand = -> defer ->
     if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)
-      getComposition().expandLocationRangeInDirection(if direction is "left" then "backward" else "forward")
+      getComposition().expandSelectionInDirection(if direction is "left" then "backward" else "forward")
 
     if --times is 0
       callback()

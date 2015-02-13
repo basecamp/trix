@@ -4,7 +4,8 @@
 #= require trix/controllers/toolbar_controller
 #= require trix/models/selection_manager
 #= require trix/models/editor
-#= require trix/observers/mutation_observer
+
+{defer} = Trix
 
 class Trix.EditorController extends Trix.Controller
   constructor: (@config) ->
@@ -29,7 +30,6 @@ class Trix.EditorController extends Trix.Controller
     @composition = @editor.composition
     @document = @composition.document
 
-    @createMutationObserver()
     @createInputController()
     @createToolbarController()
     @createDocumentController()
@@ -45,15 +45,11 @@ class Trix.EditorController extends Trix.Controller
   # Composition delegate
 
   compositionDidChangeDocument: (document) ->
-    @documentController.render()
     @delegate?.didChangeDocument?(document)
 
   compositionDidChangeCurrentAttributes: (@currentAttributes) ->
     @toolbarController.updateAttributes(currentAttributes)
     @toolbarController.updateActions()
-
-  compositionWillSetLocationRange: ->
-    @skipSelectionLock = true
 
   compositionShouldAcceptFile: (file) ->
     @delegate?.shouldAcceptFile?(file)
@@ -74,11 +70,17 @@ class Trix.EditorController extends Trix.Controller
   compositionDidStartEditingAttachment: (attachment) ->
     @attachmentLocationRange = @document.getLocationRangeOfAttachment(attachment)
     @documentController.installAttachmentEditorForAttachment(attachment)
-    @selectionManager.setLocationRange(@attachmentLocationRange)
+    defer => @selectionManager.setLocationRange(@attachmentLocationRange)
 
   compositionDidStopEditingAttachment: (attachment) ->
     @documentController.uninstallAttachmentEditor()
     delete @attachmentLocationRange
+
+  compositionDidRequestLocationRange: (locationRange) ->
+    @requestedLocationRange = locationRange
+
+  compositionDidRestoreSnapshot: ->
+    @render()
 
   getSelectionManager: ->
     @selectionManager
@@ -93,17 +95,22 @@ class Trix.EditorController extends Trix.Controller
 
   # Document controller delegate
 
-  documentControllerWillRender: ->
-    @mutationObserver.stop()
-    @selectionManager.lock() unless @skipSelectionLock
+  documentControllerWillRenderDocumentElement: ->
+    @inputController.editorWillRenderDocumentElement()
+    if @requestedLocationRange?
+      @selectionManager.lockToLocationRange(@requestedLocationRange)
+    else
+      @selectionManager.lock()
     @selectionManager.clearSelection()
 
-  documentControllerDidRender: ->
-    @mutationObserver.start()
-    @selectionManager.unlock() unless @skipSelectionLock
-    delete @skipSelectionLock
+  documentControllerDidRenderDocumentElement: ->
+    @inputController.editorDidRenderDocumentElement()
+    @selectionManager.unlock()
     @toolbarController.updateActions()
-    @delegate?.didRenderDocument?()
+    @delegate?.didRenderDocumentElement?()
+
+  documentControllerDidRender: ->
+    delete @requestedLocationRange
 
   documentControllerDidFocus: ->
     @toolbarController.hideDialog()
@@ -128,26 +135,12 @@ class Trix.EditorController extends Trix.Controller
 
   inputControllerWillPasteText: (paste) ->
     @editor.recordUndoEntry("Paste")
-    @delegate?.didPaste?(paste)
 
   inputControllerWillMoveText: ->
     @editor.recordUndoEntry("Move")
 
   inputControllerWillAttachFiles: ->
     @editor.recordUndoEntry("Drop Files")
-
-  inputControllerWillStartComposition: ->
-    @mutationObserver.stop()
-    @selectionManager.lock()
-
-  inputControllerWillEndComposition: ->
-    @documentController.render()
-    @selectionManager.unlock()
-    @mutationObserver.start()
-
-  inputControllerDidComposeCharacters: (composedString) ->
-    @recordTypingUndoEntry()
-    @composition.insertString(composedString)
 
   inputControllerDidReceiveKeyboardCommand: (keys) ->
     @toolbarController.applyKeyboardCommand(keys)
@@ -162,8 +155,8 @@ class Trix.EditorController extends Trix.Controller
     @selectionManager.setLocationRange(@locationRangeBeforeDrag)
     delete @locationRangeBeforeDrag
 
-  inputControllerDidThrowError: (error, details) ->
-    @delegate?.didThrowError?(error, details)
+  inputControllerDidRequestRender: ->
+    @render()
 
   # Selection manager delegate
 
@@ -174,18 +167,9 @@ class Trix.EditorController extends Trix.Controller
       @composition.stopEditingAttachment()
     @delegate?.didChangeSelection?()
 
-  # Mutation observer delegate
-
-  elementDidMutate: (mutations) ->
-    try
-      @composition.replaceHTML(@documentElement.innerHTML)
-    catch error
-      @delegate?.didThrowError?(error, {mutations})
-      throw error
-
   # Toolbar controller delegate
 
-  toolbarActions:
+  @toolbarActions:
     undo:
       test: -> @editor.canUndo()
       perform: -> @editor.undo()
@@ -202,24 +186,27 @@ class Trix.EditorController extends Trix.Controller
       perform: -> @composition.decreaseBlockAttributeLevel()
 
   toolbarCanInvokeAction: (actionName) ->
-    @toolbarActions[actionName]?.test.call(this)
+    @constructor.toolbarActions[actionName]?.test?.call(this)
 
   toolbarDidInvokeAction: (actionName) ->
-    @toolbarActions[actionName]?.perform?.call(this)
+    @constructor.toolbarActions[actionName]?.perform?.call(this)
 
   toolbarDidToggleAttribute: (attributeName) ->
     @recordFormattingUndoEntry()
     @composition.toggleCurrentAttribute(attributeName)
+    @render()
     @documentController.focus()
 
   toolbarDidUpdateAttribute: (attributeName, value) ->
     @recordFormattingUndoEntry()
     @composition.setCurrentAttribute(attributeName, value)
+    @render()
     @documentController.focus()
 
   toolbarDidRemoveAttribute: (attributeName) ->
     @recordFormattingUndoEntry()
     @composition.removeCurrentAttribute(attributeName)
+    @render()
     @documentController.focus()
 
   toolbarWillShowDialog: (willFocus) ->
@@ -237,23 +224,20 @@ class Trix.EditorController extends Trix.Controller
       @selectionManager.lock()
       @composition.freezeSelection()
       @selectionFrozen = true
+      @render()
 
   thawSelection: ->
     if @selectionFrozen
       @composition.thawSelection()
       @selectionManager.unlock()
       delete @selectionFrozen
+      @render()
 
   getLocationContext: ->
     locationRange = @selectionManager.getLocationRange()
     if locationRange?.isCollapsed() then locationRange.index else locationRange
 
   # Private
-
-  createMutationObserver: ->
-    return if @mutationObserver
-    @mutationObserver = new Trix.MutationObserver @documentElement
-    @mutationObserver.delegate = this
 
   createInputController: ->
     unless @inputController
@@ -271,7 +255,7 @@ class Trix.EditorController extends Trix.Controller
     delete @documentController?.delegate
     @documentController = new Trix.DocumentController @documentElement, @document
     @documentController.delegate = this
-    @documentController.render()
+    @render()
 
   updateLocationRange: ->
     @setLocationRange(@editor.locationRange) if @editor.locationRange
@@ -282,6 +266,7 @@ class Trix.EditorController extends Trix.Controller
   removeAttachment: (attachment) ->
     @editor.recordUndoEntry("Delete Attachment")
     @composition.removeAttachment(attachment)
+    @render()
 
   recordFormattingUndoEntry: ->
     locationRange = @selectionManager.getLocationRange()

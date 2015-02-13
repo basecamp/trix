@@ -9,9 +9,11 @@ class Trix.BasicObject
         @[toProperty]
 
       if optional
-        object?[name]?.apply(object, arguments)
+        subject = object?[name]
+        apply.call(subject, object, arguments) if subject?
       else
-        object[name].apply(object, arguments)
+        subject = object[name]
+        apply.call(subject, object, arguments)
 
   parseProxyMethodExpression = (expression) ->
     unless match = expression.match(proxyMethodExpressionPattern)
@@ -28,6 +30,8 @@ class Trix.BasicObject
       args.optional = true
 
     args
+
+  {apply} = Function.prototype
 
   proxyMethodExpressionPattern = ///
     ^

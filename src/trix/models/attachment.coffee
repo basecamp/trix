@@ -79,6 +79,12 @@ class Trix.Attachment extends Trix.Object
   getContentType: ->
     @attributes.get("contentType")
 
+  getWidth: ->
+    @attributes.get("width")
+
+  getHeight: ->
+    @attributes.get("height")
+
   getFile: ->
     @file
 

@@ -5,7 +5,7 @@
 class Trix.ImageAttachmentEditorController extends Trix.AttachmentEditorController
   constructor: ->
     super
-    @editor = makeElement(tagName: "div", className: "image-editor", editable: false)
+    @editor = makeElement(tagName: "div", className: "image-editor")
     @handle = makeElement(tagName: "div", className: "resize-handle se")
     @handle.addEventListener("mousedown", @startResize)
 

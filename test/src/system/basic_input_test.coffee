@@ -1,8 +1,8 @@
 editorModule "Basic input", template: "editor_empty"
 
 editorTest "typing", (expectDocument) ->
-  typeCharacters "foo", ->
-    expectDocument "foo\n"
+  typeCharacters "abc", ->
+    expectDocument "abc\n"
 
 editorTest "backspacing", (expectDocument) ->
   typeCharacters "abc\b", ->
@@ -45,13 +45,6 @@ editorTest "paste html", (expectDocument) ->
 editorTest "paste file", (expectDocument) ->
   pasteContent "Files", (createFile()), ->
     expectDocument "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
-
-editorTest "content mutation", (expectDocument) ->
-  typeCharacters "abc", ->
-    textNode = document.createTextNode("hi")
-    document.activeElement.appendChild(textNode)
-    after 50, ->
-      expectDocument "abchi\n"
 
 editorTest "drag text", (expectDocument) ->
   typeCharacters "abc", ->

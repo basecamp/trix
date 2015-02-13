@@ -2,12 +2,12 @@ editorModule "Host API", template: "editor_empty"
 
 editorTest "files are rejected without a delegate", (expectDocument) ->
   getEditorController().delegate = null
-  getComposition().insertFile(createFile())
+  insertFile(createFile())
   expectDocument("\n")
 
 editorTest "rejecting files", (expectDocument) ->
   getEditorController().delegate = shouldAcceptFile: -> false
-  getComposition().insertFile(createFile())
+  insertFile(createFile())
   expectDocument("\n")
 
 editorTest "accepting files", (expectDocument) ->
@@ -16,17 +16,17 @@ editorTest "accepting files", (expectDocument) ->
       equal file.name, "hello.txt"
       true
 
-  getComposition().insertFile(createFile(name: "hello.txt"))
+  insertFile(createFile(name: "hello.txt"))
   expectDocument("#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n")
 
 editorTest "removing an attachment", (expectDocument) ->
   getEditorController().delegate = createHostDelegate()
 
-  getComposition().insertString("abc")
-  getComposition().insertFile(createFile())
+  insertString("abc")
+  insertFile(createFile())
   equal getEditorController().delegate.attachments.length, 1
 
-  getComposition().insertString("def")
+  insertString("def")
   getEditorController().delegate.attachments[0].remove()
   equal getEditorController().delegate.attachments.length, 0
 
@@ -34,7 +34,7 @@ editorTest "removing an attachment", (expectDocument) ->
 
 editorTest "setting an attachment's URL", (done) ->
   getEditorController().delegate = createHostDelegate()
-  getComposition().insertFile(createFile(name: "hello.txt"))
+  insertFile(createFile(name: "hello.txt"))
 
   url = "http://example.com/hello.txt"
   managedAttachment = getEditorController().delegate.attachments[0]
@@ -48,14 +48,14 @@ editorTest "setting an attachment's URL", (done) ->
 
 editorTest "setting an attachment's upload progress", (done) ->
   getEditorController().delegate = createHostDelegate()
-  getComposition().insertFile(createFile(name: "hello.txt"))
+  insertFile(createFile(name: "hello.txt"))
   managedAttachment = getEditorController().delegate.attachments[0]
 
   managedAttachment.setUploadProgress(40)
-  equal document.activeElement.querySelector("progress").value, 40
+  equal document.activeElement.querySelector("progress").getAttribute("value"), 40
 
   managedAttachment.setUploadProgress(77)
-  equal document.activeElement.querySelector("progress").value, 77
+  equal document.activeElement.querySelector("progress").getAttribute("value"), 77
 
   managedAttachment.setAttributes(url: "http://example")
   ok not document.activeElement.querySelector("progress")

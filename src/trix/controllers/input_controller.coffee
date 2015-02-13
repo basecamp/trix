@@ -1,6 +1,9 @@
+#= require trix/observers/mutation_observer
 #= require trix/operations/file_verification_operation
 
 {handleEvent, findClosestElementFromNode, findElementForContainerAtOffset, defer} = Trix
+
+inputLog = Trix.Logger.get("input")
 
 class Trix.InputController extends Trix.BasicObject
   pastedFileCount = 0
@@ -16,21 +19,61 @@ class Trix.InputController extends Trix.BasicObject
     "79": "o"
 
   constructor: (@element) ->
+    @resetInputSummary()
+
+    @mutationObserver = new Trix.MutationObserver @element
+    @mutationObserver.delegate = this
+
     for eventName of @events
       handleEvent eventName, onElement: @element, withCallback: @handlerFor(eventName), inPhase: "capturing"
 
   handlerFor: (eventName) ->
     (event) =>
-      try
-        @events[eventName].call(this, event)
-      catch error
-        @delegate?.inputControllerDidThrowError?(error, {eventName})
-        throw error
+      @eventName = eventName
+      inputLog.group(eventName)
+      @events[eventName].call(this, event)
+      inputLog.groupEnd()
 
-  # Mobile input mode
+  setInputSummary: (summary = {}) ->
+    @inputSummary.eventName = @eventName
+    @inputSummary[key] = value for key, value of summary
+    inputLog.log("#setInputSummary", JSON.stringify(@inputSummary))
+    @inputSummary
 
-  isMobileInputModeEnabled: ->
-    Trix.config.useMobileInputMode()
+  resetInputSummary: ->
+    @inputSummary = {}
+
+  # Render cycle
+
+  editorWillRenderDocumentElement: ->
+    @mutationObserver.stop()
+
+  editorDidRenderDocumentElement: ->
+    @mutationObserver.start()
+
+  requestRender: ->
+    @delegate?.inputControllerDidRequestRender?()
+
+  # Mutation observer delegate
+
+  elementDidMutate: (mutationSummary) ->
+    inputLog.group("Mutation")
+    inputLog.log("mutationSummary =", JSON.stringify(mutationSummary))
+
+    unless @mutationIsExpected(mutationSummary)
+      inputLog.log("mutation doesn't match input, replacing HTML")
+      @responder?.replaceHTML(@element.innerHTML)
+    @resetInputSummary()
+    @requestRender()
+
+    inputLog.groupEnd()
+
+  mutationIsExpected: (mutationSummary) ->
+    return unless @inputSummary
+    return true if @inputSummary.keyName is "return"
+    unhandledAddition = mutationSummary.textAdded? and mutationSummary.textAdded isnt @inputSummary.textAdded
+    unhandledDeletion = mutationSummary.textDeleted? and not @inputSummary.didDelete
+    not (unhandledAddition or unhandledDeletion)
 
   # File verification
 
@@ -38,21 +81,28 @@ class Trix.InputController extends Trix.BasicObject
     operations = (new Trix.FileVerificationOperation(file) for file in files)
     Promise.all(operations).then (files) =>
       @delegate?.inputControllerWillAttachFiles()
-      for file in files
-        if @responder?.insertFile(file)
-          file.trixInserted = true
+      @responder?.insertFile(file) for file in files
+      @requestRender()
 
   # Input handlers
 
   events:
     keydown: (event) ->
+      return if @inputSummary.eventName is "compositionend"
+      @resetInputSummary()
+
       if keyName = @constructor.keyNames[event.keyCode]
         context = @keys
         for modifier in ["ctrl", "alt", "shift"] when event["#{modifier}Key"]
           modifier = "control" if modifier is "ctrl"
           context = @keys[modifier]
-          break if context[keyName]
-        context[keyName]?.call(this, event)
+          if context[keyName]
+            keyModifier = modifier
+            break
+
+        if context[keyName]?
+          @setInputSummary({keyName, keyModifier})
+          context[keyName].call(this, event)
 
       if keyEventIsKeyboardCommand(event)
         if character = String.fromCharCode(event.keyCode).toLowerCase()
@@ -62,7 +112,7 @@ class Trix.InputController extends Trix.BasicObject
             event.preventDefault()
 
     keypress: (event) ->
-      return if @isMobileInputModeEnabled()
+      return if @inputSummary.eventName?
       return if (event.metaKey or event.ctrlKey) and not event.altKey
       return if keyEventIsWebInspectorShortcut(event)
       return if keyEventIsPasteAndMatchStyleShortcut(event)
@@ -73,9 +123,9 @@ class Trix.InputController extends Trix.BasicObject
         character = String.fromCharCode event.charCode
 
       if character?
-        event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(character)
+        @setInputSummary(textAdded: character, didDelete: @selectionIsExpanded())
 
     dragenter: (event) ->
       event.preventDefault()
@@ -107,6 +157,7 @@ class Trix.InputController extends Trix.BasicObject
         @delegate?.inputControllerWillMoveText()
         @responder?.moveTextFromLocationRange(@draggedRange)
         delete @draggedRange
+        @requestRender()
 
       else if files = event.dataTransfer.files
         @attachFiles(event.dataTransfer.files)
@@ -116,7 +167,7 @@ class Trix.InputController extends Trix.BasicObject
 
     cut: (event) ->
       @delegate?.inputControllerWillCutText()
-      defer => @responder?.deleteBackward()
+      @deleteInDirection("backward")
 
     paste: (event) ->
       paste = event.clipboardData ? event.testClipboardData
@@ -139,28 +190,27 @@ class Trix.InputController extends Trix.BasicObject
           if @responder?.insertFile(file)
             file.trixInserted = true
 
+      @requestRender()
+
     compositionstart: (event) ->
-      @delegate?.inputControllerWillStartComposition?()
-      @composing = true
+      @mutationObserver.stop()
 
     compositionend: (event) ->
-      @delegate?.inputControllerWillEndComposition?()
-      @composedString = event.data
+      if (composedString = event.data)?
+        @delegate?.inputControllerWillPerformTyping()
+        @responder?.insertString(composedString)
+        @setInputSummary(textAdded: composedString, didDelete: @selectionIsExpanded())
+      @mutationObserver.start()
 
     input: (event) ->
-      if @composing and @composedString?
-        @delegate?.inputControllerDidComposeCharacters?(@composedString) if @composedString
-        delete @composedString
-        delete @composing
+      event.stopPropagation()
 
   keys:
     backspace: (event) ->
-      event.preventDefault()
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.deleteBackward()
+      @deleteInDirection("backward")
 
     return: (event) ->
-      event.preventDefault()
       @delegate?.inputControllerWillPerformTyping()
       @responder?.insertLineBreak()
 
@@ -172,55 +222,57 @@ class Trix.InputController extends Trix.BasicObject
     left: (event) ->
       if @selectionIsInCursorTarget()
         event.preventDefault()
-        @responder?.adjustPositionInDirection("backward")
+        @responder?.moveCursorInDirection("backward")
 
     right: (event) ->
       if @selectionIsInCursorTarget()
         event.preventDefault()
-        @responder?.adjustPositionInDirection("forward")
+        @responder?.moveCursorInDirection("forward")
 
     control:
       d: (event) ->
-        event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
-        @responder?.deleteForward()
+        @deleteInDirection("forward")
 
       h: (event) ->
         @delegate?.inputControllerWillPerformTyping()
-        @backspace(event)
+        @deleteInDirection("backward")
 
       o: (event) ->
         event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString("\n", updatePosition: false)
+        @requestRender()
 
     alt:
       backspace: (event) ->
-        event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
-        @responder?.deleteWordBackward()
 
     shift:
       return: (event) ->
-        event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString("\n")
 
       left: (event) ->
         if @selectionIsInCursorTarget()
           event.preventDefault()
-          @responder?.expandLocationRangeInDirection("backward")
+          @expandSelectionInDirection("backward")
 
       right: (event) ->
         if @selectionIsInCursorTarget()
           event.preventDefault()
-          @responder?.expandLocationRangeInDirection("forward")
+          @expandSelectionInDirection("forward")
 
-  selectionIsInCursorTarget: ->
-    @responder?.selectionIsInCursorTarget()
+  deleteInDirection: (direction) ->
+    @responder?.deleteInDirection(direction)
+    @setInputSummary(didDelete: true)
 
-  extensionForFile = (file) ->
-    file.type?.match(/\/(\w+)$/)?[1]
+  @proxyMethod "responder?.expandSelectionInDirection"
+  @proxyMethod "responder?.selectionIsInCursorTarget"
+  @proxyMethod "responder?.selectionIsExpanded"
+
+extensionForFile = (file) ->
+  file.type?.match(/\/(\w+)$/)?[1]
 
 keyEventIsWebInspectorShortcut = (event) ->
   event.metaKey and event.altKey and not event.shiftKey and event.keyCode is 94

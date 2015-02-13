@@ -1,29 +1,40 @@
-{defer, findClosestElementFromNode} = Trix
+{defer, findClosestElementFromNode, normalizeSpaces} = Trix
 
 class Trix.MutationObserver extends Trix.BasicObject
+  mutableSelector = "[data-trix-mutable]"
+
   options =
     attributes: true
     childList: true
     characterData: true
+    characterDataOldValue: true
     subtree: true
 
   constructor: (@element) ->
     @observer = new window.MutationObserver @didMutate
-    @reset()
     @start()
 
   start: ->
+    @reset()
     @observer.observe(@element, options)
 
   stop: ->
     @observer.disconnect()
 
   didMutate: (mutations) =>
-    significantMutations = @findSignificantMutations(mutations)
-    @mutations.push(significantMutations...)
-    @notifyDelegateOnce()
+    clearTimeout(@debounce)
+    @mutations.push(@findSignificantMutations(mutations)...)
+
+    @debounce = setTimeout =>
+      if @mutations.length
+        @delegate?.elementDidMutate?(@getMutationSummary())
+        @reset()
+    , 1
 
   # Private
+
+  reset: ->
+    @mutations = []
 
   findSignificantMutations: (mutations) ->
     mutation for mutation in mutations when @mutationIsSignificant(mutation)
@@ -33,10 +44,10 @@ class Trix.MutationObserver extends Trix.BasicObject
     false
 
   nodeIsSignificant: (node) ->
-    node isnt @element and @nodeIsEditable(node)
+    node isnt @element and not @nodeIsMutable(node)
 
-  nodeIsEditable: (node) ->
-    findClosestElementFromNode(node)?.isContentEditable
+  nodeIsMutable: (node) ->
+    findClosestElementFromNode(node, matchingSelector: mutableSelector)
 
   nodesModifiedByMutation: (mutation) ->
     nodes = []
@@ -53,13 +64,51 @@ class Trix.MutationObserver extends Trix.BasicObject
         nodes.push(mutation.removedNodes...)
     nodes
 
-  reset: ->
-    @mutations = []
+  getMutationSummary: ->
+    @getTextMutationSummary()
 
-  notifyDelegateOnce: ->
-    if @mutations.length
-      clearTimeout(@timeout)
-      @timeout = setTimeout =>
-        @delegate?.elementDidMutate?(@mutations)
-        @reset()
-      , 1
+  getTextMutationSummary: ->
+    additions = []
+    deletions = []
+
+    characterMutations = @getMutationsByType("characterData")
+
+    if characterMutations.length
+      [startMutation, ..., endMutation] = characterMutations
+      oldString = normalizeSpaces(startMutation.oldValue)
+      newString = normalizeSpaces(endMutation.target.data)
+
+      additions.push(stringDifference(newString, oldString))
+      deletions.push(stringDifference(oldString, newString))
+
+    for node in @getRemovedTextNodes()
+      deletions.push(node.data)
+
+    summary = {}
+    summary.textAdded = added if added = additions.join("")
+    summary.textDeleted = deleted if deleted = deletions.join("")
+    summary
+
+  getMutationsByType: (type) ->
+    mutation for mutation in @mutations when mutation.type is type
+
+  getRemovedTextNodes: ->
+    nodes = []
+    for mutation in @getMutationsByType("childList")
+      for node in mutation.removedNodes when node.nodeType is Node.TEXT_NODE
+        nodes.push(node)
+    nodes
+
+  stringDifference = (a, b) ->
+    leftIndex = 0
+    rightIndexA = a.length
+    rightIndexB = b.length
+
+    while leftIndex < rightIndexA and a.charAt(leftIndex) is b.charAt(leftIndex)
+      leftIndex++
+
+    while rightIndexA > leftIndex and a.charAt(rightIndexA - 1) is b.charAt(rightIndexB - 1)
+      rightIndexA--
+      rightIndexB--
+
+    a.slice(leftIndex, rightIndexA)

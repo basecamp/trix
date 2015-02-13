@@ -19,9 +19,9 @@ class Trix.Composition extends Trix.BasicObject
     selectedRange: @getLocationRange()
 
   restoreSnapshot: ({document, selectedRange}) ->
-    @notifyDelegateOfIntentionToSetLocationRange()
     @document.replaceDocument(document)
     @setLocationRange(selectedRange)
+    @delegate?.compositionDidRestoreSnapshot?()
 
   # Document delegate
 
@@ -41,7 +41,6 @@ class Trix.Composition extends Trix.BasicObject
 
   insertText: (text, {updatePosition} = updatePosition: true) ->
     if updatePosition
-      @notifyDelegateOfIntentionToSetLocationRange()
       position = @getPosition()
 
     locationRange = @getLocationRange()
@@ -55,18 +54,17 @@ class Trix.Composition extends Trix.BasicObject
     @insertDocument(document)
 
   insertDocument: (document = Trix.Document.fromString("")) ->
-    @notifyDelegateOfIntentionToSetLocationRange()
     position = @getPosition()
     locationRange = @getLocationRange()
     @document.insertDocumentAtLocationRange(document, locationRange)
     @setPosition(position + document.getLength())
 
   insertString: (string, options) ->
-    text = Trix.Text.textForStringWithAttributes(string, @getCurrentTextAttributes())
+    attributes = @getCurrentTextAttributes()
+    text = Trix.Text.textForStringWithAttributes(string, attributes)
     @insertText(text, options)
 
   insertBlockBreak: ->
-    @notifyDelegateOfIntentionToSetLocationRange()
     position = @getPosition()
     locationRange = @getLocationRange()
     @document.insertBlockBreakAtLocationRange(locationRange)
@@ -111,9 +109,10 @@ class Trix.Composition extends Trix.BasicObject
       @insertDocument(document)
 
   replaceHTML: (html) ->
-    @preserveSelection =>
-      document = Trix.Document.fromHTML(html)
-      @document.replaceDocument(document.copyUsingObjectsFromDocument(@document))
+    document = Trix.Document.fromHTML(html).copyUsingObjectsFromDocument(@document)
+    unless document.isEqualTo(@document)
+      @preserveSelection =>
+        @document.replaceDocument(document)
 
   insertFile: (file) ->
     if @delegate?.compositionShouldAcceptFile(file)
@@ -121,38 +120,28 @@ class Trix.Composition extends Trix.BasicObject
       text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
       @insertText(text)
 
-  deleteInDirectionWithGranularity: (direction, granularity) ->
-    @notifyDelegateOfIntentionToSetLocationRange()
+  deleteInDirection: (direction) ->
     locationRange = @getLocationRange()
 
     if locationRange.isCollapsed()
-      if granularity is "character"
-        @expandSelectionInDirection(direction)
+      range = @getRange()
+      if direction is "backward"
+        range[0]--
       else
-        @expandSelectionInDirectionWithGranularity(direction, granularity)
-      locationRange = @getLocationRange()
+        range[1]++
+      locationRange = @document.locationRangeFromRange(range)
 
     @document.removeTextAtLocationRange(locationRange)
     @setLocationRange(locationRange.collapse())
 
-  deleteBackward: ->
-    @deleteInDirectionWithGranularity("backward", "character")
-
-  deleteForward: ->
-    @deleteInDirectionWithGranularity("forward", "character")
-
-  deleteWordBackward: ->
-    @deleteInDirectionWithGranularity("backward", "word")
-
   moveTextFromLocationRange: (locationRange) ->
-    @notifyDelegateOfIntentionToSetLocationRange()
     position = @getPosition()
     @document.moveTextFromLocationRangeToPosition(locationRange, position)
     @setPosition(position)
 
   removeAttachment: (attachment) ->
     if locationRange = @document.getLocationRangeOfAttachment(attachment)
-      @notifyDelegateOfIntentionToSetLocationRange()
+      @stopEditingAttachment()
       @document.removeTextAtLocationRange(locationRange)
       @setLocationRange(locationRange.collapse())
 
@@ -160,6 +149,7 @@ class Trix.Composition extends Trix.BasicObject
     locationRange = @getLocationRange()
     block = @document.getBlockAtIndex(locationRange.end.index)
     @removeCurrentAttribute(block.getLastAttribute())
+    @setLocationRange(locationRange.collapse())
 
   # Current attributes
 
@@ -195,7 +185,6 @@ class Trix.Composition extends Trix.BasicObject
 
   setBlockAttribute: (attributeName, value) ->
     return unless locationRange = @getLocationRange()
-    @notifyDelegateOfIntentionToSetLocationRange()
     range = @document.rangeFromLocationRange(locationRange)
     @document.applyBlockAttributeAtLocationRange(attributeName, value, locationRange)
     @setRange(range)
@@ -262,15 +251,17 @@ class Trix.Composition extends Trix.BasicObject
   hasFrozenSelection: ->
     @hasCurrentAttribute("frozen")
 
-  # Location range and selection
+  # Location range
 
   @proxyMethod "getSelectionManager().getLocationRange"
-  @proxyMethod "getSelectionManager().setLocationRange"
   @proxyMethod "getSelectionManager().setLocationRangeFromPoint"
   @proxyMethod "getSelectionManager().preserveSelection"
   @proxyMethod "getSelectionManager().locationIsCursorTarget"
-  @proxyMethod "getSelectionManager().expandSelectionInDirectionWithGranularity"
+  @proxyMethod "getSelectionManager().selectionIsExpanded"
   @proxyMethod "delegate?.getSelectionManager"
+
+  setLocationRange: ->
+    @delegate?.compositionDidRequestLocationRange?(arguments...)
 
   getRange: ->
     locationRange = @getLocationRange()
@@ -287,29 +278,27 @@ class Trix.Composition extends Trix.BasicObject
     locationRange = @document.locationRangeFromPosition(position)
     @setLocationRange(locationRange)
 
-  adjustPositionInDirection: (direction) ->
-    distance = if direction is "backward" then -1 else 1
-    @setPosition(@getPosition() + distance)
+  # Selection
 
-  expandLocationRangeInDirection: (direction) ->
-    range = @getRange()
-    if direction is "backward" then range[0]-- else range[1]++
-    @setRange(range)
+  setSelectionForLocationRange: ->
+    @getSelectionManager().setLocationRange(arguments...)
+
+  moveCursorInDirection: (direction) ->
+    distance = if direction is "backward" then -1 else 1
+    locationRange = @document.locationRangeFromPosition(@getPosition() + distance)
+    @setSelectionForLocationRange(locationRange)
 
   expandSelectionInDirection: (direction) ->
-    if @shouldExpandInDirectionUsingLocationRange(direction)
-      @expandLocationRangeInDirection(direction)
-    else
-      @expandSelectionInDirectionWithGranularity(direction, "character")
-
-  notifyDelegateOfIntentionToSetLocationRange: ->
-    @delegate?.compositionWillSetLocationRange()
+    range = @getRange()
+    if direction is "backward" then range[0]-- else range[1]++
+    locationRange = @document.locationRangeFromRange(range)
+    @setSelectionForLocationRange(locationRange)
 
   expandSelectionForEditing: ->
     if @hasCurrentAttribute("href")
-      @expandLocationRangeAroundCommonAttribute("href")
+      @expandSelectionAroundCommonAttribute("href")
 
-  expandLocationRangeAroundCommonAttribute: (attributeName) ->
+  expandSelectionAroundCommonAttribute: (attributeName) ->
     locationRange = @getLocationRange()
 
     if locationRange.isInSingleIndex()
@@ -318,7 +307,7 @@ class Trix.Composition extends Trix.BasicObject
       textRange = [locationRange.start.offset, locationRange.end.offset]
       [left, right] = text.getExpandedRangeForAttributeAtRange(attributeName, textRange)
 
-      @setLocationRange([index, left], [index, right])
+      @setSelectionForLocationRange([index, left], [index, right])
 
   selectionContainsAttachmentWithAttribute: (attributeName) ->
     if locationRange = @getLocationRange()
@@ -343,14 +332,6 @@ class Trix.Composition extends Trix.BasicObject
     delete @editingAttachment
 
   # Private
-
-  shouldExpandInDirectionUsingLocationRange: (direction) ->
-    position = @getPosition()
-    distance = if direction is "backward" then -1 else 1
-    range = [position, position + distance].sort()
-    locationRange = @document.locationRangeFromRange(range)
-    character = @document.getStringAtLocationRange(locationRange).substr(0, 1)
-    character in ["\n", Trix.OBJECT_REPLACEMENT_CHARACTER]
 
   getDocument: ->
     @document.copy()

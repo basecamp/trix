@@ -49,6 +49,8 @@ class Trix.Editor extends Trix.Object
   @proxyMethod "delegate?.compositionDidRemoveAttachment"
   @proxyMethod "delegate?.compositionDidStartEditingAttachment"
   @proxyMethod "delegate?.compositionDidStopEditingAttachment"
+  @proxyMethod "delegate?.compositionDidRequestLocationRange"
+  @proxyMethod "delegate?.compositionDidRestoreSnapshot"
   @proxyMethod "delegate?.getSelectionManager"
 
   # Forward attachment manager delegate

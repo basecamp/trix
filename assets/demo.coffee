@@ -1,4 +1,6 @@
 #= require_self
+#= require trix/core/helpers/global
+#= require trix/core/utilities/debugger
 #= require ./documents
 #= require ./inspector/inspector_controller
 
@@ -20,13 +22,15 @@ addEventListener "DOMContentLoaded", ->
 
     handleEvent "trix-attachment-add", onElement: editorElement, withCallback: (event) ->
       {attachment} = event
-      if {file} = attachment
+      console.log "HOST: attachment added", attachment
+      if attachment.file
         uploadAttachment(attachment)
       else
         saveAttachment(attachment)
 
     handleEvent "trix-attachment-remove", onElement: editorElement, withCallback: (event) ->
       {attachment} = event
+      console.log "HOST: attachment removed", attachment
       removeAttachment(attachment)
 
 saveAttachment = (attachment) ->

@@ -10,6 +10,7 @@ class Trix.SelectionManager extends Trix.BasicObject
     Trix.selectionChangeObserver.registerSelectionManager(this)
 
   getLocationRange: ->
+    @updateCurrentLocationRange()
     @lockedLocationRange ? @currentLocationRange
 
   setLocationRange: (start, end) ->
@@ -21,38 +22,12 @@ class Trix.SelectionManager extends Trix.BasicObject
       new Trix.LocationRange start, end
 
     if domRange = @createDOMRangeFromLocationRange(locationRange)
-      # Selection#addRange is unreasonably slow in WebKit when performed in the
-      # same call stack as a mouse or key event so defer calling it.
-      # https://code.google.com/p/chromium/issues/detail?id=423170
-      # https://code.google.com/p/chromium/issues/detail?id=138439
-      defer => setDOMRange(domRange) if document.activeElement is @element
+      setDOMRange(domRange)
       @updateCurrentLocationRange(locationRange)
 
   setLocationRangeFromPoint: (point) ->
     if locationRange = @getLocationRangeAtPoint(point)
       @setLocationRange(locationRange)
-
-  expandSelectionInDirectionWithGranularity: (direction, granularity) ->
-    return unless selection = getDOMSelection()
-    if selection.modify
-      selection.modify("extend", direction, granularity)
-    else if document.body.createTextRange
-      [leftPoint, rightPoint] = @getSelectionEndPoints()
-
-      leftRange = document.body.createTextRange()
-      leftRange.moveToPoint(leftPoint...)
-
-      rightRange = document.body.createTextRange()
-      rightRange.moveToPoint(rightPoint...)
-
-      if direction is "forward"
-        rightRange.move(granularity, 1)
-      else
-        leftRange.move(granularity, -1)
-
-      leftRange.setEndPoint("EndToEnd", rightRange)
-      leftRange.select()
-    Trix.selectionChangeObserver.update()
 
   locationIsCursorTarget: (location) ->
     [node, offset] = @findNodeAndOffsetForLocation(location)
@@ -60,7 +35,12 @@ class Trix.SelectionManager extends Trix.BasicObject
 
   lock: ->
     if @lockCount++ is 0
+      @updateCurrentLocationRange()
       @lockedLocationRange = @getLocationRange()
+
+  lockToLocationRange: (locationRange) ->
+    if @lockCount++ is 0
+      @lockedLocationRange = locationRange
 
   unlock: ->
     if --@lockCount is 0
@@ -88,6 +68,12 @@ class Trix.SelectionManager extends Trix.BasicObject
 
   clearSelection: ->
     getDOMSelection()?.removeAllRanges()
+
+  selectionIsCollapsed: ->
+    getDOMRange()?.collapsed is true
+
+  selectionIsExpanded: ->
+    not @selectionIsCollapsed()
 
   focus: ->
     return if @getLocationRange()
@@ -200,7 +186,7 @@ class Trix.SelectionManager extends Trix.BasicObject
 
   getNodesForIndex: (index) ->
     nodes = []
-    walker = walkTree(@element)
+    walker = walkTree(@element, usingFilter: emptyTextNodeFilter)
     recordingNodes = false
 
     while walker.nextNode()
@@ -276,6 +262,15 @@ class Trix.SelectionManager extends Trix.BasicObject
 
   nodeIsBlockStartComment = (node) ->
     node.nodeType is Node.COMMENT_NODE and node.data is "block"
+
+  nodeIsEmptyTextNode = (node) ->
+    node.nodeType is Node.TEXT_NODE and node.data is ""
+
+  emptyTextNodeFilter = (node) ->
+    if nodeIsEmptyTextNode(node)
+      NodeFilter.FILTER_REJECT
+    else
+      NodeFilter.FILTER_ACCEPT
 
   getDOMSelection = ->
     selection = window.getSelection()

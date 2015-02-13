@@ -77,10 +77,10 @@ class Trix.PieceView extends Trix.ObjectView
         return makeElement(config.groupTagName, attributes)
 
   preserveSpaces = (string) ->
+    nbsp = Trix.NON_BREAKING_SPACE
     string
-      # Replace two spaces with a space and a non-breaking space
-      .replace(/\s{2}/g, " \u00a0")
-      # Replace leading space with a non-breaking space
-      .replace(/^\s{1}/, "\u00a0")
-      # Replace trailing space with a non-breaking space
-      .replace(/\s{1}$/, "\u00a0")
+      .replace(/\ $/, nbsp)
+      .replace(/(\S)\ {3}(\S)/g, "$1 #{nbsp} $2")
+      .replace(/\ {2}/g, "#{nbsp} ")
+      .replace(/\ {2}/g, " #{nbsp}")
+      .replace(/^\ /, nbsp)

@@ -5,13 +5,14 @@ html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector
 
 Trix.extend
-  handleEvent: (eventName, {onElement, matchingSelector, withCallback, inPhase, preventDefault} = {}) ->
+  handleEvent: (eventName, {onElement, matchingSelector, withCallback, inPhase, preventDefault, times} = {}) ->
     element = onElement ? html
     selector = matchingSelector
     callback = withCallback
     useCapture = inPhase is "capturing"
 
     handler = (event) ->
+      handler.destroy() if times? and --times is 0
       target = Trix.findClosestElementFromNode(event.target, matchingSelector: selector)
       withCallback?.call(target, event, target) if target?
       event.preventDefault() if preventDefault
@@ -22,6 +23,10 @@ Trix.extend
     element.addEventListener(eventName, handler, useCapture)
     handler
 
+  handleEventOnce: (eventName, options = {}) ->
+    options.times = 1
+    Trix.handleEvent(eventName, options)
+
   triggerEvent: (eventName, {onElement, bubbles, cancelable, attributes} = {}) ->
     element = onElement ? html
     bubbles = bubbles isnt false
@@ -31,7 +36,6 @@ Trix.extend
     event.initEvent(eventName, bubbles, cancelable)
     Trix.extend.call(event, attributes) if attributes?
     element.dispatchEvent(event)
-    event
 
   elementMatchesSelector: (element, selector) ->
     if element?.nodeType is 1

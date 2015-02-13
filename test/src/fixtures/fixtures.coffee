@@ -7,6 +7,12 @@ createDocument = (parts...) ->
 
 blockComment = "<!--block-->"
 
+cursorTarget = Trix.makeElement(
+  tagName: "span"
+  textContent: Trix.ZERO_WIDTH_SPACE
+  data: trixCursorTarget: true, trixSerialize: false
+).outerHTML
+
 @fixtures =
   "bold text":
     document: createDocument(["abc", bold: true])
@@ -36,6 +42,50 @@ blockComment = "<!--block-->"
         ]
       ]
     html: """<div>#{blockComment}<a href="http://example.com">ab<em>c</em></a></div>"""
+
+  "spaces 1":
+    document: createDocument([" a"])
+    html: """<div>#{blockComment}&nbsp;a</div>"""
+
+  "spaces 2":
+    document: createDocument(["  a"])
+    html: """<div>#{blockComment}&nbsp; a</div>"""
+
+  "spaces 3":
+    document: createDocument(["   a"])
+    html: """<div>#{blockComment}&nbsp; &nbsp;a</div>"""
+
+  "spaces 4":
+    document: createDocument([" a "])
+    html: """<div>#{blockComment}&nbsp;a&nbsp;</div>"""
+
+  "spaces 5":
+    document: createDocument(["a  b"])
+    html: """<div>#{blockComment}a&nbsp; b</div>"""
+
+  "spaces 6":
+    document: createDocument(["a   b"])
+    html: """<div>#{blockComment}a &nbsp; b</div>"""
+
+  "spaces 7":
+    document: createDocument(["a    b"])
+    html: """<div>#{blockComment}a&nbsp; &nbsp; b</div>"""
+
+  "spaces 8":
+    document: createDocument(["a b "])
+    html: """<div>#{blockComment}a b&nbsp;</div>"""
+
+  "spaces 9":
+    document: createDocument(["a b c"])
+    html: """<div>#{blockComment}a b c</div>"""
+
+  "spaces 10":
+    document: createDocument(["a "])
+    html: """<div>#{blockComment}a&nbsp;</div>"""
+
+  "spaces 11":
+    document: createDocument(["a  "])
+    html: """<div>#{blockComment}a &nbsp;</div>"""
 
   "quote formatted block":
     document: createDocument(["abc", {}, ["quote"]])
@@ -91,34 +141,11 @@ blockComment = "<!--block-->"
 
   "image attachment": do ->
     imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
-    attrs = url: imageData, filename: "example.png", filesize: 123, contentType: "image/png"
-    attachment = Trix.Attachment.attachmentForAttributes(attrs)
-    text = Trix.Text.textForAttachmentWithAttributes(attachment, width: 10, height: 20)
-
-    image = Trix.makeElement("img", src: attrs.url, width: 10, height: 20)
-
-    figure = Trix.makeElement
-      tagName: "figure"
-      className: "attachment image"
-
-    data =
-      trixAttachment: JSON.stringify(attachment)
-      trixId: attachment.id
-
-    figure.dataset[key] = value for key, value of data
-    figure.setAttribute("contenteditable", false)
-    figure.appendChild(image)
-
-    html: "<div>#{blockComment}#{figure.outerHTML}</div>"
-    document: new Trix.Document [new Trix.Block text]
-
-  "image attachment without dimensions": do ->
-    imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
-    attrs = url: imageData, filename: "example2.png", filesize: 123, contentType: "image/png"
+    attrs = url: imageData, filename: "example.png", filesize: 123, contentType: "image/png", width: 10, height: 20
     attachment = Trix.Attachment.attachmentForAttributes(attrs)
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
-    image = Trix.makeElement("img", src: attrs.url)
+    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 10, height: 20)
 
     figure = Trix.makeElement
       tagName: "figure"
@@ -132,7 +159,7 @@ blockComment = "<!--block-->"
     figure.setAttribute("contenteditable", false)
     figure.appendChild(image)
 
-    html: "<div>#{blockComment}#{figure.outerHTML}</div>"
+    html: "<div>#{blockComment}#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"
     document: new Trix.Document [new Trix.Block text]
 
   "file attachment": do ->
@@ -156,7 +183,7 @@ blockComment = "<!--block-->"
     caption = """<figcaption>#{attrs.filename}<span class="size">#{attrs.filesize}</span></figcaption>"""
     figure.innerHTML = caption
 
-    html: """<div>#{blockComment}#{link.outerHTML}</div>"""
+    html: """<div>#{blockComment}#{cursorTarget}#{link.outerHTML}#{cursorTarget}</div>"""
     document: new Trix.Document [new Trix.Block text]
 
   "nested quote and code formatted block":
