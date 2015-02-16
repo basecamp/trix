@@ -1,7 +1,7 @@
 #= require trix/observers/mutation_observer
 #= require trix/operations/file_verification_operation
 
-{handleEvent, findClosestElementFromNode, findElementForContainerAtOffset, defer} = Trix
+{handleEvent, findClosestElementFromNode, findElementForContainerAtOffset, defer, makeElement} = Trix
 
 inputLog = Trix.Logger.get("input")
 
@@ -172,25 +172,34 @@ class Trix.InputController extends Trix.BasicObject
     paste: (event) ->
       paste = event.clipboardData ? event.testClipboardData
       return unless paste?
-      return for type in paste.types when type.match(/^com\.apple/)
-      event.preventDefault()
 
-      if html = paste.getData("text/html")
+      if pasteEventIsCrippledSafariHTMLPaste(event)
+        @getPastedHTMLUsingHiddenElement (html) =>
+          @delegate?.inputControllerWillPasteText({paste, html})
+          @responder?.insertHTML(html)
+          @requestRender()
+
+      else if html = paste.getData("text/html")
+        event.preventDefault()
         @delegate?.inputControllerWillPasteText({paste, html})
         @responder?.insertHTML(html)
+        @requestRender()
+
       else if string = paste.getData("text/plain")
+        @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())
         @delegate?.inputControllerWillPasteText({paste, string})
         @responder?.insertString(string)
 
-      if "Files" in paste.types
+      else if "Files" in paste.types
         if file = paste.items?[0]?.getAsFile?()
           if not file.name and extension = extensionForFile(file)
             file.name = "pasted-file-#{++pastedFileCount}.#{extension}"
           @delegate?.inputControllerWillAttachFiles()
-          if @responder?.insertFile(file)
-            file.trixInserted = true
+          @responder?.insertFile(file)
+          @requestRender()
 
-      @requestRender()
+      else
+        event.preventDefault()
 
     compositionstart: (event) ->
       @mutationObserver.stop()
@@ -263,9 +272,24 @@ class Trix.InputController extends Trix.BasicObject
           event.preventDefault()
           @expandSelectionInDirection("forward")
 
+  # Private
+
   deleteInDirection: (direction) ->
     @responder?.deleteInDirection(direction)
     @setInputSummary(didDelete: true)
+
+  getPastedHTMLUsingHiddenElement: (callback) ->
+    locationRange = @responder?.getLocationRange()
+
+    element = makeElement(tagName: "div", editable: true, style: { position: "absolute", left: "-9999px" })
+    document.body.appendChild(element)
+    element.focus()
+
+    requestAnimationFrame =>
+      html = element.innerHTML
+      document.body.removeChild(element)
+      @responder?.setSelectionForLocationRange(locationRange)
+      callback(html)
 
   @proxyMethod "responder?.expandSelectionInDirection"
   @proxyMethod "responder?.selectionIsInCursorTarget"
@@ -282,3 +306,7 @@ keyEventIsPasteAndMatchStyleShortcut = (event) ->
 
 keyEventIsKeyboardCommand = (event) ->
   if /Mac|^iP/.test(navigator.platform) then event.metaKey else event.ctrlKey
+
+pasteEventIsCrippledSafariHTMLPaste = (event) ->
+  if types = event.clipboardData?.types
+    "com.apple.webarchive" in types and "text/html" not in types
