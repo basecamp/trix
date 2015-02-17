@@ -8,21 +8,19 @@
 Trix.defineElement class extends Trix.Element
   @tagName: "trix-editor"
 
-  createdCallback: ->
+  attachedCallback: ->
     super
 
     toolbarElement = findOrCreateToolbarElement(this)
     documentElement = findOrCreateDocumentElement(this)
     inputElement = findOrCreateInputElement(this)
 
-    @editorController = new Trix.EditorController
+    @editorController ?= new Trix.EditorController
       toolbarElement: toolbarElement
       documentElement: documentElement
       autofocus: @hasAttribute("autofocus")
       delegate: new Trix.EditorElementController this, documentElement, inputElement
 
-  attachedCallback: ->
-    super
     @editorController.registerSelectionManager()
 
   detachedCallback: ->
