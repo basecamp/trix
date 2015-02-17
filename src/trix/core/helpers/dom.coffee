@@ -130,9 +130,18 @@ Trix.extend
     registeredConstructor = document.registerElement(tagName, prototype: constructor.prototype)
     window[constructorName] = Trix.extend.call(registeredConstructor, constructor)
 
+  nodeIsBlockStartComment: (node) ->
+    return unless node
+    node.nodeType is Node.COMMENT_NODE and node.data is "block"
+
   nodeIsCursorTarget: (node) ->
     return unless node
     if node.nodeType is Node.TEXT_NODE
       node.textContent is Trix.ZERO_WIDTH_SPACE
     else
       Trix.nodeIsCursorTarget(node.firstChild)
+
+  nodeIsEmptyTextNode: (node) ->
+    return unless node
+    node.nodeType is Node.TEXT_NODE and node.data is ""
+

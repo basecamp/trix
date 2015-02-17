@@ -1,5 +1,6 @@
 {findClosestElementFromNode, findNodeFromContainerAndOffset,
- nodeIsCursorTarget, tagName, walkTree} = Trix
+ nodeIsEmptyTextNode, nodeIsCursorTarget, nodeIsBlockStartComment,
+ tagName, walkTree} = Trix
 
 class Trix.LocationMapper
   constructor: (@element) ->
@@ -98,12 +99,6 @@ class Trix.LocationMapper
         nodes.push(node)
 
     nodes
-
-  nodeIsBlockStartComment = (node) ->
-    node.nodeType is Node.COMMENT_NODE and node.data is "block"
-
-  nodeIsEmptyTextNode = (node) ->
-    node.nodeType is Node.TEXT_NODE and node.data is ""
 
   nodeLength = (node) ->
     if node.nodeType is Node.TEXT_NODE
