@@ -1,7 +1,7 @@
 #= require trix/observers/mutation_observer
 #= require trix/operations/file_verification_operation
 
-{handleEvent, findClosestElementFromNode, findElementForContainerAtOffset, defer, makeElement} = Trix
+{handleEvent, findClosestElementFromNode, findElementFromContainerAndOffset, defer, makeElement} = Trix
 
 inputLog = Trix.Logger.get("input")
 

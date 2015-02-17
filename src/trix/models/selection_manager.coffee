@@ -1,11 +1,12 @@
+#= require trix/models/location_mapper
 #= require trix/models/location_range
 #= require trix/observers/selection_change_observer
 
-{defer, benchmark, tagName, walkTree, findNodeForContainerAtOffset,
- findClosestElementFromNode, elementContainsNode} = Trix
+{defer, benchmark, elementContainsNode, nodeIsCursorTarget} = Trix
 
 class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
+    @locationMapper = new Trix.LocationMapper @element
     @lockCount = 0
 
   getLocationRange: ->
@@ -29,7 +30,7 @@ class Trix.SelectionManager extends Trix.BasicObject
       @setLocationRange(locationRange)
 
   locationIsCursorTarget: (location) ->
-    [node, offset] = @findNodeAndOffsetForLocation(location)
+    [node, offset] = @findNodeAndOffsetFromLocation(location)
     nodeIsCursorTarget(node)
 
   lock: ->
@@ -82,6 +83,10 @@ class Trix.SelectionManager extends Trix.BasicObject
 
   # Private
 
+  @proxyMethod "locationMapper.findLocationFromContainerAndOffset"
+  @proxyMethod "locationMapper.findContainerAndOffsetFromLocation"
+  @proxyMethod "locationMapper.findNodeAndOffsetFromLocation"
+
   selectionDidChange: =>
     @updateCurrentLocationRange()
 
@@ -93,11 +98,11 @@ class Trix.SelectionManager extends Trix.BasicObject
       @delegate?.locationRangeDidChange?(@currentLocationRange)
 
   createDOMRangeFromLocationRange: (locationRange) ->
-    rangeStart = @findContainerAndOffsetForLocation(locationRange.start)
+    rangeStart = @findContainerAndOffsetFromLocation(locationRange.start)
     rangeEnd = if locationRange.isCollapsed()
       rangeStart
     else
-      @findContainerAndOffsetForLocation(locationRange.end)
+      @findContainerAndOffsetFromLocation(locationRange.end)
 
     if rangeStart? and rangeEnd?
       range = document.createRange()
@@ -107,8 +112,8 @@ class Trix.SelectionManager extends Trix.BasicObject
 
   createLocationRangeFromDOMRange: (range) ->
     return unless range? and @rangeWithinElement(range)
-    return unless start = @findLocationFromContainerAtOffset(range.startContainer, range.startOffset)
-    end = @findLocationFromContainerAtOffset(range.endContainer, range.endOffset) unless range.collapsed
+    return unless start = @findLocationFromContainerAndOffset(range.startContainer, range.startOffset)
+    end = @findLocationFromContainerAndOffset(range.endContainer, range.endOffset) unless range.collapsed
     locationRange = new Trix.LocationRange start, end
     locationRange if locationRange.isValid()
 
@@ -117,91 +122,6 @@ class Trix.SelectionManager extends Trix.BasicObject
       elementContainsNode(@element, range.startContainer)
     else
       elementContainsNode(@element, range.startContainer) and elementContainsNode(@element, range.endContainer)
-
-  findLocationFromContainerAtOffset: (container, containerOffset) ->
-    index = offset = 0
-
-    if container is @element
-      if containerOffset > 0
-        index = containerOffset - 1
-        offset += nodeLength(node) for node in @getNodesForIndex(index)
-    else
-      targetNode = findNodeForContainerAtOffset(container, containerOffset)
-      walker = walkTree(@element)
-
-      while walker.nextNode()
-        node = walker.currentNode
-
-        if nodeIsBlockStartComment(node)
-          if currentBlockComment
-            index++
-          else
-            currentBlockComment = node
-          offset = 0
-
-        if node is targetNode
-          if container.nodeType is Node.TEXT_NODE and not nodeIsCursorTarget(node)
-            string = Trix.UTF16String.box(node.textContent)
-            offset += string.offsetFromUCS2Offset(containerOffset)
-          else if containerOffset > 0
-            offset += nodeLength(node)
-          return {index, offset}
-        else
-          offset += nodeLength(node)
-
-    {index, offset}
-
-  findContainerAndOffsetForLocation: (location) ->
-    return [@element, 0] if location.index is 0 and location.offset is 0
-    [node, nodeOffset] = @findNodeAndOffsetForLocation(location)
-    return unless node
-    if node.nodeType is Node.TEXT_NODE
-      container = node
-      string = Trix.UTF16String.box(node.textContent)
-      offset = string.offsetToUCS2Offset(location.offset - nodeOffset)
-    else
-      container = node.parentNode
-      offset = [node.parentNode.childNodes...].indexOf(node) + (if location.offset is 0 then 0 else 1)
-    [container, offset]
-
-  findNodeAndOffsetForLocation: (location) ->
-    offset = 0
-    for currentNode in @getNodesForIndex(location.index)
-      length = nodeLength(currentNode)
-      if location.offset <= offset + length
-        if currentNode.nodeType is Node.TEXT_NODE
-          node = currentNode
-          nodeOffset = offset
-          break if location.offset is nodeOffset and nodeIsCursorTarget(node)
-        else if not node
-          node = currentNode
-          nodeOffset = offset
-      offset += length
-      break if offset > location.offset
-
-    [node, nodeOffset]
-
-  getNodesForIndex: (index) ->
-    nodes = []
-    walker = walkTree(@element, usingFilter: emptyTextNodeFilter)
-    recordingNodes = false
-
-    while walker.nextNode()
-      node = walker.currentNode
-      if nodeIsBlockStartComment(node)
-        if blockIndex?
-          blockIndex++
-        else
-          blockIndex = 0
-
-        if blockIndex is index
-          recordingNodes = true
-        else if recordingNodes
-          break
-      else if recordingNodes
-        nodes.push(node)
-
-    nodes
 
   getLocationRangeAtPoint: ([clientX, clientY]) ->
     if document.caretPositionFromPoint
@@ -235,39 +155,6 @@ class Trix.SelectionManager extends Trix.BasicObject
       rightPoint = [rightRect.right, rightRect.top + rightRect.height / 2]
 
       [leftPoint, rightPoint]
-
-  nodeIsCursorTarget = (node) ->
-    return unless node
-    if node.nodeType is Node.TEXT_NODE
-      node.textContent is Trix.ZERO_WIDTH_SPACE
-    else
-      nodeIsCursorTarget(node.firstChild)
-
-  nodeLength = (node) ->
-    if node.nodeType is Node.TEXT_NODE
-      if nodeIsCursorTarget(node)
-        0
-      else if findClosestElementFromNode(node)?.isContentEditable
-        string = Trix.UTF16String.box(node.textContent)
-        string.length
-      else
-        0
-    else if tagName(node) in ["br", "figure"]
-      1
-    else
-      0
-
-  nodeIsBlockStartComment = (node) ->
-    node.nodeType is Node.COMMENT_NODE and node.data is "block"
-
-  nodeIsEmptyTextNode = (node) ->
-    node.nodeType is Node.TEXT_NODE and node.data is ""
-
-  emptyTextNodeFilter = (node) ->
-    if nodeIsEmptyTextNode(node)
-      NodeFilter.FILTER_REJECT
-    else
-      NodeFilter.FILTER_ACCEPT
 
   getDOMSelection = ->
     selection = window.getSelection()

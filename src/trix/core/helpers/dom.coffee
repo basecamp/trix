@@ -61,7 +61,7 @@ Trix.extend
       return true if node is element
       node = node.parentNode
 
-  findNodeForContainerAtOffset: (container, offset) ->
+  findNodeFromContainerAndOffset: (container, offset) ->
     return unless container
     if container.nodeType is Node.TEXT_NODE
       container
@@ -70,8 +70,8 @@ Trix.extend
     else
       container.childNodes.item(offset - 1)
 
-  findElementForContainerAtOffset: (container, offset) ->
-    node = Trix.findNodeForContainerAtOffset(container, offset)
+  findElementFromContainerAndOffset: (container, offset) ->
+    node = Trix.findNodeFromContainerAndOffset(container, offset)
     Trix.findClosestElementFromNode(node)
 
   measureElement: (element) ->
@@ -129,3 +129,10 @@ Trix.extend
     constructorName = Trix.convertDashesToCamelCase(tagName, initial: true) + "Element"
     registeredConstructor = document.registerElement(tagName, prototype: constructor.prototype)
     window[constructorName] = Trix.extend.call(registeredConstructor, constructor)
+
+  nodeIsCursorTarget: (node) ->
+    return unless node
+    if node.nodeType is Node.TEXT_NODE
+      node.textContent is Trix.ZERO_WIDTH_SPACE
+    else
+      Trix.nodeIsCursorTarget(node.firstChild)
