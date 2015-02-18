@@ -131,17 +131,20 @@ Trix.extend
     window[constructorName] = Trix.extend.call(registeredConstructor, constructor)
 
   nodeIsBlockStartComment: (node) ->
-    return unless node
-    node.nodeType is Node.COMMENT_NODE and node.data is "block"
+    Trix.nodeIsCommentNode(node) and node?.data is "block"
+
+  nodeIsCommentNode: (node) ->
+    node?.nodeType is Node.COMMENT_NODE
 
   nodeIsCursorTarget: (node) ->
     return unless node
-    if node.nodeType is Node.TEXT_NODE
-      node.textContent is Trix.ZERO_WIDTH_SPACE
+    if Trix.nodeIsTextNode(node)
+      node.data is Trix.ZERO_WIDTH_SPACE
     else
       Trix.nodeIsCursorTarget(node.firstChild)
 
   nodeIsEmptyTextNode: (node) ->
-    return unless node
-    node.nodeType is Node.TEXT_NODE and node.data is ""
+    Trix.nodeIsTextNode(node) and node?.data is ""
 
+  nodeIsTextNode: (node) ->
+    node?.nodeType is Node.TEXT_NODE

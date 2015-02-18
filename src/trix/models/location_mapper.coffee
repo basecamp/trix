@@ -1,42 +1,37 @@
 {findClosestElementFromNode, findNodeFromContainerAndOffset,
- nodeIsEmptyTextNode, nodeIsCursorTarget, nodeIsBlockStartComment,
- tagName, walkTree} = Trix
+ nodeIsBlockStartComment, nodeIsCursorTarget, nodeIsEmptyTextNode,
+ nodeIsTextNode, tagName, walkTree} = Trix
 
 class Trix.LocationMapper
   constructor: (@element) ->
 
-  findLocationFromContainerAndOffset: (container, containerOffset) ->
-    index = offset = 0
+  findLocationFromContainerAndOffset: (container, offset) ->
+    childIndex = 0
+    foundBlock = false
+    location = index: 0, offset: 0
 
-    if container is @element
-      if containerOffset > 0
-        index = containerOffset - 1
-        offset += nodeLength(node) for node in @getNodesForIndex(index)
-    else
-      targetNode = findNodeFromContainerAndOffset(container, containerOffset)
-      walker = walkTree(@element)
+    walker = walkTree(@element, usingFilter: skipFigureContentsFilter)
 
-      while walker.nextNode()
-        node = walker.currentNode
+    while walker.nextNode()
+      node = walker.currentNode
+
+      if node is container and nodeIsTextNode(container)
+        unless nodeIsCursorTarget(node)
+          location.offset += translateTextNodeOffset(node, offset)
+        break
+
+      else
+        if node.parentNode is container
+          break if childIndex++ is offset
 
         if nodeIsBlockStartComment(node)
-          if currentBlockComment
-            index++
-          else
-            currentBlockComment = node
-          offset = 0
-
-        if node is targetNode
-          if container.nodeType is Node.TEXT_NODE and not nodeIsCursorTarget(node)
-            string = Trix.UTF16String.box(node.textContent)
-            offset += string.offsetFromUCS2Offset(containerOffset)
-          else if containerOffset > 0
-            offset += nodeLength(node)
-          return {index, offset}
+          location.index++ if foundBlock
+          location.offset = 0
+          foundBlock = true
         else
-          offset += nodeLength(node)
+          location.offset += nodeLength(node)
 
-    {index, offset}
+    location
 
   findContainerAndOffsetFromLocation: (location) ->
     return [@element, 0] if location.index is 0 and location.offset is 0
@@ -44,7 +39,7 @@ class Trix.LocationMapper
     [node, nodeOffset] = @findNodeAndOffsetFromLocation(location)
     return unless node
 
-    if node.nodeType is Node.TEXT_NODE
+    if nodeIsTextNode(node)
       container = node
       string = Trix.UTF16String.box(node.textContent)
       offset = string.offsetToUCS2Offset(location.offset - nodeOffset)
@@ -62,7 +57,7 @@ class Trix.LocationMapper
       length = nodeLength(currentNode)
 
       if location.offset <= offset + length
-        if currentNode.nodeType is Node.TEXT_NODE
+        if nodeIsTextNode(currentNode)
           node = currentNode
           nodeOffset = offset
           break if location.offset is nodeOffset and nodeIsCursorTarget(node)
@@ -114,9 +109,18 @@ class Trix.LocationMapper
     else
       0
 
+  translateTextNodeOffset = (node, offset) ->
+    string = Trix.UTF16String.box(node.textContent)
+    string.offsetFromUCS2Offset(offset)
+
   emptyTextNodeFilter = (node) ->
     if nodeIsEmptyTextNode(node)
       NodeFilter.FILTER_REJECT
     else
       NodeFilter.FILTER_ACCEPT
 
+  skipFigureContentsFilter = (node) ->
+    if tagName(node.parentNode) is "figure"
+      NodeFilter.FILTER_REJECT
+    else
+      NodeFilter.FILTER_ACCEPT
