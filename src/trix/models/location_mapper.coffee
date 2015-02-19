@@ -52,7 +52,8 @@ class Trix.LocationMapper
 
     else
       container = node.parentNode
-      offset = [node.parentNode.childNodes...].indexOf(node) + (if location.offset is 0 then 0 else 1)
+      offset = findChildIndexOfNode(node)
+      offset++ unless location.offset is 0
 
     [container, offset]
 
