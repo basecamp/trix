@@ -74,6 +74,12 @@ Trix.extend
     node = Trix.findNodeFromContainerAndOffset(container, offset)
     Trix.findClosestElementFromNode(node)
 
+  findChildIndexOfNode: (node) ->
+    return unless node?.parentNode
+    childIndex = 0
+    childIndex++ while node = node.previousSibling
+    childIndex
+
   measureElement: (element) ->
     width:  element.offsetWidth
     height: element.offsetHeight

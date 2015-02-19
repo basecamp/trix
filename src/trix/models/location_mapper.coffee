@@ -1,7 +1,6 @@
-{elementContainsNode, findClosestElementFromNode,
- findNodeFromContainerAndOffset, nodeIsBlockStartComment,
- nodeIsCursorTarget, nodeIsEmptyTextNode, nodeIsTextNode,
- tagName, walkTree} = Trix
+{elementContainsNode, findChildIndexOfNode, findClosestElementFromNode,
+ findNodeFromContainerAndOffset, nodeIsBlockStartComment, nodeIsCursorTarget,
+ nodeIsEmptyTextNode, nodeIsTextNode, tagName, walkTree} = Trix
 
 class Trix.LocationMapper
   constructor: (@element) ->
@@ -10,6 +9,10 @@ class Trix.LocationMapper
     childIndex = 0
     foundBlock = false
     location = index: 0, offset: 0
+
+    if figure = @findFigureParentForNode(container)
+      container = figure.parentNode
+      offset = findChildIndexOfNode(figure)
 
     walker = walkTree(@element, usingFilter: skipFigureContentsFilter)
 
@@ -75,6 +78,10 @@ class Trix.LocationMapper
     [node, nodeOffset]
 
   # Private
+
+  findFigureParentForNode: (node) ->
+    figure = findClosestElementFromNode(node, matchingSelector: "figure")
+    figure if elementContainsNode(@element, figure)
 
   getNodesForIndex: (index) ->
     nodes = []
