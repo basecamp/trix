@@ -14,7 +14,7 @@ class Trix.LocationMapper
       container = figure.parentNode
       offset = findChildIndexOfNode(figure)
 
-    walker = walkTree(@element, usingFilter: skipFigureContentsFilter)
+    walker = walkTree(@element, usingFilter: rejectFigureContents)
 
     while walker.nextNode()
       node = walker.currentNode
@@ -59,7 +59,7 @@ class Trix.LocationMapper
   findNodeAndOffsetFromLocation: (location) ->
     offset = 0
 
-    for currentNode in @getNodesForIndex(location.index)
+    for currentNode in @getSignificantNodesForIndex(location.index)
       length = nodeLength(currentNode)
 
       if location.offset <= offset + length
@@ -83,9 +83,9 @@ class Trix.LocationMapper
     figure = findClosestElementFromNode(node, matchingSelector: "figure")
     figure if elementContainsNode(@element, figure)
 
-  getNodesForIndex: (index) ->
+  getSignificantNodesForIndex: (index) ->
     nodes = []
-    walker = walkTree(@element, usingFilter: emptyTextNodeFilter)
+    walker = walkTree(@element, usingFilter: acceptSignificantNodes)
     recordingNodes = false
 
     while walker.nextNode()
@@ -121,13 +121,19 @@ class Trix.LocationMapper
     string = Trix.UTF16String.box(node.textContent)
     string.offsetFromUCS2Offset(offset)
 
-  emptyTextNodeFilter = (node) ->
+  acceptSignificantNodes = (node) ->
+    if rejectEmptyTextNodes(node) is NodeFilter.FILTER_ACCEPT
+      rejectFigureContents(node)
+    else
+      NodeFilter.FILTER_REJECT
+
+  rejectEmptyTextNodes = (node) ->
     if nodeIsEmptyTextNode(node)
       NodeFilter.FILTER_REJECT
     else
       NodeFilter.FILTER_ACCEPT
 
-  skipFigureContentsFilter = (node) ->
+  rejectFigureContents = (node) ->
     if tagName(node.parentNode) is "figure"
       NodeFilter.FILTER_REJECT
     else
