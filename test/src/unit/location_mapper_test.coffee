@@ -52,8 +52,8 @@ test "findLocationFromContainerAndOffset", ->
     { location: [0, 1],  container: [0, 1],     offset: 1 }
     { location: [0, 2],  container: [0, 1],     offset: 2 }
     { location: [0, 2],  container: [0],        offset: 2 }
-    { location: [0, 2],  container: [],         offset: 1 }
-    { location: [0, 2],  container: [1],        offset: 0 }
+    { location: [0, 3],  container: [],         offset: 1 }
+    { location: [0, 3],  container: [1],        offset: 0 }
     { location: [1, 0],  container: [1],        offset: 1 }
     { location: [1, 0],  container: [1, 1],     offset: 0 }
     { location: [1, 1],  container: [1, 1],     offset: 1 }
