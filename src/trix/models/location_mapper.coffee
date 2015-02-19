@@ -99,11 +99,9 @@ class Trix.LocationMapper
     if node.nodeType is Node.TEXT_NODE
       if nodeIsCursorTarget(node)
         0
-      else if findClosestElementFromNode(node)?.isContentEditable
+      else
         string = Trix.UTF16String.box(node.textContent)
         string.length
-      else
-        0
     else if tagName(node) in ["br", "figure"]
       1
     else
