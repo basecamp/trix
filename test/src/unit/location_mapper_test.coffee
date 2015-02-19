@@ -43,52 +43,59 @@ mapper = new Trix.LocationMapper element
 
 test "findLocationFromContainerAndOffset", ->
   assertions = [
-    [[0, 0],  [[],          0]]
-    [[0, 0],  [[0],         0]]
-    [[0, 0],  [[0],         1]]
-    [[0, 0],  [[0, 1],      0]]
-    [[0, 0],  [[0, 1, 0],   0]]
-    [[0, 1],  [[0, 1, 0],   1]]
-    [[0, 1],  [[0, 1],      1]]
-    [[0, 2],  [[0, 1],      2]]
-    [[0, 2],  [[0],         2]]
-    [[0, 2],  [[],          1]]
-    [[0, 2],  [[1],         0]]
-    [[1, 0],  [[1],         1]]
-    [[1, 0],  [[1, 1],      0]]
-    [[1, 1],  [[1, 1],      1]]
-    [[1, 2],  [[1, 1],      2]]
-    [[1, 2],  [[1, 1],      3]]
-    [[1, 3],  [[1, 1],      4]]
-    [[1, 4],  [[1, 1],      5]]
-    [[1, 4],  [[1, 1],      6]]
-    [[1, 4],  [[1],         2]]
-    [[1, 4],  [[1, 2],      0]]
-    [[1, 4],  [[1, 2],      1]]
-    [[1, 4],  [[1],         3]]
-    [[1, 4],  [[1, 3],      0]]
-    [[1, 5],  [[1, 3],      1]]
-    [[1, 5],  [[1],         4]]
-    [[1, 5],  [[1, 4],      0]]
-    [[1, 5],  [[1, 4],      1]]
-    [[1, 5],  [[1],         5]]
-    [[1, 5],  [[1, 5],      0]]
-    [[1, 6],  [[1, 5],      1]]
-    [[1, 6],  [[],          2]]
+    { location: [0, 0],  container: [],         offset: 0 }
+    { location: [0, 0],  container: [0],        offset: 0 }
+    { location: [0, 0],  container: [0],        offset: 1 }
+    { location: [0, 0],  container: [0, 1],     offset: 0 }
+    { location: [0, 0],  container: [0, 1, 0],  offset: 0 }
+    { location: [0, 1],  container: [0, 1, 0],  offset: 1 }
+    { location: [0, 1],  container: [0, 1],     offset: 1 }
+    { location: [0, 2],  container: [0, 1],     offset: 2 }
+    { location: [0, 2],  container: [0],        offset: 2 }
+    { location: [0, 2],  container: [],         offset: 1 }
+    { location: [0, 2],  container: [1],        offset: 0 }
+    { location: [1, 0],  container: [1],        offset: 1 }
+    { location: [1, 0],  container: [1, 1],     offset: 0 }
+    { location: [1, 1],  container: [1, 1],     offset: 1 }
+    { location: [1, 2],  container: [1, 1],     offset: 2 }
+    { location: [1, 2],  container: [1, 1],     offset: 3 }
+    { location: [1, 3],  container: [1, 1],     offset: 4 }
+    { location: [1, 4],  container: [1, 1],     offset: 5 }
+    { location: [1, 4],  container: [1, 1],     offset: 6 }
+    { location: [1, 4],  container: [1],        offset: 2 }
+    { location: [1, 4],  container: [1, 2],     offset: 0 }
+    { location: [1, 4],  container: [1, 2],     offset: 1 }
+    { location: [1, 4],  container: [1],        offset: 3 }
+    { location: [1, 4],  container: [1, 3],     offset: 0 }
+    { location: [1, 5],  container: [1, 3],     offset: 1 }
+    { location: [1, 5],  container: [1],        offset: 4 }
+    { location: [1, 5],  container: [1, 4],     offset: 0 }
+    { location: [1, 5],  container: [1, 4],     offset: 1 }
+    { location: [1, 5],  container: [1],        offset: 5 }
+    { location: [1, 5],  container: [1, 5],     offset: 0 }
+    { location: [1, 6],  container: [1, 5],     offset: 1 }
+    { location: [1, 6],  container: [],         offset: 2 }
   ]
 
   for assertion in assertions
-    [[index, offset], [path, containerOffset]] = assertion
+    path = assertion.container
     container = findContainer(path)
-    location = mapper.findLocationFromContainerAndOffset(container, containerOffset)
+    offset = assertion.offset
 
-    equal "#{location.index}/#{location.offset}", "#{index}/#{offset}",
-      "#{describe(container)} at [#{path.join(", ")}], offset #{containerOffset} = #{index}/#{offset}"
+    expectedLocation = index: assertion.location[0], offset: assertion.location[1]
+    actualLocation = mapper.findLocationFromContainerAndOffset(container, offset)
+
+    equal format(actualLocation), format(expectedLocation),
+      "#{describe(container)} at [#{path.join(", ")}], offset #{offset} = #{format(expectedLocation)}"
+
 
 findContainer = (path) ->
   el = element
   el = el.childNodes[index] for index in path
   el
+
+format = ({index, offset}) ->
+  "#{index}/#{offset}"
 
 describe = (node) ->
   if node.nodeType is Node.TEXT_NODE
