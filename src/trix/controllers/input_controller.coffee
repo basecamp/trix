@@ -310,4 +310,4 @@ keyEventIsKeyboardCommand = (event) ->
 
 pasteEventIsCrippledSafariHTMLPaste = (event) ->
   if types = event.clipboardData?.types
-    "com.apple.webarchive" in types and "text/html" not in types
+    "text/html" not in types and ("com.apple.webarchive" in types or "com.apple.flat-rtfd" in types)

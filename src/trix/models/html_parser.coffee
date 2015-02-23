@@ -203,6 +203,7 @@ class Trix.HTMLParser extends Trix.BasicObject
     JSON.parse(element.dataset.trixAttachment)
 
   sanitizeHTML = (html) ->
+    html = removeInsignificantWhitespace(html)
     doc = document.implementation.createHTMLDocument("")
     doc.documentElement.innerHTML = html
     {body, head} = doc
@@ -231,6 +232,11 @@ class Trix.HTMLParser extends Trix.BasicObject
       node.parentNode.removeChild(node)
 
     body.innerHTML
+
+  removeInsignificantWhitespace = (html) ->
+    html
+      .replace(/>\n+</g, "><")
+      .replace(/>\ +</g, "> <")
 
   getBlockElementMargin = (element) ->
     style = window.getComputedStyle(element)
