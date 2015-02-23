@@ -67,6 +67,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   isBlockElement: (element) ->
     return unless element?.nodeType is Node.ELEMENT_NODE
+    return if findClosestElementFromNode(element, matchingSelector: "td")
     tagName(element) in @getBlockTagNames() or window.getComputedStyle(element).display is "block"
 
   getBlockTagNames: ->
@@ -105,7 +106,7 @@ class Trix.HTMLParser extends Trix.BasicObject
             @appendStringWithAttributes("\n")
         when "td"
           unless element.parentNode.firstChild is element
-            @appendStringWithAttributes(" ")
+            @appendStringWithAttributes(" | ")
 
   appendBlockForAttributesWithElement: (attributes, element) ->
     @blockElements.push(element)

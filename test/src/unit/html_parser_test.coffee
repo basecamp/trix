@@ -31,8 +31,8 @@ test "parses inline element following block element", ->
   expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
 test "translates tables into plain text", ->
-  html = """<table><tr><td>a</td><td>b</td></tr><tr><td>1</td><td>2</td></tr><table>"""
-  expectedHTML = """<div><!--block-->a b<br>1 2</div>"""
+  html = """<table><tr><td>a</td><td>b</td></tr><tr><td>1</td><td><p>2</p></td></tr><table>"""
+  expectedHTML = """<div><!--block-->a | b<br>1 | 2</div>"""
   expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
 test "translates block element margins to newlines", ->
