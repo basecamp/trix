@@ -22,6 +22,7 @@ class Trix.EditorElementController extends Trix.Controller
     unless @loaded
       @load()
       @loaded = true
+    @save()
 
   didChangeDocument: (document) ->
     defer =>
