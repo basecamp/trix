@@ -10,7 +10,6 @@ class Trix.SelectionManager extends Trix.BasicObject
     @lockCount = 0
 
   getLocationRange: ->
-    @updateCurrentLocationRange()
     @lockedLocationRange ? @currentLocationRange
 
   setLocationRange: (start, end) ->

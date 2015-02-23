@@ -34,6 +34,10 @@ class Trix.SelectionChangeObserver extends Trix.BasicObject
       @range = range
       @notifySelectionManagersOfSelectionChange()
 
+  reset: ->
+    delete @range
+    @update()
+
   # Private
 
   run: =>

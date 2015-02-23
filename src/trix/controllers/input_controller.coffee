@@ -102,6 +102,7 @@ class Trix.InputController extends Trix.BasicObject
 
         if context[keyName]?
           @setInputSummary({keyName, keyModifier})
+          Trix.selectionChangeObserver.reset()
           context[keyName].call(this, event)
 
       if keyEventIsKeyboardCommand(event)
