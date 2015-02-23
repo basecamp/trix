@@ -113,7 +113,9 @@ insertCharacter = (character, callback) ->
 
 backspace = (callback) ->
   if getDOMRange()?.collapsed
-    expandSelection("left", callback)
+    expandSelection "left", ->
+      deleteSelection()
+      callback()
   else
     deleteSelection()
     callback()

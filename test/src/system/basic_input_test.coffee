@@ -6,6 +6,7 @@ editorTest "typing", (expectDocument) ->
 
 editorTest "backspacing", (expectDocument) ->
   typeCharacters "abc\b", ->
+    assertLocationRange [0,2]
     expectDocument "ab\n"
 
 editorTest "pressing return", (expectDocument) ->

@@ -65,6 +65,7 @@ class Trix.InputController extends Trix.BasicObject
       @responder?.replaceHTML(@element.innerHTML)
     @resetInputSummary()
     @requestRender()
+    Trix.selectionChangeObserver.reset()
 
     inputLog.groupEnd()
 
