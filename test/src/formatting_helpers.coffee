@@ -5,6 +5,7 @@ getToolbarDialog = ({attribute, action}) ->
   getToolbarElement().querySelector(".dialog[data-attribute='#{attribute}'], .dialog[data-action='#{action}']")
 
 @clickToolbarButton = (selector, callback) ->
+  Trix.selectionChangeObserver.update()
   button = getToolbarButton(selector)
   triggerEvent(button, "mousedown")
   defer(callback)
