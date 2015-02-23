@@ -30,11 +30,13 @@ class Trix.EditorController extends Trix.Controller
     @composition = @editor.composition
     @document = @composition.document
 
+    @selectionManager.delegate = null
     @createInputController()
     @createToolbarController()
     @createDocumentController()
-    @updateLocationRange()
+    @selectionManager.delegate = this
 
+    @updateLocationRange()
     @delegate?.didSetEditor?(editor)
     @render()
 
