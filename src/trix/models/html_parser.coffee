@@ -1,5 +1,5 @@
 {arraysAreEqual, benchmark, normalizeSpaces, makeElement, tagName, walkTree,
- findClosestElementFromNode, elementContainsNode, elementMatchesSelector} = Trix
+ findClosestElementFromNode, elementContainsNode, nodeIsAttachmentElement} = Trix
 
 class Trix.HTMLParser extends Trix.BasicObject
   allowedAttributes = "style href src width height class".split(" ")
@@ -78,7 +78,7 @@ class Trix.HTMLParser extends Trix.BasicObject
       @appendStringWithAttributes(string, getTextAttributes(node.parentNode))
 
   processElement: (element) ->
-    if elementMatchesSelector(element, "[data-trix-attachment]")
+    if nodeIsAttachmentElement(element)
       attributes = getAttachmentAttributes(element)
       if Object.keys(attributes).length
         textAttributes = getTextAttributes(element)

@@ -4,14 +4,16 @@
 
 {handleEvent, tagName, benchmark, findClosestElementFromNode}  = Trix
 
+{attachmentSelector} = Trix.AttachmentView
+
 class Trix.DocumentController extends Trix.BasicObject
   constructor: (@element, @document) ->
     @documentView = new Trix.DocumentView @document, {@element}
 
     handleEvent "focus", onElement: @element, withCallback: @didFocus
     handleEvent "click", onElement: @element, matchingSelector: "a[contenteditable=false]", preventDefault: true
-    handleEvent "mousedown", onElement: @element, matchingSelector: "[data-trix-attachment]", withCallback: @didClickAttachment
-    handleEvent "click", onElement: @element, matchingSelector: "a[data-trix-attachment]", preventDefault: true
+    handleEvent "mousedown", onElement: @element, matchingSelector: attachmentSelector, withCallback: @didClickAttachment
+    handleEvent "click", onElement: @element, matchingSelector: "a#{attachmentSelector}", preventDefault: true
 
   didFocus: =>
     @delegate?.documentControllerDidFocus?()
@@ -51,7 +53,7 @@ class Trix.DocumentController extends Trix.BasicObject
 
   installAttachmentEditorForAttachment: (attachment) ->
     return if @attachmentEditor?.attachment is attachment
-    return unless element = @findElementForAttachment(attachment)
+    return unless element = @documentView.findElementForObject(attachment)
     @uninstallAttachmentEditor()
 
     controller = if attachment.isImage()
@@ -87,12 +89,3 @@ class Trix.DocumentController extends Trix.BasicObject
 
   findAttachmentForElement: (element) ->
     @document.getAttachmentById(Number(element.dataset.trixId))
-
-  findElementForAttachment: (attachment) ->
-    element = @documentView.findElementForObject(attachment)
-    selector = "figure.attachment"
-
-    if Trix.elementMatchesSelector(element, selector)
-      element
-    else
-      element?.querySelector(selector)

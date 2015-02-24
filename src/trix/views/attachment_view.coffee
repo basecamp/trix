@@ -1,6 +1,8 @@
 {makeElement} = Trix
 
 class Trix.AttachmentView extends Trix.ObjectView
+  @attachmentSelector: "[data-trix-attachment]"
+
   constructor: ->
     super
     @attachment = @object

@@ -1,9 +1,12 @@
 #= require trix/controllers/attachment_editor_controller
 
-{handleEvent, makeElement} = Trix
+{handleEvent, makeElement, tagName} = Trix
 
 class Trix.AttachmentEditorController extends Trix.BasicObject
   constructor: (@attachment, @element, @container) ->
+    if tagName(@element) is "a"
+      @element = @element.firstChild
+
     @removeButton = makeElement(tagName: "a", textContent: "⊗", className: "remove", attributes: { href: "#", title: "Remove" })
     @element.appendChild(@removeButton)
     @element.dataset.trixMutable = true

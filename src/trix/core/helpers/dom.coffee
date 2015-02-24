@@ -149,6 +149,9 @@ Trix.extend
     else
       Trix.nodeIsCursorTarget(node.firstChild)
 
+  nodeIsAttachmentElement: (node) ->
+    Trix.elementMatchesSelector(node, Trix.AttachmentView.attachmentSelector)
+
   nodeIsEmptyTextNode: (node) ->
     Trix.nodeIsTextNode(node) and node?.data is ""
 

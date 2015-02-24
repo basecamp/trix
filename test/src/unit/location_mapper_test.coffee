@@ -28,7 +28,7 @@ document = Trix.Document.fromJSON [
 #     2 <span data-trix-cursor-target>
 #         0 (zero-width space)
 #       </span>
-#     3 <a href="data:image/png," ...>
+#     3 <a href="data:image/png," data-trix-attachment="" ...>
 #         0 <figure ...>...</figure>
 #       </a>
 #     4 <span data-trix-cursor-target>
@@ -67,7 +67,7 @@ test "findLocationFromContainerAndOffset", ->
     { location: [1, 4],  container: [1, 2],     offset: 1 }
     { location: [1, 4],  container: [1],        offset: 3 }
     { location: [1, 4],  container: [1, 3],     offset: 0 }
-    { location: [1, 5],  container: [1, 3],     offset: 1 }
+    { location: [1, 4],  container: [1, 3],     offset: 1 }
     { location: [1, 5],  container: [1],        offset: 4 }
     { location: [1, 5],  container: [1, 4],     offset: 0 }
     { location: [1, 5],  container: [1, 4],     offset: 1 }

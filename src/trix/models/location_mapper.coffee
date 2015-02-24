@@ -1,6 +1,6 @@
 {elementContainsNode, findChildIndexOfNode, findClosestElementFromNode,
  findNodeFromContainerAndOffset, nodeIsBlockStartComment, nodeIsCursorTarget,
- nodeIsEmptyTextNode, nodeIsTextNode, tagName, walkTree} = Trix
+ nodeIsEmptyTextNode, nodeIsTextNode, nodeIsAttachmentElement, tagName, walkTree} = Trix
 
 class Trix.LocationMapper
   constructor: (@element) ->
@@ -10,11 +10,11 @@ class Trix.LocationMapper
     foundBlock = false
     location = index: 0, offset: 0
 
-    if figure = @findFigureParentForNode(container)
-      container = figure.parentNode
-      offset = findChildIndexOfNode(figure)
+    if attachmentElement = @findAttachmentElementParentForNode(container)
+      container = attachmentElement.parentNode
+      offset = findChildIndexOfNode(attachmentElement)
 
-    walker = walkTree(@element, usingFilter: rejectFigureContents)
+    walker = walkTree(@element, usingFilter: rejectAttachmentContents)
 
     while walker.nextNode()
       node = walker.currentNode
@@ -80,9 +80,10 @@ class Trix.LocationMapper
 
   # Private
 
-  findFigureParentForNode: (node) ->
-    figure = findClosestElementFromNode(node, matchingSelector: "figure")
-    figure if elementContainsNode(@element, figure)
+  findAttachmentElementParentForNode: (node) ->
+    while node and node isnt @element
+      return node if nodeIsAttachmentElement(node)
+      node = node.parentNode
 
   getSignificantNodesForIndex: (index) ->
     nodes = []
@@ -113,7 +114,7 @@ class Trix.LocationMapper
       else
         string = Trix.UTF16String.box(node.textContent)
         string.length
-    else if tagName(node) in ["br", "figure"]
+    else if tagName(node) is "br" or nodeIsAttachmentElement(node)
       1
     else
       0
@@ -124,7 +125,7 @@ class Trix.LocationMapper
 
   acceptSignificantNodes = (node) ->
     if rejectEmptyTextNodes(node) is NodeFilter.FILTER_ACCEPT
-      rejectFigureContents(node)
+      rejectAttachmentContents(node)
     else
       NodeFilter.FILTER_REJECT
 
@@ -134,8 +135,8 @@ class Trix.LocationMapper
     else
       NodeFilter.FILTER_ACCEPT
 
-  rejectFigureContents = (node) ->
-    if tagName(node.parentNode) is "figure"
+  rejectAttachmentContents = (node) ->
+    if nodeIsAttachmentElement(node.parentNode)
       NodeFilter.FILTER_REJECT
     else
       NodeFilter.FILTER_ACCEPT
