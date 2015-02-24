@@ -18,7 +18,6 @@ Trix.defineElement class extends Trix.Element
     @editorController ?= new Trix.EditorController
       toolbarElement: toolbarElement
       documentElement: documentElement
-      autofocus: @hasAttribute("autofocus")
       delegate: new Trix.EditorElementController this, documentElement, inputElement
 
     @editorController.registerSelectionManager()
@@ -37,6 +36,9 @@ Trix.defineElement class extends Trix.Element
     unless element = parentElement.querySelector("trix-document")
       placeholder = parentElement.getAttribute("placeholder")
       element = makeElement("trix-document", {placeholder})
+      if parentElement.hasAttribute("autofocus")
+        parentElement.removeAttribute("autofocus")
+        element.setAttribute("autofocus", "")
       parentElement.insertBefore(element, null)
     element
 

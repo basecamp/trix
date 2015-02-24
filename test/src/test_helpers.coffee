@@ -169,7 +169,6 @@ setDOMRange = (range) ->
     times = options.times
 
   times ?= 1
-  getDocumentElement().focus()
 
   do move = -> defer ->
     if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction])
@@ -207,7 +206,6 @@ getElementCoordinates = (element) ->
     times = options.times
 
   times ?= 1
-  getDocumentElement().focus()
 
   do expand = -> defer ->
     if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)

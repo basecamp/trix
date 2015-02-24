@@ -75,6 +75,11 @@ Trix.defineElement class extends Trix.Element
     super
     makeEditable(this)
 
+  attachedCallback: ->
+    super
+    if @hasAttribute("autofocus") and document.querySelector("[autofocus]") is this
+      @focus()
+
   makeEditable = (element) ->
     return if element.hasAttribute("contenteditable")
     element.setAttribute("contenteditable", "")

@@ -74,9 +74,6 @@ class Trix.SelectionManager extends Trix.BasicObject
   selectionIsExpanded: ->
     not @selectionIsCollapsed()
 
-  focus: ->
-    @setLocationRange([0, 0]) unless @getLocationRange()
-
   # Private
 
   @proxyMethod "locationMapper.findLocationFromContainerAndOffset"

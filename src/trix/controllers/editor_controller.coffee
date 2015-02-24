@@ -17,10 +17,6 @@ class Trix.EditorController extends Trix.Controller
 
     @setEditor(new Trix.Editor @document)
 
-    if @config.autofocus
-      @documentController.focus()
-      @selectionManager.focus()
-
   setEditor: (editor) ->
     return if @editor is editor
     delete @editor?.delegate
@@ -266,7 +262,7 @@ class Trix.EditorController extends Trix.Controller
     @render()
 
   updateLocationRange: ->
-    @setLocationRange(@editor.locationRange) if @editor.locationRange
+    @setLocationRange(@editor.locationRange ? [0,0])
 
   render: ->
     @documentController.render()
