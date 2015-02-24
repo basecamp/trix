@@ -1,12 +1,13 @@
 editorModule "Attachments", template: "editor_with_image"
 
 editorTest "moving an image by drag and drop", (expectDocument) ->
-  moveCursor direction: "right", times: 1, (coordinates) ->
-    img = document.activeElement.querySelector("img")
-    triggerEvent(img, "mousedown")
-    after 1, ->
-      dragToCoordinates coordinates, ->
-        expectDocument "a#{Trix.OBJECT_REPLACEMENT_CHARACTER}b\n"
+  typeCharacters "!", ->
+    moveCursor direction: "right", times: 1, (coordinates) ->
+      img = document.activeElement.querySelector("img")
+      triggerEvent(img, "mousedown")
+      after 1, ->
+        dragToCoordinates coordinates, ->
+          expectDocument "!a#{Trix.OBJECT_REPLACEMENT_CHARACTER}b\n"
 
 editorTest "resizing an image", (expectDocument) ->
   clickElement getFigure(), ->
