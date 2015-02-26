@@ -19,7 +19,7 @@ GEM
     coffee-script (2.2.0)
       coffee-script-source
       execjs
-    coffee-script-source (1.7.0)
+    coffee-script-source (1.9.1)
     ejs (1.1.1)
     execjs (1.4.0)
       multi_json (~> 1.0)
@@ -65,7 +65,7 @@ PLATFORMS
 DEPENDENCIES
   aws-sdk
   coffee-script
-  coffee-script-source (~> 1.7.0)
+  coffee-script-source (~> 1.9.1)
   ejs
   listen
   rack-rewrite

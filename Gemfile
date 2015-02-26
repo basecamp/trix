@@ -5,7 +5,7 @@ gemspec
 gem 'rake'
 gem 'sprockets'
 gem 'coffee-script'
-gem 'coffee-script-source', '~> 1.7.0'
+gem 'coffee-script-source', '~> 1.9.1'
 gem 'ejs'
 gem 'rack-rewrite'
 gem 'listen'

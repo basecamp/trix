@@ -52,7 +52,7 @@ class Trix.EditorController extends Trix.Controller
     @delegate?.didChangeDocument?(document)
 
   compositionDidChangeCurrentAttributes: (@currentAttributes) ->
-    @toolbarController.updateAttributes(currentAttributes)
+    @toolbarController.updateAttributes(@currentAttributes)
     @toolbarController.updateActions()
 
   compositionShouldAcceptFile: (file) ->
