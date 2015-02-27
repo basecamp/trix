@@ -25,9 +25,7 @@ class Trix.EditorElementController extends Trix.Controller
     @save()
 
   didChangeDocument: (document) ->
-    defer =>
-      @save()
-      triggerEvent("input", onElement: @element)
+    defer @saveAndNotify
 
   shouldAcceptFile: (file) ->
     triggerEvent("trix-file-accept", onElement: @element, attributes: {file})
@@ -37,7 +35,7 @@ class Trix.EditorElementController extends Trix.Controller
     @save()
 
   didEditAttachment: (attachment) ->
-    @save()
+    @saveAndNotify()
 
   didRemoveAttachment: (attachment) ->
     triggerEvent("trix-attachment-remove", onElement: @element, attributes: {attachment})
@@ -48,3 +46,9 @@ class Trix.EditorElementController extends Trix.Controller
 
   didChangeSelection: ->
     triggerEvent("selectionchange", onElement: @element, bubbles: false)
+
+  # Private
+
+  saveAndNotify: =>
+    @save()
+    triggerEvent("input", onElement: @element)
