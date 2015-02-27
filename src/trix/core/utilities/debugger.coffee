@@ -141,6 +141,7 @@ wrapFunctionWithErrorHandler = (fn) ->
       fn.apply(this, arguments)
     catch error
       reportError(error)
+      throw error
   trixDebugWrapper
 
 installMethodDebugger = (className, methodName) ->
