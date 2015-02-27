@@ -21,7 +21,7 @@ class Trix.Editor extends Trix.Object
     @composition.loadDocument(@document)
 
   toJSON: ->
-    document: @document
+    document: @document.toSerializableDocument()
     locationRange: @locationRange
 
   # Forward attachment manager
