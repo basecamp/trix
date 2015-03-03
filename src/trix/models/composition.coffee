@@ -129,10 +129,16 @@ class Trix.Composition extends Trix.BasicObject
         range[0]--
       else
         range[1]++
-      locationRange = @document.locationRangeFromRange(range)
 
-    @document.removeTextAtLocationRange(locationRange)
-    @setLocationRange(locationRange.collapse())
+      locationRange = @document.locationRangeFromRange(range)
+      attachment = @getAttachmentAtLocationRange(locationRange)
+
+    if attachment
+      @setLocationRange(locationRange)
+      # @editAttachment(attachment)
+    else
+      @document.removeTextAtLocationRange(locationRange)
+      @setLocationRange(locationRange.collapse())
 
   moveTextFromLocationRange: (locationRange) ->
     position = @getPosition()
@@ -338,3 +344,8 @@ class Trix.Composition extends Trix.BasicObject
 
   refreshAttachments: ->
     @attachments.refresh(@document.getAttachments())
+
+  getAttachmentAtLocationRange: (locationRange) ->
+    document = @document.getDocumentAtLocationRange(locationRange)
+    if document.toString() is "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+      document.getAttachments()[0]
