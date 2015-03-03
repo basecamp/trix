@@ -19,8 +19,8 @@ Trix.defineElement class extends Trix.Element
     <span class="button_group">
       <button type="button" class="bold" data-attribute="bold" data-key="b">Bold</button>
       <button type="button" class="italic" data-attribute="italic" data-key="i">Italic</button>
-      <button type="button" class="link" data-attribute="href" data-action="link" data-key="k">Link</button>
       <button type="button" class="strike" data-attribute="strike">Strike</button>
+      <button type="button" class="link" data-attribute="href" data-action="link" data-key="k">Link</button>
     </span>
 
     <span class="button_group">
