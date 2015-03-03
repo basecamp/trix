@@ -14,6 +14,7 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
 
   createContentNodes: ->
     image = makeElement("img", src: "", "data-trix-mutable": true)
+    caption = makeElement(tagName: "figcaption", textContent: @attachment.getFilename())
     @refresh(image)
 
     if operation = @attachment.preloadOperation
@@ -21,7 +22,11 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
         @refresh(image)
         @refresh()
 
-    [image]
+    if filesize = @attachment.getFormattedFilesize()
+      span = makeElement(tagName: "span", className: "size", textContent: filesize)
+      caption.appendChild(span)
+
+    [image, caption]
 
   getClassName: ->
     [super, "image"].join(" ")
