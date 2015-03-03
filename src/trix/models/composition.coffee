@@ -131,11 +131,13 @@ class Trix.Composition extends Trix.BasicObject
         range[1]++
 
       locationRange = @document.locationRangeFromRange(range)
-      attachment = @getAttachmentAtLocationRange(locationRange)
+
+      if direction is "backward"
+        attachment = @getAttachmentAtLocationRange(locationRange)
 
     if attachment
       @setLocationRange(locationRange)
-      # @editAttachment(attachment)
+      @editAttachment(attachment)
     else
       @document.removeTextAtLocationRange(locationRange)
       @setLocationRange(locationRange.collapse())
