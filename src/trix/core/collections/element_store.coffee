@@ -1,3 +1,5 @@
+{tagName} = Trix
+
 class Trix.ElementStore
   constructor: (elements) ->
     @reset(elements)
@@ -20,4 +22,7 @@ class Trix.ElementStore
     elements
 
   hash = (element) ->
-    element.outerHTML
+    if tagName(element) is "img"
+      element.getAttribute("src")
+    else
+      element.outerHTML
