@@ -54,6 +54,8 @@ class Trix.DocumentView extends Trix.ObjectView
 
     for image in findImages(fragment)
       if storedImage = @elementStore.remove(image)
+        storedImage.width = image.width
+        storedImage.height = image.height
         image.parentNode.replaceChild(storedImage, image)
 
     fragment
