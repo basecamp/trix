@@ -110,9 +110,13 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   setAttribute: (dialogElement) ->
     attributeName = getAttributeName(dialogElement)
-    value = getInputForDialog(dialogElement, attributeName).value
-    @delegate?.toolbarDidUpdateAttribute(attributeName, value)
-    @hideDialog()
+    input = getInputForDialog(dialogElement, attributeName)
+    if input.willValidate and not input.checkValidity()
+      input.classList.add("validate")
+      input.focus()
+    else
+      @delegate?.toolbarDidUpdateAttribute(attributeName, input.value)
+      @hideDialog()
 
   removeAttribute: (dialogElement) ->
     attributeName = getAttributeName(dialogElement)
@@ -121,6 +125,8 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   hideDialog: ->
     @element.querySelector(activeDialogSelector)?.classList.remove("active")
+    for input in @element.querySelectorAll("input.validate")
+      input.classList.remove("validate")
     @delegate?.toolbarDidHideDialog()
 
   getDialogForAttributeName: (attributeName) ->
