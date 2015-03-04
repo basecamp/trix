@@ -11,6 +11,7 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   constructor: (@element) ->
     @attributes = {}
+    @resetDialogInputs()
 
     handleEvent "mousedown", onElement: @element, matchingSelector: actionButtonSelector, withCallback: @didClickActionButton
     handleEvent "mousedown", onElement: @element, matchingSelector: attributeButtonSelector, withCallback: @didClickAttributeButton
@@ -101,12 +102,13 @@ class Trix.ToolbarController extends Trix.BasicObject
 
     element = @getDialogForAttributeName(attributeName)
     input = getInputForDialog(element, attributeName)
-
     @delegate?.toolbarWillShowDialog(input?)
-
     element.classList.add("active")
-    input?.value = @attributes[attributeName] ? ""
-    input?.select()
+
+    if input
+      input.removeAttribute("disabled")
+      input.value = @attributes[attributeName] ? ""
+      input.select()
 
   setAttribute: (dialogElement) ->
     attributeName = getAttributeName(dialogElement)
@@ -125,9 +127,13 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   hideDialog: ->
     @element.querySelector(activeDialogSelector)?.classList.remove("active")
-    for input in @element.querySelectorAll("input.validate")
-      input.classList.remove("validate")
+    @resetDialogInputs()
     @delegate?.toolbarDidHideDialog()
+
+  resetDialogInputs: ->
+    for input in @element.querySelectorAll(dialogInputSelector)
+      input.setAttribute("disabled", "disabled")
+      input.classList.remove("validate")
 
   getDialogForAttributeName: (attributeName) ->
     @element.querySelector(".dialog[data-attribute=#{attributeName}]")
