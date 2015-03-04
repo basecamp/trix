@@ -124,12 +124,7 @@ class Trix.Composition extends Trix.BasicObject
     locationRange = @getLocationRange()
 
     if locationRange.isCollapsed()
-      range = @getRange()
-      if direction is "backward"
-        range[0]--
-      else
-        range[1]++
-
+      range = @getExpandedRangeInDirection(direction)
       locationRange = @document.locationRangeFromRange(range)
 
       if direction is "backward"
@@ -286,19 +281,37 @@ class Trix.Composition extends Trix.BasicObject
     locationRange = @document.locationRangeFromPosition(position)
     @setLocationRange(locationRange)
 
+  getExpandedRangeInDirection: (direction) ->
+    range = @getRange()
+    if direction is "backward"
+      range[0]--
+    else
+      range[1]++
+    range
+
   # Selection
 
   setSelectionForLocationRange: ->
     @getSelectionManager().setLocationRange(arguments...)
 
   moveCursorInDirection: (direction) ->
-    distance = if direction is "backward" then -1 else 1
-    locationRange = @document.locationRangeFromPosition(@getPosition() + distance)
-    @setSelectionForLocationRange(locationRange)
+    if @editingAttachment
+      locationRange = @document.getLocationRangeOfAttachment(@editingAttachment)
+    else
+      expandedRange = @getExpandedRangeInDirection(direction)
+      locationRange = @document.locationRangeFromRange(expandedRange)
+
+    if direction is "backward"
+      @setSelectionForLocationRange(locationRange.start)
+    else
+      @setSelectionForLocationRange(locationRange.end)
+
+    if expandedRange
+      if attachment = @getAttachmentAtLocationRange(locationRange)
+        @editAttachment(attachment)
 
   expandSelectionInDirection: (direction) ->
-    range = @getRange()
-    if direction is "backward" then range[0]-- else range[1]++
+    range = @getExpandedRangeInDirection(direction)
     locationRange = @document.locationRangeFromRange(range)
     @setSelectionForLocationRange(locationRange)
 
@@ -324,7 +337,7 @@ class Trix.Composition extends Trix.BasicObject
       false
 
   selectionIsInCursorTarget: ->
-    @locationIsCursorTarget(@getLocationRange().start)
+    @editingAttachment or @locationIsCursorTarget(@getLocationRange().start)
 
   # Attachment editing
 
