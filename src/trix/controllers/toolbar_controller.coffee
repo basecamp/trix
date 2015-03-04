@@ -7,7 +7,7 @@ class Trix.ToolbarController extends Trix.BasicObject
   dialogSelector = ".dialog[data-attribute]"
   activeDialogSelector = "#{dialogSelector}.active"
   dialogButtonSelector = "#{dialogSelector} input[data-method]"
-  dialogInputSelector = "#{dialogSelector} input[type=text]"
+  dialogInputSelector = "#{dialogSelector} input[type=text], #{dialogSelector} input[type=url]"
 
   constructor: (@element) ->
     @attributes = {}
