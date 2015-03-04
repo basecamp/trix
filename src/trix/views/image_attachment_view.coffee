@@ -24,7 +24,7 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
     [image]
 
   getClassName: ->
-    [super, "image preview"].join(" ")
+    [super, "image", "preview"].join(" ")
 
   refresh: (image) ->
     image ?= @findElement()?.querySelector("img")
