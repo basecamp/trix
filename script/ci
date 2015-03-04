@@ -1,6 +1,4 @@
 #!/bin/sh
-echo "CI temporarily disabled until the dust settles" && exit
-
 set -ex
 export PATH="$(dirname "$0")/../bin:/local/app/.rbenv/bin:$PATH"
 

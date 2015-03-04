@@ -6,7 +6,10 @@ require "timeout"
 module Trix
   class VMTestRunner
     TESTS = [
-      { browser: "Safari",            version_depth: 2, platforms: ["Mac", "Windows"] },
+    # Disable tests in Safari 7 until custom element issue is sorted
+    # https://3.basecamp.com/99999999/buckets/44/todos/71812
+    # { browser: "Safari",            version_depth: 2, platforms: ["Mac", "Windows"] },
+      { browser: "Safari",            version_depth: 1, platforms: ["Mac", "Windows"] },
       { browser: "Google Chrome",     version_depth: 2, platforms: ["Mac", "Windows"] },
       { browser: "Firefox",           version_depth: 2, platforms: ["Mac", "Windows"] },
       { browser: "Internet Explorer", version_depth: 1, platforms: ["Windows"] },
