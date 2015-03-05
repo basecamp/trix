@@ -11,6 +11,10 @@ Trix.defineElement class extends Trix.Element
   attachedCallback: ->
     super
 
+    unless contentType = @getAttribute("content-type")
+      contentType = "text/html"
+      @setAttribute("content-type", contentType)
+
     toolbarElement = findOrCreateToolbarElement(this)
     documentElement = findOrCreateDocumentElement(this)
     inputElement = findOrCreateInputElement(this)
@@ -18,6 +22,7 @@ Trix.defineElement class extends Trix.Element
     @editorController ?= new Trix.EditorController
       toolbarElement: toolbarElement
       documentElement: documentElement
+      document: Trix.deserializeFromContentType(inputElement.value, contentType)
       delegate: new Trix.EditorElementController this, documentElement, inputElement
 
     @editorController.registerSelectionManager()

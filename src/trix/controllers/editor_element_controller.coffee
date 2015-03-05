@@ -4,29 +4,21 @@
 
 class Trix.EditorElementController extends Trix.Controller
   constructor: (@element, @documentElement, @inputElement) ->
-    @contentType = @element.getAttribute("content-type") ? "text/html"
+    @contentType = @element.getAttribute("content-type")
 
   save: ->
     value = Trix.serializeToContentType(@documentElement, @contentType)
     @inputElement.value = value
     @element.setAttribute("value", value)
 
-  load: ->
-    document = Trix.deserializeFromContentType(@inputElement.value, @contentType)
-    @document.replaceDocument(document)
-
   # Editor controller delegate
 
   didSetEditor: (editor) ->
     @document = editor.document
-    unless @loaded
-      @load()
-      @loaded = true
     @save()
 
   didChangeDocument: (document) ->
-    if @loaded
-      defer(@saveAndNotify)
+    defer(@saveAndNotify)
 
   shouldAcceptFile: (file) ->
     triggerEvent("trix-file-accept", onElement: @element, attributes: {file})

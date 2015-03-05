@@ -36,8 +36,8 @@ class Trix.EditorController extends Trix.Controller
       @delegate?.didAddAttachment?(managedAttachment)
 
     @updateLocationRange()
-    @delegate?.didSetEditor?(editor)
     @render()
+    @delegate?.didSetEditor?(editor)
 
   loadDocument: (document) ->
     return if @document is document
