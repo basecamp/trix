@@ -25,7 +25,8 @@ class Trix.EditorElementController extends Trix.Controller
     @save()
 
   didChangeDocument: (document) ->
-    defer @saveAndNotify
+    if @loaded
+      defer(@saveAndNotify)
 
   shouldAcceptFile: (file) ->
     triggerEvent("trix-file-accept", onElement: @element, attributes: {file})

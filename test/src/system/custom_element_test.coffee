@@ -37,7 +37,7 @@ editorTest "element triggers attachment events", ->
 editorTest "element triggers input events when the document changes", (done) ->
   element = getEditorElement()
   eventCount = 0
-  defer -> element.addEventListener "input", (event) -> eventCount++
+  element.addEventListener "input", (event) -> eventCount++
 
   typeCharacters "a", ->
     equal eventCount, 1
