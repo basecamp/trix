@@ -32,6 +32,9 @@ class Trix.EditorController extends Trix.Controller
     @createDocumentController()
     @selectionManager.delegate = this
 
+    for managedAttachment in @editor.getAttachments()
+      @delegate?.didAddAttachment?(managedAttachment)
+
     @updateLocationRange()
     @delegate?.didSetEditor?(editor)
     @render()

@@ -1,8 +1,9 @@
 #= require trix/models/managed_attachment
 
 class Trix.AttachmentManager extends Trix.BasicObject
-  constructor: ->
+  constructor: (attachments = []) ->
     @managedAttachments = {}
+    @manageAttachment(attachment) for attachment in attachments
 
   getAttachments: ->
     attachment for id, attachment of @managedAttachments

@@ -13,6 +13,10 @@ Trix.defineElement class extends Trix.Element
     %t .dialog.active {
       display: block;
     }
+
+    %t .dialog input.validate:invalid {
+      background-color: #ffdddd;
+    }
   """
 
   @defaultHTML: """
@@ -36,7 +40,7 @@ Trix.defineElement class extends Trix.Element
     </span>
 
     <div class="dialog" data-attribute="href">
-      <input type="text" name="href" placeholder="Enter a URL...">
+      <input type="url" required name="href" placeholder="Enter a URL...">
       <input type="button" value="Save link" data-method="setAttribute">
       <input type="button" value="Unlink" data-method="removeAttribute">
     </div>

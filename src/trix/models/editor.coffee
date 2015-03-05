@@ -13,12 +13,10 @@ class Trix.Editor extends Trix.Object
     @composition = new Trix.Composition @document
     @composition.delegate = this
 
-    @attachmentManager = new Trix.AttachmentManager @composition
+    @attachmentManager = new Trix.AttachmentManager @document.getAttachments()
     @attachmentManager.delegate = this
 
     @undoManager = new Trix.UndoManager @composition
-
-    @composition.loadDocument(@document)
 
   toJSON: ->
     document: @document.toSerializableDocument()

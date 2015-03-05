@@ -1,16 +1,9 @@
 #= require trix/models/document
 
 class Trix.Composition extends Trix.BasicObject
-  constructor: (document = new Trix.Document) ->
-    @loadDocument(document)
-
-  loadDocument: (document) ->
-    @document = document
+  constructor: (@document = new Trix.Document) ->
     @document.delegate = this
     @currentAttributes = {}
-
-    for attachment in @document.getAttachments()
-      @delegate?.compositionDidAddAttachment?(attachment)
 
   # Snapshots
 
@@ -356,9 +349,6 @@ class Trix.Composition extends Trix.BasicObject
 
   getDocument: ->
     @document.copy()
-
-  refreshAttachments: ->
-    @attachments.refresh(@document.getAttachments())
 
   getAttachmentAtLocationRange: (locationRange) ->
     document = @document.getDocumentAtLocationRange(locationRange)
