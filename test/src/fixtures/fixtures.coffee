@@ -147,9 +147,12 @@ cursorTarget = Trix.makeElement(
 
     image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 10, height: 20)
 
+    caption = Trix.makeElement("figcaption")
+    caption.innerHTML = """#{attrs.filename}<span class="size">#{attrs.filesize} Bytes</span>"""
+
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment image"
+      className: "attachment image preview"
 
     data =
       trixAttachment: JSON.stringify(attachment)
@@ -158,6 +161,7 @@ cursorTarget = Trix.makeElement(
     figure.dataset[key] = value for key, value of data
     figure.setAttribute("contenteditable", false)
     figure.appendChild(image)
+    figure.appendChild(caption)
 
     html: "<div>#{blockComment}#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"
     document: new Trix.Document [new Trix.Block text]
