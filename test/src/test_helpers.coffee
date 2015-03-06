@@ -184,7 +184,7 @@ setDOMRange = (range) ->
       Trix.selectionChangeObserver.update()
 
     if --times is 0
-      callback(getCursorCoordinates())
+      defer -> callback(getCursorCoordinates())
     else
       move()
 
@@ -212,7 +212,7 @@ getElementCoordinates = (element) ->
       getComposition().expandSelectionInDirection(if direction is "left" then "backward" else "forward")
 
     if --times is 0
-      callback()
+      defer(callback)
     else
       expand()
 

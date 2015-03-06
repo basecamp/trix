@@ -4,10 +4,14 @@ editorTest "move cursor around attachment", (done) ->
   insertFile(createFile())
   assertLocationRange([0,1])
   moveCursor "left", ->
-    assertLocationRange([0,0])
-    moveCursor "right", ->
-      assertLocationRange([0,1])
-      done()
+    assertLocationRange([0,0], [0,1])
+    moveCursor "left", ->
+      assertLocationRange([0,0])
+      moveCursor "right", ->
+        assertLocationRange([0,0], [0,1])
+        moveCursor "right", ->
+          assertLocationRange([0,1])
+          done()
 
 editorTest "move cursor around attachment and text", (done) ->
   insertString("a")
@@ -17,10 +21,12 @@ editorTest "move cursor around attachment and text", (done) ->
   moveCursor "left", ->
     assertLocationRange([0,2])
     moveCursor "left", ->
-      assertLocationRange([0,1])
+      assertLocationRange([0,1], [0,2])
       moveCursor "left", ->
-        assertLocationRange([0,0])
-        done()
+        assertLocationRange([0,1])
+        moveCursor "left", ->
+          assertLocationRange([0,0])
+          done()
 
 editorTest "expand selection over attachment", (done) ->
   insertFile(createFile())
