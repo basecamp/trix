@@ -180,9 +180,9 @@ class Trix.InputController extends Trix.BasicObject
           @delegate?.inputControllerWillPasteText({paste, html})
           @responder?.insertHTML(html)
           @requestRender()
+        return
 
-      else if html = paste.getData("text/html")
-        event.preventDefault()
+      if html = paste.getData("text/html")
         @delegate?.inputControllerWillPasteText({paste, html})
         @responder?.insertHTML(html)
         @requestRender()
@@ -191,6 +191,7 @@ class Trix.InputController extends Trix.BasicObject
         @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())
         @delegate?.inputControllerWillPasteText({paste, string})
         @responder?.insertString(string)
+        @requestRender()
 
       else if "Files" in paste.types
         if file = paste.items?[0]?.getAsFile?()
@@ -200,8 +201,7 @@ class Trix.InputController extends Trix.BasicObject
           @responder?.insertFile(file)
           @requestRender()
 
-      else
-        event.preventDefault()
+      event.preventDefault()
 
     compositionstart: (event) ->
       @mutationObserver.stop()
