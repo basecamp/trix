@@ -145,6 +145,8 @@ class Trix.EditorController extends Trix.Controller
   inputControllerWillPasteText: (paste) ->
     @editor.recordUndoEntry("Paste")
 
+  inputControllerDidPaste: ->
+
   inputControllerWillMoveText: ->
     @editor.recordUndoEntry("Move")
 
