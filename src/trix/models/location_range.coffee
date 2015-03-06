@@ -30,6 +30,9 @@ class Trix.LocationRange extends Trix.BasicObject
     else
       location
 
+  copyWithEndLocation: (end) ->
+    new @constructor @start, end
+
   isEqualTo: (locationRange) ->
     @start.index is locationRange?.start?.index and
       @end.index is locationRange?.end?.index and

@@ -58,6 +58,8 @@ class Trix.EditorController extends Trix.Controller
     @toolbarController.updateAttributes(@currentAttributes)
     @toolbarController.updateActions()
 
+  compositionDidPerformInsertionAtLocationRange: (locationRange) ->
+
   compositionShouldAcceptFile: (file) ->
     @delegate?.shouldAcceptFile?(file)
 

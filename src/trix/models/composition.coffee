@@ -33,14 +33,16 @@ class Trix.Composition extends Trix.BasicObject
   # Responder protocol
 
   insertText: (text, {updatePosition} = updatePosition: true) ->
-    if updatePosition
-      position = @getPosition()
-
+    position = @getPosition()
     locationRange = @getLocationRange()
     @document.insertTextAtLocationRange(text, locationRange)
 
-    if updatePosition
-      @setPosition(position + text.getLength())
+    endPosition = position + text.getLength()
+    endLocation = @document.locationFromPosition(endPosition)
+    @setLocation(endLocation) if updatePosition
+
+    insertedLocationRange = locationRange.copyWithEndLocation(endLocation)
+    @notifyDelegateOfInsertionAtLocationRange(insertedLocationRange)
 
   insertBlock: (block = new Trix.Block) ->
     document = new Trix.Document [block]
@@ -50,7 +52,13 @@ class Trix.Composition extends Trix.BasicObject
     position = @getPosition()
     locationRange = @getLocationRange()
     @document.insertDocumentAtLocationRange(document, locationRange)
-    @setPosition(position + document.getLength())
+
+    endPosition = position + document.getLength()
+    endLocation = @document.locationFromPosition(endPosition)
+    @setLocation(endLocation)
+
+    insertedLocationRange = locationRange.copyWithEndLocation(endLocation)
+    @notifyDelegateOfInsertionAtLocationRange(insertedLocationRange)
 
   insertString: (string, options) ->
     attributes = @getCurrentTextAttributes()
@@ -61,7 +69,13 @@ class Trix.Composition extends Trix.BasicObject
     position = @getPosition()
     locationRange = @getLocationRange()
     @document.insertBlockBreakAtLocationRange(locationRange)
-    @setPosition(position + 1)
+
+    endPosition = position + 1
+    endLocation = @document.locationFromPosition(endPosition)
+    @setLocation(endLocation)
+
+    insertedLocationRange = locationRange.copyWithEndLocation(endLocation)
+    @notifyDelegateOfInsertionAtLocationRange(insertedLocationRange)
 
   insertLineBreak: ->
     locationRange = @getLocationRange()
@@ -233,9 +247,6 @@ class Trix.Composition extends Trix.BasicObject
     attributes[key] = value for key, value of @currentAttributes when Trix.config.textAttributes[key]
     attributes
 
-  notifyDelegateOfCurrentAttributesChange: ->
-    @delegate?.compositionDidChangeCurrentAttributes?(@currentAttributes)
-
   # Selection freezing
 
   freezeSelection: ->
@@ -256,9 +267,6 @@ class Trix.Composition extends Trix.BasicObject
   @proxyMethod "getSelectionManager().selectionIsExpanded"
   @proxyMethod "delegate?.getSelectionManager"
 
-  setLocationRange: ->
-    @delegate?.compositionDidRequestLocationRange?(arguments...)
-
   getRange: ->
     locationRange = @getLocationRange()
     @document.rangeFromLocationRange(locationRange)
@@ -271,8 +279,15 @@ class Trix.Composition extends Trix.BasicObject
     @getRange()[0]
 
   setPosition: (position) ->
-    locationRange = @document.locationRangeFromPosition(position)
+    location = @document.locationFromPosition(position)
+    @setLocation(location)
+
+  setLocation: (location) ->
+    locationRange = new Trix.LocationRange location
     @setLocationRange(locationRange)
+
+  setLocationRange: ->
+    @delegate?.compositionDidRequestLocationRange?(arguments...)
 
   getExpandedRangeInDirection: (direction) ->
     range = @getRange()
@@ -354,3 +369,9 @@ class Trix.Composition extends Trix.BasicObject
     document = @document.getDocumentAtLocationRange(locationRange)
     if document.toString() is "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
       document.getAttachments()[0]
+
+  notifyDelegateOfCurrentAttributesChange: ->
+    @delegate?.compositionDidChangeCurrentAttributes?(@currentAttributes)
+
+  notifyDelegateOfInsertionAtLocationRange: (locationRange) ->
+    @delegate?.compositionDidPerformInsertionAtLocationRange?(locationRange)
