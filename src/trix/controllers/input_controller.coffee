@@ -179,22 +179,22 @@ class Trix.InputController extends Trix.BasicObject
         @getPastedHTMLUsingHiddenElement (html) =>
           @delegate?.inputControllerWillPasteText({paste, html})
           @responder?.insertHTML(html)
-          @delegate?.inputControllerDidPaste()
           @requestRender()
+          @delegate?.inputControllerDidPaste()
         return
 
       if html = paste.getData("text/html")
         @delegate?.inputControllerWillPasteText({paste, html})
         @responder?.insertHTML(html)
-        @delegate?.inputControllerDidPaste()
         @requestRender()
+        @delegate?.inputControllerDidPaste()
 
       else if string = paste.getData("text/plain")
         @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())
         @delegate?.inputControllerWillPasteText({paste, string})
         @responder?.insertString(string)
-        @delegate?.inputControllerDidPaste()
         @requestRender()
+        @delegate?.inputControllerDidPaste()
 
       else if "Files" in paste.types
         if file = paste.items?[0]?.getAsFile?()
@@ -202,8 +202,8 @@ class Trix.InputController extends Trix.BasicObject
             file.name = "pasted-file-#{++pastedFileCount}.#{extension}"
           @delegate?.inputControllerWillAttachFiles()
           @responder?.insertFile(file)
-          @delegate?.inputControllerDidPaste()
           @requestRender()
+          @delegate?.inputControllerDidPaste()
 
       event.preventDefault()
 

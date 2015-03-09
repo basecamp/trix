@@ -149,9 +149,12 @@ class Trix.EditorController extends Trix.Controller
     @pasting = true
 
   inputControllerDidPaste: ->
-    @delegate?.didPasteAtLocationRange?(@pastedLocationRange)
+    locationRange = @pastedLocationRange
     delete @pastedLocationRange
     delete @pasting
+
+    @delegate?.didPasteAtLocationRange?(locationRange)
+    @render()
 
   inputControllerWillMoveText: ->
     @editor.recordUndoEntry("Move")
