@@ -82,10 +82,6 @@ class Trix.HTMLParser extends Trix.BasicObject
       attributes = getAttachmentAttributes(element)
       if Object.keys(attributes).length
         textAttributes = getTextAttributes(element)
-        if image = element.querySelector("img")
-          for key, value of getImageDimensions(image)
-            if value isnt attributes[key]
-              textAttributes[key] = value
         @appendAttachmentWithAttributes(attributes, textAttributes)
         # We have everything we need so avoid processing inner nodes
         element.innerHTML = ""

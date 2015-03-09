@@ -141,11 +141,11 @@ cursorTarget = Trix.makeElement(
 
   "image attachment": do ->
     imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
-    attrs = url: imageData, filename: "example.png", filesize: "123", contentType: "image/png", width: 10, height: 20
+    attrs = url: imageData, filename: "example.png", filesize: "123", contentType: "image/png", width: 1, height: 1
     attachment = Trix.Attachment.attachmentForAttributes(attrs)
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
-    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 10, height: 20)
+    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
 
     caption = Trix.makeElement("figcaption")
     caption.innerHTML = """#{attrs.filename}<span class="size">#{attrs.filesize}</span>"""
