@@ -27,7 +27,7 @@ class Trix.Operation extends Trix.BasicObject
     callback(false)
 
   release: ->
-    @promise?.cancel()
+    @promise?.cancel?()
     delete @promise
     delete @performing
     delete @performed
