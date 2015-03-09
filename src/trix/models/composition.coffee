@@ -306,15 +306,17 @@ class Trix.Composition extends Trix.BasicObject
     if @editingAttachment
       locationRange = @document.getLocationRangeOfAttachment(@editingAttachment)
     else
+      originalLocationRange = @getLocationRange()
       expandedRange = @getExpandedRangeInDirection(direction)
       locationRange = @document.locationRangeFromRange(expandedRange)
+      canEditAttachment = not locationRange.isEqualTo(originalLocationRange)
 
     if direction is "backward"
       @setSelectionForLocationRange(locationRange.start)
     else
       @setSelectionForLocationRange(locationRange.end)
 
-    if expandedRange
+    if canEditAttachment
       if attachment = @getAttachmentAtLocationRange(locationRange)
         @editAttachment(attachment)
 
