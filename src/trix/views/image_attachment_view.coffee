@@ -41,8 +41,8 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
       serializedAttributes = JSON.stringify(src: attachmentURL)
       image.setAttribute("data-trix-serialized-attributes", serializedAttributes)
 
-    width = @attachmentPiece.getWidth() ? @attachment.getWidth()
-    height = @attachmentPiece.getHeight() ? @attachment.getHeight()
+    width = @attachment.getWidth()
+    height = @attachment.getHeight()
 
     image.width = width if width?
     image.height = height if height?

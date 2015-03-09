@@ -16,12 +16,6 @@ DEBUG_METHODS =
     loadDocument
   "
 
-  "Trix.ImageAttachmentEditorController": "
-    startResize
-    resize
-    endResize
-  "
-
   "Trix.InputController": "
     elementDidMutate
     events.keydown

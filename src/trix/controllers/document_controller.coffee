@@ -1,5 +1,4 @@
 #= require trix/controllers/attachment_editor_controller
-#= require trix/controllers/image_attachment_editor_controller
 #= require trix/views/document_view
 
 {handleEvent, tagName, benchmark, findClosestElementFromNode}  = Trix
@@ -58,13 +57,7 @@ class Trix.DocumentController extends Trix.BasicObject
     return if @attachmentEditor?.attachment is attachment
     return unless element = @documentView.findElementForObject(attachment)
     @uninstallAttachmentEditor()
-
-    controller = if attachment.isImage()
-      Trix.ImageAttachmentEditorController
-    else
-      Trix.AttachmentEditorController
-
-    @attachmentEditor = new controller attachment, element, @element
+    @attachmentEditor = new Trix.AttachmentEditorController attachment, element, @element
     @attachmentEditor.delegate = this
 
   uninstallAttachmentEditor: ->

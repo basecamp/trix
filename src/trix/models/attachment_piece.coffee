@@ -20,12 +20,6 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   isSerializable: ->
     not @attachment.isPending()
 
-  getWidth: ->
-    @attributes.get("width")
-
-  getHeight: ->
-    @attributes.get("height")
-
   canBeGrouped: ->
     super and not @attachment.hasAttribute("href")
 

@@ -18,28 +18,9 @@ Trix.defineElement class extends Trix.Element
       cursor: text;
     }
 
-    %t .image-editor,
     %t .pending-attachment {
       position: relative;
       display: inline-block;
-    }
-
-    %t .image-editor img {
-      outline: 1px dashed #333;
-    }
-
-    %t .image-editor .resize-handle {
-      position: absolute;
-      width: 8px;
-      height: 8px;
-      border: 1px solid #333;
-      background: white;
-    }
-
-    %t .image-editor .resize-handle.se {
-      bottom: -4px;
-      right: -4px;
-      cursor: nwse-resize;
     }
 
     %t figure.attachment {
