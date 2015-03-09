@@ -18,12 +18,14 @@ class Trix.ImageAttachment extends Trix.Attachment
     if url? and not @preloadOperation
       @preloadOperation = new Trix.ImagePreloadOperation url
       @preloadOperation.then ({width, height}) =>
-        @setAttributes({width, height}) unless @getWidth()?
+        @setAttributes({width, height})
         @releaseFile()
 
   createPreviewPreloadOperationForFile: (file) ->
     previewObjectURL = URL.createObjectURL(file)
     @previewPreloadOperation = new Trix.ImagePreloadOperation previewObjectURL
+    @previewPreloadOperation.then ({width, height}) =>
+      @setAttributes({width, height})
 
   releasePreviewPreload: ->
     if @previewPreloadOperation
