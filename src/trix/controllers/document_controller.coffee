@@ -49,6 +49,9 @@ class Trix.DocumentController extends Trix.BasicObject
   disableViewCaching: ->
     @documentView.disableViewCaching()
 
+  refreshViewCache: ->
+    @documentView.garbageCollectCachedViews()
+
   # Attachment editor management
 
   installAttachmentEditorForAttachment: (attachment) ->

@@ -90,6 +90,7 @@ class Trix.EditorController extends Trix.Controller
     @requestedLocationRange = locationRange
 
   compositionDidRestoreSnapshot: ->
+    @documentController.refreshViewCache()
     @render()
 
   getSelectionManager: ->
