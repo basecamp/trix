@@ -33,6 +33,20 @@ addEventListener "DOMContentLoaded", ->
       console.log "HOST: attachment removed", attachment
       removeAttachment(attachment)
 
+    handleEvent "trix-paste", onElement: editorElement, withCallback: (event) ->
+      locationRange = event.locationRange
+      {document, editor} = @editorController
+
+      unless document.getCommonAttributesAtLocationRange(locationRange).href
+        fragment = document.getDocumentAtLocationRange(locationRange)
+        value = fragment.toString().slice(0, -1)
+
+        if isURL(value)
+          editor.recordUndoEntry("Link Pasted URL")
+          document.addAttributeAtLocationRange("href", value, locationRange)
+
+
+
 saveAttachment = (attachment) ->
   item = document.createElement("li")
   item.setAttribute("id", "attachment_#{attachment.id}")
@@ -77,3 +91,10 @@ uploadAttachment = (attachment) ->
       else
         console.warn "Host failed to upload file:", file
   xhr.send(file)
+
+isURL = (value) ->
+  input = document.createElement("input")
+  input.type = "url"
+  input.value = value
+  input.required = true
+  input.checkValidity()
