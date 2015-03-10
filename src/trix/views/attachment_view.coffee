@@ -11,18 +11,28 @@ class Trix.AttachmentView extends Trix.ObjectView
 
   createNodes: ->
     figure = makeElement({tagName: "figure", className: @getClassName()})
-    caption = makeElement(tagName: "figcaption", textContent: @attachment.getFilename())
+    figcaption = makeElement(tagName: "figcaption")
 
-    if filesize = @attachment.getFormattedFilesize()
-      span = makeElement(tagName: "span", className: "size", textContent: filesize)
-      caption.appendChild(span)
+    if caption = @attachmentPiece.getCaption()
+      figcaption.textContent = caption
+    else
+      if filename = @attachment.getFilename()
+        figcaption.textContent = filename
+
+        if filesize = @attachment.getFormattedFilesize()
+          span = makeElement(tagName: "span", className: "size", textContent: filesize)
+          figcaption.appendChild(span)
 
     figure.appendChild(node) for node in @createContentNodes()
-    figure.appendChild(caption)
+    figure.appendChild(figcaption)
 
     data =
       trixAttachment: JSON.stringify(@attachment)
       trixId: @attachment.id
+
+    attributes = @attachmentPiece.getAttributesForAttachment()
+    unless attributes.isEmpty()
+      data.trixAttributes = JSON.stringify(attributes)
 
     if @attachment.isPending()
       data.trixSerialize = false

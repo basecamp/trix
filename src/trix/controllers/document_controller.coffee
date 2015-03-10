@@ -12,6 +12,7 @@ class Trix.DocumentController extends Trix.BasicObject
     handleEvent "focus", onElement: @element, withCallback: @didFocus
     handleEvent "click", onElement: @element, matchingSelector: "a[contenteditable=false]", preventDefault: true
     handleEvent "mousedown", onElement: @element, matchingSelector: attachmentSelector, withCallback: @didClickAttachment
+    handleEvent "click", onElement: @element, matchingSelector: "#{attachmentSelector} figcaption", withCallback: @didClickAttachmentCaption
     handleEvent "click", onElement: @element, matchingSelector: "a#{attachmentSelector}", preventDefault: true
 
   didFocus: =>
@@ -20,6 +21,9 @@ class Trix.DocumentController extends Trix.BasicObject
   didClickAttachment: (event, target) =>
     attachment = @findAttachmentForElement(target)
     @delegate?.documentControllerDidSelectAttachment?(attachment)
+
+  didClickAttachmentCaption: (event, target) =>
+    @attachmentEditor?.editCaption()
 
   render: benchmark "DocumentController#render", ->
     @documentView.render()
@@ -57,7 +61,8 @@ class Trix.DocumentController extends Trix.BasicObject
     return if @attachmentEditor?.attachment is attachment
     return unless element = @documentView.findElementForObject(attachment)
     @uninstallAttachmentEditor()
-    @attachmentEditor = new Trix.AttachmentEditorController attachment, element, @element
+    attachmentPiece = @document.getAttachmentPieceForAttachment(attachment)
+    @attachmentEditor = new Trix.AttachmentEditorController attachmentPiece, element, @element
     @attachmentEditor.delegate = this
 
   uninstallAttachmentEditor: ->
@@ -78,6 +83,7 @@ class Trix.DocumentController extends Trix.BasicObject
   attachmentEditorDidRequestUpdatingAttachmentWithAttributes: (attachment, attributes) ->
     @delegate?.documentControllerWillUpdateAttachment?(attachment)
     @document.updateAttributesForAttachment(attributes, attachment)
+    @rerenderViewForObject(attachment)
 
   attachmentEditorDidRequestRemovalOfAttachment: (attachment) ->
     @delegate?.documentControllerDidRequestRemovalOfAttachment?(attachment)

@@ -190,6 +190,32 @@ cursorTarget = Trix.makeElement(
     html: """<div>#{blockComment}#{cursorTarget}#{link.outerHTML}#{cursorTarget}</div>"""
     document: new Trix.Document [new Trix.Block text]
 
+  "file attachment with caption": do ->
+    attrs = href: "http://example.com/example.pdf", filename: "example.pdf", filesize: "345", contentType: "application/pdf"
+    attachment = new Trix.Attachment attrs
+    textAttrs = caption: "Example"
+    text = Trix.Text.textForAttachmentWithAttributes(attachment, textAttrs)
+
+    figure = Trix.makeElement
+      tagName: "figure"
+      className: "attachment file pdf"
+
+    data =
+      trixAttachment: JSON.stringify(attachment)
+      trixId: attachment.id
+      trixAttributes: JSON.stringify(textAttrs)
+
+    link = Trix.makeElement("a", href: attrs.href)
+    link.dataset[key] = value for key, value of data
+    link.setAttribute("contenteditable", false)
+    link.appendChild(figure)
+
+    caption = """<figcaption>Example</figcaption>"""
+    figure.innerHTML = caption
+
+    html: """<div>#{blockComment}#{cursorTarget}#{link.outerHTML}#{cursorTarget}</div>"""
+    document: new Trix.Document [new Trix.Block text]
+
   "nested quote and code formatted block":
     document: createDocument(["ab3", {}, ["quote", "code"]])
     html: "<blockquote><pre>#{blockComment}ab3</pre></blockquote>"

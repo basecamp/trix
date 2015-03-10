@@ -183,6 +183,12 @@ class Trix.HTMLParser extends Trix.BasicObject
       else if config.tagName
         if tagName(element) is config.tagName
           attributes[attribute] = true
+
+    if nodeIsAttachmentElement(element)
+      if json = element.dataset.trixAttributes
+        for key, value of JSON.parse(json)
+          attributes[key] = value
+
     attributes
 
   getBlockAttributes = (element) ->

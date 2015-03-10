@@ -55,6 +55,9 @@ Trix.extend
     element = element.firstElementChild while element?.firstElementChild
     element
 
+  innerElementIsActive: (element) ->
+    document.activeElement isnt element and Trix.elementContainsNode(element, document.activeElement)
+
   elementContainsNode: (element, node) ->
     return unless element and node
     while node

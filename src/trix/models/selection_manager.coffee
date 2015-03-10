@@ -2,7 +2,7 @@
 #= require trix/models/location_range
 #= require trix/observers/selection_change_observer
 
-{defer, benchmark, elementContainsNode, nodeIsCursorTarget} = Trix
+{defer, benchmark, elementContainsNode, nodeIsCursorTarget, innerElementIsActive} = Trix
 
 class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
@@ -81,7 +81,8 @@ class Trix.SelectionManager extends Trix.BasicObject
   @proxyMethod "locationMapper.findNodeAndOffsetFromLocation"
 
   selectionDidChange: =>
-    @updateCurrentLocationRange()
+    unless innerElementIsActive(@element)
+      @updateCurrentLocationRange()
 
   updateCurrentLocationRange: (locationRange) ->
     locationRange ?= @createLocationRangeFromDOMRange(getDOMRange())
