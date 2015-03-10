@@ -18,7 +18,9 @@ def resolve(path)
 end
 
 def process(path)
-  class_name = nil
+  module_name = nil
+  module_type = nil
+  indentation = ""
   line_number = 0
 
   File.open(path, "r") do |file|
@@ -26,16 +28,23 @@ def process(path)
       line.chomp!
       line_number += 1
 
-      if line =~ /\bclass ([^ ]+)?( ?extends ([^ ]+))? *$/
-        class_name = $1 || "(anonymous)"
-        superclass_name = $3
-        result = format_class(class_name, superclass_name)
+      if line =~ /^( *).*\bclass ([^ ]+)?( ?extends ([^ ]+))? *$/
+        indentation = $1
+        module_name = $2 || "(anonymous)"
+        module_type = :class
+        superclass_name = $4
+        result = format_class(module_name, superclass_name)
 
-      elsif line =~ /^ +(@)?([^\s:]+): (.*)[=-]> *$/
+      elsif line =~ /^( *)([^ .]+)\.extend *$/
+        indentation = $1
+        module_name = $2
+        module_type = :object
+
+      elsif line =~ /^#{indentation}  (@)?([^\s:]+): (.*)[=-]> *$/
         method_sigil = $1
         method_name = $2
         arguments = $3[/\((.*)\)/, 1]
-        result = format_method(class_name, method_sigil, method_name, arguments)
+        result = format_method(module_name, module_type, method_sigil, method_name, arguments)
       end
 
       if result
@@ -51,9 +60,9 @@ def format_class(class_name, superclass_name)
   result
 end
 
-def format_method(class_name, method_sigil, method_name, arguments)
-  joiner = method_sigil == "@" ? "." : "#"
-  result = "#{class_name}#{joiner}#{method_name}"
+def format_method(module_name, module_type, method_sigil, method_name, arguments)
+  joiner = module_type == :class ? (method_sigil == "@" ? "." : "#") : "."
+  result = "#{module_name}#{joiner}#{method_name}"
   result << " (#{arguments})" if arguments
   result
 end
