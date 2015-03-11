@@ -16,11 +16,18 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
 
   install: ->
     @makeElementMutable()
+    @makeCaptionEditable()
     @addRemoveButton()
 
   makeElementMutable: undoable ->
     do: => @element.dataset.trixMutable = true
     undo: => delete @element.dataset.trixMutable
+
+  makeCaptionEditable: undoable ->
+    figcaption = @element.querySelector("figcaption")
+    handler = null
+    do: => handler = handleEvent("click", onElement: figcaption, withCallback: @didClickCaption, inPhase: "capturing")
+    undo: => handler.destroy()
 
   addRemoveButton: undoable ->
     removeButton = makeElement(tagName: "a", textContent: "⊗", className: "remove", attributes: { href: "#", title: "Remove" })
@@ -52,6 +59,10 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     event.preventDefault()
     event.stopPropagation()
     @delegate?.attachmentEditorDidRequestRemovalOfAttachment(@attachment)
+
+  didClickCaption: (event) =>
+    event.preventDefault()
+    @editCaption()
 
   didChangeCaption: (event) =>
     caption = event.target.value

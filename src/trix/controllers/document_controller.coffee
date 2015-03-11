@@ -12,7 +12,6 @@ class Trix.DocumentController extends Trix.BasicObject
     handleEvent "focus", onElement: @element, withCallback: @didFocus
     handleEvent "click", onElement: @element, matchingSelector: "a[contenteditable=false]", preventDefault: true
     handleEvent "mousedown", onElement: @element, matchingSelector: attachmentSelector, withCallback: @didClickAttachment
-    handleEvent "click", onElement: @element, matchingSelector: "#{attachmentSelector} figcaption", withCallback: @didClickAttachmentCaption
     handleEvent "click", onElement: @element, matchingSelector: "a#{attachmentSelector}", preventDefault: true
 
   didFocus: =>
@@ -21,9 +20,6 @@ class Trix.DocumentController extends Trix.BasicObject
   didClickAttachment: (event, target) =>
     attachment = @findAttachmentForElement(target)
     @delegate?.documentControllerDidSelectAttachment?(attachment)
-
-  didClickAttachmentCaption: (event, target) =>
-    @attachmentEditor?.editCaption()
 
   render: benchmark "DocumentController#render", ->
     @documentView.render()
