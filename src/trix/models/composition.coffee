@@ -125,21 +125,20 @@ class Trix.Composition extends Trix.BasicObject
       @insertText(text)
 
   deleteInDirection: (direction) ->
-    locationRange = @getLocationRange()
+    positionRange = @getPositionRange()
 
-    if locationRange.isCollapsed()
-      range = @getExpandedRangeInDirection(direction)
-      locationRange = @document.locationRangeFromRange(range)
+    if positionRange.isCollapsed()
+      positionRange = positionRange.expandInDirection(direction)
 
       if direction is "backward"
-        attachment = @getAttachmentAtLocationRange(locationRange)
+        attachment = @getAttachmentAtPositionRange(positionRange)
 
     if attachment
-      @setLocationRange(locationRange)
+      @setPositionRange(positionRange)
       @editAttachment(attachment)
     else
-      @document.removeTextAtLocationRange(locationRange)
-      @setLocationRange(locationRange.collapse())
+      @document.removeTextAtPositionRange(positionRange)
+      @setPositionRange(positionRange.collapse())
 
   moveTextFromLocationRange: (locationRange) ->
     position = @getPosition()
@@ -374,6 +373,11 @@ class Trix.Composition extends Trix.BasicObject
 
   getAttachmentAtLocationRange: (locationRange) ->
     document = @document.getDocumentAtLocationRange(locationRange)
+    if document.toString() is "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+      document.getAttachments()[0]
+
+  getAttachmentAtPositionRange: (positionRange) ->
+    document = @document.getDocumentAtPositionRange(positionRange)
     if document.toString() is "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
       document.getAttachments()[0]
 
