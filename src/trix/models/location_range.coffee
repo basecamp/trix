@@ -52,8 +52,7 @@ class Trix.LocationRange extends Trix.BasicObject
     callback(index) for index in [@start.index..@end.index]
 
   collapse: ->
-    @end = @start
-    this
+    @copyWithEndLocation(@start)
 
   toArray: ->
     [@start, @end]
