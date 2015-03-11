@@ -50,6 +50,11 @@ def process(path)
         method_name = $2
         arguments = $3[/\((.*)\)/, 1]
         result = format_method(module_name, module_type, method_sigil, method_name, arguments)
+
+      elsif line =~ /^#{indentation}  @proxyMethod +"(.*?\.)([^"?]+)"/
+        method_name = $2
+        result = format_method(module_name, module_type, nil, method_name, nil)
+
       end
 
       if result
