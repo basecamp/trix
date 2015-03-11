@@ -11,7 +11,7 @@ class Trix.Block extends Trix.Object
     @attributes = Trix.List.box(attributes)
 
   isEmpty: ->
-    textIsBlockBreak(@text)
+    @text.isBlockBreak()
 
   copyWithText: (text) ->
     new @constructor text, @attributes
@@ -139,7 +139,7 @@ class Trix.Block extends Trix.Object
     return text unless lastPiece?
 
     innerPieces = for piece in innerPieces
-      if pieceIsBlockBreak(piece)
+      if piece.isBlockBreak()
         modified = true
         unmarkBlockBreakPiece(piece)
       else
@@ -162,15 +162,7 @@ class Trix.Block extends Trix.Object
     length = text.getLength()
     return false if length is 0
     endText = text.getTextAtRange([length - 1, length])
-    textIsBlockBreak(endText)
-
-  textIsBlockBreak = (text) ->
-    return false unless text.getLength() is 1
-    piece = text.pieceList.getObjectAtIndex(0)
-    pieceIsBlockBreak(piece)
-
-  pieceIsBlockBreak = (piece) ->
-    piece.toString() is "\n" and piece.getAttribute("blockBreak") is true
+    endText.isBlockBreak()
 
   unmarkBlockBreakPiece = (piece) ->
     piece.copyWithoutAttribute("blockBreak")

@@ -54,6 +54,9 @@ class Trix.Piece extends Trix.Object
   hasSameAttributesAsPiece: (piece) ->
     piece? and (@attributes is piece.attributes or @attributes.isEqualTo(piece.attributes))
 
+  isBlockBreak: ->
+    false
+
   isEqualTo: (piece) ->
     super or (
       @hasSameConstructorAs(piece) and

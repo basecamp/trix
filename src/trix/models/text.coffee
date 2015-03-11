@@ -137,6 +137,9 @@ class Trix.Text extends Trix.Object
   isEqualTo: (text) ->
     super or text?.pieceList?.isEqualTo(@pieceList)
 
+  isBlockBreak: ->
+    @getLength() is 1 and @pieceList.getObjectAtIndex(0).isBlockBreak()
+
   eachPiece: (callback) ->
     @pieceList.eachObject(callback)
 
