@@ -40,6 +40,11 @@ def process(path)
         module_name = $2
         module_type = :object
 
+      elsif line =~ /^( *)((@[^ ]+)|([^ ]+\.[^ ]+)) *= *$/
+        indentation = $1
+        module_name = $2
+        module_type = :object
+
       elsif line =~ /^#{indentation}  (@)?([^\s:]+): (.*)[=-]> *$/
         method_sigil = $1
         method_name = $2
