@@ -8,8 +8,11 @@ class Trix.PositionRange extends Trix.BasicObject
       new this value[0], value[1]
 
   constructor: (start, end) ->
-    @start = @position = parse(start)
-    @end = parse(end) ? @start
+    @start = start
+    @end = end ? @start
+
+  copyWithEndPosition: (end) ->
+    new @constructor @start, end
 
   isEqualTo: (positionRange) ->
     positionRange = @constructor.box(positionRange)
@@ -19,7 +22,7 @@ class Trix.PositionRange extends Trix.BasicObject
     @start is @end
 
   collapse: ->
-    new this @start, @start
+    @copyWithEndPosition(@start)
 
   toArray: ->
     [@start, @end]

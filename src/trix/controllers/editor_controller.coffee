@@ -58,8 +58,8 @@ class Trix.EditorController extends Trix.Controller
     @toolbarController.updateAttributes(@currentAttributes)
     @toolbarController.updateActions()
 
-  compositionDidPerformInsertionAtLocationRange: (locationRange) ->
-    @pastedLocationRange = locationRange if @pasting
+  compositionDidPerformInsertionAtPositionRange: (positionRange) ->
+    @pastedPositionRange = positionRange if @pasting
 
   compositionShouldAcceptFile: (file) ->
     @delegate?.shouldAcceptFile?(file)
@@ -149,11 +149,11 @@ class Trix.EditorController extends Trix.Controller
     @pasting = true
 
   inputControllerDidPaste: ->
-    locationRange = @pastedLocationRange
-    delete @pastedLocationRange
+    positionRange = @pastedPositionRange
+    delete @pastedPositionRange
     delete @pasting
 
-    @delegate?.didPasteAtLocationRange?(locationRange)
+    @delegate?.didPasteAtPositionRange?(positionRange)
     @render()
 
   inputControllerWillMoveText: ->

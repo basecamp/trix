@@ -33,32 +33,30 @@ class Trix.Composition extends Trix.BasicObject
   # Responder protocol
 
   insertText: (text, {updatePosition} = updatePosition: true) ->
-    position = @getPosition()
-    locationRange = @getLocationRange()
-    @document.insertTextAtLocationRange(text, locationRange)
+    positionRange = @getPositionRange()
+    position = positionRange.start
+    @document.insertTextAtPositionRange(text, positionRange)
 
     endPosition = position + text.getLength()
-    endLocation = @document.locationFromPosition(endPosition)
-    @setLocation(endLocation) if updatePosition
+    @setPosition(endPosition) if updatePosition
 
-    insertedLocationRange = locationRange.copyWithEndLocation(endLocation)
-    @notifyDelegateOfInsertionAtLocationRange(insertedLocationRange)
+    insertedPositionRange = positionRange.copyWithEndPosition(endPosition)
+    @notifyDelegateOfInsertionAtPositionRange(insertedPositionRange)
 
   insertBlock: (block = new Trix.Block) ->
     document = new Trix.Document [block]
     @insertDocument(document)
 
   insertDocument: (document = Trix.Document.fromString("")) ->
-    position = @getPosition()
-    locationRange = @getLocationRange()
-    @document.insertDocumentAtLocationRange(document, locationRange)
+    positionRange = @getPositionRange()
+    position = positionRange.start
+    @document.insertDocumentAtPositionRange(document, positionRange)
 
     endPosition = position + document.getLength()
-    endLocation = @document.locationFromPosition(endPosition)
-    @setLocation(endLocation)
+    @setPosition(endPosition)
 
-    insertedLocationRange = locationRange.copyWithEndLocation(endLocation)
-    @notifyDelegateOfInsertionAtLocationRange(insertedLocationRange)
+    insertedPositionRange = positionRange.copyWithEndPosition(endPosition)
+    @notifyDelegateOfInsertionAtPositionRange(insertedPositionRange)
 
   insertString: (string, options) ->
     attributes = @getCurrentTextAttributes()
@@ -66,16 +64,15 @@ class Trix.Composition extends Trix.BasicObject
     @insertText(text, options)
 
   insertBlockBreak: ->
-    position = @getPosition()
-    locationRange = @getLocationRange()
-    @document.insertBlockBreakAtLocationRange(locationRange)
+    positionRange = @getPositionRange()
+    position = positionRange.start
+    @document.insertBlockBreakAtPositionRange(positionRange)
 
     endPosition = position + 1
-    endLocation = @document.locationFromPosition(endPosition)
-    @setLocation(endLocation)
+    @setPosition(endPosition)
 
-    insertedLocationRange = locationRange.copyWithEndLocation(endLocation)
-    @notifyDelegateOfInsertionAtLocationRange(insertedLocationRange)
+    insertedPositionRange = positionRange.copyWithEndPosition(endPosition)
+    @notifyDelegateOfInsertionAtPositionRange(insertedPositionRange)
 
   insertLineBreak: ->
     locationRange = @getLocationRange()
@@ -275,6 +272,14 @@ class Trix.Composition extends Trix.BasicObject
     locationRange = @document.locationRangeFromRange(range)
     @setLocationRange(locationRange)
 
+  getPositionRange: ->
+    locationRange = @getLocationRange()
+    @document.positionRangeFromLocationRange(locationRange)
+
+  setPositionRange: (positionRange) ->
+    locationRange = @document.locationRangeFromPositionRange(positionRange)
+    @setLocationRange(locationRange)
+
   getPosition: ->
     @getRange()[0]
 
@@ -375,5 +380,5 @@ class Trix.Composition extends Trix.BasicObject
   notifyDelegateOfCurrentAttributesChange: ->
     @delegate?.compositionDidChangeCurrentAttributes?(@currentAttributes)
 
-  notifyDelegateOfInsertionAtLocationRange: (locationRange) ->
-    @delegate?.compositionDidPerformInsertionAtLocationRange?(locationRange)
+  notifyDelegateOfInsertionAtPositionRange: (positionRange) ->
+    @delegate?.compositionDidPerformInsertionAtPositionRange?(positionRange)

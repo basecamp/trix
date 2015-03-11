@@ -40,7 +40,7 @@ class Trix.Editor extends Trix.Object
 
   @proxyMethod "delegate?.compositionDidChangeDocument"
   @proxyMethod "delegate?.compositionDidChangeCurrentAttributes"
-  @proxyMethod "delegate?.compositionDidPerformInsertionAtLocationRange"
+  @proxyMethod "delegate?.compositionDidPerformInsertionAtPositionRange"
   @proxyMethod "delegate?.compositionWillSetLocationRange"
   @proxyMethod "delegate?.compositionShouldAcceptFile"
   @proxyMethod "delegate?.compositionDidAddAttachment"

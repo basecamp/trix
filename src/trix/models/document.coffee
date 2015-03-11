@@ -432,7 +432,7 @@ class Trix.Document extends Trix.Object
     @getTextAtIndex(index)
 
   getPieceAtPosition: (position) ->
-    {index, offset} = @locaitonFromPosition(position)
+    {index, offset} = @locationFromPosition(position)
     text = @getTextAtIndex(index).getTextAtRange([offset, offset + 1])
     text.getPieces()[0]
 
@@ -607,6 +607,11 @@ class Trix.Document extends Trix.Object
     startLocation = @locationFromPosition(positionRange.start)
     endLocation = @locationFromPosition(positionRange.end)
     new Trix.LocationRange startLocation, endLocation
+
+  positionRangeFromLocationRange: (locationRange) ->
+    leftPosition = @blockList.findPositionAtIndexAndOffset(locationRange.start.index, locationRange.start.offset)
+    rightPosition = @blockList.findPositionAtIndexAndOffset(locationRange.end.index, locationRange.end.offset) unless locationRange.isCollapsed()
+    new Trix.PositionRange leftPosition, rightPosition
 
   isEqualTo: (document) ->
     @blockList.isEqualTo(document?.blockList)
