@@ -5,54 +5,58 @@
 class Trix.AttachmentEditorController extends Trix.BasicObject
   constructor: (@attachmentPiece, @element, @container) ->
     {@attachment} = @attachmentPiece
-
     @element = @element.firstChild if tagName(@element) is "a"
-    @element.dataset.trixMutable = true
+    @install()
 
+  undoable = (fn) -> ->
+    commands = fn.apply(this, arguments)
+    commands.do()
+    @undos ?= []
+    @undos.push(commands.undo)
+
+  install: ->
+    @makeElementMutable()
     @addRemoveButton()
 
-  addRemoveButton: ->
-    @removeButton = makeElement(tagName: "a", textContent: "⊗", className: "remove", attributes: { href: "#", title: "Remove" })
-    @element.appendChild(@removeButton)
-    handleEvent "click", onElement: @removeButton, withCallback: @didClickRemoveButton
+  makeElementMutable: undoable ->
+    do: => @element.dataset.trixMutable = true
+    undo: => delete @element.dataset.trixMutable
+
+  addRemoveButton: undoable ->
+    removeButton = makeElement(tagName: "a", textContent: "⊗", className: "remove", attributes: { href: "#", title: "Remove" })
+    handleEvent("click", onElement: removeButton, withCallback: @didClickRemoveButton)
+    do: => @element.appendChild(removeButton)
+    undo: => @element.removeChild(removeButton)
+
+  editCaption: undoable ->
+    input = makeElement "input",
+      type: "text"
+      value: @attachmentPiece.getCaption()
+      placeholder: Trix.config.lang.attachment.captionPlaceholder
+
+    handleEvent("change", onElement: input, withCallback: @didChangeCaption)
+
+    figcaption = @element.querySelector("figcaption")
+    editingFigcaption = figcaption.cloneNode()
+
+    do: ->
+      figcaption.style.display = "none"
+      editingFigcaption.appendChild(input)
+      figcaption.parentElement.insertBefore(editingFigcaption, figcaption)
+      input.select()
+    undo: ->
+      editingFigcaption.parentNode.removeChild(editingFigcaption)
+      figcaption.style.display = null
 
   didClickRemoveButton: (event) =>
     event.preventDefault()
     event.stopPropagation()
     @delegate?.attachmentEditorDidRequestRemovalOfAttachment(@attachment)
 
-  editCaption: ->
-    if figcaption = @element.querySelector("figcaption:not(.editing)")
-      editingFigcaption = figcaption.cloneNode()
-      editingFigcaption.classList.add("editing")
-      figcaption.style.display = "none"
-
-      value = @attachmentPiece.getCaption()
-      placeholder = Trix.config.lang.attachment.captionPlaceholder
-      input = makeElement("input", {type: "text", value, placeholder})
-
-      editingFigcaption.appendChild(input)
-      figcaption.parentElement.insertBefore(editingFigcaption, figcaption)
-      input.select()
-
-      handleEvent "change", onElement: input, withCallback: @didChangeCaption
-
   didChangeCaption: (event) =>
     caption = event.target.value
     @delegate?.attachmentEditorDidRequestUpdatingAttachmentWithAttributes?(@attachment, {caption})
 
-  stopEditingCaption: ->
-    if editingFigcaption = @element.querySelector("figcaption.editing")
-      editingFigcaption.parentNode.removeChild(editingFigcaption)
-
-      figcaption = @element.querySelector("figcaption")
-      figcaption.removeAttribute("style")
-
-  resetElement: ->
-    @stopEditingCaption()
-    @element.removeChild(@removeButton)
-    delete @element.dataset.trixMutable
-
   uninstall: ->
-    @stopEditingCaption()
+    undo() while undo = @undos.pop()
     @delegate?.didUninstallAttachmentEditor(this)
