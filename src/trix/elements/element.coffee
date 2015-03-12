@@ -7,6 +7,9 @@ class HTMLElement
       value: this
 
 class Trix.Element extends HTMLElement
+  @defineProperty: (name, descriptor) ->
+    Object.defineProperty(@prototype, name, descriptor)
+
   createdCallback: ->
     @loadStylesheet()
     @innerHTML = @constructor.defaultHTML if @constructor.defaultHTML? and @innerHTML is ""
@@ -14,6 +17,8 @@ class Trix.Element extends HTMLElement
   attachedCallback: ->
 
   detachedCallback: ->
+
+  attributeChangedCallback: ->
 
   loadStylesheet: ->
     tagName = @tagName.toLowerCase()

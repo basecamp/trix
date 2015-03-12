@@ -36,8 +36,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     undo: => @element.removeChild(removeButton)
 
   editCaption: undoable ->
-    input = makeElement "input",
-      type: "text"
+    input = makeElement "trix-input",
       value: @attachmentPiece.getCaption()
       placeholder: Trix.config.lang.attachment.captionPlaceholder
 
@@ -50,7 +49,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       figcaption.style.display = "none"
       editingFigcaption.appendChild(input)
       figcaption.parentElement.insertBefore(editingFigcaption, figcaption)
-      input.select()
+      input.focus()
     undo: ->
       editingFigcaption.parentNode.removeChild(editingFigcaption)
       figcaption.style.display = null
