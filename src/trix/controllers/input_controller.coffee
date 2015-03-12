@@ -134,7 +134,7 @@ class Trix.InputController extends Trix.BasicObject
 
     dragstart: (event) ->
       target = event.target
-      @draggedRange = @responder?.getLocationRange()
+      @draggedRange = @responder?.getPositionRange()
       @delegate?.inputControllerDidStartDrag?()
 
     dragover: (event) ->
@@ -157,7 +157,7 @@ class Trix.InputController extends Trix.BasicObject
 
       if @draggedRange
         @delegate?.inputControllerWillMoveText()
-        @responder?.moveTextFromLocationRange(@draggedRange)
+        @responder?.moveTextFromPositionRange(@draggedRange)
         delete @draggedRange
         @requestRender()
 

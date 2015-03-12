@@ -299,7 +299,7 @@ class Trix.Document extends Trix.Object
   applyBlockAttributeAtPositionRange: edit "applyBlockAttributeAtPositionRange", (attributeName, value, positionRange) ->
     positionRange = @expandPositionRangeToLineBreaksAndSplitBlocks(positionRange)
     if Trix.config.blockAttributes[attributeName].parentAttribute
-      positionRange = @convertLineBreaksToBlockBreaksInPositionRange(positionRange)
+      @convertLineBreaksToBlockBreaksInPositionRange(positionRange)
     @addAttributeAtPositionRange(attributeName, value, positionRange)
 
   firstBlockInLocationRangeIsEntirelySelected: (locationRange) ->
@@ -374,7 +374,7 @@ class Trix.Document extends Trix.Object
         unless end.offset is endBlock.getBlockBreakPosition()
           @insertBlockBreakAtLocationRange(Trix.LocationRange.forLocationWithLength(end, 1))
 
-    new Trix.LocationRange start, end
+    @positionRangeFromLocationRange(new Trix.LocationRange start, end)
 
   convertLineBreaksToBlockBreaksInLocationRange: (locationRange) ->
     string = @getStringAtLocationRange(locationRange).slice(0, -1)
@@ -548,6 +548,13 @@ class Trix.Document extends Trix.Object
 
     commonAttributes
 
+  getPositionRangeOfCommonAttributeAtPosition: (attributeName, position) ->
+    {index, offset} = @locationFromPosition(position)
+    text = @getTextAtIndex(index)
+    [left, right] = text.getExpandedRangeForAttributeAtOffset(attributeName, offset)
+    locationRange = new Trix.LocationRange {index, offset: left}, {index, offset: right}
+    @positionRangeFromLocationRange(locationRange)
+
   attributesForBlock = (block) ->
     attributes = {}
     if attributeName = block.getLastAttribute()
@@ -575,7 +582,7 @@ class Trix.Document extends Trix.Object
     position = 0
     for {text}, index in @blockList.toArray()
       if textRange = text.getRangeOfAttachment(attachment)
-        return new Trix.PositionRange position + range[0], position + range[1]
+        return new Trix.PositionRange position + textRange[0], position + textRange[1]
       position += text.getLength()
 
   getAttachmentPieceForAttachment: (attachment) ->
@@ -603,7 +610,7 @@ class Trix.Document extends Trix.Object
     new Trix.LocationRange startLocation, endLocation
 
   locationRangeFromPositionRange: (positionRange) ->
-    positionRange = Trix.PositionRange.box(positionRange)
+    return unless positionRange = Trix.PositionRange.box(positionRange)
     startLocation = @locationFromPosition(positionRange.start)
     endLocation = @locationFromPosition(positionRange.end)
     new Trix.LocationRange startLocation, endLocation

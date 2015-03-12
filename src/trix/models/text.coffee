@@ -77,13 +77,12 @@ class Trix.Text extends Trix.Object
   getCommonAttributesAtRange: (range) ->
     @getTextAtRange(range).getCommonAttributes() ? {}
 
-  getExpandedRangeForAttributeAtRange: (attributeName, range) ->
-    [left, right] = range
-    originalLeft = left
+  getExpandedRangeForAttributeAtOffset: (attributeName, offset) ->
+    left = right = offset
     length = @getLength()
 
     left-- while left > 0 and @getCommonAttributesAtRange([left - 1, right])[attributeName]
-    right++ while right < length and @getCommonAttributesAtRange([originalLeft, right + 1])[attributeName]
+    right++ while right < length and @getCommonAttributesAtRange([offset, right + 1])[attributeName]
 
     [left, right]
 

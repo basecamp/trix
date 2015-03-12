@@ -140,22 +140,22 @@ class Trix.Composition extends Trix.BasicObject
       @document.removeTextAtPositionRange(positionRange)
       @setPositionRange(positionRange.collapse())
 
-  moveTextFromLocationRange: (locationRange) ->
+  moveTextFromPositionRange: (positionRange) ->
     position = @getPosition()
-    @document.moveTextFromLocationRangeToPosition(locationRange, position)
+    @document.moveTextFromPositionRangeToPosition(positionRange, position)
     @setPosition(position)
 
   removeAttachment: (attachment) ->
-    if locationRange = @document.getLocationRangeOfAttachment(attachment)
+    if positionRange = @document.getPositionRangeOfAttachment(attachment)
       @stopEditingAttachment()
-      @document.removeTextAtLocationRange(locationRange)
-      @setLocationRange(locationRange.collapse())
+      @document.removeTextAtPositionRange(positionRange)
+      @setPositionRange(positionRange.collapse())
 
   removeLastBlockAttribute: ->
-    locationRange = @getLocationRange()
-    block = @document.getBlockAtIndex(locationRange.end.index)
+    positionRange = @getPositionRange()
+    block = @document.getBlockAtPosition(positionRange.end)
     @removeCurrentAttribute(block.getLastAttribute())
-    @setLocationRange(locationRange.collapse())
+    @setPositionRange(positionRange.collapse())
 
   # Current attributes
 
@@ -185,15 +185,14 @@ class Trix.Composition extends Trix.BasicObject
       @notifyDelegateOfCurrentAttributesChange()
 
   setTextAttribute: (attributeName, value) ->
-    return unless locationRange = @getLocationRange()
-    unless locationRange.isCollapsed()
-      @document.addAttributeAtLocationRange(attributeName, value, locationRange)
+    return unless positionRange = @getPositionRange()
+    unless positionRange.isCollapsed()
+      @document.addAttributeAtPositionRange(attributeName, value, positionRange)
 
   setBlockAttribute: (attributeName, value) ->
-    return unless locationRange = @getLocationRange()
-    range = @document.rangeFromLocationRange(locationRange)
-    @document.applyBlockAttributeAtLocationRange(attributeName, value, locationRange)
-    @setRange(range)
+    return unless positionRange = @getPositionRange()
+    @document.applyBlockAttributeAtPositionRange(attributeName, value, positionRange)
+    @setPositionRange(positionRange)
 
   removeCurrentAttribute: (attributeName) ->
     if Trix.config.blockAttributes[attributeName]
@@ -205,34 +204,34 @@ class Trix.Composition extends Trix.BasicObject
       @notifyDelegateOfCurrentAttributesChange()
 
   removeTextAttribute: (attributeName) ->
-    return unless locationRange = @getLocationRange()
-    unless locationRange.isCollapsed()
-      @document.removeAttributeAtLocationRange(attributeName, locationRange)
+    return unless positionRange = @getPositionRange()
+    unless positionRange.isCollapsed()
+      @document.removeAttributeAtPositionRange(attributeName, positionRange)
 
   removeBlockAttribute: (attributeName) ->
-    return unless locationRange = @getLocationRange()
-    @document.removeAttributeAtLocationRange(attributeName, locationRange)
+    return unless positionRange = @getPositionRange()
+    @document.removeAttributeAtPositionRange(attributeName, positionRange)
 
   increaseBlockAttributeLevel: ->
-    locationRange = @getLocationRange()
-    block = @document.getBlockAtIndex(locationRange.index)
+    positionRange = @getPositionRange()
+    block = @document.getBlockAtPosition(positionRange.start)
     if attribute = block.getLastAttribute()
       @setCurrentAttribute(attribute)
 
   decreaseBlockAttributeLevel: ->
-    locationRange = @getLocationRange()
-    block = @document.getBlockAtIndex(locationRange.index)
+    positionRange = @getPositionRange()
+    block = @document.getBlockAtPosition(positionRange.start)
     if attribute = block.getLastAttribute()
       @removeCurrentAttribute(attribute)
 
   canChangeBlockAttributeLevel: ->
-    if locationRange = @getLocationRange()
-      @document.getBlockAtIndex(locationRange.index).getAttributes().length
+    if positionRange = @getPositionRange()
+      @document.getBlockAtPosition(positionRange.start).getAttributes().length
 
   updateCurrentAttributes: ->
     @currentAttributes =
-      if locationRange = @getLocationRange()
-        @document.getCommonAttributesAtLocationRange(locationRange)
+      if positionRange = @getPositionRange()
+        @document.getCommonAttributesAtPositionRange(positionRange)
       else
         {}
 
@@ -264,27 +263,27 @@ class Trix.Composition extends Trix.BasicObject
   @proxyMethod "delegate?.getSelectionManager"
 
   getRange: ->
-    locationRange = @getLocationRange()
-    @document.rangeFromLocationRange(locationRange)
+    if locationRange = @getLocationRange()
+      @document.rangeFromLocationRange(locationRange)
 
   setRange: (range) ->
-    locationRange = @document.locationRangeFromRange(range)
-    @setLocationRange(locationRange)
+    if locationRange = @document.locationRangeFromRange(range)
+      @setLocationRange(locationRange)
 
   getPositionRange: ->
-    locationRange = @getLocationRange()
-    @document.positionRangeFromLocationRange(locationRange)
+    if locationRange = @getLocationRange()
+      @document.positionRangeFromLocationRange(locationRange)
 
   setPositionRange: (positionRange) ->
-    locationRange = @document.locationRangeFromPositionRange(positionRange)
-    @setLocationRange(locationRange)
+    if locationRange = @document.locationRangeFromPositionRange(positionRange)
+      @setLocationRange(locationRange)
 
   getPosition: ->
-    @getRange()[0]
+    @getRange()?[0]
 
   setPosition: (position) ->
-    location = @document.locationFromPosition(position)
-    @setLocation(location)
+    if location = @document.locationFromPosition(position)
+      @setLocation(location)
 
   setLocation: (location) ->
     locationRange = new Trix.LocationRange location
@@ -301,57 +300,57 @@ class Trix.Composition extends Trix.BasicObject
       range[1]++
     range
 
+  positionIsCursorTarget: (position) ->
+    if location = @document.locationFromPosition(position)
+      @locationIsCursorTarget(location)
+
   # Selection
 
   setSelectionForLocationRange: ->
     @getSelectionManager().setLocationRange(arguments...)
 
+  setSelectionForPositionRange: (positionRange) ->
+    locationRange = @document.locationRangeFromPositionRange(positionRange)
+    @getSelectionManager().setLocationRange(locationRange)
+
   moveCursorInDirection: (direction) ->
     if @editingAttachment
-      locationRange = @document.getLocationRangeOfAttachment(@editingAttachment)
+      positionRange = @document.getPositionRangeOfAttachment(@editingAttachment)
     else
-      originalLocationRange = @getLocationRange()
-      expandedRange = @getExpandedRangeInDirection(direction)
-      locationRange = @document.locationRangeFromRange(expandedRange)
-      canEditAttachment = not locationRange.isEqualTo(originalLocationRange)
+      originalPositionRange = @getPositionRange()
+      positionRange = originalPositionRange.expandInDirection(direction)
+      canEditAttachment = not positionRange.isEqualTo(originalPositionRange)
 
     if direction is "backward"
-      @setSelectionForLocationRange(locationRange.start)
+      @setSelectionForPositionRange(positionRange.start)
     else
-      @setSelectionForLocationRange(locationRange.end)
+      @setSelectionForPositionRange(positionRange.end)
 
     if canEditAttachment
-      if attachment = @getAttachmentAtLocationRange(locationRange)
+      if attachment = @getAttachmentAtPositionRange(positionRange)
         @editAttachment(attachment)
 
   expandSelectionInDirection: (direction) ->
-    range = @getExpandedRangeInDirection(direction)
-    locationRange = @document.locationRangeFromRange(range)
-    @setSelectionForLocationRange(locationRange)
+    positionRange = @getPositionRange().expandInDirection(direction)
+    @setSelectionForPositionRange(positionRange)
 
   expandSelectionForEditing: ->
     if @hasCurrentAttribute("href")
       @expandSelectionAroundCommonAttribute("href")
 
   expandSelectionAroundCommonAttribute: (attributeName) ->
-    locationRange = @getLocationRange()
-
-    if locationRange.isInSingleIndex()
-      {index} = locationRange
-      text = @document.getTextAtIndex(index)
-      textRange = [locationRange.start.offset, locationRange.end.offset]
-      [left, right] = text.getExpandedRangeForAttributeAtRange(attributeName, textRange)
-
-      @setSelectionForLocationRange([index, left], [index, right])
+    position = @getPosition()
+    positionRange = @document.getPositionRangeOfCommonAttributeAtPosition(attributeName, position)
+    @setSelectionForPositionRange(positionRange)
 
   selectionContainsAttachmentWithAttribute: (attributeName) ->
-    if locationRange = @getLocationRange()
-      for attachment in @document.getDocumentAtLocationRange(locationRange).getAttachments()
+    if positionRange = @getPositionRange()
+      for attachment in @document.getDocumentAtPositionRange(positionRange).getAttachments()
         return true if attachment.hasAttribute(attributeName)
       false
 
   selectionIsInCursorTarget: ->
-    @editingAttachment or @locationIsCursorTarget(@getLocationRange().start)
+    @editingAttachment or @positionIsCursorTarget(@getPosition())
 
   # Attachment editing
 
