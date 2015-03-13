@@ -78,7 +78,8 @@ class Trix.EditorController extends Trix.Controller
     @delegate?.didRemoveAttachment?(managedAttachment)
 
   compositionDidStartEditingAttachment: (attachment) ->
-    @attachmentLocationRange = @document.getLocationRangeOfAttachment(attachment)
+    attachmentPositionRange = @document.getPositionRangeOfAttachment(attachment)
+    @attachmentLocationRange = @document.locationRangeFromPositionRange(attachmentPositionRange)
     @documentController.installAttachmentEditorForAttachment(attachment)
     defer => @selectionManager.setLocationRange(@attachmentLocationRange)
 
@@ -127,7 +128,6 @@ class Trix.EditorController extends Trix.Controller
     @toolbarController.hideDialog()
 
   documentControllerDidSelectAttachment: (attachment) ->
-    locationRange = @document.getLocationRangeOfAttachment(attachment)
     @composition.editAttachment(attachment)
 
   documentControllerWillUpdateAttachment: (attachment) ->
