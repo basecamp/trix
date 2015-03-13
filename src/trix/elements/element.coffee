@@ -1,37 +1,44 @@
 {makeElement} = Trix
 
-class HTMLElement
-  @prototype = Object.create window.HTMLElement.prototype,
-    constructor:
-      writable: true
-      value: this
+Trix.createElementClass = (constructor = window.HTMLElement) ->
+  HTMLElement = class
+    @prototype = Object.create constructor.prototype,
+      constructor:
+        writable: true
+        value: this
 
-class Trix.Element extends HTMLElement
-  @defineProperty: (name, descriptor) ->
-    Object.defineProperty(@prototype, name, descriptor)
+  class extends HTMLElement
+    @defineProperty: (name, descriptor) ->
+      Object.defineProperty(@prototype, name, descriptor)
 
-  createdCallback: ->
-    @loadStylesheet()
-    @innerHTML = @constructor.defaultHTML if @constructor.defaultHTML? and @innerHTML is ""
+    createdCallback: ->
+      @loadStylesheet()
+      @innerHTML = @constructor.defaultHTML if @constructor.defaultHTML? and @innerHTML is ""
 
-  attachedCallback: ->
+    attachedCallback: ->
 
-  detachedCallback: ->
+    detachedCallback: ->
 
-  attributeChangedCallback: ->
+    attributeChangedCallback: ->
 
-  loadStylesheet: ->
-    tagName = @tagName.toLowerCase()
-    return if document.querySelector("style[data-tag-name='#{tagName}']")
+    loadStylesheet: ->
+      tagName = @tagName.toLowerCase()
+      return if document.querySelector("style[data-tag-name='#{tagName}']")
 
-    element = makeElement("style", type: "text/css")
-    element.setAttribute("data-tag-name", tagName)
-    element.textContent = @getDefaultCSS()
+      element = makeElement("style", type: "text/css")
+      element.setAttribute("data-tag-name", tagName)
+      element.textContent = @getDefaultCSS()
 
-    head = document.querySelector("head")
-    head.insertBefore(element, head.firstChild)
-    element
+      head = document.querySelector("head")
+      head.insertBefore(element, head.firstChild)
+      element
 
-  getDefaultCSS: (css = @constructor.defaultCSS) ->
-    css = "%t { display: block }\n#{[css]}"
-    css.replace(/%t/g, @tagName.toLowerCase())
+    getDefaultCSS: (css = @constructor.defaultCSS) ->
+      selector = @tagName.toLowerCase()
+      if type = @getAttribute("is")
+        selector += "[is=#{type}]"
+
+      css = "%t { display: block }\n#{[css]}"
+      css.replace(/%t/g, selector)
+
+Trix.Element = Trix.createElementClass()

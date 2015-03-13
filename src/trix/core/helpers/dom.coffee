@@ -136,7 +136,7 @@ Trix.extend
   defineElement: (constructor) ->
     tagName = constructor.tagName
     constructorName = Trix.convertDashesToCamelCase(tagName, initial: true) + "Element"
-    registeredConstructor = document.registerElement(tagName, prototype: constructor.prototype)
+    registeredConstructor = document.registerElement(tagName, prototype: constructor.prototype, extends: constructor.extends)
     window[constructorName] = Trix.extend.call(registeredConstructor, constructor)
 
   nodeIsBlockStartComment: (node) ->
