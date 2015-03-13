@@ -21,7 +21,7 @@ Trix.defineElement class extends Trix.Element
 
   @defaultHTML: """
     <div class="button_groups">
-      <span class="button_group inline_tools">
+      <span class="button_group text_tools">
         <button type="button" class="bold" data-attribute="bold" data-key="b">Bold</button>
         <button type="button" class="italic" data-attribute="italic" data-key="i">Italic</button>
         <button type="button" class="strike" data-attribute="strike">Strike</button>
