@@ -1,49 +1,51 @@
-{triggerEvent} = Trix
+{makeElement} = Trix
 
-Trix.defineElement class extends Trix.Element
+TextAreaElement = Trix.createElementClass(window.HTMLTextAreaElement)
+
+Trix.defineElement class extends TextAreaElement
   @tagName: "trix-input"
+  @extends: "textarea"
 
   @defaultCSS: """
-    %t:empty:not(:focus)::before {
-      content: attr(placeholder);
-      color: graytext;
+    %t {
+      resize: none;
     }
   """
 
-  @defineProperty "value",
-    get: ->
-      @textContent
-    set: (value) ->
-      @textContent = value
-
-  createdCallback: ->
-    super
-    @contentEditable = true
-    @value = @getAttribute("value") if @hasAttribute("value")
-
   attachedCallback: ->
     super
-    simulateChangeEvent.call(this)
-    ensurePlainTextInput.call(this)
+    @referenceEl = makeElement("div")
+    copyStyles(fromElement: this, toElement: @referenceEl)
+    @referenceEl.style.position = "absolute"
+    @referenceEl.style.left = "-9999px"
+    @parentNode.insertBefore(@referenceEl, this)
 
-  attributeChangedCallback: (name, oldValue, newValue) ->
+    @addEventListener("input", @autoResize)
+    @autoResize()
+
+  detachedCallback: ->
     super
-    @[name] = newValue if @[name]?
+    @referenceEl.parentNode.removeChild(@referenceEl)
 
-  # Private
+  autoResize: =>
+    @referenceEl.innerHTML = escape(@value) + "<br>"
+    @style.height = getHeight(@referenceEl)
 
-  simulateChangeEvent = ->
-    @addEventListener "focus", =>
-      @focusValue = @value
+  # Helpers
 
-    @addEventListener "blur", =>
-      if @focusValue isnt @value
-        triggerEvent("change", onElement: this)
-      delete @focusValue
+  getHeight = (element) ->
+    {height} = getComputedStyle(element)
+    if /^\d/.test(height)
+      height
+    else
+      element.clientHeight + "px"
 
-  inputEvents = "keypress input paste change".split(" ")
+  copyStyles = ({fromElement, toElement}) ->
+    for key, value of getComputedStyle(fromElement) when value and typeof value is "string"
+      unless key.match(/^\d|overflow|height|cssText/i)
+        toElement.style[key] = value
 
-  ensurePlainTextInput = ->
-    for event in inputEvents
-      @addEventListener event, =>
-        @value = @textContent
+  escape = (string) ->
+    el = document.createElement("div")
+    el.textContent = string
+    el.innerHTML

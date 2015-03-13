@@ -36,9 +36,9 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     undo: => @element.removeChild(removeButton)
 
   editCaption: undoable ->
-    input = makeElement "trix-input",
-      value: @attachmentPiece.getCaption()
-      placeholder: Trix.config.lang.attachment.captionPlaceholder
+    input = document.createElement("textarea", "trix-input")
+    input.setAttribute("placeholder", Trix.config.lang.attachment.captionPlaceholder)
+    input.value = @attachmentPiece.getCaption()
 
     handleEvent("change", onElement: input, withCallback: @didChangeCaption)
 
