@@ -37,11 +37,16 @@ DEBUG_METHODS =
     didKeyDownDialogInput
   "
 
-TrixToolbarElement::constructor.defaultHTML += """
+{makeFragment} = Trix
+{defaultContent} = TrixToolbarElement::constructor
+
+defaultContent.querySelector(".button_groups")?.appendChild makeFragment """
   <span class="button_group debug_tools">
     <button type="button" class="debug" data-action="debug" data-error-content="☠">ℹ</button>
   </span>
+"""
 
+defaultContent.querySelector(".dialogs")?.appendChild makeFragment """
   <div class="dialogs">
     <div class="dialog debug_dialog" data-attribute="debug">
       <div>Copy and paste:</div>

@@ -1,3 +1,5 @@
+{makeFragment} = Trix
+
 Trix.defineElement class extends Trix.Element
   @tagName: "trix-toolbar"
 
@@ -19,7 +21,7 @@ Trix.defineElement class extends Trix.Element
     }
   """
 
-  @defaultHTML: """
+  @defaultContent: makeFragment """
     <div class="button_groups">
       <span class="button_group text_tools">
         <button type="button" class="bold" data-attribute="bold" data-key="b">Bold</button>
