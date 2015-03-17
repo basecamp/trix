@@ -39,6 +39,8 @@ class Trix.ToolbarController extends Trix.BasicObject
     else
       @delegate?.toolbarDidToggleAttribute(attributeName)
 
+    @refreshAttributeButtons()
+
   didClickDialogButton: (event, element) =>
     dialogElement = findClosestElementFromNode(element, matchingSelector: dialogSelector)
     method = element.getAttribute("data-method")
@@ -68,8 +70,11 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   updateAttributes: (attributes) ->
     @attributes = attributes
-    @eachAttributeButton (element, attributeName) ->
-      if attributes[attributeName]
+    @refreshAttributeButtons()
+
+  refreshAttributeButtons: ->
+    @eachAttributeButton (element, attributeName) =>
+      if @attributes[attributeName] or @dialogIsVisible(attributeName)
         element.classList.add("active")
       else
         element.classList.remove("active")
@@ -90,9 +95,12 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   # Dialogs
 
+  dialogIsVisible: (attributeName) ->
+    if element = @getDialogForAttributeName(attributeName)
+      element.classList.contains("active")
+
   toggleDialog: (attributeName) ->
-    element = @getDialogForAttributeName(attributeName)
-    if element.classList.contains("active")
+    if @dialogIsVisible(attributeName)
       @hideDialog()
     else
       @showDialog(attributeName)

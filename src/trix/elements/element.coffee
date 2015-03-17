@@ -1,4 +1,4 @@
-{makeElement} = Trix
+{cloneFragment, makeElement, makeFragment} = Trix
 
 Trix.createElementClass = (constructor = window.HTMLElement) ->
   HTMLElement = class
@@ -13,7 +13,7 @@ Trix.createElementClass = (constructor = window.HTMLElement) ->
 
     createdCallback: ->
       @loadStylesheet()
-      @innerHTML = @constructor.defaultHTML if @constructor.defaultHTML? and @innerHTML is ""
+      @loadDefaultContent()
 
     attachedCallback: ->
 
@@ -33,6 +33,11 @@ Trix.createElementClass = (constructor = window.HTMLElement) ->
       head.insertBefore(element, head.firstChild)
       element
 
+    loadDefaultContent: ->
+      if @innerHTML is ""
+        if content = @getDefaultContent()
+          @appendChild(content)
+
     getDefaultCSS: (css = @constructor.defaultCSS) ->
       selector = @tagName.toLowerCase()
       if type = @getAttribute("is")
@@ -40,5 +45,11 @@ Trix.createElementClass = (constructor = window.HTMLElement) ->
 
       css = "%t { display: block }\n#{[css]}"
       css.replace(/%t/g, selector)
+
+    getDefaultContent: ->
+      if @constructor.defaultContent?
+        cloneFragment(@constructor.defaultContent)
+      else if @constructor.defaultHTML?
+        makeFragment(@constructor.defaultHTML)
 
 Trix.Element = Trix.createElementClass()

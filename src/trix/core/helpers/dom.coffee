@@ -139,6 +139,18 @@ Trix.extend
     registeredConstructor = document.registerElement(tagName, prototype: constructor.prototype, extends: constructor.extends)
     window[constructorName] = Trix.extend.call(registeredConstructor, constructor)
 
+  cloneFragment: (sourceFragment) ->
+    fragment = document.createDocumentFragment()
+    fragment.appendChild(node.cloneNode(true)) for node in sourceFragment.childNodes
+    fragment
+
+  makeFragment: (html = "") ->
+    container = document.createElement("div")
+    container.innerHTML = html
+    fragment = document.createDocumentFragment()
+    fragment.appendChild(node) while node = container.firstChild
+    fragment
+
   nodeIsBlockStartComment: (node) ->
     Trix.nodeIsCommentNode(node) and node?.data is "block"
 
