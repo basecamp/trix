@@ -1,6 +1,7 @@
 #= require trix/controllers/attachment_editor_controller
 
 {handleEvent, makeElement, tagName} = Trix
+{keyNames} = Trix.InputController
 
 class Trix.AttachmentEditorController extends Trix.BasicObject
   constructor: (@attachmentPiece, @element, @container) ->
@@ -40,6 +41,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     input.setAttribute("placeholder", Trix.config.lang.attachment.captionPlaceholder)
     input.value = @attachmentPiece.getCaption()
 
+    handleEvent("keydown", onElement: input, withCallback: @didKeyDownCaption)
     handleEvent("change", onElement: input, withCallback: @didChangeCaption)
 
     figcaption = @element.querySelector("figcaption")
@@ -67,6 +69,12 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
   didChangeCaption: (event) =>
     caption = event.target.value
     @delegate?.attachmentEditorDidRequestUpdatingAttachmentWithAttributes?(@attachment, {caption})
+
+  didKeyDownCaption: (event) =>
+    if keyNames[event.keyCode] is "return"
+      event.preventDefault()
+      @didChangeCaption(event)
+      @uninstall()
 
   uninstall: ->
     undo() while undo = @undos.pop()
