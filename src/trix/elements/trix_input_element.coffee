@@ -12,40 +12,35 @@ Trix.defineElement class extends TextAreaElement
     }
   """
 
+  uncloneableAttributeNames = ["is", "id", "name"]
+  cloneStyles = maxHeight: "0px", position: "absolute", left: "-9999px"
+
   attachedCallback: ->
     super
-    @referenceEl = makeElement("div")
-    copyStyles(fromElement: this, toElement: @referenceEl)
-    @referenceEl.style.position = "absolute"
-    @referenceEl.style.left = "-9999px"
-    @parentNode.insertBefore(@referenceEl, this)
+    @clone = makeElement(@tagName)
 
+    for name, value of getAttributes(this)
+      unless name in uncloneableAttributeNames
+        @clone.setAttribute(name, value)
+
+    for key, value of cloneStyles
+      @clone.style[key] = value
+
+    @parentNode.insertBefore(@clone, this)
     @addEventListener("input", @autoResize)
     @autoResize()
 
   detachedCallback: ->
     super
-    @referenceEl.parentNode.removeChild(@referenceEl)
+    @clone.parentNode.removeChild(@clone)
 
   autoResize: =>
-    @referenceEl.innerHTML = escape(@value) + "<br>"
-    @style.height = getHeight(@referenceEl)
+    @clone.value = @value
+    @style.height = @clone.scrollHeight + "px"
 
-  # Helpers
-
-  getHeight = (element) ->
-    {height} = getComputedStyle(element)
-    if /^\d/.test(height)
-      height
-    else
-      element.clientHeight + "px"
-
-  copyStyles = ({fromElement, toElement}) ->
-    for key, value of getComputedStyle(fromElement) when value and typeof value is "string"
-      unless key.match(/^\d|overflow|height|cssText/i)
-        toElement.style[key] = value
-
-  escape = (string) ->
-    el = document.createElement("div")
-    el.textContent = string
-    el.innerHTML
+  getAttributes = (element) ->
+    attributes = {}
+    for key, attribute of element.attributes
+      if attribute.name and typeof attribute.value is "string"
+        attributes[attribute.name] = attribute.value
+    attributes
