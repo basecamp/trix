@@ -1,4 +1,4 @@
-{makeElement} = Trix
+{cloneFragment, makeElement, makeFragment} = Trix
 
 class HTMLElement
   @prototype = Object.create window.HTMLElement.prototype,
@@ -9,7 +9,7 @@ class HTMLElement
 class Trix.Element extends HTMLElement
   createdCallback: ->
     @loadStylesheet()
-    @innerHTML = @constructor.defaultHTML if @constructor.defaultHTML? and @innerHTML is ""
+    @loadDefaultContent()
 
   attachedCallback: ->
 
@@ -27,6 +27,17 @@ class Trix.Element extends HTMLElement
     head.insertBefore(element, head.firstChild)
     element
 
+  loadDefaultContent: ->
+    if @innerHTML is ""
+      if content = @getDefaultContent()
+        @appendChild(content)
+
   getDefaultCSS: (css = @constructor.defaultCSS) ->
     css = "%t { display: block }\n#{[css]}"
     css.replace(/%t/g, @tagName.toLowerCase())
+
+  getDefaultContent: ->
+    if @constructor.defaultContent?
+      cloneFragment(@constructor.defaultContent)
+    else if @constructor.defaultHTML?
+      makeFragment(@constructor.defaultHTML)
