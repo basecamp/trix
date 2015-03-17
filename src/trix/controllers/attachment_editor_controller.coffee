@@ -48,6 +48,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     do: ->
       figcaption.style.display = "none"
       editingFigcaption.appendChild(input)
+      editingFigcaption.classList.add("editing")
       figcaption.parentElement.insertBefore(editingFigcaption, figcaption)
       input.focus()
     undo: ->

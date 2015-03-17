@@ -14,6 +14,7 @@ class Trix.AttachmentView extends Trix.ObjectView
     figcaption = makeElement(tagName: "figcaption")
 
     if caption = @attachmentPiece.getCaption()
+      figcaption.classList.add("edited")
       figcaption.textContent = caption
     else
       if filename = @attachment.getFilename()
