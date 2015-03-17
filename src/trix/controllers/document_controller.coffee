@@ -70,6 +70,9 @@ class Trix.DocumentController extends Trix.BasicObject
       @uninstallAttachmentEditor()
       @installAttachmentEditorForAttachment(attachment)
 
+  editAttachmentCaption: ->
+    @attachmentEditor?.editCaption()
+
   # Attachment controller delegate
 
   didUninstallAttachmentEditor: ->

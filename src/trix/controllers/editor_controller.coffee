@@ -204,6 +204,9 @@ class Trix.EditorController extends Trix.Controller
     decreaseBlockLevel:
       test: -> @composition.canChangeBlockAttributeLevel()
       perform: -> @composition.decreaseBlockAttributeLevel()
+    editCaption:
+      test: -> @composition.canEditAttachmentCaption()
+      perform: -> @documentController.editAttachmentCaption()
 
   toolbarCanInvokeAction: (actionName) ->
     @constructor.toolbarActions[actionName]?.test?.call(this)

@@ -362,6 +362,9 @@ class Trix.Composition extends Trix.BasicObject
     @delegate?.compositionDidStopEditingAttachment(@editingAttachment)
     delete @editingAttachment
 
+  canEditAttachmentCaption: ->
+    @editingAttachment?.isImage()
+
   # Private
 
   getDocument: ->
