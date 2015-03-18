@@ -79,9 +79,13 @@ class Trix.DocumentController extends Trix.BasicObject
     delete @attachmentEditor
     @render()
 
-  attachmentEditorDidRequestUpdatingAttachmentWithAttributes: (attachment, attributes) ->
+  attachmentEditorDidRequestUpdatingAttributesForAttachment: (attributes, attachment) ->
     @delegate?.documentControllerWillUpdateAttachment?(attachment)
     @document.updateAttributesForAttachment(attributes, attachment)
+
+  attachmentEditorDidRequestRemovingAttributeForAttachment: (attribute, attachment) ->
+    @delegate?.documentControllerWillUpdateAttachment?(attachment)
+    @document.removeAttributeForAttachment(attribute, attachment)
 
   attachmentEditorDidRequestRemovalOfAttachment: (attachment) ->
     @delegate?.documentControllerDidRequestRemovalOfAttachment?(attachment)

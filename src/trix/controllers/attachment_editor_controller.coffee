@@ -67,8 +67,11 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     @editCaption()
 
   didChangeCaption: (event) =>
-    caption = event.target.value
-    @delegate?.attachmentEditorDidRequestUpdatingAttachmentWithAttributes?(@attachment, {caption})
+    caption = event.target.value.replace(/\s/g, " ").trim()
+    if caption
+      @delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?({caption}, @attachment)
+    else
+      @delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?("caption", @attachment)
 
   didKeyDownCaption: (event) =>
     if keyNames[event.keyCode] is "return"
