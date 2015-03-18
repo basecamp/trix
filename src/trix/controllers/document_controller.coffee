@@ -90,6 +90,9 @@ class Trix.DocumentController extends Trix.BasicObject
   attachmentEditorDidRequestRemovalOfAttachment: (attachment) ->
     @delegate?.documentControllerDidRequestRemovalOfAttachment?(attachment)
 
+  attachmentEditorDidRequestDeselectingAttachment: (attachment) ->
+    @delegate?.documentControllerDidRequestDeselectingAttachment?(attachment)
+
   # Private
 
   findAttachmentForElement: (element) ->

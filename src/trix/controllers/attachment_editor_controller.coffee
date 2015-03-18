@@ -77,7 +77,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     if keyNames[event.keyCode] is "return"
       event.preventDefault()
       @didChangeCaption(event)
-      @uninstall()
+      @delegate?.attachmentEditorDidRequestDeselectingAttachment?(@attachment)
 
   uninstall: ->
     undo() while undo = @undos.pop()

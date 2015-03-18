@@ -130,6 +130,10 @@ class Trix.EditorController extends Trix.Controller
     locationRange = @document.getLocationRangeOfAttachment(attachment)
     @composition.editAttachment(attachment)
 
+  documentControllerDidRequestDeselectingAttachment: (attachment) ->
+    if @attachmentLocationRange
+      @selectionManager.setLocationRange(@attachmentLocationRange.end)
+
   documentControllerWillUpdateAttachment: (attachment) ->
     @editor.recordUndoEntry("Edit Attachment", context: attachment.id, consolidatable: true)
 
