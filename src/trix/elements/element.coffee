@@ -1,4 +1,4 @@
-{cloneFragment, makeElement, makeFragment} = Trix
+{cloneFragment, handleEvent, makeElement, makeFragment, triggerEvent} = Trix
 
 Trix.createElementClass = (constructor = window.HTMLElement) ->
   HTMLElement = class
@@ -14,8 +14,13 @@ Trix.createElementClass = (constructor = window.HTMLElement) ->
     createdCallback: ->
       @loadStylesheet()
       @loadDefaultContent()
+      handleEvent "element-attached", onElement: this, withCallback: (event) =>
+        @childAttachedCallback(event.target) unless event.target is this
 
     attachedCallback: ->
+      triggerEvent("element-attached", onElement: this)
+
+    childAttachedCallback: ->
 
     detachedCallback: ->
 

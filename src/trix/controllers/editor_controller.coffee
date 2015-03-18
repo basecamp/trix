@@ -272,7 +272,7 @@ class Trix.EditorController extends Trix.Controller
     unless @toolbarController
       @toolbarController = new Trix.ToolbarController @toolbarElement
       @toolbarController.delegate = this
-    defer => @toolbarController.updateActions()
+    @toolbarController.updateActions()
 
   createDocumentController: ->
     delete @documentController?.delegate
