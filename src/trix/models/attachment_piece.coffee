@@ -20,6 +20,12 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   isSerializable: ->
     not @attachment.isPending()
 
+  getCaption: ->
+    @attributes.get("caption") ? ""
+
+  getAttributesForAttachment: ->
+    @attributes.slice(["caption"])
+
   canBeGrouped: ->
     super and not @attachment.hasAttribute("href")
 

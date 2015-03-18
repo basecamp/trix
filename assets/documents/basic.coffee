@@ -48,15 +48,16 @@ trixDocuments.basic = [
         {
           "type": "attachment",
           "attributes": {
-            "width": 100,
-            "height": 83
+
           },
           "attachment": {
             "contentType": "image/png",
             "url": "basecamp.png",
             "href": "basecamp.png",
             "filename": "basecamp.png",
-            "identifier": "Attachment:1"
+            "identifier": "Attachment:1",
+            "width": 100,
+            "height": 83
           }
         },
         {

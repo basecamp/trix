@@ -61,10 +61,10 @@ class Trix.Attachment extends Trix.Object
     @attributes.get("href")
 
   getFilename: ->
-    @attributes.get("filename") ? "Untitled"
+    @attributes.get("filename") ? ""
 
   getFilesize: ->
-    @attributes.get("filesize") ? 0
+    @attributes.get("filesize")
 
   getFormattedFilesize: ->
     filesize = @attributes.get("filesize")

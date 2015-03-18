@@ -57,7 +57,8 @@ class Trix.DocumentController extends Trix.BasicObject
     return if @attachmentEditor?.attachment is attachment
     return unless element = @documentView.findElementForObject(attachment)
     @uninstallAttachmentEditor()
-    @attachmentEditor = new Trix.AttachmentEditorController attachment, element, @element
+    attachmentPiece = @document.getAttachmentPieceForAttachment(attachment)
+    @attachmentEditor = new Trix.AttachmentEditorController attachmentPiece, element, @element
     @attachmentEditor.delegate = this
 
   uninstallAttachmentEditor: ->
@@ -69,18 +70,28 @@ class Trix.DocumentController extends Trix.BasicObject
       @uninstallAttachmentEditor()
       @installAttachmentEditorForAttachment(attachment)
 
+  editAttachmentCaption: ->
+    @attachmentEditor?.editCaption()
+
   # Attachment controller delegate
 
   didUninstallAttachmentEditor: ->
     delete @attachmentEditor
     @render()
 
-  attachmentEditorDidRequestUpdatingAttachmentWithAttributes: (attachment, attributes) ->
+  attachmentEditorDidRequestUpdatingAttributesForAttachment: (attributes, attachment) ->
     @delegate?.documentControllerWillUpdateAttachment?(attachment)
     @document.updateAttributesForAttachment(attributes, attachment)
 
+  attachmentEditorDidRequestRemovingAttributeForAttachment: (attribute, attachment) ->
+    @delegate?.documentControllerWillUpdateAttachment?(attachment)
+    @document.removeAttributeForAttachment(attribute, attachment)
+
   attachmentEditorDidRequestRemovalOfAttachment: (attachment) ->
     @delegate?.documentControllerDidRequestRemovalOfAttachment?(attachment)
+
+  attachmentEditorDidRequestDeselectingAttachment: (attachment) ->
+    @delegate?.documentControllerDidRequestDeselectingAttachment?(attachment)
 
   # Private
 

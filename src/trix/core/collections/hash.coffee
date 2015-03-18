@@ -35,7 +35,7 @@ class Trix.Hash extends Trix.Object
 
   slice: (keys) ->
     values = {}
-    values[key] = @values[key] for key in keys
+    values[key] = @values[key] for key in keys when @has(key)
     new Trix.Hash values
 
   getKeys: ->
@@ -47,6 +47,9 @@ class Trix.Hash extends Trix.Object
 
   isEqualTo: (values) ->
     arraysAreEqual(@toArray(), box(values).toArray())
+
+  isEmpty: ->
+    @getKeys().length is 0
 
   toArray: ->
     (@array ?= (

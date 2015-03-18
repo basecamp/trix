@@ -41,6 +41,10 @@ Trix.defineElement class extends Trix.Element
         <button type="button" class="undo" href="#" data-action="undo" data-key="z">Undo</button>
         <button type="button" class="redo" href="#" data-action="redo" data-key="shift+z">Redo</button>
       </span>
+
+      <span class="button_group attachment_tools" style="display:none">
+        <button type="button" data-action="editCaption" data-key="shift+e">Edit caption</button>
+      </span>
     </div>
 
     <div class="dialogs">

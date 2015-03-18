@@ -190,6 +190,10 @@ class Trix.Document extends Trix.Object
     @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
       block.copyWithText(text.updateAttributesForAttachment(attributes, attachment))
 
+  removeAttributeForAttachment: edit "removeAttributeForAttachment", (attribute, attachment) ->
+    locationRange = @getLocationRangeOfAttachment(attachment)
+    @removeAttributeAtLocationRange(attribute, locationRange)
+
   insertBlockBreakAtLocationRange: edit "insertBlockBreakAtLocationRange", (locationRange) ->
     position = @blockList.findPositionAtIndexAndOffset(locationRange.index, locationRange.offset)
     @removeTextAtLocationRange(locationRange)

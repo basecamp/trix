@@ -55,6 +55,9 @@ Trix.extend
     element = element.firstElementChild while element?.firstElementChild
     element
 
+  innerElementIsActive: (element) ->
+    document.activeElement isnt element and Trix.elementContainsNode(element, document.activeElement)
+
   elementContainsNode: (element, node) ->
     return unless element and node
     while node
@@ -133,7 +136,7 @@ Trix.extend
   defineElement: (constructor) ->
     tagName = constructor.tagName
     constructorName = Trix.convertDashesToCamelCase(tagName, initial: true) + "Element"
-    registeredConstructor = document.registerElement(tagName, prototype: constructor.prototype)
+    registeredConstructor = document.registerElement(tagName, prototype: constructor.prototype, extends: constructor.extends)
     window[constructorName] = Trix.extend.call(registeredConstructor, constructor)
 
   cloneFragment: (sourceFragment) ->
