@@ -10,13 +10,13 @@ Trix.defineElement class extends Trix.Element
 
   createdCallback: ->
     super
+    @setAttribute("content-type", "text/html") unless @getAttribute("content-type")
+    findOrCreateInputElement(this)
     findOrCreateToolbarElement(this)
     findOrCreateDocumentElement(this)
-    findOrCreateInputElement(this)
 
   attachedCallback: ->
     super
-    @setAttribute("content-type", "text/html") unless @getAttribute("content-type")
     @initializeEditorController()
 
   childAttachedCallback: (element) ->
