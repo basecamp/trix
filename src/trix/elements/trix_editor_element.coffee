@@ -3,21 +3,40 @@
 #= require trix/controllers/editor_controller
 #= require trix/controllers/editor_element_controller
 
-{makeElement} = Trix
+{makeElement, tagName} = Trix
 
 Trix.defineElement class extends Trix.Element
   @tagName: "trix-editor"
 
+  createdCallback: ->
+    super
+    findOrCreateToolbarElement(this)
+    findOrCreateDocumentElement(this)
+    findOrCreateInputElement(this)
+
   attachedCallback: ->
     super
+    @setAttribute("content-type", "text/html") unless @getAttribute("content-type")
+    @initializeEditorController()
 
-    unless contentType = @getAttribute("content-type")
-      contentType = "text/html"
-      @setAttribute("content-type", contentType)
+  childAttachedCallback: (element) ->
+    super
+    @attachedChildren ?= {}
+    @attachedChildren[tagName(element)] = element
+    @initializeEditorController()
 
-    toolbarElement = findOrCreateToolbarElement(this)
-    documentElement = findOrCreateDocumentElement(this)
-    inputElement = findOrCreateInputElement(this)
+  detachedCallback: ->
+    super
+    @editorController?.unregisterSelectionManager()
+    delete @attachedChildren
+
+  initializeEditorController: ->
+    toolbarElement = @attachedChildren?["trix-toolbar"]
+    documentElement = @attachedChildren?["trix-document"]
+    return unless toolbarElement? and documentElement?
+
+    contentType = @getAttribute("content-type")
+    inputElement = findInputElement(this)
 
     @editorController ?= new Trix.EditorController
       toolbarElement: toolbarElement
@@ -26,10 +45,6 @@ Trix.defineElement class extends Trix.Element
       delegate: new Trix.EditorElementController this, documentElement, inputElement
 
     @editorController.registerSelectionManager()
-
-  detachedCallback: ->
-    super
-    @editorController.unregisterSelectionManager()
 
   findOrCreateToolbarElement = (parentElement) ->
     unless element = parentElement.querySelector("trix-toolbar")
@@ -48,7 +63,7 @@ Trix.defineElement class extends Trix.Element
     element
 
   findOrCreateInputElement = (parentElement) ->
-    unless element = parentElement.querySelector("input[type=hidden]")
+    unless element = findInputElement(parentElement)
       name = parentElement.getAttribute("name")
       value = parentElement.getAttribute("value")
       element = makeElement("input", type: "hidden")
@@ -56,3 +71,6 @@ Trix.defineElement class extends Trix.Element
       element.value = value if value?
       parentElement.insertBefore(element, null)
     element
+
+  findInputElement = (parentElement) ->
+    parentElement.querySelector("input[type=hidden]")
