@@ -43,6 +43,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
 
     handleEvent("keydown", onElement: input, withCallback: @didKeyDownCaption)
     handleEvent("change", onElement: input, withCallback: @didChangeCaption)
+    handleEvent("blur", onElement: input, withCallback: @uninstall)
 
     figcaption = @element.querySelector("figcaption")
     editingFigcaption = figcaption.cloneNode()
@@ -79,6 +80,6 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       @didChangeCaption(event)
       @delegate?.attachmentEditorDidRequestDeselectingAttachment?(@attachment)
 
-  uninstall: ->
+  uninstall: =>
     undo() while undo = @undos.pop()
     @delegate?.didUninstallAttachmentEditor(this)
