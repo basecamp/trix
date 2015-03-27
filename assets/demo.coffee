@@ -45,7 +45,16 @@ addEventListener "DOMContentLoaded", ->
           editor.recordUndoEntry("Link Pasted URL")
           document.addAttributeAtLocationRange("href", value, locationRange)
 
-
+    form = document.querySelector("form#submit-trix-content")
+    handleEvent "submit", onElement: form, withCallback: (event) ->
+      event.preventDefault()
+      data = new FormData form
+      xhr = new XMLHttpRequest
+      xhr.open("POST", "/submit", true)
+      xhr.onload = ->
+        if xhr.status is 200
+          console.log "Form data submit:", JSON.parse(xhr.responseText)
+      xhr.send(data)
 
 saveAttachment = (attachment) ->
   item = document.createElement("li")
