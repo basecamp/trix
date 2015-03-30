@@ -1,6 +1,7 @@
 require 'bundler/setup'
 require 'rack/rewrite'
 require 'pathname'
+require 'json'
 
 root = Pathname.new(File.dirname(__FILE__))
 
@@ -21,4 +22,12 @@ end
 
 map '/attachments' do
   run Trix::AttachmentServer
+end
+
+map '/submit' do
+  run -> (env) do
+    request = Rack::Request.new(env)
+    response = JSON.dump(request.params)
+    [200, {'Content-Type' => 'application/json'}, [response]]
+  end
 end

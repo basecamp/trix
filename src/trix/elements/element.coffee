@@ -1,43 +1,60 @@
-{cloneFragment, makeElement, makeFragment} = Trix
+{cloneFragment, handleEvent, makeElement, makeFragment, triggerEvent} = Trix
 
-class HTMLElement
-  @prototype = Object.create window.HTMLElement.prototype,
-    constructor:
-      writable: true
-      value: this
+Trix.createElementClass = (constructor = window.HTMLElement) ->
+  HTMLElement = class
+    @prototype = Object.create constructor.prototype,
+      constructor:
+        writable: true
+        value: this
 
-class Trix.Element extends HTMLElement
-  createdCallback: ->
-    @loadStylesheet()
-    @loadDefaultContent()
+  class extends HTMLElement
+    @defineProperty: (name, descriptor) ->
+      Object.defineProperty(@prototype, name, descriptor)
 
-  attachedCallback: ->
+    createdCallback: ->
+      @loadStylesheet()
+      @loadDefaultContent()
+      handleEvent "element-attached", onElement: this, withCallback: (event) =>
+        @childAttachedCallback(event.target) unless event.target is this
 
-  detachedCallback: ->
+    attachedCallback: ->
+      triggerEvent("element-attached", onElement: this)
 
-  loadStylesheet: ->
-    tagName = @tagName.toLowerCase()
-    return if document.querySelector("style[data-tag-name='#{tagName}']")
+    childAttachedCallback: ->
 
-    element = makeElement("style", type: "text/css")
-    element.setAttribute("data-tag-name", tagName)
-    element.textContent = @getDefaultCSS()
+    detachedCallback: ->
 
-    head = document.querySelector("head")
-    head.insertBefore(element, head.firstChild)
-    element
+    attributeChangedCallback: ->
 
-  loadDefaultContent: ->
-    if @innerHTML is ""
-      if content = @getDefaultContent()
-        @appendChild(content)
+    loadStylesheet: ->
+      tagName = @tagName.toLowerCase()
+      return if document.querySelector("style[data-tag-name='#{tagName}']")
 
-  getDefaultCSS: (css = @constructor.defaultCSS) ->
-    css = "%t { display: block }\n#{[css]}"
-    css.replace(/%t/g, @tagName.toLowerCase())
+      element = makeElement("style", type: "text/css")
+      element.setAttribute("data-tag-name", tagName)
+      element.textContent = @getDefaultCSS()
 
-  getDefaultContent: ->
-    if @constructor.defaultContent?
-      cloneFragment(@constructor.defaultContent)
-    else if @constructor.defaultHTML?
-      makeFragment(@constructor.defaultHTML)
+      head = document.querySelector("head")
+      head.insertBefore(element, head.firstChild)
+      element
+
+    loadDefaultContent: ->
+      if @innerHTML is ""
+        if content = @getDefaultContent()
+          @appendChild(content)
+
+    getDefaultCSS: (css = @constructor.defaultCSS) ->
+      selector = @tagName.toLowerCase()
+      if type = @getAttribute("is")
+        selector += "[is=#{type}]"
+
+      css = "%t { display: block }\n#{[css]}"
+      css.replace(/%t/g, selector)
+
+    getDefaultContent: ->
+      if @constructor.defaultContent?
+        cloneFragment(@constructor.defaultContent)
+      else if @constructor.defaultHTML?
+        makeFragment(@constructor.defaultHTML)
+
+Trix.Element = Trix.createElementClass()

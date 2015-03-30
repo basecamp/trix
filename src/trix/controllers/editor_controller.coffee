@@ -130,6 +130,10 @@ class Trix.EditorController extends Trix.Controller
   documentControllerDidSelectAttachment: (attachment) ->
     @composition.editAttachment(attachment)
 
+  documentControllerDidRequestDeselectingAttachment: (attachment) ->
+    if @attachmentLocationRange
+      @selectionManager.setLocationRange(@attachmentLocationRange.end)
+
   documentControllerWillUpdateAttachment: (attachment) ->
     @editor.recordUndoEntry("Edit Attachment", context: attachment.id, consolidatable: true)
 
@@ -204,6 +208,9 @@ class Trix.EditorController extends Trix.Controller
     decreaseBlockLevel:
       test: -> @composition.canChangeBlockAttributeLevel()
       perform: -> @composition.decreaseBlockAttributeLevel()
+    editCaption:
+      test: -> @composition.canEditAttachmentCaption()
+      perform: -> @documentController.editAttachmentCaption()
 
   toolbarCanInvokeAction: (actionName) ->
     @constructor.toolbarActions[actionName]?.test?.call(this)
@@ -269,7 +276,7 @@ class Trix.EditorController extends Trix.Controller
     unless @toolbarController
       @toolbarController = new Trix.ToolbarController @toolbarElement
       @toolbarController.delegate = this
-    defer => @toolbarController.updateActions()
+    @toolbarController.updateActions()
 
   createDocumentController: ->
     delete @documentController?.delegate

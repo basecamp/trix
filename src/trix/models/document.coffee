@@ -196,6 +196,10 @@ class Trix.Document extends Trix.Object
     @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
       block.copyWithText(text.updateAttributesForAttachment(attributes, attachment))
 
+  removeAttributeForAttachment: edit "removeAttributeForAttachment", (attribute, attachment) ->
+    positionRange = @getPositionRangeOfAttachment(attachment)
+    @removeAttributeAtPositionRange(attribute, positionRange)
+
   insertBlockBreakAtPositionRange: edit "insertBlockBreakAtPositionRange", (positionRange) ->
     positionRange = Trix.PositionRange.box(positionRange)
     position = positionRange.start

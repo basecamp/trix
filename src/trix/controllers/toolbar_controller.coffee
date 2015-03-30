@@ -52,6 +52,9 @@ class Trix.ToolbarController extends Trix.BasicObject
       attribute = element.getAttribute("name")
       dialog = @getDialogForAttributeName(attribute)
       @setAttribute(dialog)
+    if event.keyCode is 27 # Escape key
+      event.preventDefault()
+      @hideDialog()
 
   # Action buttons
 

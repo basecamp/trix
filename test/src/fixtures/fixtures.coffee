@@ -166,6 +166,34 @@ cursorTarget = Trix.makeElement(
     html: "<div>#{blockComment}#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"
     document: new Trix.Document [new Trix.Block text]
 
+  "image attachment with edited caption": do ->
+    imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
+    attrs = url: imageData, filename: "example.png", filesize: "123", contentType: "image/png", width: 1, height: 1
+    attachment = Trix.Attachment.attachmentForAttributes(attrs)
+    textAttrs = caption: "Example"
+    text = Trix.Text.textForAttachmentWithAttributes(attachment, textAttrs)
+
+    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
+
+    caption = Trix.makeElement(tagName: "figcaption", className: "edited", textContent: "Example")
+
+    figure = Trix.makeElement
+      tagName: "figure"
+      className: "attachment image preview"
+
+    data =
+      trixAttachment: JSON.stringify(attachment)
+      trixId: attachment.id
+      trixAttributes: JSON.stringify(textAttrs)
+
+    figure.dataset[key] = value for key, value of data
+    figure.setAttribute("contenteditable", false)
+    figure.appendChild(image)
+    figure.appendChild(caption)
+
+    html: "<div>#{blockComment}#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"
+    document: new Trix.Document [new Trix.Block text]
+
   "file attachment": do ->
     attrs = href: "http://example.com/example.pdf", filename: "example.pdf", filesize: "345", contentType: "application/pdf"
     attachment = new Trix.Attachment attrs

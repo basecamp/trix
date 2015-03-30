@@ -1,7 +1,8 @@
 #= require trix/observers/mutation_observer
 #= require trix/operations/file_verification_operation
 
-{handleEvent, findClosestElementFromNode, findElementFromContainerAndOffset, defer, makeElement} = Trix
+{handleEvent, findClosestElementFromNode, findElementFromContainerAndOffset,
+  defer, makeElement, innerElementIsActive} = Trix
 
 inputLog = Trix.Logger.get("input")
 
@@ -29,10 +30,11 @@ class Trix.InputController extends Trix.BasicObject
 
   handlerFor: (eventName) ->
     (event) =>
-      @eventName = eventName
-      inputLog.group(eventName)
-      @events[eventName].call(this, event)
-      inputLog.groupEnd()
+      unless innerElementIsActive(@element)
+        @eventName = eventName
+        inputLog.group(eventName)
+        @events[eventName].call(this, event)
+        inputLog.groupEnd()
 
   setInputSummary: (summary = {}) ->
     @inputSummary.eventName = @eventName
