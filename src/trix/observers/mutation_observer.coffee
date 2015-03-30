@@ -75,11 +75,13 @@ class Trix.MutationObserver extends Trix.BasicObject
 
     if characterMutations.length
       [startMutation, ..., endMutation] = characterMutations
-      oldString = normalizeSpaces(startMutation.oldValue)
-      newString = normalizeSpaces(endMutation.target.data)
 
-      additions.push(stringDifference(newString, oldString))
-      deletions.push(stringDifference(oldString, newString))
+      newString = Trix.UTF16String.box(normalizeSpaces(endMutation.target.data))
+      oldString = Trix.UTF16String.box(normalizeSpaces(startMutation.oldValue))
+      change = newString.compareToOlder(oldString)
+
+      additions.push(change.stringAdded)
+      deletions.push(change.stringRemoved)
 
     for node in @getRemovedTextNodes()
       deletions.push(node.data)
@@ -98,20 +100,3 @@ class Trix.MutationObserver extends Trix.BasicObject
       for node in mutation.removedNodes when node.nodeType is Node.TEXT_NODE
         nodes.push(node)
     nodes
-
-  stringDifference = (a, b) ->
-    a = Trix.UTF16String.box(a)
-    b = Trix.UTF16String.box(b)
-
-    leftIndex = 0
-    rightIndexA = a.length
-    rightIndexB = b.length
-
-    while leftIndex < rightIndexA and a.charAt(leftIndex).isEqualTo(b.charAt(leftIndex))
-      leftIndex++
-
-    while rightIndexA > leftIndex + 1 and a.charAt(rightIndexA - 1).isEqualTo(b.charAt(rightIndexB - 1))
-      rightIndexA--
-      rightIndexB--
-
-    a.slice(leftIndex, rightIndexA).toString()
