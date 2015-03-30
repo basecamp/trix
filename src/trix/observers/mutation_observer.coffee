@@ -1,4 +1,4 @@
-{defer, findClosestElementFromNode, normalizeSpaces} = Trix
+{defer, findClosestElementFromNode, normalizeSpaces, summarizeStringChange} = Trix
 
 class Trix.MutationObserver extends Trix.BasicObject
   mutableSelector = "[data-trix-mutable]"
@@ -76,12 +76,12 @@ class Trix.MutationObserver extends Trix.BasicObject
     if characterMutations.length
       [startMutation, ..., endMutation] = characterMutations
 
-      newString = Trix.UTF16String.box(normalizeSpaces(endMutation.target.data))
-      oldString = Trix.UTF16String.box(normalizeSpaces(startMutation.oldValue))
-      change = newString.compareToOlder(oldString)
+      oldString = normalizeSpaces(startMutation.oldValue)
+      newString = normalizeSpaces(endMutation.target.data)
+      {added, removed} = summarizeStringChange(oldString, newString)
 
-      additions.push(change.stringAdded)
-      deletions.push(change.stringRemoved)
+      additions.push(added)
+      deletions.push(removed)
 
     for node in @getRemovedTextNodes()
       deletions.push(node.data)

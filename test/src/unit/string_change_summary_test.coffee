@@ -1,56 +1,56 @@
-module "Trix.UTF16String"
+module "Trix.summarizeStringChange"
 
-stringComparisonAssertions =
+assertions =
   "no change":
     oldString: "abc"
     newString: "abc"
-    change: stringAdded: "", stringRemoved: ""
+    change: added: "", removed: ""
   "adding a character":
     oldString: ""
     newString: "a"
-    change: stringAdded: "a", stringRemoved: ""
+    change: added: "a", removed: ""
   "appending a character":
     oldString: "ab"
     newString: "abc"
-    change: stringAdded: "c", stringRemoved: ""
+    change: added: "c", removed: ""
   "appending a multibyte character":
     oldString: "a💩"
     newString: "a💩💩"
-    change: stringAdded: "💩", stringRemoved: ""
+    change: added: "💩", removed: ""
   "prepending a character":
     oldString: "bc"
     newString: "abc"
-    change: stringAdded: "a", stringRemoved: ""
+    change: added: "a", removed: ""
   "inserting a character":
     oldString: "ac"
     newString: "abc"
-    change: stringAdded: "b", stringRemoved: ""
+    change: added: "b", removed: ""
   "inserting a string":
     oldString: "ac"
     newString: "aZZZc"
-    change: stringAdded: "ZZZ", stringRemoved: ""
+    change: added: "ZZZ", removed: ""
   "replacing a character":
     oldString: "abc"
     newString: "aZc"
-    change: stringAdded: "Z", stringRemoved: "b"
+    change: added: "Z", removed: "b"
   "replacing a character with a string":
     oldString: "abc"
     newString: "aXYc"
-    change: stringAdded: "XY", stringRemoved: "b"
+    change: added: "XY", removed: "b"
   "replacing a string with a character":
     oldString: "abcde"
     newString: "aXe"
-    change: stringAdded: "X", stringRemoved: "bcd"
+    change: added: "X", removed: "bcd"
   "replacing a string with a string":
     oldString: "abcde"
     newString: "aBCDe"
-    change: stringAdded: "BCD", stringRemoved: "bcd"
+    change: added: "BCD", removed: "bcd"
   "removing a character":
     oldString: "abc"
     newString: "ac"
-    change: stringAdded: "", stringRemoved: "b"
+    change: added: "", removed: "b"
 
-for name, details of stringComparisonAssertions
+for name, details of assertions
   do ({oldString, newString, change} = details) ->
-    test "#compareToOlder - #{name}", ->
-      deepEqual Trix.UTF16String.box(newString).compareToOlder(oldString), change
+    test name, ->
+      deepEqual Trix.summarizeStringChange(oldString, newString), change

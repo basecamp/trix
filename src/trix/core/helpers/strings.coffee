@@ -13,5 +13,46 @@ Trix.extend
     string.replace pattern, (match) ->
       match.toString().slice(-1).toUpperCase()
 
+  summarizeStringChange: (oldString, newString) ->
+    oldString = Trix.UTF16String.box(oldString)
+    newString = Trix.UTF16String.box(newString)
+
+    if newString.length < oldString.length
+      [removed, added] = utf16StringDifferences(oldString, newString)
+    else
+      [added, removed] = utf16StringDifferences(newString, oldString)
+
+    {added, removed}
+
 trailingDashesToCamelCasePattern = /-[a-z]/g
 initialDashesToCamelCasePattern = /^[a-z]|-[a-z]/g
+
+utf16StringDifferences = (a, b) ->
+  return ["", ""] if a.isEqualTo(b)
+
+  diffA = utf16StringDifference(a, b)
+  {length} = diffA.utf16String
+
+  diffB = if length
+    {offset} = diffA
+    codepoints = a.codepoints.slice(0, offset).concat(a.codepoints.slice(offset + length))
+    utf16StringDifference(b, Trix.UTF16String.fromCodepoints(codepoints))
+  else
+    utf16StringDifference(b, a)
+
+  [diffA.utf16String.toString(), diffB.utf16String.toString()]
+
+utf16StringDifference = (a, b) ->
+  leftIndex = 0
+  rightIndexA = a.length
+  rightIndexB = b.length
+
+  while leftIndex < rightIndexA and a.charAt(leftIndex).isEqualTo(b.charAt(leftIndex))
+    leftIndex++
+
+  while rightIndexA > leftIndex + 1 and a.charAt(rightIndexA - 1).isEqualTo(b.charAt(rightIndexB - 1))
+    rightIndexA--
+    rightIndexB--
+
+  utf16String: a.slice(leftIndex, rightIndexA)
+  offset: leftIndex

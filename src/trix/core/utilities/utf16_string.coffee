@@ -39,48 +39,6 @@ class Trix.UTF16String extends Trix.BasicObject
   toString: ->
     @ucs2String
 
-  compareToOlder: (older) ->
-    older = @constructor.box(older)
-
-    if @length < older.length
-      [stringRemoved, stringAdded] = older.stringDifferences(this)
-    else
-      [stringAdded, stringRemoved] = @stringDifferences(older)
-
-    {stringAdded, stringRemoved}
-
-  # Private
-
-  difference: (other) ->
-    leftIndex = 0
-    rightIndexA = @length
-    rightIndexB = other.length
-
-    while leftIndex < rightIndexA and @charAt(leftIndex).isEqualTo(other.charAt(leftIndex))
-      leftIndex++
-
-    while rightIndexA > leftIndex + 1 and @charAt(rightIndexA - 1).isEqualTo(other.charAt(rightIndexB - 1))
-      rightIndexA--
-      rightIndexB--
-
-    utf16String: @slice(leftIndex, rightIndexA)
-    offset: leftIndex
-
-  stringDifferences: (other) ->
-    return ["", ""] if @isEqualTo(other)
-
-    diffA = @difference(other)
-    {length} = diffA.utf16String
-
-    diffB = if length
-      {offset} = diffA
-      codepoints = @codepoints.slice(0, offset).concat(@codepoints.slice(offset + length))
-      other.difference(@constructor.fromCodepoints(codepoints))
-    else
-      other.difference(this)
-
-    [diffA.utf16String.toString(), diffB.utf16String.toString()]
-
 hasArrayFrom = Array.from?("\ud83d\udc7c").length is 1
 hasStringCodePointAt = " ".codePointAt?(0)?
 hasStringFromCodePoint = String.fromCodePoint?(32, 128124) is " \ud83d\udc7c"
