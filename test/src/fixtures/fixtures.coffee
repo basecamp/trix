@@ -152,7 +152,7 @@ cursorTarget = Trix.makeElement(
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment image preview"
+      className: "attachment preview png"
 
     data =
       trixAttachment: JSON.stringify(attachment)
@@ -179,7 +179,7 @@ cursorTarget = Trix.makeElement(
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment image preview"
+      className: "attachment preview png"
 
     data =
       trixAttachment: JSON.stringify(attachment)

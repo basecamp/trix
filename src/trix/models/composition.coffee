@@ -363,7 +363,7 @@ class Trix.Composition extends Trix.BasicObject
     delete @editingAttachment
 
   canEditAttachmentCaption: ->
-    @editingAttachment?.isImage()
+    @editingAttachment?.isPreviewable()
 
   # Private
 

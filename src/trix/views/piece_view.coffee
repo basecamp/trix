@@ -1,5 +1,5 @@
-#= require trix/views/file_attachment_view
-#= require trix/views/image_attachment_view
+#= require trix/views/attachment_view
+#= require trix/views/previewable_attachment_view
 
 {makeElement, findInnerElement} = Trix
 
@@ -28,8 +28,12 @@ class Trix.PieceView extends Trix.ObjectView
     nodes
 
   createAttachmentNodes: ->
-    viewType = if @attachment.isImage() then "Image" else "File"
-    view = @createChildView(Trix["#{viewType}AttachmentView"], @piece.attachment, {@piece})
+    constructor = if @attachment.isPreviewable()
+      Trix.PreviewableAttachmentView
+    else
+      Trix.AttachmentView
+
+    view = @createChildView(constructor, @piece.attachment, {@piece})
     view.getNodes()
 
   createStringNodes: ->

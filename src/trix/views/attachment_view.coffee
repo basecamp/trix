@@ -9,6 +9,9 @@ class Trix.AttachmentView extends Trix.ObjectView
     @attachment.uploadProgressDelegate = this
     @attachmentPiece = @options.piece
 
+  createContentNodes: ->
+    []
+
   createNodes: ->
     figure = makeElement({tagName: "figure", className: @getClassName()})
     figcaption = makeElement(tagName: "figcaption")
@@ -52,7 +55,14 @@ class Trix.AttachmentView extends Trix.ObjectView
     [@createCursorTarget(), element, @createCursorTarget()]
 
   getClassName: ->
-    "attachment"
+    names = ["attachment"]
+    if @attachment.isPreviewable()
+      names.push("preview")
+    else
+      names.push("file")
+    if extension = @attachment.getExtension()
+      names.push(extension)
+    names.join(" ")
 
   createCursorTarget: ->
     makeElement

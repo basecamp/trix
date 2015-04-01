@@ -1,9 +1,7 @@
+#= require trix/operations/image_preload_operation
+
 class Trix.Attachment extends Trix.Object
-  @constructorForContentType: (contentType) ->
-    if /image/.test(contentType)
-      Trix.ImageAttachment
-    else
-      Trix.Attachment
+  @previewablePattern: /^image(\/(gif|png|jpe?g)|$)/
 
   @attachmentForFile: (file) ->
     attributes = @attributesForFile(file)
@@ -12,9 +10,7 @@ class Trix.Attachment extends Trix.Object
     attachment
 
   @attachmentForAttributes: (attributes) ->
-    contentType = Trix.Hash.box(attributes).get("contentType")
-    constructor = @constructorForContentType(contentType)
-    new constructor attributes
+    new this attributes
 
   @attributesForFile: (file) ->
     new Trix.Hash
@@ -47,12 +43,14 @@ class Trix.Attachment extends Trix.Object
       @delegate?.attachmentDidChangeAttributes?(this)
 
   didChangeAttributes: ->
+    if @isPreviewable()
+      @preloadURL()
 
   isPending: ->
     @file? and not (@getURL() or @getHref())
 
-  isImage: ->
-    false
+  isPreviewable: ->
+    @attributes.get("previewable") or @constructor.previewablePattern.test(@getContentType())
 
   getURL: ->
     @attributes.get("url")
@@ -89,8 +87,11 @@ class Trix.Attachment extends Trix.Object
     @file
 
   setFile: (@file) ->
+    if @isPreviewable()
+      @createPreviewPreloadOperationForFile(@file)
 
   releaseFile: ->
+    @releasePreviewPreload()
     delete @file
 
   getUploadProgress: ->
@@ -106,3 +107,25 @@ class Trix.Attachment extends Trix.Object
 
   getCacheKey: ->
     [super, @attributes.getCacheKey()].join("/")
+
+  # Previewable
+
+  preloadURL: ->
+    url = @getURL()
+    if url? and not @preloadOperation
+      @preloadOperation = new Trix.ImagePreloadOperation url
+      @preloadOperation.then ({width, height}) =>
+        @setAttributes({width, height})
+        @releaseFile()
+
+  createPreviewPreloadOperationForFile: (file) ->
+    previewObjectURL = URL.createObjectURL(file)
+    @previewPreloadOperation = new Trix.ImagePreloadOperation previewObjectURL
+    @previewPreloadOperation.then ({width, height}) =>
+      @setAttributes({width, height})
+
+  releasePreviewPreload: ->
+    if @previewPreloadOperation
+      URL.revokeObjectURL(@previewPreloadOperation.url)
+      @previewPreloadOperation.release()
+      delete @previewPreloadOperation

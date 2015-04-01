@@ -1,9 +1,8 @@
 #= require trix/views/attachment_view
-#= require trix/models/image_attachment
 
 {defer, makeElement, measureElement} = Trix
 
-class Trix.ImageAttachmentView extends Trix.AttachmentView
+class Trix.PreviewableAttachmentView extends Trix.AttachmentView
   getPreloadOperation: ->
     if @attachment.preloadOperation?.hasSucceeded()
       @attachment.preloadOperation
@@ -22,9 +21,6 @@ class Trix.ImageAttachmentView extends Trix.AttachmentView
         @refresh()
 
     [image]
-
-  getClassName: ->
-    [super, "image", "preview"].join(" ")
 
   refresh: (image) ->
     image ?= @findElement()?.querySelector("img")
