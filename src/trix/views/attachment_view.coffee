@@ -37,7 +37,7 @@ class Trix.AttachmentView extends Trix.ObjectView
 
     if @attachment.isPending()
       data.trixSerialize = false
-      progressElement = makeElement("progress", className: "attachment_progress", max: 100, value: 0, "data-trix-mutable": true)
+      progressElement = makeElement(tagName: "progress", className: "attachment_progress", max: 100, value: 0, "data-trix-mutable": true)
       figure.appendChild(progressElement)
 
     if href = @attachment.getHref()
