@@ -6,7 +6,7 @@ class Trix.FileAttachmentView extends Trix.AttachmentView
   createContentNodes: -> []
 
   getClassName: ->
-    names = [super, "file"]
+    names = [super, "attachment--file"]
     if extension = @attachment.getExtension()
       names.push(extension)
     names.join(" ")
