@@ -300,8 +300,11 @@ class Trix.Document extends Trix.Object
 
   getPieceAtPosition: (position) ->
     {index, offset} = @locationFromPosition(position)
-    text = @getTextAtIndex(index).getTextAtRange([offset, offset + 1])
-    text.getPieces()[0]
+    @getTextAtIndex(index).getPieceAtPosition(position)
+
+  getCharacterAtPosition: (position) ->
+    {index, offset} = @locationFromPosition(position)
+    @getTextAtIndex(index).getStringAtRange([offset, offset + 1])
 
   getLength: ->
     @blockList.getEndPosition()

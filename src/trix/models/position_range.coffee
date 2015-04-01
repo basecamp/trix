@@ -8,8 +8,8 @@ class Trix.PositionRange extends Trix.BasicObject
       new this value[0], value[1]
 
   constructor: (start, end) ->
-    @start = start
-    @end = end ? @start
+    @start = @[0] = start
+    @end = @[1] = end ? @start
 
   copyWithEndPosition: (end) ->
     new @constructor @start, end

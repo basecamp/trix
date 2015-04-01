@@ -145,6 +145,9 @@ class Trix.Text extends Trix.Object
   getPieces: ->
     @pieceList.toArray()
 
+  getPieceAtPosition: (position) ->
+    @pieceList.getObjectAtPosition(position)
+
   contentsForInspection: ->
     pieceList: @pieceList.inspect()
 
