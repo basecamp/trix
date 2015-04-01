@@ -11,9 +11,9 @@ editorTest "moving an image by drag and drop", (expectDocument) ->
 
 editorTest "removing an image", (expectDocument) ->
   clickElement getFigure(), ->
-    closeButton = getFigure().querySelector(".remove")
+    closeButton = getFigure().querySelector(".attachment_remover")
     clickElement closeButton, ->
       expectDocument "ab\n"
 
 getFigure = ->
-  document.activeElement.querySelector("figure.attachment.image")
+  document.activeElement.querySelector("figure.attachment--image")
