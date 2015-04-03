@@ -6,6 +6,8 @@ class Trix.Watchdog.PlayerController
     @view = new Trix.Watchdog.PlayerView @element, @player
     @view.delegate = this
 
+    @player.seek(0)
+
   play: ->
     @player.play()
 

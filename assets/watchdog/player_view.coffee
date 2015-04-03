@@ -1,6 +1,8 @@
 class Trix.Watchdog.PlayerView
   constructor: (@element, @player) ->
     @frame = document.createElement("iframe")
+    @frame.style.border = "none"
+    @frame.style.width = "100%"
     @frame.onload = @frameDidLoad
 
     container = document.createElement("div")
@@ -23,7 +25,10 @@ class Trix.Watchdog.PlayerView
 
   frameDidLoad: =>
     @document = @frame.contentDocument
+    @document.head.innerHTML = document.head.innerHTML
+
     @body = @document.body
+    @body.style.cssText = "margin: 0; padding: 0"
 
     if @snapshot
       @renderSnapshot(snapshot)
@@ -41,7 +46,7 @@ class Trix.Watchdog.PlayerView
       {element, range} = @deserializeSnapshot(snapshot)
       render(@body, element)
       select(@document, range)
-      @frame.focus()
+      @updateFrame()
     else
       @snapshot = snapshot
 
@@ -49,6 +54,11 @@ class Trix.Watchdog.PlayerView
     deserializer = new Trix.Watchdog.Deserializer @document, snapshot
     element: deserializer.getElement()
     range: deserializer.getRange()
+
+  updateFrame: ->
+    @frame.style.height = 0
+    @frame.style.height = @body.scrollHeight + "px"
+    @frame.focus()
 
   clear = (element) ->
     element.removeChild(element.lastChild) while element.lastChild
