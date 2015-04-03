@@ -2,7 +2,7 @@ class Trix.Watchdog.Player
   constructor: (@recording) ->
     @playing = false
     @index = -1
-    @length = @recording.getSnapshotCount()
+    @length = @recording.getFrameCount()
     @interval = 100
 
   play: ->
@@ -46,4 +46,4 @@ class Trix.Watchdog.Player
     @index >= @length - 1
 
   getSnapshot: ->
-    @recording.getSnapshotAtIndex(@index)
+    @recording.getSnapshotAtFrameIndex(@index)

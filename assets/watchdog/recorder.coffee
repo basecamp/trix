@@ -5,11 +5,14 @@ class Trix.Watchdog.Recorder
     return if @started
     @recording = new Trix.Watchdog.Recording
     @installMutationObserver()
+    @installEventListeners()
+    @recordSnapshot()
     @started = true
 
   stop: ->
     return unless @started
     @uninstallMutationObserver()
+    @uninstallEventListeners()
     @started = false
 
   installMutationObserver: ->
@@ -25,9 +28,48 @@ class Trix.Watchdog.Recorder
       @animationFrameRequest = null
       @recordSnapshot()
 
+  installEventListeners: ->
+    @element.addEventListener("input", @handleEvent, true)
+    @element.addEventListener("keypress", @handleEvent, true)
+    document.addEventListener("selectionchange", @handleEvent, true)
+
+  uninstallEventListeners: ->
+    @element.removeEventListener("input", @handleEvent, true)
+    @element.removeEventListener("keypress", @handleEvent, true)
+    document.removeEventListener("selectionchange", @handleEvent, true)
+
+  handleEvent: (event) =>
+    switch event.type
+      when "input"
+        @recordInputEvent(event)
+      when "keypress"
+        @recordKeypressEvent(event)
+      when "selectionchange"
+        @recordSnapshotDuringNextAnimationFrame()
+
+  recordInputEvent: (event) ->
+    @recording.recordEvent(type: "input")
+
+  recordKeypressEvent: (event) ->
+    @recording.recordEvent
+      type: "keypress"
+      altKey: event.altKey
+      ctrlKey: event.ctrlKey
+      metaKey: event.metaKey
+      shiftKey: event.shiftKey
+      keyCode: event.keyCode
+      charCode: event.charCode
+      character: characterFromKeyboardEvent(event)
+
   recordSnapshot: ->
     @recording.recordSnapshot(@getSnapshot())
 
   getSnapshot: ->
     serializer = new Trix.Watchdog.Serializer @element
     serializer.getSnapshot()
+
+  characterFromKeyboardEvent = (event) ->
+    if event.which is null
+      String.fromCharCode(event.keyCode)
+    else if event.which isnt 0 and event.charCode isnt 0
+      String.fromCharCode(event.charCode)
