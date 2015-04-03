@@ -1,8 +1,18 @@
 class Trix.Watchdog.PlayerView
-  constructor: (@element) ->
+  constructor: (@element, @player) ->
     @frame = document.createElement("iframe")
     @frame.onload = @frameDidLoad
-    render(@element, @frame)
+
+    @slider = document.createElement("input")
+    @slider.type = "range"
+    @slider.max = @player.length
+    @slider.oninput = @sliderDidChangeValue
+
+    @setIndex(0)
+    render(@element, @frame, @slider)
+
+  setIndex: (index) ->
+    @slider.value = index
 
   frameDidLoad: =>
     @document = @frame.contentDocument
@@ -11,6 +21,9 @@ class Trix.Watchdog.PlayerView
     if @snapshot
       @renderSnapshot(snapshot)
       @snapshot = null
+
+  sliderDidChangeValue: =>
+    @delegate?.playerViewSliderDidChangeValue?(@slider.value)
 
   renderSnapshot: (snapshot) ->
     if @body
@@ -28,9 +41,9 @@ class Trix.Watchdog.PlayerView
   clear = (element) ->
     element.removeChild(element.lastChild) while element.lastChild
 
-  render = (element, content) ->
+  render = (element, contents...) ->
     clear(element)
-    element.appendChild(content)
+    element.appendChild(content) for content in contents
 
   select = (document, range) ->
     return unless range

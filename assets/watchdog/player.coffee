@@ -2,7 +2,7 @@ class Trix.Watchdog.Player
   constructor: (@recording) ->
     @playing = false
     @index = -1
-    @count = @recording.getSnapshotCount()
+    @length = @recording.getSnapshotCount()
     @interval = 100
 
   play: ->
@@ -30,8 +30,7 @@ class Trix.Watchdog.Player
       @index = index
 
     if @index isnt previousIndex
-      if snapshot = @getSnapshot()
-        @delegate?.playerDidSeekToSnapshot?(snapshot)
+      @delegate?.playerDidSeekToIndex?(index)
 
   stop: ->
     return unless @playing
