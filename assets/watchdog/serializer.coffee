@@ -27,9 +27,11 @@ class Trix.Watchdog.Serializer
     attributes = {}
     hasAttributes = false
 
-    for {name} in node.attributes when name isnt "value"
+    for {name} in node.attributes
       if node.hasAttribute(name)
-        attributes[name] = node.getAttribute(name)
+        value = node.getAttribute(name)
+        value = "data:" if name is "src" and value[0...5] is "data:"
+        attributes[name] = value
         hasAttributes = true
 
     if hasAttributes
