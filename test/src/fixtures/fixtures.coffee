@@ -147,8 +147,8 @@ cursorTarget = Trix.makeElement(
 
     image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
 
-    caption = Trix.makeElement(tagName: "figcaption", className: "attachment_caption")
-    caption.innerHTML = """#{attrs.filename}<span class="attachment_size">#{attrs.filesize}</span>"""
+    caption = Trix.makeElement(tagName: "figcaption", className: "attachment__caption")
+    caption.innerHTML = """#{attrs.filename}<span class="attachment__size">#{attrs.filesize}</span>"""
 
     figure = Trix.makeElement
       tagName: "figure"
@@ -175,7 +175,7 @@ cursorTarget = Trix.makeElement(
 
     image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
 
-    caption = Trix.makeElement(tagName: "figcaption", className: "attachment_caption attachment_caption--edited", textContent: "Example")
+    caption = Trix.makeElement(tagName: "figcaption", className: "attachment__caption attachment__caption--edited", textContent: "Example")
 
     figure = Trix.makeElement
       tagName: "figure"
@@ -212,7 +212,7 @@ cursorTarget = Trix.makeElement(
     link.setAttribute("contenteditable", false)
     link.appendChild(figure)
 
-    caption = """<figcaption class="attachment_caption">#{attrs.filename}<span class="attachment_size">#{attrs.filesize}</span></figcaption>"""
+    caption = """<figcaption class="attachment__caption">#{attrs.filename}<span class="attachment__size">#{attrs.filesize}</span></figcaption>"""
     figure.innerHTML = caption
 
     html: """<div>#{blockComment}#{cursorTarget}#{link.outerHTML}#{cursorTarget}</div>"""

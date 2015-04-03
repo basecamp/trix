@@ -31,7 +31,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     undo: => handler.destroy()
 
   addRemoveButton: undoable ->
-    removeButton = makeElement(tagName: "a", textContent: "⊗", className: "attachment_remover", attributes: { href: "#", title: "Remove" })
+    removeButton = makeElement(tagName: "a", textContent: "⊗", className: "attachment__remover", attributes: { href: "#", title: "Remove" })
     handleEvent("click", onElement: removeButton, withCallback: @didClickRemoveButton)
     do: => @element.appendChild(removeButton)
     undo: => @element.removeChild(removeButton)
@@ -39,7 +39,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
   editCaption: undoable ->
     input = document.createElement("textarea", "trix-input")
     input.setAttribute("placeholder", Trix.config.lang.attachment.captionPlaceholder)
-    input.classList.add("attachment_caption_editor")
+    input.classList.add("attachment__caption-editor")
     input.value = @attachmentPiece.getCaption()
 
     handleEvent("keydown", onElement: input, withCallback: @didKeyDownCaption)
@@ -52,7 +52,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     do: ->
       figcaption.style.display = "none"
       editingFigcaption.appendChild(input)
-      editingFigcaption.classList.add("attachment_caption--editing")
+      editingFigcaption.classList.add("attachment__caption--editing")
       figcaption.parentElement.insertBefore(editingFigcaption, figcaption)
       input.focus()
     undo: ->
