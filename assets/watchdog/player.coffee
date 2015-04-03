@@ -3,7 +3,6 @@ class Trix.Watchdog.Player
     @playing = false
     @index = -1
     @length = @recording.getFrameCount()
-    @interval = 100
 
   play: ->
     return if @playing
@@ -17,7 +16,8 @@ class Trix.Watchdog.Player
       @stop()
     else
       @seek(@index + 1)
-      @timeout = setTimeout(@tick, @interval)
+      duration = @getTimeToNextFrame()
+      @timeout = setTimeout(@tick, duration)
 
   seek: (index) ->
     previousIndex = @index
@@ -47,3 +47,9 @@ class Trix.Watchdog.Player
 
   getSnapshot: ->
     @recording.getSnapshotAtFrameIndex(@index)
+
+  getTimeToNextFrame: ->
+    current = @recording.getTimestampAtFrameIndex(@index)
+    next = @recording.getTimestampAtFrameIndex(@index + 1)
+    duration = if current? and next? then next - current else 0
+    Math.min(duration, 500)
