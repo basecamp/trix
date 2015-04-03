@@ -39,6 +39,9 @@ class Trix.Watchdog.Player
     @playing = false
     @delegate?.playerDidStopPlaying?()
 
+  isPlaying: ->
+    @playing
+
   hasEnded: ->
     @index >= @length - 1
 

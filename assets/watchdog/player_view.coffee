@@ -3,13 +3,20 @@ class Trix.Watchdog.PlayerView
     @frame = document.createElement("iframe")
     @frame.onload = @frameDidLoad
 
+    container = document.createElement("div")
+
+    @button = document.createElement("button")
+    @button.textContent = "Play"
+    @button.onclick = @didClickButton
+
     @slider = document.createElement("input")
     @slider.type = "range"
     @slider.max = @player.length
-    @slider.oninput = @sliderDidChangeValue
+    @slider.oninput = @didChangeSliderValue
 
+    render(container, @button, @slider)
+    render(@element, @frame, container)
     @setIndex(0)
-    render(@element, @frame, @slider)
 
   setIndex: (index) ->
     @slider.value = index
@@ -22,8 +29,12 @@ class Trix.Watchdog.PlayerView
       @renderSnapshot(snapshot)
       @snapshot = null
 
-  sliderDidChangeValue: =>
-    @delegate?.playerViewSliderDidChangeValue?(@slider.value)
+  didClickButton: =>
+    @delegate?.playerViewDidClickButton?()
+
+  didChangeSliderValue: =>
+    value = parseInt(@slider.value, 10)
+    @delegate?.playerViewDidChangeSliderValue?(value)
 
   renderSnapshot: (snapshot) ->
     if @body

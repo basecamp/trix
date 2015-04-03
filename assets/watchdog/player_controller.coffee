@@ -12,7 +12,13 @@ class Trix.Watchdog.PlayerController
   stop: ->
     @player.stop()
 
-  playerViewSliderDidChangeValue: (value) ->
+  playerViewDidClickButton: ->
+    if @player.isPlaying()
+      @player.stop()
+    else
+      @player.play()
+
+  playerViewDidChangeSliderValue: (value) ->
     @player.seek(value)
 
   playerDidSeekToIndex: (index) ->
