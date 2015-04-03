@@ -3,6 +3,7 @@
 #= require trix/core/utilities/debugger
 #= require ./documents
 #= require ./inspector/inspector_controller
+#= require ./watchdog
 
 {handleEvent, defer} = Trix
 
