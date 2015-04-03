@@ -41,6 +41,7 @@ class Trix.Watchdog.PlayerView
       {element, range} = @deserializeSnapshot(snapshot)
       render(@body, element)
       select(@document, range)
+      @frame.focus()
     else
       @snapshot = snapshot
 
