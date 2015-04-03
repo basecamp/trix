@@ -30,9 +30,9 @@ class Trix.Watchdog.Recording
 
   getEventsUpToIndex: (index, size = 0) ->
     return [] if index < 0
-    @events.slice(0, index).slice(-size).reverse()
+    @events.slice(0, index).slice(-size)
 
-  getEventsUpToFrameIndex: (frameIndex, size = 5) ->
+  getEventsUpToFrameIndex: (frameIndex, size) ->
     eventIndex = @getEventIndexAtFrameIndex(frameIndex)
     @getEventsUpToIndex(eventIndex, size)
 

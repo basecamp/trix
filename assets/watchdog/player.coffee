@@ -1,5 +1,5 @@
 class Trix.Watchdog.Player
-  constructor: (@recording) ->
+  constructor: (@recording, @speed = 2) ->
     @playing = false
     @index = -1
     @length = @recording.getFrameCount()
@@ -16,7 +16,7 @@ class Trix.Watchdog.Player
       @stop()
     else
       @seek(@index + 1)
-      duration = @getTimeToNextFrame()
+      duration = @getTimeToNextFrame() / @speed
       @timeout = setTimeout(@tick, duration)
 
   seek: (index) ->
@@ -47,6 +47,9 @@ class Trix.Watchdog.Player
 
   getSnapshot: ->
     @recording.getSnapshotAtFrameIndex(@index)
+
+  getEvents: ->
+    @recording.getEventsUpToFrameIndex(@index)
 
   getTimeToNextFrame: ->
     current = @recording.getTimestampAtFrameIndex(@index)

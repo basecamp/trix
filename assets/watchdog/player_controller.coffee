@@ -25,5 +25,15 @@ class Trix.Watchdog.PlayerController
 
   playerDidSeekToIndex: (index) ->
     @view.setIndex(index)
+
     if snapshot = @player.getSnapshot(index)
       @view.renderSnapshot(snapshot)
+
+    if events = @player.getEvents(index)
+      @view.renderEvents(events)
+
+  playerDidStartPlaying: ->
+    @view.playerDidStartPlaying()
+
+  playerDidStopPlaying: ->
+    @view.playerDidStopPlaying()
