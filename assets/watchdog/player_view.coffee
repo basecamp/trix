@@ -2,7 +2,7 @@ class Trix.Watchdog.PlayerView
   @className: "trix-watchdog-preview"
   @playingClassName: "trix-watchdog-preview-playing"
 
-  constructor: (@element, @player) ->
+  constructor: (@element) ->
     @element.classList.add(@constructor.className)
 
     @frame = document.createElement("iframe")
@@ -10,23 +10,35 @@ class Trix.Watchdog.PlayerView
     @frame.style.width = "100%"
     @frame.onload = @frameDidLoadDefaultDocument
 
-    container = document.createElement("div")
+    bottomContainer = document.createElement("div")
 
-    @button = document.createElement("button")
-    @button.textContent = "Play"
-    @button.onclick = @didClickButton
+    @playButton = document.createElement("button")
+    @playButton.textContent = "Play"
+    @playButton.onclick = @didClickPlayButton
 
     @slider = document.createElement("input")
     @slider.type = "range"
-    @slider.max = @player.length
     @slider.oninput = @didChangeSliderValue
+
+    speedControls = document.createElement("div")
+
+    @decreaseSpeedButton = document.createElement("button")
+    @decreaseSpeedButton.textContent = "–"
+    @decreaseSpeedButton.onclick = @didClickDecreaseSpeedButton
+
+    @speedMultiplierLabel = document.createElement("span")
+
+    @increaseSpeedButton = document.createElement("button")
+    @increaseSpeedButton.textContent = "+"
+    @increaseSpeedButton.onclick = @didClickIncreaseSpeedButton
 
     @log = document.createElement("textarea")
     @log.setAttribute("readonly", "")
     @log.rows = 4
 
-    render(container, @button, @slider, @log)
-    render(@element, @frame, container)
+    render(speedControls, @decreaseSpeedButton, @speedMultiplierLabel, @increaseSpeedButton)
+    render(bottomContainer, @playButton, @slider, speedControls, @log)
+    render(@element, @frame, bottomContainer)
     @setIndex(0)
 
   renderSnapshot: (snapshot) ->
@@ -46,13 +58,19 @@ class Trix.Watchdog.PlayerView
   setIndex: (index) ->
     @slider.value = index
 
+  setLength: (length) ->
+    @slider.max = length
+
+  setSpeed: (speed) ->
+    @speedMultiplierLabel.textContent = speed + "×"
+
   playerDidStartPlaying: ->
     @element.classList.add(@constructor.playingClassName)
-    @button.textContent = "Pause"
+    @playButton.textContent = "Pause"
 
   playerDidStopPlaying: ->
     @element.classList.remove(@constructor.playingClassName)
-    @button.textContent = "Play"
+    @playButton.textContent = "Play"
 
   frameDidLoadDefaultDocument: =>
     @document = @frame.contentDocument
@@ -70,12 +88,18 @@ class Trix.Watchdog.PlayerView
   frameDidLoadStylesheet: =>
     @updateFrame()
 
-  didClickButton: =>
-    @delegate?.playerViewDidClickButton?()
+  didClickPlayButton: =>
+    @delegate?.playerViewDidClickPlayButton?()
 
   didChangeSliderValue: =>
     value = parseInt(@slider.value, 10)
     @delegate?.playerViewDidChangeSliderValue?(value)
+
+  didClickDecreaseSpeedButton: =>
+    @delegate?.playerViewDidClickDecreaseSpeedButton?()
+
+  didClickIncreaseSpeedButton: =>
+    @delegate?.playerViewDidClickIncreaseSpeedButton?()
 
   renderEvent: (event, index) ->
     description = switch event.type
