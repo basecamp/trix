@@ -32,6 +32,7 @@ class Trix.Watchdog.Deserializer
 
   deserializeElement: (serializedNode) ->
     node = @document.createElement(serializedNode.name)
+    node.setAttribute(name, value) for name, value of serializedNode.attributes ? {}
     node.removeChild(node.lastChild) while node.lastChild
     node.appendChild(childNode) for childNode in @deserializeChildren(serializedNode)
     node
