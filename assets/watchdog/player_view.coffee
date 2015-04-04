@@ -9,6 +9,7 @@ class Trix.Watchdog.PlayerView
     @frame.style.border = "none"
     @frame.style.width = "100%"
     @frame.onload = @frameDidLoadDefaultDocument
+    @frame.onblur = @frameDidLoseFocus
 
     bottomContainer = document.createElement("div")
 
@@ -88,6 +89,10 @@ class Trix.Watchdog.PlayerView
   frameDidLoadStylesheet: =>
     @updateFrame()
 
+  frameDidLoseFocus: =>
+    if @element.classList.contains(@constructor.playingClassName)
+      requestAnimationFrame(@updateFrame)
+
   didClickPlayButton: =>
     @delegate?.playerViewDidClickPlayButton?()
 
@@ -116,10 +121,11 @@ class Trix.Watchdog.PlayerView
     element: deserializer.getElement()
     range: deserializer.getRange()
 
-  updateFrame: ->
+  updateFrame: =>
     @frame.style.height = 0
     @frame.style.height = @body.scrollHeight + "px"
     @frame.focus()
+    @frame.contentWindow.focus()
 
   clear = (element) ->
     element.removeChild(element.lastChild) while element.lastChild
