@@ -112,7 +112,7 @@ class Trix.Attachment extends Trix.Object
 
   preloadURL: ->
     url = @getURL()
-    if url? and not @preloadOperation
+    if url? and url isnt @preloadOperation?.url
       @preloadOperation = new Trix.ImagePreloadOperation url
       @preloadOperation.then ({width, height}) =>
         @setAttributes({width, height})
