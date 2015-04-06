@@ -213,10 +213,16 @@ class Trix.EditorController extends Trix.Controller
       perform: -> @documentController.editAttachmentCaption()
 
   toolbarCanInvokeAction: (actionName) ->
-    @constructor.toolbarActions[actionName]?.test?.call(this)
+    if toolbarActionIsExternal(actionName)
+      true
+    else
+      @constructor.toolbarActions[actionName]?.test?.call(this)
 
   toolbarDidInvokeAction: (actionName) ->
-    @constructor.toolbarActions[actionName]?.perform?.call(this)
+    if toolbarActionIsExternal(actionName)
+      @delegate?.didInvokeExternalAction?(actionName)
+    else
+      @constructor.toolbarActions[actionName]?.perform?.call(this)
 
   toolbarDidToggleAttribute: (attributeName) ->
     @recordFormattingUndoEntry()
@@ -243,6 +249,9 @@ class Trix.EditorController extends Trix.Controller
   toolbarDidHideDialog: ->
     @documentController.focus()
     @thawSelection()
+
+  toolbarActionIsExternal = (actionName) ->
+    /^x-./.test(actionName)
 
   # Selection management
 

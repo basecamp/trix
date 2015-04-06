@@ -43,6 +43,9 @@ class Trix.EditorElementController extends Trix.Controller
   didChangeSelection: ->
     triggerEvent("selectionchange", onElement: @element, bubbles: false)
 
+  didInvokeExternalAction: (actionName) ->
+    triggerEvent("trix-action-invoke", onElement: @element, attributes: {actionName})
+
   # Private
 
   saveAndNotify: =>
