@@ -46,7 +46,10 @@ class Trix.Watchdog.Serializer
     object.value = node.nodeValue
 
   serializeSelection: ->
-    range = window.getSelection().getRangeAt(0)
+    selection = window.getSelection()
+    return unless selection.length > 0
+
+    range = selection.getRangeAt(0)
     startId = @ids.get(range?.startContainer)
     endId = @ids.get(range?.endContainer)
 
