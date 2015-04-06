@@ -349,6 +349,10 @@ class Trix.Composition extends Trix.BasicObject
   selectionIsInCursorTarget: ->
     @editingAttachment or @locationIsCursorTarget(@getLocationRange().start)
 
+  getSelectedDocument: ->
+    if locationRange = @getLocationRange()
+      @document.getDocumentAtLocationRange(locationRange)
+
   # Attachment editing
 
   editAttachment: (attachment) ->

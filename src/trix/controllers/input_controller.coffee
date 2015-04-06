@@ -136,11 +136,12 @@ class Trix.InputController extends Trix.BasicObject
 
     dragstart: (event) ->
       target = event.target
+      @serializeSelectionToDataTransfer(event.dataTransfer)
       @draggedRange = @responder?.getLocationRange()
       @delegate?.inputControllerDidStartDrag?()
 
     dragover: (event) ->
-      if @draggedRange or "Files" in event.dataTransfer?.types
+      if @draggedRange or @canAcceptDataTransfer(event.dataTransfer)
         event.preventDefault()
         draggingPoint = [event.clientX, event.clientY]
         if draggingPoint.toString() isnt @draggingPoint?.toString()
@@ -161,6 +162,11 @@ class Trix.InputController extends Trix.BasicObject
         @delegate?.inputControllerWillMoveText()
         @responder?.moveTextFromLocationRange(@draggedRange)
         delete @draggedRange
+        @requestRender()
+
+      else if documentJSON = event.dataTransfer.getData("application/x-trix-document")
+        document = Trix.Document.fromJSONString(documentJSON)
+        @responder?.insertDocument(document)
         @requestRender()
 
       else if files = event.dataTransfer.files
@@ -285,6 +291,23 @@ class Trix.InputController extends Trix.BasicObject
   deleteInDirection: (direction) ->
     @responder?.deleteInDirection(direction)
     @setInputSummary(didDelete: true)
+
+  serializeSelectionToDataTransfer: (dataTransfer) ->
+    return unless dataTransfer?.setData?
+
+    document = @responder?.getSelectedDocument().toSerializableDocument()
+    element = Trix.DocumentView.render(document)
+    html = element.innerHTML
+    text = element.innerText
+
+    dataTransfer.setData("application/x-trix-document", JSON.stringify(document))
+    dataTransfer.setData("text/html", html)
+    dataTransfer.setData("text/plain", text)
+
+  canAcceptDataTransfer: (dataTransfer) ->
+    types = {}
+    types[type] = true for type in dataTransfer?.types ? []
+    types["Files"] or types["application/x-trix-document"] or types["text/html"] or types["text/plain"]
 
   getPastedHTMLUsingHiddenElement: (callback) ->
     locationRange = @responder?.getLocationRange()
