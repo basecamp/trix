@@ -1,10 +1,4 @@
-#= require vendor/lz-string
-
 class Trix.Watchdog.Recording
-  @load: (data) ->
-    json = LZString.decompress(data)
-    @fromJSON(JSON.parse(json))
-
   @fromJSON: ({snapshots, events, frames}) ->
     new this snapshots, events, frames
 
@@ -57,7 +51,3 @@ class Trix.Watchdog.Recording
 
   toJSON: ->
     {@snapshots, @events, @frames}
-
-  dump: ->
-    data = JSON.stringify(this)
-    LZString.compress(data)
