@@ -1,3 +1,6 @@
+#= require trix/watchdog/recording
+#= require trix/watchdog/serializer
+
 class Trix.Watchdog.Recorder
   constructor: (@element) ->
 

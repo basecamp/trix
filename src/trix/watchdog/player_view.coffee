@@ -1,3 +1,5 @@
+#= require trix/watchdog/deserializer
+
 class Trix.Watchdog.PlayerView
   @className: "trix-watchdog-preview"
   @playingClassName: "trix-watchdog-preview-playing"

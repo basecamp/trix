@@ -1,3 +1,6 @@
+#= require trix/watchdog/player
+#= require trix/watchdog/player_view
+
 class Trix.Watchdog.PlayerController
   constructor: (@element, @recording) ->
     @player = new Trix.Watchdog.Player @recording

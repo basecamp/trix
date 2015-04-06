@@ -1,3 +1,5 @@
+#= require trix/watchdog/recording
+
 class Trix.Watchdog.Player
   constructor: (@recording, @speed = 1) ->
     @playing = false
