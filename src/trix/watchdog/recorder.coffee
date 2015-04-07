@@ -2,7 +2,7 @@
 #= require trix/watchdog/serializer
 
 class Trix.Watchdog.Recorder
-  constructor: (@element) ->
+  constructor: (@element, {@snapshotLimit} = {}) ->
 
   start: ->
     return if @started
@@ -66,6 +66,7 @@ class Trix.Watchdog.Recorder
 
   recordSnapshot: ->
     @recording.recordSnapshot(@getSnapshot())
+    @recording.truncateToSnapshotCount(@snapshotLimit) if @snapshotLimit?
 
   getSnapshot: ->
     serializer = new Trix.Watchdog.Serializer @element

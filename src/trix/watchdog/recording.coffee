@@ -49,5 +49,21 @@ class Trix.Watchdog.Recording
   getTimestamp: ->
     new Date().getTime()
 
+  truncateToSnapshotCount: (snapshotCount) ->
+    snapshotOffset = @snapshots.length - snapshotCount
+    eventOffset = null
+    return if snapshotOffset < 0
+
+    frames = @frames
+    @frames = for [timestamp, snapshotIndex, eventIndex] in frames when snapshotIndex >= snapshotOffset
+      if eventIndex isnt -1
+        eventOffset ?= eventIndex
+        eventIndex -= eventOffset
+      snapshotIndex -= snapshotOffset
+      [timestamp, snapshotIndex, eventIndex]
+
+    @events = @events.slice(eventOffset) if eventOffset? and eventOffset > -1
+    @snapshots = @snapshots.slice(snapshotOffset)
+
   toJSON: ->
     {@snapshots, @events, @frames}
