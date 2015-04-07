@@ -5,9 +5,19 @@ nonPreviewableTypes = "image/tiff application/foo".split(" ")
 
 for contentType in previewableTypes then do (contentType) ->
   test "#{contentType} content type is previewable", ->
-    ok Trix.Attachment.attachmentForAttributes({contentType}).isPreviewable()
+    ok createAttachment({contentType}).isPreviewable()
 
 for contentType in nonPreviewableTypes then do (contentType) ->
   test "#{contentType} content type is NOT previewable", ->
-    ok not Trix.Attachment.attachmentForAttributes({contentType}).isPreviewable()
+    ok not createAttachment({contentType}).isPreviewable()
 
+test "'previewable' attribute determines previewability", ->
+  attrs = previewable: true, contentType: nonPreviewableTypes[0]
+  ok createAttachment(attrs).isPreviewable()
+
+  attrs = previewable: false, contentType: previewableTypes[0]
+  ok not createAttachment(attrs).isPreviewable()
+
+
+createAttachment = (attributes) ->
+  Trix.Attachment.attachmentForAttributes(attributes)

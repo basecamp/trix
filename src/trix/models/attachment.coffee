@@ -50,7 +50,10 @@ class Trix.Attachment extends Trix.Object
     @file? and not (@getURL() or @getHref())
 
   isPreviewable: ->
-    @attributes.get("previewable") or @constructor.previewablePattern.test(@getContentType())
+    if @attributes.has("previewable")
+      @attributes.get("previewable")
+    else
+      @constructor.previewablePattern.test(@getContentType())
 
   getURL: ->
     @attributes.get("url")
