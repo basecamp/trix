@@ -57,9 +57,9 @@ class Trix.AttachmentView extends Trix.ObjectView
   getClassName: ->
     names = ["attachment"]
     if @attachment.isPreviewable()
-      names.push("preview")
+      names.push("attachment--preview")
     else
-      names.push("file")
+      names.push("attachment--file")
     if extension = @attachment.getExtension()
       names.push(extension)
     names.join(" ")
