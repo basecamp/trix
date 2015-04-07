@@ -3,38 +3,28 @@
 {defer, makeElement, measureElement} = Trix
 
 class Trix.PreviewableAttachmentView extends Trix.AttachmentView
-  getPreloadOperation: ->
-    if @attachment.preloadOperation?.hasSucceeded()
-      @attachment.preloadOperation
-    else if @attachment.previewPreloadOperation?
-      @attachment.previewPreloadOperation
-    else
-      @attachment.preloadOperation
+  constructor: ->
+    super
+    @attachment.previewDelegate = this
 
   createContentNodes: ->
-    image = makeElement("img", src: "", "data-trix-mutable": true)
-    @refresh(image)
-
-    if operation = @attachment.preloadOperation
-      operation.then =>
-        @refresh(image)
-        @refresh()
-
-    [image]
+    @image = makeElement("img", src: "", "data-trix-mutable": true)
+    @refresh(@image)
+    [@image]
 
   refresh: (image) ->
     image ?= @findElement()?.querySelector("img")
     @updateAttributesForImage(image) if image
 
   updateAttributesForImage: (image) ->
-    attachmentURL = @attachment.getURL()
-    operation = @getPreloadOperation()
-    image.src = url = operation.url
+    url = @attachment.getURL()
+    preloadedURL = @attachment.getPreloadedURL()
+    image.src = preloadedURL or url
 
-    if url is attachmentURL
+    if preloadedURL is url
       image.removeAttribute("data-trix-serialized-attributes")
     else
-      serializedAttributes = JSON.stringify(src: attachmentURL)
+      serializedAttributes = JSON.stringify(src: url)
       image.setAttribute("data-trix-serialized-attributes", serializedAttributes)
 
     width = @attachment.getWidth()
@@ -42,3 +32,9 @@ class Trix.PreviewableAttachmentView extends Trix.AttachmentView
 
     image.width = width if width?
     image.height = height if height?
+
+  # Attachment delegate
+
+  attachmentDidPreload: ->
+    @refresh(@image)
+    @refresh()

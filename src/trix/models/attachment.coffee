@@ -35,9 +35,9 @@ class Trix.Attachment extends Trix.Object
   getAttributes: ->
     @attributes.toObject()
 
-  setAttributes: (attributes = {}, options = {}) ->
+  setAttributes: (attributes = {}) ->
     newAttributes = @attributes.merge(attributes)
-    if options.touch or not @attributes.isEqualTo(newAttributes)
+    unless @attributes.isEqualTo(newAttributes)
       @attributes = newAttributes
       @didChangeAttributes()
       @delegate?.attachmentDidChangeAttributes?(this)
@@ -88,10 +88,10 @@ class Trix.Attachment extends Trix.Object
 
   setFile: (@file) ->
     if @isPreviewable()
-      @createPreviewPreloadOperationForFile(@file)
+      @preloadFile()
 
-  releaseFile: ->
-    @releasePreviewPreload()
+  releaseFile: =>
+    @releasePreloadedFile()
     delete @file
 
   getUploadProgress: ->
@@ -110,24 +110,28 @@ class Trix.Attachment extends Trix.Object
 
   # Previewable
 
+  getPreloadedURL: ->
+    @preloadedURL
+
   preloadURL: ->
-    url = @getURL()
-    if url? and url isnt @preloadOperation?.url
+    @preload(@getURL(), @releaseFile)
+
+  preloadFile: ->
+    if @file
+      @fileObjectURL = URL.createObjectURL(@file)
+      @preload(@fileObjectURL)
+
+  releasePreloadedFile: ->
+    if @fileObjectURL
+      URL.revokeObjectURL(@fileObjectURL)
+      delete @fileObjectURL
+
+  preload: (url, callback) ->
+    if url and url isnt @preloadedURL
+      @preloadedURL ?= url
       operation = new Trix.ImagePreloadOperation url
-      @preloadOperation ?= operation
       operation.then ({width, height}) =>
-        @preloadOperation = operation
-        @setAttributes({width, height}, touch: true)
-        @releaseFile()
-
-  createPreviewPreloadOperationForFile: (file) ->
-    previewObjectURL = URL.createObjectURL(file)
-    @previewPreloadOperation = new Trix.ImagePreloadOperation previewObjectURL
-    @previewPreloadOperation.then ({width, height}) =>
-      @setAttributes({width, height})
-
-  releasePreviewPreload: ->
-    if @previewPreloadOperation
-      URL.revokeObjectURL(@previewPreloadOperation.url)
-      @previewPreloadOperation.release()
-      delete @previewPreloadOperation
+        @preloadedURL = url
+        @setAttributes({width, height})
+        @previewDelegate?.attachmentDidPreload?()
+        callback?()
