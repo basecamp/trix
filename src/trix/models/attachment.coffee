@@ -5,12 +5,9 @@ class Trix.Attachment extends Trix.Object
 
   @attachmentForFile: (file) ->
     attributes = @attributesForFile(file)
-    attachment = @attachmentForAttributes(attributes)
+    attachment = new this attributes
     attachment.setFile(file)
     attachment
-
-  @attachmentForAttributes: (attributes) ->
-    new this attributes
 
   @attributesForFile: (file) ->
     new Trix.Hash
@@ -19,7 +16,7 @@ class Trix.Attachment extends Trix.Object
       contentType: file.type
 
   @fromJSON: (attachmentJSON) ->
-    @attachmentForAttributes(attachmentJSON)
+    new this attachmentJSON
 
   constructor: (attributes = {}) ->
     super

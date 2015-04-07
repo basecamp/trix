@@ -20,4 +20,4 @@ test "'previewable' attribute determines previewability", ->
 
 
 createAttachment = (attributes) ->
-  Trix.Attachment.attachmentForAttributes(attributes)
+  new Trix.Attachment attributes

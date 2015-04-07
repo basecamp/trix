@@ -142,7 +142,7 @@ cursorTarget = Trix.makeElement(
   "image attachment": do ->
     imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
     attrs = url: imageData, filename: "example.png", filesize: "123", contentType: "image/png", width: 1, height: 1
-    attachment = Trix.Attachment.attachmentForAttributes(attrs)
+    attachment = new Trix.Attachment attrs
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
     image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
@@ -169,7 +169,7 @@ cursorTarget = Trix.makeElement(
   "image attachment with edited caption": do ->
     imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
     attrs = url: imageData, filename: "example.png", filesize: "123", contentType: "image/png", width: 1, height: 1
-    attachment = Trix.Attachment.attachmentForAttributes(attrs)
+    attachment = new Trix.Attachment attrs
     textAttrs = caption: "Example"
     text = Trix.Text.textForAttachmentWithAttributes(attachment, textAttrs)
 
