@@ -17,7 +17,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
 
   install: ->
     @makeElementMutable()
-    @makeCaptionEditable() if @attachment.isImage()
+    @makeCaptionEditable() if @attachment.isPreviewable()
     @addRemoveButton()
 
   makeElementMutable: undoable ->
