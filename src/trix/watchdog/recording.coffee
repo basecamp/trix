@@ -62,7 +62,7 @@ class Trix.Watchdog.Recording
       snapshotIndex -= snapshotOffset
       [timestamp, snapshotIndex, eventIndex]
 
-    @events = @events.slice(eventOffset) if eventOffset? and eventOffset > -1
+    @events = @events.slice(eventOffset) if eventOffset?
     @snapshots = @snapshots.slice(snapshotOffset)
 
   toJSON: ->
