@@ -411,11 +411,11 @@ class Trix.Document extends Trix.Object
   # Attachments collection delegate
 
   collectionDidAddObject: (collection, object) ->
-    object.delegate = this
+    object.delegate ?= this
     @delegate?.documentDidAddAttachment(this, object)
 
   collectionDidRemoveObject: (collection, object) ->
-    delete object.delegate
+    delete object.delegate if object.delegate is this
     @delegate?.documentDidRemoveAttachment(this, object)
 
   # Attachment delegate
