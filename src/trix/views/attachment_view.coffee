@@ -14,17 +14,17 @@ class Trix.AttachmentView extends Trix.ObjectView
 
   createNodes: ->
     figure = makeElement({tagName: "figure", className: @getClassName()})
-    figcaption = makeElement(tagName: "figcaption")
+    figcaption = makeElement(tagName: "figcaption", className: "attachment__caption")
 
     if caption = @attachmentPiece.getCaption()
-      figcaption.classList.add("edited")
+      figcaption.classList.add("attachment__caption--edited")
       figcaption.textContent = caption
     else
       if filename = @attachment.getFilename()
         figcaption.textContent = filename
 
         if filesize = @attachment.getFormattedFilesize()
-          span = makeElement(tagName: "span", className: "size", textContent: filesize)
+          span = makeElement(tagName: "span", className: "attachment__size", textContent: filesize)
           figcaption.appendChild(span)
 
     figure.appendChild(node) for node in @createContentNodes()
@@ -40,7 +40,7 @@ class Trix.AttachmentView extends Trix.ObjectView
 
     if @attachment.isPending()
       data.trixSerialize = false
-      progressElement = makeElement("progress", max: 100, value: 0, "data-trix-mutable": true)
+      progressElement = makeElement(tagName: "progress", className: "attachment__progress", max: 100, value: 0, "data-trix-mutable": true)
       figure.appendChild(progressElement)
 
     if href = @attachment.getHref()
