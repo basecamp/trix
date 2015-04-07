@@ -47,7 +47,7 @@ class Trix.Watchdog.Serializer
 
   serializeSelection: ->
     selection = window.getSelection()
-    return unless selection.length > 0
+    return unless selection.rangeCount > 0
 
     range = selection.getRangeAt(0)
     startId = @ids.get(range?.startContainer)
