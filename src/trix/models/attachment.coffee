@@ -35,9 +35,9 @@ class Trix.Attachment extends Trix.Object
   getAttributes: ->
     @attributes.toObject()
 
-  setAttributes: (attributes = {}) ->
+  setAttributes: (attributes = {}, options = {}) ->
     newAttributes = @attributes.merge(attributes)
-    unless @attributes.isEqualTo(newAttributes)
+    if options.touch or not @attributes.isEqualTo(newAttributes)
       @attributes = newAttributes
       @didChangeAttributes()
       @delegate?.attachmentDidChangeAttributes?(this)
@@ -117,7 +117,7 @@ class Trix.Attachment extends Trix.Object
       @preloadOperation ?= operation
       operation.then ({width, height}) =>
         @preloadOperation = operation
-        @setAttributes({width, height})
+        @setAttributes({width, height}, touch: true)
         @releaseFile()
 
   createPreviewPreloadOperationForFile: (file) ->
