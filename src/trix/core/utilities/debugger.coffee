@@ -37,113 +37,17 @@ DEBUG_METHODS =
     didKeyDownDialogInput
   "
 
-{makeFragment} = Trix
-{defaultContent} = TrixToolbarElement::constructor
+{findClosestElementFromNode} = Trix
 
-defaultContent.querySelector(".button_groups")?.appendChild makeFragment """
-  <span class="button_group debug_tools">
-    <button type="button" class="debug" data-action="debug" data-error-content="☠">ℹ</button>
-  </span>
-"""
+errorListeners = []
 
-defaultContent.querySelector(".dialogs")?.appendChild makeFragment """
-  <div class="dialogs">
-    <div class="dialog debug_dialog" data-attribute="debug">
-      <div>Copy and paste:</div>
-      <textarea readonly></textarea>
-    </div>
-  </div>
-"""
+Trix.Debugger =
+  addErrorListener: (listener) ->
+    unless listener in errorListeners
+      errorListeners.push(listener)
 
-TrixToolbarElement::constructor.defaultCSS += """
-  %t button[data-action=debug].error {
-    border: 1px solid red;
-    color: red;
-  }
-
-  %t .dialog[data-attribute=debug] {
-    position: absolute;
-    width: 500px;
-    padding: 10px;
-    margin: 5px 0 0 5px;
-    border-radius: 2px;
-    background-color: white;
-    border: 1px solid black;
-    font-family: monospace;
-    font-size: 12px;
-  }
-
-  %t .dialog[data-attribute=debug] textarea {
-    box-sizing: border-box;
-    width: 100%;
-    margin: 10px 0 0 0;
-    height: 200px;
-    border: none;
-  }
-"""
-
-Trix.EditorController.toolbarActions.debug = test: -> true
-
-
-{tagName, findClosestElementFromNode, handleEvent} = Trix
-
-buttonSelector = "button[data-action=debug]"
-
-handleEvent "click", onElement: document, matchingSelector: buttonSelector, withCallback: (event) ->
-  setDebugInfo(element: event.target, focus: true)
-  event.preventDefault()
-
-setDebugInfo = ({element, error, focus}) ->
-  editorElement = findClosestElementFromNode(element, matchingSelector: "trix-editor")
-  {editorController} = editorElement
-  toolbarElement = editorElement.querySelector("trix-toolbar")
-  buttonElement = toolbarElement.querySelector(buttonSelector)
-  textareaElement = toolbarElement.querySelector(".dialog[data-attribute=debug] textarea")
-  documentElement = editorElement.querySelector("trix-document")
-
-  info = ""
-
-  if error?
-    buttonElement.classList.add("error")
-    buttonElement.textContent = buttonElement.dataset.errorContent
-    info += "Error: #{error.message}\n  #{error.stack}"
-
-  info += """
-    URL:
-      #{window.location}
-    Location range:
-      #{editorController.getLocationRange()?.inspect()}
-    Last input:
-      #{JSON.stringify(editorController.inputController.inputSummary)}
-    Document:
-      #{JSON.stringify(editorController.document)}
-    HTML:
-      #{documentElement.innerHTML}
-  """
-
-  shouldUpdateTextarea = error? or not buttonElement.classList.contains("error")
-
-  textareaElement.value = info if shouldUpdateTextarea
-  textareaElement.select() if focus?
-
-reportError = (error) ->
-  console.error "Trix error!"
-  console.log error.stack
-
-  element = document.activeElement
-  if tagName(element) is "trix-document"
-    setDebugInfo({element, error})
-  else
-    console.warn "Can't find <trix-document> element. document.activeElement =", element
-
-wrapFunctionWithErrorHandler = (fn) ->
-  trixDebugWrapper = ->
-    try
-      fn.apply(this, arguments)
-    catch error
-      reportError(error)
-      throw error
-  trixDebugWrapper
+  removeErrorListener: (listener) ->
+    errorListeners = (l for l in errorListeners when l isnt listener)
 
 installMethodDebugger = (className, methodName) ->
   [objectName, constructorNames...] = className.split(".")
@@ -159,7 +63,34 @@ installMethodDebugger = (className, methodName) ->
   else
     throw new Error "Can't install on non-function"
 
-install = ->
+wrapFunctionWithErrorHandler = (fn) ->
+  trixDebugWrapper = ->
+    try
+      fn.apply(this, arguments)
+    catch error
+      reportError(error)
+      throw error
+  trixDebugWrapper
+
+reportError = (error) ->
+  Trix.Debugger.lastError = error
+
+  console.error "Trix error!"
+  console.log error.stack
+
+  activeElement = document.activeElement
+  editorElement = findClosestElementFromNode(activeElement, matchingSelector: "trix-editor")
+
+  if editorElement
+    notifyErrorListeners(error, editorElement)
+  else
+    console.warn "Can't find <trix-editor> element. document.activeElement =", activeElement
+
+notifyErrorListeners = (error, element) ->
+  for listener in errorListeners
+    try listener(error, element)
+
+do ->
   console.groupCollapsed("Trix debugger")
 
   for className, methodNames of DEBUG_METHODS
@@ -171,5 +102,3 @@ install = ->
         console.warn "✗ #{className}##{methodName}:", error.message
 
   console.groupEnd()
-
-install()
