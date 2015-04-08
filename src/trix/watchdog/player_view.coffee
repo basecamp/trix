@@ -1,6 +1,7 @@
 #= require trix/watchdog/deserializer
 
 class Trix.Watchdog.PlayerView
+  @documentClassName: "trix-watchdog-player"
   @playingClassName: "trix-watchdog-player-playing"
 
   constructor: (@element) ->
@@ -77,6 +78,8 @@ class Trix.Watchdog.PlayerView
 
   frameDidLoadDefaultDocument: =>
     @document = @frame.contentDocument
+    @document.documentElement.classList.add(@constructor.documentClassName)
+
     @document.head.innerHTML = document.head.innerHTML
     for stylesheet in @document.head.querySelectorAll("link[rel=stylesheet]")
       stylesheet.onload = @frameDidLoadStylesheet
