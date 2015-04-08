@@ -1,19 +1,16 @@
 #= require trix/watchdog/deserializer
 
 class Trix.Watchdog.PlayerView
-  @className: "trix-watchdog-preview"
-  @playingClassName: "trix-watchdog-preview-playing"
+  @playingClassName: "trix-watchdog-player-playing"
 
   constructor: (@element) ->
-    @element.classList.add(@constructor.className)
-
     @frame = document.createElement("iframe")
     @frame.style.border = "none"
     @frame.style.width = "100%"
     @frame.onload = @frameDidLoadDefaultDocument
     @frame.onblur = @frameDidLoseFocus
 
-    bottomContainer = document.createElement("div")
+    controlsContainer = document.createElement("div")
 
     @playButton = document.createElement("button")
     @playButton.textContent = "Play"
@@ -35,13 +32,16 @@ class Trix.Watchdog.PlayerView
     @increaseSpeedButton.textContent = "+"
     @increaseSpeedButton.onclick = @didClickIncreaseSpeedButton
 
+    logContainer = document.createElement("div")
+
     @log = document.createElement("textarea")
     @log.setAttribute("readonly", "")
     @log.rows = 4
 
     render(speedControls, @decreaseSpeedButton, @speedMultiplierLabel, @increaseSpeedButton)
-    render(bottomContainer, @playButton, @slider, speedControls, @log)
-    render(@element, @frame, bottomContainer)
+    render(controlsContainer, @playButton, @slider, speedControls)
+    render(logContainer, @log)
+    render(@element, @frame, controlsContainer, logContainer)
     @setIndex(0)
 
   renderSnapshot: (snapshot) ->
