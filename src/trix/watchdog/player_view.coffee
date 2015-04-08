@@ -62,7 +62,7 @@ class Trix.Watchdog.PlayerView
     @slider.value = index
 
   setLength: (length) ->
-    @slider.max = length
+    @slider.max = length - 1
 
   setSpeed: (speed) ->
     @speedMultiplierLabel.textContent = speed + "×"
