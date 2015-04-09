@@ -24,7 +24,7 @@ class Trix.Watchdog.Recording
 
   getEventsUpToIndex: (index, size = 0) ->
     return [] if index < 0
-    @events.slice(0, index).slice(-size)
+    @events.slice(0, index + 1).slice(-size)
 
   getEventsUpToFrameIndex: (frameIndex, size) ->
     eventIndex = @getEventIndexAtFrameIndex(frameIndex)
@@ -57,7 +57,7 @@ class Trix.Watchdog.Recording
     frames = @frames
     @frames = for [timestamp, snapshotIndex, eventIndex] in frames when snapshotIndex >= snapshotOffset
       if eventIndex isnt -1
-        eventOffset ?= eventIndex
+        eventOffset ?= eventIndex + 1
         eventIndex -= eventOffset
       snapshotIndex -= snapshotOffset
       [timestamp, snapshotIndex, eventIndex]
