@@ -18,6 +18,9 @@ class Trix.Watchdog.Recorder
     @uninstallEventListeners()
     @started = false
 
+  log: (message) ->
+    @recording.recordEvent(type: "log", message: message)
+
   installMutationObserver: ->
     @mutationObserver = new MutationObserver @recordSnapshotDuringNextAnimationFrame
     @mutationObserver.observe(@element, attributes: true, characterData: true, childList: true, subtree: true)

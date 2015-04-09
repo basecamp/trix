@@ -118,6 +118,8 @@ class Trix.Watchdog.PlayerView
       when "keypress"
         key = event.character ? event.charCode ? event.keyCode
         "Key pressed: #{JSON.stringify(key)}"
+      when "log"
+        event.message
 
     "[#{index}] #{description}"
 
