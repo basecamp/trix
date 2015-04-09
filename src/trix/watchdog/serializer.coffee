@@ -1,7 +1,6 @@
 class Trix.Watchdog.Serializer
-  id = 0
-
   constructor: (@element) ->
+    @id = 0
     @serializeTree()
     @serializeSelection()
 
@@ -10,7 +9,7 @@ class Trix.Watchdog.Serializer
     @tree = @serializeNode(@element)
 
   serializeNode: (node) ->
-    object = id: ++id, name: node.nodeName
+    object = id: ++@id, name: node.nodeName
     @ids.set(node, object.id)
 
     switch node.nodeType

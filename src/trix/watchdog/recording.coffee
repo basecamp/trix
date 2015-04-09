@@ -5,8 +5,11 @@ class Trix.Watchdog.Recording
   constructor: (@snapshots = [], @events = [], @frames = []) ->
 
   recordSnapshot: (snapshot) ->
-    @snapshots.push(snapshot)
-    @recordFrame()
+    snapshotJSON = JSON.stringify(snapshot)
+    if snapshotJSON isnt @lastSnapshotJSON
+      @snapshots.push(snapshot)
+      @lastSnapshotJSON = snapshotJSON
+      @recordFrame()
 
   getSnapshotAtIndex: (index) ->
     @snapshots[index] if index >= 0
