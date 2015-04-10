@@ -7,6 +7,7 @@ class Trix.Watchdog.Recording
   recordSnapshot: (snapshot) ->
     snapshotJSON = JSON.stringify(snapshot)
     if snapshotJSON isnt @lastSnapshotJSON
+      @events.push(type: "snapshot")
       @snapshots.push(snapshot)
       @lastSnapshotJSON = snapshotJSON
       @recordFrame()

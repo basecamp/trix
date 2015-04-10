@@ -101,6 +101,8 @@ class Trix.Watchdog.PlayerView
         "Key pressed: #{JSON.stringify(key)}"
       when "log"
         event.message
+      when "snapshot"
+        "DOM update"
 
     "[#{index}] #{description}"
 
