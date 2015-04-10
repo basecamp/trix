@@ -6,16 +6,6 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    aws-sdk (1.57.0)
-      aws-sdk-v1 (= 1.57.0)
-    aws-sdk-v1 (1.57.0)
-      json (~> 1.4)
-      nokogiri (>= 1.4.4)
-    celluloid (0.15.2)
-      timers (~> 1.1.0)
-    celluloid-io (0.15.0)
-      celluloid (>= 0.15.0)
-      nio4r (>= 0.5.0)
     coffee-script (2.2.0)
       coffee-script-source
       execjs
@@ -23,30 +13,12 @@ GEM
     ejs (1.1.1)
     execjs (1.4.0)
       multi_json (~> 1.0)
-    ffi (1.9.3)
     hike (1.2.3)
     json (1.8.1)
-    listen (2.7.1)
-      celluloid (>= 0.15.2)
-      celluloid-io (>= 0.15.0)
-      rb-fsevent (>= 0.9.3)
-      rb-inotify (>= 0.9)
-    mime-types (2.4.3)
-    mini_portile (0.6.0)
     multi_json (1.7.7)
-    netrc (0.8.0)
-    nio4r (1.0.0)
-    nokogiri (1.6.3.1)
-      mini_portile (= 0.6.0)
     rack (1.5.2)
     rack-rewrite (1.5.0)
     rake (10.0.4)
-    rb-fsevent (0.9.4)
-    rb-inotify (0.9.3)
-      ffi (>= 0.5.0)
-    rest-client (1.7.2)
-      mime-types (>= 1.16, < 3.0)
-      netrc (~> 0.7)
     sass (3.4.3)
     sprockets (2.10.0)
       hike (~> 1.2)
@@ -54,7 +26,6 @@ GEM
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
     tilt (1.4.1)
-    timers (1.1.0)
     uglifier (2.5.1)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
@@ -63,14 +34,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  aws-sdk
   coffee-script
   coffee-script-source (~> 1.9.1)
   ejs
-  listen
   rack-rewrite
   rake
-  rest-client
   sass
   sprockets
   trix!

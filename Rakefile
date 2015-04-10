@@ -51,26 +51,6 @@ namespace :test do
   task :browser => :dist do
     system "open", environment.dist_path_for("test.html")
   end
-
-  desc "Listen for file changes and run Trix tests in Chrome"
-  task :listen do
-    require "listen"
-
-    Listen.to("src/", "test/src", "lib") do |modified, added, removed|
-      files = modified + added + removed
-      puts "\nModified: #{files.join(', ')}"
-      puts "Running tests in Chrome..."
-      `osascript -l JavaScript -e 'Application("Chrome").windows[0].tabs.whose({ url: { _beginsWith: "http://trix.dev/test" } })[0].reload()'`
-    end.start
-
-    sleep
-  end
-
-  desc "Run Trix tests on a suite of browser VMs"
-  task vm: :dist do
-    require_relative "test/vm_test_runner.rb"
-    Trix::VMTestRunner.new(environment).run
-  end
 end
 
 task :default => "test:browser"
