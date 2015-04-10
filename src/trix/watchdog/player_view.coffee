@@ -21,17 +21,7 @@ class Trix.Watchdog.PlayerView
     @slider.type = "range"
     @slider.oninput = @didChangeSliderValue
 
-    speedControls = document.createElement("div")
-
-    @decreaseSpeedButton = document.createElement("button")
-    @decreaseSpeedButton.textContent = "–"
-    @decreaseSpeedButton.onclick = @didClickDecreaseSpeedButton
-
-    @speedMultiplierLabel = document.createElement("span")
-
-    @increaseSpeedButton = document.createElement("button")
-    @increaseSpeedButton.textContent = "+"
-    @increaseSpeedButton.onclick = @didClickIncreaseSpeedButton
+    @indexLabel = document.createElement("span")
 
     logContainer = document.createElement("div")
 
@@ -39,8 +29,7 @@ class Trix.Watchdog.PlayerView
     @log.setAttribute("readonly", "")
     @log.rows = 4
 
-    render(speedControls, @decreaseSpeedButton, @speedMultiplierLabel, @increaseSpeedButton)
-    render(controlsContainer, @playButton, @slider, speedControls)
+    render(controlsContainer, @playButton, @slider, @indexLabel)
     render(logContainer, @log)
     render(@element, @frame, controlsContainer, logContainer)
     @setIndex(0)
@@ -61,12 +50,10 @@ class Trix.Watchdog.PlayerView
 
   setIndex: (index) ->
     @slider.value = index
+    @indexLabel.textContent = "Frame #{index}"
 
   setLength: (length) ->
     @slider.max = length - 1
-
-  setSpeed: (speed) ->
-    @speedMultiplierLabel.textContent = speed + "×"
 
   playerDidStartPlaying: ->
     @element.classList.add(@constructor.playingClassName)
@@ -104,12 +91,6 @@ class Trix.Watchdog.PlayerView
   didChangeSliderValue: =>
     value = parseInt(@slider.value, 10)
     @delegate?.playerViewDidChangeSliderValue?(value)
-
-  didClickDecreaseSpeedButton: =>
-    @delegate?.playerViewDidClickDecreaseSpeedButton?()
-
-  didClickIncreaseSpeedButton: =>
-    @delegate?.playerViewDidClickIncreaseSpeedButton?()
 
   renderEvent: (event, index) ->
     description = switch event.type

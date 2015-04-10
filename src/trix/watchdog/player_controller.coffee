@@ -10,7 +10,6 @@ class Trix.Watchdog.PlayerController
     @view.delegate = this
 
     @view.setLength(@player.length)
-    @view.setSpeed(@player.speed)
     @player.seek(0)
 
   play: ->
@@ -25,17 +24,8 @@ class Trix.Watchdog.PlayerController
     else
       @player.play()
 
-  playerViewDidClickDecreaseSpeedButton: ->
-    @player.decreaseSpeed()
-
-  playerViewDidClickIncreaseSpeedButton: ->
-    @player.increaseSpeed()
-
   playerViewDidChangeSliderValue: (value) ->
     @player.seek(value)
-
-  playerViewDidChangeSpeed: (speed) ->
-    @player.setSpeed(speed)
 
   playerDidSeekToIndex: (index) ->
     @view.setIndex(index)
@@ -51,6 +41,3 @@ class Trix.Watchdog.PlayerController
 
   playerDidStopPlaying: ->
     @view.playerDidStopPlaying()
-
-  playerDidChangeSpeed: (speed) ->
-    @view.setSpeed(speed)

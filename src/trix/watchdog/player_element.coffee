@@ -8,8 +8,7 @@ Trix.defineElement class extends Trix.Element
     %t > div { display: -webkit-flex; display: flex; font-size: 14px; margin: 10px 0 }
     %t > div > button { width: 65px }
     %t > div > input { width: 100%; -webkit-align-self: stretch; align-self: stretch; margin: 0 20px }
-    %t > div > div { display: -webkit-inline-flex; display: inline-flex; width: 110px }
-    %t > div > div { -webkit-justify-content: space-between; justify-content: space-between }
+    %t > div > span { display: inline-block; text-align: center; width: 110px }
   """
 
   attachedCallback: ->

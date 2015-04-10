@@ -1,7 +1,7 @@
 #= require trix/watchdog/recording
 
 class Trix.Watchdog.Player
-  constructor: (@recording, @speed = 1) ->
+  constructor: (@recording) ->
     @playing = false
     @index = -1
     @length = @recording.getFrameCount()
@@ -18,7 +18,7 @@ class Trix.Watchdog.Player
       @stop()
     else
       @seek(@index + 1)
-      duration = @getTimeToNextFrame() / @speed
+      duration = @getTimeToNextFrame()
       @timeout = setTimeout(@tick, duration)
 
   seek: (index) ->
@@ -40,25 +40,6 @@ class Trix.Watchdog.Player
     @timeout = null
     @playing = false
     @delegate?.playerDidStopPlaying?()
-
-  increaseSpeed: ->
-    @setSpeed switch @speed
-      when 0.5 then 1
-      when 1 then 2
-      when 2 then 4
-      else @speed
-
-  decreaseSpeed: ->
-    @setSpeed switch @speed
-      when 1 then 0.5
-      when 2 then 1
-      when 4 then 2
-      else @speed
-
-  setSpeed: (speed) ->
-    return if speed is @speed
-    @speed = speed
-    @delegate?.playerDidChangeSpeed?(speed)
 
   isPlaying: ->
     @playing
