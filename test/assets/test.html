@@ -3,22 +3,15 @@
 <head>
   <meta charset="utf-8">
   <title>Trix System Tests</title>
-  <link rel="stylesheet" type="text/css" href="test.css">
+  <link rel="stylesheet" type="text/css" href="qunit.css">
+  <script type="text/javascript" src="qunit.js"></script>
   <script type="text/javascript" src="polyfills.js"></script>
+  <script type="text/javascript" src="test.js"></script>
 </head>
 <body>
-  <div id="trix-container"></div>
   <div id="tests">
     <div id="qunit"></div>
     <div id="qunit-fixture"></div>
   </div>
-  <script>
-    (function() {
-      var url = "test.js?" + +new Date
-      var el = document.createElement("script")
-      el.src = url
-      document.body.appendChild(el)
-    })()
-  </script>
 </body>
 </html>
