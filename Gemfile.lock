@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/javan/blade_runner-sauce.git
-  revision: 53bbde57f931b8f0bf9dbee5227431fcb6dcce03
+  revision: 577f112b94f1092af8a81b228641cb5971d1698c
   specs:
     blade_runner-sauce (0.1.0)
       faraday
