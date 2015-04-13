@@ -13,7 +13,7 @@ Trix.defineElement class extends Trix.Element
       cursor: text;
     }
 
-    %t * {
+    %t img {
       max-width: 100%;
     }
   """
