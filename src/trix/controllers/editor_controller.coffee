@@ -108,10 +108,7 @@ class Trix.EditorController extends Trix.Controller
 
   documentControllerWillRenderDocumentElement: ->
     @inputController.editorWillRenderDocumentElement()
-    if @requestedLocationRange?
-      @selectionManager.lockToLocationRange(@requestedLocationRange)
-    else
-      @selectionManager.lock()
+    @selectionManager.lock()
     @selectionManager.clearSelection()
 
   documentControllerDidRenderDocumentElement: ->
@@ -121,7 +118,9 @@ class Trix.EditorController extends Trix.Controller
     @delegate?.didRenderDocumentElement?()
 
   documentControllerDidRender: ->
-    delete @requestedLocationRange
+    if @requestedLocationRange?
+      @selectionManager.setLocationRange(@requestedLocationRange)
+      delete @requestedLocationRange
 
   documentControllerDidFocus: ->
     @toolbarController.hideDialog()
