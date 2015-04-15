@@ -88,6 +88,7 @@ class Trix.EditorController extends Trix.Controller
 
   compositionDidRequestLocationRange: (locationRange) ->
     @requestedLocationRange = locationRange
+    @editCountWhenLocationRangeRequested = @document.getEditCount()
 
   compositionDidRestoreSnapshot: ->
     @documentController.refreshViewCache()
@@ -119,8 +120,10 @@ class Trix.EditorController extends Trix.Controller
 
   documentControllerDidRender: ->
     if @requestedLocationRange?
-      @selectionManager.setLocationRange(@requestedLocationRange)
+      if @editCountWhenLocationRangeRequested is @document.getEditCount()
+        @selectionManager.setLocationRange(@requestedLocationRange)
       delete @requestedLocationRange
+      delete @editCountWhenLocationRangeRequested
 
   documentControllerDidFocus: ->
     @toolbarController.hideDialog()

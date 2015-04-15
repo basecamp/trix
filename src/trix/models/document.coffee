@@ -275,6 +275,9 @@ class Trix.Document extends Trix.Object
   getBlocks: ->
     @blockList.toArray()
 
+  getEditCount: ->
+    @editCount
+
   eachBlock: (callback) ->
     @blockList.eachObject(callback)
 
