@@ -3,10 +3,10 @@
 
 class Trix.Watchdog.Recorder
   constructor: (@element, {@snapshotLimit} = {}) ->
+    @recording = new Trix.Watchdog.Recording
 
   start: ->
     return if @started
-    @recording = new Trix.Watchdog.Recording
     @installMutationObserver()
     @installEventListeners()
     @recordSnapshot()
