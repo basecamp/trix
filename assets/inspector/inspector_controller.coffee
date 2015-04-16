@@ -7,6 +7,7 @@
 #= require ./debugging_panel_view
 #= require ./loggers_panel_view
 #= require ./benchmark_panel_view
+#= require ./replay_panel_view
 
 {defer, handleEvent, findClosestElementFromNode} = Trix
 
