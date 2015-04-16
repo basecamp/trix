@@ -73,6 +73,7 @@ class Trix.Watchdog.PlayerView
 
     @body = @document.body
     @body.style.cssText = "margin: 0; padding: 0"
+    @body.onkeydown = (event) -> event.preventDefault()
 
     if @snapshot
       @renderSnapshot(snapshot)
