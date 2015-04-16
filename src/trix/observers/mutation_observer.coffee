@@ -95,8 +95,17 @@ class Trix.MutationObserver extends Trix.BasicObject
     mutation for mutation in @mutations when mutation.type is type
 
   getRemovedTextNodes: ->
-    nodes = []
+    added = []
+    removed = []
+    removedAndNotAdded = []
+
     for mutation in @getMutationsByType("childList")
       for node in mutation.removedNodes when node.nodeType is Node.TEXT_NODE
-        nodes.push(node)
-    nodes
+        removed.push(node)
+      for node in mutation.addedNodes when node.nodeType is Node.TEXT_NODE
+        added.push(node)
+
+    for node, index in removed when node.data isnt added[index]?.data
+      removedAndNotAdded.push(node)
+
+    removedAndNotAdded
