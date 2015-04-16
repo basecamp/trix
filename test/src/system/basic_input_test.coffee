@@ -37,11 +37,33 @@ editorTest "paste plain text", (expectDocument) ->
       pasteContent "text/plain", "!", ->
         expectDocument "ab!c\n"
 
-editorTest "paste html", (expectDocument) ->
+editorTest "paste simple html", (expectDocument) ->
   typeCharacters "abc", ->
     moveCursor "left", ->
       pasteContent "text/html", "&lt;", ->
         expectDocument "ab<c\n"
+
+editorTest "paste complex html", (expectDocument) ->
+  typeCharacters "abc", ->
+    moveCursor "left", ->
+      pasteContent "text/html", "<div>Hello world<br></div><div>This is a test</div>", ->
+        expectDocument "abHello world\nThis is a test\nc\n"
+
+editorTest "paste complex html into formatted block", (done) ->
+  typeCharacters "abc", ->
+    clickToolbarButton attribute: "quote", ->
+      pasteContent "text/html", "<div>Hello world<br></div><div>This is a test</div>", ->
+        document = getDocument()
+        equal 2, document.getBlockCount()
+
+        block = document.getBlockAtIndex(0)
+        deepEqual ["quote"], block.getAttributes()
+        equal block.toString(), "abcHello world\n"
+
+        block = document.getBlockAtIndex(1)
+        deepEqual ["quote"], block.getAttributes()
+        equal block.toString(), "This is a test\n"
+        done()
 
 editorTest "paste file", (expectDocument) ->
   pasteContent "Files", (createFile()), ->

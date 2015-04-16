@@ -1,5 +1,7 @@
 #= require trix/models/document
 
+{arraysAreEqual} = Trix
+
 class Trix.Composition extends Trix.BasicObject
   constructor: (@document = new Trix.Document) ->
     @document.delegate = this
@@ -48,12 +50,18 @@ class Trix.Composition extends Trix.BasicObject
     document = new Trix.Document [block]
     @insertDocument(document)
 
-  insertDocument: (document = Trix.Document.fromString("")) ->
+  insertDocument: (document = Trix.Document.fromString(""), {withLeadingBlockBreak} = {}) ->
     position = @getPosition()
     locationRange = @getLocationRange()
-    @document.insertDocumentAtLocationRange(document, locationRange)
 
+    @document.insertDocumentAtLocationRange(document, locationRange)
     endPosition = position + document.getLength()
+
+    if withLeadingBlockBreak is false
+      blockBreakLocationRange = @document.locationRangeFromRange([position, position + 1])
+      @document.removeTextAtLocationRange(blockBreakLocationRange)
+      endPosition -= 1
+
     endLocation = @document.locationFromPosition(endPosition)
     @setLocation(endLocation)
 
@@ -106,14 +114,22 @@ class Trix.Composition extends Trix.BasicObject
     else
       @insertString("\n")
 
-  insertHTML: (html) ->
-    document = Trix.Document.fromHTML(html)
-    block = document.getBlockAtIndex(0)
+  pasteDocument: (document) ->
+    blockAttributes = @getBlock().getAttributes()
+    formattedDocument = document.copyWithBaseBlockAttributes(blockAttributes)
+    firstBlock = formattedDocument.getBlockAtIndex(0)
 
-    if document.blockList.length is 1 and not block.hasAttributes()
-      @insertText(block.getTextWithoutBlockBreak())
+    if arraysAreEqual(blockAttributes, firstBlock.getAttributes())
+      if formattedDocument.getBlockCount() is 1
+        @insertText(firstBlock.getTextWithoutBlockBreak())
+      else
+        @insertDocument(formattedDocument, withLeadingBlockBreak: false)
     else
-      @insertDocument(document)
+      @insertDocument(formattedDocument)
+
+  pasteHTML: (html) ->
+    document = Trix.Document.fromHTML(html)
+    @pasteDocument(document)
 
   replaceHTML: (html) ->
     document = Trix.Document.fromHTML(html).copyUsingObjectsFromDocument(@document)
@@ -218,20 +234,15 @@ class Trix.Composition extends Trix.BasicObject
     @document.removeAttributeAtLocationRange(attributeName, locationRange)
 
   increaseBlockAttributeLevel: ->
-    locationRange = @getLocationRange()
-    block = @document.getBlockAtIndex(locationRange.index)
-    if attribute = block.getLastAttribute()
+    if attribute = @getBlock()?.getLastAttribute()
       @setCurrentAttribute(attribute)
 
   decreaseBlockAttributeLevel: ->
-    locationRange = @getLocationRange()
-    block = @document.getBlockAtIndex(locationRange.index)
-    if attribute = block.getLastAttribute()
+    if attribute = @getBlock()?.getLastAttribute()
       @removeCurrentAttribute(attribute)
 
   canChangeBlockAttributeLevel: ->
-    if locationRange = @getLocationRange()
-      @document.getBlockAtIndex(locationRange.index).getAttributes().length
+    @getBlock()?.getAttributes().length
 
   updateCurrentAttributes: ->
     @currentAttributes =
@@ -373,6 +384,10 @@ class Trix.Composition extends Trix.BasicObject
 
   getDocument: ->
     @document.copy()
+
+  getBlock: ->
+    if locationRange = @getLocationRange()
+      @document.getBlockAtIndex(locationRange.index)
 
   getAttachmentAtLocationRange: (locationRange) ->
     document = @document.getDocumentAtLocationRange(locationRange)

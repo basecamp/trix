@@ -56,6 +56,12 @@ class Trix.Document extends Trix.Object
         block.copyUsingObjectMap(objectMap)
     new @constructor blocks
 
+  copyWithBaseBlockAttributes: (blockAttributes = []) ->
+    blocks = for block in @getBlocks()
+      attributes = blockAttributes.concat(block.getAttributes())
+      block.copyWithAttributes(attributes)
+    new @constructor blocks
+
   edit = (name, fn) -> ->
     @beginEditing()
     fn.apply(this, arguments)
@@ -274,6 +280,9 @@ class Trix.Document extends Trix.Object
 
   getBlocks: ->
     @blockList.toArray()
+
+  getBlockCount: ->
+    @blockList.length
 
   getEditCount: ->
     @editCount
