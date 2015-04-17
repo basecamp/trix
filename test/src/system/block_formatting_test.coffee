@@ -120,3 +120,20 @@ editorTest "backspacing a list item inside a quote", (done) ->
         pressKey "backspace", ->
           expectBlockAttributes([0, 1], [])
           done()
+
+editorTest "increasing list level", (done) ->
+  ok isToolbarButtonDisabled(action: "increaseBlockLevel")
+  ok isToolbarButtonDisabled(action: "decreaseBlockLevel")
+  clickToolbarButton attribute: "bullet", ->
+    ok isToolbarButtonDisabled(action: "increaseBlockLevel")
+    ok not isToolbarButtonDisabled(action: "decreaseBlockLevel")
+    typeCharacters "a\n", ->
+      ok not isToolbarButtonDisabled(action: "increaseBlockLevel")
+      ok not isToolbarButtonDisabled(action: "decreaseBlockLevel")
+      clickToolbarButton action: "increaseBlockLevel", ->
+        typeCharacters "b", ->
+          ok isToolbarButtonDisabled(action: "increaseBlockLevel")
+          ok not isToolbarButtonDisabled(action: "decreaseBlockLevel")
+          expectBlockAttributes([0, 2], ["bulletList", "bullet"])
+          expectBlockAttributes([2, 4], ["bulletList", "bullet", "bulletList", "bullet"])
+          done()

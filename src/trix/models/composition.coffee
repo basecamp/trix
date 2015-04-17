@@ -148,7 +148,7 @@ class Trix.Composition extends Trix.BasicObject
 
     if locationRange.isCollapsed()
       if direction is "backward" and locationRange.offset is 0
-        if @canChangeBlockAttributeLevel()
+        if @canDecreaseBlockAttributeLevel()
           if @isEditingListItem()
             @decreaseBlockAttributeLevel() while @isEditingListItem()
           else
@@ -250,8 +250,18 @@ class Trix.Composition extends Trix.BasicObject
     if attribute = @getBlock()?.getLastAttribute()
       @removeCurrentAttribute(attribute)
 
-  canChangeBlockAttributeLevel: ->
-    @getBlock()?.hasAttributes()
+  canIncreaseBlockAttributeLevel: ->
+    return unless block = @getBlock()
+    return unless attribute = block.getLastAttribute()
+    return unless config = Trix.config.blockAttributes[attribute]
+    if config.listAttribute
+      if previousBlock = @getPreviousBlock()
+        previousBlock.getAttributeAtLevel(block.getAttributeLevel()) is attribute
+    else
+      config.nestable
+
+  canDecreaseBlockAttributeLevel: ->
+    @getBlock()?.getAttributeLevel() > 0
 
   isEditingListItem: ->
     if attribute = @getBlock()?.getLastAttribute()
@@ -397,6 +407,11 @@ class Trix.Composition extends Trix.BasicObject
 
   getDocument: ->
     @document.copy()
+
+  getPreviousBlock: ->
+    if locationRange = @getLocationRange()
+      {index} = locationRange
+      @document.getBlockAtIndex(index - 1) if index > 0
 
   getBlock: ->
     if locationRange = @getLocationRange()

@@ -4,6 +4,7 @@ Trix.config.blockAttributes = attributes =
     parse: false
   quote:
     tagName: "blockquote"
+    nestable: true
   code:
     tagName: "pre"
     text:
