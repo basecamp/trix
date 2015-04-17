@@ -29,20 +29,20 @@ class Trix.Block extends Trix.Object
       @copyWithText(@text.copyUsingObjectMap(objectMap))
 
   addAttribute: (attribute) ->
-    {parentAttribute} = Trix.config.blockAttributes[attribute]
-    attributes = if parentAttribute
-      @attributes.push(parentAttribute, attribute)
+    {listAttribute} = Trix.config.blockAttributes[attribute]
+    attributes = if listAttribute
+      @attributes.push(listAttribute, attribute)
     else
       @attributes.push(attribute)
-    @copyWithAttributes attributes
+    @copyWithAttributes(attributes)
 
   removeAttribute: (attribute) ->
-    {parentAttribute} = Trix.config.blockAttributes[attribute]
-    attributes = if parentAttribute
-      @attributes.pop(attribute, parentAttribute)
+    {listAttribute} = Trix.config.blockAttributes[attribute]
+    attributes = if listAttribute
+      @attributes.pop(attribute, listAttribute)
     else
       @attributes.pop(attribute)
-    @copyWithAttributes attributes
+    @copyWithAttributes(attributes)
 
   removeLastAttribute: ->
     @removeAttribute(@getLastAttribute())

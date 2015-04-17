@@ -208,7 +208,7 @@ class Trix.Document extends Trix.Object
 
   applyBlockAttributeAtLocationRange: edit "applyBlockAttributeAtLocationRange", (attributeName, value, locationRange) ->
     locationRange = @expandLocationRangeToLineBreaksAndSplitBlocks(locationRange)
-    if Trix.config.blockAttributes[attributeName].parentAttribute
+    if Trix.config.blockAttributes[attributeName].listAttribute
       locationRange = @convertLineBreaksToBlockBreaksInLocationRange(locationRange)
     @addAttributeAtLocationRange(attributeName, value, locationRange)
 

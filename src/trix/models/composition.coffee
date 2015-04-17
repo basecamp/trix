@@ -92,7 +92,7 @@ class Trix.Composition extends Trix.BasicObject
     if block.hasAttributes()
       attributes = block.getAttributes()
       blockConfig = Trix.config.blockAttributes[block.getLastAttribute()]
-      if blockConfig?.parentAttribute
+      if blockConfig?.listAttribute
         if block.isEmpty()
           @removeLastBlockAttribute()
         else
