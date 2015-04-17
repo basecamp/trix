@@ -9,6 +9,12 @@ editorTest "backspacing", (expectDocument) ->
     assertLocationRange [0,2]
     expectDocument "ab\n"
 
+editorTest "pressing delete", (expectDocument) ->
+  typeCharacters "ab", ->
+    moveCursor "left", ->
+      pressKey "delete", ->
+        expectDocument "a\n"
+
 editorTest "pressing return", (expectDocument) ->
   typeCharacters "ab\rc", ->
     expectDocument "ab\nc\n"
@@ -76,4 +82,3 @@ editorTest "drag text", (expectDocument) ->
         expandSelection "right", ->
           dragToCoordinates coordinates, ->
             expectDocument "acb\n"
-

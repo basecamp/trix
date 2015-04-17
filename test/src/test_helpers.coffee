@@ -1,8 +1,9 @@
 #= require trix/core/helpers/global
 
-keyCodes =
-  left: 37
-  right: 39
+keyCodes = {}
+
+for code, name of Trix.InputController.keyNames
+  keyCodes[name] = code
 
 @after = (defer, callback) ->
   setTimeout(callback, defer)
@@ -65,6 +66,16 @@ keyCodes =
       typeCharacterInElement(character, document.activeElement, typeNextCharacter)
     else
       callback()
+
+@pressKey = (keyName, callback) ->
+  element = document.activeElement
+  code = keyCodes[keyName]
+  properties = which: code, keyCode: code, charCode: 0
+
+  return callback() unless triggerEvent(element, "keydown", properties)
+  defer ->
+    triggerEvent(element, "keyup", properties)
+    defer(callback)
 
 @insertString = (string) ->
   getComposition().insertString(string)

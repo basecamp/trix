@@ -15,6 +15,7 @@ class Trix.InputController extends Trix.BasicObject
     "13": "return"
     "37": "left"
     "39": "right"
+    "46": "delete"
     "68": "d"
     "72": "h"
     "79": "o"
@@ -237,6 +238,10 @@ class Trix.InputController extends Trix.BasicObject
     backspace: (event) ->
       @delegate?.inputControllerWillPerformTyping()
       @deleteInDirection("backward")
+
+    delete: (event) ->
+      @delegate?.inputControllerWillPerformTyping()
+      @deleteInDirection("forward")
 
     return: (event) ->
       @delegate?.inputControllerWillPerformTyping()
