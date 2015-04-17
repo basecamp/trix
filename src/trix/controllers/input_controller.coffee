@@ -73,11 +73,17 @@ class Trix.InputController extends Trix.BasicObject
     inputLog.groupEnd()
 
   mutationIsExpected: (mutationSummary) ->
-    return unless @inputSummary
-    return true if @inputSummary.keyName is "return"
-    unhandledAddition = mutationSummary.textAdded? and mutationSummary.textAdded isnt @inputSummary.textAdded
-    unhandledDeletion = mutationSummary.textDeleted? and not @inputSummary.didDelete
-    not (unhandledAddition or unhandledDeletion)
+    switch
+      when not @inputSummary
+        false
+      when @inputSummary.keyName is "backspace" and @inputSummary.keyModifier is "meta"
+        false
+      when @inputSummary.keyName is "return"
+        true
+      else
+        unhandledAddition = mutationSummary.textAdded? and mutationSummary.textAdded isnt @inputSummary.textAdded
+        unhandledDeletion = mutationSummary.textDeleted? and not @inputSummary.didDelete
+        not (unhandledAddition or unhandledDeletion)
 
   # File verification
 
@@ -97,7 +103,7 @@ class Trix.InputController extends Trix.BasicObject
 
       if keyName = @constructor.keyNames[event.keyCode]
         context = @keys
-        for modifier in ["ctrl", "alt", "shift"] when event["#{modifier}Key"]
+        for modifier in ["ctrl", "alt", "shift", "meta"] when event["#{modifier}Key"]
           modifier = "control" if modifier is "ctrl"
           context = @keys[modifier]
           if context[keyName]
@@ -278,10 +284,6 @@ class Trix.InputController extends Trix.BasicObject
         @responder?.insertString("\n", updatePosition: false)
         @requestRender()
 
-    alt:
-      backspace: (event) ->
-        @delegate?.inputControllerWillPerformTyping()
-
     shift:
       return: (event) ->
         @delegate?.inputControllerWillPerformTyping()
@@ -302,6 +304,14 @@ class Trix.InputController extends Trix.BasicObject
         if @selectionIsInCursorTarget()
           event.preventDefault()
           @expandSelectionInDirection("forward")
+
+    alt:
+      backspace: (event) ->
+        @delegate?.inputControllerWillPerformTyping()
+
+    meta:
+      backspace: (event) ->
+        @delegate?.inputControllerWillPerformTyping()
 
   # Private
 
