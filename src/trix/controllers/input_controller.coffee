@@ -287,6 +287,12 @@ class Trix.InputController extends Trix.BasicObject
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString("\n")
 
+      tab: (event) ->
+        if @responder?.canChangeBlockAttributeLevel()
+          @responder?.decreaseBlockAttributeLevel()
+          @requestRender()
+          event.preventDefault()
+
       left: (event) ->
         if @selectionIsInCursorTarget()
           event.preventDefault()
