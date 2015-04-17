@@ -62,8 +62,13 @@ for code, name of Trix.InputController.keyNames
   do typeNextCharacter = -> defer ->
     character = characters.shift()
     if character?
-      character = "\r" if character is "\n"
-      typeCharacterInElement(character, document.activeElement, typeNextCharacter)
+      switch character
+        when "\n"
+          pressKey("return", typeNextCharacter)
+        when "\b"
+          pressKey("backspace", typeNextCharacter)
+        else
+          typeCharacterInElement(character, document.activeElement, typeNextCharacter)
     else
       callback()
 
@@ -73,9 +78,11 @@ for code, name of Trix.InputController.keyNames
   properties = which: code, keyCode: code, charCode: 0
 
   return callback() unless triggerEvent(element, "keydown", properties)
-  defer ->
-    triggerEvent(element, "keyup", properties)
-    defer(callback)
+
+  simulateKeypress keyName, ->
+    defer ->
+      triggerEvent(element, "keyup", properties)
+      defer(callback)
 
 @insertString = (string) ->
   getComposition().insertString(string)
@@ -112,19 +119,22 @@ typeCharacterInElement = (character, element, callback) ->
         callback()
 
 insertCharacter = (character, callback) ->
-  switch character
-    when "\b"
-      backspace(callback)
-    when "\r"
+  node = document.createTextNode(character)
+  insertNode(node, callback)
+
+simulateKeypress = (keyName, callback) ->
+  switch keyName
+    when "backspace"
+      deleteInDirection("left", callback)
+    when "delete"
+      deleteInDirection("right", callback)
+    when "return"
       node = document.createElement("br")
       insertNode(node, callback)
-    else
-      node = document.createTextNode(character)
-      insertNode(node, callback)
 
-backspace = (callback) ->
+deleteInDirection = (direction, callback) ->
   if getDOMRange()?.collapsed
-    expandSelection "left", ->
+    expandSelection direction, ->
       deleteSelection()
       callback()
   else

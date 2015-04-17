@@ -16,8 +16,10 @@ editorTest "pressing delete", (expectDocument) ->
         expectDocument "a\n"
 
 editorTest "pressing return", (expectDocument) ->
-  typeCharacters "ab\rc", ->
-    expectDocument "ab\nc\n"
+  typeCharacters "ab", ->
+    pressKey "return", ->
+      typeCharacters "c", ->
+        expectDocument "ab\nc\n"
 
 editorTest "cursor left", (expectDocument) ->
   typeCharacters "ac", ->
