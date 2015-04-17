@@ -250,6 +250,7 @@ class Trix.InputController extends Trix.BasicObject
     tab: (event) ->
       if @responder?.canChangeBlockAttributeLevel()
         @responder?.increaseBlockAttributeLevel()
+        @requestRender()
         event.preventDefault()
 
     left: (event) ->
