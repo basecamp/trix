@@ -35,6 +35,8 @@ Trix.defineElement class extends Trix.Element
         <button type="button" class="code" href="#" data-attribute="code">Code</button>
         <button type="button" class="list bullets" href="#" data-attribute="bullet">Bullets</button>
         <button type="button" class="list numbers" href="#" data-attribute="number">Numbers</button>
+        <button type="button" class="block-level decrease" href="#" data-action="decreaseBlockLevel">[</button>
+        <button type="button" class="block-level increase" href="#" data-action="increaseBlockLevel">]</button>
       </span>
 
       <span class="button_group history_tools">

@@ -206,10 +206,10 @@ class Trix.EditorController extends Trix.Controller
       test: -> @composition.canSetCurrentAttribute("href")
     increaseBlockLevel:
       test: -> @composition.canChangeBlockAttributeLevel()
-      perform: -> @composition.increaseBlockAttributeLevel()
+      perform: -> @composition.increaseBlockAttributeLevel() and @render()
     decreaseBlockLevel:
       test: -> @composition.canChangeBlockAttributeLevel()
-      perform: -> @composition.decreaseBlockAttributeLevel()
+      perform: -> @composition.decreaseBlockAttributeLevel() and @render()
     editCaption:
       test: -> @composition.canEditAttachmentCaption()
       perform: -> @documentController.editAttachmentCaption()
