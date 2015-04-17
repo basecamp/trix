@@ -147,6 +147,15 @@ class Trix.Composition extends Trix.BasicObject
     locationRange = @getLocationRange()
 
     if locationRange.isCollapsed()
+      if direction is "backward" and locationRange.offset is 0
+        if @canChangeBlockAttributeLevel()
+          if @isEditingListItem()
+            @decreaseBlockAttributeLevel() while @isEditingListItem()
+          else
+            @decreaseBlockAttributeLevel()
+            @setLocationRange(locationRange)
+            return
+
       range = @getExpandedRangeInDirection(direction)
       locationRange = @document.locationRangeFromRange(range)
 
@@ -242,7 +251,11 @@ class Trix.Composition extends Trix.BasicObject
       @removeCurrentAttribute(attribute)
 
   canChangeBlockAttributeLevel: ->
-    @getBlock()?.getAttributes().length
+    @getBlock()?.hasAttributes()
+
+  isEditingListItem: ->
+    if attribute = @getBlock()?.getLastAttribute()
+      Trix.config.blockAttributes[attribute].listAttribute
 
   updateCurrentAttributes: ->
     @currentAttributes =

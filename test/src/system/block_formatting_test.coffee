@@ -78,3 +78,45 @@ editorTest "deleting the only non-block-break character in a block", (done) ->
       typeCharacters "\b\b", ->
         expectBlockAttributes([0, 1], ["quote"])
         done()
+
+editorTest "backspacing a quote", (done) ->
+  clickToolbarButton attribute: "quote", ->
+    expectBlockAttributes([0, 1], ["quote"])
+    pressKey "backspace", ->
+      expectBlockAttributes([0, 1], [])
+      done()
+
+editorTest "backspacing a nested quote", (done) ->
+  clickToolbarButton attribute: "quote", ->
+    clickToolbarButton action: "increaseBlockLevel", ->
+      expectBlockAttributes([0, 1], ["quote", "quote"])
+      pressKey "backspace", ->
+        expectBlockAttributes([0, 1], ["quote"])
+        pressKey "backspace", ->
+          expectBlockAttributes([0, 1], [])
+          done()
+
+editorTest "backspacing a list item", (done) ->
+  clickToolbarButton attribute: "bullet", ->
+    expectBlockAttributes([0, 1], ["bulletList", "bullet"])
+    pressKey "backspace", ->
+      expectBlockAttributes([0, 0], [])
+      done()
+
+editorTest "backspacing a nested list item", (done) ->
+  clickToolbarButton attribute: "bullet", ->
+    clickToolbarButton action: "increaseBlockLevel", ->
+      expectBlockAttributes([0, 1], ["bulletList", "bullet", "bulletList", "bullet"])
+      pressKey "backspace", ->
+        expectBlockAttributes([0, 1], [])
+        done()
+
+editorTest "backspacing a list item inside a quote", (done) ->
+  clickToolbarButton attribute: "quote", ->
+    clickToolbarButton attribute: "bullet", ->
+      expectBlockAttributes([0, 1], ["quote", "bulletList", "bullet"])
+      pressKey "backspace", ->
+        expectBlockAttributes([0, 1], ["quote"])
+        pressKey "backspace", ->
+          expectBlockAttributes([0, 1], [])
+          done()

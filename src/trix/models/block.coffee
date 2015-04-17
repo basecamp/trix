@@ -53,8 +53,11 @@ class Trix.Block extends Trix.Object
   getAttributes: ->
     @attributes.toArray()
 
-  hasAttributes: ->
+  getAttributeLevel: ->
     @attributes.length
+
+  hasAttributes: ->
+    @getAttributeLevel() > 0
 
   findLineBreakInDirectionFromPosition: (direction, position) ->
     string = @toString()
