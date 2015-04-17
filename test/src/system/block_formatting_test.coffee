@@ -103,13 +103,14 @@ editorTest "backspacing a list item", (done) ->
       expectBlockAttributes([0, 0], [])
       done()
 
-editorTest "backspacing a nested list item", (done) ->
+editorTest "backspacing a nested list item", (expectDocument) ->
   clickToolbarButton attribute: "bullet", ->
-    clickToolbarButton action: "increaseBlockLevel", ->
-      expectBlockAttributes([0, 1], ["bulletList", "bullet", "bulletList", "bullet"])
-      pressKey "backspace", ->
-        expectBlockAttributes([0, 1], [])
-        done()
+    typeCharacters "a\n", ->
+      clickToolbarButton action: "increaseBlockLevel", ->
+        expectBlockAttributes([2, 3], ["bulletList", "bullet", "bulletList", "bullet"])
+        pressKey "backspace", ->
+          expectBlockAttributes([2, 3], [])
+          expectDocument("a\n")
 
 editorTest "backspacing a list item inside a quote", (done) ->
   clickToolbarButton attribute: "quote", ->
