@@ -7,6 +7,8 @@ class Trix.BlockView extends Trix.ObjectView
     super
     @block = @object
     @attributes = @block.getAttributes()
+    @blockConfig = Trix.config.blockAttributes[@block.getLastAttribute()] ? {}
+    @textConfig = @blockConfig.text ? {}
 
   createNodes: ->
     comment = document.createComment("block")
@@ -14,8 +16,7 @@ class Trix.BlockView extends Trix.ObjectView
     if @block.isEmpty()
       nodes.push(makeElement("br"))
     else
-      textConfig = Trix.config.blockAttributes[@block.getLastAttribute()]?.text
-      textView = @findOrCreateCachedChildView(Trix.TextView, @block.text, {textConfig})
+      textView = @findOrCreateCachedChildView(Trix.TextView, @block.text, {@textConfig})
       nodes.push(textView.getNodes()...)
       nodes.push(makeElement("br")) if @shouldAddExtraNewlineElement()
 
@@ -30,6 +31,10 @@ class Trix.BlockView extends Trix.ObjectView
     attribute = @attributes[depth]
     config = Trix.config.blockAttributes[attribute]
     makeElement(config.tagName)
+
+  createGroupJoiningNode: ->
+    if @textConfig.plaintext
+      document.createTextNode("\n")
 
   # A single <br> at the end of a block element has no visual representation
   # so add an extra one.
