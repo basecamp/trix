@@ -31,17 +31,17 @@ Trix.defineElement class extends Trix.Element
       </span>
 
       <span class="button_group block_tools">
-        <button type="button" class="quote" href="#" data-attribute="quote">Quote</button>
-        <button type="button" class="code" href="#" data-attribute="code">Code</button>
-        <button type="button" class="list bullets" href="#" data-attribute="bullet">Bullets</button>
-        <button type="button" class="list numbers" href="#" data-attribute="number">Numbers</button>
-        <button type="button" class="block-level decrease" href="#" data-action="decreaseBlockLevel">[</button>
-        <button type="button" class="block-level increase" href="#" data-action="increaseBlockLevel">]</button>
+        <button type="button" class="quote" data-attribute="quote">Quote</button>
+        <button type="button" class="code" data-attribute="code">Code</button>
+        <button type="button" class="list bullets" data-attribute="bullet">Bullets</button>
+        <button type="button" class="list numbers" data-attribute="number">Numbers</button>
+        <button type="button" class="block-level decrease" data-action="decreaseBlockLevel">[</button>
+        <button type="button" class="block-level increase" data-action="increaseBlockLevel">]</button>
       </span>
 
       <span class="button_group history_tools">
-        <button type="button" class="undo" href="#" data-action="undo" data-key="z">Undo</button>
-        <button type="button" class="redo" href="#" data-action="redo" data-key="shift+z">Redo</button>
+        <button type="button" class="undo" data-action="undo" data-key="z">Undo</button>
+        <button type="button" class="redo" data-action="redo" data-key="shift+z">Redo</button>
       </span>
 
       <span class="button_group attachment_tools" style="display:none">
