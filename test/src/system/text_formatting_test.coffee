@@ -50,7 +50,7 @@ editorTest "applying a link to an attachment with a host-provided href", (done) 
   insertDocument(fixtures["file attachment"].document)
   typeCharacters "a", ->
     ok not isToolbarButtonDisabled(attribute: "href")
-    expandSelection "left", ->
+    expandSelection direction: "left", times: 2, ->
       ok not isToolbarButtonDisabled(attribute: "href")
       expandSelection "left", ->
         ok isToolbarButtonDisabled(attribute: "href")

@@ -275,6 +275,10 @@ class Trix.Document extends Trix.Object
   getTextAtIndex: (index) ->
     @getBlockAtIndex(index)?.text
 
+  getCharacterAtPosition: (position) ->
+    {index, offset} = @locationFromPosition(position)
+    @getTextAtIndex(index).getStringAtRange([offset, offset + 1])
+
   getLength: ->
     @blockList.getEndPosition()
 
@@ -339,6 +343,19 @@ class Trix.Document extends Trix.Object
         commonAttributes[key] = value
 
     commonAttributes
+
+  getBaseBlockAttributes: ->
+    baseBlockAttributes = @getBlockAtIndex(0).getAttributes()
+
+    for blockIndex in [1...@getBlockCount()]
+      blockAttributes = @getBlockAtIndex(blockIndex).getAttributes()
+      lastAttributeIndex = Math.min(baseBlockAttributes.length, blockAttributes.length)
+
+      baseBlockAttributes = for index in [0...lastAttributeIndex]
+        break unless blockAttributes[index] is baseBlockAttributes[index]
+        blockAttributes[index]
+
+    baseBlockAttributes
 
   attributesForBlock = (block) ->
     attributes = {}

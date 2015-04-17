@@ -50,18 +50,22 @@ class Trix.Composition extends Trix.BasicObject
     document = new Trix.Document [block]
     @insertDocument(document)
 
-  insertDocument: (document = Trix.Document.fromString(""), {withLeadingBlockBreak} = {}) ->
-    position = @getPosition()
+  insertDocument: (document = Trix.Document.fromString("")) ->
+    block = @getBlock()
     locationRange = @getLocationRange()
+    [startPosition, endPosition] = @document.rangeFromLocationRange(locationRange)
 
+    if block.isEmpty() and locationRange.isCollapsed()
+      endPosition += 1
+
+    else if block.getBlockBreakPosition() is locationRange.offset
+      if @document.getCharacterAtPosition(startPosition - 1) is "\n"
+        startPosition -= 1
+
+    locationRange = @document.locationRangeFromRange([startPosition, endPosition])
     @document.insertDocumentAtLocationRange(document, locationRange)
-    endPosition = position + document.getLength()
 
-    if withLeadingBlockBreak is false
-      blockBreakLocationRange = @document.locationRangeFromRange([position, position + 1])
-      @document.removeTextAtLocationRange(blockBreakLocationRange)
-      endPosition -= 1
-
+    endPosition = startPosition + document.getLength()
     endLocation = @document.locationFromPosition(endPosition)
     @setLocation(endLocation)
 
@@ -116,14 +120,20 @@ class Trix.Composition extends Trix.BasicObject
 
   pasteDocument: (document) ->
     blockAttributes = @getBlock().getAttributes()
-    formattedDocument = document.copyWithBaseBlockAttributes(blockAttributes)
+    baseBlockAttributes = document.getBaseBlockAttributes()
+    trailingBlockAttributes = blockAttributes.slice(-baseBlockAttributes.length)
+
+    if arraysAreEqual(baseBlockAttributes, trailingBlockAttributes)
+      leadingBlockAttributes = blockAttributes.slice(0, -baseBlockAttributes.length)
+      formattedDocument = document.copyWithBaseBlockAttributes(leadingBlockAttributes)
+    else
+      formattedDocument = document.copyWithBaseBlockAttributes(blockAttributes)
+
+    blockCount = formattedDocument.getBlockCount()
     firstBlock = formattedDocument.getBlockAtIndex(0)
 
-    if arraysAreEqual(blockAttributes, firstBlock.getAttributes())
-      if formattedDocument.getBlockCount() is 1
-        @insertText(firstBlock.getTextWithoutBlockBreak())
-      else
-        @insertDocument(formattedDocument, withLeadingBlockBreak: false)
+    if blockCount is 1 and arraysAreEqual(blockAttributes, firstBlock.getAttributes())
+      @insertText(firstBlock.getTextWithoutBlockBreak())
     else
       @insertDocument(formattedDocument)
 

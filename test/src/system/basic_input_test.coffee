@@ -55,23 +55,79 @@ editorTest "paste complex html", (expectDocument) ->
   typeCharacters "abc", ->
     moveCursor "left", ->
       pasteContent "text/html", "<div>Hello world<br></div><div>This is a test</div>", ->
-        expectDocument "abHello world\nThis is a test\nc\n"
+        expectDocument "ab\nHello world\nThis is a test\nc\n"
 
 editorTest "paste complex html into formatted block", (done) ->
   typeCharacters "abc", ->
     clickToolbarButton attribute: "quote", ->
       pasteContent "text/html", "<div>Hello world<br></div><div>This is a test</div>", ->
         document = getDocument()
-        equal 2, document.getBlockCount()
+        equal 3, document.getBlockCount()
 
         block = document.getBlockAtIndex(0)
         deepEqual ["quote"], block.getAttributes()
-        equal block.toString(), "abcHello world\n"
+        equal block.toString(), "abc\n"
 
         block = document.getBlockAtIndex(1)
         deepEqual ["quote"], block.getAttributes()
+        equal block.toString(), "Hello world\n"
+
+        block = document.getBlockAtIndex(2)
+        deepEqual ["quote"], block.getAttributes()
         equal block.toString(), "This is a test\n"
+
         done()
+
+editorTest "paste list into list", (done) ->
+  clickToolbarButton attribute: "bullet", ->
+    typeCharacters "abc\n", ->
+      pasteContent "text/html", "<ul><li>one</li><li>two</li></ul>", ->
+        document = getDocument()
+        equal 4, document.getBlockCount()
+
+        block = document.getBlockAtIndex(0)
+        deepEqual ["bulletList", "bullet"], block.getAttributes()
+        equal block.toString(), "abc\n"
+
+        block = document.getBlockAtIndex(1)
+        deepEqual ["bulletList", "bullet"], block.getAttributes()
+        equal block.toString(), "one\n"
+
+        block = document.getBlockAtIndex(2)
+        deepEqual ["bulletList", "bullet"], block.getAttributes()
+        equal block.toString(), "two\n"
+
+        block = document.getBlockAtIndex(3)
+        deepEqual ["bulletList", "bullet"], block.getAttributes()
+        equal block.toString(), "\n"
+
+        done()
+
+editorTest "paste list into quoted list", (done) ->
+  clickToolbarButton attribute: "quote", ->
+    clickToolbarButton attribute: "bullet", ->
+      typeCharacters "abc\n", ->
+        pasteContent "text/html", "<ul><li>one</li><li>two</li></ul>", ->
+          document = getDocument()
+          equal 4, document.getBlockCount()
+
+          block = document.getBlockAtIndex(0)
+          deepEqual ["quote", "bulletList", "bullet"], block.getAttributes()
+          equal block.toString(), "abc\n"
+
+          block = document.getBlockAtIndex(1)
+          deepEqual ["quote", "bulletList", "bullet"], block.getAttributes()
+          equal block.toString(), "one\n"
+
+          block = document.getBlockAtIndex(2)
+          deepEqual ["quote", "bulletList", "bullet"], block.getAttributes()
+          equal block.toString(), "two\n"
+
+          block = document.getBlockAtIndex(3)
+          deepEqual ["quote", "bulletList", "bullet"], block.getAttributes()
+          equal block.toString(), "\n"
+
+          done()
 
 editorTest "paste file", (expectDocument) ->
   pasteContent "Files", (createFile()), ->
