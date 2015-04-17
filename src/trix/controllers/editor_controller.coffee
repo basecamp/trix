@@ -298,6 +298,9 @@ class Trix.EditorController extends Trix.Controller
   updateLocationRange: ->
     @setLocationRange(@editor.locationRange ? [0,0])
 
+  reparse: ->
+    @composition.replaceHTML(@documentElement.innerHTML)
+
   render: ->
     @documentController.render()
 
