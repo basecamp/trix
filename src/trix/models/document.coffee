@@ -209,8 +209,17 @@ class Trix.Document extends Trix.Object
   applyBlockAttributeAtLocationRange: edit "applyBlockAttributeAtLocationRange", (attributeName, value, locationRange) ->
     locationRange = @expandLocationRangeToLineBreaksAndSplitBlocks(locationRange)
     if Trix.config.blockAttributes[attributeName].listAttribute
+      @removeLastListAttributeAtLocationRange(locationRange, exceptAttributeName: attributeName)
       locationRange = @convertLineBreaksToBlockBreaksInLocationRange(locationRange)
     @addAttributeAtLocationRange(attributeName, value, locationRange)
+
+  removeLastListAttributeAtLocationRange: edit "removeLastListAttributeAtLocationRange", (locationRange, options = {}) ->
+    @eachBlockAtLocationRange locationRange, (block, range, index) =>
+      return unless lastAttributeName = block.getLastAttribute()
+      return unless Trix.config.blockAttributes[lastAttributeName].listAttribute
+      return if lastAttributeName is options.exceptAttributeName
+      @blockList = @blockList.editObjectAtIndex index, ->
+        block.removeAttribute(lastAttributeName)
 
   firstBlockInLocationRangeIsEntirelySelected: (locationRange) ->
     if locationRange.start.offset is 0 and locationRange.start.index < locationRange.end.index

@@ -138,3 +138,10 @@ editorTest "increasing list level", (done) ->
           expectBlockAttributes([0, 2], ["bulletList", "bullet"])
           expectBlockAttributes([2, 4], ["bulletList", "bullet", "bulletList", "bullet"])
           done()
+
+editorTest "changing list type", (done) ->
+  clickToolbarButton attribute: "bullet", ->
+    expectBlockAttributes([0, 1], ["bulletList", "bullet"])
+    clickToolbarButton attribute: "number", ->
+      expectBlockAttributes([0, 1], ["numberList", "number"])
+      done()
