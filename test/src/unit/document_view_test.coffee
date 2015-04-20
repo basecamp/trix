@@ -11,3 +11,11 @@ test "grouped code blocks", ->
     ]
   html = "<pre><!--block-->a\n<!--block-->b</pre>"
   expectHTML document, html
+
+test "grouped quote blocks", ->
+  document = new Trix.Document [
+      new Trix.Block(Trix.Text.textForStringWithAttributes("a"), ["quote"])
+      new Trix.Block(Trix.Text.textForStringWithAttributes("b"), ["quote"])
+    ]
+  html = "<blockquote><!--block-->a<br><!--block-->b</blockquote>"
+  expectHTML document, html
