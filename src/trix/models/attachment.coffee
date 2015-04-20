@@ -106,7 +106,7 @@ class Trix.Attachment extends Trix.Object
     @getAttributes()
 
   getCacheKey: ->
-    [super, @attributes.getCacheKey(), @getUploadProgress()].join("/")
+    [super, @attributes.getCacheKey(), @getUploadProgress(), @getPreloadedURL()].join("/")
 
   # Previewable
 
