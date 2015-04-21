@@ -286,10 +286,6 @@ class Trix.Document extends Trix.Object
       @blockList = @blockList.consolidateFromIndexToIndex(start.index, end.index)
     @locationRangeFromRange(range)
 
-  consolidateBlocks: ->
-    @blockList = @blockList.consolidate()
-    this
-
   getDocumentAtLocationRange: (locationRange) ->
     range = @rangeFromLocationRange(locationRange)
     blocks = @blockList.getSplittableListInRange(range).toArray()
