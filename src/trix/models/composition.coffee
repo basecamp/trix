@@ -127,7 +127,7 @@ class Trix.Composition extends Trix.BasicObject
       leadingBlockAttributes = blockAttributes.slice(0, -baseBlockAttributes.length)
       formattedDocument = document.copyWithBaseBlockAttributes(leadingBlockAttributes)
     else
-      formattedDocument = document.copyWithBaseBlockAttributes(blockAttributes)
+      formattedDocument = document.copy(consolidateBlocks: true).copyWithBaseBlockAttributes(blockAttributes)
 
     blockCount = formattedDocument.getBlockCount()
     firstBlock = formattedDocument.getBlockAtIndex(0)

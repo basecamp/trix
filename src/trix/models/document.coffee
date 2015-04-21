@@ -41,8 +41,13 @@ class Trix.Document extends Trix.Object
       block.isEmpty() and not block.hasAttributes()
     )
 
-  copy: ->
-    new @constructor @blockList.toArray()
+  copy: (options = {})->
+    blocks = if options.consolidateBlocks
+      @blockList.consolidate().toArray()
+    else
+      @blockList.toArray()
+
+    new @constructor blocks
 
   copyUsingObjectsFromDocument: (sourceDocument) ->
     objectMap = new Trix.ObjectMap sourceDocument.getObjects()
@@ -280,6 +285,10 @@ class Trix.Document extends Trix.Object
       {start, end} = locationRange
       @blockList = @blockList.consolidateFromIndexToIndex(start.index, end.index)
     @locationRangeFromRange(range)
+
+  consolidateBlocks: ->
+    @blockList = @blockList.consolidate()
+    this
 
   getDocumentAtLocationRange: (locationRange) ->
     range = @rangeFromLocationRange(locationRange)
