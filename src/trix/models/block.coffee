@@ -89,7 +89,7 @@ class Trix.Block extends Trix.Object
     @text.getLength()
 
   canBeConsolidatedWith: (block) ->
-    false
+    not @hasAttributes() and not block.hasAttributes()
 
   consolidateWith: (block) ->
     @copyWithText(@text.appendText(block.text))

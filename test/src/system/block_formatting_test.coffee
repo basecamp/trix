@@ -54,6 +54,26 @@ editorTest "applying bullets to text with newlines", (done) ->
           expectBlockAttributes([16, 20], ["bulletList", "bullet"])
           done()
 
+editorTest "applying block attributes to adjacent unformatted blocks consolidates them", (done) ->
+  document = new Trix.Document [
+      new Trix.Block(Trix.Text.textForStringWithAttributes("1"), ["code"])
+      new Trix.Block(Trix.Text.textForStringWithAttributes("a"), [])
+      new Trix.Block(Trix.Text.textForStringWithAttributes("b"), [])
+      new Trix.Block(Trix.Text.textForStringWithAttributes("c"), [])
+      new Trix.Block(Trix.Text.textForStringWithAttributes("2"), ["code"])
+      new Trix.Block(Trix.Text.textForStringWithAttributes("3"), ["code"])
+    ]
+
+  insertDocument(document)
+  getEditorController().setLocationRange([0,0], [5,1])
+  defer ->
+    clickToolbarButton attribute: "quote", ->
+      expectBlockAttributes([0, 2], ["code", "quote"])
+      expectBlockAttributes([2, 8], ["quote"])
+      expectBlockAttributes([8, 10], ["code", "quote"])
+      expectBlockAttributes([10, 12], ["code", "quote"])
+      done()
+
 editorTest "breaking out of the end of a block", (done) ->
   typeCharacters "abc", ->
     clickToolbarButton attribute: "quote", ->

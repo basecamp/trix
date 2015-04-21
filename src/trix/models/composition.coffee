@@ -217,7 +217,7 @@ class Trix.Composition extends Trix.BasicObject
   setCurrentAttribute: (attributeName, value) ->
     if Trix.config.blockAttributes[attributeName]
       @setBlockAttribute(attributeName, value)
-      @updateCurrentAttributes()
+      defer => @updateCurrentAttributes()
     else
       @setTextAttribute(attributeName, value)
       @currentAttributes[attributeName] = value
