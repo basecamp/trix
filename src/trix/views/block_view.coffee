@@ -35,8 +35,6 @@ class Trix.BlockView extends Trix.ObjectView
   createGroupJoiningNode: ->
     if @textConfig.plaintext
       document.createTextNode("\n")
-    else
-      makeElement("br")
 
   # A single <br> at the end of a block element has no visual representation
   # so add an extra one.
