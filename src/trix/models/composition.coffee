@@ -278,7 +278,7 @@ class Trix.Composition extends Trix.BasicObject
 
   updateCurrentAttributes: ->
     @currentAttributes =
-      if locationRange = @getLocationRange()
+      if locationRange = @getLocationRange(ignoreLock: true)
         @document.getCommonAttributesAtLocationRange(locationRange)
       else
         {}
