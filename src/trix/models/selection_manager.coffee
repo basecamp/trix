@@ -9,8 +9,11 @@ class Trix.SelectionManager extends Trix.BasicObject
     @locationMapper = new Trix.LocationMapper @element
     @lockCount = 0
 
-  getLocationRange: ->
-    @lockedLocationRange ? @currentLocationRange
+  getLocationRange: (options = {}) ->
+    if options.ignoreLock
+      @currentLocationRange
+    else
+      @lockedLocationRange ? @currentLocationRange
 
   setLocationRange: (start, end) ->
     return if @lockedLocationRange

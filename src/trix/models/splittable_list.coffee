@@ -106,6 +106,13 @@ class Trix.SplittableList extends Trix.Object
 
     new @constructor objects
 
+  consolidateFromIndexToIndex: (startIndex, endIndex) ->
+    objects = @objects.slice(0)
+    objectsInRange = objects.slice(startIndex, endIndex + 1)
+    consolidatedInRange = new @constructor(objectsInRange).consolidate().toArray()
+    objects.splice(startIndex, objectsInRange.length, consolidatedInRange...)
+    new @constructor objects
+
   findIndexAndOffsetAtPosition: (position) ->
     currentPosition = 0
     for object, index in @objects

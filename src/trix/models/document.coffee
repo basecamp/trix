@@ -41,8 +41,13 @@ class Trix.Document extends Trix.Object
       block.isEmpty() and not block.hasAttributes()
     )
 
-  copy: ->
-    new @constructor @blockList.toArray()
+  copy: (options = {})->
+    blocks = if options.consolidateBlocks
+      @blockList.consolidate().toArray()
+    else
+      @blockList.toArray()
+
+    new @constructor blocks
 
   copyUsingObjectsFromDocument: (sourceDocument) ->
     objectMap = new Trix.ObjectMap sourceDocument.getObjects()
@@ -208,9 +213,13 @@ class Trix.Document extends Trix.Object
 
   applyBlockAttributeAtLocationRange: edit "applyBlockAttributeAtLocationRange", (attributeName, value, locationRange) ->
     locationRange = @expandLocationRangeToLineBreaksAndSplitBlocks(locationRange)
+
     if Trix.config.blockAttributes[attributeName].listAttribute
       @removeLastListAttributeAtLocationRange(locationRange, exceptAttributeName: attributeName)
       locationRange = @convertLineBreaksToBlockBreaksInLocationRange(locationRange)
+    else
+      locationRange = @consolidateBlocksAtLocationRange(locationRange)
+
     @addAttributeAtLocationRange(attributeName, value, locationRange)
 
   removeLastListAttributeAtLocationRange: edit "removeLastListAttributeAtLocationRange", (locationRange, options = {}) ->
@@ -268,6 +277,13 @@ class Trix.Document extends Trix.Object
         locationRange = @locationRangeFromRange([position - 1, position])
         @insertBlockBreakAtLocationRange(locationRange)
 
+    @locationRangeFromRange(range)
+
+  consolidateBlocksAtLocationRange: (locationRange) ->
+    range = @rangeFromLocationRange(locationRange)
+    @edit =>
+      {start, end} = locationRange
+      @blockList = @blockList.consolidateFromIndexToIndex(start.index, end.index)
     @locationRangeFromRange(range)
 
   getDocumentAtLocationRange: (locationRange) ->

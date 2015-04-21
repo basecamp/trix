@@ -14,12 +14,8 @@ class Trix.ObjectGroupView extends Trix.ObjectView
   createNodes: ->
     element = @createContainerElement()
 
-    for view, index in @getChildViews()
-      if index > 0 and node = view.createGroupJoiningNode?()
-        element.appendChild(node)
-
-      for node in view.getNodes()
-        element.appendChild(node)
+    for view in @getChildViews()
+      element.appendChild(node) for node in view.getNodes()
 
     [element]
 

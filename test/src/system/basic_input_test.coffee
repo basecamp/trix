@@ -60,7 +60,7 @@ editorTest "paste complex html", (expectDocument) ->
 editorTest "paste complex html into formatted block", (done) ->
   typeCharacters "abc", ->
     clickToolbarButton attribute: "quote", ->
-      pasteContent "text/html", "<div>Hello world<br></div><div>This is a test</div>", ->
+      pasteContent "text/html", "<div>Hello world<br></div><pre>This is a test</pre>", ->
         document = getDocument()
         equal 3, document.getBlockCount()
 
@@ -73,7 +73,7 @@ editorTest "paste complex html into formatted block", (done) ->
         equal block.toString(), "Hello world\n"
 
         block = document.getBlockAtIndex(2)
-        deepEqual ["quote"], block.getAttributes()
+        deepEqual ["quote", "code"], block.getAttributes()
         equal block.toString(), "This is a test\n"
 
         done()
