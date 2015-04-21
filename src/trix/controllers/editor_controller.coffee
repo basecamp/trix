@@ -122,6 +122,7 @@ class Trix.EditorController extends Trix.Controller
     if @requestedLocationRange?
       if @editCountWhenLocationRangeRequested is @document.getEditCount()
         @selectionManager.setLocationRange(@requestedLocationRange)
+      @composition.updateCurrentAttributes()
       delete @requestedLocationRange
       delete @editCountWhenLocationRangeRequested
 

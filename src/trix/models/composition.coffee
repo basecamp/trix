@@ -1,6 +1,6 @@
 #= require trix/models/document
 
-{arraysAreEqual, defer} = Trix
+{arraysAreEqual} = Trix
 
 class Trix.Composition extends Trix.BasicObject
   constructor: (@document = new Trix.Document) ->
@@ -217,7 +217,6 @@ class Trix.Composition extends Trix.BasicObject
   setCurrentAttribute: (attributeName, value) ->
     if Trix.config.blockAttributes[attributeName]
       @setBlockAttribute(attributeName, value)
-      defer => @updateCurrentAttributes()
     else
       @setTextAttribute(attributeName, value)
       @currentAttributes[attributeName] = value
