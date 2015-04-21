@@ -1,6 +1,6 @@
 #= require trix/models/document
 
-{arraysAreEqual} = Trix
+{arraysAreEqual, defer} = Trix
 
 class Trix.Composition extends Trix.BasicObject
   constructor: (@document = new Trix.Document) ->
