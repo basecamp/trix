@@ -22,13 +22,13 @@ editorTest "applying a link to text", (done) ->
             done()
 
 editorTest "inserting a link", (expectDocument) ->
-  typeCharacters "a ", ->
+  typeCharacters "a", ->
     clickToolbarButton attribute: "href", ->
       ok isToolbarDialogActive(attribute: "href")
       typeInToolbarDialog "http://example.com", attribute: "href", ->
-        expectAttributes([0, 2], {})
-        expectAttributes([2, 20], href: "http://example.com")
-        expectDocument("a http://example.com\n")
+        expectAttributes([0, 1], {})
+        expectAttributes([1, 19], href: "http://example.com")
+        expectDocument("ahttp://example.com\n")
 
 editorTest "editing a link", (done) ->
   insertString("a")
