@@ -21,6 +21,15 @@ editorTest "applying a link to text", (done) ->
             expectAttributes([2, 3], {})
             done()
 
+editorTest "inserting a link", (expectDocument) ->
+  typeCharacters "a ", ->
+    clickToolbarButton attribute: "href", ->
+      ok isToolbarDialogActive(attribute: "href")
+      typeInToolbarDialog "http://example.com", attribute: "href", ->
+        expectAttributes([0, 2], {})
+        expectAttributes([2, 20], href: "http://example.com")
+        expectDocument("a http://example.com\n")
+
 editorTest "editing a link", (done) ->
   insertString("a")
   text = Trix.Text.textForStringWithAttributes("bc", href: "http://example.com")

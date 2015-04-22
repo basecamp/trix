@@ -224,7 +224,11 @@ class Trix.Composition extends Trix.BasicObject
 
   setTextAttribute: (attributeName, value) ->
     return unless locationRange = @getLocationRange()
-    unless locationRange.isCollapsed()
+    if locationRange.isCollapsed()
+      if attributeName is "href"
+        text = Trix.Text.textForStringWithAttributes(value, href: value)
+        @insertText(text)
+    else
       @document.addAttributeAtLocationRange(attributeName, value, locationRange)
 
   setBlockAttribute: (attributeName, value) ->
