@@ -92,7 +92,9 @@ class Trix.Block extends Trix.Object
     not @hasAttributes() and not block.hasAttributes()
 
   consolidateWith: (block) ->
-    @copyWithText(@text.appendText(block.text))
+    newlineText = Trix.Text.textForStringWithAttributes("\n")
+    text = @getTextWithoutBlockBreak().appendText(newlineText)
+    @copyWithText(text.appendText(block.text))
 
   splitAtOffset: (offset) ->
     if offset is 0
