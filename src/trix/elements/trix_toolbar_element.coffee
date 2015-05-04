@@ -55,9 +55,11 @@ Trix.defineElement class extends Trix.Element
 
     <div class="dialogs">
       <div class="dialog link_dialog" data-attribute="href">
-        <input type="url" required name="href" placeholder="Enter a URL...">
-        <input type="button" value="Link" data-method="setAttribute">
-        <input type="button" value="Unlink" data-method="removeAttribute">
+        <div class="link_url_fields">
+          <input type="url" required name="href" placeholder="Enter a URL...">
+          <input type="button" value="Link" data-method="setAttribute">
+          <input type="button" value="Unlink" data-method="removeAttribute">
+        </div>
       </div>
     </div>
   """
