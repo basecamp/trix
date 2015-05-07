@@ -224,7 +224,9 @@ cursorTarget = Trix.makeElement(
   "content attachment": do ->
     content = """<blockquote class="twitter-tweet" data-cards="hidden"><p>ruby-build 20150413 is out, with definitions for 2.2.2, 2.1.6, and 2.0.0-p645 to address recent security issues: <a href="https://t.co/YEwV6NtRD8">https://t.co/YEwV6NtRD8</a></p>&mdash; Sam Stephenson (@sstephenson) <a href="https://twitter.com/sstephenson/status/587715996783218688">April 13, 2015</a></blockquote>"""
     href = "https://twitter.com/sstephenson/status/587715996783218688"
-    attachment = new Trix.Attachment {content, href}
+    contentType = "embed/twitter"
+
+    attachment = new Trix.Attachment {content, contentType, href}
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
     figure = Trix.makeElement
@@ -238,6 +240,7 @@ cursorTarget = Trix.makeElement(
 
     data =
       trixAttachment: JSON.stringify(attachment)
+      trixContentType: contentType
       trixId: attachment.id
 
     figure.dataset[key] = value for key, value of data
