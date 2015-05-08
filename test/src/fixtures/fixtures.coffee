@@ -156,6 +156,7 @@ cursorTarget = Trix.makeElement(
 
     data =
       trixAttachment: JSON.stringify(attachment)
+      trixContentType: "image/png"
       trixId: attachment.id
 
     figure.dataset[key] = value for key, value of data
@@ -183,6 +184,7 @@ cursorTarget = Trix.makeElement(
 
     data =
       trixAttachment: JSON.stringify(attachment)
+      trixContentType: "image/png"
       trixId: attachment.id
       trixAttributes: JSON.stringify(textAttrs)
 
@@ -205,6 +207,7 @@ cursorTarget = Trix.makeElement(
 
     data =
       trixAttachment: JSON.stringify(attachment)
+      trixContentType: "application/pdf"
       trixId: attachment.id
 
     link = Trix.makeElement("a", href: attrs.href)

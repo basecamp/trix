@@ -32,6 +32,7 @@ class Trix.AttachmentView extends Trix.ObjectView
 
     data =
       trixAttachment: JSON.stringify(@attachment)
+      trixContentType: @attachment.getContentType()
       trixId: @attachment.id
 
     attributes = @attachmentPiece.getAttributesForAttachment()

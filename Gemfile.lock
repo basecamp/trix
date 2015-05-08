@@ -23,7 +23,7 @@ GIT
 PATH
   remote: .
   specs:
-    trix (0.7.0)
+    trix (0.8.0)
 
 GEM
   remote: https://rubygems.org/
