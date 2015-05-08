@@ -9,8 +9,9 @@
 
 class Trix.EditorController extends Trix.Controller
   constructor: (@config) ->
-    {@documentElement, @toolbarElement, @document, @delegate} = @config
+    {@documentElement, @toolbarController, @document, @delegate} = @config
     @document ?= new Trix.Document
+    @toolbarController.delegate = this
 
     @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
@@ -28,7 +29,6 @@ class Trix.EditorController extends Trix.Controller
 
     @selectionManager.delegate = null
     @createInputController()
-    @createToolbarController()
     @createDocumentController()
     @selectionManager.delegate = this
 
@@ -283,12 +283,6 @@ class Trix.EditorController extends Trix.Controller
       @inputController = new Trix.InputController @documentElement
       @inputController.delegate = this
     @inputController.responder = @composition
-
-  createToolbarController: ->
-    unless @toolbarController
-      @toolbarController = new Trix.ToolbarController @toolbarElement
-      @toolbarController.delegate = this
-    @toolbarController.updateActions()
 
   createDocumentController: ->
     delete @documentController?.delegate

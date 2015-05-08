@@ -40,7 +40,7 @@ Trix.defineElement class extends Trix.Element
     inputElement = findInputElement(this)
 
     @editorController ?= new Trix.EditorController
-      toolbarElement: toolbarElement
+      toolbarController: toolbarElement.toolbarController
       documentElement: documentElement
       document: Trix.deserializeFromContentType(inputElement.value, contentType)
       delegate: new Trix.EditorElementController this, documentElement, inputElement

@@ -57,3 +57,7 @@ Trix.defineElement class extends Trix.Element
       </div>
     </div>
   """
+
+  createdCallback: ->
+    super
+    @toolbarController = new Trix.ToolbarController this
