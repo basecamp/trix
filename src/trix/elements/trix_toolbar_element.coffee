@@ -19,6 +19,10 @@ Trix.defineElement class extends Trix.Element
     %t .dialog input.validate:invalid {
       background-color: #ffdddd;
     }
+
+    %t[native] {
+      display: none;
+    }
   """
 
   @defaultContent: makeFragment """
@@ -58,6 +62,13 @@ Trix.defineElement class extends Trix.Element
     </div>
   """
 
-  createdCallback: ->
+  attachedCallback: ->
+    if @hasAttribute("native")
+      if Trix.NativeToolbarController
+        @toolbarController = new Trix.NativeToolbarController this
+      else
+        throw "Host application must implement Trix.NativeToolbarController"
+    else
+      @toolbarController = new Trix.ToolbarController this
+
     super
-    @toolbarController = new Trix.ToolbarController this
