@@ -25,10 +25,10 @@ class Trix.DocumentController extends Trix.BasicObject
     @documentView.render()
 
     unless @documentView.isSynced()
-      @delegate?.documentControllerWillRenderDocumentElement?()
+      @delegate?.documentControllerWillSyncDocumentView?()
       @documentView.sync()
       @reinstallAttachmentEditor()
-      @delegate?.documentControllerDidRenderDocumentElement?()
+      @delegate?.documentControllerDidSyncDocumentView?()
 
     @delegate?.documentControllerDidRender?()
 

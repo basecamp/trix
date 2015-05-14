@@ -18,7 +18,7 @@ class Trix.EditorElementController extends Trix.Controller
     @save()
 
   didChangeDocument: (document) ->
-    defer(@saveAndNotify)
+    @documentChangedSinceLastRender = true
 
   didPasteDataAtLocationRange: (pasteData, locationRange) ->
     triggerEvent("trix-paste", onElement: @element, attributes: {pasteData, locationRange})
@@ -37,8 +37,15 @@ class Trix.EditorElementController extends Trix.Controller
     triggerEvent("trix-attachment-remove", onElement: @element, attributes: {attachment})
     @save()
 
-  didRenderDocumentElement: ->
+  didRenderDocument: ->
+    if @documentChangedSinceLastRender
+      delete @documentChangedSinceLastRender
+      @saveAndNotify()
+
     triggerEvent("trix-render", onElement: @element)
+
+  didSyncDocumentView: ->
+    triggerEvent("trix-sync", onElement: @element)
 
   didChangeSelection: ->
     triggerEvent("selectionchange", onElement: @element, bubbles: false)

@@ -107,16 +107,16 @@ class Trix.EditorController extends Trix.Controller
 
   # Document controller delegate
 
-  documentControllerWillRenderDocumentElement: ->
-    @inputController.editorWillRenderDocumentElement()
+  documentControllerWillSyncDocumentView: ->
+    @inputController.editorWillSyncDocumentView()
     @selectionManager.lock()
     @selectionManager.clearSelection()
 
-  documentControllerDidRenderDocumentElement: ->
-    @inputController.editorDidRenderDocumentElement()
+  documentControllerDidSyncDocumentView: ->
+    @inputController.editorDidSyncDocumentView()
     @selectionManager.unlock()
     @toolbarController.updateActions()
-    @delegate?.didRenderDocumentElement?()
+    @delegate?.didSyncDocumentView?()
 
   documentControllerDidRender: ->
     if @requestedLocationRange?
@@ -125,6 +125,7 @@ class Trix.EditorController extends Trix.Controller
       @composition.updateCurrentAttributes()
       delete @requestedLocationRange
       delete @editCountWhenLocationRangeRequested
+    @delegate?.didRenderDocument?()
 
   documentControllerDidFocus: ->
     @toolbarController.hideDialog()
