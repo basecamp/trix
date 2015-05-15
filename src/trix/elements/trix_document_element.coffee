@@ -1,4 +1,4 @@
-{handleEvent, handleEventOnce} = Trix
+{handleEvent, handleEventOnce, defer} = Trix
 
 Trix.defineElement class extends Trix.Element
   @tagName: "trix-document"
@@ -24,8 +24,10 @@ Trix.defineElement class extends Trix.Element
 
   attachedCallback: ->
     super
-    if @hasAttribute("autofocus") and document.querySelector("[autofocus]") is this
-      @focus()
+    defer =>
+      unless document.querySelector(":focus")
+        if @hasAttribute("autofocus") and document.querySelector("[autofocus]") is this
+          @focus()
 
   makeEditable = (element) ->
     return if element.hasAttribute("contenteditable")
