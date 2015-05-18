@@ -130,8 +130,9 @@ editorTest "paste list into quoted list", (done) ->
           done()
 
 editorTest "paste file", (expectDocument) ->
-  pasteContent "Files", (createFile()), ->
-    expectDocument "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+  typeCharacters "a", ->
+    pasteContent "Files", (createFile()), ->
+      expectDocument "a#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
 
 editorTest "drag text", (expectDocument) ->
   typeCharacters "abc", ->
