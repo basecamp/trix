@@ -52,6 +52,14 @@ class Trix.Attachment extends Trix.Object
     else
       @constructor.previewablePattern.test(@getContentType())
 
+  getType: ->
+    if @hasContent()
+      "content"
+    else if @isPreviewable()
+      "preview"
+    else
+      "file"
+
   getURL: ->
     @attributes.get("url")
 
@@ -76,6 +84,12 @@ class Trix.Attachment extends Trix.Object
 
   getContentType: ->
     @attributes.get("contentType")
+
+  hasContent: ->
+    @attributes.has("content")
+
+  getContent: ->
+    @attributes.get("content")
 
   getWidth: ->
     @attributes.get("width")

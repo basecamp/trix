@@ -14,21 +14,13 @@ class Trix.AttachmentView extends Trix.ObjectView
 
   createNodes: ->
     figure = makeElement({tagName: "figure", className: @getClassName()})
-    figcaption = makeElement(tagName: "figcaption", className: "attachment__caption")
 
-    if caption = @attachmentPiece.getCaption()
-      figcaption.classList.add("attachment__caption--edited")
-      figcaption.textContent = caption
+    if @attachment.hasContent()
+      figure.innerHTML = @attachment.getContent()
     else
-      if filename = @attachment.getFilename()
-        figcaption.textContent = filename
+      figure.appendChild(node) for node in @createContentNodes()
 
-        if filesize = @attachment.getFormattedFilesize()
-          span = makeElement(tagName: "span", className: "attachment__size", textContent: filesize)
-          figcaption.appendChild(span)
-
-    figure.appendChild(node) for node in @createContentNodes()
-    figure.appendChild(figcaption)
+    figure.appendChild(@createCaptionElement())
 
     data =
       trixAttachment: JSON.stringify(@attachment)
@@ -44,7 +36,7 @@ class Trix.AttachmentView extends Trix.ObjectView
       @progressElement = makeElement("progress", class: "attachment__progress", max: 100, value: @attachment.getUploadProgress(), "data-trix-mutable": true)
       figure.appendChild(@progressElement)
 
-    if href = @attachment.getHref()
+    if href = @getHref()
       element = makeElement("a", {href})
       element.appendChild(figure)
     else
@@ -55,15 +47,31 @@ class Trix.AttachmentView extends Trix.ObjectView
 
     [@createCursorTarget(), element, @createCursorTarget()]
 
-  getClassName: ->
-    names = ["attachment"]
-    if @attachment.isPreviewable()
-      names.push("attachment--preview")
+  createCaptionElement: ->
+    figcaption = makeElement(tagName: "figcaption", className: "attachment__caption")
+
+    if caption = @attachmentPiece.getCaption()
+      figcaption.classList.add("attachment__caption--edited")
+      figcaption.textContent = caption
     else
-      names.push("attachment--file")
+      if filename = @attachment.getFilename()
+        figcaption.textContent = filename
+
+        if filesize = @attachment.getFormattedFilesize()
+          span = makeElement(tagName: "span", className: "attachment__size", textContent: filesize)
+          figcaption.appendChild(span)
+
+    figcaption
+
+  getClassName: ->
+    names = ["attachment", "attachment--#{@attachment.getType()}"]
     if extension = @attachment.getExtension()
       names.push(extension)
     names.join(" ")
+
+  getHref: ->
+    unless htmlContainsTagName(@attachment.getContent(), "a")
+      @attachment.getHref()
 
   createCursorTarget: ->
     makeElement
@@ -82,3 +90,8 @@ class Trix.AttachmentView extends Trix.ObjectView
     value = @attachment.getUploadProgress()
     @progressElement?.value = value
     @findProgressElement()?.value = value
+
+htmlContainsTagName = (html, tagName) ->
+  div = makeElement("div")
+  div.innerHTML = html ? ""
+  div.querySelector(tagName)
