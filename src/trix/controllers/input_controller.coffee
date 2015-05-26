@@ -39,8 +39,10 @@ class Trix.InputController extends Trix.BasicObject
 
   setInputSummary: (summary = {}) ->
     @inputSummary.eventName = @eventName
+    @extendInputSummary(summary)
+
+  extendInputSummary: (summary) ->
     @inputSummary[key] = value for key, value of summary
-    inputLog.log("#setInputSummary", JSON.stringify(@inputSummary))
     @inputSummary
 
   resetInputSummary: ->
@@ -62,6 +64,7 @@ class Trix.InputController extends Trix.BasicObject
   elementDidMutate: (mutationSummary) ->
     inputLog.group("Mutation")
     inputLog.log("mutationSummary =", JSON.stringify(mutationSummary))
+    inputLog.log("inputSummary =", JSON.stringify(@inputSummary))
 
     unless @mutationIsExpected(mutationSummary)
       inputLog.log("mutation doesn't match input, replacing HTML")
@@ -81,7 +84,7 @@ class Trix.InputController extends Trix.BasicObject
       when @inputSummary.keyName is "return"
         true
       else
-        unhandledAddition = mutationSummary.textAdded? and mutationSummary.textAdded isnt @inputSummary.textAdded
+        unhandledAddition = mutationSummary.textAdded isnt @inputSummary.textAdded
         unhandledDeletion = mutationSummary.textDeleted? and not @inputSummary.didDelete
         not (unhandledAddition or unhandledDeletion)
 
@@ -98,8 +101,8 @@ class Trix.InputController extends Trix.BasicObject
 
   events:
     keydown: (event) ->
-      return if @inputSummary.eventName is "compositionend"
-      @resetInputSummary()
+      endingComposition = @inputSummary.eventName is "compositionend"
+      @resetInputSummary() unless endingComposition
 
       if keyName = @constructor.keyNames[event.keyCode]
         context = @keys
@@ -111,7 +114,12 @@ class Trix.InputController extends Trix.BasicObject
             break
 
         if context[keyName]?
-          @setInputSummary({keyName, keyModifier})
+          summary = {keyName, keyModifier}
+          if endingComposition
+            @extendInputSummary(summary)
+          else
+            @setInputSummary(summary)
+
           Trix.selectionChangeObserver.reset()
           context[keyName].call(this, event)
 
@@ -229,13 +237,20 @@ class Trix.InputController extends Trix.BasicObject
 
     compositionstart: (event) ->
       @mutationObserver.stop()
+      @composition = start: event.data
+
+    compositionupdate: (event) ->
+      @composition.update = event.data
 
     compositionend: (event) ->
-      if (composedString = event.data)?
-        @delegate?.inputControllerWillPerformTyping()
-        @responder?.insertString(composedString)
-        @setInputSummary(textAdded: composedString, didDelete: @selectionIsExpanded())
       @mutationObserver.start()
+      @composition.end = event.data
+
+      if @composition.end? and @composition.end isnt @composition.start
+        @delegate?.inputControllerWillPerformTyping()
+        @responder?.insertString(@composition.end)
+        @setInputSummary(textAdded: @composition.end, didDelete: @selectionIsExpanded())
+        delete @composition
 
     input: (event) ->
       event.stopPropagation()
