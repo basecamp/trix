@@ -68,23 +68,11 @@ class Trix.MutationObserver extends Trix.BasicObject
     @getTextMutationSummary()
 
   getTextMutationSummary: ->
-    additions = []
-    deletions = []
+    {additions, deletions} = @getTextChangesFromCharacterData()
 
-    characterMutations = @getMutationsByType("characterData")
-
-    if characterMutations.length
-      [startMutation, ..., endMutation] = characterMutations
-
-      oldString = normalizeSpaces(startMutation.oldValue)
-      newString = normalizeSpaces(endMutation.target.data)
-      {added, removed} = summarizeStringChange(oldString, newString)
-
-      additions.push(added)
-      deletions.push(removed)
-
-    for node in @getRemovedTextNodes()
-      deletions.push(node.data)
+    textChanges = @getTextChangesFromTextNodes()
+    additions.push(textChanges.additions...)
+    deletions.push(textChanges.deletions...)
 
     summary = {}
     summary.textAdded = added if added = additions.join("")
@@ -94,18 +82,28 @@ class Trix.MutationObserver extends Trix.BasicObject
   getMutationsByType: (type) ->
     mutation for mutation in @mutations when mutation.type is type
 
-  getRemovedTextNodes: ->
-    added = []
-    removed = []
-    removedAndNotAdded = []
+  getTextChangesFromTextNodes: ->
+    nodesAdded = []
+    nodesRemoved = []
 
     for mutation in @getMutationsByType("childList")
       for node in mutation.removedNodes when node.nodeType is Node.TEXT_NODE
-        removed.push(node)
+        nodesRemoved.push(node)
       for node in mutation.addedNodes when node.nodeType is Node.TEXT_NODE
-        added.push(node)
+        nodesAdded.push(node)
 
-    for node, index in removed when node.data isnt added[index]?.data
-      removedAndNotAdded.push(node)
+    additions: (node.data for node, index in nodesAdded when node.data isnt nodesRemoved[index]?.data)
+    deletions: (node.data for node, index in nodesRemoved when node.data isnt nodesAdded[index]?.data)
 
-    removedAndNotAdded
+  getTextChangesFromCharacterData: ->
+    characterMutations = @getMutationsByType("characterData")
+
+    if characterMutations.length
+      [startMutation, ..., endMutation] = characterMutations
+
+      oldString = normalizeSpaces(startMutation.oldValue)
+      newString = normalizeSpaces(endMutation.target.data)
+      {added, removed} = summarizeStringChange(oldString, newString)
+
+    additions: if added then [added] else []
+    deletions: if removed then [removed] else []
