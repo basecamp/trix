@@ -55,11 +55,13 @@ Trix.defineElement class extends Trix.Element
 
   findOrCreateDocumentElement = (parentElement) ->
     unless element = parentElement.querySelector("trix-document")
-      placeholder = parentElement.getAttribute("placeholder")
-      element = makeElement("trix-document", {placeholder})
+      element = makeElement("trix-document")
       if parentElement.hasAttribute("autofocus")
         parentElement.removeAttribute("autofocus")
         element.setAttribute("autofocus", "")
+      if placeholder = parentElement.getAttribute("placeholder")
+        parentElement.removeAttribute("placeholder")
+        element.setAttribute("placeholder", placeholder)
       parentElement.insertBefore(element, null)
     element
 
