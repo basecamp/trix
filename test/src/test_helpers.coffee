@@ -84,6 +84,24 @@ for code, name of Trix.InputController.keyNames
       triggerEvent(element, "keyup", properties)
       defer(callback)
 
+@composeString = (string, callback) ->
+  index = 1
+  started = false
+  updated = false
+
+  do continueComposition = -> defer ->
+    if started
+      if updated and index >= string.length
+        compose string, "end", ->
+          node = document.createTextNode(string)
+          insertNode(node, callback)
+      else
+        updated = true
+        compose(string.slice(0, index++), "update", continueComposition)
+    else
+      started = true
+      compose(string.slice(0, index++), "start", continueComposition)
+
 @insertString = (string) ->
   getComposition().insertString(string)
   render()
@@ -131,6 +149,15 @@ simulateKeypress = (keyName, callback) ->
     when "return"
       node = document.createElement("br")
       insertNode(node, callback)
+
+compose = (string, name, callback) ->
+  element = document.activeElement
+  triggerEvent(element, "keydown", which: 229, keyCode: 229, charCode: 0)
+  defer ->
+    triggerEvent(element, "composition#{name}", data: string)
+    defer ->
+      triggerEvent(element, "input")
+      defer(callback)
 
 deleteInDirection = (direction, callback) ->
   if getDOMRange()?.collapsed

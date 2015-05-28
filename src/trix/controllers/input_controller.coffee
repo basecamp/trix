@@ -40,7 +40,6 @@ class Trix.InputController extends Trix.BasicObject
   setInputSummary: (summary = {}) ->
     @inputSummary.eventName = @eventName
     @inputSummary[key] = value for key, value of summary
-    inputLog.log("#setInputSummary", JSON.stringify(@inputSummary))
     @inputSummary
 
   resetInputSummary: ->
@@ -62,9 +61,10 @@ class Trix.InputController extends Trix.BasicObject
   elementDidMutate: (mutationSummary) ->
     inputLog.group("Mutation")
     inputLog.log("mutationSummary =", JSON.stringify(mutationSummary))
+    inputLog.log("inputSummary =", JSON.stringify(@inputSummary))
 
     unless @mutationIsExpected(mutationSummary)
-      inputLog.log("mutation doesn't match input, replacing HTML")
+      inputLog.log("mutation is unexpected, replacing HTML")
       @responder?.replaceHTML(@element.innerHTML)
     @resetInputSummary()
     @requestRender()
@@ -73,15 +73,11 @@ class Trix.InputController extends Trix.BasicObject
     inputLog.groupEnd()
 
   mutationIsExpected: (mutationSummary) ->
-    switch
-      when not @inputSummary
-        false
-      when @inputSummary.keyName is "backspace" and @inputSummary.keyModifier is "meta"
-        false
-      when @inputSummary.keyName is "return"
-        true
+    if @inputSummary
+      if @inputSummary.preferDocument?
+        @inputSummary.preferDocument
       else
-        unhandledAddition = mutationSummary.textAdded? and mutationSummary.textAdded isnt @inputSummary.textAdded
+        unhandledAddition = mutationSummary.textAdded isnt @inputSummary.textAdded
         unhandledDeletion = mutationSummary.textDeleted? and not @inputSummary.didDelete
         not (unhandledAddition or unhandledDeletion)
 
@@ -98,8 +94,7 @@ class Trix.InputController extends Trix.BasicObject
 
   events:
     keydown: (event) ->
-      return if @inputSummary.eventName is "compositionend"
-      @resetInputSummary()
+      @resetInputSummary() unless @inputSummary.composing
 
       if keyName = @constructor.keyNames[event.keyCode]
         context = @keys
@@ -229,13 +224,20 @@ class Trix.InputController extends Trix.BasicObject
 
     compositionstart: (event) ->
       @mutationObserver.stop()
+      @setInputSummary(composing: true, compositionStart: event.data)
+
+    compositionupdate: (event) ->
+      @setInputSummary(composing: true, compositionUpdate: event.data)
 
     compositionend: (event) ->
-      if (composedString = event.data)?
+      @mutationObserver.start()
+      composedString = event.data
+      @setInputSummary(composing: true, compositionEnd: composedString)
+
+      if composedString? and composedString isnt @inputSummary.compositionStart
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(composedString)
         @setInputSummary(textAdded: composedString, didDelete: @selectionIsExpanded())
-      @mutationObserver.start()
 
     input: (event) ->
       event.stopPropagation()
@@ -250,6 +252,7 @@ class Trix.InputController extends Trix.BasicObject
       @deleteInDirection("forward")
 
     return: (event) ->
+      @setInputSummary(preferDocument: true)
       @delegate?.inputControllerWillPerformTyping()
       @responder?.insertLineBreak()
 
@@ -307,10 +310,12 @@ class Trix.InputController extends Trix.BasicObject
 
     alt:
       backspace: (event) ->
+        @setInputSummary(preferDocument: false)
         @delegate?.inputControllerWillPerformTyping()
 
     meta:
       backspace: (event) ->
+        @setInputSummary(preferDocument: false)
         @delegate?.inputControllerWillPerformTyping()
 
   # Private
