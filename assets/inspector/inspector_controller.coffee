@@ -61,7 +61,10 @@ class Trix.InspectorController
     @element.querySelector("[data-inspector-panel-name=#{name}]")
 
   incrementRenderCount: -> defer =>
-    @renderCountView.incrementAndRender()
+    @renderCountView.incrementRenderCount()
+
+  incrementSyncCount: -> defer =>
+    @renderCountView.incrementSyncCount()
 
   render: -> defer =>
     @selectionView.render()

@@ -23,8 +23,12 @@ addEventListener "DOMContentLoaded", ->
       inspectorController.render()
 
     handleEvent "trix-render", onElement: editorElement, withCallback: ->
-      inspectorController.render()
       inspectorController.incrementRenderCount()
+      inspectorController.render()
+
+    handleEvent "trix-sync", onElement: editorElement, withCallback: ->
+      inspectorController.incrementSyncCount()
+      inspectorController.render()
 
     handleEvent "trix-attachment-add", onElement: editorElement, withCallback: (event) ->
       {attachment} = event
