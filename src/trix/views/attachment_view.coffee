@@ -32,9 +32,18 @@ class Trix.AttachmentView extends Trix.ObjectView
       data.trixAttributes = JSON.stringify(attributes)
 
     if @attachment.isPending()
-      data.trixSerialize = false
-      @progressElement = makeElement("progress", class: "attachment__progress", max: 100, value: @attachment.getUploadProgress(), "data-trix-mutable": true)
+      @progressElement = makeElement
+        tagName: "progress"
+        attributes:
+          className: "attachment__progress"
+          value: @attachment.getUploadProgress()
+          max: 100
+        data:
+          trixMutable: true
+          trixStoreKey: @attachment.getCacheKey("progressElement")
+
       figure.appendChild(@progressElement)
+      data.trixSerialize = false
 
     if href = @getHref()
       element = makeElement("a", {href})
@@ -88,7 +97,6 @@ class Trix.AttachmentView extends Trix.ObjectView
 
   attachmentDidChangeUploadProgress: ->
     value = @attachment.getUploadProgress()
-    @progressElement?.value = value
     @findProgressElement()?.value = value
 
 htmlContainsTagName = (html, tagName) ->

@@ -1,5 +1,5 @@
 unserializableElementSelector = "[data-trix-serialize=false]"
-unserializableAttributeNames = ["contenteditable", "data-trix-id", "data-trix-mutable"]
+unserializableAttributeNames = ["contenteditable", "data-trix-id", "data-trix-store-key", "data-trix-mutable"]
 serializedAttributesAttribute = "data-trix-serialized-attributes"
 serializedAttributesSelector = "[#{serializedAttributesAttribute}]"
 

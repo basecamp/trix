@@ -145,7 +145,8 @@ cursorTarget = Trix.makeElement(
     attachment = new Trix.Attachment attrs
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
-    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
+    key = attachment.getCacheKey("imageElement")
+    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, "data-trix-store-key": key, width: 1, height: 1)
 
     caption = Trix.makeElement(tagName: "figcaption", className: "attachment__caption")
     caption.innerHTML = """#{attrs.filename}<span class="attachment__size">#{attrs.filesize}</span>"""
@@ -174,7 +175,8 @@ cursorTarget = Trix.makeElement(
     textAttrs = caption: "Example"
     text = Trix.Text.textForAttachmentWithAttributes(attachment, textAttrs)
 
-    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
+    key = attachment.getCacheKey("imageElement")
+    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, "data-trix-store-key": key, width: 1, height: 1)
 
     caption = Trix.makeElement(tagName: "figcaption", className: "attachment__caption attachment__caption--edited", textContent: "Example")
 

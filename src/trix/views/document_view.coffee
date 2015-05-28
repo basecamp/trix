@@ -43,7 +43,7 @@ class Trix.DocumentView extends Trix.ObjectView
   # Private
 
   didSync: ->
-    @elementStore.reset(findImages(@element))
+    @elementStore.reset(findStoredElements(@element))
     defer => @garbageCollectCachedViews()
 
   createDocumentFragmentForSync: ->
@@ -52,16 +52,14 @@ class Trix.DocumentView extends Trix.ObjectView
     for node in @shadowElement.childNodes
       fragment.appendChild(node.cloneNode(true))
 
-    for image in findImages(fragment)
-      if storedImage = @elementStore.remove(image)
-        storedImage.width = image.width
-        storedImage.height = image.height
-        image.parentNode.replaceChild(storedImage, image)
+    for element in findStoredElements(fragment)
+      if storedElement = @elementStore.remove(element)
+        element.parentNode.replaceChild(storedElement, element)
 
     fragment
 
-  findImages = (element) ->
-    element.querySelectorAll("img")
+  findStoredElements = (element) ->
+    element.querySelectorAll("[data-trix-store-key]")
 
   elementsHaveEqualHTML = (element, otherElement) ->
     ignoreSpaces(element.innerHTML) is ignoreSpaces(otherElement.innerHTML)

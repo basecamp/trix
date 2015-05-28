@@ -119,8 +119,10 @@ class Trix.Attachment extends Trix.Object
   toJSON: ->
     @getAttributes()
 
-  getCacheKey: ->
-    [super, @attributes.getCacheKey(), @getUploadProgress(), @getPreloadedURL()].join("/")
+  getCacheKey: (prependWith) ->
+    parts = [super, @attributes.getCacheKey(), @getPreloadedURL()]
+    parts.unshift(prependWith) if prependWith
+    parts.join("/")
 
   # Previewable
 

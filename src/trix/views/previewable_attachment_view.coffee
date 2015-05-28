@@ -8,7 +8,14 @@ class Trix.PreviewableAttachmentView extends Trix.AttachmentView
     @attachment.previewDelegate = this
 
   createContentNodes: ->
-    @image = makeElement("img", src: "", "data-trix-mutable": true)
+    @image = makeElement
+      tagName: "img"
+      attributes:
+        src: ""
+      data:
+        trixMutable: true
+        trixStoreKey: @attachment.getCacheKey("imageElement")
+
     @refresh(@image)
     [@image]
 
