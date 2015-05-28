@@ -19,6 +19,7 @@ class Trix.ObjectView extends Trix.BasicObject
 
   findOrCreateCachedChildView: (viewClass, object, options) ->
     if view = @getCachedViewForObject(object)
+      view.parentView = this
       @childViews.push(view)
     else
       view = @createChildView(arguments...)
