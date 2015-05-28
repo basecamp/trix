@@ -9,10 +9,10 @@ editorTest "composing", (expectDocument) ->
     expectDocument "abc\n"
 
 editorTest "typing and composing", (expectDocument) ->
-  typeCharacters "a ", ->
+  typeCharacters "a", ->
     composeString "bcd", ->
-      typeCharacters " e", ->
-        expectDocument "a bcd e\n"
+      typeCharacters "e", ->
+        expectDocument "abcde\n"
 
 editorTest "backspacing", (expectDocument) ->
   typeCharacters "abc\b", ->
