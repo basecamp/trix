@@ -35,7 +35,7 @@ class Trix.AttachmentView extends Trix.ObjectView
       @progressElement = makeElement
         tagName: "progress"
         attributes:
-          className: "attachment__progress"
+          class: "attachment__progress"
           value: @attachment.getUploadProgress()
           max: 100
         data:
