@@ -2,7 +2,7 @@
 #= require trix/operations/file_verification_operation
 
 {handleEvent, findClosestElementFromNode, findElementFromContainerAndOffset,
-  defer, makeElement, innerElementIsActive} = Trix
+  defer, makeElement, innerElementIsActive, summarizeStringChange} = Trix
 
 inputLog = Trix.Logger.get("input")
 
@@ -237,7 +237,8 @@ class Trix.InputController extends Trix.BasicObject
       if composedString? and composedString isnt @inputSummary.compositionStart
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(composedString)
-        @setInputSummary(textAdded: composedString, didDelete: @selectionIsExpanded())
+        {added, removed} = summarizeStringChange(@inputSummary.compositionStart, composedString)
+        @setInputSummary(textAdded: added, didDelete: Boolean(removed))
 
     input: (event) ->
       event.stopPropagation()
