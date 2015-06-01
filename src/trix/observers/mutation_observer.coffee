@@ -22,14 +22,11 @@ class Trix.MutationObserver extends Trix.BasicObject
     @observer.disconnect()
 
   didMutate: (mutations) =>
-    clearTimeout(@debounce)
     @mutations.push(@findSignificantMutations(mutations)...)
 
-    @debounce = setTimeout =>
-      if @mutations.length
-        @delegate?.elementDidMutate?(@getMutationSummary())
-        @reset()
-    , 1
+    if @mutations.length
+      @delegate?.elementDidMutate?(@getMutationSummary())
+      @reset()
 
   # Private
 
