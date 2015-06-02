@@ -142,7 +142,8 @@ editorTest "paste list into quoted list", (done) ->
 editorTest "paste nested list into empty list item", (done) ->
   clickToolbarButton attribute: "bullet", ->
     typeCharacters "y\nzz", ->
-      moveCursor direction: "left", times: 3, ->
+      getSelectionManager().setLocationRange([0,1])
+      defer ->
         pressKey "backspace", ->
           pasteContent "text/html", "<ul><li>a<ul><li>b</li></ul></li></ul>", ->
           document = getDocument()
@@ -164,7 +165,8 @@ editorTest "paste nested list into empty list item", (done) ->
 editorTest "paste nested list over list item contents", (done) ->
   clickToolbarButton attribute: "bullet", ->
     typeCharacters "y\nzz", ->
-      moveCursor direction: "left", times: 3, ->
+      getSelectionManager().setLocationRange([0,1])
+      defer ->
         expandSelection "left", ->
           pasteContent "text/html", "<ul><li>a<ul><li>b</li></ul></li></ul>", ->
           document = getDocument()
