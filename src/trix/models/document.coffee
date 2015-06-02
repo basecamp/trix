@@ -109,13 +109,18 @@ class Trix.Document extends Trix.Object
     this
 
   insertDocumentAtLocationRange: edit "insertDocumentAtLocationRange", (document, locationRange) ->
-    block = @getBlockAtIndex(locationRange.index)
+    range = @rangeFromLocationRange(locationRange)
+    block = @getBlockAtIndex(locationRange.end.index)
 
-    position = @blockList.findPositionAtIndexAndOffset(locationRange.index, locationRange.offset)
-    position++ if locationRange.end.offset is block.getBlockBreakPosition()
+    if locationRange.end.offset is block.getBlockBreakPosition()
+      if locationRange.isExpanded() or block.isEqualTo(document.getBlockAtIndex(0))
+        range[1]++
+        locationRange = @locationRangeFromRange(range)
+      else
+        range[0]++
 
     @removeTextAtLocationRange(locationRange)
-    @blockList = @blockList.insertSplittableListAtPosition(document.blockList, position)
+    @blockList = @blockList.insertSplittableListAtPosition(document.blockList, range[0])
 
   replaceDocument: edit "replaceDocument", (document) ->
     @blockList = document.blockList.copy()

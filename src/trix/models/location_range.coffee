@@ -42,6 +42,9 @@ class Trix.LocationRange extends Trix.BasicObject
   isCollapsed: ->
     @start.index is @end.index and @start.offset is @end.offset
 
+  isExpanded: ->
+    not @isCollapsed()
+
   isInSingleIndex: ->
     @start.index is @end.index
 

@@ -139,6 +139,50 @@ editorTest "paste list into quoted list", (done) ->
 
           done()
 
+editorTest "paste nested list into empty list item", (done) ->
+  clickToolbarButton attribute: "bullet", ->
+    typeCharacters "y\nzz", ->
+      moveCursor direction: "left", times: 3, ->
+        pressKey "backspace", ->
+          pasteContent "text/html", "<ul><li>a<ul><li>b</li></ul></li></ul>", ->
+          document = getDocument()
+          equal 3, document.getBlockCount()
+
+          block = document.getBlockAtIndex(0)
+          deepEqual ["bulletList", "bullet"], block.getAttributes()
+          equal block.toString(), "a\n"
+
+          block = document.getBlockAtIndex(1)
+          deepEqual ["bulletList", "bullet", "bulletList", "bullet"], block.getAttributes()
+          equal block.toString(), "b\n"
+
+          block = document.getBlockAtIndex(2)
+          deepEqual ["bulletList", "bullet"], block.getAttributes()
+          equal block.toString(), "zz\n"
+          done()
+
+editorTest "paste nested list over list item contents", (done) ->
+  clickToolbarButton attribute: "bullet", ->
+    typeCharacters "y\nzz", ->
+      moveCursor direction: "left", times: 3, ->
+        expandSelection "left", ->
+          pasteContent "text/html", "<ul><li>a<ul><li>b</li></ul></li></ul>", ->
+          document = getDocument()
+          equal 3, document.getBlockCount()
+
+          block = document.getBlockAtIndex(0)
+          deepEqual ["bulletList", "bullet"], block.getAttributes()
+          equal block.toString(), "a\n"
+
+          block = document.getBlockAtIndex(1)
+          deepEqual ["bulletList", "bullet", "bulletList", "bullet"], block.getAttributes()
+          equal block.toString(), "b\n"
+
+          block = document.getBlockAtIndex(2)
+          deepEqual ["bulletList", "bullet"], block.getAttributes()
+          equal block.toString(), "zz\n"
+          done()
+
 editorTest "paste file", (expectDocument) ->
   typeCharacters "a", ->
     pasteContent "Files", (createFile()), ->

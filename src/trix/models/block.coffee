@@ -13,6 +13,9 @@ class Trix.Block extends Trix.Object
   isEmpty: ->
     textIsBlockBreak(@text)
 
+  isEqualTo: (block) ->
+    super or (@text.isEqualTo(block.text) and @attributes.isEqualTo(block.attributes))
+
   copyWithText: (text) ->
     new @constructor text, @attributes
 

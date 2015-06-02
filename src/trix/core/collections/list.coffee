@@ -1,11 +1,8 @@
+{arraysAreEqual} = Trix
+
 class Trix.List extends Trix.Object
   @box: (object) ->
-    if object instanceof this
-      object
-    else if Array.isArray(object)
-      new this object
-    else
-      new this (key for key, value of object when value)
+    box(object)
 
   constructor: (items = []) ->
     @items = copy(items)
@@ -34,5 +31,16 @@ class Trix.List extends Trix.Object
     object[item] = true for item in @toArray()
     object
 
+  isEqualTo: (items) ->
+    super or arraysAreEqual(@items, box(items).items)
+
   copy = (array) ->
     array.slice(0)
+
+  box = (object) ->
+    if object instanceof Trix.List
+      object
+    else if Array.isArray(object)
+      new Trix.List object
+    else
+      new Trix.List (key for key, value of object when value)
