@@ -58,23 +58,23 @@ test "findLocationFromContainerAndOffset", ->
     { location: [1, 0],  container: [1, 1],     offset: 0 }
     { location: [1, 1],  container: [1, 1],     offset: 1 }
     { location: [1, 2],  container: [1, 1],     offset: 2 }
-    { location: [1, 2],  container: [1, 1],     offset: 3 }
-    { location: [1, 3],  container: [1, 1],     offset: 4 }
-    { location: [1, 4],  container: [1, 1],     offset: 5 }
-    { location: [1, 4],  container: [1, 1],     offset: 6 }
-    { location: [1, 4],  container: [1],        offset: 2 }
-    { location: [1, 4],  container: [1, 2],     offset: 0 }
-    { location: [1, 4],  container: [1, 2],     offset: 1 }
-    { location: [1, 4],  container: [1],        offset: 3 }
-    { location: [1, 4],  container: [1, 3],     offset: 0 }
-    { location: [1, 4],  container: [1, 3],     offset: 1 }
-    { location: [1, 5],  container: [1],        offset: 4 }
-    { location: [1, 5],  container: [1, 4],     offset: 0 }
-    { location: [1, 5],  container: [1, 4],     offset: 1 }
-    { location: [1, 5],  container: [1],        offset: 5 }
-    { location: [1, 5],  container: [1, 5],     offset: 0 }
-    { location: [1, 6],  container: [1, 5],     offset: 1 }
-    { location: [1, 6],  container: [],         offset: 2 }
+    { location: [1, 3],  container: [1, 1],     offset: 3 }
+    { location: [1, 4],  container: [1, 1],     offset: 4 }
+    { location: [1, 5],  container: [1, 1],     offset: 5 }
+    { location: [1, 6],  container: [1, 1],     offset: 6 }
+    { location: [1, 5],  container: [1],        offset: 2 }
+    { location: [1, 5],  container: [1, 2],     offset: 0 }
+    { location: [1, 5],  container: [1, 2],     offset: 1 }
+    { location: [1, 5],  container: [1],        offset: 3 }
+    { location: [1, 5],  container: [1, 3],     offset: 0 }
+    { location: [1, 5],  container: [1, 3],     offset: 1 }
+    { location: [1, 6],  container: [1],        offset: 4 }
+    { location: [1, 6],  container: [1, 4],     offset: 0 }
+    { location: [1, 6],  container: [1, 4],     offset: 1 }
+    { location: [1, 6],  container: [1],        offset: 5 }
+    { location: [1, 6],  container: [1, 5],     offset: 0 }
+    { location: [1, 7],  container: [1, 5],     offset: 1 }
+    { location: [1, 7],  container: [],         offset: 2 }
   ]
 
   for assertion in assertions

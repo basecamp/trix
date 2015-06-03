@@ -21,7 +21,7 @@ class Trix.LocationMapper
 
       if node is container and nodeIsTextNode(container)
         unless nodeIsCursorTarget(node)
-          location.offset += translateTextNodeOffset(node, offset)
+          location.offset += offset
         break
 
       else
@@ -47,8 +47,8 @@ class Trix.LocationMapper
 
     if nodeIsTextNode(node)
       container = node
-      string = Trix.UTF16String.box(node.textContent)
-      offset = string.offsetToUCS2Offset(location.offset - nodeOffset)
+      string = node.textContent
+      offset = location.offset - nodeOffset
 
     else
       container = node.parentNode
@@ -112,16 +112,12 @@ class Trix.LocationMapper
       if nodeIsCursorTarget(node)
         0
       else
-        string = Trix.UTF16String.box(node.textContent)
+        string = node.textContent
         string.length
     else if tagName(node) is "br" or nodeIsAttachmentElement(node)
       1
     else
       0
-
-  translateTextNodeOffset = (node, offset) ->
-    string = Trix.UTF16String.box(node.textContent)
-    string.offsetFromUCS2Offset(offset)
 
   acceptSignificantNodes = (node) ->
     if rejectEmptyTextNodes(node) is NodeFilter.FILTER_ACCEPT

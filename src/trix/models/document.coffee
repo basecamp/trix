@@ -278,7 +278,7 @@ class Trix.Document extends Trix.Object
 
     @edit =>
       string.replace /.*?\n/g, (match) =>
-        position += Trix.UTF16String.fromUCS2String(match).length
+        position += match.length
         locationRange = @locationRangeFromRange([position - 1, position])
         @insertBlockBreakAtLocationRange(locationRange)
 
