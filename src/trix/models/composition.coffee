@@ -47,16 +47,14 @@ class Trix.Composition extends Trix.BasicObject
     @notifyDelegateOfInsertionAtLocationRange(insertedLocationRange)
 
   insertDocument: (document = Trix.Document.fromString("")) ->
+    startPosition = @getPosition()
     locationRange = @getLocationRange()
-    [startPosition, endPosition] = @document.rangeFromLocationRange(locationRange)
-
     @document.insertDocumentAtLocationRange(document, locationRange)
 
-    endPosition = startPosition + document.getLength()
-    endLocation = @document.locationFromPosition(endPosition)
-    @setLocation(endLocation)
+    endPosition = startPosition + document.getLength() - 1
+    @setPosition(endPosition)
 
-    insertedLocationRange = locationRange.copyWithEndLocation(endLocation)
+    insertedLocationRange = @document.locationRangeFromRange([startPosition, endPosition])
     @notifyDelegateOfInsertionAtLocationRange(insertedLocationRange)
 
   insertString: (string, options) ->
