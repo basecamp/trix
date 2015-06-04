@@ -339,9 +339,9 @@ class Trix.Composition extends Trix.BasicObject
   getExpandedRangeInDirection: (direction) ->
     range = @getRange()
     if direction is "backward"
-      range[0]--
+      range[0] = @translateUTF16PositionFromOffset(range[0], -1)
     else
-      range[1]++
+      range[1] = @translateUTF16PositionFromOffset(range[1], 1)
     range
 
   # Selection
@@ -440,3 +440,8 @@ class Trix.Composition extends Trix.BasicObject
 
   notifyDelegateOfInsertionAtLocationRange: (locationRange) ->
     @delegate?.compositionDidPerformInsertionAtLocationRange?(locationRange)
+
+  translateUTF16PositionFromOffset: (position, offset) ->
+    utf16string = @document.toUTF16String()
+    utf16position = utf16string.offsetFromUCS2Offset(position)
+    utf16string.offsetToUCS2Offset(utf16position + offset)
