@@ -21,7 +21,7 @@ editorTest "backspacing", (expectDocument) ->
 
 QUnit.skip "backspacing emoji and typing", (expectDocument) ->
   # The helpers need to be fixed for this test to pass.
-  typeCharacters "abc😭", ->
+  typeCharacters ["a", "b", "c", "😭"], ->
     assertLocationRange [0,5]
     typeCharacters "\b", ->
       assertLocationRange [0,3]

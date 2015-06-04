@@ -58,7 +58,11 @@ for code, name of Trix.InputController.keyNames
   file
 
 @typeCharacters = (string, callback) ->
-  characters = string.split("")
+  if Array.isArray(string)
+    characters = string
+  else
+    characters = string.split("")
+
   do typeNextCharacter = -> defer ->
     character = characters.shift()
     if character?
