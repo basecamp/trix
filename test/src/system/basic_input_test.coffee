@@ -19,15 +19,17 @@ editorTest "backspacing", (expectDocument) ->
     assertLocationRange [0,2]
     expectDocument "ab\n"
 
-QUnit.skip "backspacing emoji and typing", (expectDocument) ->
-  # The helpers need to be fixed for this test to pass.
-  typeCharacters ["a", "b", "c", "😭"], ->
-    assertLocationRange [0,5]
-    typeCharacters "\b", ->
-      assertLocationRange [0,3]
-      typeCharacters "d", ->
-        assertLocationRange [0,4]
-        expectDocument "abcd\n"
+editorTest "backspacing emoji and typing", (expectDocument) ->
+  typeCharacters "abc", ->
+    getComposition().insertString("😭")
+    getEditorController().render()
+    defer ->
+      assertLocationRange [0,5]
+      typeCharacters "\b", ->
+        assertLocationRange [0,3]
+        typeCharacters "d", ->
+          assertLocationRange [0,4]
+          expectDocument "abcd\n"
 
 editorTest "pressing delete", (expectDocument) ->
   typeCharacters "ab", ->
