@@ -3,7 +3,7 @@ class Trix.UTF16String extends Trix.BasicObject
     if value instanceof this
       value
     else
-      @fromUCS2String(value)
+      @fromUCS2String(value?.toString())
 
   @fromUCS2String: (ucs2String) ->
     new this ucs2String, ucs2decode(ucs2String)
