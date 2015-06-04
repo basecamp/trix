@@ -122,6 +122,10 @@ for code, name of Trix.InputController.keyNames
   getComposition().insertFile(file)
   render()
 
+@replaceDocument = (document) ->
+  getDocument().replaceDocument(document)
+  render()
+
 render = ->
   getEditorController().render()
 

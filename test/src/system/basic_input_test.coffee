@@ -65,24 +65,20 @@ editorTest "paste complex html", (expectDocument) ->
   typeCharacters "abc", ->
     moveCursor "left", ->
       pasteContent "text/html", "<div>Hello world<br></div><div>This is a test</div>", ->
-        expectDocument "ab\nHello world\nThis is a test\nc\n"
+        expectDocument "abHello world\nThis is a test\nc\n"
 
 editorTest "paste complex html into formatted block", (done) ->
   typeCharacters "abc", ->
     clickToolbarButton attribute: "quote", ->
       pasteContent "text/html", "<div>Hello world<br></div><pre>This is a test</pre>", ->
         document = getDocument()
-        equal 3, document.getBlockCount()
+        equal 2, document.getBlockCount()
 
         block = document.getBlockAtIndex(0)
         deepEqual ["quote"], block.getAttributes()
-        equal block.toString(), "abc\n"
+        equal block.toString(), "abcHello world\n"
 
         block = document.getBlockAtIndex(1)
-        deepEqual ["quote"], block.getAttributes()
-        equal block.toString(), "Hello world\n"
-
-        block = document.getBlockAtIndex(2)
         deepEqual ["quote", "code"], block.getAttributes()
         equal block.toString(), "This is a test\n"
 
@@ -93,7 +89,7 @@ editorTest "paste list into list", (done) ->
     typeCharacters "abc\n", ->
       pasteContent "text/html", "<ul><li>one</li><li>two</li></ul>", ->
         document = getDocument()
-        equal 4, document.getBlockCount()
+        equal 3, document.getBlockCount()
 
         block = document.getBlockAtIndex(0)
         deepEqual ["bulletList", "bullet"], block.getAttributes()
@@ -107,10 +103,6 @@ editorTest "paste list into list", (done) ->
         deepEqual ["bulletList", "bullet"], block.getAttributes()
         equal block.toString(), "two\n"
 
-        block = document.getBlockAtIndex(3)
-        deepEqual ["bulletList", "bullet"], block.getAttributes()
-        equal block.toString(), "\n"
-
         done()
 
 editorTest "paste list into quoted list", (done) ->
@@ -119,7 +111,7 @@ editorTest "paste list into quoted list", (done) ->
       typeCharacters "abc\n", ->
         pasteContent "text/html", "<ul><li>one</li><li>two</li></ul>", ->
           document = getDocument()
-          equal 4, document.getBlockCount()
+          equal 3, document.getBlockCount()
 
           block = document.getBlockAtIndex(0)
           deepEqual ["quote", "bulletList", "bullet"], block.getAttributes()
@@ -132,10 +124,6 @@ editorTest "paste list into quoted list", (done) ->
           block = document.getBlockAtIndex(2)
           deepEqual ["quote", "bulletList", "bullet"], block.getAttributes()
           equal block.toString(), "two\n"
-
-          block = document.getBlockAtIndex(3)
-          deepEqual ["quote", "bulletList", "bullet"], block.getAttributes()
-          equal block.toString(), "\n"
 
           done()
 
@@ -184,6 +172,30 @@ editorTest "paste nested list over list item contents", (done) ->
           deepEqual ["bulletList", "bullet"], block.getAttributes()
           equal block.toString(), "zz\n"
           done()
+
+editorTest "paste list into empty block before list", (done) ->
+  clickToolbarButton attribute: "bullet", ->
+    typeCharacters "c", ->
+      moveCursor "left", ->
+        pressKey "return", ->
+          getSelectionManager().setLocationRange([0,0])
+          defer ->
+            pasteContent "text/html", "<ul><li>a</li><li>b</li></ul>", ->
+              document = getDocument()
+              equal document.getBlockCount(), 3
+
+              block = document.getBlockAtIndex(0)
+              deepEqual ["bulletList", "bullet"], block.getAttributes()
+              equal block.toString(), "a\n"
+
+              block = document.getBlockAtIndex(1)
+              deepEqual ["bulletList", "bullet"], block.getAttributes()
+              equal block.toString(), "b\n"
+
+              block = document.getBlockAtIndex(2)
+              deepEqual ["bulletList", "bullet"], block.getAttributes()
+              equal block.toString(), "c\n"
+              done()
 
 editorTest "paste file", (expectDocument) ->
   typeCharacters "a", ->

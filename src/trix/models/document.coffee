@@ -109,18 +109,13 @@ class Trix.Document extends Trix.Object
     this
 
   insertDocumentAtLocationRange: edit "insertDocumentAtLocationRange", (document, locationRange) ->
-    range = @rangeFromLocationRange(locationRange)
-    block = @getBlockAtIndex(locationRange.end.index)
+    [startPosition, endPosition] = @rangeFromLocationRange(locationRange)
 
-    if locationRange.end.offset is block.getBlockBreakPosition()
-      if locationRange.isExpanded() or block.isEqualTo(document.getBlockAtIndex(0))
-        range[1]++
-        locationRange = @locationRangeFromRange(range)
-      else
-        range[0]++
+    {index, offset} = locationRange.end
+    endPosition++ if offset is @getBlockAtIndex(index).getBlockBreakPosition()
 
-    @removeTextAtLocationRange(locationRange)
-    @blockList = @blockList.insertSplittableListAtPosition(document.blockList, range[0])
+    @blockList = @blockList.insertSplittableListAtPosition(document.blockList, endPosition)
+    @removeTextAtLocationRange(@locationRangeFromRange([startPosition, endPosition]))
 
   replaceDocument: edit "replaceDocument", (document) ->
     @blockList = document.blockList.copy()
@@ -142,7 +137,13 @@ class Trix.Document extends Trix.Object
     rightText = rightBlock.text.getTextAtRange([locationRange.end.offset, rightBlock.getLength()])
 
     text = leftText.appendText(rightText)
-    block = leftBlock.copyWithText(text)
+    removingLeftBlock = leftIndex isnt rightIndex and locationRange.start.offset is 0
+
+    if removingLeftBlock
+      block = rightBlock.copyWithText(text)
+    else
+      block = leftBlock.copyWithText(text)
+
     blocks = @blockList.toArray()
     affectedBlockCount = rightIndex + 1 - leftIndex
     blocks.splice(leftIndex, affectedBlockCount, block)

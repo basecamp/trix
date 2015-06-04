@@ -46,23 +46,10 @@ class Trix.Composition extends Trix.BasicObject
     insertedLocationRange = locationRange.copyWithEndLocation(endLocation)
     @notifyDelegateOfInsertionAtLocationRange(insertedLocationRange)
 
-  insertBlock: (block = new Trix.Block) ->
-    document = new Trix.Document [block]
-    @insertDocument(document)
-
   insertDocument: (document = Trix.Document.fromString("")) ->
-    block = @getBlock()
     locationRange = @getLocationRange()
     [startPosition, endPosition] = @document.rangeFromLocationRange(locationRange)
 
-    if block.isEmpty() and locationRange.isCollapsed()
-      endPosition += 1
-
-    else if block.getBlockBreakPosition() is locationRange.offset
-      if @document.getCharacterAtPosition(startPosition - 1) is "\n"
-        startPosition -= 1
-
-    locationRange = @document.locationRangeFromRange([startPosition, endPosition])
     @document.insertDocumentAtLocationRange(document, locationRange)
 
     endPosition = startPosition + document.getLength()
@@ -89,9 +76,29 @@ class Trix.Composition extends Trix.BasicObject
     insertedLocationRange = locationRange.copyWithEndLocation(endLocation)
     @notifyDelegateOfInsertionAtLocationRange(insertedLocationRange)
 
+  breakFormattedBlock: ->
+    [startPosition, endPosition] = @getRange()
+    locationRange = @document.locationRangeFromRange([startPosition - 1, endPosition])
+
+    {index, offset} = locationRange.end
+    block = @document.getBlockAtIndex(index)
+
+    if block.getBlockBreakPosition() is offset
+      @document.removeTextAtLocationRange(locationRange)
+      locationRange = @document.locationRangeFromPosition(startPosition)
+    else
+      nextCharacter = block.text.getStringAtRange([offset, offset + 1])
+      if nextCharacter is "\n"
+        locationRange = @document.locationRangeFromRange([startPosition - 1, endPosition + 1])
+
+    document = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
+    @document.insertDocumentAtLocationRange(document, locationRange)
+    @setPosition(startPosition)
+
   insertLineBreak: ->
     locationRange = @getLocationRange()
-    block = @document.getBlockAtIndex(locationRange.end.index)
+    {index, offset} = locationRange.end
+    block = @document.getBlockAtIndex(index)
 
     if block.hasAttributes()
       attributes = block.getAttributes()
@@ -102,19 +109,12 @@ class Trix.Composition extends Trix.BasicObject
         else
           @insertBlockBreak()
       else
-        text = block.text.getTextAtRange([0, locationRange.end.offset])
-        switch
-          # Remove block attributes
-          when block.isEmpty()
-            @removeLastBlockAttribute()
-          # Break out of block after a newline (and remove the newline)
-          when text.endsWithString("\n")
-            @expandSelectionInDirection("backward")
-            newBlock = block.removeLastAttribute().copyWithoutText()
-            @insertBlock(newBlock)
-          # Stay in the block, add a newline
-          else
-            @insertString("\n")
+        if block.isEmpty()
+          @removeLastBlockAttribute()
+        else if block.text.getStringAtRange([offset - 1, offset]) is "\n"
+          @breakFormattedBlock()
+        else
+          @insertString("\n")
     else
       @insertString("\n")
 
@@ -135,7 +135,21 @@ class Trix.Composition extends Trix.BasicObject
     if blockCount is 1 and arraysAreEqual(blockAttributes, firstBlock.getAttributes())
       @insertText(firstBlock.getTextWithoutBlockBreak())
     else
-      @insertDocument(formattedDocument)
+      if firstBlock.hasAttributes()
+        @insertDocument(formattedDocument)
+      else
+        position = @getPosition()
+        text = firstBlock.getTextWithoutBlockBreak()
+        @document.insertTextAtLocationRange(text, @getLocationRange())
+        position += text.getLength()
+
+        if blockCount > 1
+          formattedDocument = new Trix.Document formattedDocument.getBlocks().slice(1)
+          locationRange = @document.locationRangeFromPosition(position)
+          @document.insertDocumentAtLocationRange(formattedDocument, locationRange)
+          position += formattedDocument.getLength()
+
+        @setPosition(position)
 
   pasteHTML: (html) ->
     document = Trix.Document.fromHTML(html)

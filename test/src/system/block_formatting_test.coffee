@@ -64,7 +64,7 @@ editorTest "applying block attributes to adjacent unformatted blocks consolidate
       new Trix.Block(Trix.Text.textForStringWithAttributes("3"), ["code"])
     ]
 
-  insertDocument(document)
+  replaceDocument(document)
   getEditorController().setLocationRange([0,0], [5,1])
   defer ->
     clickToolbarButton attribute: "quote", ->
@@ -78,19 +78,76 @@ editorTest "breaking out of the end of a block", (done) ->
   typeCharacters "abc", ->
     clickToolbarButton attribute: "quote", ->
       typeCharacters "\n\n", ->
-        expectBlockAttributes([0, 4], ["quote"])
-        expectBlockAttributes([4, 5], [])
+        document = getDocument()
+        equal document.getBlockCount(), 2
+
+        block = document.getBlockAtIndex(0)
+        deepEqual block.getAttributes(), ["quote"]
+        equal block.toString(), "abc\n"
+
+        block = document.getBlockAtIndex(1)
+        deepEqual block.getAttributes(), []
+        equal block.toString(), "\n"
+
         done()
 
-editorTest "breaking out of the middle of a block", (done) ->
+
+editorTest "breaking out of the middle of a block before character", (done) ->
+  # * = cursor
+  #
+  # ab
+  # *c
+  #
   typeCharacters "abc", ->
     clickToolbarButton attribute: "quote", ->
       moveCursor "left", ->
         typeCharacters "\n\n", ->
-          expectBlockAttributes([0, 3], ["quote"])
-          expectBlockAttributes([3, 4], [])
-          expectBlockAttributes([4, 6], ["quote"])
+          document = getDocument()
+          equal document.getBlockCount(), 3
+
+          block = document.getBlockAtIndex(0)
+          deepEqual block.getAttributes(), ["quote"]
+          equal block.toString(), "ab\n"
+
+          block = document.getBlockAtIndex(1)
+          deepEqual block.getAttributes(), []
+          equal block.toString(), "\n"
+
+          block = document.getBlockAtIndex(2)
+          deepEqual block.getAttributes(), ["quote"]
+          equal block.toString(), "c\n"
+
           done()
+
+editorTest "breaking out of the middle of a block before newline", (done) ->
+  # * = cursor
+  #
+  # ab
+  # *
+  # c
+  #
+  typeCharacters "abc", ->
+    clickToolbarButton attribute: "quote", ->
+      moveCursor "left", ->
+        typeCharacters "\n", ->
+          moveCursor "left", ->
+            typeCharacters "\n\n", ->
+              document = getDocument()
+              equal document.getBlockCount(), 3
+
+              block = document.getBlockAtIndex(0)
+              deepEqual block.getAttributes(), ["quote"]
+              equal block.toString(), "ab\n"
+
+              block = document.getBlockAtIndex(1)
+              deepEqual block.getAttributes(), []
+              equal block.toString(), "\n"
+
+              block = document.getBlockAtIndex(2)
+              deepEqual block.getAttributes(), ["quote"]
+              equal block.toString(), "c\n"
+
+              done()
 
 editorTest "deleting the only non-block-break character in a block", (done) ->
   typeCharacters "ab", ->

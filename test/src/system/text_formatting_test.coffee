@@ -56,10 +56,11 @@ editorTest "removing a link", (done) ->
         done()
 
 editorTest "applying a link to an attachment with a host-provided href", (done) ->
-  insertDocument(fixtures["file attachment"].document)
+  text = fixtures["file attachment"].document.getBlockAtIndex(0).getTextWithoutBlockBreak()
+  insertText(text)
   typeCharacters "a", ->
     ok not isToolbarButtonDisabled(attribute: "href")
-    expandSelection direction: "left", times: 2, ->
+    expandSelection "left", ->
       ok not isToolbarButtonDisabled(attribute: "href")
       expandSelection "left", ->
         ok isToolbarButtonDisabled(attribute: "href")
