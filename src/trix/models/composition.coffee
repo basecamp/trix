@@ -49,9 +49,12 @@ class Trix.Composition extends Trix.BasicObject
   insertDocument: (document = Trix.Document.fromString("")) ->
     startPosition = @getPosition()
     locationRange = @getLocationRange()
-    @document.insertDocumentAtLocationRange(document, locationRange)
 
-    endPosition = startPosition + document.getLength() - 1
+    startLength = @document.getLength()
+    @document.insertDocumentAtLocationRange(document, locationRange)
+    endLength = @document.getLength()
+
+    endPosition = startPosition + (endLength - startLength)
     @setPosition(endPosition)
 
     insertedLocationRange = @document.locationRangeFromRange([startPosition, endPosition])
@@ -75,23 +78,24 @@ class Trix.Composition extends Trix.BasicObject
     @notifyDelegateOfInsertionAtLocationRange(insertedLocationRange)
 
   breakFormattedBlock: ->
-    [startPosition, endPosition] = @getRange()
-    locationRange = @document.locationRangeFromRange([startPosition - 1, endPosition])
+    position = @getPosition()
+    locationRange = @document.locationRangeFromRange([position - 1, position])
 
     {index, offset} = locationRange.end
     block = @document.getBlockAtIndex(index)
 
     if block.getBlockBreakPosition() is offset
       @document.removeTextAtLocationRange(locationRange)
-      locationRange = @document.locationRangeFromPosition(startPosition)
+      locationRange = @document.locationRangeFromPosition(position)
     else
-      nextCharacter = block.text.getStringAtRange([offset, offset + 1])
-      if nextCharacter is "\n"
-        locationRange = @document.locationRangeFromRange([startPosition - 1, endPosition + 1])
+      if block.text.getStringAtRange([offset, offset + 1]) is "\n"
+        locationRange = @document.locationRangeFromRange([position - 1, position + 1])
+      else
+        position += 1
 
     document = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
     @document.insertDocumentAtLocationRange(document, locationRange)
-    @setPosition(startPosition)
+    @setPosition(position)
 
   insertLineBreak: ->
     locationRange = @getLocationRange()
@@ -130,24 +134,21 @@ class Trix.Composition extends Trix.BasicObject
     blockCount = formattedDocument.getBlockCount()
     firstBlock = formattedDocument.getBlockAtIndex(0)
 
-    if blockCount is 1 and arraysAreEqual(blockAttributes, firstBlock.getAttributes())
-      @insertText(firstBlock.getTextWithoutBlockBreak())
+    if arraysAreEqual(blockAttributes, firstBlock.getAttributes())
+      position = @getPosition()
+      text = firstBlock.getTextWithoutBlockBreak()
+      @document.insertTextAtLocationRange(text, @getLocationRange())
+      position += text.getLength()
+
+      if blockCount > 1
+        formattedDocument = new Trix.Document formattedDocument.getBlocks().slice(1)
+        locationRange = @document.locationRangeFromPosition(position)
+        @document.insertDocumentAtLocationRange(formattedDocument, locationRange)
+        position += formattedDocument.getLength()
+
+      @setPosition(position)
     else
-      if firstBlock.hasAttributes()
-        @insertDocument(formattedDocument)
-      else
-        position = @getPosition()
-        text = firstBlock.getTextWithoutBlockBreak()
-        @document.insertTextAtLocationRange(text, @getLocationRange())
-        position += text.getLength()
-
-        if blockCount > 1
-          formattedDocument = new Trix.Document formattedDocument.getBlocks().slice(1)
-          locationRange = @document.locationRangeFromPosition(position)
-          @document.insertDocumentAtLocationRange(formattedDocument, locationRange)
-          position += formattedDocument.getLength()
-
-        @setPosition(position)
+      @insertDocument(formattedDocument)
 
   pasteHTML: (html) ->
     document = Trix.Document.fromHTML(html)

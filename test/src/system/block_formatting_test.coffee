@@ -89,6 +89,7 @@ editorTest "breaking out of the end of a block", (done) ->
         deepEqual block.getAttributes(), []
         equal block.toString(), "\n"
 
+        assertLocationRange [1,0]
         done()
 
 
@@ -117,6 +118,7 @@ editorTest "breaking out of the middle of a block before character", (done) ->
           deepEqual block.getAttributes(), ["quote"]
           equal block.toString(), "c\n"
 
+          assertLocationRange [2,0]
           done()
 
 editorTest "breaking out of the middle of a block before newline", (done) ->

@@ -56,6 +56,27 @@ editorTest "paste list into list", (done) ->
 
         done()
 
+editorTest "paste list into quote", (done) ->
+  clickToolbarButton attribute: "quote", ->
+    typeCharacters "abc", ->
+      pasteContent "text/html", "<ul><li>one</li><li>two</li></ul>", ->
+        document = getDocument()
+        equal document.getBlockCount(), 3
+
+        block = document.getBlockAtIndex(0)
+        deepEqual block.getAttributes(), ["quote"]
+        equal block.toString(), "abc\n"
+
+        block = document.getBlockAtIndex(1)
+        deepEqual block.getAttributes(), ["quote", "bulletList", "bullet"]
+        equal block.toString(), "one\n"
+
+        block = document.getBlockAtIndex(2)
+        deepEqual block.getAttributes(), ["quote", "bulletList", "bullet"]
+        equal block.toString(), "two\n"
+
+        done()
+
 editorTest "paste list into quoted list", (done) ->
   clickToolbarButton attribute: "quote", ->
     clickToolbarButton attribute: "bullet", ->
