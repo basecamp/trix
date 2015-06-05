@@ -23,14 +23,14 @@ editorTest "paste complex html into formatted block", (done) ->
     clickToolbarButton attribute: "quote", ->
       pasteContent "text/html", "<div>Hello world<br></div><pre>This is a test</pre>", ->
         document = getDocument()
-        equal 2, document.getBlockCount()
+        equal document.getBlockCount(), 2
 
         block = document.getBlockAtIndex(0)
-        deepEqual ["quote"], block.getAttributes()
+        deepEqual block.getAttributes(), ["quote"],
         equal block.toString(), "abcHello world\n"
 
         block = document.getBlockAtIndex(1)
-        deepEqual ["quote", "code"], block.getAttributes()
+        deepEqual block.getAttributes(), ["quote", "code"]
         equal block.toString(), "This is a test\n"
 
         done()
@@ -40,18 +40,18 @@ editorTest "paste list into list", (done) ->
     typeCharacters "abc\n", ->
       pasteContent "text/html", "<ul><li>one</li><li>two</li></ul>", ->
         document = getDocument()
-        equal 3, document.getBlockCount()
+        equal document.getBlockCount(), 3
 
         block = document.getBlockAtIndex(0)
-        deepEqual ["bulletList", "bullet"], block.getAttributes()
+        deepEqual block.getAttributes(), ["bulletList", "bullet"]
         equal block.toString(), "abc\n"
 
         block = document.getBlockAtIndex(1)
-        deepEqual ["bulletList", "bullet"], block.getAttributes()
+        deepEqual block.getAttributes(), ["bulletList", "bullet"]
         equal block.toString(), "one\n"
 
         block = document.getBlockAtIndex(2)
-        deepEqual ["bulletList", "bullet"], block.getAttributes()
+        deepEqual block.getAttributes(), ["bulletList", "bullet"]
         equal block.toString(), "two\n"
 
         done()
@@ -83,18 +83,18 @@ editorTest "paste list into quoted list", (done) ->
       typeCharacters "abc\n", ->
         pasteContent "text/html", "<ul><li>one</li><li>two</li></ul>", ->
           document = getDocument()
-          equal 3, document.getBlockCount()
+          equal document.getBlockCount(), 3
 
           block = document.getBlockAtIndex(0)
-          deepEqual ["quote", "bulletList", "bullet"], block.getAttributes()
+          deepEqual block.getAttributes(), ["quote", "bulletList", "bullet"]
           equal block.toString(), "abc\n"
 
           block = document.getBlockAtIndex(1)
-          deepEqual ["quote", "bulletList", "bullet"], block.getAttributes()
+          deepEqual block.getAttributes(), ["quote", "bulletList", "bullet"]
           equal block.toString(), "one\n"
 
           block = document.getBlockAtIndex(2)
-          deepEqual ["quote", "bulletList", "bullet"], block.getAttributes()
+          deepEqual block.getAttributes(), ["quote", "bulletList", "bullet"]
           equal block.toString(), "two\n"
 
           done()
@@ -107,18 +107,18 @@ editorTest "paste nested list into empty list item", (done) ->
         pressKey "backspace", ->
           pasteContent "text/html", "<ul><li>a<ul><li>b</li></ul></li></ul>", ->
           document = getDocument()
-          equal 3, document.getBlockCount()
+          equal document.getBlockCount(), 3
 
           block = document.getBlockAtIndex(0)
-          deepEqual ["bulletList", "bullet"], block.getAttributes()
+          deepEqual block.getAttributes(), ["bulletList", "bullet"]
           equal block.toString(), "a\n"
 
           block = document.getBlockAtIndex(1)
-          deepEqual ["bulletList", "bullet", "bulletList", "bullet"], block.getAttributes()
+          deepEqual block.getAttributes(), ["bulletList", "bullet", "bulletList", "bullet"]
           equal block.toString(), "b\n"
 
           block = document.getBlockAtIndex(2)
-          deepEqual ["bulletList", "bullet"], block.getAttributes()
+          deepEqual block.getAttributes(), ["bulletList", "bullet"]
           equal block.toString(), "zz\n"
           done()
 
@@ -130,18 +130,18 @@ editorTest "paste nested list over list item contents", (done) ->
         expandSelection "left", ->
           pasteContent "text/html", "<ul><li>a<ul><li>b</li></ul></li></ul>", ->
           document = getDocument()
-          equal 3, document.getBlockCount()
+          equal document.getBlockCount(), 3
 
           block = document.getBlockAtIndex(0)
-          deepEqual ["bulletList", "bullet"], block.getAttributes()
+          deepEqual block.getAttributes(), ["bulletList", "bullet"]
           equal block.toString(), "a\n"
 
           block = document.getBlockAtIndex(1)
-          deepEqual ["bulletList", "bullet", "bulletList", "bullet"], block.getAttributes()
+          deepEqual block.getAttributes(), ["bulletList", "bullet", "bulletList", "bullet"]
           equal block.toString(), "b\n"
 
           block = document.getBlockAtIndex(2)
-          deepEqual ["bulletList", "bullet"], block.getAttributes()
+          deepEqual block.getAttributes(), ["bulletList", "bullet"]
           equal block.toString(), "zz\n"
           done()
 
@@ -157,15 +157,15 @@ editorTest "paste list into empty block before list", (done) ->
               equal document.getBlockCount(), 3
 
               block = document.getBlockAtIndex(0)
-              deepEqual ["bulletList", "bullet"], block.getAttributes()
+              deepEqual block.getAttributes(), ["bulletList", "bullet"]
               equal block.toString(), "a\n"
 
               block = document.getBlockAtIndex(1)
-              deepEqual ["bulletList", "bullet"], block.getAttributes()
+              deepEqual block.getAttributes(), ["bulletList", "bullet"]
               equal block.toString(), "b\n"
 
               block = document.getBlockAtIndex(2)
-              deepEqual ["bulletList", "bullet"], block.getAttributes()
+              deepEqual block.getAttributes(), ["bulletList", "bullet"]
               equal block.toString(), "c\n"
               done()
 
