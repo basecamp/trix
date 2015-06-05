@@ -19,18 +19,6 @@ editorTest "backspacing", (expectDocument) ->
     assertLocationRange [0,2]
     expectDocument "ab\n"
 
-editorTest "backspacing emoji and typing", (expectDocument) ->
-  typeCharacters "abc", ->
-    getComposition().insertString("😭")
-    getEditorController().render()
-    defer ->
-      assertLocationRange [0,5]
-      typeCharacters "\b", ->
-        assertLocationRange [0,3]
-        typeCharacters "d", ->
-          assertLocationRange [0,4]
-          expectDocument "abcd\n"
-
 editorTest "pressing delete", (expectDocument) ->
   typeCharacters "ab", ->
     moveCursor "left", ->
