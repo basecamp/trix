@@ -68,7 +68,7 @@ class Trix.MutationObserver extends Trix.BasicObject
     {additions, deletions} = @getTextChangesFromCharacterData()
 
     textChanges = @getTextChangesFromTextNodes()
-    additions.push(textChanges.additions...)
+    additions.push(addition) for addition in textChanges.additions when addition not in additions
     deletions.push(textChanges.deletions...)
 
     summary = {}
