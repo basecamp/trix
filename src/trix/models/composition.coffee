@@ -1,7 +1,5 @@
 #= require trix/models/document
 
-{arraysAreEqual} = Trix
-
 class Trix.Composition extends Trix.BasicObject
   constructor: (@document = new Trix.Document) ->
     @document.delegate = this
@@ -120,39 +118,15 @@ class Trix.Composition extends Trix.BasicObject
     else
       @insertString("\n")
 
-  pasteDocument: (document) ->
-    blockAttributes = @getBlock().getAttributes()
-    baseBlockAttributes = document.getBaseBlockAttributes()
-    trailingBlockAttributes = blockAttributes.slice(-baseBlockAttributes.length)
-
-    if arraysAreEqual(baseBlockAttributes, trailingBlockAttributes)
-      leadingBlockAttributes = blockAttributes.slice(0, -baseBlockAttributes.length)
-      formattedDocument = document.copyWithBaseBlockAttributes(leadingBlockAttributes)
-    else
-      formattedDocument = document.copy(consolidateBlocks: true).copyWithBaseBlockAttributes(blockAttributes)
-
-    blockCount = formattedDocument.getBlockCount()
-    firstBlock = formattedDocument.getBlockAtIndex(0)
-
-    if arraysAreEqual(blockAttributes, firstBlock.getAttributes())
-      position = @getPosition()
-      text = firstBlock.getTextWithoutBlockBreak()
-      @document.insertTextAtLocationRange(text, @getLocationRange())
-      position += text.getLength()
-
-      if blockCount > 1
-        formattedDocument = new Trix.Document formattedDocument.getBlocks().slice(1)
-        locationRange = @document.locationRangeFromPosition(position)
-        @document.insertDocumentAtLocationRange(formattedDocument, locationRange)
-        position += formattedDocument.getLength()
-
-      @setPosition(position)
-    else
-      @insertDocument(formattedDocument)
-
   pasteHTML: (html) ->
+    startPosition = @getPosition()
+    startLength = @document.getLength()
+
     document = Trix.Document.fromHTML(html)
-    @pasteDocument(document)
+    @document.mergeDocumentAtLocationRange(document, @getLocationRange())
+
+    endLength = @document.getLength()
+    @setPosition(startPosition + (endLength - startLength))
 
   replaceHTML: (html) ->
     document = Trix.Document.fromHTML(html).copyUsingObjectsFromDocument(@document)

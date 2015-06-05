@@ -3,6 +3,8 @@
 #= require trix/models/location_range
 #= require trix/models/html_parser
 
+{arraysAreEqual} = Trix
+
 editOperationLog = Trix.Logger.get("editOperations")
 
 class Trix.Document extends Trix.Object
@@ -120,6 +122,32 @@ class Trix.Document extends Trix.Object
 
     @removeTextAtLocationRange(locationRange)
     @blockList = @blockList.insertSplittableListAtPosition(document.blockList, startPosition)
+
+  mergeDocumentAtLocationRange: edit "mergeDocumentAtLocationRange", (document, locationRange) ->
+    blockAttributes = @getBlockAtIndex(locationRange.index).getAttributes()
+    baseBlockAttributes = document.getBaseBlockAttributes()
+    trailingBlockAttributes = blockAttributes.slice(-baseBlockAttributes.length)
+
+    if arraysAreEqual(baseBlockAttributes, trailingBlockAttributes)
+      leadingBlockAttributes = blockAttributes.slice(0, -baseBlockAttributes.length)
+      formattedDocument = document.copyWithBaseBlockAttributes(leadingBlockAttributes)
+    else
+      formattedDocument = document.copy(consolidateBlocks: true).copyWithBaseBlockAttributes(blockAttributes)
+
+    blockCount = formattedDocument.getBlockCount()
+    firstBlock = formattedDocument.getBlockAtIndex(0)
+
+    if arraysAreEqual(blockAttributes, firstBlock.getAttributes())
+      firstText = firstBlock.getTextWithoutBlockBreak()
+      @insertTextAtLocationRange(firstText, locationRange)
+
+      if blockCount > 1
+        [startPosition, endPosition] = @rangeFromLocationRange(locationRange)
+        formattedDocument = new @constructor formattedDocument.getBlocks().slice(1)
+        locationRange = @locationRangeFromPosition(startPosition + firstText.getLength())
+        @insertDocumentAtLocationRange(formattedDocument, locationRange)
+    else
+      @insertDocumentAtLocationRange(formattedDocument, locationRange)
 
   replaceDocument: edit "replaceDocument", (document) ->
     @blockList = document.blockList.copy()
