@@ -1,24 +1,25 @@
 GIT
   remote: git://github.com/javan/blade_runner-sauce.git
-  revision: 577f112b94f1092af8a81b228641cb5971d1698c
+  revision: 5a35c85ca625e9821e3ff58dc9e04364270c8e77
   specs:
     blade_runner-sauce (0.1.0)
+      childprocess
       faraday
 
 GIT
   remote: git://github.com/javan/blade_runner.git
-  revision: a23babd9a3bf84a46d1e996762fd11f6fb7f1260
+  revision: 0c0e7d3c14696a6a5f771465bd8785eb722777a7
   specs:
     blade_runner (0.1.0)
-      childprocess
+      activesupport
       coffee-script
       coffee-script-source
       curses
       eventmachine
       faye
-      listen
-      puma
       sprockets
+      thin
+      useragent
 
 PATH
   remote: .
@@ -28,9 +29,13 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    activesupport (4.2.1)
+      i18n (~> 0.7)
+      json (~> 1.7, >= 1.7.7)
+      minitest (~> 5.1)
+      thread_safe (~> 0.3, >= 0.3.4)
+      tzinfo (~> 1.1)
     addressable (2.3.8)
-    celluloid (0.16.0)
-      timers (~> 4.0.0)
     childprocess (0.5.6)
       ffi (~> 1.0, >= 1.0.11)
     coffee-script (2.4.1)
@@ -39,6 +44,7 @@ GEM
     coffee-script-source (1.9.1.1)
     cookiejar (0.3.2)
     curses (1.0.1)
+    daemons (1.2.2)
     ejs (1.1.1)
     em-http-request (1.1.2)
       addressable (>= 2.3.4)
@@ -64,31 +70,29 @@ GEM
       eventmachine (>= 0.12.0)
       websocket-driver (>= 0.5.1)
     ffi (1.9.8)
-    hitimes (1.2.2)
     http_parser.rb (0.6.0)
+    i18n (0.7.0)
     json (1.8.1)
-    listen (2.10.0)
-      celluloid (~> 0.16.0)
-      rb-fsevent (>= 0.9.3)
-      rb-inotify (>= 0.9)
+    minitest (5.7.0)
     multi_json (1.11.0)
     multipart-post (2.0.0)
-    puma (2.11.2)
-      rack (>= 1.1, < 2.0)
-    rack (1.6.0)
+    rack (1.6.1)
     rack-rewrite (1.5.0)
     rake (10.0.4)
-    rb-fsevent (0.9.4)
-    rb-inotify (0.9.5)
-      ffi (>= 0.5.0)
     sass (3.4.3)
-    sprockets (3.0.0)
+    sprockets (3.2.0)
       rack (~> 1.0)
-    timers (4.0.1)
-      hitimes
+    thin (1.6.3)
+      daemons (~> 1.0, >= 1.0.9)
+      eventmachine (~> 1.0)
+      rack (~> 1.0)
+    thread_safe (0.3.5)
+    tzinfo (1.2.2)
+      thread_safe (~> 0.1)
     uglifier (2.5.1)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
+    useragent (0.13.3)
     websocket-driver (0.5.4)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)

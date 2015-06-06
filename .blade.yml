@@ -9,18 +9,15 @@ test_scripts:
   - polyfills.js
   - test.js
 
-watch_files:
-  - src
-  - test/src
-
-plugins:
-  sauce:
-    browsers:
-      - name: "Google Chrome"
-        platforms: ["Mac", "Windows"]
-      - name: "Safari"
-        platforms: ["Mac"]
-      - name: "Firefox"
-        platforms: ["Mac", "Windows"]
-      - name: "Internet Explorer"
-        platforms: ["Windows"]
+ci:
+  plugins:
+    sauce:
+      browsers:
+        - name: "Google Chrome"
+          platforms: ["Mac", "Windows"]
+        - name: "Safari"
+          platforms: ["Mac"]
+        - name: "Firefox"
+          platforms: ["Mac", "Windows"]
+        - name: "Internet Explorer"
+          platforms: ["Windows"]
