@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/javan/blade_runner-sauce.git
-  revision: 5a35c85ca625e9821e3ff58dc9e04364270c8e77
+  revision: cb9446569153702e845fd4d13a374f814680d1d7
   specs:
     blade_runner-sauce (0.1.0)
       childprocess
