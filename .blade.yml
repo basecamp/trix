@@ -1,11 +1,11 @@
 framework: qunit
 
-asset_paths:
+load_paths:
   - test/src
   - src
   - polyfills
 
-test_scripts:
+logical_paths:
   - polyfills.js
   - test.js
 

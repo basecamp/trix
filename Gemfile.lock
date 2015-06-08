@@ -8,18 +8,18 @@ GIT
 
 GIT
   remote: git://github.com/javan/blade_runner.git
-  revision: 0c0e7d3c14696a6a5f771465bd8785eb722777a7
+  revision: 39d87a495f6b85a1ceb1a0f51e5a992612fb8c92
   specs:
     blade_runner (0.1.0)
-      activesupport
-      coffee-script
-      coffee-script-source
-      curses
-      eventmachine
-      faye
-      sprockets
-      thin
-      useragent
+      activesupport (>= 3.0.0)
+      coffee-script (~> 2.4.0)
+      coffee-script-source (~> 1.9.0)
+      curses (~> 1.0.0)
+      eventmachine (~> 1.0.0)
+      faye (~> 1.1.1)
+      sprockets (~> 3.2.0)
+      thin (~> 1.6.0)
+      useragent (~> 0.13.0)
 
 PATH
   remote: .
@@ -72,7 +72,7 @@ GEM
     ffi (1.9.8)
     http_parser.rb (0.6.0)
     i18n (0.7.0)
-    json (1.8.1)
+    json (1.8.3)
     minitest (5.7.0)
     multi_json (1.11.0)
     multipart-post (2.0.0)
@@ -112,3 +112,6 @@ DEPENDENCIES
   sprockets
   trix!
   uglifier
+
+BUNDLED WITH
+   1.10.3
