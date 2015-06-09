@@ -41,7 +41,17 @@ class Trix.LocationMapper
     location
 
   findContainerAndOffsetFromLocation: (location) ->
-    return [@element, 0] if location.index is 0 and location.offset is 0
+    if location.index is 0 and location.offset is 0
+      container = @element
+      offset = 0
+
+      while container.firstChild
+        container = container.firstChild
+        if nodeIsBlockContainer(container)
+          offset = 1
+          break
+
+      return [container, offset]
 
     [node, nodeOffset] = @findNodeAndOffsetFromLocation(location)
     return unless node
