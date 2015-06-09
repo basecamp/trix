@@ -100,7 +100,6 @@ test "findContainerAndOffsetFromLocation: (0/0)", ->
     ],"attributes":["bulletList","bullet"]},
   ]
 
-  console.log element.innerHTML
   location = index: 0, offset: 0
   container = findContainer([0, 0])
   offset = 1
