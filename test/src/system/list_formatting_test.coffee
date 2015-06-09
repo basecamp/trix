@@ -16,3 +16,13 @@ editorTest "breaking out of a list", (expectDocument) ->
         expectBlockAttributes([0, 2], ["bulletList", "bullet"])
         expectBlockAttributes([2, 3], [])
         expectDocument("a\n\n")
+
+editorTest "pressing return at the beginning of a non-empty list item", (expectDocument) ->
+  clickToolbarButton attribute: "bullet", ->
+    typeCharacters "a\nb", ->
+      moveCursor "left", ->
+        pressKey "return", ->
+          expectBlockAttributes([0, 2], ["bulletList", "bullet"])
+          expectBlockAttributes([2, 3], ["bulletList", "bullet"])
+          expectBlockAttributes([3, 5], ["bulletList", "bullet"])
+          expectDocument("a\n\nb\n")

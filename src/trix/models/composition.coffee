@@ -106,6 +106,9 @@ class Trix.Composition extends Trix.BasicObject
       if blockConfig?.listAttribute
         if block.isEmpty()
           @removeLastBlockAttribute()
+        else if locationRange.start.offset is 0
+          document = new Trix.Document [block.copyWithoutText()]
+          @insertDocument(document)
         else
           @insertBlockBreak()
       else
