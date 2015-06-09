@@ -169,9 +169,11 @@ class Trix.Document extends Trix.Object
     rightText = rightBlock.text.getTextAtRange([locationRange.end.offset, rightBlock.getLength()])
 
     text = leftText.appendText(rightText)
-    removingLeftBlock = leftIndex isnt rightIndex and locationRange.start.offset is 0
 
-    if removingLeftBlock
+    removingLeftBlock = leftIndex isnt rightIndex and locationRange.start.offset is 0
+    useRightBlock = removingLeftBlock and leftBlock.getAttributeLevel() >= rightBlock.getAttributeLevel()
+
+    if useRightBlock
       block = rightBlock.copyWithText(text)
     else
       block = leftBlock.copyWithText(text)

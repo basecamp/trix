@@ -201,6 +201,36 @@ editorTest "backspacing a list item inside a quote", (done) ->
           expectBlockAttributes([0, 1], [])
           done()
 
+editorTest "backspacing selected nested list items", (expectDocument) ->
+  clickToolbarButton attribute: "bullet", ->
+    typeCharacters "a\n", ->
+      clickToolbarButton action: "increaseBlockLevel", ->
+        typeCharacters "b", ->
+          getSelectionManager().setLocationRange([0, 0], [1, 1])
+          pressKey "backspace", ->
+            expectBlockAttributes([0, 1], ["bulletList", "bullet"])
+            expectDocument("\n")
+
+editorTest "backspace selection spanning formatted blocks", (expectDocument) ->
+  clickToolbarButton attribute: "quote", ->
+    typeCharacters "ab\n\n", ->
+      clickToolbarButton attribute: "code", ->
+        typeCharacters "cd", ->
+          getSelectionManager().setLocationRange([0, 1], [1, 1])
+          getComposition().deleteInDirection("backward")
+          expectBlockAttributes([0, 2], ["quote"])
+          expectDocument("ad\n")
+
+editorTest "backspace selection spanning and entire formatted block and a formatted block", (expectDocument) ->
+  clickToolbarButton attribute: "quote", ->
+    typeCharacters "ab\n\n", ->
+      clickToolbarButton attribute: "code", ->
+        typeCharacters "cd", ->
+          getSelectionManager().setLocationRange([0, 0], [1, 1])
+          getComposition().deleteInDirection("backward")
+          expectBlockAttributes([0, 2], ["code"])
+          expectDocument("d\n")
+
 editorTest "increasing list level", (done) ->
   ok isToolbarButtonDisabled(action: "increaseBlockLevel")
   ok isToolbarButtonDisabled(action: "decreaseBlockLevel")
