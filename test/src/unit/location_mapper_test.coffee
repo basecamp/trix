@@ -106,6 +106,28 @@ test "findContainerAndOffsetFromLocation: (0/0)", ->
 
   deepEqual mapper.findContainerAndOffsetFromLocation(location), [container, offset]
 
+test "findContainerAndOffsetFromLocation after newline in formatted text", ->
+  setDocument [
+    # <trix-document>
+    # 0 <div>
+    #     0 <!--block-->
+    #     0 <strong>
+    #         0 a
+    #         1 <br>
+    #       </strong>
+    #   </div>
+    # </trix-document>
+    {"text":[
+      {"type":"string","attributes":{"bold":true},"string":"a\n"}
+      {"type":"string","attributes":{"blockBreak":true},"string":"\n"}
+    ],"attributes":[]},
+  ]
+
+  location = index: 0, offset: 2
+  container = findContainer([0])
+  offset = 2
+
+  deepEqual mapper.findContainerAndOffsetFromLocation(location), [container, offset]
 
 # ---
 document = null
