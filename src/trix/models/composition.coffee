@@ -105,7 +105,9 @@ class Trix.Composition extends Trix.BasicObject
       blockConfig = Trix.config.blockAttributes[block.getLastAttribute()]
       if blockConfig?.listAttribute
         if block.isEmpty()
-          @removeLastBlockAttribute()
+          position = @getPosition()
+          @decreaseListLevel()
+          @setPosition(position)
         else if locationRange.start.offset is 0
           document = new Trix.Document [block.copyWithoutText()]
           @insertDocument(document)
@@ -145,16 +147,18 @@ class Trix.Composition extends Trix.BasicObject
 
   deleteInDirection: (direction) ->
     locationRange = @getLocationRange()
+    block = @getBlock()
 
     if locationRange.isCollapsed()
-      if direction is "backward" and locationRange.offset is 0
+      if direction is "backward" and locationRange.offset is 0 and block.isEmpty()
         if @canDecreaseBlockAttributeLevel()
+          position = @getPosition()
           if @isEditingListItem()
-            @decreaseBlockAttributeLevel() while @isEditingListItem()
+            @decreaseListLevel()
           else
             @decreaseBlockAttributeLevel()
-            @setLocationRange(locationRange)
-            return
+          @setPosition(position)
+          return
 
       range = @getExpandedRangeInDirection(direction)
       locationRange = @document.locationRangeFromRange(range)
@@ -252,6 +256,21 @@ class Trix.Composition extends Trix.BasicObject
   decreaseBlockAttributeLevel: ->
     if attribute = @getBlock()?.getLastAttribute()
       @removeCurrentAttribute(attribute)
+
+  decreaseListLevel: ->
+    position = @getPosition()
+    locationRange = @getLocationRange()
+    {index} = locationRange
+    level = @getBlock().getAttributeLevel()
+
+    for block in @document.getBlocks().slice(index + 1)
+      if Trix.config.blockAttributes[block.getLastAttribute()]?.listAttribute and block.getAttributeLevel() > level
+        index++
+      else
+        break
+
+    locationRange.end.index = index
+    @document.removeLastListAttributeAtLocationRange(locationRange)
 
   canIncreaseBlockAttributeLevel: ->
     return unless block = @getBlock()
