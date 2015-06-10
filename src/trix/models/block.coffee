@@ -65,6 +65,14 @@ class Trix.Block extends Trix.Object
   hasAttributes: ->
     @getAttributeLevel() > 0
 
+  getConfig: (key) ->
+    return unless attribute = @getLastAttribute()
+    return unless config = Trix.config.blockAttributes[attribute]
+    if key then config[key] else config
+
+  isListItem: ->
+    @getConfig("listAttribute")?
+
   findLineBreakInDirectionFromPosition: (direction, position) ->
     string = @toString()
     result = switch direction

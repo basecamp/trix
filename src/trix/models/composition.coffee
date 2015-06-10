@@ -101,9 +101,7 @@ class Trix.Composition extends Trix.BasicObject
     block = @document.getBlockAtIndex(index)
 
     if block.hasAttributes()
-      attributes = block.getAttributes()
-      blockConfig = Trix.config.blockAttributes[block.getLastAttribute()]
-      if blockConfig?.listAttribute
+      if block.isListItem()
         if block.isEmpty()
           position = @getPosition()
           @decreaseListLevel()
@@ -153,7 +151,7 @@ class Trix.Composition extends Trix.BasicObject
       if direction is "backward" and locationRange.offset is 0 and block.isEmpty()
         if @canDecreaseBlockAttributeLevel()
           position = @getPosition()
-          if @isEditingListItem()
+          if block.isListItem()
             @decreaseListLevel()
           else
             @decreaseBlockAttributeLevel()
@@ -264,7 +262,7 @@ class Trix.Composition extends Trix.BasicObject
     level = @getBlock().getAttributeLevel()
 
     for block in @document.getBlocks().slice(index + 1)
-      if Trix.config.blockAttributes[block.getLastAttribute()]?.listAttribute and block.getAttributeLevel() > level
+      if block.isListItem() and block.getAttributeLevel() > level
         index++
       else
         break
@@ -274,20 +272,16 @@ class Trix.Composition extends Trix.BasicObject
 
   canIncreaseBlockAttributeLevel: ->
     return unless block = @getBlock()
-    return unless attribute = block.getLastAttribute()
-    return unless config = Trix.config.blockAttributes[attribute]
-    if config.listAttribute
+    nestable = block.getConfig("nestable")
+    if nestable?
+      nestable
+    else if block.isListItem()
       if previousBlock = @getPreviousBlock()
-        previousBlock.getAttributeAtLevel(block.getAttributeLevel()) is attribute
-    else
-      config.nestable
+        level = block.getAttributeLevel()
+        previousBlock.getAttributeAtLevel(level) is block.getAttributeAtLevel(level)
 
   canDecreaseBlockAttributeLevel: ->
     @getBlock()?.getAttributeLevel() > 0
-
-  isEditingListItem: ->
-    if attribute = @getBlock()?.getLastAttribute()
-      Trix.config.blockAttributes[attribute].listAttribute
 
   updateCurrentAttributes: ->
     @currentAttributes =
