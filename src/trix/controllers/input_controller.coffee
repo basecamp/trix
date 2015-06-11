@@ -246,11 +246,11 @@ class Trix.InputController extends Trix.BasicObject
   keys:
     backspace: (event) ->
       @delegate?.inputControllerWillPerformTyping()
-      @deleteInDirection("backward")
+      @deleteInDirection("backward", event)
 
     delete: (event) ->
       @delegate?.inputControllerWillPerformTyping()
-      @deleteInDirection("forward")
+      @deleteInDirection("forward", event)
 
     return: (event) ->
       @setInputSummary(preferDocument: true)
@@ -276,11 +276,11 @@ class Trix.InputController extends Trix.BasicObject
     control:
       d: (event) ->
         @delegate?.inputControllerWillPerformTyping()
-        @deleteInDirection("forward")
+        @deleteInDirection("forward", event)
 
       h: (event) ->
         @delegate?.inputControllerWillPerformTyping()
-        @deleteInDirection("backward")
+        @deleteInDirection("backward", event)
 
       o: (event) ->
         event.preventDefault()
@@ -321,9 +321,11 @@ class Trix.InputController extends Trix.BasicObject
 
   # Private
 
-  deleteInDirection: (direction) ->
-    @responder?.deleteInDirection(direction)
-    @setInputSummary(didDelete: true)
+  deleteInDirection: (direction, event) ->
+    if @responder?.deleteInDirection(direction) is false
+      event?.preventDefault()
+    else
+      @setInputSummary(didDelete: true)
 
   serializeSelectionToDataTransfer: (dataTransfer) ->
     return unless dataTransfer?.setData?
