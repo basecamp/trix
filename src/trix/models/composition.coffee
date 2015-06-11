@@ -256,18 +256,15 @@ class Trix.Composition extends Trix.BasicObject
       @removeCurrentAttribute(attribute)
 
   decreaseListLevel: ->
-    position = @getPosition()
-    locationRange = @getLocationRange()
-    {index} = locationRange
-    level = @getBlock().getAttributeLevel()
+    {index} = @getLocationRange()
+    endIndex = index
+    attributeLevel = @getBlock().getAttributeLevel()
 
-    for block in @document.getBlocks().slice(index + 1)
-      if block.isListItem() and block.getAttributeLevel() > level
-        index++
-      else
-        break
+    while block = @document.getBlockAtIndex(endIndex + 1)
+      break unless block.isListItem() and block.getAttributeLevel() > attributeLevel
+      endIndex++
 
-    locationRange.end.index = index
+    locationRange = new Trix.LocationRange [index, 0], [endIndex, 0]
     @document.removeLastListAttributeAtLocationRange(locationRange)
 
   canIncreaseBlockAttributeLevel: ->
