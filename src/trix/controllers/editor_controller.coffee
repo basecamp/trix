@@ -244,9 +244,9 @@ class Trix.EditorController extends Trix.Controller
     @render()
     @documentController.focus()
 
-  toolbarWillShowDialog: (willFocus) ->
+  toolbarWillShowDialog: ->
     @composition.expandSelectionForEditing()
-    @freezeSelection() if willFocus
+    @freezeSelection()
 
   toolbarDidHideDialog: ->
     @documentController.focus()
