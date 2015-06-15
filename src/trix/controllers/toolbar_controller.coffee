@@ -120,6 +120,8 @@ class Trix.ToolbarController extends Trix.BasicObject
       input.value = @attributes[attributeName] ? ""
       input.select()
 
+    @delegate?.toolbarDidShowDialog(element)
+
   setAttribute: (dialogElement) ->
     attributeName = getAttributeName(dialogElement)
     input = getInputForDialog(dialogElement, attributeName)
@@ -136,10 +138,10 @@ class Trix.ToolbarController extends Trix.BasicObject
     @hideDialog()
 
   hideDialog: ->
-    if activeDialog = @element.querySelector(activeDialogSelector)
-      activeDialog.classList.remove("active")
+    if element = @element.querySelector(activeDialogSelector)
+      element.classList.remove("active")
       @resetDialogInputs()
-      @delegate?.toolbarDidHideDialog()
+      @delegate?.toolbarDidHideDialog(element)
 
   resetDialogInputs: ->
     for input in @element.querySelectorAll(dialogInputSelector)

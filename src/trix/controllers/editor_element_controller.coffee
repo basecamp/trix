@@ -53,6 +53,12 @@ class Trix.EditorElementController extends Trix.Controller
   didInvokeExternalAction: (actionName) ->
     triggerEvent("trix-action-invoke", onElement: @element, attributes: {actionName})
 
+  didShowToolbarDialog: (dialogElement) ->
+    triggerEvent("trix-toolbar-dialog-show", onElement: dialogElement)
+
+  didHideToolbarDialog: (dialogElement) ->
+    triggerEvent("trix-toolbar-dialog-hide", onElement: dialogElement)
+
   # Private
 
   saveAndNotify: =>

@@ -244,13 +244,17 @@ class Trix.EditorController extends Trix.Controller
     @render()
     @documentController.focus()
 
-  toolbarWillShowDialog: ->
+  toolbarWillShowDialog: (dialogElement) ->
     @composition.expandSelectionForEditing()
     @freezeSelection()
 
-  toolbarDidHideDialog: ->
+  toolbarDidShowDialog: (dialogElement) ->
+    @delegate?.didShowToolbarDialog?(dialogElement)
+
+  toolbarDidHideDialog: (dialogElement) ->
     @documentController.focus()
     @thawSelection()
+    @delegate?.didHideToolbarDialog?(dialogElement)
 
   toolbarActionIsExternal = (actionName) ->
     /^x-./.test(actionName)
