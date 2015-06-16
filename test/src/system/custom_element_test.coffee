@@ -71,6 +71,7 @@ editorTest "element triggers toolbar dialog events", (done) ->
     events.push(event.type)
 
   clickToolbarButton action: "link", ->
-    getDocumentElement().focus()
-    deepEqual events, ["trix-toolbar-dialog-show", "trix-toolbar-dialog-hide"]
-    done()
+    typeInToolbarDialog "http://example.com", attribute: "href", ->
+      defer ->
+        deepEqual events, ["trix-toolbar-dialog-show", "trix-toolbar-dialog-hide"]
+        done()
