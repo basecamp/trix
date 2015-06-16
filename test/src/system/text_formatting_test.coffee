@@ -107,6 +107,17 @@ editorTest "applying formatting and then moving the cursor away", (done) ->
             expectAttributes([3, 4], blockBreak: true)
             done()
 
+editorTest "applying formatting to an unfocused editor", (done) ->
+  input = Trix.makeElement("input", type: "text")
+  document.body.appendChild(input)
+  input.focus()
+
+  clickToolbarButton attribute: "bold", ->
+    typeCharacters "a", ->
+      expectAttributes([0, 1], bold: true)
+      document.body.removeChild(input)
+      done()
+
 editorTest "editing formatted text", (done) ->
   clickToolbarButton attribute: "bold", ->
     typeCharacters "ab", ->

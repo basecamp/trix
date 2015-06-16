@@ -22,6 +22,7 @@ class Trix.ToolbarController extends Trix.BasicObject
   # Event handlers
 
   didClickActionButton: (event, element) =>
+    @delegate?.toolbarDidClickButton()
     event.preventDefault()
     actionName = getActionName(element)
 
@@ -31,6 +32,7 @@ class Trix.ToolbarController extends Trix.BasicObject
       @delegate?.toolbarDidInvokeAction(actionName)
 
   didClickAttributeButton: (event, element) =>
+    @delegate?.toolbarDidClickButton()
     event.preventDefault()
     attributeName = getAttributeName(element)
 

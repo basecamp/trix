@@ -214,6 +214,9 @@ class Trix.EditorController extends Trix.Controller
       test: -> @composition.canEditAttachmentCaption()
       perform: -> @documentController.editAttachmentCaption()
 
+  toolbarDidClickButton: ->
+    @updateLocationRange() unless @getLocationRange()
+
   toolbarCanInvokeAction: (actionName) ->
     if toolbarActionIsExternal(actionName)
       true
