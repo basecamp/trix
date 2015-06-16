@@ -59,3 +59,18 @@ editorTest "element triggers selectionchange events when the location range chan
     moveCursor "left", ->
       equal eventCount, 2
       done()
+
+editorTest "element triggers toolbar dialog events", (done) ->
+  element = getEditorElement()
+  events = []
+
+  element.addEventListener "trix-toolbar-dialog-show", (event) ->
+    events.push(event.type)
+
+  element.addEventListener "trix-toolbar-dialog-hide", (event) ->
+    events.push(event.type)
+
+  clickToolbarButton action: "link", ->
+    getDocumentElement().focus()
+    deepEqual events, ["trix-toolbar-dialog-show", "trix-toolbar-dialog-hide"]
+    done()
