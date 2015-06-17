@@ -85,7 +85,8 @@ editorTest "element triggers paste event with location range", (done) ->
     eventCount++
     {locationRange} = event
 
-  pasteContent "text/html", "<strong>hello</strong>", ->
-    equal eventCount, 1
-    equal locationRange?.inspect(), new Trix.LocationRange([0,5]).inspect()
-    done()
+  typeCharacters "", ->
+    pasteContent "text/html", "<strong>hello</strong>", ->
+      equal eventCount, 1
+      equal locationRange?.inspect(), new Trix.LocationRange([0,5]).inspect()
+      done()
