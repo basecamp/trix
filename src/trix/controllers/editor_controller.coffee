@@ -88,6 +88,7 @@ class Trix.EditorController extends Trix.Controller
   compositionDidRequestLocationRange: (locationRange) ->
     @requestedLocationRange = locationRange
     @editCountWhenLocationRangeRequested = @document.getEditCount()
+    @render() unless @handlingInput
 
   compositionDidRestoreSnapshot: ->
     @documentController.refreshViewCache()
