@@ -86,9 +86,9 @@ class Trix.InputController extends Trix.BasicObject
   # File verification
 
   attachFiles: (files) ->
-    @handleInput ->
-      operations = (new Trix.FileVerificationOperation(file) for file in files)
-      Promise.all(operations).then (files) =>
+    operations = (new Trix.FileVerificationOperation(file) for file in files)
+    Promise.all(operations).then (files) =>
+      @handleInput ->
         @delegate?.inputControllerWillAttachFiles()
         @responder?.insertFile(file) for file in files
         @requestRender()
