@@ -147,9 +147,16 @@ class Trix.EditorController extends Trix.Controller
 
   inputControllerWillHandleInput: ->
     @handlingInput = true
+    @requestedRender = false
+
+  inputControllerDidRequestRender: ->
+    @requestedRender = true
 
   inputControllerDidHandleInput: ->
     @handlingInput = false
+    if @requestedRender
+      @requestedRender = false
+      @render()
 
   inputControllerWillPerformTyping: ->
     @recordTypingUndoEntry()
@@ -187,9 +194,6 @@ class Trix.EditorController extends Trix.Controller
   inputControllerDidCancelDrag: ->
     @selectionManager.setLocationRange(@locationRangeBeforeDrag)
     delete @locationRangeBeforeDrag
-
-  inputControllerDidRequestRender: ->
-    @render()
 
   # Selection manager delegate
 
