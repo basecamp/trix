@@ -31,11 +31,12 @@ class Trix.InputController extends Trix.BasicObject
 
   handlerFor: (eventName) ->
     (event) =>
-      unless innerElementIsActive(@element)
-        @eventName = eventName
-        inputLog.group(eventName)
-        @events[eventName].call(this, event)
-        inputLog.groupEnd()
+      @handleInput ->
+        unless innerElementIsActive(@element)
+          @eventName = eventName
+          inputLog.group(eventName)
+          @events[eventName].call(this, event)
+          inputLog.groupEnd()
 
   setInputSummary: (summary = {}) ->
     @inputSummary.eventName = @eventName
@@ -59,18 +60,19 @@ class Trix.InputController extends Trix.BasicObject
   # Mutation observer delegate
 
   elementDidMutate: (mutationSummary) ->
-    inputLog.group("Mutation")
-    inputLog.log("mutationSummary =", JSON.stringify(mutationSummary))
-    inputLog.log("inputSummary =", JSON.stringify(@inputSummary))
+    @handleInput ->
+      inputLog.group("Mutation")
+      inputLog.log("mutationSummary =", JSON.stringify(mutationSummary))
+      inputLog.log("inputSummary =", JSON.stringify(@inputSummary))
 
-    unless @mutationIsExpected(mutationSummary)
-      inputLog.log("mutation is unexpected, replacing HTML")
-      @responder?.replaceHTML(@element.innerHTML)
-    @resetInputSummary()
-    @requestRender()
-    Trix.selectionChangeObserver.reset()
+      unless @mutationIsExpected(mutationSummary)
+        inputLog.log("mutation is unexpected, replacing HTML")
+        @responder?.replaceHTML(@element.innerHTML)
+      @resetInputSummary()
+      @requestRender()
+      Trix.selectionChangeObserver.reset()
 
-    inputLog.groupEnd()
+      inputLog.groupEnd()
 
   mutationIsExpected: (mutationSummary) ->
     if @inputSummary
@@ -84,11 +86,12 @@ class Trix.InputController extends Trix.BasicObject
   # File verification
 
   attachFiles: (files) ->
-    operations = (new Trix.FileVerificationOperation(file) for file in files)
-    Promise.all(operations).then (files) =>
-      @delegate?.inputControllerWillAttachFiles()
-      @responder?.insertFile(file) for file in files
-      @requestRender()
+    @handleInput ->
+      operations = (new Trix.FileVerificationOperation(file) for file in files)
+      Promise.all(operations).then (files) =>
+        @delegate?.inputControllerWillAttachFiles()
+        @responder?.insertFile(file) for file in files
+        @requestRender()
 
   # Input handlers
 
@@ -328,6 +331,13 @@ class Trix.InputController extends Trix.BasicObject
         @delegate?.inputControllerWillPerformTyping()
 
   # Private
+
+  handleInput: (callback) ->
+    try
+      @delegate?.inputControllerWillHandleInput()
+      callback.call(this)
+    finally
+      @delegate?.inputControllerDidHandleInput()
 
   deleteInDirection: (direction, event) ->
     if @responder?.deleteInDirection(direction) is false

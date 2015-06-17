@@ -51,6 +51,7 @@ class Trix.EditorController extends Trix.Controller
 
   compositionDidChangeDocument: (document) ->
     @delegate?.didChangeDocument?(document)
+    @render() unless @handlingInput
 
   compositionDidChangeCurrentAttributes: (@currentAttributes) ->
     @toolbarController.updateAttributes(@currentAttributes)
@@ -143,6 +144,12 @@ class Trix.EditorController extends Trix.Controller
     @removeAttachment(attachment)
 
   # Input controller delegate
+
+  inputControllerWillHandleInput: ->
+    @handlingInput = true
+
+  inputControllerDidHandleInput: ->
+    @handlingInput = false
 
   inputControllerWillPerformTyping: ->
     @recordTypingUndoEntry()
