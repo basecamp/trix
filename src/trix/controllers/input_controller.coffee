@@ -178,8 +178,16 @@ class Trix.InputController extends Trix.BasicObject
       delete @draggingPoint
 
     cut: (event) ->
+      if @serializeSelectionToDataTransfer(event.clipboardData)
+        event.preventDefault()
+
       @delegate?.inputControllerWillCutText()
       @deleteInDirection("backward")
+      @requestRender() if event.defaultPrevented
+
+    copy: (event) ->
+      if @serializeSelectionToDataTransfer(event.clipboardData)
+        event.preventDefault()
 
     paste: (event) ->
       paste = event.clipboardData ? event.testClipboardData
@@ -338,6 +346,7 @@ class Trix.InputController extends Trix.BasicObject
     dataTransfer.setData("application/x-trix-document", JSON.stringify(document))
     dataTransfer.setData("text/html", html)
     dataTransfer.setData("text/plain", text)
+    true
 
   canAcceptDataTransfer: (dataTransfer) ->
     types = {}
