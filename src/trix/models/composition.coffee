@@ -129,7 +129,11 @@ class Trix.Composition extends Trix.BasicObject
     @document.mergeDocumentAtLocationRange(document, @getLocationRange())
 
     endLength = @document.getLength()
-    @setPosition(startPosition + (endLength - startLength))
+    endPosition = startPosition + (endLength - startLength)
+    locationRange = @document.locationRangeFromPosition(endPosition)
+
+    @setLocationRange(locationRange)
+    @notifyDelegateOfInsertionAtLocationRange(locationRange)
 
   replaceHTML: (html) ->
     document = Trix.Document.fromHTML(html).copyUsingObjectsFromDocument(@document)
