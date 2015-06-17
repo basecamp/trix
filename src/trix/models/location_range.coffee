@@ -16,19 +16,23 @@ class Trix.LocationRange extends Trix.BasicObject
 
   constructor: (start, end) ->
     @start = parse(start)
-    @end = parse(end)
-
+    @end = if end? then parse(end) else copy(@start)
     {@index, @offset} = @start
-
-    unless @end?
-      @end = {}
-      @end[key] = val for key, val of @start
 
   parse = (location) ->
     if Array.isArray(location)
       index: location[0], offset: location[1]
     else
-      location
+      copy(location)
+
+  copy = (object) ->
+    return object unless object?
+    result = {}
+    result[key] = value for key, value of object
+    result
+
+  copy: ->
+    new @constructor @start, @end
 
   copyWithEndLocation: (end) ->
     new @constructor @start, end

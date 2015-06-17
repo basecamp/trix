@@ -10,10 +10,11 @@ class Trix.SelectionManager extends Trix.BasicObject
     @lockCount = 0
 
   getLocationRange: (options = {}) ->
-    if options.ignoreLock
+    locationRange = if options.ignoreLock
       @currentLocationRange
     else
       @lockedLocationRange ? @currentLocationRange
+    locationRange?.copy()
 
   setLocationRange: (start, end) ->
     return if @lockedLocationRange
@@ -87,7 +88,7 @@ class Trix.SelectionManager extends Trix.BasicObject
     locationRange ?= @createLocationRangeFromDOMRange(getDOMRange())
     if (@currentLocationRange and not locationRange) or not locationRange?.isEqualTo(@currentLocationRange)
       @currentLocationRange = locationRange
-      @delegate?.locationRangeDidChange?(@currentLocationRange)
+      @delegate?.locationRangeDidChange?(@currentLocationRange?.copy())
 
   createDOMRangeFromLocationRange: (locationRange) ->
     rangeStart = @findContainerAndOffsetFromLocation(locationRange.start)
