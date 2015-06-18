@@ -311,7 +311,6 @@ class Trix.Composition extends Trix.BasicObject
 
   # Location range
 
-  @proxyMethod "getSelectionManager().getLocationRange"
   @proxyMethod "getSelectionManager().setLocationRangeFromPoint"
   @proxyMethod "getSelectionManager().preserveSelection"
   @proxyMethod "getSelectionManager().locationIsCursorTarget"
@@ -336,6 +335,9 @@ class Trix.Composition extends Trix.BasicObject
   setLocation: (location) ->
     locationRange = new Trix.LocationRange location
     @setLocationRange(locationRange)
+
+  getLocationRange: ->
+    @getSelectionManager().getLocationRange() ? new Trix.LocationRange [0, 0]
 
   setLocationRange: ->
     @delegate?.compositionDidRequestLocationRange?(arguments...)
