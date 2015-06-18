@@ -7,6 +7,7 @@
 class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
     @locationMapper = new Trix.LocationMapper @element
+    @updateCurrentLocationRange(new Trix.LocationRange [0, 0])
     @lockCount = 0
 
   getLocationRange: (options = {}) ->

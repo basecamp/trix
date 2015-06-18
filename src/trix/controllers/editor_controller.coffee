@@ -33,7 +33,11 @@ class Trix.EditorController extends Trix.Controller
     for managedAttachment in @editor.getAttachments()
       @delegate?.didAddAttachment?(managedAttachment)
 
-    @updateLocationRange()
+    if @editor.locationRange?
+      @setLocationRange(@editor.locationRange)
+    else
+      @composition.updateCurrentAttributes()
+
     @render()
     @delegate?.didSetEditor?(editor)
 
@@ -227,7 +231,7 @@ class Trix.EditorController extends Trix.Controller
       perform: -> @documentController.editAttachmentCaption()
 
   toolbarDidClickButton: ->
-    @updateLocationRange() unless @getLocationRange()
+    @setLocationRange([0, 0]) unless @getLocationRange()
 
   toolbarCanInvokeAction: (actionName) ->
     if toolbarActionIsExternal(actionName)
@@ -307,9 +311,6 @@ class Trix.EditorController extends Trix.Controller
     @documentController = new Trix.DocumentController @documentElement, @document
     @documentController.delegate = this
     @render()
-
-  updateLocationRange: ->
-    @setLocationRange(@editor.locationRange ? [0,0])
 
   reparse: ->
     @composition.replaceHTML(@documentElement.innerHTML)
