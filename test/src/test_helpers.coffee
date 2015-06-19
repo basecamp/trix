@@ -31,6 +31,7 @@ for code, name of Trix.InputController.keyNames
 
   asyncTest name, ->
     defer ->
+      prepareEditor()
       if callback.length is 0
         callback()
         done()
@@ -125,6 +126,10 @@ for code, name of Trix.InputController.keyNames
 @replaceDocument = (document) ->
   getDocument().replaceDocument(document)
   render()
+
+prepareEditor = ->
+  if getDocumentElement().hasAttribute("autofocus")
+    getEditorController().setLocationRange([0, 0])
 
 render = ->
   getEditorController().render()

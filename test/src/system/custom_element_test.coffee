@@ -55,9 +55,9 @@ editorTest "element triggers selectionchange events when the location range chan
   element.addEventListener "selectionchange", (event) -> eventCount++
 
   typeCharacters "a", ->
-    equal eventCount, 2
+    equal eventCount, 1
     moveCursor "left", ->
-      equal eventCount, 3
+      equal eventCount, 2
       done()
 
 editorTest "element triggers toolbar dialog events", (done) ->
