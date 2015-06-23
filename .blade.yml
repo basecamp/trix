@@ -2,6 +2,7 @@ framework: qunit
 
 load_paths:
   - test/src
+  - test/blade_runner_assets
   - src
   - polyfills
 
@@ -11,7 +12,7 @@ logical_paths:
 
 ci:
   plugins:
-    sauce:
+    sauce_labs:
       browsers:
         - name: "Google Chrome"
           platforms: ["Mac", "Windows"]

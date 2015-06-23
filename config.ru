@@ -2,6 +2,7 @@ require 'bundler/setup'
 require 'rack/rewrite'
 require 'pathname'
 require 'json'
+require 'blade_runner'
 
 root = Pathname.new(File.dirname(__FILE__))
 
@@ -11,6 +12,9 @@ environment.paths = %w( assets polyfills src )
 
 require root.join('lib/trix/attachment_server')
 Trix::AttachmentServer.root = root.join('tmp/attachments')
+
+
+use BladeRunner::RackAdapter, mount: '/test'
 
 map '/' do
   run environment.sprockets_environment

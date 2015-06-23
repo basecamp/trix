@@ -1,15 +1,32 @@
 GIT
-  remote: git://github.com/javan/blade_runner-sauce.git
-  revision: cb9446569153702e845fd4d13a374f814680d1d7
+  remote: git://github.com/javan/blade_runner-qunit_adapter.git
+  revision: 961acc78da3207d9f49f054ab2d516fadd2c7d5e
   specs:
-    blade_runner-sauce (0.1.0)
+    blade_runner-qunit_adapter (0.1.0)
+
+GIT
+  remote: git://github.com/javan/blade_runner-sauce_labs_plugin.git
+  revision: 0cb36905420b0e10504bf42318776a09e88d5d83
+  specs:
+    blade_runner-sauce_labs_plugin (0.1.0)
       childprocess
       faraday
 
-GIT
-  remote: git://github.com/javan/blade_runner.git
-  revision: 39d87a495f6b85a1ceb1a0f51e5a992612fb8c92
+PATH
+  remote: .
   specs:
+    trix (0.8.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activesupport (4.2.2)
+      i18n (~> 0.7)
+      json (~> 1.7, >= 1.7.7)
+      minitest (~> 5.1)
+      thread_safe (~> 0.3, >= 0.3.4)
+      tzinfo (~> 1.1)
+    addressable (2.3.8)
     blade_runner (0.1.0)
       activesupport (>= 3.0.0)
       coffee-script (~> 2.4.0)
@@ -20,22 +37,6 @@ GIT
       sprockets (~> 3.2.0)
       thin (~> 1.6.0)
       useragent (~> 0.13.0)
-
-PATH
-  remote: .
-  specs:
-    trix (0.8.0)
-
-GEM
-  remote: https://rubygems.org/
-  specs:
-    activesupport (4.2.1)
-      i18n (~> 0.7)
-      json (~> 1.7, >= 1.7.7)
-      minitest (~> 5.1)
-      thread_safe (~> 0.3, >= 0.3.4)
-      tzinfo (~> 1.1)
-    addressable (2.3.8)
     childprocess (0.5.6)
       ffi (~> 1.0, >= 1.0.11)
     coffee-script (2.4.1)
@@ -74,7 +75,7 @@ GEM
     i18n (0.7.0)
     json (1.8.3)
     minitest (5.7.0)
-    multi_json (1.11.0)
+    multi_json (1.11.1)
     multipart-post (2.0.0)
     rack (1.6.1)
     rack-rewrite (1.5.0)
@@ -101,8 +102,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  blade_runner!
-  blade_runner-sauce!
+  blade_runner
+  blade_runner-qunit_adapter!
+  blade_runner-sauce_labs_plugin!
   coffee-script
   coffee-script-source (~> 1.9.1)
   ejs
@@ -112,6 +114,3 @@ DEPENDENCIES
   sprockets
   trix!
   uglifier
-
-BUNDLED WITH
-   1.10.3
