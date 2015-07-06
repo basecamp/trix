@@ -47,6 +47,8 @@ Trix.defineElement class extends Trix.Element
 
     @editorController.registerSelectionManager()
 
+    @setAttribute("document", @editorController.document.id)
+
   findOrCreateToolbarElement = (parentElement) ->
     unless element = parentElement.querySelector("trix-toolbar")
       element = makeElement("trix-toolbar")
