@@ -366,17 +366,15 @@ class Trix.Document extends Trix.Object
       callback(block, textRange, locationRange.index)
     else
       locationRange.eachIndex (index) =>
-        block = @getBlockAtIndex(index)
-
-        textRange = switch index
-          when locationRange.start.index
-            [locationRange.start.offset, block.text.getLength()]
-          when locationRange.end.index
-            [0, locationRange.end.offset]
-          else
-            [0, block.text.getLength()]
-
-        callback(block, textRange, index)
+        if block = @getBlockAtIndex(index)
+          textRange = switch index
+            when locationRange.start.index
+              [locationRange.start.offset, block.text.getLength()]
+            when locationRange.end.index
+              [0, locationRange.end.offset]
+            else
+              [0, block.text.getLength()]
+          callback(block, textRange, index)
 
   getCommonAttributesAtLocationRange: (locationRange) ->
     if locationRange.isCollapsed()
