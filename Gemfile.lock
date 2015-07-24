@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: git://github.com/javan/blade_runner.git
-  revision: 9273ebddc73cefb5f6add6480c5dc692ae3411af
+  revision: 51ab11449a4d41ab96dc0bab620e8e752c59fe42
   specs:
     blade_runner (0.1.0)
       activesupport (>= 3.0.0)
