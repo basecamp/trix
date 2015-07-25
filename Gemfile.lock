@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: git://github.com/javan/blade_runner.git
-  revision: c2d0ed2d2cecd445c4acc7c012e4e54b50502ea4
+  revision: dacc16012f1afbbed408643e5a0e137ecae283cd
   specs:
     blade_runner (0.1.0)
       activesupport (>= 3.0.0)
@@ -22,7 +22,7 @@ GIT
       coffee-script-source (~> 1.9.0)
       curses (~> 1.0.0)
       eventmachine (~> 1.0.0)
-      faye (~> 1.1.1)
+      faye (= 1.1.1)
       sprockets (~> 3.2.0)
       thin (~> 1.6.0)
       useragent (~> 0.13.0)
@@ -113,7 +113,6 @@ DEPENDENCIES
   coffee-script
   coffee-script-source (~> 1.9.1)
   ejs
-  faye (= 1.1.1)
   rack-rewrite
   rake
   sass
