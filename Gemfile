@@ -12,5 +12,6 @@ gem 'uglifier'
 gem 'sass'
 
 gem 'blade_runner', github: 'javan/blade_runner'
+gem 'faye', '1.1.1'
 gem 'blade_runner-qunit_adapter', github: 'javan/blade_runner-qunit_adapter'
 gem 'blade_runner-sauce_labs_plugin', github: 'javan/blade_runner-sauce_labs_plugin'
