@@ -1,10 +1,9 @@
 #= require trix/models/block
 #= require trix/models/splittable_list
-#= require trix/models/location_range
 #= require trix/models/position_range
 #= require trix/models/html_parser
 
-{arraysAreEqual} = Trix
+{arraysAreEqual, normalizeRange, rangeIsCollapsed} = Trix
 
 editOperationLog = Trix.Logger.get("editOperations")
 
@@ -500,8 +499,9 @@ class Trix.Document extends Trix.Object
     return piece for piece in @getAttachmentPieces() when piece.attachment is attachment
 
   rangeFromLocationRange: (locationRange) ->
-    leftPosition = @positionFromLocation(locationRange.start)
-    rightPosition = @positionFromLocation(locationRange.end) unless locationRange.isCollapsed()
+    locationRange = normalizeRange(locationRange)
+    leftPosition = @positionFromLocation(locationRange[0])
+    rightPosition = @positionFromLocation(locationRange[1]) unless rangeIsCollapsed(locationRange)
     [leftPosition, rightPosition ? leftPosition]
 
   locationFromPosition: (position) ->
@@ -516,22 +516,23 @@ class Trix.Document extends Trix.Object
     @blockList.findPositionAtIndexAndOffset(location.index, location.offset)
 
   locationRangeFromPosition: (position) ->
-    new Trix.LocationRange @locationFromPosition(position)
+    normalizeRange(@locationFromPosition(position))
 
   locationRangeFromRange: ([start, end]) ->
     startLocation = @locationFromPosition(start)
     endLocation = @locationFromPosition(end)
-    new Trix.LocationRange startLocation, endLocation
+    normalizeRange([startLocation, endLocation])
 
   locationRangeFromPositionRange: (positionRange) ->
     return unless positionRange = Trix.PositionRange.box(positionRange)
     startLocation = @locationFromPosition(positionRange.start)
     endLocation = @locationFromPosition(positionRange.end)
-    new Trix.LocationRange startLocation, endLocation
+    normalizeRange([startLocation, endLocation])
 
   positionRangeFromLocationRange: (locationRange) ->
-    leftPosition = @positionFromLocation(locationRange.start)
-    rightPosition = @positionFromLocation(locationRange.end) unless locationRange.isCollapsed()
+    locationRange = normalizeRange(locationRange)
+    leftPosition = @positionFromLocation(locationRange[0])
+    rightPosition = @positionFromLocation(locationRange[1]) unless rangeIsCollapsed(locationRange)
     new Trix.PositionRange leftPosition, rightPosition
 
   isEqualTo: (document) ->

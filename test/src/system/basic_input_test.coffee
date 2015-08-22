@@ -16,7 +16,7 @@ editorTest "typing and composing", (expectDocument) ->
 
 editorTest "backspacing", (expectDocument) ->
   typeCharacters "abc\b", ->
-    assertLocationRange [0,2]
+    assertLocationRange(index: 0, offset: 2)
     expectDocument "ab\n"
 
 editorTest "pressing delete", (expectDocument) ->

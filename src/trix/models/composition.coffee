@@ -1,5 +1,7 @@
 #= require trix/models/document
 
+{normalizeRange} = Trix
+
 class Trix.Composition extends Trix.BasicObject
   constructor: (@document = new Trix.Document) ->
     @document.delegate = this
@@ -318,18 +320,17 @@ class Trix.Composition extends Trix.BasicObject
 
   getPosition: ->
     if locationRange = @getLocationRange()
-      @document.positionFromLocation(locationRange.start)
+      @document.positionFromLocation(locationRange[0])
 
   setPosition: (position) ->
     if location = @document.locationFromPosition(position)
       @setLocation(location)
 
   setLocation: (location) ->
-    locationRange = new Trix.LocationRange location
-    @setLocationRange(locationRange)
+    @setLocationRange(normalizeRange(location))
 
   getLocationRange: ->
-    @getSelectionManager().getLocationRange() ? new Trix.LocationRange [0, 0]
+    @getSelectionManager().getLocationRange() ? normalizeRange(index: 0, offset: 0)
 
   setLocationRange: ->
     @delegate?.compositionDidRequestLocationRange?(arguments...)
@@ -350,8 +351,8 @@ class Trix.Composition extends Trix.BasicObject
 
   getSelectedRange: ->
     if locationRange = @getLocationRange()
-      startPosition = @document.positionFromLocation(locationRange.start)
-      endPosition = @document.positionFromLocation(locationRange.end)
+      startPosition = @document.positionFromLocation(locationRange[0])
+      endPosition = @document.positionFromLocation(locationRange[1])
       [startPosition, endPosition]
 
   setSelectedRange: (selectedRange) ->
@@ -428,12 +429,12 @@ class Trix.Composition extends Trix.BasicObject
 
   getPreviousBlock: ->
     if locationRange = @getLocationRange()
-      {index} = locationRange
+      {index} = locationRange[0]
       @document.getBlockAtIndex(index - 1) if index > 0
 
   getBlock: ->
     if locationRange = @getLocationRange()
-      @document.getBlockAtIndex(locationRange.index)
+      @document.getBlockAtIndex(locationRange[0].index)
 
   getAttachmentAtPositionRange: (positionRange) ->
     document = @document.getDocumentAtPositionRange(positionRange)

@@ -2,7 +2,7 @@
 #= require trix/observers/selection_change_observer
 
 {defer, benchmark, elementContainsNode, nodeIsCursorTarget, innerElementIsActive,
- rangeIsCollapsed, createRange} = Trix
+ normalizeRange, rangeIsCollapsed, rangesAreEqual} = Trix
 
 class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
@@ -15,9 +15,9 @@ class Trix.SelectionManager extends Trix.BasicObject
     else
       @lockedLocationRange ? @currentLocationRange
 
-  setLocationRange: (start, end) ->
+  setLocationRange: (locationRange) ->
     return if @lockedLocationRange
-    locationRange = createRange(start, end)
+    locationRange = normalizeRange(locationRange)
     if domRange = @createDOMRangeFromLocationRange(locationRange)
       setDOMRange(domRange)
       @updateCurrentLocationRange(locationRange)
@@ -50,9 +50,15 @@ class Trix.SelectionManager extends Trix.BasicObject
       start = @getLocationRangeAtPoint(endPoints[0])
       end = @getLocationRangeAtPoint(endPoints[1])
 
-    if range = createRange(start, end)
-      @setLocationRange(range)
-    else if locationRange
+      if start? and not end?
+        end = start
+      else if end? and not start?
+        start = end
+
+      if start? and end?
+        locationRange = normalizeRange([start, end])
+
+    if locationRange
       @setLocationRange(locationRange)
 
   clearSelection: ->
@@ -76,16 +82,16 @@ class Trix.SelectionManager extends Trix.BasicObject
 
   updateCurrentLocationRange: (locationRange) ->
     locationRange ?= @createLocationRangeFromDOMRange(getDOMRange())
-    if (@currentLocationRange and not locationRange) or not locationRange?.isEqualTo(@currentLocationRange)
+    if not rangesAreEqual(locationRange, @currentLocationRange)
       @currentLocationRange = locationRange
-      @delegate?.locationRangeDidChange?(@currentLocationRange?.copy())
+      @delegate?.locationRangeDidChange?(@currentLocationRange?.slice(0))
 
   createDOMRangeFromLocationRange: (locationRange) ->
-    rangeStart = @findContainerAndOffsetFromLocation(locationRange.start)
-    rangeEnd = if locationRange.isCollapsed()
+    rangeStart = @findContainerAndOffsetFromLocation(locationRange[0])
+    rangeEnd = if rangeIsCollapsed(locationRange)
       rangeStart
     else
-      @findContainerAndOffsetFromLocation(locationRange.end)
+      @findContainerAndOffsetFromLocation(locationRange[1])
 
     if rangeStart? and rangeEnd?
       range = document.createRange()
@@ -97,8 +103,7 @@ class Trix.SelectionManager extends Trix.BasicObject
     return unless range? and @rangeWithinElement(range)
     return unless start = @findLocationFromContainerAndOffset(range.startContainer, range.startOffset)
     end = @findLocationFromContainerAndOffset(range.endContainer, range.endOffset) unless range.collapsed
-    locationRange = new Trix.LocationRange start, end
-    locationRange if locationRange.isValid()
+    normalizeRange([start, end])
 
   rangeWithinElement: (range) ->
     if range.collapsed

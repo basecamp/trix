@@ -33,8 +33,8 @@ class Trix.UndoManager extends Trix.BasicObject
 
   createEntry: ({description, context} = {}) ->
     description: description?.toString()
-    context: context?.toString()
+    context: JSON.stringify(context)
     snapshot: @composition.createSnapshot()
 
   entryHasDescriptionAndContext = (entry, description, context) ->
-    entry?.description is description?.toString() and entry?.context is context?.toString()
+    entry?.description is description?.toString() and entry?.context is JSON.stringify(context)

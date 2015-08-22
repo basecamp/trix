@@ -1,14 +1,30 @@
 Trix.extend
-  rangeIsCollapsed: (range) ->
-    range[0] is range[1]
+  normalizeRange: normalizeRange = (range) ->
+    return unless range?
+    range = [range, range] unless Array.isArray(range)
+    [copyValue(range[0]), copyValue(range[1] ? range[0])]
 
-  createRange: (start, end) ->
-    switch
-      when Array.isArray(start)
-        start
-      when start? and end?
-        [start, end]
-      when start? and not end?
-        [start, start]
-      when end? and not start?
-        [end, end]
+  rangeIsCollapsed: (range) ->
+    return unless range?
+    [start, end] = normalizeRange(range)
+    rangeValuesAreEqual(start, end)
+
+  rangesAreEqual: (leftRange, rightRange) ->
+    return unless leftRange? and rightRange?
+    [leftStart, leftEnd] = normalizeRange(leftRange)
+    [rightStart, rightEnd] = normalizeRange(rightRange)
+    rangeValuesAreEqual(leftStart, rightStart) and
+      rangeValuesAreEqual(leftEnd, rightEnd)
+
+copyValue = (value) ->
+  if typeof value is "number"
+    value
+  else
+    {index, offset} = value
+    {index, offset}
+
+rangeValuesAreEqual = (left, right) ->
+  if typeof left is "number"
+    left is right
+  else
+    left.index is right.index and left.offset is right.offset

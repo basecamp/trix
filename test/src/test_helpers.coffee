@@ -1,5 +1,7 @@
 #= require trix/core/helpers/global
 
+{normalizeRange, rangesAreEqual} = Trix
+
 keyCodes = {}
 
 for code, name of Trix.InputController.keyNames
@@ -39,9 +41,9 @@ for code, name of Trix.InputController.keyNames
         callback done
 
 @assertLocationRange = (start, end) ->
-  expectedLocationRange = new Trix.LocationRange start, end
+  expectedLocationRange = normalizeRange([start, end])
   actualLocationRange = getEditorController().getLocationRange()
-  equal actualLocationRange.inspect(), expectedLocationRange.inspect()
+  ok rangesAreEqual(expectedLocationRange, actualLocationRange)
 
 @pasteContent = (contentType, value, callback) ->
   testClipboardData =
@@ -129,7 +131,7 @@ for code, name of Trix.InputController.keyNames
 
 prepareEditor = ->
   if getDocumentElement().hasAttribute("autofocus")
-    getEditorController().setLocationRange([0, 0])
+    getEditorController().setLocationRange(index: 0, offset: 0)
 
 render = ->
   getEditorController().render()

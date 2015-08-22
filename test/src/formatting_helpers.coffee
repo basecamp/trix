@@ -47,8 +47,8 @@ getToolbarDialog = ({attribute, action}) ->
   throw "range #{JSON.stringify(range)} spans more than one block" unless blocks.length is 1
 
   locationRange = getDocument().locationRangeFromPositionRange(range)
-  textIndex = locationRange.index
-  textRange = [locationRange.start.offset, locationRange.end.offset]
+  textIndex = locationRange[0].index
+  textRange = [locationRange[0].offset, locationRange[1].offset]
   text = getDocument().getTextAtIndex(textIndex).getTextAtRange(textRange)
   pieces = text.getPieces()
   throw "range #{JSON.stringify(range)} must only span one piece" unless pieces.length is 1

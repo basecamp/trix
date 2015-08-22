@@ -3,10 +3,12 @@
 #= require trix/models/attachment_manager
 #= require trix/models/undo_manager
 
+{normalizeRange} = Trix
+
 class Trix.Editor extends Trix.Object
   @fromJSON: (json) ->
     document = Trix.Document.fromJSON(json.document)
-    locationRange = Trix.LocationRange.fromJSON(json.locationRange) if json.locationRange?
+    locationRange = normalizeRange(json.locationRange)
     new this document, locationRange
 
   constructor: (@document, @locationRange) ->

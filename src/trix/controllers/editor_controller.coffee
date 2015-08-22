@@ -5,6 +5,8 @@
 #= require trix/models/selection_manager
 #= require trix/models/editor
 
+{rangeIsCollapsed, rangesAreEqual} = Trix
+
 class Trix.EditorController extends Trix.Controller
   constructor: (@config) ->
     {@documentElement, @toolbarController, @document, @delegate} = @config
@@ -140,7 +142,7 @@ class Trix.EditorController extends Trix.Controller
 
   documentControllerDidRequestDeselectingAttachment: (attachment) ->
     if @attachmentLocationRange
-      @selectionManager.setLocationRange(@attachmentLocationRange.end)
+      @selectionManager.setLocationRange(@attachmentLocationRange[1])
 
   documentControllerWillUpdateAttachment: (attachment) ->
     @editor.recordUndoEntry("Edit Attachment", context: attachment.id, consolidatable: true)
@@ -205,7 +207,7 @@ class Trix.EditorController extends Trix.Controller
   locationRangeDidChange: (locationRange) ->
     @editor.locationRange = locationRange
     @composition.updateCurrentAttributes()
-    if @attachmentLocationRange and not @attachmentLocationRange.isEqualTo(locationRange)
+    if @attachmentLocationRange and not rangesAreEqual(@attachmentLocationRange, locationRange)
       @composition.stopEditingAttachment()
     @delegate?.didChangeSelection?()
 
@@ -231,7 +233,7 @@ class Trix.EditorController extends Trix.Controller
       perform: -> @documentController.editAttachmentCaption()
 
   toolbarDidClickButton: ->
-    @setLocationRange([0, 0]) unless @getLocationRange()
+    @setLocationRange(index: 0, offset: 0) unless @getLocationRange()
 
   toolbarCanInvokeAction: (actionName) ->
     if toolbarActionIsExternal(actionName)
@@ -296,7 +298,10 @@ class Trix.EditorController extends Trix.Controller
 
   getLocationContext: ->
     locationRange = @selectionManager.getLocationRange()
-    if locationRange?.isCollapsed() then locationRange.index else locationRange
+    if rangeIsCollapsed(locationRange)
+      locationRange[0].index
+    else
+      locationRange
 
   # Private
 
@@ -325,7 +330,7 @@ class Trix.EditorController extends Trix.Controller
 
   recordFormattingUndoEntry: ->
     locationRange = @selectionManager.getLocationRange()
-    unless locationRange?.isCollapsed()
+    unless rangeIsCollapsed(locationRange)
       @editor.recordUndoEntry("Formatting", context: @getLocationContext(), consolidatable: true)
 
   recordTypingUndoEntry: ->
