@@ -79,14 +79,14 @@ editorTest "element triggers toolbar dialog events", (done) ->
 editorTest "element triggers paste event with position range", (done) ->
   element = getEditorElement()
   eventCount = 0
-  positionRange = null
+  range = null
 
   element.addEventListener "trix-paste", (event) ->
     eventCount++
-    {positionRange} = event
+    {range} = event
 
   typeCharacters "", ->
     pasteContent "text/html", "<strong>hello</strong>", ->
       equal eventCount, 1
-      ok Trix.rangesAreEqual([5, 5], positionRange)
+      ok Trix.rangesAreEqual([5, 5], range)
       done()

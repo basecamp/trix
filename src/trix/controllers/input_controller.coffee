@@ -142,7 +142,7 @@ class Trix.InputController extends Trix.BasicObject
     dragstart: (event) ->
       target = event.target
       @serializeSelectionToDataTransfer(event.dataTransfer)
-      @draggedRange = @responder?.getPositionRange()
+      @draggedRange = @responder?.getSelectedRange()
       @delegate?.inputControllerDidStartDrag?()
 
     dragover: (event) ->
@@ -165,7 +165,7 @@ class Trix.InputController extends Trix.BasicObject
 
       if @draggedRange
         @delegate?.inputControllerWillMoveText()
-        @responder?.moveTextFromPositionRange(@draggedRange)
+        @responder?.moveTextFromRange(@draggedRange)
         delete @draggedRange
         @requestRender()
 
