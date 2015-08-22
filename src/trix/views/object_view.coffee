@@ -8,6 +8,7 @@ class Trix.ObjectView extends Trix.BasicObject
 
   getNodes: ->
     @nodes ?= @createNodes()
+    node.cloneNode(true) for node in @nodes
 
   invalidate: ->
     delete @nodes
@@ -18,7 +19,7 @@ class Trix.ObjectView extends Trix.BasicObject
 
   findOrCreateCachedChildView: (viewClass, object, options) ->
     if view = @getCachedViewForObject(object)
-      @childViews.push(view) unless view in @childViews
+      @recordChildView(view)
     else
       view = @createChildView(arguments...)
       @cacheViewForObject(view, object)
@@ -30,6 +31,9 @@ class Trix.ObjectView extends Trix.BasicObject
       viewClass = Trix.ObjectGroupView
 
     view = new viewClass object, options
+    @recordChildView(view)
+
+  recordChildView: (view) ->
     view.parentView = this
     view.rootView = @rootView
     @childViews.push(view)

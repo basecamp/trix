@@ -10,10 +10,11 @@ editorTest "moving an image by drag and drop", (expectDocument) ->
           expectDocument "!a#{Trix.OBJECT_REPLACEMENT_CHARACTER}b\n"
 
 editorTest "removing an image", (expectDocument) ->
-  clickElement getFigure(), ->
-    closeButton = getFigure().querySelector(".remove")
-    clickElement closeButton, ->
-      expectDocument "ab\n"
+  after 20, ->
+    clickElement getFigure(), ->
+      closeButton = getFigure().querySelector(".attachment__remover")
+      clickElement closeButton, ->
+        expectDocument "ab\n"
 
 getFigure = ->
-  document.activeElement.querySelector("figure.attachment.image")
+  getDocumentElement().querySelector("figure")

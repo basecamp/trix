@@ -12,12 +12,12 @@ Trix.createElementClass = (constructor = window.HTMLElement) ->
       Object.defineProperty(@prototype, name, descriptor)
 
     createdCallback: ->
-      @loadStylesheet()
       @loadDefaultContent()
       handleEvent "element-attached", onElement: this, withCallback: (event) =>
         @childAttachedCallback(event.target) unless event.target is this
 
     attachedCallback: ->
+      @loadStylesheet()
       triggerEvent("element-attached", onElement: this)
 
     childAttachedCallback: ->

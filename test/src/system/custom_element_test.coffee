@@ -59,3 +59,34 @@ editorTest "element triggers selectionchange events when the location range chan
     moveCursor "left", ->
       equal eventCount, 2
       done()
+
+editorTest "element triggers toolbar dialog events", (done) ->
+  element = getEditorElement()
+  events = []
+
+  element.addEventListener "trix-toolbar-dialog-show", (event) ->
+    events.push(event.type)
+
+  element.addEventListener "trix-toolbar-dialog-hide", (event) ->
+    events.push(event.type)
+
+  clickToolbarButton action: "link", ->
+    typeInToolbarDialog "http://example.com", attribute: "href", ->
+      defer ->
+        deepEqual events, ["trix-toolbar-dialog-show", "trix-toolbar-dialog-hide"]
+        done()
+
+editorTest "element triggers paste event with location range", (done) ->
+  element = getEditorElement()
+  eventCount = 0
+  locationRange = null
+
+  element.addEventListener "trix-paste", (event) ->
+    eventCount++
+    {locationRange} = event
+
+  typeCharacters "", ->
+    pasteContent "text/html", "<strong>hello</strong>", ->
+      equal eventCount, 1
+      equal locationRange?.inspect(), new Trix.LocationRange([0,5]).inspect()
+      done()

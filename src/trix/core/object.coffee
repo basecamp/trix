@@ -24,7 +24,10 @@ class Trix.Object extends Trix.BasicObject
   contentsForInspection: ->
 
   toJSONString: ->
-    JSON.stringify this
+    JSON.stringify(this)
+
+  toUTF16String: ->
+    Trix.UTF16String.box(this)
 
   getCacheKey: ->
     @id.toString()

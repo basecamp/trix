@@ -1,10 +1,13 @@
 class Trix.RenderCountView
   constructor: (@element) ->
-    @count = 1
+    @renderCount = 1
+    @syncCount = 1
 
-  incrementAndRender: ->
-    @count++
-    @render()
+  incrementRenderCount: ->
+    @renderCount++
+
+  incrementSyncCount: ->
+    @syncCount++
 
   render: ->
-    @element.innerHTML = "Document renders: #{@count}"
+    @element.innerHTML = "Document renders: #{@renderCount}<br>Document syncs: #{@syncCount}"

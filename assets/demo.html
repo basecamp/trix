@@ -26,6 +26,7 @@
         <input type="radio" name="inspector-panel" id="inspect-debugging" value="debugging"><label for="inspect-debugging">Debugging</label>
         <input type="radio" name="inspector-panel" id="inspect-loggers" value="loggers"><label for="inspect-loggers">Loggers</label>
         <input type="radio" name="inspector-panel" id="inspect-benchmark" value="benchmark"><label for="inspect-benchmark">Benchmark</label>
+        <input type="radio" name="inspector-panel" id="inspect-replay" value="replay"><label for="inspect-replay">Replay</label>
       </div>
       <div class="trix-inspector-panel" data-inspector-panel-name="structure" data-inspector-panel-view="StructurePanelView">
       </div>
@@ -57,6 +58,9 @@
           </li>
         </ol>
         <button class="add">Add another benchmark</button> <button class="run">Run benchmarks</button>
+      </div>
+      <div class="trix-inspector-panel" data-inspector-panel-name="replay" data-inspector-panel-view="ReplayPanelView">
+        <trix-watchdog-player></trix-watchdog-player>
       </div>
     </div>
 

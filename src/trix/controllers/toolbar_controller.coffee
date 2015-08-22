@@ -22,6 +22,7 @@ class Trix.ToolbarController extends Trix.BasicObject
   # Event handlers
 
   didClickActionButton: (event, element) =>
+    @delegate?.toolbarDidClickButton()
     event.preventDefault()
     actionName = getActionName(element)
 
@@ -31,6 +32,7 @@ class Trix.ToolbarController extends Trix.BasicObject
       @delegate?.toolbarDidInvokeAction(actionName)
 
   didClickAttributeButton: (event, element) =>
+    @delegate?.toolbarDidClickButton()
     event.preventDefault()
     attributeName = getAttributeName(element)
 
@@ -110,16 +112,17 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   showDialog: (attributeName) ->
     @hideDialog()
+    @delegate?.toolbarWillShowDialog()
 
     element = @getDialogForAttributeName(attributeName)
-    input = getInputForDialog(element, attributeName)
-    @delegate?.toolbarWillShowDialog(input?)
     element.classList.add("active")
 
-    if input
+    if input = getInputForDialog(element, attributeName)
       input.removeAttribute("disabled")
       input.value = @attributes[attributeName] ? ""
       input.select()
+
+    @delegate?.toolbarDidShowDialog(element)
 
   setAttribute: (dialogElement) ->
     attributeName = getAttributeName(dialogElement)
@@ -137,9 +140,10 @@ class Trix.ToolbarController extends Trix.BasicObject
     @hideDialog()
 
   hideDialog: ->
-    @element.querySelector(activeDialogSelector)?.classList.remove("active")
-    @resetDialogInputs()
-    @delegate?.toolbarDidHideDialog()
+    if element = @element.querySelector(activeDialogSelector)
+      element.classList.remove("active")
+      @resetDialogInputs()
+      @delegate?.toolbarDidHideDialog(element)
 
   resetDialogInputs: ->
     for input in @element.querySelectorAll(dialogInputSelector)

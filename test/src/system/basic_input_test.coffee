@@ -4,14 +4,32 @@ editorTest "typing", (expectDocument) ->
   typeCharacters "abc", ->
     expectDocument "abc\n"
 
+editorTest "composing", (expectDocument) ->
+  composeString "abc", ->
+    expectDocument "abc\n"
+
+editorTest "typing and composing", (expectDocument) ->
+  typeCharacters "a", ->
+    composeString "bcd", ->
+      typeCharacters "e", ->
+        expectDocument "abcde\n"
+
 editorTest "backspacing", (expectDocument) ->
   typeCharacters "abc\b", ->
     assertLocationRange [0,2]
     expectDocument "ab\n"
 
+editorTest "pressing delete", (expectDocument) ->
+  typeCharacters "ab", ->
+    moveCursor "left", ->
+      pressKey "delete", ->
+        expectDocument "a\n"
+
 editorTest "pressing return", (expectDocument) ->
-  typeCharacters "ab\rc", ->
-    expectDocument "ab\nc\n"
+  typeCharacters "ab", ->
+    pressKey "return", ->
+      typeCharacters "c", ->
+        expectDocument "ab\nc\n"
 
 editorTest "cursor left", (expectDocument) ->
   typeCharacters "ac", ->
@@ -31,22 +49,6 @@ editorTest "remove entire document", (expectDocument) ->
       typeCharacters "\b", ->
         expectDocument "\n"
 
-editorTest "paste plain text", (expectDocument) ->
-  typeCharacters "abc", ->
-    moveCursor "left", ->
-      pasteContent "text/plain", "!", ->
-        expectDocument "ab!c\n"
-
-editorTest "paste html", (expectDocument) ->
-  typeCharacters "abc", ->
-    moveCursor "left", ->
-      pasteContent "text/html", "&lt;", ->
-        expectDocument "ab<c\n"
-
-editorTest "paste file", (expectDocument) ->
-  pasteContent "Files", (createFile()), ->
-    expectDocument "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
-
 editorTest "drag text", (expectDocument) ->
   typeCharacters "abc", ->
     moveCursor direction: "left", times: 2, (coordinates) ->
@@ -54,4 +56,3 @@ editorTest "drag text", (expectDocument) ->
         expandSelection "right", ->
           dragToCoordinates coordinates, ->
             expectDocument "acb\n"
-

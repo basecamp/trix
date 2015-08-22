@@ -1,20 +1,13 @@
+#= require trix/operations/image_preload_operation
+
 class Trix.Attachment extends Trix.Object
-  @constructorForContentType: (contentType) ->
-    if /image/.test(contentType)
-      Trix.ImageAttachment
-    else
-      Trix.Attachment
+  @previewablePattern: /^image(\/(gif|png|jpe?g)|$)/
 
   @attachmentForFile: (file) ->
     attributes = @attributesForFile(file)
-    attachment = @attachmentForAttributes(attributes)
+    attachment = new this attributes
     attachment.setFile(file)
     attachment
-
-  @attachmentForAttributes: (attributes) ->
-    contentType = Trix.Hash.box(attributes).get("contentType")
-    constructor = @constructorForContentType(contentType)
-    new constructor attributes
 
   @attributesForFile: (file) ->
     new Trix.Hash
@@ -23,7 +16,7 @@ class Trix.Attachment extends Trix.Object
       contentType: file.type
 
   @fromJSON: (attachmentJSON) ->
-    @attachmentForAttributes(attachmentJSON)
+    new this attachmentJSON
 
   constructor: (attributes = {}) ->
     super
@@ -47,12 +40,25 @@ class Trix.Attachment extends Trix.Object
       @delegate?.attachmentDidChangeAttributes?(this)
 
   didChangeAttributes: ->
+    if @isPreviewable()
+      @preloadURL()
 
   isPending: ->
     @file? and not (@getURL() or @getHref())
 
-  isImage: ->
-    false
+  isPreviewable: ->
+    if @attributes.has("previewable")
+      @attributes.get("previewable")
+    else
+      @constructor.previewablePattern.test(@getContentType())
+
+  getType: ->
+    if @hasContent()
+      "content"
+    else if @isPreviewable()
+      "preview"
+    else
+      "file"
 
   getURL: ->
     @attributes.get("url")
@@ -79,6 +85,12 @@ class Trix.Attachment extends Trix.Object
   getContentType: ->
     @attributes.get("contentType")
 
+  hasContent: ->
+    @attributes.has("content")
+
+  getContent: ->
+    @attributes.get("content")
+
   getWidth: ->
     @attributes.get("width")
 
@@ -89,8 +101,11 @@ class Trix.Attachment extends Trix.Object
     @file
 
   setFile: (@file) ->
+    if @isPreviewable()
+      @preloadFile()
 
-  releaseFile: ->
+  releaseFile: =>
+    @releasePreloadedFile()
     delete @file
 
   getUploadProgress: ->
@@ -104,5 +119,35 @@ class Trix.Attachment extends Trix.Object
   toJSON: ->
     @getAttributes()
 
-  getCacheKey: ->
-    [super, @attributes.getCacheKey()].join("/")
+  getCacheKey: (prependWith) ->
+    parts = [super, @attributes.getCacheKey(), @getPreloadedURL()]
+    parts.unshift(prependWith) if prependWith
+    parts.join("/")
+
+  # Previewable
+
+  getPreloadedURL: ->
+    @preloadedURL
+
+  preloadURL: ->
+    @preload(@getURL(), @releaseFile)
+
+  preloadFile: ->
+    if @file
+      @fileObjectURL = URL.createObjectURL(@file)
+      @preload(@fileObjectURL)
+
+  releasePreloadedFile: ->
+    if @fileObjectURL
+      URL.revokeObjectURL(@fileObjectURL)
+      delete @fileObjectURL
+
+  preload: (url, callback) ->
+    if url and url isnt @preloadedURL
+      @preloadedURL ?= url
+      operation = new Trix.ImagePreloadOperation url
+      operation.then ({width, height}) =>
+        @preloadedURL = url
+        @setAttributes({width, height})
+        @previewDelegate?.attachmentDidPreload?()
+        callback?()

@@ -1,8 +1,9 @@
 #= require trix/core/helpers/global
 
-keyCodes =
-  left: 37
-  right: 39
+keyCodes = {}
+
+for code, name of Trix.InputController.keyNames
+  keyCodes[name] = code
 
 @after = (defer, callback) ->
   setTimeout(callback, defer)
@@ -30,6 +31,7 @@ keyCodes =
 
   asyncTest name, ->
     defer ->
+      prepareEditor()
       if callback.length is 0
         callback()
         done()
@@ -57,14 +59,53 @@ keyCodes =
   file
 
 @typeCharacters = (string, callback) ->
-  characters = string.split("")
+  if Array.isArray(string)
+    characters = string
+  else
+    characters = string.split("")
+
   do typeNextCharacter = -> defer ->
     character = characters.shift()
     if character?
-      character = "\r" if character is "\n"
-      typeCharacterInElement(character, document.activeElement, typeNextCharacter)
+      switch character
+        when "\n"
+          pressKey("return", typeNextCharacter)
+        when "\b"
+          pressKey("backspace", typeNextCharacter)
+        else
+          typeCharacterInElement(character, document.activeElement, typeNextCharacter)
     else
       callback()
+
+@pressKey = (keyName, callback) ->
+  element = document.activeElement
+  code = keyCodes[keyName]
+  properties = which: code, keyCode: code, charCode: 0
+
+  return callback() unless triggerEvent(element, "keydown", properties)
+
+  simulateKeypress keyName, ->
+    defer ->
+      triggerEvent(element, "keyup", properties)
+      defer(callback)
+
+@composeString = (string, callback) ->
+  index = 1
+  started = false
+  updated = false
+
+  do continueComposition = -> defer ->
+    if started
+      if updated and index >= string.length
+        compose string, "end", ->
+          node = document.createTextNode(string)
+          insertNode(node, callback)
+      else
+        updated = true
+        compose(string.slice(0, index++), "update", continueComposition)
+    else
+      started = true
+      compose(string.slice(0, index++), "start", continueComposition)
 
 @insertString = (string) ->
   getComposition().insertString(string)
@@ -81,6 +122,14 @@ keyCodes =
 @insertFile = (file) ->
   getComposition().insertFile(file)
   render()
+
+@replaceDocument = (document) ->
+  getDocument().replaceDocument(document)
+  render()
+
+prepareEditor = ->
+  if getDocumentElement().hasAttribute("autofocus")
+    getEditorController().setLocationRange([0, 0])
 
 render = ->
   getEditorController().render()
@@ -101,19 +150,31 @@ typeCharacterInElement = (character, element, callback) ->
         callback()
 
 insertCharacter = (character, callback) ->
-  switch character
-    when "\b"
-      backspace(callback)
-    when "\r"
+  node = document.createTextNode(character)
+  insertNode(node, callback)
+
+simulateKeypress = (keyName, callback) ->
+  switch keyName
+    when "backspace"
+      deleteInDirection("left", callback)
+    when "delete"
+      deleteInDirection("right", callback)
+    when "return"
       node = document.createElement("br")
       insertNode(node, callback)
-    else
-      node = document.createTextNode(character)
-      insertNode(node, callback)
 
-backspace = (callback) ->
+compose = (string, name, callback) ->
+  element = document.activeElement
+  triggerEvent(element, "keydown", which: 229, keyCode: 229, charCode: 0)
+  defer ->
+    triggerEvent(element, "composition#{name}", data: string)
+    defer ->
+      triggerEvent(element, "input")
+      defer(callback)
+
+deleteInDirection = (direction, callback) ->
   if getDOMRange()?.collapsed
-    expandSelection "left", ->
+    expandSelection direction, ->
       deleteSelection()
       callback()
   else

@@ -5,12 +5,11 @@
 #= require trix/models/selection_manager
 #= require trix/models/editor
 
-{defer} = Trix
-
 class Trix.EditorController extends Trix.Controller
   constructor: (@config) ->
-    {@documentElement, @toolbarElement, @document, @delegate} = @config
+    {@documentElement, @toolbarController, @document, @delegate} = @config
     @document ?= new Trix.Document
+    @toolbarController.delegate = this
 
     @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
@@ -28,14 +27,17 @@ class Trix.EditorController extends Trix.Controller
 
     @selectionManager.delegate = null
     @createInputController()
-    @createToolbarController()
     @createDocumentController()
     @selectionManager.delegate = this
 
     for managedAttachment in @editor.getAttachments()
       @delegate?.didAddAttachment?(managedAttachment)
 
-    @updateLocationRange()
+    if @editor.locationRange?
+      @setLocationRange(@editor.locationRange)
+    else
+      @composition.updateCurrentAttributes()
+
     @render()
     @delegate?.didSetEditor?(editor)
 
@@ -53,6 +55,7 @@ class Trix.EditorController extends Trix.Controller
 
   compositionDidChangeDocument: (document) ->
     @delegate?.didChangeDocument?(document)
+    @render() unless @handlingInput
 
   compositionDidChangeCurrentAttributes: (@currentAttributes) ->
     @toolbarController.updateAttributes(@currentAttributes)
@@ -81,7 +84,7 @@ class Trix.EditorController extends Trix.Controller
     attachmentPositionRange = @document.getPositionRangeOfAttachment(attachment)
     @attachmentLocationRange = @document.locationRangeFromPositionRange(attachmentPositionRange)
     @documentController.installAttachmentEditorForAttachment(attachment)
-    defer => @selectionManager.setLocationRange(@attachmentLocationRange)
+    @selectionManager.setLocationRange(@attachmentLocationRange)
 
   compositionDidStopEditingAttachment: (attachment) ->
     @documentController.uninstallAttachmentEditor()
@@ -89,6 +92,8 @@ class Trix.EditorController extends Trix.Controller
 
   compositionDidRequestLocationRange: (locationRange) ->
     @requestedLocationRange = locationRange
+    @editCountWhenLocationRangeRequested = @document.getEditCount()
+    @render() unless @handlingInput
 
   compositionDidRestoreSnapshot: ->
     @documentController.refreshViewCache()
@@ -107,22 +112,25 @@ class Trix.EditorController extends Trix.Controller
 
   # Document controller delegate
 
-  documentControllerWillRenderDocumentElement: ->
-    @inputController.editorWillRenderDocumentElement()
-    if @requestedLocationRange?
-      @selectionManager.lockToLocationRange(@requestedLocationRange)
-    else
-      @selectionManager.lock()
+  documentControllerWillSyncDocumentView: ->
+    @inputController.editorWillSyncDocumentView()
+    @selectionManager.lock()
     @selectionManager.clearSelection()
 
-  documentControllerDidRenderDocumentElement: ->
-    @inputController.editorDidRenderDocumentElement()
+  documentControllerDidSyncDocumentView: ->
+    @inputController.editorDidSyncDocumentView()
     @selectionManager.unlock()
     @toolbarController.updateActions()
-    @delegate?.didRenderDocumentElement?()
+    @delegate?.didSyncDocumentView?()
 
   documentControllerDidRender: ->
-    delete @requestedLocationRange
+    if @requestedLocationRange?
+      if @editCountWhenLocationRangeRequested is @document.getEditCount()
+        @selectionManager.setLocationRange(@requestedLocationRange)
+      @composition.updateCurrentAttributes()
+      delete @requestedLocationRange
+      delete @editCountWhenLocationRangeRequested
+    @delegate?.didRenderDocument?()
 
   documentControllerDidFocus: ->
     @toolbarController.hideDialog()
@@ -142,22 +150,35 @@ class Trix.EditorController extends Trix.Controller
 
   # Input controller delegate
 
+  inputControllerWillHandleInput: ->
+    @handlingInput = true
+    @requestedRender = false
+
+  inputControllerDidRequestRender: ->
+    @requestedRender = true
+
+  inputControllerDidHandleInput: ->
+    @handlingInput = false
+    if @requestedRender
+      @requestedRender = false
+      @render()
+
   inputControllerWillPerformTyping: ->
     @recordTypingUndoEntry()
 
   inputControllerWillCutText: ->
     @editor.recordUndoEntry("Cut")
 
-  inputControllerWillPasteText: (paste) ->
+  inputControllerWillPasteText: (pasteData) ->
     @editor.recordUndoEntry("Paste")
     @pasting = true
 
-  inputControllerDidPaste: ->
+  inputControllerDidPaste: (pasteData) ->
     positionRange = @pastedPositionRange
     delete @pastedPositionRange
     delete @pasting
 
-    @delegate?.didPasteAtPositionRange?(positionRange)
+    @delegate?.didPasteDataAtPositionRange?(pasteData, positionRange)
     @render()
 
   inputControllerWillMoveText: ->
@@ -178,9 +199,6 @@ class Trix.EditorController extends Trix.Controller
   inputControllerDidCancelDrag: ->
     @selectionManager.setLocationRange(@locationRangeBeforeDrag)
     delete @locationRangeBeforeDrag
-
-  inputControllerDidRequestRender: ->
-    @render()
 
   # Selection manager delegate
 
@@ -203,20 +221,29 @@ class Trix.EditorController extends Trix.Controller
     link:
       test: -> @composition.canSetCurrentAttribute("href")
     increaseBlockLevel:
-      test: -> @composition.canChangeBlockAttributeLevel()
-      perform: -> @composition.increaseBlockAttributeLevel()
+      test: -> @composition.canIncreaseBlockAttributeLevel()
+      perform: -> @composition.increaseBlockAttributeLevel() and @render()
     decreaseBlockLevel:
-      test: -> @composition.canChangeBlockAttributeLevel()
-      perform: -> @composition.decreaseBlockAttributeLevel()
+      test: -> @composition.canDecreaseBlockAttributeLevel()
+      perform: -> @composition.decreaseBlockAttributeLevel() and @render()
     editCaption:
       test: -> @composition.canEditAttachmentCaption()
       perform: -> @documentController.editAttachmentCaption()
 
+  toolbarDidClickButton: ->
+    @setLocationRange([0, 0]) unless @getLocationRange()
+
   toolbarCanInvokeAction: (actionName) ->
-    @constructor.toolbarActions[actionName]?.test?.call(this)
+    if toolbarActionIsExternal(actionName)
+      true
+    else
+      @constructor.toolbarActions[actionName]?.test?.call(this)
 
   toolbarDidInvokeAction: (actionName) ->
-    @constructor.toolbarActions[actionName]?.perform?.call(this)
+    if toolbarActionIsExternal(actionName)
+      @delegate?.didInvokeExternalAction?(actionName)
+    else
+      @constructor.toolbarActions[actionName]?.perform?.call(this)
 
   toolbarDidToggleAttribute: (attributeName) ->
     @recordFormattingUndoEntry()
@@ -236,13 +263,20 @@ class Trix.EditorController extends Trix.Controller
     @render()
     @documentController.focus()
 
-  toolbarWillShowDialog: (willFocus) ->
+  toolbarWillShowDialog: (dialogElement) ->
     @composition.expandSelectionForEditing()
-    @freezeSelection() if willFocus
+    @freezeSelection()
 
-  toolbarDidHideDialog: ->
+  toolbarDidShowDialog: (dialogElement) ->
+    @delegate?.didShowToolbarDialog?(dialogElement)
+
+  toolbarDidHideDialog: (dialogElement) ->
     @documentController.focus()
     @thawSelection()
+    @delegate?.didHideToolbarDialog?(dialogElement)
+
+  toolbarActionIsExternal = (actionName) ->
+    /^x-./.test(actionName)
 
   # Selection management
 
@@ -272,20 +306,14 @@ class Trix.EditorController extends Trix.Controller
       @inputController.delegate = this
     @inputController.responder = @composition
 
-  createToolbarController: ->
-    unless @toolbarController
-      @toolbarController = new Trix.ToolbarController @toolbarElement
-      @toolbarController.delegate = this
-    @toolbarController.updateActions()
-
   createDocumentController: ->
     delete @documentController?.delegate
     @documentController = new Trix.DocumentController @documentElement, @document
     @documentController.delegate = this
     @render()
 
-  updateLocationRange: ->
-    @setLocationRange(@editor.locationRange ? [0,0])
+  reparse: ->
+    @composition.replaceHTML(@documentElement.innerHTML)
 
   render: ->
     @documentController.render()

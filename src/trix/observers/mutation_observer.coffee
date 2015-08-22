@@ -1,4 +1,4 @@
-{defer, findClosestElementFromNode, normalizeSpaces} = Trix
+{defer, findClosestElementFromNode, normalizeSpaces, summarizeStringChange} = Trix
 
 class Trix.MutationObserver extends Trix.BasicObject
   mutableSelector = "[data-trix-mutable]"
@@ -22,14 +22,11 @@ class Trix.MutationObserver extends Trix.BasicObject
     @observer.disconnect()
 
   didMutate: (mutations) =>
-    clearTimeout(@debounce)
     @mutations.push(@findSignificantMutations(mutations)...)
 
-    @debounce = setTimeout =>
-      if @mutations.length
-        @delegate?.elementDidMutate?(@getMutationSummary())
-        @reset()
-    , 1
+    if @mutations.length
+      @delegate?.elementDidMutate?(@getMutationSummary())
+      @reset()
 
   # Private
 
@@ -68,21 +65,11 @@ class Trix.MutationObserver extends Trix.BasicObject
     @getTextMutationSummary()
 
   getTextMutationSummary: ->
-    additions = []
-    deletions = []
+    {additions, deletions} = @getTextChangesFromCharacterData()
 
-    characterMutations = @getMutationsByType("characterData")
-
-    if characterMutations.length
-      [startMutation, ..., endMutation] = characterMutations
-      oldString = normalizeSpaces(startMutation.oldValue)
-      newString = normalizeSpaces(endMutation.target.data)
-
-      additions.push(stringDifference(newString, oldString))
-      deletions.push(stringDifference(oldString, newString))
-
-    for node in @getRemovedTextNodes()
-      deletions.push(node.data)
+    textChanges = @getTextChangesFromTextNodes()
+    additions.push(addition) for addition in textChanges.additions when addition not in additions
+    deletions.push(textChanges.deletions...)
 
     summary = {}
     summary.textAdded = added if added = additions.join("")
@@ -92,26 +79,28 @@ class Trix.MutationObserver extends Trix.BasicObject
   getMutationsByType: (type) ->
     mutation for mutation in @mutations when mutation.type is type
 
-  getRemovedTextNodes: ->
-    nodes = []
+  getTextChangesFromTextNodes: ->
+    nodesAdded = []
+    nodesRemoved = []
+
     for mutation in @getMutationsByType("childList")
       for node in mutation.removedNodes when node.nodeType is Node.TEXT_NODE
-        nodes.push(node)
-    nodes
+        nodesRemoved.push(node)
+      for node in mutation.addedNodes when node.nodeType is Node.TEXT_NODE
+        nodesAdded.push(node)
 
-  stringDifference = (a, b) ->
-    a = Trix.UTF16String.box(a)
-    b = Trix.UTF16String.box(b)
+    additions: (node.data for node, index in nodesAdded when node.data isnt nodesRemoved[index]?.data)
+    deletions: (node.data for node, index in nodesRemoved when node.data isnt nodesAdded[index]?.data)
 
-    leftIndex = 0
-    rightIndexA = a.length
-    rightIndexB = b.length
+  getTextChangesFromCharacterData: ->
+    characterMutations = @getMutationsByType("characterData")
 
-    while leftIndex < rightIndexA and a.charAt(leftIndex).isEqualTo(b.charAt(leftIndex))
-      leftIndex++
+    if characterMutations.length
+      [startMutation, ..., endMutation] = characterMutations
 
-    while rightIndexA > leftIndex + 1 and a.charAt(rightIndexA - 1).isEqualTo(b.charAt(rightIndexB - 1))
-      rightIndexA--
-      rightIndexB--
+      oldString = normalizeSpaces(startMutation.oldValue)
+      newString = normalizeSpaces(endMutation.target.data)
+      {added, removed} = summarizeStringChange(oldString, newString)
 
-    a.slice(leftIndex, rightIndexA).toString()
+    additions: if added then [added] else []
+    deletions: if removed then [removed] else []

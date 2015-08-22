@@ -19,6 +19,10 @@ Trix.defineElement class extends Trix.Element
     %t .dialog input.validate:invalid {
       background-color: #ffdddd;
     }
+
+    %t[native] {
+      display: none;
+    }
   """
 
   @defaultContent: makeFragment """
@@ -31,15 +35,17 @@ Trix.defineElement class extends Trix.Element
       </span>
 
       <span class="button_group block_tools">
-        <button type="button" class="quote" href="#" data-attribute="quote">Quote</button>
-        <button type="button" class="code" href="#" data-attribute="code">Code</button>
-        <button type="button" class="list bullets" href="#" data-attribute="bullet">Bullets</button>
-        <button type="button" class="list numbers" href="#" data-attribute="number">Numbers</button>
+        <button type="button" class="quote" data-attribute="quote">Quote</button>
+        <button type="button" class="code" data-attribute="code">Code</button>
+        <button type="button" class="list bullets" data-attribute="bullet">Bullets</button>
+        <button type="button" class="list numbers" data-attribute="number">Numbers</button>
+        <button type="button" class="block-level decrease" data-action="decreaseBlockLevel">[</button>
+        <button type="button" class="block-level increase" data-action="increaseBlockLevel">]</button>
       </span>
 
       <span class="button_group history_tools">
-        <button type="button" class="undo" href="#" data-action="undo" data-key="z">Undo</button>
-        <button type="button" class="redo" href="#" data-action="redo" data-key="shift+z">Redo</button>
+        <button type="button" class="undo" data-action="undo" data-key="z">Undo</button>
+        <button type="button" class="redo" data-action="redo" data-key="shift+z">Redo</button>
       </span>
 
       <span class="button_group attachment_tools" style="display:none">
@@ -49,9 +55,22 @@ Trix.defineElement class extends Trix.Element
 
     <div class="dialogs">
       <div class="dialog link_dialog" data-attribute="href">
-        <input type="url" required name="href" placeholder="Enter a URL...">
-        <input type="button" value="Link" data-method="setAttribute">
-        <input type="button" value="Unlink" data-method="removeAttribute">
+        <div class="link_url_fields">
+          <input type="url" required name="href" placeholder="Enter a URL...">
+          <input type="button" value="Link" data-method="setAttribute">
+          <input type="button" value="Unlink" data-method="removeAttribute">
+        </div>
       </div>
     </div>
   """
+
+  attachedCallback: ->
+    if @hasAttribute("native")
+      if Trix.NativeToolbarController
+        @toolbarController = new Trix.NativeToolbarController this
+      else
+        throw "Host application must implement Trix.NativeToolbarController"
+    else
+      @toolbarController = new Trix.ToolbarController this
+
+    super

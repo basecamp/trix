@@ -151,6 +151,9 @@ Trix.extend
     fragment.appendChild(node) while node = container.firstChild
     fragment
 
+  nodeIsBlockContainer: (node) ->
+    Trix.nodeIsBlockStartComment(node?.firstChild)
+
   nodeIsBlockStartComment: (node) ->
     Trix.nodeIsCommentNode(node) and node?.data is "block"
 

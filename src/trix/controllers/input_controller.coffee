@@ -2,7 +2,7 @@
 #= require trix/operations/file_verification_operation
 
 {handleEvent, findClosestElementFromNode, findElementFromContainerAndOffset,
-  defer, makeElement, innerElementIsActive} = Trix
+  defer, makeElement, innerElementIsActive, summarizeStringChange} = Trix
 
 inputLog = Trix.Logger.get("input")
 
@@ -15,6 +15,7 @@ class Trix.InputController extends Trix.BasicObject
     "13": "return"
     "37": "left"
     "39": "right"
+    "46": "delete"
     "68": "d"
     "72": "h"
     "79": "o"
@@ -30,16 +31,16 @@ class Trix.InputController extends Trix.BasicObject
 
   handlerFor: (eventName) ->
     (event) =>
-      unless innerElementIsActive(@element)
-        @eventName = eventName
-        inputLog.group(eventName)
-        @events[eventName].call(this, event)
-        inputLog.groupEnd()
+      @handleInput ->
+        unless innerElementIsActive(@element)
+          @eventName = eventName
+          inputLog.group(eventName)
+          @events[eventName].call(this, event)
+          inputLog.groupEnd()
 
   setInputSummary: (summary = {}) ->
     @inputSummary.eventName = @eventName
     @inputSummary[key] = value for key, value of summary
-    inputLog.log("#setInputSummary", JSON.stringify(@inputSummary))
     @inputSummary
 
   resetInputSummary: ->
@@ -47,10 +48,10 @@ class Trix.InputController extends Trix.BasicObject
 
   # Render cycle
 
-  editorWillRenderDocumentElement: ->
+  editorWillSyncDocumentView: ->
     @mutationObserver.stop()
 
-  editorDidRenderDocumentElement: ->
+  editorDidSyncDocumentView: ->
     @mutationObserver.start()
 
   requestRender: ->
@@ -59,44 +60,48 @@ class Trix.InputController extends Trix.BasicObject
   # Mutation observer delegate
 
   elementDidMutate: (mutationSummary) ->
-    inputLog.group("Mutation")
-    inputLog.log("mutationSummary =", JSON.stringify(mutationSummary))
+    @handleInput ->
+      inputLog.group("Mutation")
+      inputLog.log("mutationSummary =", JSON.stringify(mutationSummary))
+      inputLog.log("inputSummary =", JSON.stringify(@inputSummary))
 
-    unless @mutationIsExpected(mutationSummary)
-      inputLog.log("mutation doesn't match input, replacing HTML")
-      @responder?.replaceHTML(@element.innerHTML)
-    @resetInputSummary()
-    @requestRender()
-    Trix.selectionChangeObserver.reset()
+      unless @mutationIsExpected(mutationSummary)
+        inputLog.log("mutation is unexpected, replacing HTML")
+        @responder?.replaceHTML(@element.innerHTML)
+      @resetInputSummary()
+      @requestRender()
+      Trix.selectionChangeObserver.reset()
 
-    inputLog.groupEnd()
+      inputLog.groupEnd()
 
   mutationIsExpected: (mutationSummary) ->
-    return unless @inputSummary
-    return true if @inputSummary.keyName is "return"
-    unhandledAddition = mutationSummary.textAdded? and mutationSummary.textAdded isnt @inputSummary.textAdded
-    unhandledDeletion = mutationSummary.textDeleted? and not @inputSummary.didDelete
-    not (unhandledAddition or unhandledDeletion)
+    if @inputSummary
+      if @inputSummary.preferDocument?
+        @inputSummary.preferDocument
+      else
+        unhandledAddition = mutationSummary.textAdded isnt @inputSummary.textAdded
+        unhandledDeletion = mutationSummary.textDeleted? and not @inputSummary.didDelete
+        not (unhandledAddition or unhandledDeletion)
 
   # File verification
 
   attachFiles: (files) ->
     operations = (new Trix.FileVerificationOperation(file) for file in files)
     Promise.all(operations).then (files) =>
-      @delegate?.inputControllerWillAttachFiles()
-      @responder?.insertFile(file) for file in files
-      @requestRender()
+      @handleInput ->
+        @delegate?.inputControllerWillAttachFiles()
+        @responder?.insertFile(file) for file in files
+        @requestRender()
 
   # Input handlers
 
   events:
     keydown: (event) ->
-      return if @inputSummary.eventName is "compositionend"
-      @resetInputSummary()
+      @resetInputSummary() unless @inputSummary.composing
 
       if keyName = @constructor.keyNames[event.keyCode]
         context = @keys
-        for modifier in ["ctrl", "alt", "shift"] when event["#{modifier}Key"]
+        for modifier in ["ctrl", "alt", "shift", "meta"] when event["#{modifier}Key"]
           modifier = "control" if modifier is "ctrl"
           context = @keys[modifier]
           if context[keyName]
@@ -136,11 +141,12 @@ class Trix.InputController extends Trix.BasicObject
 
     dragstart: (event) ->
       target = event.target
+      @serializeSelectionToDataTransfer(event.dataTransfer)
       @draggedRange = @responder?.getPositionRange()
       @delegate?.inputControllerDidStartDrag?()
 
     dragover: (event) ->
-      if @draggedRange or "Files" in event.dataTransfer?.types
+      if @draggedRange or @canAcceptDataTransfer(event.dataTransfer)
         event.preventDefault()
         draggingPoint = [event.clientX, event.clientY]
         if draggingPoint.toString() isnt @draggingPoint?.toString()
@@ -163,6 +169,11 @@ class Trix.InputController extends Trix.BasicObject
         delete @draggedRange
         @requestRender()
 
+      else if documentJSON = event.dataTransfer.getData("application/x-trix-document")
+        document = Trix.Document.fromJSONString(documentJSON)
+        @responder?.insertDocument(document)
+        @requestRender()
+
       else if files = event.dataTransfer.files
         @attachFiles(event.dataTransfer.files)
 
@@ -170,54 +181,75 @@ class Trix.InputController extends Trix.BasicObject
       delete @draggingPoint
 
     cut: (event) ->
+      if @serializeSelectionToDataTransfer(event.clipboardData)
+        event.preventDefault()
+
       @delegate?.inputControllerWillCutText()
       @deleteInDirection("backward")
+      @requestRender() if event.defaultPrevented
+
+    copy: (event) ->
+      if @serializeSelectionToDataTransfer(event.clipboardData)
+        event.preventDefault()
 
     paste: (event) ->
       paste = event.clipboardData ? event.testClipboardData
       return unless paste?
+      pasteData = {paste}
 
       if pasteEventIsCrippledSafariHTMLPaste(event)
         @getPastedHTMLUsingHiddenElement (html) =>
-          @delegate?.inputControllerWillPasteText({paste, html})
-          @responder?.insertHTML(html)
+          pasteData.html = html
+          @delegate?.inputControllerWillPasteText(pasteData)
+          @responder?.pasteHTML(html)
           @requestRender()
-          @delegate?.inputControllerDidPaste()
+          @delegate?.inputControllerDidPaste(pasteData)
         return
 
       if html = paste.getData("text/html")
-        @delegate?.inputControllerWillPasteText({paste, html})
-        @responder?.insertHTML(html)
+        pasteData.html = html
+        @delegate?.inputControllerWillPasteText(pasteData)
+        @responder?.pasteHTML(html)
         @requestRender()
-        @delegate?.inputControllerDidPaste()
+        @delegate?.inputControllerDidPaste(pasteData)
 
       else if string = paste.getData("text/plain")
+        pasteData.string = string
         @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())
-        @delegate?.inputControllerWillPasteText({paste, string})
+        @delegate?.inputControllerWillPasteText(pasteData)
         @responder?.insertString(string)
         @requestRender()
-        @delegate?.inputControllerDidPaste()
+        @delegate?.inputControllerDidPaste(pasteData)
 
       else if "Files" in paste.types
         if file = paste.items?[0]?.getAsFile?()
           if not file.name and extension = extensionForFile(file)
             file.name = "pasted-file-#{++pastedFileCount}.#{extension}"
+          pasteData.file = file
           @delegate?.inputControllerWillAttachFiles()
           @responder?.insertFile(file)
           @requestRender()
-          @delegate?.inputControllerDidPaste()
+          @delegate?.inputControllerDidPaste(pasteData)
 
       event.preventDefault()
 
     compositionstart: (event) ->
       @mutationObserver.stop()
+      @setInputSummary(composing: true, compositionStart: event.data)
+
+    compositionupdate: (event) ->
+      @setInputSummary(composing: true, compositionUpdate: event.data)
 
     compositionend: (event) ->
-      if (composedString = event.data)?
+      @mutationObserver.start()
+      composedString = event.data
+      @setInputSummary(composing: true, compositionEnd: composedString)
+
+      if composedString? and composedString isnt @inputSummary.compositionStart
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(composedString)
-        @setInputSummary(textAdded: composedString, didDelete: @selectionIsExpanded())
-      @mutationObserver.start()
+        {added, removed} = summarizeStringChange(@inputSummary.compositionStart, composedString)
+        @setInputSummary(textAdded: added, didDelete: Boolean(removed))
 
     input: (event) ->
       event.stopPropagation()
@@ -225,15 +257,21 @@ class Trix.InputController extends Trix.BasicObject
   keys:
     backspace: (event) ->
       @delegate?.inputControllerWillPerformTyping()
-      @deleteInDirection("backward")
+      @deleteInDirection("backward", event)
+
+    delete: (event) ->
+      @delegate?.inputControllerWillPerformTyping()
+      @deleteInDirection("forward", event)
 
     return: (event) ->
+      @setInputSummary(preferDocument: true)
       @delegate?.inputControllerWillPerformTyping()
       @responder?.insertLineBreak()
 
     tab: (event) ->
-      if @responder?.canChangeBlockAttributeLevel()
+      if @responder?.canIncreaseBlockAttributeLevel()
         @responder?.increaseBlockAttributeLevel()
+        @requestRender()
         event.preventDefault()
 
     left: (event) ->
@@ -249,11 +287,11 @@ class Trix.InputController extends Trix.BasicObject
     control:
       d: (event) ->
         @delegate?.inputControllerWillPerformTyping()
-        @deleteInDirection("forward")
+        @deleteInDirection("forward", event)
 
       h: (event) ->
         @delegate?.inputControllerWillPerformTyping()
-        @deleteInDirection("backward")
+        @deleteInDirection("backward", event)
 
       o: (event) ->
         event.preventDefault()
@@ -261,14 +299,16 @@ class Trix.InputController extends Trix.BasicObject
         @responder?.insertString("\n", updatePosition: false)
         @requestRender()
 
-    alt:
-      backspace: (event) ->
-        @delegate?.inputControllerWillPerformTyping()
-
     shift:
       return: (event) ->
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString("\n")
+
+      tab: (event) ->
+        if @responder?.canDecreaseBlockAttributeLevel()
+          @responder?.decreaseBlockAttributeLevel()
+          @requestRender()
+          event.preventDefault()
 
       left: (event) ->
         if @selectionIsInCursorTarget()
@@ -280,11 +320,48 @@ class Trix.InputController extends Trix.BasicObject
           event.preventDefault()
           @expandSelectionInDirection("forward")
 
+    alt:
+      backspace: (event) ->
+        @setInputSummary(preferDocument: false)
+        @delegate?.inputControllerWillPerformTyping()
+
+    meta:
+      backspace: (event) ->
+        @setInputSummary(preferDocument: false)
+        @delegate?.inputControllerWillPerformTyping()
+
   # Private
 
-  deleteInDirection: (direction) ->
-    @responder?.deleteInDirection(direction)
-    @setInputSummary(didDelete: true)
+  handleInput: (callback) ->
+    try
+      @delegate?.inputControllerWillHandleInput()
+      callback.call(this)
+    finally
+      @delegate?.inputControllerDidHandleInput()
+
+  deleteInDirection: (direction, event) ->
+    if @responder?.deleteInDirection(direction) is false
+      event?.preventDefault()
+    else
+      @setInputSummary(didDelete: true)
+
+  serializeSelectionToDataTransfer: (dataTransfer) ->
+    return unless dataTransfer?.setData?
+
+    document = @responder?.getSelectedDocument().toSerializableDocument()
+    element = Trix.DocumentView.render(document)
+    html = element.innerHTML
+    text = element.innerText
+
+    dataTransfer.setData("application/x-trix-document", JSON.stringify(document))
+    dataTransfer.setData("text/html", html)
+    dataTransfer.setData("text/plain", text)
+    true
+
+  canAcceptDataTransfer: (dataTransfer) ->
+    types = {}
+    types[type] = true for type in dataTransfer?.types ? []
+    types["Files"] or types["application/x-trix-document"] or types["text/html"] or types["text/plain"]
 
   getPastedHTMLUsingHiddenElement: (callback) ->
     locationRange = @responder?.getLocationRange()

@@ -13,6 +13,9 @@ class Trix.Block extends Trix.Object
   isEmpty: ->
     @text.isBlockBreak()
 
+  isEqualTo: (block) ->
+    super or (@text.isEqualTo(block.text) and @attributes.isEqualTo(block.attributes))
+
   copyWithText: (text) ->
     new @constructor text, @attributes
 
@@ -29,20 +32,20 @@ class Trix.Block extends Trix.Object
       @copyWithText(@text.copyUsingObjectMap(objectMap))
 
   addAttribute: (attribute) ->
-    {parentAttribute} = Trix.config.blockAttributes[attribute]
-    attributes = if parentAttribute
-      @attributes.push(parentAttribute, attribute)
+    {listAttribute} = Trix.config.blockAttributes[attribute]
+    attributes = if listAttribute
+      @attributes.push(listAttribute, attribute)
     else
       @attributes.push(attribute)
-    @copyWithAttributes attributes
+    @copyWithAttributes(attributes)
 
   removeAttribute: (attribute) ->
-    {parentAttribute} = Trix.config.blockAttributes[attribute]
-    attributes = if parentAttribute
-      @attributes.pop(attribute, parentAttribute)
+    {listAttribute} = Trix.config.blockAttributes[attribute]
+    attributes = if listAttribute
+      @attributes.pop(attribute, listAttribute)
     else
       @attributes.pop(attribute)
-    @copyWithAttributes attributes
+    @copyWithAttributes(attributes)
 
   removeLastAttribute: ->
     @removeAttribute(@getLastAttribute())
@@ -53,8 +56,22 @@ class Trix.Block extends Trix.Object
   getAttributes: ->
     @attributes.toArray()
 
-  hasAttributes: ->
+  getAttributeLevel: ->
     @attributes.length
+
+  getAttributeAtLevel: (level) ->
+    @getAttributes()[level - 1]
+
+  hasAttributes: ->
+    @getAttributeLevel() > 0
+
+  getConfig: (key) ->
+    return unless attribute = @getLastAttribute()
+    return unless config = Trix.config.blockAttributes[attribute]
+    if key then config[key] else config
+
+  isListItem: ->
+    @getConfig("listAttribute")?
 
   findLineBreakInDirectionFromPosition: (direction, position) ->
     string = @toString()
@@ -83,10 +100,12 @@ class Trix.Block extends Trix.Object
     @text.getLength()
 
   canBeConsolidatedWith: (block) ->
-    false
+    not @hasAttributes() and not block.hasAttributes()
 
   consolidateWith: (block) ->
-    @copyWithText(@text.appendText(block.text))
+    newlineText = Trix.Text.textForStringWithAttributes("\n")
+    text = @getTextWithoutBlockBreak().appendText(newlineText)
+    @copyWithText(text.appendText(block.text))
 
   splitAtOffset: (offset) ->
     if offset is 0

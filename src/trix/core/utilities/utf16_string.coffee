@@ -3,7 +3,7 @@ class Trix.UTF16String extends Trix.BasicObject
     if value instanceof this
       value
     else
-      @fromUCS2String(value)
+      @fromUCS2String(value?.toString())
 
   @fromUCS2String: (ucs2String) ->
     new this ucs2String, ucs2decode(ucs2String)
@@ -16,10 +16,10 @@ class Trix.UTF16String extends Trix.BasicObject
     @ucs2Length = @ucs2String.length
 
   offsetToUCS2Offset: (offset) ->
-    ucs2encode(@codepoints.slice(0, offset)).length
+    ucs2encode(@codepoints.slice(0, Math.max(0, offset))).length
 
   offsetFromUCS2Offset: (ucs2Offset) ->
-    ucs2decode(@ucs2String.slice(0, ucs2Offset)).length
+    ucs2decode(@ucs2String.slice(0, Math.max(0, ucs2Offset))).length
 
   slice: ->
     @constructor.fromCodepoints(@codepoints.slice(arguments...))
@@ -38,7 +38,6 @@ class Trix.UTF16String extends Trix.BasicObject
 
   toString: ->
     @ucs2String
-
 
 hasArrayFrom = Array.from?("\ud83d\udc7c").length is 1
 hasStringCodePointAt = " ".codePointAt?(0)?

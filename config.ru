@@ -2,21 +2,24 @@ require 'bundler/setup'
 require 'rack/rewrite'
 require 'pathname'
 require 'json'
+require 'blade_runner'
 
 root = Pathname.new(File.dirname(__FILE__))
 
 require root.join('lib/trix/environment')
 environment = Trix::Environment.new(root)
-environment.paths = %w( assets polyfills src test/assets test/src test/vendor )
+environment.paths = %w( assets polyfills src )
 
 require root.join('lib/trix/attachment_server')
 Trix::AttachmentServer.root = root.join('tmp/attachments')
+
+
+use BladeRunner::RackAdapter, mount: '/test'
 
 map '/' do
   run environment.sprockets_environment
   use Rack::Rewrite do
     rewrite '/', '/demo.html'
-    rewrite /\/test((\?.*)|$)/, 'test.html$1'
   end
 end
 

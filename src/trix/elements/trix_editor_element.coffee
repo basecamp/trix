@@ -40,12 +40,14 @@ Trix.defineElement class extends Trix.Element
     inputElement = findInputElement(this)
 
     @editorController ?= new Trix.EditorController
-      toolbarElement: toolbarElement
+      toolbarController: toolbarElement.toolbarController
       documentElement: documentElement
       document: Trix.deserializeFromContentType(inputElement.value, contentType)
       delegate: new Trix.EditorElementController this, documentElement, inputElement
 
     @editorController.registerSelectionManager()
+
+    @setAttribute("document", @editorController.document.id)
 
   findOrCreateToolbarElement = (parentElement) ->
     unless element = parentElement.querySelector("trix-toolbar")
@@ -55,11 +57,13 @@ Trix.defineElement class extends Trix.Element
 
   findOrCreateDocumentElement = (parentElement) ->
     unless element = parentElement.querySelector("trix-document")
-      placeholder = parentElement.getAttribute("placeholder")
-      element = makeElement("trix-document", {placeholder})
+      element = makeElement("trix-document")
       if parentElement.hasAttribute("autofocus")
         parentElement.removeAttribute("autofocus")
         element.setAttribute("autofocus", "")
+      if placeholder = parentElement.getAttribute("placeholder")
+        parentElement.removeAttribute("placeholder")
+        element.setAttribute("placeholder", placeholder)
       parentElement.insertBefore(element, null)
     element
 

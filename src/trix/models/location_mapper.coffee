@@ -1,6 +1,7 @@
 {elementContainsNode, findChildIndexOfNode, findClosestElementFromNode,
- findNodeFromContainerAndOffset, nodeIsBlockStartComment, nodeIsCursorTarget,
- nodeIsEmptyTextNode, nodeIsTextNode, nodeIsAttachmentElement, tagName, walkTree} = Trix
+ findNodeFromContainerAndOffset, nodeIsBlockStartComment, nodeIsBlockContainer,
+ nodeIsCursorTarget, nodeIsEmptyTextNode, nodeIsTextNode, nodeIsAttachmentElement,
+ tagName, walkTree} = Trix
 
 class Trix.LocationMapper
   constructor: (@element) ->
@@ -21,7 +22,7 @@ class Trix.LocationMapper
 
       if node is container and nodeIsTextNode(container)
         unless nodeIsCursorTarget(node)
-          location.offset += translateTextNodeOffset(node, offset)
+          location.offset += offset
         break
 
       else
@@ -40,18 +41,35 @@ class Trix.LocationMapper
     location
 
   findContainerAndOffsetFromLocation: (location) ->
-    return [@element, 0] if location.index is 0 and location.offset is 0
+    if location.index is 0 and location.offset is 0
+      container = @element
+      offset = 0
+
+      while container.firstChild
+        container = container.firstChild
+        if nodeIsBlockContainer(container)
+          offset = 1
+          break
+
+      return [container, offset]
 
     [node, nodeOffset] = @findNodeAndOffsetFromLocation(location)
     return unless node
 
     if nodeIsTextNode(node)
       container = node
-      string = Trix.UTF16String.box(node.textContent)
-      offset = string.offsetToUCS2Offset(location.offset - nodeOffset)
+      string = node.textContent
+      offset = location.offset - nodeOffset
 
     else
       container = node.parentNode
+
+      unless nodeIsBlockContainer(container)
+        while node is container.lastChild
+          node = container
+          container = container.parentNode
+          break if nodeIsBlockContainer(container)
+
       offset = findChildIndexOfNode(node)
       offset++ unless location.offset is 0
 
@@ -112,16 +130,12 @@ class Trix.LocationMapper
       if nodeIsCursorTarget(node)
         0
       else
-        string = Trix.UTF16String.box(node.textContent)
+        string = node.textContent
         string.length
     else if tagName(node) is "br" or nodeIsAttachmentElement(node)
       1
     else
       0
-
-  translateTextNodeOffset = (node, offset) ->
-    string = Trix.UTF16String.box(node.textContent)
-    string.offsetFromUCS2Offset(offset)
 
   acceptSignificantNodes = (node) ->
     if rejectEmptyTextNodes(node) is NodeFilter.FILTER_ACCEPT

@@ -18,10 +18,10 @@ class Trix.EditorElementController extends Trix.Controller
     @save()
 
   didChangeDocument: (document) ->
-    defer(@saveAndNotify)
+    @documentChangedSinceLastRender = true
 
-  didPasteAtPositionRange: (positionRange) ->
-    triggerEvent("trix-paste", onElement: @element, attributes: {positionRange})
+  didPasteAtPositionRange: (pasteData, positionRange) ->
+    triggerEvent("trix-paste", onElement: @element, attributes: {pasteData, positionRange})
 
   shouldAcceptFile: (file) ->
     triggerEvent("trix-file-accept", onElement: @element, attributes: {file})
@@ -37,11 +37,27 @@ class Trix.EditorElementController extends Trix.Controller
     triggerEvent("trix-attachment-remove", onElement: @element, attributes: {attachment})
     @save()
 
-  didRenderDocumentElement: ->
+  didRenderDocument: ->
+    if @documentChangedSinceLastRender
+      delete @documentChangedSinceLastRender
+      @saveAndNotify()
+
     triggerEvent("trix-render", onElement: @element)
+
+  didSyncDocumentView: ->
+    triggerEvent("trix-sync", onElement: @element)
 
   didChangeSelection: ->
     triggerEvent("selectionchange", onElement: @element, bubbles: false)
+
+  didInvokeExternalAction: (actionName) ->
+    triggerEvent("trix-action-invoke", onElement: @element, attributes: {actionName})
+
+  didShowToolbarDialog: (dialogElement) ->
+    triggerEvent("trix-toolbar-dialog-show", onElement: dialogElement)
+
+  didHideToolbarDialog: (dialogElement) ->
+    triggerEvent("trix-toolbar-dialog-hide", onElement: dialogElement)
 
   # Private
 

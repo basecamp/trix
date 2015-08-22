@@ -7,6 +7,7 @@
 #= require ./debugging_panel_view
 #= require ./loggers_panel_view
 #= require ./benchmark_panel_view
+#= require ./replay_panel_view
 
 {defer, handleEvent, findClosestElementFromNode} = Trix
 
@@ -60,7 +61,10 @@ class Trix.InspectorController
     @element.querySelector("[data-inspector-panel-name=#{name}]")
 
   incrementRenderCount: -> defer =>
-    @renderCountView.incrementAndRender()
+    @renderCountView.incrementRenderCount()
+
+  incrementSyncCount: -> defer =>
+    @renderCountView.incrementSyncCount()
 
   render: -> defer =>
     @selectionView.render()

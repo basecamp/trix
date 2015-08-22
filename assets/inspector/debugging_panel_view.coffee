@@ -27,10 +27,10 @@ class Trix.DebuggingPanelView extends Trix.InspectorPanelView
     @documentController.isViewCachingEnabled()
 
   didClickRenderButton: =>
-    @documentController.render()
+    @editorController.render()
 
   didClickParseButton: =>
-    @editorController.composition.replaceHTML(@editorController.documentElement.innerHTML)
+    @editorController.reparse()
 
   capitalize = (string) ->
     string.charAt(0).toUpperCase() + string.substring(1)

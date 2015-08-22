@@ -21,6 +21,15 @@ editorTest "applying a link to text", (done) ->
             expectAttributes([2, 3], {})
             done()
 
+editorTest "inserting a link", (expectDocument) ->
+  typeCharacters "a", ->
+    clickToolbarButton attribute: "href", ->
+      ok isToolbarDialogActive(attribute: "href")
+      typeInToolbarDialog "http://example.com", attribute: "href", ->
+        expectAttributes([0, 1], {})
+        expectAttributes([1, 19], href: "http://example.com")
+        expectDocument("ahttp://example.com\n")
+
 editorTest "editing a link", (done) ->
   insertString("a")
   text = Trix.Text.textForStringWithAttributes("bc", href: "http://example.com")
@@ -47,7 +56,8 @@ editorTest "removing a link", (done) ->
         done()
 
 editorTest "applying a link to an attachment with a host-provided href", (done) ->
-  insertDocument(fixtures["file attachment"].document)
+  text = fixtures["file attachment"].document.getBlockAtIndex(0).getTextWithoutBlockBreak()
+  insertText(text)
   typeCharacters "a", ->
     ok not isToolbarButtonDisabled(attribute: "href")
     expandSelection "left", ->
@@ -96,6 +106,17 @@ editorTest "applying formatting and then moving the cursor away", (done) ->
             expectAttributes([0, 3], {})
             expectAttributes([3, 4], blockBreak: true)
             done()
+
+editorTest "applying formatting to an unfocused editor", (done) ->
+  input = Trix.makeElement("input", type: "text")
+  document.body.appendChild(input)
+  input.focus()
+
+  clickToolbarButton attribute: "bold", ->
+    typeCharacters "a", ->
+      expectAttributes([0, 1], bold: true)
+      document.body.removeChild(input)
+      done()
 
 editorTest "editing formatted text", (done) ->
   clickToolbarButton attribute: "bold", ->

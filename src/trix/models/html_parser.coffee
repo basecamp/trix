@@ -198,7 +198,7 @@ class Trix.HTMLParser extends Trix.BasicObject
         if tagName(element) is config.tagName
           if config.test?(element) or not config.test
             attributes.push(attribute)
-            attributes.push(config.parentAttribute) if config.parentAttribute
+            attributes.push(config.listAttribute) if config.listAttribute
       element = element.parentNode
     attributes.reverse()
 

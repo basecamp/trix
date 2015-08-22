@@ -4,6 +4,7 @@ Trix.config.blockAttributes = attributes =
     parse: false
   quote:
     tagName: "blockquote"
+    nestable: true
   code:
     tagName: "pre"
     text:
@@ -13,14 +14,14 @@ Trix.config.blockAttributes = attributes =
     parse: false
   bullet:
     tagName: "li"
-    parentAttribute: "bulletList"
+    listAttribute: "bulletList"
     test: (element) ->
-      Trix.tagName(element.parentNode) is attributes[@parentAttribute].tagName
+      Trix.tagName(element.parentNode) is attributes[@listAttribute].tagName
   numberList:
     tagName: "ol"
     parse: false
   number:
     tagName: "li"
-    parentAttribute: "numberList"
+    listAttribute: "numberList"
     test: (element) ->
-      Trix.tagName(element.parentNode) is attributes[@parentAttribute].tagName
+      Trix.tagName(element.parentNode) is attributes[@listAttribute].tagName

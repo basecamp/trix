@@ -1,6 +1,7 @@
 #= require_self
 #= require trix/core/helpers/global
 #= require trix/core/utilities/debugger
+#= require trix/watchdog
 #= require ./documents
 #= require ./inspector/inspector_controller
 
@@ -9,6 +10,11 @@
 addEventListener "DOMContentLoaded", ->
   defer ->
     editorElement = document.querySelector("trix-editor")
+    documentElement = document.querySelector("trix-document")
+
+    documentElement.recorder = new Trix.Watchdog.Recorder documentElement
+    documentElement.recorder.start()
+
     inspectorElement = document.querySelector("#inspector")
     inspectorController = new Trix.InspectorController inspectorElement, editorElement.editorController
     inspectorElement.style.visibility = "visible"
@@ -17,8 +23,12 @@ addEventListener "DOMContentLoaded", ->
       inspectorController.render()
 
     handleEvent "trix-render", onElement: editorElement, withCallback: ->
-      inspectorController.render()
       inspectorController.incrementRenderCount()
+      inspectorController.render()
+
+    handleEvent "trix-sync", onElement: editorElement, withCallback: ->
+      inspectorController.incrementSyncCount()
+      inspectorController.render()
 
     handleEvent "trix-attachment-add", onElement: editorElement, withCallback: (event) ->
       {attachment} = event
