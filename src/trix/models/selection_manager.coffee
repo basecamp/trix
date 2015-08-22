@@ -1,8 +1,8 @@
 #= require trix/models/location_mapper
-#= require trix/models/location_range
 #= require trix/observers/selection_change_observer
 
-{defer, benchmark, elementContainsNode, nodeIsCursorTarget, innerElementIsActive} = Trix
+{defer, benchmark, elementContainsNode, nodeIsCursorTarget, innerElementIsActive,
+ rangeIsCollapsed, createRange} = Trix
 
 class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
@@ -14,16 +14,10 @@ class Trix.SelectionManager extends Trix.BasicObject
       @currentLocationRange
     else
       @lockedLocationRange ? @currentLocationRange
-    locationRange?.copy()
 
   setLocationRange: (start, end) ->
     return if @lockedLocationRange
-
-    locationRange = if start instanceof Trix.LocationRange
-      start
-    else
-      new Trix.LocationRange start, end
-
+    locationRange = createRange(start, end)
     if domRange = @createDOMRangeFromLocationRange(locationRange)
       setDOMRange(domRange)
       @updateCurrentLocationRange(locationRange)
@@ -56,12 +50,8 @@ class Trix.SelectionManager extends Trix.BasicObject
       start = @getLocationRangeAtPoint(endPoints[0])
       end = @getLocationRangeAtPoint(endPoints[1])
 
-    if start and end
-      @setLocationRange(start, end)
-    else if start
-      @setLocationRange(start)
-    else if end
-      @setLocationRange(end)
+    if range = createRange(start, end)
+      @setLocationRange(range)
     else if locationRange
       @setLocationRange(locationRange)
 
