@@ -20,7 +20,7 @@ class Trix.EditorElementController extends Trix.Controller
   didChangeDocument: (document) ->
     @documentChangedSinceLastRender = true
 
-  didPasteAtPositionRange: (pasteData, positionRange) ->
+  didPasteDataAtPositionRange: (pasteData, positionRange) ->
     triggerEvent("trix-paste", onElement: @element, attributes: {pasteData, positionRange})
 
   shouldAcceptFile: (file) ->

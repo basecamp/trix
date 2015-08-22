@@ -126,8 +126,10 @@ class Trix.Document extends Trix.Object
     @removeTextAtPositionRange(positionRange)
     @blockList = @blockList.insertSplittableListAtPosition(document.blockList, position)
 
-  mergeDocumentAtLocationRange: edit "mergeDocumentAtLocationRange", (document, locationRange) ->
-    blockAttributes = @getBlockAtIndex(locationRange.index).getAttributes()
+  mergeDocumentAtPositionRange: edit "mergeDocumentAtPositionRange", (document, positionRange) ->
+    positionRange = Trix.PositionRange.box(positionRange)
+    startLocation = @locationFromPosition(positionRange.start)
+    blockAttributes = @getBlockAtIndex(startLocation.index).getAttributes()
     baseBlockAttributes = document.getBaseBlockAttributes()
     trailingBlockAttributes = blockAttributes.slice(-baseBlockAttributes.length)
 
@@ -142,15 +144,14 @@ class Trix.Document extends Trix.Object
 
     if arraysAreEqual(blockAttributes, firstBlock.getAttributes())
       firstText = firstBlock.getTextWithoutBlockBreak()
-      @insertTextAtLocationRange(firstText, locationRange)
+      @insertTextAtPositionRange(firstText, positionRange)
 
       if blockCount > 1
-        [startPosition, endPosition] = @rangeFromLocationRange(locationRange)
         formattedDocument = new @constructor formattedDocument.getBlocks().slice(1)
-        locationRange = @locationRangeFromPosition(startPosition + firstText.getLength())
-        @insertDocumentAtLocationRange(formattedDocument, locationRange)
+        position = positionRange.start + firstText.getLength()
+        @insertDocumentAtPositionRange(formattedDocument, position)
     else
-      @insertDocumentAtLocationRange(formattedDocument, locationRange)
+      @insertDocumentAtPositionRange(formattedDocument, positionRange)
 
   replaceDocument: edit "replaceDocument", (document) ->
     @blockList = document.blockList.copy()
@@ -179,7 +180,7 @@ class Trix.Document extends Trix.Object
 
     text = leftText.appendText(rightText)
 
-    removingLeftBlock = leftIndex isnt rightIndex and locationRange.start.offset is 0
+    removingLeftBlock = leftIndex isnt rightIndex and leftLocation.offset is 0
     useRightBlock = removingLeftBlock and leftBlock.getAttributeLevel() >= rightBlock.getAttributeLevel()
 
     if useRightBlock
@@ -340,7 +341,7 @@ class Trix.Document extends Trix.Object
         @insertBlockBreakAtPositionRange([position - 1, position])
 
     positionRange
-  
+
   consolidateBlocksAtPositionRange: (positionRange) ->
     positionRange = Trix.PositionRange.box(positionRange)
     @edit =>

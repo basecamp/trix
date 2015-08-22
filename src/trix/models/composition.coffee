@@ -73,22 +73,22 @@ class Trix.Composition extends Trix.BasicObject
 
   breakFormattedBlock: ->
     position = @getPosition()
-    locationRange = @document.locationRangeFromRange([position - 1, position])
+    positionRange = [position - 1, position]
 
-    {index, offset} = locationRange.end
+    {index, offset} = @document.locationFromPosition(position)
     block = @document.getBlockAtIndex(index)
 
     if block.getBlockBreakPosition() is offset
-      @document.removeTextAtLocationRange(locationRange)
-      locationRange = @document.locationRangeFromPosition(position)
+      @document.removeTextAtPositionRange(positionRange)
+      positionRange = [position, position]
     else
       if block.text.getStringAtRange([offset, offset + 1]) is "\n"
-        locationRange = @document.locationRangeFromRange([position - 1, position + 1])
+        positionRange = [position - 1, position + 1]
       else
         position += 1
 
     document = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
-    @document.insertDocumentAtLocationRange(document, locationRange)
+    @document.insertDocumentAtPositionRange(document, positionRange)
     @setPosition(position)
 
   insertLineBreak: ->
@@ -122,14 +122,13 @@ class Trix.Composition extends Trix.BasicObject
     startLength = @document.getLength()
 
     document = Trix.Document.fromHTML(html)
-    @document.mergeDocumentAtLocationRange(document, @getLocationRange())
+    @document.mergeDocumentAtPositionRange(document, @getSelectedRange())
 
     endLength = @document.getLength()
     endPosition = startPosition + (endLength - startLength)
-    locationRange = @document.locationRangeFromPosition(endPosition)
 
-    @setLocationRange(locationRange)
-    @notifyDelegateOfInsertionAtLocationRange(locationRange)
+    @setPosition(endPosition)
+    @notifyDelegateOfInsertionAtPositionRange([endPosition, endPosition])
 
   replaceHTML: (html) ->
     document = Trix.Document.fromHTML(html).copyUsingObjectsFromDocument(@document)
@@ -144,7 +143,7 @@ class Trix.Composition extends Trix.BasicObject
       @insertText(text)
 
   deleteInDirection: (direction) ->
-    [startPosition, endPosition] = @getSelectedRange()
+    range = [startPosition, endPosition] = @getSelectedRange()
     block = @getBlock()
 
     if startPosition is endPosition
