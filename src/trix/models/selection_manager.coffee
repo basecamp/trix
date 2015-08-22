@@ -94,22 +94,22 @@ class Trix.SelectionManager extends Trix.BasicObject
       @findContainerAndOffsetFromLocation(locationRange[1])
 
     if rangeStart? and rangeEnd?
-      range = document.createRange()
-      range.setStart(rangeStart...)
-      range.setEnd(rangeEnd...)
-      range
+      domRange = document.createRange()
+      domRange.setStart(rangeStart...)
+      domRange.setEnd(rangeEnd...)
+      domRange
 
-  createLocationRangeFromDOMRange: (range) ->
-    return unless range? and @rangeWithinElement(range)
-    return unless start = @findLocationFromContainerAndOffset(range.startContainer, range.startOffset)
-    end = @findLocationFromContainerAndOffset(range.endContainer, range.endOffset) unless range.collapsed
+  createLocationRangeFromDOMRange: (domRange) ->
+    return unless domRange? and @domRangeWithinElement(domRange)
+    return unless start = @findLocationFromContainerAndOffset(domRange.startContainer, domRange.startOffset)
+    end = @findLocationFromContainerAndOffset(domRange.endContainer, domRange.endOffset) unless domRange.collapsed
     normalizeRange([start, end])
 
-  rangeWithinElement: (range) ->
-    if range.collapsed
-      elementContainsNode(@element, range.startContainer)
+  domRangeWithinElement: (domRange) ->
+    if domRange.collapsed
+      elementContainsNode(@element, domRange.startContainer)
     else
-      elementContainsNode(@element, range.startContainer) and elementContainsNode(@element, range.endContainer)
+      elementContainsNode(@element, domRange.startContainer) and elementContainsNode(@element, domRange.endContainer)
 
   getLocationRangeAtPoint: ([clientX, clientY]) ->
     if document.caretPositionFromPoint
@@ -133,8 +133,8 @@ class Trix.SelectionManager extends Trix.BasicObject
     @createLocationRangeFromDOMRange(domRange ? getDOMRange())
 
   getSelectionEndPoints: ->
-    return unless range = getDOMRange()
-    rects = range.getClientRects()
+    return unless domRange = getDOMRange()
+    rects = domRange.getClientRects()
     if rects.length > 0
       leftRect = rects[0]
       rightRect = rects[rects.length - 1]

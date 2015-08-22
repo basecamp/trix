@@ -29,13 +29,13 @@ class Trix.SelectionChangeObserver extends Trix.BasicObject
       selectionManager.selectionDidChange()
 
   update: =>
-    range = getRange()
-    unless rangesAreEqual(range, @range)
-      @range = range
+    domRange = getDOMRange()
+    unless domRangesAreEqual(domRange, @domRange)
+      @domRange = domRange
       @notifySelectionManagersOfSelectionChange()
 
   reset: ->
-    delete @range
+    delete @domRange
     @update()
 
   # Private
@@ -45,11 +45,11 @@ class Trix.SelectionChangeObserver extends Trix.BasicObject
       @update()
       requestAnimationFrame(@run)
 
-  getRange = ->
+  getDOMRange = ->
     selection = window.getSelection()
     selection.getRangeAt(0) if selection.rangeCount > 0
 
-  rangesAreEqual = (left, right) ->
+  domRangesAreEqual = (left, right) ->
     left?.startContainer is right?.startContainer and
       left?.startOffset is right?.startOffset and
       left?.endContainer is right?.endContainer and
