@@ -190,10 +190,10 @@ insertNode = (node, callback) ->
   deleteSelection()
   getDOMRange()?.insertNode(node)
 
-  range = document.createRange()
-  range.selectNode(node)
-  range.collapse(false)
-  setDOMRange(range)
+  domRange = document.createRange()
+  domRange.selectNode(node)
+  domRange.collapse(false)
+  setDOMRange(domRange)
   callback?()
 
 getDOMRange = ->
@@ -201,10 +201,10 @@ getDOMRange = ->
   if selection.rangeCount
     selection.getRangeAt(0)
 
-setDOMRange = (range) ->
+setDOMRange = (domRange) ->
   selection = window.getSelection()
   selection.removeAllRanges()
-  selection.addRange(range)
+  selection.addRange(domRange)
 
 @createEvent = (type, properties = {}) ->
   event = document.createEvent("Events")
@@ -281,14 +281,14 @@ getElementCoordinates = (element) ->
 
 @collapseSelection = (direction, callback) ->
   selection = window.getSelection()
-  range = selection.getRangeAt(0)
-  newRange = document.createRange()
+  domRange = selection.getRangeAt(0)
+  newDOMRange = document.createRange()
   if direction is "left"
-    newRange.setStart(range.startContainer, range.startOffset)
+    newDOMRange.setStart(domRange.startContainer, domRange.startOffset)
   else
-    newRange.setStart(range.endContainer, range.endOffset)
+    newDOMRange.setStart(domRange.endContainer, domRange.endOffset)
   selection.removeAllRanges()
-  selection.addRange(newRange)
+  selection.addRange(newDOMRange)
   Trix.selectionChangeObserver.update()
   defer(callback)
 
