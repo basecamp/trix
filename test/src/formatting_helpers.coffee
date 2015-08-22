@@ -41,25 +41,25 @@ getToolbarDialog = ({attribute, action}) ->
   dialog = getToolbarDialog(selector)
   dialog.classList.contains("active")
 
-@expectAttributes = (range, attributes) ->
-  document = getDocument().getDocumentAtPositionRange(range)
+@expectAttributes = (positionRange, attributes) ->
+  document = getDocument().getDocumentAtPositionRange(positionRange)
   blocks = document.getBlocks()
-  throw "range #{JSON.stringify(range)} spans more than one block" unless blocks.length is 1
+  throw "range #{JSON.stringify(positionRange)} spans more than one block" unless blocks.length is 1
 
-  locationRange = getDocument().locationRangeFromPositionRange(range)
+  locationRange = getDocument().locationRangeFromPositionRange(positionRange)
   textIndex = locationRange[0].index
   textRange = [locationRange[0].offset, locationRange[1].offset]
   text = getDocument().getTextAtIndex(textIndex).getTextAtRange(textRange)
   pieces = text.getPieces()
-  throw "range #{JSON.stringify(range)} must only span one piece" unless pieces.length is 1
+  throw "range #{JSON.stringify(positionRange)} must only span one piece" unless pieces.length is 1
 
   piece = pieces[0]
   deepEqual piece.getAttributes(), attributes
 
-@expectBlockAttributes = (range, attributes) ->
-  document = getDocument().getDocumentAtPositionRange(range)
+@expectBlockAttributes = (positionRange, attributes) ->
+  document = getDocument().getDocumentAtPositionRange(positionRange)
   blocks = document.getBlocks()
-  throw "range #{JSON.stringify(range)} spans more than one block" unless blocks.length is 1
+  throw "range #{JSON.stringify(positionRange)} spans more than one block" unless blocks.length is 1
 
   block = blocks[0]
   deepEqual block.getAttributes(), attributes

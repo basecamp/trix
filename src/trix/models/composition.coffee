@@ -145,7 +145,7 @@ class Trix.Composition extends Trix.BasicObject
       @insertText(text)
 
   deleteInDirection: (direction) ->
-    range = [startPosition, endPosition] = @getSelectedRange()
+    positionRange = [startPosition, endPosition] = @getSelectedRange()
     block = @getBlock()
 
     if startPosition is endPosition
@@ -159,17 +159,17 @@ class Trix.Composition extends Trix.BasicObject
           @setPosition(startPosition)
           return
 
-      range = @getExpandedRangeInDirection(direction)
+      positionRange = @getExpandedRangeInDirection(direction)
 
       if direction is "backward"
-        attachment = @getAttachmentAtPositionRange(range)
+        attachment = @getAttachmentAtPositionRange(positionRange)
 
     if attachment
       @editAttachment(attachment)
       false
     else
-      @document.removeTextAtPositionRange(range)
-      @setPosition(range[0])
+      @document.removeTextAtPositionRange(positionRange)
+      @setPosition(positionRange[0])
 
   moveTextFromPositionRange: (positionRange) ->
     [position] = @getSelectedRange()
