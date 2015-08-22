@@ -1,6 +1,5 @@
 #= require trix/models/block
 #= require trix/models/splittable_list
-#= require trix/models/position_range
 #= require trix/models/html_parser
 
 {arraysAreEqual, normalizeRange, rangeIsCollapsed} = Trix
@@ -111,13 +110,12 @@ class Trix.Document extends Trix.Object
     this
 
   insertDocumentAtPositionRange: edit "insertDocumentAtPositionRange", (document, positionRange) ->
-    positionRange = Trix.PositionRange.box(positionRange)
-    position = positionRange.start
+    [position] = positionRange = normalizeRange(positionRange)
     {index, offset} = @locationFromPosition(position)
 
     block = @getBlockAtPosition(position)
 
-    if positionRange.isCollapsed() and block.isEmpty() and not block.hasAttributes()
+    if rangeIsCollapsed(positionRange) and block.isEmpty() and not block.hasAttributes()
       @blockList = @blockList.removeObjectAtIndex(index)
     else if block.getBlockBreakPosition() is offset
       position++
@@ -126,8 +124,8 @@ class Trix.Document extends Trix.Object
     @blockList = @blockList.insertSplittableListAtPosition(document.blockList, position)
 
   mergeDocumentAtPositionRange: edit "mergeDocumentAtPositionRange", (document, positionRange) ->
-    positionRange = Trix.PositionRange.box(positionRange)
-    startLocation = @locationFromPosition(positionRange.start)
+    [startPosition] = positionRange = normalizeRange(positionRange)
+    startLocation = @locationFromPosition(startPosition)
     blockAttributes = @getBlockAtIndex(startLocation.index).getAttributes()
     baseBlockAttributes = document.getBaseBlockAttributes()
     trailingBlockAttributes = blockAttributes.slice(-baseBlockAttributes.length)
@@ -147,7 +145,7 @@ class Trix.Document extends Trix.Object
 
       if blockCount > 1
         formattedDocument = new @constructor formattedDocument.getBlocks().slice(1)
-        position = positionRange.start + firstText.getLength()
+        position = startPosition + firstText.getLength()
         @insertDocumentAtPositionRange(formattedDocument, position)
     else
       @insertDocumentAtPositionRange(formattedDocument, positionRange)
@@ -156,23 +154,23 @@ class Trix.Document extends Trix.Object
     @blockList = document.blockList.copy()
 
   insertTextAtPositionRange: edit "insertTextAtPositionRange", (text, positionRange) ->
-    positionRange = Trix.PositionRange.box(positionRange)
-    {index, offset} = @locationFromPosition(positionRange.start)
+    [startPosition] = positionRange = normalizeRange(positionRange)
+    {index, offset} = @locationFromPosition(startPosition)
 
     @removeTextAtPositionRange(positionRange)
     @blockList = @blockList.editObjectAtIndex index, (block) ->
       block.copyWithText(block.text.insertTextAtPosition(text, offset))
 
   removeTextAtPositionRange: edit "removeTextAtPositionRange", (positionRange) ->
-    positionRange = Trix.PositionRange.box(positionRange)
-    return if positionRange.isCollapsed()
+    [startPosition, endPosition] = positionRange = normalizeRange(positionRange)
+    return if rangeIsCollapsed(positionRange)
 
-    leftLocation = @locationFromPosition(positionRange.start)
+    leftLocation = @locationFromPosition(startPosition)
     leftIndex = leftLocation.index
     leftBlock = @getBlockAtIndex(leftIndex)
     leftText = leftBlock.text.getTextAtRange([0, leftLocation.offset])
 
-    rightLocation = @locationFromPosition(positionRange.end)
+    rightLocation = @locationFromPosition(endPosition)
     rightIndex = rightLocation.index
     rightBlock = @getBlockAtIndex(rightIndex)
     rightText = rightBlock.text.getTextAtRange([rightLocation.offset, rightBlock.getLength()])
@@ -194,13 +192,13 @@ class Trix.Document extends Trix.Object
     @blockList = new Trix.SplittableList blocks
 
   moveTextFromPositionRangeToPosition: edit "moveTextFromPositionRangeToPosition", (positionRange, position) ->
-    positionRange = Trix.PositionRange.box(positionRange)
-    return if positionRange.start <= position <= positionRange.end
+    [startPosition, endPosition] = positionRange = normalizeRange(positionRange)
+    return if startPosition <= position <= endPosition
 
     document = @getDocumentAtPositionRange(positionRange)
     @removeTextAtPositionRange(positionRange)
 
-    movingRightward = positionRange.start < position
+    movingRightward = startPosition < position
     position -= document.getLength() if movingRightward
 
     unless @firstBlockInPositionRangeIsEntirelySelected(positionRange)
@@ -245,8 +243,8 @@ class Trix.Document extends Trix.Object
           block.copyWithText(block.text.removeAttributeAtRange(attribute, textRange))
 
   updateAttributesForAttachment: edit "updateAttributesForAttachment", (attributes, attachment) ->
-    positionRange = @getPositionRangeOfAttachment(attachment)
-    {index} = @locationFromPosition(positionRange.start)
+    [startPosition] = positionRange = @getPositionRangeOfAttachment(attachment)
+    {index} = @locationFromPosition(startPosition)
     text = @getTextAtIndex(index)
 
     @blockList = @blockList.editObjectAtIndex index, (block) ->
@@ -257,13 +255,12 @@ class Trix.Document extends Trix.Object
     @removeAttributeAtPositionRange(attribute, positionRange)
 
   insertBlockBreakAtPositionRange: edit "insertBlockBreakAtPositionRange", (positionRange) ->
-    positionRange = Trix.PositionRange.box(positionRange)
-    position = positionRange.start
-    {offset} = @locationFromPosition(position)
+    [startPosition] = positionRange = normalizeRange(positionRange)
+    {offset} = @locationFromPosition(startPosition)
 
     @removeTextAtPositionRange(positionRange)
     blocks = [new Trix.Block] if offset is 0
-    @blockList = @blockList.insertSplittableListAtPosition(new Trix.SplittableList(blocks), position)
+    @blockList = @blockList.insertSplittableListAtPosition(new Trix.SplittableList(blocks), startPosition)
 
   applyBlockAttributeAtPositionRange: edit "applyBlockAttributeAtPositionRange", (attributeName, value, positionRange) ->
     positionRange = @expandPositionRangeToLineBreaksAndSplitBlocks(positionRange)
@@ -285,9 +282,9 @@ class Trix.Document extends Trix.Object
         block.removeAttribute(lastAttributeName)
 
   firstBlockInPositionRangeIsEntirelySelected: (positionRange) ->
-    positionRange = Trix.PositionRange.box(positionRange)
-    leftLocation = @locationFromPosition(positionRange.start)
-    rightLocation = @locationFromPosition(positionRange.end)
+    [startPosition, endPosition] = positionRange = normalizeRange(positionRange)
+    leftLocation = @locationFromPosition(startPosition)
+    rightLocation = @locationFromPosition(endPosition)
 
     if leftLocation.offset is 0 and leftLocation.index < rightLocation.index
       true
@@ -298,9 +295,9 @@ class Trix.Document extends Trix.Object
       false
 
   expandPositionRangeToLineBreaksAndSplitBlocks: (positionRange) ->
-    positionRange = Trix.PositionRange.box(positionRange)
-    startLocation = @locationFromPosition(positionRange.start)
-    endLocation = @locationFromPosition(positionRange.end)
+    [startPosition, endPosition] = positionRange = normalizeRange(positionRange)
+    startLocation = @locationFromPosition(startPosition)
+    endLocation = @locationFromPosition(endPosition)
 
     @edit =>
       startBlock = @getBlockAtIndex(startLocation.index)
@@ -327,11 +324,10 @@ class Trix.Document extends Trix.Object
 
     startPosition = @positionFromLocation(startLocation)
     endPosition = @positionFromLocation(endLocation)
-    new Trix.PositionRange startPosition, endPosition
+    normalizeRange([startPosition, endPosition])
 
   convertLineBreaksToBlockBreaksInPositionRange: (positionRange) ->
-    positionRange = Trix.PositionRange.box(positionRange)
-    position = positionRange.start
+    [position] = positionRange = normalizeRange(positionRange)
     string = @getStringAtPositionRange(positionRange).slice(0, -1)
 
     @edit =>
@@ -342,16 +338,16 @@ class Trix.Document extends Trix.Object
     positionRange
 
   consolidateBlocksAtPositionRange: (positionRange) ->
-    positionRange = Trix.PositionRange.box(positionRange)
+    [startPosition, endPosition] = positionRange = normalizeRange(positionRange)
     @edit =>
-      startIndex = @locationFromPosition(positionRange.start).index
-      endIndex = @locationFromPosition(positionRange.end).index
+      startIndex = @locationFromPosition(startPosition).index
+      endIndex = @locationFromPosition(endPosition).index
       @blockList = @blockList.consolidateFromIndexToIndex(startIndex, endIndex)
     positionRange
 
   getDocumentAtPositionRange: (positionRange) ->
-    range = Trix.PositionRange.box(positionRange).toArray()
-    blocks = @blockList.getSplittableListInRange(range).toArray()
+    positionRange = normalizeRange(positionRange)
+    blocks = @blockList.getSplittableListInRange(positionRange).toArray()
     new @constructor blocks
 
   getStringAtPositionRange: (positionRange) ->
@@ -395,30 +391,30 @@ class Trix.Document extends Trix.Object
     @blockList.eachObject(callback)
 
   eachBlockAtPositionRange: (positionRange, callback) ->
-    positionRange = Trix.PositionRange.box(positionRange)
-    start = @locationFromPosition(positionRange.start)
-    end = @locationFromPosition(positionRange.end)
+    [startPosition, endPosition] = positionRange = normalizeRange(positionRange)
+    startLocation = @locationFromPosition(startPosition)
+    endLocation = @locationFromPosition(endPosition)
 
-    if start.index is end.index
-      block = @getBlockAtIndex(start.index)
-      textRange = [start.offset, end.offset]
-      callback(block, textRange, start.index)
+    if startLocation.index is endLocation.index
+      block = @getBlockAtIndex(startLocation.index)
+      textRange = [startLocation.offset, endLocation.offset]
+      callback(block, textRange, startLocation.index)
     else
-      for index in [start.index..end.index]
+      for index in [startLocation.index..endLocation.index]
         if block = @getBlockAtIndex(index)
           textRange = switch index
-            when start.index
-              [start.offset, block.text.getLength()]
-            when end.index
-              [0, end.offset]
+            when startLocation.index
+              [startLocation.offset, block.text.getLength()]
+            when endLocation.index
+              [0, endLocation.offset]
             else
               [0, block.text.getLength()]
           callback(block, textRange, index)
 
   getCommonAttributesAtPositionRange: (positionRange) ->
-    positionRange = Trix.PositionRange.box(positionRange)
-    if positionRange.isCollapsed()
-      @getCommonAttributesAtPosition(positionRange.start)
+    [startPosition] = positionRange = normalizeRange(positionRange)
+    if rangeIsCollapsed(positionRange)
+      @getCommonAttributesAtPosition(startPosition)
     else
       textAttributes = []
       blockAttributes = []
@@ -455,7 +451,7 @@ class Trix.Document extends Trix.Object
 
     start = @positionFromLocation {index, offset: startOffset}
     end = @positionFromLocation {index, offset: endOffset}
-    new Trix.PositionRange start, end
+    normalizeRange([start, end])
 
   getBaseBlockAttributes: ->
     baseBlockAttributes = @getBlockAtIndex(0).getAttributes()
@@ -492,8 +488,9 @@ class Trix.Document extends Trix.Object
     position = 0
     for {text}, index in @blockList.toArray()
       if textRange = text.getRangeOfAttachment(attachment)
-        return new Trix.PositionRange position + textRange[0], position + textRange[1]
+        return normalizeRange([position + textRange[0], position + textRange[1]])
       position += text.getLength()
+    return
 
   getAttachmentPieceForAttachment: (attachment) ->
     return piece for piece in @getAttachmentPieces() when piece.attachment is attachment
@@ -524,16 +521,17 @@ class Trix.Document extends Trix.Object
     normalizeRange([startLocation, endLocation])
 
   locationRangeFromPositionRange: (positionRange) ->
-    return unless positionRange = Trix.PositionRange.box(positionRange)
-    startLocation = @locationFromPosition(positionRange.start)
-    endLocation = @locationFromPosition(positionRange.end)
+    return unless positionRange = normalizeRange(positionRange)
+    [startPosition, endPosition] = positionRange
+    startLocation = @locationFromPosition(startPosition)
+    endLocation = @locationFromPosition(endPosition)
     normalizeRange([startLocation, endLocation])
 
   positionRangeFromLocationRange: (locationRange) ->
     locationRange = normalizeRange(locationRange)
     leftPosition = @positionFromLocation(locationRange[0])
     rightPosition = @positionFromLocation(locationRange[1]) unless rangeIsCollapsed(locationRange)
-    new Trix.PositionRange leftPosition, rightPosition
+    normalizeRange([leftPosition, rightPosition])
 
   isEqualTo: (document) ->
     @blockList.isEqualTo(document?.blockList)

@@ -1,6 +1,6 @@
 #= require trix/models/document
 
-{normalizeRange} = Trix
+{normalizeRange, rangesAreEqual} = Trix
 
 class Trix.Composition extends Trix.BasicObject
   constructor: (@document = new Trix.Document) ->
@@ -336,12 +336,12 @@ class Trix.Composition extends Trix.BasicObject
     @delegate?.compositionDidRequestLocationRange?(arguments...)
 
   getExpandedRangeInDirection: (direction) ->
-    positionRange = @getSelectedRange()
+    [startPosition, endPosition] = @getSelectedRange()
     if direction is "backward"
-      positionRange[0] = @translateUTF16PositionFromOffset(positionRange[0], -1)
+      startPosition = @translateUTF16PositionFromOffset(startPosition, -1)
     else
-      positionRange[1] = @translateUTF16PositionFromOffset(positionRange[1], 1)
-    positionRange
+      endPosition = @translateUTF16PositionFromOffset(endPosition, 1)
+    normalizeRange([startPosition, endPosition])
 
   positionIsCursorTarget: (position) ->
     if location = @document.locationFromPosition(position)
@@ -369,7 +369,7 @@ class Trix.Composition extends Trix.BasicObject
     else
       selectedRange = @getSelectedRange()
       positionRange = @getExpandedRangeInDirection(direction)
-      canEditAttachment = selectedRange.toString() isnt positionRange.toString()
+      canEditAttachment = not rangesAreEqual(selectedRange, positionRange)
 
     if direction is "backward"
       @immediatelySetSelectedRange(positionRange[0])

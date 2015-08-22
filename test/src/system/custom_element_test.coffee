@@ -88,5 +88,5 @@ editorTest "element triggers paste event with position range", (done) ->
   typeCharacters "", ->
     pasteContent "text/html", "<strong>hello</strong>", ->
       equal eventCount, 1
-      ok Trix.PositionRange.box([5,5]).isEqualTo(positionRange)
+      ok Trix.rangesAreEqual([5, 5], positionRange)
       done()
