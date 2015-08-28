@@ -38,7 +38,7 @@ editorTest "editing a link", (done) ->
   moveCursor direction: "left", times: 2, ->
     clickToolbarButton attribute: "href", ->
       ok isToolbarDialogActive(attribute: "href")
-      assertLocationRange([0,1], [0,3])
+      assertLocationRange({index: 0, offset: 1}, {index: 0, offset: 3})
       typeInToolbarDialog "http://example.org", attribute: "href", ->
         expectAttributes([0, 1], {})
         expectAttributes([1, 3], href: "http://example.org")
@@ -72,7 +72,7 @@ editorTest "typing after a link", (done) ->
       clickToolbarButton attribute: "href", ->
         typeInToolbarDialog "http://example.com", attribute: "href", ->
           collapseSelection "right", ->
-            assertLocationRange([0,2])
+            assertLocationRange(index: 0, offset: 2)
             typeCharacters "c", ->
               expectAttributes([0, 2], href: "http://example.com")
               expectAttributes([2, 3], {})

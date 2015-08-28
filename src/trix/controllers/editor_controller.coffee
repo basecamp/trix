@@ -5,6 +5,8 @@
 #= require trix/models/selection_manager
 #= require trix/models/editor
 
+{rangeIsCollapsed, rangesAreEqual} = Trix
+
 class Trix.EditorController extends Trix.Controller
   constructor: (@config) ->
     {@documentElement, @toolbarController, @document, @delegate} = @config
@@ -61,8 +63,8 @@ class Trix.EditorController extends Trix.Controller
     @toolbarController.updateAttributes(@currentAttributes)
     @toolbarController.updateActions()
 
-  compositionDidPerformInsertionAtLocationRange: (locationRange) ->
-    @pastedLocationRange = locationRange if @pasting
+  compositionDidPerformInsertionAtRange: (range) ->
+    @pastedRange = range if @pasting
 
   compositionShouldAcceptFile: (file) ->
     @delegate?.shouldAcceptFile?(file)
@@ -81,7 +83,8 @@ class Trix.EditorController extends Trix.Controller
     @delegate?.didRemoveAttachment?(managedAttachment)
 
   compositionDidStartEditingAttachment: (attachment) ->
-    @attachmentLocationRange = @document.getLocationRangeOfAttachment(attachment)
+    attachmentRange = @document.getRangeOfAttachment(attachment)
+    @attachmentLocationRange = @document.locationRangeFromRange(attachmentRange)
     @documentController.installAttachmentEditorForAttachment(attachment)
     @selectionManager.setLocationRange(@attachmentLocationRange)
 
@@ -135,12 +138,11 @@ class Trix.EditorController extends Trix.Controller
     @toolbarController.hideDialog()
 
   documentControllerDidSelectAttachment: (attachment) ->
-    locationRange = @document.getLocationRangeOfAttachment(attachment)
     @composition.editAttachment(attachment)
 
   documentControllerDidRequestDeselectingAttachment: (attachment) ->
     if @attachmentLocationRange
-      @selectionManager.setLocationRange(@attachmentLocationRange.end)
+      @selectionManager.setLocationRange(@attachmentLocationRange[1])
 
   documentControllerWillUpdateAttachment: (attachment) ->
     @editor.recordUndoEntry("Edit Attachment", context: attachment.id, consolidatable: true)
@@ -174,11 +176,11 @@ class Trix.EditorController extends Trix.Controller
     @pasting = true
 
   inputControllerDidPaste: (pasteData) ->
-    locationRange = @pastedLocationRange
-    delete @pastedLocationRange
+    range = @pastedRange
+    delete @pastedRange
     delete @pasting
 
-    @delegate?.didPasteDataAtLocationRange?(pasteData, locationRange)
+    @delegate?.didPasteDataAtRange?(pasteData, range)
     @render()
 
   inputControllerWillMoveText: ->
@@ -205,7 +207,7 @@ class Trix.EditorController extends Trix.Controller
   locationRangeDidChange: (locationRange) ->
     @editor.locationRange = locationRange
     @composition.updateCurrentAttributes()
-    if @attachmentLocationRange and not @attachmentLocationRange.isEqualTo(locationRange)
+    if @attachmentLocationRange and not rangesAreEqual(@attachmentLocationRange, locationRange)
       @composition.stopEditingAttachment()
     @delegate?.didChangeSelection?()
 
@@ -231,7 +233,7 @@ class Trix.EditorController extends Trix.Controller
       perform: -> @documentController.editAttachmentCaption()
 
   toolbarDidClickButton: ->
-    @setLocationRange([0, 0]) unless @getLocationRange()
+    @setLocationRange(index: 0, offset: 0) unless @getLocationRange()
 
   toolbarCanInvokeAction: (actionName) ->
     if toolbarActionIsExternal(actionName)
@@ -296,7 +298,10 @@ class Trix.EditorController extends Trix.Controller
 
   getLocationContext: ->
     locationRange = @selectionManager.getLocationRange()
-    if locationRange?.isCollapsed() then locationRange.index else locationRange
+    if rangeIsCollapsed(locationRange)
+      locationRange[0].index
+    else
+      locationRange
 
   # Private
 
@@ -325,7 +330,7 @@ class Trix.EditorController extends Trix.Controller
 
   recordFormattingUndoEntry: ->
     locationRange = @selectionManager.getLocationRange()
-    unless locationRange?.isCollapsed()
+    unless rangeIsCollapsed(locationRange)
       @editor.recordUndoEntry("Formatting", context: @getLocationContext(), consolidatable: true)
 
   recordTypingUndoEntry: ->

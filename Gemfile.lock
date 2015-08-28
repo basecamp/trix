@@ -1,23 +1,25 @@
 GIT
   remote: git://github.com/javan/blade_runner-qunit_adapter.git
-  revision: 961acc78da3207d9f49f054ab2d516fadd2c7d5e
+  revision: 12d37f3ea81e5904cc53b69b523f7d47d8a40666
   specs:
     blade_runner-qunit_adapter (0.1.0)
 
 GIT
   remote: git://github.com/javan/blade_runner-sauce_labs_plugin.git
-  revision: 406396e7b5e5d1071b2cedf7355433b695ddc282
+  revision: 6b7a0344aa941d6daad4afb1605384bef3e75d38
   specs:
     blade_runner-sauce_labs_plugin (0.1.0)
+      blade_runner
       childprocess
       faraday
 
 GIT
   remote: git://github.com/javan/blade_runner.git
-  revision: dacc16012f1afbbed408643e5a0e137ecae283cd
+  revision: fc1137b4d057cf7e84cd9a3196432b2579ffad88
   specs:
     blade_runner (0.1.0)
       activesupport (>= 3.0.0)
+      blade_runner-qunit_adapter
       coffee-script (~> 2.4.0)
       coffee-script-source (~> 1.9.0)
       curses (~> 1.0.0)
@@ -25,6 +27,7 @@ GIT
       faye (= 1.1.1)
       sprockets (~> 3.2.0)
       thin (~> 1.6.0)
+      thor (~> 0.19.1)
       useragent (~> 0.13.0)
 
 PATH
@@ -35,7 +38,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (4.2.3)
+    activesupport (4.2.4)
       i18n (~> 0.7)
       json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
@@ -60,8 +63,8 @@ GEM
       http_parser.rb (>= 0.6.0)
     em-socksify (0.3.0)
       eventmachine (>= 1.0.0.beta.4)
-    eventmachine (1.0.7)
-    execjs (2.5.2)
+    eventmachine (1.0.8)
+    execjs (2.6.0)
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
     faye (1.1.1)
@@ -79,7 +82,7 @@ GEM
     http_parser.rb (0.6.0)
     i18n (0.7.0)
     json (1.8.3)
-    minitest (5.7.0)
+    minitest (5.8.0)
     multi_json (1.11.2)
     multipart-post (2.0.0)
     rack (1.6.4)
@@ -92,6 +95,7 @@ GEM
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0)
       rack (~> 1.0)
+    thor (0.19.1)
     thread_safe (0.3.5)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
@@ -119,3 +123,6 @@ DEPENDENCIES
   sprockets
   trix!
   uglifier
+
+BUNDLED WITH
+   1.10.6

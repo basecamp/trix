@@ -3,3 +3,4 @@
 #= require trix/core/helpers/strings
 #= require trix/core/helpers/collections
 #= require trix/core/helpers/dom
+#= require trix/core/helpers/ranges

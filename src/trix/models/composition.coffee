@@ -1,5 +1,7 @@
 #= require trix/models/document
 
+{normalizeRange, rangesAreEqual} = Trix
+
 class Trix.Composition extends Trix.BasicObject
   constructor: (@document = new Trix.Document) ->
     @document.delegate = this
@@ -9,11 +11,11 @@ class Trix.Composition extends Trix.BasicObject
 
   createSnapshot: ->
     document: @getDocument()
-    selectedRange: @getLocationRange()
+    selectedRange: @getSelectedRange()
 
   restoreSnapshot: ({document, selectedRange}) ->
     @document.replaceDocument(document)
-    @setLocationRange(selectedRange)
+    @setSelectedRange(selectedRange)
     @delegate?.compositionDidRestoreSnapshot?()
 
   # Document delegate
@@ -33,30 +35,28 @@ class Trix.Composition extends Trix.BasicObject
   # Responder protocol
 
   insertText: (text, {updatePosition} = updatePosition: true) ->
-    position = @getPosition()
-    locationRange = @getLocationRange()
-    @document.insertTextAtLocationRange(text, locationRange)
+    selectedRange = @getSelectedRange()
+    @document.insertTextAtRange(text, selectedRange)
 
-    endPosition = position + text.getLength()
-    endLocation = @document.locationFromPosition(endPosition)
-    @setLocation(endLocation) if updatePosition
+    startPosition = selectedRange[0]
+    endPosition = startPosition + text.getLength()
 
-    insertedLocationRange = locationRange.copyWithEndLocation(endLocation)
-    @notifyDelegateOfInsertionAtLocationRange(insertedLocationRange)
+    @setSelectedRange(endPosition) if updatePosition
+    @notifyDelegateOfInsertionAtRange([startPosition, endPosition])
 
-  insertDocument: (document = Trix.Document.fromString("")) ->
-    startPosition = @getPosition()
-    locationRange = @getLocationRange()
+  insertBlock: (block = new Trix.Block) ->
+    document = new Trix.Document [block]
+    @insertDocument(document)
 
-    startLength = @document.getLength()
-    @document.insertDocumentAtLocationRange(document, locationRange)
-    endLength = @document.getLength()
+  insertDocument: (document = new Trix.Document) ->
+    selectedRange = @getSelectedRange()
+    @document.insertDocumentAtRange(document, selectedRange)
 
-    endPosition = startPosition + (endLength - startLength)
-    @setPosition(endPosition)
+    startPosition = selectedRange[0]
+    endPosition = startPosition + document.getLength()
 
-    insertedLocationRange = @document.locationRangeFromRange([startPosition, endPosition])
-    @notifyDelegateOfInsertionAtLocationRange(insertedLocationRange)
+    @setSelectedRange(endPosition)
+    @notifyDelegateOfInsertionAtRange([startPosition, endPosition])
 
   insertString: (string, options) ->
     attributes = @getCurrentTextAttributes()
@@ -64,49 +64,47 @@ class Trix.Composition extends Trix.BasicObject
     @insertText(text, options)
 
   insertBlockBreak: ->
-    position = @getPosition()
-    locationRange = @getLocationRange()
-    @document.insertBlockBreakAtLocationRange(locationRange)
+    selectedRange = @getSelectedRange()
+    @document.insertBlockBreakAtRange(selectedRange)
 
-    endPosition = position + 1
-    endLocation = @document.locationFromPosition(endPosition)
-    @setLocation(endLocation)
+    startPosition = selectedRange[0]
+    endPosition = startPosition + 1
 
-    insertedLocationRange = locationRange.copyWithEndLocation(endLocation)
-    @notifyDelegateOfInsertionAtLocationRange(insertedLocationRange)
+    @setSelectedRange(endPosition)
+    @notifyDelegateOfInsertionAtRange([startPosition, endPosition])
 
   breakFormattedBlock: ->
     position = @getPosition()
-    locationRange = @document.locationRangeFromRange([position - 1, position])
+    range = [position - 1, position]
 
-    {index, offset} = locationRange.end
+    {index, offset} = @document.locationFromPosition(position)
     block = @document.getBlockAtIndex(index)
 
     if block.getBlockBreakPosition() is offset
-      @document.removeTextAtLocationRange(locationRange)
-      locationRange = @document.locationRangeFromPosition(position)
+      @document.removeTextAtRange(range)
+      range = [position, position]
     else
       if block.text.getStringAtRange([offset, offset + 1]) is "\n"
-        locationRange = @document.locationRangeFromRange([position - 1, position + 1])
+        range = [position - 1, position + 1]
       else
         position += 1
 
     document = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
-    @document.insertDocumentAtLocationRange(document, locationRange)
+    @document.insertDocumentAtRange(document, range)
     @setPosition(position)
 
   insertLineBreak: ->
-    locationRange = @getLocationRange()
-    {index, offset} = locationRange.end
-    block = @document.getBlockAtIndex(index)
+    [startPosition, endPosition] = @getSelectedRange()
+    startLocation = @document.locationFromPosition(startPosition)
+    endLocation = @document.locationFromPosition(endPosition)
+    block = @document.getBlockAtIndex(endLocation.index)
 
     if block.hasAttributes()
       if block.isListItem()
         if block.isEmpty()
-          position = @getPosition()
           @decreaseListLevel()
-          @setPosition(position)
-        else if locationRange.start.offset is 0
+          @setPosition(startPosition)
+        else if startLocation.offset is 0
           document = new Trix.Document [block.copyWithoutText()]
           @insertDocument(document)
         else
@@ -114,7 +112,7 @@ class Trix.Composition extends Trix.BasicObject
       else
         if block.isEmpty()
           @removeLastBlockAttribute()
-        else if block.text.getStringAtRange([offset - 1, offset]) is "\n"
+        else if block.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is "\n"
           @breakFormattedBlock()
         else
           @insertString("\n")
@@ -126,14 +124,13 @@ class Trix.Composition extends Trix.BasicObject
     startLength = @document.getLength()
 
     document = Trix.Document.fromHTML(html)
-    @document.mergeDocumentAtLocationRange(document, @getLocationRange())
+    @document.mergeDocumentAtRange(document, @getSelectedRange())
 
     endLength = @document.getLength()
     endPosition = startPosition + (endLength - startLength)
-    locationRange = @document.locationRangeFromPosition(endPosition)
 
-    @setLocationRange(locationRange)
-    @notifyDelegateOfInsertionAtLocationRange(locationRange)
+    @setPosition(endPosition)
+    @notifyDelegateOfInsertionAtRange([endPosition, endPosition])
 
   replaceHTML: (html) ->
     document = Trix.Document.fromHTML(html).copyUsingObjectsFromDocument(@document)
@@ -148,49 +145,48 @@ class Trix.Composition extends Trix.BasicObject
       @insertText(text)
 
   deleteInDirection: (direction) ->
-    locationRange = @getLocationRange()
+    range = [startPosition, endPosition] = @getSelectedRange()
     block = @getBlock()
 
-    if locationRange.isCollapsed()
-      if direction is "backward" and locationRange.offset is 0 and block.isEmpty()
+    if startPosition is endPosition
+      startLocation = @document.locationFromPosition(startPosition)
+      if direction is "backward" and startLocation.offset is 0 and block.isEmpty()
         if @canDecreaseBlockAttributeLevel()
-          position = @getPosition()
           if block.isListItem()
             @decreaseListLevel()
           else
             @decreaseBlockAttributeLevel()
-          @setPosition(position)
+          @setPosition(startPosition)
           return
 
       range = @getExpandedRangeInDirection(direction)
-      locationRange = @document.locationRangeFromRange(range)
 
       if direction is "backward"
-        attachment = @getAttachmentAtLocationRange(locationRange)
+        attachment = @getAttachmentAtRange(range)
 
     if attachment
       @editAttachment(attachment)
       false
     else
-      @document.removeTextAtLocationRange(locationRange)
-      @setLocationRange(locationRange.collapse())
+      @document.removeTextAtRange(range)
+      @setPosition(range[0])
 
-  moveTextFromLocationRange: (locationRange) ->
-    position = @getPosition()
-    @document.moveTextFromLocationRangeToPosition(locationRange, position)
-    @setPosition(position)
+  moveTextFromRange: (range) ->
+    [position] = @getSelectedRange()
+    @document.moveTextFromRangeToPosition(range, position)
+    @setSelectedRange(position)
 
   removeAttachment: (attachment) ->
-    if locationRange = @document.getLocationRangeOfAttachment(attachment)
+    if range = @document.getRangeOfAttachment(attachment)
       @stopEditingAttachment()
-      @document.removeTextAtLocationRange(locationRange)
-      @setLocationRange(locationRange.collapse())
+      @document.removeTextAtRange(range)
+      @setSelectedRange(range[0])
 
   removeLastBlockAttribute: ->
-    locationRange = @getLocationRange()
-    block = @document.getBlockAtIndex(locationRange.end.index)
+    [startPosition, endPosition] = @getSelectedRange()
+    block = @document.getBlockAtPosition(endPosition)
     @removeCurrentAttribute(block.getLastAttribute())
-    @setLocationRange(locationRange.collapse())
+    @setSelectedRange(startPosition)
 
   # Current attributes
 
@@ -219,19 +215,19 @@ class Trix.Composition extends Trix.BasicObject
       @notifyDelegateOfCurrentAttributesChange()
 
   setTextAttribute: (attributeName, value) ->
-    return unless locationRange = @getLocationRange()
-    if locationRange.isCollapsed()
+    return unless selectedRange = @getSelectedRange()
+    [startPosition, endPosition] = selectedRange
+    if startPosition is endPosition
       if attributeName is "href"
         text = Trix.Text.textForStringWithAttributes(value, href: value)
         @insertText(text)
     else
-      @document.addAttributeAtLocationRange(attributeName, value, locationRange)
+      @document.addAttributeAtRange(attributeName, value, selectedRange)
 
   setBlockAttribute: (attributeName, value) ->
-    return unless locationRange = @getLocationRange()
-    range = @document.rangeFromLocationRange(locationRange)
-    @document.applyBlockAttributeAtLocationRange(attributeName, value, locationRange)
-    @setRange(range)
+    return unless selectedRange = @getSelectedRange()
+    @document.applyBlockAttributeAtRange(attributeName, value, selectedRange)
+    @setSelectedRange(selectedRange)
 
   removeCurrentAttribute: (attributeName) ->
     if Trix.config.blockAttributes[attributeName]
@@ -243,13 +239,12 @@ class Trix.Composition extends Trix.BasicObject
       @notifyDelegateOfCurrentAttributesChange()
 
   removeTextAttribute: (attributeName) ->
-    return unless locationRange = @getLocationRange()
-    unless locationRange.isCollapsed()
-      @document.removeAttributeAtLocationRange(attributeName, locationRange)
+    return unless selectedRange = @getSelectedRange()
+    @document.removeAttributeAtRange(attributeName, selectedRange)
 
   removeBlockAttribute: (attributeName) ->
-    return unless locationRange = @getLocationRange()
-    @document.removeAttributeAtLocationRange(attributeName, locationRange)
+    return unless selectedRange = @getSelectedRange()
+    @document.removeAttributeAtRange(attributeName, selectedRange)
 
   increaseBlockAttributeLevel: ->
     if attribute = @getBlock()?.getLastAttribute()
@@ -260,7 +255,8 @@ class Trix.Composition extends Trix.BasicObject
       @removeCurrentAttribute(attribute)
 
   decreaseListLevel: ->
-    {index} = @getLocationRange()
+    [startPosition] = @getSelectedRange()
+    {index} = @document.locationFromPosition(startPosition)
     endIndex = index
     attributeLevel = @getBlock().getAttributeLevel()
 
@@ -268,8 +264,9 @@ class Trix.Composition extends Trix.BasicObject
       break unless block.isListItem() and block.getAttributeLevel() > attributeLevel
       endIndex++
 
-    locationRange = new Trix.LocationRange [index, 0], [endIndex, 0]
-    @document.removeLastListAttributeAtLocationRange(locationRange)
+    startPosition = @document.positionFromLocation(index: index, offset: 0)
+    endPosition = @document.positionFromLocation(index: endIndex, offset: 0)
+    @document.removeLastListAttributeAtRange([startPosition, endPosition])
 
   canIncreaseBlockAttributeLevel: ->
     return unless block = @getBlock()
@@ -286,8 +283,8 @@ class Trix.Composition extends Trix.BasicObject
 
   updateCurrentAttributes: ->
     @currentAttributes =
-      if locationRange = @getLocationRange(ignoreLock: true)
-        @document.getCommonAttributesAtLocationRange(locationRange)
+      if selectedRange = @getSelectedRange(ignoreLock: true)
+        @document.getCommonAttributesAtRange(selectedRange)
       else
         {}
 
@@ -317,90 +314,87 @@ class Trix.Composition extends Trix.BasicObject
   @proxyMethod "getSelectionManager().selectionIsExpanded"
   @proxyMethod "delegate?.getSelectionManager"
 
-  getRange: ->
-    locationRange = @getLocationRange()
-    @document.rangeFromLocationRange(locationRange)
-
-  setRange: (range) ->
-    locationRange = @document.locationRangeFromRange(range)
-    @setLocationRange(locationRange)
-
   getPosition: ->
-    @getRange()[0]
+    if locationRange = @getLocationRange()
+      @document.positionFromLocation(locationRange[0])
 
   setPosition: (position) ->
-    location = @document.locationFromPosition(position)
-    @setLocation(location)
+    if location = @document.locationFromPosition(position)
+      @setLocation(location)
 
   setLocation: (location) ->
-    locationRange = new Trix.LocationRange location
-    @setLocationRange(locationRange)
+    @setLocationRange(normalizeRange(location))
 
   getLocationRange: ->
-    @getSelectionManager().getLocationRange() ? new Trix.LocationRange [0, 0]
+    @getSelectionManager().getLocationRange() ? normalizeRange(index: 0, offset: 0)
 
   setLocationRange: ->
     @delegate?.compositionDidRequestLocationRange?(arguments...)
 
   getExpandedRangeInDirection: (direction) ->
-    range = @getRange()
+    [startPosition, endPosition] = @getSelectedRange()
     if direction is "backward"
-      range[0] = @translateUTF16PositionFromOffset(range[0], -1)
+      startPosition = @translateUTF16PositionFromOffset(startPosition, -1)
     else
-      range[1] = @translateUTF16PositionFromOffset(range[1], 1)
-    range
+      endPosition = @translateUTF16PositionFromOffset(endPosition, 1)
+    normalizeRange([startPosition, endPosition])
+
+  positionIsCursorTarget: (position) ->
+    if location = @document.locationFromPosition(position)
+      @locationIsCursorTarget(location)
 
   # Selection
 
-  setSelectionForLocationRange: ->
-    @getSelectionManager().setLocationRange(arguments...)
+  getSelectedRange: ->
+    if locationRange = @getLocationRange()
+      @document.rangeFromLocationRange(locationRange)
+
+  setSelectedRange: (selectedRange) ->
+    locationRange = @document.locationRangeFromRange(selectedRange)
+    @delegate?.compositionDidRequestLocationRange?(locationRange)
+
+  immediatelySetSelectedRange: (selectedRange) ->
+    locationRange = @document.locationRangeFromRange(selectedRange)
+    @getSelectionManager().setLocationRange(locationRange)
 
   moveCursorInDirection: (direction) ->
     if @editingAttachment
-      locationRange = @document.getLocationRangeOfAttachment(@editingAttachment)
+      range = @document.getRangeOfAttachment(@editingAttachment)
     else
-      originalLocationRange = @getLocationRange()
-      expandedRange = @getExpandedRangeInDirection(direction)
-      locationRange = @document.locationRangeFromRange(expandedRange)
-      canEditAttachment = not locationRange.isEqualTo(originalLocationRange)
+      selectedRange = @getSelectedRange()
+      range = @getExpandedRangeInDirection(direction)
+      canEditAttachment = not rangesAreEqual(selectedRange, range)
 
     if direction is "backward"
-      @setSelectionForLocationRange(locationRange.start)
+      @immediatelySetSelectedRange(range[0])
     else
-      @setSelectionForLocationRange(locationRange.end)
+      @immediatelySetSelectedRange(range[1])
 
     if canEditAttachment
-      if attachment = @getAttachmentAtLocationRange(locationRange)
+      if attachment = @getAttachmentAtRange(range)
         @editAttachment(attachment)
 
   expandSelectionInDirection: (direction) ->
     range = @getExpandedRangeInDirection(direction)
-    locationRange = @document.locationRangeFromRange(range)
-    @setSelectionForLocationRange(locationRange)
+    @immediatelySetSelectedRange(range)
 
   expandSelectionForEditing: ->
     if @hasCurrentAttribute("href")
       @expandSelectionAroundCommonAttribute("href")
 
   expandSelectionAroundCommonAttribute: (attributeName) ->
-    locationRange = @getLocationRange()
-
-    if locationRange.isInSingleIndex()
-      {index} = locationRange
-      text = @document.getTextAtIndex(index)
-      textRange = [locationRange.start.offset, locationRange.end.offset]
-      [left, right] = text.getExpandedRangeForAttributeAtRange(attributeName, textRange)
-
-      @setSelectionForLocationRange([index, left], [index, right])
+    position = @getPosition()
+    range = @document.getRangeOfCommonAttributeAtPosition(attributeName, position)
+    @immediatelySetSelectedRange(range)
 
   selectionContainsAttachmentWithAttribute: (attributeName) ->
-    if locationRange = @getLocationRange()
-      for attachment in @document.getDocumentAtLocationRange(locationRange).getAttachments()
+    if selectedRange = @getSelectedRange()
+      for attachment in @document.getDocumentAtRange(selectedRange).getAttachments()
         return true if attachment.hasAttribute(attributeName)
       false
 
   selectionIsInCursorTarget: ->
-    @editingAttachment or @locationIsCursorTarget(@getLocationRange().start)
+    @editingAttachment or @positionIsCursorTarget(@getPosition())
 
   getSelectedDocument: ->
     if locationRange = @getLocationRange()
@@ -429,23 +423,23 @@ class Trix.Composition extends Trix.BasicObject
 
   getPreviousBlock: ->
     if locationRange = @getLocationRange()
-      {index} = locationRange
+      {index} = locationRange[0]
       @document.getBlockAtIndex(index - 1) if index > 0
 
   getBlock: ->
     if locationRange = @getLocationRange()
-      @document.getBlockAtIndex(locationRange.index)
+      @document.getBlockAtIndex(locationRange[0].index)
 
-  getAttachmentAtLocationRange: (locationRange) ->
-    document = @document.getDocumentAtLocationRange(locationRange)
+  getAttachmentAtRange: (range) ->
+    document = @document.getDocumentAtRange(range)
     if document.toString() is "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
       document.getAttachments()[0]
 
   notifyDelegateOfCurrentAttributesChange: ->
     @delegate?.compositionDidChangeCurrentAttributes?(@currentAttributes)
 
-  notifyDelegateOfInsertionAtLocationRange: (locationRange) ->
-    @delegate?.compositionDidPerformInsertionAtLocationRange?(locationRange)
+  notifyDelegateOfInsertionAtRange: (range) ->
+    @delegate?.compositionDidPerformInsertionAtRange?(range)
 
   translateUTF16PositionFromOffset: (position, offset) ->
     utf16string = @document.toUTF16String()

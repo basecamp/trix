@@ -4,7 +4,7 @@ editorTest "creating a new list item", (done) ->
   typeCharacters "a", ->
     clickToolbarButton attribute: "bullet", ->
       typeCharacters "\n", ->
-        assertLocationRange([1,0])
+        assertLocationRange(index: 1, offset: 0)
         expectBlockAttributes([0, 2], ["bulletList", "bullet"])
         expectBlockAttributes([2, 3], ["bulletList", "bullet"])
         done()
@@ -34,7 +34,7 @@ editorTest "decreasing list item's level decreases its nested items level too", 
         typeCharacters "b\n", ->
           clickToolbarButton action: "increaseBlockLevel", ->
             typeCharacters "c", ->
-              getSelectionManager().setLocationRange([1, 1])
+              getSelectionManager().setLocationRange(index: 1, offset: 1)
 
               for n in [0...3]
                 getComposition().deleteInDirection("backward")

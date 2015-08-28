@@ -65,7 +65,7 @@ editorTest "applying block attributes to adjacent unformatted blocks consolidate
     ]
 
   replaceDocument(document)
-  getEditorController().setLocationRange([0,0], [5,1])
+  getEditorController().setLocationRange([{index: 0, offset: 0}, {index: 5, offset: 1}])
   defer ->
     clickToolbarButton attribute: "quote", ->
       expectBlockAttributes([0, 2], ["code", "quote"])
@@ -89,7 +89,7 @@ editorTest "breaking out of the end of a block", (done) ->
         deepEqual block.getAttributes(), []
         equal block.toString(), "\n"
 
-        assertLocationRange [1,0]
+        assertLocationRange(index: 1, offset: 0)
         done()
 
 
@@ -118,7 +118,7 @@ editorTest "breaking out of the middle of a block before character", (done) ->
           deepEqual block.getAttributes(), ["quote"]
           equal block.toString(), "c\n"
 
-          assertLocationRange [2,0]
+          assertLocationRange(index: 2, offset: 0)
           done()
 
 editorTest "breaking out of the middle of a block before newline", (done) ->
@@ -206,7 +206,7 @@ editorTest "backspacing selected nested list items", (expectDocument) ->
     typeCharacters "a\n", ->
       clickToolbarButton action: "increaseBlockLevel", ->
         typeCharacters "b", ->
-          getSelectionManager().setLocationRange([0, 0], [1, 1])
+          getSelectionManager().setLocationRange([{index: 0, offset: 0}, {index: 1, offset: 1}])
           pressKey "backspace", ->
             expectBlockAttributes([0, 1], ["bulletList", "bullet"])
             expectDocument("\n")
@@ -216,7 +216,7 @@ editorTest "backspace selection spanning formatted blocks", (expectDocument) ->
     typeCharacters "ab\n\n", ->
       clickToolbarButton attribute: "code", ->
         typeCharacters "cd", ->
-          getSelectionManager().setLocationRange([0, 1], [1, 1])
+          getSelectionManager().setLocationRange([{index: 0, offset: 1}, {index: 1, offset: 1}])
           getComposition().deleteInDirection("backward")
           expectBlockAttributes([0, 2], ["quote"])
           expectDocument("ad\n")
@@ -226,7 +226,7 @@ editorTest "backspace selection spanning and entire formatted block and a format
     typeCharacters "ab\n\n", ->
       clickToolbarButton attribute: "code", ->
         typeCharacters "cd", ->
-          getSelectionManager().setLocationRange([0, 0], [1, 1])
+          getSelectionManager().setLocationRange([{index: 0, offset: 0}, {index: 1, offset: 1}])
           getComposition().deleteInDirection("backward")
           expectBlockAttributes([0, 2], ["code"])
           expectDocument("d\n")

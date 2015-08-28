@@ -1,3 +1,5 @@
+{normalizeRange, rangeIsCollapsed} = Trix
+
 class Trix.TestCompositionDelegate
   compositionDidRequestLocationRange: ->
     @getSelectionManager().setLocationRange(arguments...)
@@ -7,16 +9,13 @@ class Trix.TestCompositionDelegate
 
 class Trix.TestSelectionManager
   constructor: ->
-    @setLocationRange([0, 0])
+    @setLocationRange(index: 0, offset: 0)
 
   getLocationRange: ->
     @locationRange
 
-  setLocationRange: (start, end) ->
-    @locationRange = if start instanceof Trix.LocationRange
-      start
-    else
-      new Trix.LocationRange start, end
+  setLocationRange: (locationRange) ->
+    @locationRange = normalizeRange(locationRange)
 
   preserveSelection: (block) ->
     locationRange = @getLocationRange()
@@ -29,4 +28,4 @@ class Trix.TestSelectionManager
     false
 
   selectionIsExpanded: ->
-    not @getLocationRange().isCollapsed()
+    not rangeIsCollapsed(@getLocationRange())

@@ -1,9 +1,8 @@
 #= require trix/models/block
 #= require trix/models/splittable_list
-#= require trix/models/location_range
 #= require trix/models/html_parser
 
-{arraysAreEqual} = Trix
+{arraysAreEqual, normalizeRange, rangeIsCollapsed} = Trix
 
 editOperationLog = Trix.Logger.get("editOperations")
 
@@ -110,21 +109,24 @@ class Trix.Document extends Trix.Object
 
     this
 
-  insertDocumentAtLocationRange: edit "insertDocumentAtLocationRange", (document, locationRange) ->
-    [startPosition, endPosition] = @rangeFromLocationRange(locationRange)
+  insertDocumentAtRange: edit "insertDocumentAtRange", (document, range) ->
+    [position] = range = normalizeRange(range)
+    {index, offset} = @locationFromPosition(position)
 
-    block = @getBlockAtIndex(locationRange.index)
+    block = @getBlockAtPosition(position)
 
-    if locationRange.isCollapsed() and block.isEmpty() and not block.hasAttributes()
-      @blockList = @blockList.removeObjectAtIndex(locationRange.index)
-    else if block.getBlockBreakPosition() is locationRange.offset
-      startPosition++
+    if rangeIsCollapsed(range) and block.isEmpty() and not block.hasAttributes()
+      @blockList = @blockList.removeObjectAtIndex(index)
+    else if block.getBlockBreakPosition() is offset
+      position++
 
-    @removeTextAtLocationRange(locationRange)
-    @blockList = @blockList.insertSplittableListAtPosition(document.blockList, startPosition)
+    @removeTextAtRange(range)
+    @blockList = @blockList.insertSplittableListAtPosition(document.blockList, position)
 
-  mergeDocumentAtLocationRange: edit "mergeDocumentAtLocationRange", (document, locationRange) ->
-    blockAttributes = @getBlockAtIndex(locationRange.index).getAttributes()
+  mergeDocumentAtRange: edit "mergeDocumentAtRange", (document, range) ->
+    [startPosition] = range = normalizeRange(range)
+    startLocation = @locationFromPosition(startPosition)
+    blockAttributes = @getBlockAtIndex(startLocation.index).getAttributes()
     baseBlockAttributes = document.getBaseBlockAttributes()
     trailingBlockAttributes = blockAttributes.slice(-baseBlockAttributes.length)
 
@@ -139,38 +141,43 @@ class Trix.Document extends Trix.Object
 
     if arraysAreEqual(blockAttributes, firstBlock.getAttributes())
       firstText = firstBlock.getTextWithoutBlockBreak()
-      @insertTextAtLocationRange(firstText, locationRange)
+      @insertTextAtRange(firstText, range)
 
       if blockCount > 1
-        [startPosition, endPosition] = @rangeFromLocationRange(locationRange)
         formattedDocument = new @constructor formattedDocument.getBlocks().slice(1)
-        locationRange = @locationRangeFromPosition(startPosition + firstText.getLength())
-        @insertDocumentAtLocationRange(formattedDocument, locationRange)
+        position = startPosition + firstText.getLength()
+        @insertDocumentAtRange(formattedDocument, position)
     else
-      @insertDocumentAtLocationRange(formattedDocument, locationRange)
+      @insertDocumentAtRange(formattedDocument, range)
 
   replaceDocument: edit "replaceDocument", (document) ->
     @blockList = document.blockList.copy()
 
-  insertTextAtLocationRange: edit "insertTextAtLocationRange", (text, locationRange) ->
-    @removeTextAtLocationRange(locationRange)
-    @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
-      block.copyWithText(block.text.insertTextAtPosition(text, locationRange.offset))
+  insertTextAtRange: edit "insertTextAtRange", (text, range) ->
+    [startPosition] = range = normalizeRange(range)
+    {index, offset} = @locationFromPosition(startPosition)
 
-  removeTextAtLocationRange: edit "removeTextAtLocationRange", (locationRange) ->
-    return if locationRange.isCollapsed()
+    @removeTextAtRange(range)
+    @blockList = @blockList.editObjectAtIndex index, (block) ->
+      block.copyWithText(block.text.insertTextAtPosition(text, offset))
 
-    leftIndex = locationRange.start.index
+  removeTextAtRange: edit "removeTextAtRange", (range) ->
+    [startPosition, endPosition] = range = normalizeRange(range)
+    return if rangeIsCollapsed(range)
+
+    leftLocation = @locationFromPosition(startPosition)
+    leftIndex = leftLocation.index
     leftBlock = @getBlockAtIndex(leftIndex)
-    leftText = leftBlock.text.getTextAtRange([0, locationRange.start.offset])
+    leftText = leftBlock.text.getTextAtRange([0, leftLocation.offset])
 
-    rightIndex = locationRange.end.index
+    rightLocation = @locationFromPosition(endPosition)
+    rightIndex = rightLocation.index
     rightBlock = @getBlockAtIndex(rightIndex)
-    rightText = rightBlock.text.getTextAtRange([locationRange.end.offset, rightBlock.getLength()])
+    rightText = rightBlock.text.getTextAtRange([rightLocation.offset, rightBlock.getLength()])
 
     text = leftText.appendText(rightText)
 
-    removingLeftBlock = leftIndex isnt rightIndex and locationRange.start.offset is 0
+    removingLeftBlock = leftIndex isnt rightIndex and leftLocation.offset is 0
     useRightBlock = removingLeftBlock and leftBlock.getAttributeLevel() >= rightBlock.getAttributeLevel()
 
     if useRightBlock
@@ -184,17 +191,17 @@ class Trix.Document extends Trix.Object
 
     @blockList = new Trix.SplittableList blocks
 
-  moveTextFromLocationRangeToPosition: edit "moveTextFromLocationRangeToPosition", (locationRange, position) ->
-    range = @rangeFromLocationRange(locationRange)
-    return if range[0] <= position <= range[1]
+  moveTextFromRangeToPosition: edit "moveTextFromRangeToPosition", (range, position) ->
+    [startPosition, endPosition] = range = normalizeRange(range)
+    return if startPosition <= position <= endPosition
 
-    document = @getDocumentAtLocationRange(locationRange)
-    @removeTextAtLocationRange(locationRange)
+    document = @getDocumentAtRange(range)
+    @removeTextAtRange(range)
 
-    movingRightward = range[0] < position
+    movingRightward = startPosition < position
     position -= document.getLength() if movingRightward
 
-    unless @firstBlockInLocationRangeIsEntirelySelected(locationRange)
+    unless @firstBlockInRangeIsEntirelySelected(range)
       [firstBlock, blocks...] = document.getBlocks()
       if blocks.length is 0
         text = firstBlock.getTextWithoutBlockBreak()
@@ -202,143 +209,167 @@ class Trix.Document extends Trix.Object
       else
         text = firstBlock.text
 
-      @insertTextAtLocationRange(text, @locationRangeFromPosition(position))
+      @insertTextAtRange(text, position)
       return if blocks.length is 0
 
       document = new Trix.Document blocks
       position += text.getLength()
 
-    @insertDocumentAtLocationRange(document, @locationRangeFromPosition(position))
+    @insertDocumentAtRange(document, position)
 
-  addAttributeAtLocationRange: edit "addAttributeAtLocationRange", (attribute, value, locationRange) ->
-    @eachBlockAtLocationRange locationRange, (block, range, index) =>
+  addAttributeAtRange: edit "addAttributeAtRange", (attribute, value, range) ->
+    @eachBlockAtRange range, (block, textRange, index) =>
       @blockList = @blockList.editObjectAtIndex index, ->
         if Trix.config.blockAttributes[attribute]
           block.addAttribute(attribute, value)
         else
-          if range[0] isnt range[1]
-            block.copyWithText(block.text.addAttributeAtRange(attribute, value, range))
-          else
+          if textRange[0] is textRange[1]
             block
+          else
+            block.copyWithText(block.text.addAttributeAtRange(attribute, value, textRange))
 
   addAttribute: edit "addAttribute", (attribute, value) ->
     @eachBlock (block, index) =>
       @blockList = @blockList.editObjectAtIndex (index), ->
         block.addAttribute(attribute, value)
 
-  removeAttributeAtLocationRange: edit "removeAttributeAtLocationRange", (attribute, locationRange) ->
-    @eachBlockAtLocationRange locationRange, (block, range, index) =>
+  removeAttributeAtRange: edit "removeAttributeAtRange", (attribute, range) ->
+    @eachBlockAtRange range, (block, textRange, index) =>
       if Trix.config.blockAttributes[attribute]
         @blockList = @blockList.editObjectAtIndex index, ->
           block.removeAttribute(attribute)
-      else if range[0] isnt range[1]
+      else if textRange[0] isnt textRange[1]
         @blockList = @blockList.editObjectAtIndex index, ->
-          block.copyWithText(block.text.removeAttributeAtRange(attribute, range))
+          block.copyWithText(block.text.removeAttributeAtRange(attribute, textRange))
 
   updateAttributesForAttachment: edit "updateAttributesForAttachment", (attributes, attachment) ->
-    locationRange = @getLocationRangeOfAttachment(attachment)
-    text = @getTextAtIndex(locationRange.index)
-    @blockList = @blockList.editObjectAtIndex locationRange.index, (block) ->
+    [startPosition] = range = @getRangeOfAttachment(attachment)
+    {index} = @locationFromPosition(startPosition)
+    text = @getTextAtIndex(index)
+
+    @blockList = @blockList.editObjectAtIndex index, (block) ->
       block.copyWithText(text.updateAttributesForAttachment(attributes, attachment))
 
   removeAttributeForAttachment: edit "removeAttributeForAttachment", (attribute, attachment) ->
-    locationRange = @getLocationRangeOfAttachment(attachment)
-    @removeAttributeAtLocationRange(attribute, locationRange)
+    range = @getRangeOfAttachment(attachment)
+    @removeAttributeAtRange(attribute, range)
 
-  insertBlockBreakAtLocationRange: edit "insertBlockBreakAtLocationRange", (locationRange) ->
-    position = @blockList.findPositionAtIndexAndOffset(locationRange.index, locationRange.offset)
-    @removeTextAtLocationRange(locationRange)
-    blocks = [new Trix.Block] if locationRange.offset is 0
-    @blockList = @blockList.insertSplittableListAtPosition(new Trix.SplittableList(blocks), position)
+  insertBlockBreakAtRange: edit "insertBlockBreakAtRange", (range) ->
+    [startPosition] = range = normalizeRange(range)
+    {offset} = @locationFromPosition(startPosition)
 
-  applyBlockAttributeAtLocationRange: edit "applyBlockAttributeAtLocationRange", (attributeName, value, locationRange) ->
-    locationRange = @expandLocationRangeToLineBreaksAndSplitBlocks(locationRange)
+    @removeTextAtRange(range)
+    blocks = [new Trix.Block] if offset is 0
+    @blockList = @blockList.insertSplittableListAtPosition(new Trix.SplittableList(blocks), startPosition)
+
+  applyBlockAttributeAtRange: edit "applyBlockAttributeAtRange", (attributeName, value, range) ->
+    range = @expandRangeToLineBreaksAndSplitBlocks(range)
 
     if Trix.config.blockAttributes[attributeName].listAttribute
-      @removeLastListAttributeAtLocationRange(locationRange, exceptAttributeName: attributeName)
-      locationRange = @convertLineBreaksToBlockBreaksInLocationRange(locationRange)
+      @removeLastListAttributeAtRange(range, exceptAttributeName: attributeName)
+      range = @convertLineBreaksToBlockBreaksInRange(range)
     else
-      locationRange = @consolidateBlocksAtLocationRange(locationRange)
+      range = @consolidateBlocksAtRange(range)
 
-    @addAttributeAtLocationRange(attributeName, value, locationRange)
+    @addAttributeAtRange(attributeName, value, range)
 
-  removeLastListAttributeAtLocationRange: edit "removeLastListAttributeAtLocationRange", (locationRange, options = {}) ->
-    @eachBlockAtLocationRange locationRange, (block, range, index) =>
+  removeLastListAttributeAtRange: edit "removeLastListAttributeAtRange", (range, options = {}) ->
+    @eachBlockAtRange range, (block, textRange, index) =>
       return unless lastAttributeName = block.getLastAttribute()
       return unless Trix.config.blockAttributes[lastAttributeName].listAttribute
       return if lastAttributeName is options.exceptAttributeName
       @blockList = @blockList.editObjectAtIndex index, ->
         block.removeAttribute(lastAttributeName)
 
-  firstBlockInLocationRangeIsEntirelySelected: (locationRange) ->
-    if locationRange.start.offset is 0 and locationRange.start.index < locationRange.end.index
+  firstBlockInRangeIsEntirelySelected: (range) ->
+    [startPosition, endPosition] = range = normalizeRange(range)
+    leftLocation = @locationFromPosition(startPosition)
+    rightLocation = @locationFromPosition(endPosition)
+
+    if leftLocation.offset is 0 and leftLocation.index < rightLocation.index
       true
-    else if locationRange.start.index is locationRange.end.index
-      length = @getBlockAtIndex(locationRange.start.index).getLength()
-      locationRange.start.offset is 0 and locationRange.end.offset is length
+    else if leftLocation.index is rightLocation.index
+      length = @getBlockAtIndex(leftLocation.index).getLength()
+      leftLocation.offset is 0 and rightLocation.offset is length
     else
       false
 
-  expandLocationRangeToLineBreaksAndSplitBlocks: (locationRange) ->
-    start = index: locationRange.start.index, offset: locationRange.start.offset
-    end = index: locationRange.end.index, offset: locationRange.end.offset
+  expandRangeToLineBreaksAndSplitBlocks: (range) ->
+    [startPosition, endPosition] = range = normalizeRange(range)
+    startLocation = @locationFromPosition(startPosition)
+    endLocation = @locationFromPosition(endPosition)
 
     @edit =>
-      startBlock = @getBlockAtIndex(start.index)
-      if (start.offset = startBlock.findLineBreakInDirectionFromPosition("backward", start.offset))?
-        @insertBlockBreakAtLocationRange(Trix.LocationRange.forLocationWithLength(start, 1))
-        end.index += 1
-        end.offset -= @getBlockAtIndex(start.index).getLength()
-        start.index += 1
-      start.offset = 0
+      startBlock = @getBlockAtIndex(startLocation.index)
+      if (startLocation.offset = startBlock.findLineBreakInDirectionFromPosition("backward", startLocation.offset))?
+        position = @positionFromLocation(startLocation)
+        @insertBlockBreakAtRange([position, position + 1])
+        endLocation.index += 1
+        endLocation.offset -= @getBlockAtIndex(startLocation.index).getLength()
+        startLocation.index += 1
+      startLocation.offset = 0
 
-      if end.offset is 0 and end.index > start.index
-        end.index -= 1
-        end.offset = @getBlockAtIndex(end.index).getBlockBreakPosition()
+      if endLocation.offset is 0 and endLocation.index > startLocation.index
+        endLocation.index -= 1
+        endLocation.offset = @getBlockAtIndex(endLocation.index).getBlockBreakPosition()
       else
-        endBlock = @getBlockAtIndex(end.index)
-        if endBlock.text.getStringAtRange([end.offset - 1, end.offset]) is "\n"
-          end.offset -= 1
+        endBlock = @getBlockAtIndex(endLocation.index)
+        if endBlock.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is "\n"
+          endLocation.offset -= 1
         else
-          end.offset = endBlock.findLineBreakInDirectionFromPosition("forward", end.offset)
-        unless end.offset is endBlock.getBlockBreakPosition()
-          @insertBlockBreakAtLocationRange(Trix.LocationRange.forLocationWithLength(end, 1))
+          endLocation.offset = endBlock.findLineBreakInDirectionFromPosition("forward", endLocation.offset)
+        unless endLocation.offset is endBlock.getBlockBreakPosition()
+          position = @positionFromLocation(endLocation)
+          @insertBlockBreakAtRange([position, position + 1])
 
-    new Trix.LocationRange start, end
+    startPosition = @positionFromLocation(startLocation)
+    endPosition = @positionFromLocation(endLocation)
+    normalizeRange([startPosition, endPosition])
 
-  convertLineBreaksToBlockBreaksInLocationRange: (locationRange) ->
-    string = @getStringAtLocationRange(locationRange).slice(0, -1)
-    range = @rangeFromLocationRange(locationRange)
-    position = range[0]
+  convertLineBreaksToBlockBreaksInRange: (range) ->
+    [position] = range = normalizeRange(range)
+    string = @getStringAtRange(range).slice(0, -1)
 
     @edit =>
       string.replace /.*?\n/g, (match) =>
         position += match.length
-        locationRange = @locationRangeFromRange([position - 1, position])
-        @insertBlockBreakAtLocationRange(locationRange)
+        @insertBlockBreakAtRange([position - 1, position])
 
-    @locationRangeFromRange(range)
+    range
 
-  consolidateBlocksAtLocationRange: (locationRange) ->
-    range = @rangeFromLocationRange(locationRange)
+  consolidateBlocksAtRange: (range) ->
+    [startPosition, endPosition] = range = normalizeRange(range)
     @edit =>
-      {start, end} = locationRange
-      @blockList = @blockList.consolidateFromIndexToIndex(start.index, end.index)
-    @locationRangeFromRange(range)
+      startIndex = @locationFromPosition(startPosition).index
+      endIndex = @locationFromPosition(endPosition).index
+      @blockList = @blockList.consolidateFromIndexToIndex(startIndex, endIndex)
+    range
 
-  getDocumentAtLocationRange: (locationRange) ->
-    range = @rangeFromLocationRange(locationRange)
+  getDocumentAtRange: (range) ->
+    range = normalizeRange(range)
     blocks = @blockList.getSplittableListInRange(range).toArray()
     new @constructor blocks
 
-  getStringAtLocationRange: (locationRange) ->
-    @getDocumentAtLocationRange(locationRange).toString()
+  getStringAtRange: (range) ->
+    @getDocumentAtRange(range).toString()
 
   getBlockAtIndex: (index) ->
     @blockList.getObjectAtIndex(index)
 
+  getBlockAtPosition: (position) ->
+    {index} = @locationFromPosition(position)
+    @getBlockAtIndex(index)
+
   getTextAtIndex: (index) ->
     @getBlockAtIndex(index)?.text
+
+  getTextAtPosition: (position) ->
+    {index} = @locationFromPosition(position)
+    @getTextAtIndex(index)
+
+  getPieceAtPosition: (position) ->
+    {index, offset} = @locationFromPosition(position)
+    @getTextAtIndex(index).getPieceAtPosition(position)
 
   getCharacterAtPosition: (position) ->
     {index, offset} = @locationFromPosition(position)
@@ -359,31 +390,36 @@ class Trix.Document extends Trix.Object
   eachBlock: (callback) ->
     @blockList.eachObject(callback)
 
-  eachBlockAtLocationRange: (locationRange, callback) ->
-    if locationRange.isInSingleIndex()
-      block = @getBlockAtIndex(locationRange.index)
-      textRange = [locationRange.start.offset, locationRange.end.offset]
-      callback(block, textRange, locationRange.index)
+  eachBlockAtRange: (range, callback) ->
+    [startPosition, endPosition] = range = normalizeRange(range)
+    startLocation = @locationFromPosition(startPosition)
+    endLocation = @locationFromPosition(endPosition)
+
+    if startLocation.index is endLocation.index
+      block = @getBlockAtIndex(startLocation.index)
+      textRange = [startLocation.offset, endLocation.offset]
+      callback(block, textRange, startLocation.index)
     else
-      locationRange.eachIndex (index) =>
+      for index in [startLocation.index..endLocation.index]
         if block = @getBlockAtIndex(index)
           textRange = switch index
-            when locationRange.start.index
-              [locationRange.start.offset, block.text.getLength()]
-            when locationRange.end.index
-              [0, locationRange.end.offset]
+            when startLocation.index
+              [startLocation.offset, block.text.getLength()]
+            when endLocation.index
+              [0, endLocation.offset]
             else
               [0, block.text.getLength()]
           callback(block, textRange, index)
 
-  getCommonAttributesAtLocationRange: (locationRange) ->
-    if locationRange.isCollapsed()
-      @getCommonAttributesAtLocation(locationRange.start)
+  getCommonAttributesAtRange: (range) ->
+    [startPosition] = range = normalizeRange(range)
+    if rangeIsCollapsed(range)
+      @getCommonAttributesAtPosition(startPosition)
     else
       textAttributes = []
       blockAttributes = []
 
-      @eachBlockAtLocationRange locationRange, (block, textRange) ->
+      @eachBlockAtRange range, (block, textRange) ->
         unless textRange[0] is textRange[1]
           textAttributes.push(block.text.getCommonAttributesAtRange(textRange))
           blockAttributes.push(attributesForBlock(block))
@@ -392,7 +428,8 @@ class Trix.Document extends Trix.Object
         .merge(Trix.Hash.fromCommonAttributesOfObjects(blockAttributes))
         .toObject()
 
-  getCommonAttributesAtLocation: ({index, offset}) ->
+  getCommonAttributesAtPosition: (position) ->
+    {index, offset} = @locationFromPosition(position)
     block = @getBlockAtIndex(index)
     return {} unless block
 
@@ -406,6 +443,15 @@ class Trix.Document extends Trix.Object
         commonAttributes[key] = value
 
     commonAttributes
+
+  getRangeOfCommonAttributeAtPosition: (attributeName, position) ->
+    {index, offset} = @locationFromPosition(position)
+    text = @getTextAtIndex(index)
+    [startOffset, endOffset] = text.getExpandedRangeForAttributeAtOffset(attributeName, offset)
+
+    start = @positionFromLocation {index, offset: startOffset}
+    end = @positionFromLocation {index, offset: endOffset}
+    normalizeRange([start, end])
 
   getBaseBlockAttributes: ->
     baseBlockAttributes = @getBlockAtIndex(0).getAttributes()
@@ -426,9 +472,6 @@ class Trix.Document extends Trix.Object
       attributes[attributeName] = true
     attributes
 
-  getTextAttributesAtLocation: ({index, offset}) ->
-    @getTextAtIndex(index).getAttributesAtPosition(offset)
-
   getAttachmentById: (attachmentId) ->
     @attachments.get(attachmentId)
 
@@ -441,17 +484,21 @@ class Trix.Document extends Trix.Object
   getAttachments: ->
     piece.attachment for piece in @getAttachmentPieces()
 
-  getLocationRangeOfAttachment: (attachment) ->
+  getRangeOfAttachment: (attachment) ->
+    position = 0
     for {text}, index in @blockList.toArray()
-      if range = text.getRangeOfAttachment(attachment)
-        return new Trix.LocationRange {index, offset: range[0]}, {index, offset: range[1]}
+      if textRange = text.getRangeOfAttachment(attachment)
+        return normalizeRange([position + textRange[0], position + textRange[1]])
+      position += text.getLength()
+    return
 
   getAttachmentPieceForAttachment: (attachment) ->
     return piece for piece in @getAttachmentPieces() when piece.attachment is attachment
 
   rangeFromLocationRange: (locationRange) ->
-    leftPosition = @blockList.findPositionAtIndexAndOffset(locationRange.start.index, locationRange.start.offset)
-    rightPosition = @blockList.findPositionAtIndexAndOffset(locationRange.end.index, locationRange.end.offset) unless locationRange.isCollapsed()
+    locationRange = normalizeRange(locationRange)
+    leftPosition = @positionFromLocation(locationRange[0])
+    rightPosition = @positionFromLocation(locationRange[1]) unless rangeIsCollapsed(locationRange)
     [leftPosition, rightPosition ? leftPosition]
 
   locationFromPosition: (position) ->
@@ -462,13 +509,29 @@ class Trix.Document extends Trix.Object
       blocks = @getBlocks()
       index: blocks.length - 1, offset: blocks[blocks.length - 1].getLength()
 
+  positionFromLocation: (location) ->
+    @blockList.findPositionAtIndexAndOffset(location.index, location.offset)
+
   locationRangeFromPosition: (position) ->
-    new Trix.LocationRange @locationFromPosition(position)
+    normalizeRange(@locationFromPosition(position))
 
   locationRangeFromRange: ([start, end]) ->
     startLocation = @locationFromPosition(start)
     endLocation = @locationFromPosition(end)
-    new Trix.LocationRange startLocation, endLocation
+    normalizeRange([startLocation, endLocation])
+
+  locationRangeFromRange: (range) ->
+    return unless range = normalizeRange(range)
+    [startPosition, endPosition] = range
+    startLocation = @locationFromPosition(startPosition)
+    endLocation = @locationFromPosition(endPosition)
+    normalizeRange([startLocation, endLocation])
+
+  rangeFromLocationRange: (locationRange) ->
+    locationRange = normalizeRange(locationRange)
+    leftPosition = @positionFromLocation(locationRange[0])
+    rightPosition = @positionFromLocation(locationRange[1]) unless rangeIsCollapsed(locationRange)
+    normalizeRange([leftPosition, rightPosition])
 
   isEqualTo: (document) ->
     @blockList.isEqualTo(document?.blockList)

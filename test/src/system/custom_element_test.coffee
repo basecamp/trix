@@ -76,17 +76,17 @@ editorTest "element triggers toolbar dialog events", (done) ->
         deepEqual events, ["trix-toolbar-dialog-show", "trix-toolbar-dialog-hide"]
         done()
 
-editorTest "element triggers paste event with location range", (done) ->
+editorTest "element triggers paste event with position range", (done) ->
   element = getEditorElement()
   eventCount = 0
-  locationRange = null
+  range = null
 
   element.addEventListener "trix-paste", (event) ->
     eventCount++
-    {locationRange} = event
+    {range} = event
 
   typeCharacters "", ->
     pasteContent "text/html", "<strong>hello</strong>", ->
       equal eventCount, 1
-      equal locationRange?.inspect(), new Trix.LocationRange([0,5]).inspect()
+      ok Trix.rangesAreEqual([5, 5], range)
       done()

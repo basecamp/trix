@@ -42,13 +42,13 @@ getToolbarDialog = ({attribute, action}) ->
   dialog.classList.contains("active")
 
 @expectAttributes = (range, attributes) ->
-  locationRange = getDocument().locationRangeFromRange(range)
-  document = getDocument().getDocumentAtLocationRange(locationRange)
+  document = getDocument().getDocumentAtRange(range)
   blocks = document.getBlocks()
   throw "range #{JSON.stringify(range)} spans more than one block" unless blocks.length is 1
 
-  textIndex = locationRange.index
-  textRange = [locationRange.start.offset, locationRange.end.offset]
+  locationRange = getDocument().locationRangeFromRange(range)
+  textIndex = locationRange[0].index
+  textRange = [locationRange[0].offset, locationRange[1].offset]
   text = getDocument().getTextAtIndex(textIndex).getTextAtRange(textRange)
   pieces = text.getPieces()
   throw "range #{JSON.stringify(range)} must only span one piece" unless pieces.length is 1
@@ -57,8 +57,7 @@ getToolbarDialog = ({attribute, action}) ->
   deepEqual piece.getAttributes(), attributes
 
 @expectBlockAttributes = (range, attributes) ->
-  locationRange = getDocument().locationRangeFromRange(range)
-  document = getDocument().getDocumentAtLocationRange(locationRange)
+  document = getDocument().getDocumentAtRange(range)
   blocks = document.getBlocks()
   throw "range #{JSON.stringify(range)} spans more than one block" unless blocks.length is 1
 
