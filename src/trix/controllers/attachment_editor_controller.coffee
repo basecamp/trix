@@ -2,6 +2,7 @@
 
 {handleEvent, makeElement, tagName} = Trix
 {keyNames} = Trix.InputController
+{lang} = Trix.config
 
 class Trix.AttachmentEditorController extends Trix.BasicObject
   constructor: (@attachmentPiece, @element, @container) ->
@@ -31,14 +32,14 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     undo: => handler.destroy()
 
   addRemoveButton: undoable ->
-    removeButton = makeElement(tagName: "a", textContent: "⊗", className: "attachment__remover", attributes: { href: "#", title: "Remove" })
+    removeButton = makeElement(tagName: "a", textContent: lang.remove, className: "attachment__remover", attributes: { href: "#", title: lang.remove })
     handleEvent("click", onElement: removeButton, withCallback: @didClickRemoveButton)
     do: => @element.appendChild(removeButton)
     undo: => @element.removeChild(removeButton)
 
   editCaption: undoable ->
     input = document.createElement("textarea", "trix-input")
-    input.setAttribute("placeholder", Trix.config.lang.attachment.captionPlaceholder)
+    input.setAttribute("placeholder", Trix.config.lang.captionPlaceholder)
     input.classList.add("attachment__caption-editor")
     input.value = @attachmentPiece.getCaption()
 
