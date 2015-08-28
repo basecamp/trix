@@ -1,5 +1,3 @@
-framework: qunit
-
 load_paths:
   - test/src
   - test/blade_runner_assets
@@ -10,15 +8,14 @@ logical_paths:
   - polyfills.js
   - test.js
 
-ci:
-  plugins:
-    sauce_labs:
-      browsers:
-        - name: "Google Chrome"
-          platforms: ["Mac", "Windows"]
-        - name: "Safari"
-          platforms: ["Mac"]
-        - name: "Firefox"
-          platforms: ["Mac", "Windows"]
-        - name: "Internet Explorer"
-          platforms: ["Windows"]
+plugins:
+  sauce_labs:
+    browsers:
+      chrome:
+        platform: ["Mac", "Windows"]
+      safari:
+        platform: ["Mac"]
+      firefox:
+        platform: ["Mac", "Windows"]
+      ie:
+        platform: ["Windows"]
