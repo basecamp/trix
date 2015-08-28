@@ -3,6 +3,7 @@
 {handleEvent, makeElement, tagName} = Trix
 {keyNames} = Trix.InputController
 {lang} = Trix.config
+{classNames} = Trix.config.css
 
 class Trix.AttachmentEditorController extends Trix.BasicObject
   constructor: (@attachmentPiece, @element, @container) ->
@@ -32,15 +33,15 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     undo: => handler.destroy()
 
   addRemoveButton: undoable ->
-    removeButton = makeElement(tagName: "a", textContent: lang.remove, className: "attachment__remover", attributes: { href: "#", title: lang.remove })
+    removeButton = makeElement(tagName: "a", textContent: lang.remove, className: classNames.attachment.removeButton, attributes: { href: "#", title: lang.remove })
     handleEvent("click", onElement: removeButton, withCallback: @didClickRemoveButton)
     do: => @element.appendChild(removeButton)
     undo: => @element.removeChild(removeButton)
 
   editCaption: undoable ->
     input = document.createElement("textarea", "trix-input")
-    input.setAttribute("placeholder", Trix.config.lang.captionPlaceholder)
-    input.classList.add("attachment__caption-editor")
+    input.setAttribute("placeholder", lang.captionPlaceholder)
+    input.classList.add(classNames.attachment.captionEditor)
     input.value = @attachmentPiece.getCaption()
 
     handleEvent("keydown", onElement: input, withCallback: @didKeyDownCaption)
@@ -53,7 +54,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     do: ->
       figcaption.style.display = "none"
       editingFigcaption.appendChild(input)
-      editingFigcaption.classList.add("attachment__caption--editing")
+      editingFigcaption.classList.add(classNames.attachment.editingCaption)
       figcaption.parentElement.insertBefore(editingFigcaption, figcaption)
       input.focus()
     undo: ->

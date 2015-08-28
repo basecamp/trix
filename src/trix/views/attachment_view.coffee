@@ -1,4 +1,5 @@
 {makeElement} = Trix
+{classNames} = Trix.config.css
 
 class Trix.AttachmentView extends Trix.ObjectView
   @attachmentSelector: "[data-trix-attachment]"
@@ -35,7 +36,7 @@ class Trix.AttachmentView extends Trix.ObjectView
       @progressElement = makeElement
         tagName: "progress"
         attributes:
-          class: "attachment__progress"
+          class: classNames.attachment.progressBar
           value: @attachment.getUploadProgress()
           max: 100
         data:
@@ -57,17 +58,17 @@ class Trix.AttachmentView extends Trix.ObjectView
     [@createCursorTarget(), element, @createCursorTarget()]
 
   createCaptionElement: ->
-    figcaption = makeElement(tagName: "figcaption", className: "attachment__caption")
+    figcaption = makeElement(tagName: "figcaption", className: classNames.attachment.caption)
 
     if caption = @attachmentPiece.getCaption()
-      figcaption.classList.add("attachment__caption--edited")
+      figcaption.classList.add(classNames.attachment.captionEdited)
       figcaption.textContent = caption
     else
       if filename = @attachment.getFilename()
         figcaption.textContent = filename
 
         if filesize = @attachment.getFormattedFilesize()
-          span = makeElement(tagName: "span", className: "attachment__size", textContent: filesize)
+          span = makeElement(tagName: "span", className: classNames.attachment.size, textContent: filesize)
           figcaption.appendChild(span)
 
     figcaption
