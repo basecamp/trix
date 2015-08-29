@@ -1,11 +1,14 @@
 class Trix.SplittableList extends Trix.Object
+  @box: (objects) ->
+    if objects instanceof this
+      objects
+    else
+      new this objects
+
   constructor: (objects = []) ->
     super
     @objects = objects.slice(0)
     @length = @objects.length
-
-  copy: ->
-    new @constructor @objects
 
   eachObject: (callback) ->
     callback(object, index) for object, index in @objects
