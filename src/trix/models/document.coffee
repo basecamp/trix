@@ -20,14 +20,8 @@ class Trix.Document extends Trix.Object
 
   constructor: (blocks = []) ->
     super
-
     blocks = [new Trix.Block] if blocks.length is 0
     @blockList = Trix.SplittableList.box(blocks)
-
-    @attachments = new Trix.Set
-    @attachments.delegate = this
-
-    @refresh()
 
   isEmpty: ->
     @blockList.length is 1 and (
@@ -524,26 +518,3 @@ class Trix.Document extends Trix.Object
 
   toConsole: ->
     JSON.stringify(JSON.parse(block.text.toConsole()) for block in @blockList.toArray())
-
-  # Attachments collection delegate
-
-  collectionDidAddObject: (collection, object) ->
-    object.delegate ?= this
-    @delegate?.documentDidAddAttachment(this, object)
-
-  collectionDidRemoveObject: (collection, object) ->
-    delete object.delegate if object.delegate is this
-    @delegate?.documentDidRemoveAttachment(this, object)
-
-  # Attachment delegate
-
-  attachmentDidChangeAttributes: (attachment) ->
-    @delegate?.documentDidEditAttachment(this, attachment)
-
-  # Private
-
-  refresh: ->
-    @refreshAttachments()
-
-  refreshAttachments: ->
-    @attachments.refresh(@getAttachments())
