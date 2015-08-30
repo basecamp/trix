@@ -1,6 +1,6 @@
 #= require trix/controllers/controller
 #= require trix/controllers/input_controller
-#= require trix/controllers/document_controller
+#= require trix/controllers/composition_controller
 #= require trix/controllers/toolbar_controller
 #= require trix/models/selection_manager
 #= require trix/models/editor
@@ -74,7 +74,7 @@ class Trix.EditorController extends Trix.Controller
     @delegate?.didAddAttachment?(managedAttachment)
 
   compositionDidEditAttachment: (attachment) ->
-    @documentController.rerenderViewForObject(attachment)
+    @compositionController.rerenderViewForObject(attachment)
     managedAttachment = @editor.manageAttachment(attachment)
     @delegate?.didEditAttachment?(managedAttachment)
 
@@ -85,11 +85,11 @@ class Trix.EditorController extends Trix.Controller
   compositionDidStartEditingAttachment: (attachment) ->
     attachmentRange = @document.getRangeOfAttachment(attachment)
     @attachmentLocationRange = @document.locationRangeFromRange(attachmentRange)
-    @documentController.installAttachmentEditorForAttachment(attachment)
+    @compositionController.installAttachmentEditorForAttachment(attachment)
     @selectionManager.setLocationRange(@attachmentLocationRange)
 
   compositionDidStopEditingAttachment: (attachment) ->
-    @documentController.uninstallAttachmentEditor()
+    @compositionController.uninstallAttachmentEditor()
     delete @attachmentLocationRange
 
   compositionDidRequestLocationRange: (locationRange) ->
@@ -98,7 +98,7 @@ class Trix.EditorController extends Trix.Controller
     @render() unless @handlingInput
 
   compositionDidRestoreSnapshot: ->
-    @documentController.refreshViewCache()
+    @compositionController.refreshViewCache()
     @render()
 
   getSelectionManager: ->
@@ -230,7 +230,7 @@ class Trix.EditorController extends Trix.Controller
       perform: -> @composition.decreaseBlockAttributeLevel() and @render()
     editCaption:
       test: -> @composition.canEditAttachmentCaption()
-      perform: -> @documentController.editAttachmentCaption()
+      perform: -> @compositionController.editAttachmentCaption()
 
   toolbarDidClickButton: ->
     @setLocationRange(index: 0, offset: 0) unless @getLocationRange()
@@ -251,19 +251,19 @@ class Trix.EditorController extends Trix.Controller
     @recordFormattingUndoEntry()
     @composition.toggleCurrentAttribute(attributeName)
     @render()
-    @documentController.focus()
+    @compositionController.focus()
 
   toolbarDidUpdateAttribute: (attributeName, value) ->
     @recordFormattingUndoEntry()
     @composition.setCurrentAttribute(attributeName, value)
     @render()
-    @documentController.focus()
+    @compositionController.focus()
 
   toolbarDidRemoveAttribute: (attributeName) ->
     @recordFormattingUndoEntry()
     @composition.removeCurrentAttribute(attributeName)
     @render()
-    @documentController.focus()
+    @compositionController.focus()
 
   toolbarWillShowDialog: (dialogElement) ->
     @composition.expandSelectionForEditing()
@@ -273,7 +273,7 @@ class Trix.EditorController extends Trix.Controller
     @delegate?.didShowToolbarDialog?(dialogElement)
 
   toolbarDidHideDialog: (dialogElement) ->
-    @documentController.focus()
+    @compositionController.focus()
     @thawSelection()
     @delegate?.didHideToolbarDialog?(dialogElement)
 
@@ -312,16 +312,16 @@ class Trix.EditorController extends Trix.Controller
     @inputController.responder = @composition
 
   createDocumentController: ->
-    delete @documentController?.delegate
-    @documentController = new Trix.DocumentController @documentElement, @document
-    @documentController.delegate = this
+    delete @compositionController?.delegate
+    @compositionController = new Trix.CompositionController @documentElement, @composition
+    @compositionController.delegate = this
     @render()
 
   reparse: ->
     @composition.replaceHTML(@documentElement.innerHTML)
 
   render: ->
-    @documentController.render()
+    @compositionController.render()
 
   removeAttachment: (attachment) ->
     @editor.recordUndoEntry("Delete Attachment")

@@ -5,9 +5,9 @@
 
 {attachmentSelector} = Trix.AttachmentView
 
-class Trix.DocumentController extends Trix.BasicObject
-  constructor: (@element, @document) ->
-    @documentView = new Trix.DocumentView @document, {@element}
+class Trix.CompositionController extends Trix.BasicObject
+  constructor: (@element, @composition) ->
+    @documentView = new Trix.DocumentView @composition.document, {@element}
 
     handleEvent "focus", onElement: @element, withCallback: @didFocus
     handleEvent "click", onElement: @element, matchingSelector: "a[contenteditable=false]", preventDefault: true
@@ -22,7 +22,7 @@ class Trix.DocumentController extends Trix.BasicObject
     @delegate?.documentControllerDidSelectAttachment?(attachment)
 
   render: benchmark "DocumentController#render", ->
-    @documentView.render()
+    @documentView.setDocument(@composition.document)
 
     unless @documentView.isSynced()
       @delegate?.documentControllerWillSyncDocumentView?()
