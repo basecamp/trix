@@ -9,14 +9,14 @@
 
 class Trix.EditorController extends Trix.Controller
   constructor: (@config) ->
-    {@documentElement, @toolbarController, @document, @delegate} = @config
-    @document ?= new Trix.Document
+    {@documentElement, @toolbarController, document, @delegate} = @config
+    document ?= new Trix.Document
     @toolbarController.delegate = this
 
     @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
 
-    @setEditor(new Trix.Editor @document)
+    @setEditor(new Trix.Editor document)
 
   setEditor: (editor) ->
     return if @editor is editor
@@ -25,7 +25,6 @@ class Trix.EditorController extends Trix.Controller
     @editor.delegate = this
 
     @composition = @editor.composition
-    @document = @composition.document
 
     @selectionManager.delegate = null
     @createInputController()
@@ -44,7 +43,7 @@ class Trix.EditorController extends Trix.Controller
     @delegate?.didSetEditor?(editor)
 
   loadDocument: (document) ->
-    return if @document is document
+    return if document is @composition.document
     @setEditor(new Trix.Editor document)
 
   registerSelectionManager: ->
@@ -83,8 +82,9 @@ class Trix.EditorController extends Trix.Controller
     @delegate?.didRemoveAttachment?(managedAttachment)
 
   compositionDidStartEditingAttachment: (attachment) ->
-    attachmentRange = @document.getRangeOfAttachment(attachment)
-    @attachmentLocationRange = @document.locationRangeFromRange(attachmentRange)
+    document = @composition.document
+    attachmentRange = document.getRangeOfAttachment(attachment)
+    @attachmentLocationRange = document.locationRangeFromRange(attachmentRange)
     @compositionController.installAttachmentEditorForAttachment(attachment)
     @selectionManager.setLocationRange(@attachmentLocationRange)
 
@@ -94,7 +94,7 @@ class Trix.EditorController extends Trix.Controller
 
   compositionDidRequestLocationRange: (locationRange) ->
     @requestedLocationRange = locationRange
-    @editCountWhenLocationRangeRequested = @document.getEditCount()
+    @documentWhenLocationRangeRequested = @composition.document
     @render() unless @handlingInput
 
   compositionDidRestoreSnapshot: ->
@@ -127,11 +127,11 @@ class Trix.EditorController extends Trix.Controller
 
   documentControllerDidRender: ->
     if @requestedLocationRange?
-      if @editCountWhenLocationRangeRequested is @document.getEditCount()
+      if @documentWhenLocationRangeRequested.isEqualTo(@composition.document)
         @selectionManager.setLocationRange(@requestedLocationRange)
       @composition.updateCurrentAttributes()
       delete @requestedLocationRange
-      delete @editCountWhenLocationRangeRequested
+      delete @documentWhenLocationRangeRequested
     @delegate?.didRenderDocument?()
 
   documentControllerDidFocus: ->

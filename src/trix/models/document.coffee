@@ -429,7 +429,7 @@ class Trix.Document extends Trix.Object
     attributes
 
   getAttachmentById: (attachmentId) ->
-    @attachments.get(attachmentId)
+    return attachment for attachment in @getAttachments() when attachment.id is attachmentId
 
   getAttachmentPieces: ->
     attachmentPieces = []

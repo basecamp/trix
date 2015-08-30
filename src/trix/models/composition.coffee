@@ -3,7 +3,8 @@
 {normalizeRange, rangesAreEqual} = Trix
 
 class Trix.Composition extends Trix.BasicObject
-  constructor: (@document = new Trix.Document) ->
+  constructor: ->
+    @document = new Trix.Document
     @currentAttributes = {}
 
   setDocument: (document) ->
@@ -401,6 +402,11 @@ class Trix.Composition extends Trix.BasicObject
     if locationRange = @getLocationRange()
       @document.getDocumentAtLocationRange(locationRange)
 
+  # Attachments
+
+  getAttachments: ->
+    @document.getAttachments()
+
   # Attachment editing
 
   editAttachment: (attachment) ->
@@ -420,7 +426,7 @@ class Trix.Composition extends Trix.BasicObject
   # Private
 
   getDocument: ->
-    @document.copy()
+    @document
 
   getPreviousBlock: ->
     if locationRange = @getLocationRange()

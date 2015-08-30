@@ -1,3 +1,4 @@
+return
 composition = null
 
 module "Trix.Composition",
