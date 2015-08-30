@@ -15,22 +15,22 @@ class Trix.CompositionController extends Trix.BasicObject
     handleEvent "click", onElement: @element, matchingSelector: "a#{attachmentSelector}", preventDefault: true
 
   didFocus: =>
-    @delegate?.documentControllerDidFocus?()
+    @delegate?.compositionControllerDidFocus?()
 
   didClickAttachment: (event, target) =>
     attachment = @findAttachmentForElement(target)
-    @delegate?.documentControllerDidSelectAttachment?(attachment)
+    @delegate?.compositionControllerDidSelectAttachment?(attachment)
 
-  render: benchmark "DocumentController#render", ->
+  render: benchmark "CompositionController#render", ->
     @documentView.setDocument(@composition.document)
 
     unless @documentView.isSynced()
-      @delegate?.documentControllerWillSyncDocumentView?()
+      @delegate?.compositionControllerWillSyncDocumentView?()
       @documentView.sync()
       @reinstallAttachmentEditor()
-      @delegate?.documentControllerDidSyncDocumentView?()
+      @delegate?.compositionControllerDidSyncDocumentView?()
 
-    @delegate?.documentControllerDidRender?()
+    @delegate?.compositionControllerDidRender?()
 
   rerenderViewForObject: (object) ->
     @documentView.invalidateViewForObject(object)
@@ -80,18 +80,18 @@ class Trix.CompositionController extends Trix.BasicObject
     @render()
 
   attachmentEditorDidRequestUpdatingAttributesForAttachment: (attributes, attachment) ->
-    @delegate?.documentControllerWillUpdateAttachment?(attachment)
+    @delegate?.compositionControllerWillUpdateAttachment?(attachment)
     @composition.document.updateAttributesForAttachment(attributes, attachment)
 
   attachmentEditorDidRequestRemovingAttributeForAttachment: (attribute, attachment) ->
-    @delegate?.documentControllerWillUpdateAttachment?(attachment)
+    @delegate?.compositionControllerWillUpdateAttachment?(attachment)
     @composition.document.removeAttributeForAttachment(attribute, attachment)
 
   attachmentEditorDidRequestRemovalOfAttachment: (attachment) ->
-    @delegate?.documentControllerDidRequestRemovalOfAttachment?(attachment)
+    @delegate?.compositionControllerDidRequestRemovalOfAttachment?(attachment)
 
   attachmentEditorDidRequestDeselectingAttachment: (attachment) ->
-    @delegate?.documentControllerDidRequestDeselectingAttachment?(attachment)
+    @delegate?.compositionControllerDidRequestDeselectingAttachment?(attachment)
 
   # Private
 

@@ -3,7 +3,7 @@
 class Trix.DebuggingPanelView extends Trix.InspectorPanelView
   constructor: ->
     super
-    {@documentController, @inputController} = @editorController
+    {@compositionController, @inputController} = @editorController
     @handleEvent "click", onElement: @element, matchingSelector: "label", withCallback: @didClickCheckbox
     @handleEvent "click", onElement: @element, matchingSelector: "button[data-action=render]", withCallback: @didClickRenderButton
     @handleEvent "click", onElement: @element, matchingSelector: "button[data-action=parse]", withCallback: @didClickParseButton
@@ -19,12 +19,12 @@ class Trix.DebuggingPanelView extends Trix.InspectorPanelView
 
   didClickViewCachingCheckbox: (checked) ->
     if checked
-      @documentController.enableViewCaching()
+      @compositionController.enableViewCaching()
     else
-      @documentController.disableViewCaching()
+      @compositionController.disableViewCaching()
 
   viewCachingCheckboxIsChecked: ->
-    @documentController.isViewCachingEnabled()
+    @compositionController.isViewCachingEnabled()
 
   didClickRenderButton: =>
     @editorController.render()
