@@ -5,7 +5,7 @@
 class Trix.StructurePanelView extends Trix.InspectorPanelView
   constructor: ->
     super
-    @document = @editorController.document
+    {@composition} = @editorController
     @handleEvent "mousedown", onElement: @element, matchingSelector: ".expandable .title", withCallback: @didClickExpandableTitle
 
   didClickExpandableTitle: (event) ->
@@ -15,7 +15,8 @@ class Trix.StructurePanelView extends Trix.InspectorPanelView
 
   render: ->
     element = make("div", className: "trix-inspector-text")
-    for block, index in @document.blockList.toArray()
+    document = @composition.document
+    for block, index in document.blockList.toArray()
       element.appendChild(@renderBlock(block, index))
     @clear()
     @element.appendChild(element)
