@@ -44,16 +44,16 @@ addEventListener "DOMContentLoaded", ->
       removeAttachment(attachment)
 
     handleEvent "trix-paste", onElement: editorElement, withCallback: (event) ->
-      locationRange = event.locationRange
+      {range} = event
       {document, editor} = @editorController
 
-      unless document.getCommonAttributesAtLocationRange(locationRange).href
-        fragment = document.getDocumentAtLocationRange(locationRange)
+      unless document.getCommonAttributesAtRange(range).href
+        fragment = document.getDocumentAtRange(range)
         value = fragment.toString().slice(0, -1)
 
         if isURL(value)
           editor.recordUndoEntry("Link Pasted URL")
-          document.addAttributeAtLocationRange("href", value, locationRange)
+          document.addAttributeAtRange("href", value, range)
 
     form = document.querySelector("form#submit-trix-content")
     handleEvent "submit", onElement: form, withCallback: (event) ->
