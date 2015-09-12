@@ -4,7 +4,7 @@
 #= require trix/controllers/editor_controller
 #= require trix/controllers/editor_element_controller
 
-{makeElement, tagName} = Trix
+{makeElement, tagName, defer} = Trix
 
 Trix.registerElement "trix-editor",
   createdCallback: ->
@@ -21,7 +21,7 @@ Trix.registerElement "trix-editor",
         @initializeEditorController(toolbarElement, documentElement)
         true
 
-    requestAnimationFrame(initialize) unless initialize()
+    defer(initialize) unless initialize()
 
   detachedCallback: ->
     @editorController?.unregisterSelectionManager()
