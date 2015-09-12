@@ -34,10 +34,10 @@ editorTest "element triggers attachment events", ->
   attachment.remove()
   deepEqual events, ["trix-file-accept", "trix-attachment-add", "trix-attachment-remove"]
 
-editorTest "element triggers input events when the document changes", (done) ->
+editorTest "element triggers trix-change events when the document changes", (done) ->
   element = getEditorElement()
   eventCount = 0
-  element.addEventListener "input", (event) -> eventCount++
+  element.addEventListener "trix-change", (event) -> eventCount++
 
   typeCharacters "a", ->
     equal eventCount, 1

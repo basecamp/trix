@@ -63,4 +63,4 @@ class Trix.EditorElementController extends Trix.Controller
 
   saveAndNotify: =>
     @save()
-    triggerEvent("input", onElement: @element)
+    triggerEvent("trix-change", onElement: @element)
