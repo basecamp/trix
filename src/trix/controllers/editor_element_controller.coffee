@@ -4,10 +4,9 @@
 
 class Trix.EditorElementController extends Trix.Controller
   constructor: (@element, @documentElement, @inputElement) ->
-    @contentType = @element.getAttribute("content-type")
 
   save: ->
-    value = Trix.serializeToContentType(@documentElement, @contentType)
+    value = Trix.serializeToContentType(@documentElement, "text/html")
     @inputElement.value = value
     @element.setAttribute("value", value)
 

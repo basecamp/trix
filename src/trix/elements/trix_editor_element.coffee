@@ -11,7 +11,6 @@ Trix.defineElement class extends Trix.Element
 
   createdCallback: ->
     super
-    @setAttribute("content-type", "text/html") unless @getAttribute("content-type")
     findOrCreateInputElement(this)
     findOrCreateToolbarElement(this)
     findOrCreateDocumentElement(this)
@@ -36,13 +35,12 @@ Trix.defineElement class extends Trix.Element
     documentElement = @attachedChildren?["trix-document"]
     return unless toolbarElement? and documentElement?
 
-    contentType = @getAttribute("content-type")
     inputElement = findInputElement(this)
 
     @editorController ?= new Trix.EditorController
       toolbarController: toolbarElement.toolbarController
       documentElement: documentElement
-      document: Trix.deserializeFromContentType(inputElement.value, contentType)
+      document: Trix.deserializeFromContentType(inputElement.value, "text/html")
       delegate: new Trix.EditorElementController this, documentElement, inputElement
 
     @editorController.registerSelectionManager()
