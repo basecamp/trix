@@ -1,22 +1,18 @@
 {makeElement} = Trix
 
-TextAreaElement = Trix.createElementClass(window.HTMLTextAreaElement)
+uncloneableAttributeNames = ["is", "id", "name"]
+cloneStyles = maxHeight: "0px", position: "absolute", left: "-9999px"
 
-Trix.defineElement class extends TextAreaElement
-  @tagName: "trix-input"
-  @extends: "textarea"
+Trix.registerElement "trix-input",
+  extendsTagName: "textarea"
 
-  @defaultCSS: """
+  defaultCSS: """
     %t {
       resize: none;
     }
   """
 
-  uncloneableAttributeNames = ["is", "id", "name"]
-  cloneStyles = maxHeight: "0px", position: "absolute", left: "-9999px"
-
   attachedCallback: ->
-    super
     @clone = makeElement(@tagName)
 
     for name, value of getAttributes(this)
@@ -27,20 +23,19 @@ Trix.defineElement class extends TextAreaElement
       @clone.style[key] = value
 
     @parentNode.insertBefore(@clone, this)
-    @addEventListener("input", @autoResize)
+    @addEventListener("input", @autoResize.bind(this))
     @autoResize()
 
   detachedCallback: ->
-    super
     @clone.parentNode.removeChild(@clone)
 
-  autoResize: =>
+  autoResize: ->
     @clone.value = @value
     @style.height = @clone.scrollHeight + "px"
 
-  getAttributes = (element) ->
-    attributes = {}
-    for key, attribute of element.attributes
-      if attribute.name and typeof attribute.value is "string"
-        attributes[attribute.name] = attribute.value
-    attributes
+getAttributes = (element) ->
+  attributes = {}
+  for key, attribute of element.attributes
+    if attribute.name and typeof attribute.value is "string"
+      attributes[attribute.name] = attribute.value
+  attributes

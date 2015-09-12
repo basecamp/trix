@@ -6,27 +6,21 @@
 
 {makeElement, tagName} = Trix
 
-Trix.defineElement class extends Trix.Element
-  @tagName: "trix-editor"
-
+Trix.registerElement "trix-editor",
   createdCallback: ->
-    super
     findOrCreateInputElement(this)
     findOrCreateToolbarElement(this)
     findOrCreateDocumentElement(this)
 
   attachedCallback: ->
-    super
     @initializeEditorController()
 
   childAttachedCallback: (element) ->
-    super
     @attachedChildren ?= {}
     @attachedChildren[tagName(element)] = element
     @initializeEditorController()
 
   detachedCallback: ->
-    super
     @editorController?.unregisterSelectionManager()
     delete @attachedChildren
 
@@ -47,33 +41,33 @@ Trix.defineElement class extends Trix.Element
 
     @setAttribute("document", @editorController.document.id)
 
-  findOrCreateToolbarElement = (parentElement) ->
-    unless element = parentElement.querySelector("trix-toolbar")
-      element = makeElement("trix-toolbar")
-      parentElement.insertBefore(element, parentElement.firstChild)
-    element
+findOrCreateToolbarElement = (parentElement) ->
+  unless element = parentElement.querySelector("trix-toolbar")
+    element = makeElement("trix-toolbar")
+    parentElement.insertBefore(element, parentElement.firstChild)
+  element
 
-  findOrCreateDocumentElement = (parentElement) ->
-    unless element = parentElement.querySelector("trix-document")
-      element = makeElement("trix-document")
-      if parentElement.hasAttribute("autofocus")
-        parentElement.removeAttribute("autofocus")
-        element.setAttribute("autofocus", "")
-      if placeholder = parentElement.getAttribute("placeholder")
-        parentElement.removeAttribute("placeholder")
-        element.setAttribute("placeholder", placeholder)
-      parentElement.insertBefore(element, null)
-    element
+findOrCreateDocumentElement = (parentElement) ->
+  unless element = parentElement.querySelector("trix-document")
+    element = makeElement("trix-document")
+    if parentElement.hasAttribute("autofocus")
+      parentElement.removeAttribute("autofocus")
+      element.setAttribute("autofocus", "")
+    if placeholder = parentElement.getAttribute("placeholder")
+      parentElement.removeAttribute("placeholder")
+      element.setAttribute("placeholder", placeholder)
+    parentElement.insertBefore(element, null)
+  element
 
-  findOrCreateInputElement = (parentElement) ->
-    unless element = findInputElement(parentElement)
-      name = parentElement.getAttribute("name")
-      value = parentElement.getAttribute("value")
-      element = makeElement("input", type: "hidden")
-      element.name = name if name?
-      element.value = value if value?
-      parentElement.insertBefore(element, null)
-    element
+findOrCreateInputElement = (parentElement) ->
+  unless element = findInputElement(parentElement)
+    name = parentElement.getAttribute("name")
+    value = parentElement.getAttribute("value")
+    element = makeElement("input", type: "hidden")
+    element.name = name if name?
+    element.value = value if value?
+    parentElement.insertBefore(element, null)
+  element
 
-  findInputElement = (parentElement) ->
-    parentElement.querySelector("input[type=hidden]")
+findInputElement = (parentElement) ->
+  parentElement.querySelector("input[type=hidden]")
