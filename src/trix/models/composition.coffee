@@ -7,11 +7,13 @@ class Trix.Composition extends Trix.BasicObject
     @document = new Trix.Document
     @attachments = []
     @currentAttributes = {}
+    @revision = 0
 
   setDocument: (document) ->
     unless document.isEqualTo(@document)
       @document = document
       @refreshAttachments()
+      @revision++
       @delegate?.compositionDidChangeDocument(document)
 
   # Snapshots
@@ -415,6 +417,7 @@ class Trix.Composition extends Trix.BasicObject
   # Attachment delegate
 
   attachmentDidChangeAttributes: (attachment) ->
+    @revision++
     @delegate?.compositionDidEditAttachment(attachment)
 
   # Attachment editing

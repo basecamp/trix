@@ -20,7 +20,6 @@ class Trix.DocumentView extends Trix.ObjectView
   setDocument: (document) ->
     unless document.isEqualTo(@document)
       @document = @object = document
-      @render()
 
   render: ->
     @childViews = []

@@ -22,7 +22,10 @@ class Trix.CompositionController extends Trix.BasicObject
     @delegate?.compositionControllerDidSelectAttachment?(attachment)
 
   render: benchmark "CompositionController#render", ->
-    @documentView.setDocument(@composition.document)
+    unless @revision is @composition.revision
+      @documentView.setDocument(@composition.document)
+      @documentView.render()
+      @revision = @composition.revision
 
     unless @documentView.isSynced()
       @delegate?.compositionControllerWillSyncDocumentView?()
