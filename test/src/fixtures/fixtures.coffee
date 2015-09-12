@@ -141,7 +141,7 @@ cursorTarget = Trix.makeElement(
 
   "image attachment": do ->
     imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
-    attrs = url: imageData, filename: "example.png", filesize: "123", contentType: "image/png", width: 1, height: 1
+    attrs = url: imageData, filename: "example.png", filesize: 98203, contentType: "image/png", width: 1, height: 1
     attachment = new Trix.Attachment attrs
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
@@ -149,7 +149,7 @@ cursorTarget = Trix.makeElement(
     image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, "data-trix-store-key": key, width: 1, height: 1)
 
     caption = Trix.makeElement(tagName: "figcaption", className: "attachment__caption")
-    caption.innerHTML = """#{attrs.filename}<span class="attachment__size">#{attrs.filesize}</span>"""
+    caption.innerHTML = """#{attrs.filename}<span class="attachment__size">95.9 KB</span>"""
 
     figure = Trix.makeElement
       tagName: "figure"
@@ -170,7 +170,7 @@ cursorTarget = Trix.makeElement(
 
   "image attachment with edited caption": do ->
     imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
-    attrs = url: imageData, filename: "example.png", filesize: "123", contentType: "image/png", width: 1, height: 1
+    attrs = url: imageData, filename: "example.png", filesize: 123, contentType: "image/png", width: 1, height: 1
     attachment = new Trix.Attachment attrs
     textAttrs = caption: "Example"
     text = Trix.Text.textForAttachmentWithAttributes(attachment, textAttrs)
@@ -199,7 +199,7 @@ cursorTarget = Trix.makeElement(
     document: new Trix.Document [new Trix.Block text]
 
   "file attachment": do ->
-    attrs = href: "http://example.com/example.pdf", filename: "example.pdf", filesize: "345", contentType: "application/pdf"
+    attrs = href: "http://example.com/example.pdf", filename: "example.pdf", filesize: 34038769, contentType: "application/pdf"
     attachment = new Trix.Attachment attrs
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
@@ -217,7 +217,7 @@ cursorTarget = Trix.makeElement(
     link.setAttribute("contenteditable", false)
     link.appendChild(figure)
 
-    caption = """<figcaption class="attachment__caption">#{attrs.filename}<span class="attachment__size">#{attrs.filesize}</span></figcaption>"""
+    caption = """<figcaption class="attachment__caption">#{attrs.filename}<span class="attachment__size">32.46 MB</span></figcaption>"""
     figure.innerHTML = caption
 
     html: """<div>#{blockComment}#{cursorTarget}#{link.outerHTML}#{cursorTarget}</div>"""
