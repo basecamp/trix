@@ -11,7 +11,7 @@ editorTest "loads the initial document", ->
 
 editorTest "sets value attribute", (done) ->
   defer ->
-    equal getEditorElement().getAttribute("value"), "<div><!--block-->Hello world</div>"
+    equal getEditorElement().getAttribute("value"), "<div>Hello world</div>"
     done()
 
 editorModule "Installation process", template: "editor_json"
