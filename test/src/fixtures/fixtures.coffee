@@ -100,6 +100,11 @@ cursorTarget = Trix.makeElement(
     document: createDocument(["12\n3", {}, ["code"]])
     html: "<pre>#{blockComment}12\n3</pre>"
 
+  "multiple blocks with block comments in their text":
+    document: createDocument(["a#{blockComment}b", {}, ["quote"]], ["#{blockComment}c", {}, ["code"]])
+    html: "<blockquote>#{blockComment}a&lt;!--block--&gt;b</blockquote><pre>#{blockComment}&lt;!--block--&gt;c</pre>"
+    serializedHTML: "<blockquote>a&lt;!--block--&gt;b</blockquote><pre>&lt;!--block--&gt;c</pre>"
+
   "unordered list with one item":
     document: createDocument(["a", {}, ["bulletList", "bullet"]])
     html: "<ul><li>#{blockComment}a</li></ul>"
