@@ -158,7 +158,7 @@ class Trix.Document extends Trix.Object
         text = firstBlock.text
 
       result = result.insertTextAtRange(text, position)
-      return this if blocks.length is 0
+      return result if blocks.length is 0
 
       document = new @constructor blocks
       position += text.getLength()
