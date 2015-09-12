@@ -36,6 +36,8 @@ Trix.registerElement "trix-toolbar",
     else
       @toolbarController = new Trix.ToolbarController this
 
+    @setAttribute("initialized", "")
+
 
 defaultHTML = """
   <div class="button_groups">

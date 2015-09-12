@@ -20,10 +20,13 @@ Trix.registerElement "trix-document",
     makeEditable(this)
 
   attachedCallback: ->
-    defer =>
-      unless document.querySelector(":focus")
-        if @hasAttribute("autofocus") and document.querySelector("[autofocus]") is this
-          @focus()
+    defer => autofocus(this)
+    @setAttribute("initialized", "")
+
+autofocus = (element) ->
+  unless document.querySelector(":focus")
+    if element.hasAttribute("autofocus") and document.querySelector("[autofocus]") is element
+      element.focus()
 
 makeEditable = (element) ->
   return if element.hasAttribute("contenteditable")

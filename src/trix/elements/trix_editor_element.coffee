@@ -13,22 +13,20 @@ Trix.registerElement "trix-editor",
     findOrCreateDocumentElement(this)
 
   attachedCallback: ->
-    @initializeEditorController()
+    initialize = =>
+      toolbarElement = @querySelector("trix-toolbar[initialized]")
+      documentElement = @querySelector("trix-document[initialized]")
 
-  childAttachedCallback: (element) ->
-    @attachedChildren ?= {}
-    @attachedChildren[tagName(element)] = element
-    @initializeEditorController()
+      if toolbarElement? and documentElement?
+        @initializeEditorController(toolbarElement, documentElement)
+        true
+
+    requestAnimationFrame(initialize) unless initialize()
 
   detachedCallback: ->
     @editorController?.unregisterSelectionManager()
-    delete @attachedChildren
 
-  initializeEditorController: ->
-    toolbarElement = @attachedChildren?["trix-toolbar"]
-    documentElement = @attachedChildren?["trix-document"]
-    return unless toolbarElement? and documentElement?
-
+  initializeEditorController: (toolbarElement, documentElement) ->
     inputElement = findInputElement(this)
 
     @editorController ?= new Trix.EditorController
