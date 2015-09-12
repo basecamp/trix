@@ -49,10 +49,10 @@ editorTest "element triggers trix-change events when the document changes", (don
           equal eventCount, 5
           done()
 
-editorTest "element triggers selectionchange events when the location range changes", (done) ->
+editorTest "element triggers trix-selectionchange events when the location range changes", (done) ->
   element = getEditorElement()
   eventCount = 0
-  element.addEventListener "selectionchange", (event) -> eventCount++
+  element.addEventListener "trix-selectionchange", (event) -> eventCount++
 
   typeCharacters "a", ->
     equal eventCount, 1

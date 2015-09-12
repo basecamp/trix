@@ -48,7 +48,7 @@ class Trix.EditorElementController extends Trix.Controller
     triggerEvent("trix-sync", onElement: @element)
 
   didChangeSelection: ->
-    triggerEvent("selectionchange", onElement: @element, bubbles: false)
+    triggerEvent("trix-selectionchange", onElement: @element)
 
   didInvokeExternalAction: (actionName) ->
     triggerEvent("trix-action-invoke", onElement: @element, attributes: {actionName})
