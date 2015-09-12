@@ -1,38 +1,29 @@
 #= require trix/models/document
 
-{normalizeRange, rangesAreEqual} = Trix
+{normalizeRange, rangesAreEqual, summarizeArrayChange} = Trix
 
 class Trix.Composition extends Trix.BasicObject
   constructor: ->
     @document = new Trix.Document
+    @attachments = []
     @currentAttributes = {}
 
   setDocument: (document) ->
     unless document.isEqualTo(@document)
       @document = document
+      @refreshAttachments()
       @delegate?.compositionDidChangeDocument(document)
 
   # Snapshots
 
   createSnapshot: ->
-    document: @getDocument()
+    document: @document
     selectedRange: @getSelectedRange()
 
   restoreSnapshot: ({document, selectedRange}) ->
     @setDocument(document)
     @setSelectedRange(selectedRange)
     @delegate?.compositionDidRestoreSnapshot?()
-
-  # Document delegate
-
-  documentDidAddAttachment: (document, attachment) ->
-    @delegate?.compositionDidAddAttachment?(attachment)
-
-  documentDidEditAttachment: (document, attachment) ->
-    @delegate?.compositionDidEditAttachment?(attachment)
-
-  documentDidRemoveAttachment: (document, attachment) ->
-    @delegate?.compositionDidRemoveAttachment?(attachment)
 
   # Responder protocol
 
@@ -405,7 +396,26 @@ class Trix.Composition extends Trix.BasicObject
   # Attachments
 
   getAttachments: ->
-    @document.getAttachments()
+    @attachments.slice(0)
+
+  refreshAttachments: ->
+    attachments = @document.getAttachments()
+    {added, removed} = summarizeArrayChange(@attachments, attachments)
+
+    for attachment in removed
+      attachment.delegate = null
+      @delegate?.compositionDidRemoveAttachment(attachment)
+
+    for attachment in added
+      attachment.delegate = this
+      @delegate?.compositionDidAddAttachment(attachment)
+
+    @attachments = attachments
+
+  # Attachment delegate
+
+  attachmentDidChangeAttributes: (attachment) ->
+    @delegate?.compositionDidEditAttachment(attachment)
 
   # Attachment editing
 
@@ -424,9 +434,6 @@ class Trix.Composition extends Trix.BasicObject
     @editingAttachment?.isPreviewable()
 
   # Private
-
-  getDocument: ->
-    @document
 
   getPreviousBlock: ->
     if locationRange = @getLocationRange()
