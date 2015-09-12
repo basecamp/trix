@@ -39,7 +39,7 @@ Trix.extend
         for name, value of attributes
           el.setAttribute(name, value)
 
-      element.innerHTML
+      element.innerHTML.replace("<!--block-->", "")
 
   deserializers:
     "application/json": (string) ->

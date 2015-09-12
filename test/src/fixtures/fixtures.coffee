@@ -17,6 +17,7 @@ cursorTarget = Trix.makeElement(
   "bold text":
     document: createDocument(["abc", bold: true])
     html: "<div>#{blockComment}<strong>abc</strong></div>"
+    serializedHTML: "<div><strong>abc</strong></div>"
 
   "bold, italic text":
     document: createDocument(["abc", bold: true, italic: true])
@@ -165,7 +166,14 @@ cursorTarget = Trix.makeElement(
     figure.appendChild(image)
     figure.appendChild(caption)
 
+    serializedFigure = figure.cloneNode(true)
+    for attribute in ["data-trix-id", "data-trix-mutable", "data-trix-store-key", "contenteditable"]
+      serializedFigure.removeAttribute(attribute)
+      for element in serializedFigure.querySelectorAll("[#{attribute}]")
+        element.removeAttribute(attribute)
+
     html: "<div>#{blockComment}#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"
+    serializedHTML: "<div>#{serializedFigure.outerHTML}</div>"
     document: new Trix.Document [new Trix.Block text]
 
   "image attachment with edited caption": do ->
