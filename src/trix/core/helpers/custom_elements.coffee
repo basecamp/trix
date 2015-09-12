@@ -1,15 +1,24 @@
+defaults =
+  extendsTagName: "div"
+  css: "%t { display: block; }"
+
 Trix.registerElement = (tagName, definition = {}) ->
   tagName = tagName.toLowerCase()
   properties = rewriteFunctionsAsValues(definition)
 
-  # TODO: Figure out why adding defaultCSS nukes all other styles in demo.css
-  # defaultCSS = properties.defaultCSS ? "%t { display: block }"
-  defaultCSS = "%t { display: block }"
+  extendsTagName = properties.extendsTagName ? defaults.extendsTagName
+  delete properties.extendsTagName
+
+  defaultCSS = properties.defaultCSS
   delete properties.defaultCSS
+
+  if defaultCSS? and extendsTagName is defaults.extendsTagName
+    defaultCSS += "\n#{defaults.css}"
+  else
+    defaultCSS = defaults.css
+
   installDefaultCSSForTagName(defaultCSS, tagName)
 
-  extendsTagName = properties.extendsTagName ? "div"
-  delete properties.extendsTagName
   extendedPrototype = Object.getPrototypeOf(document.createElement(extendsTagName))
   extendedPrototype.__super__ = extendedPrototype
 
