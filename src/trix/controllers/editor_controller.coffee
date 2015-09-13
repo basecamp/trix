@@ -17,6 +17,7 @@ class Trix.EditorController extends Trix.Controller
     @selectionManager.delegate = this
 
     @setEditor(new Trix.Editor @document)
+    @delegate?.didInitialize?()
 
   setEditor: (editor) ->
     return if @editor is editor

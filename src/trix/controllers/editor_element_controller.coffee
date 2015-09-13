@@ -19,6 +19,10 @@ class Trix.EditorElementController extends Trix.Controller
   didChangeDocument: (document) ->
     @documentChangedSinceLastRender = true
 
+  didInitialize: ->
+    requestAnimationFrame =>
+      triggerEvent("trix-initialize", onElement: @element)
+
   didPasteDataAtRange: (pasteData, range) ->
     triggerEvent("trix-paste", onElement: @element, attributes: {pasteData, range})
 
