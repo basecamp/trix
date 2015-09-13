@@ -1,6 +1,5 @@
 #= require trix/elements/trix_toolbar_element
 #= require trix/elements/trix_document_element
-#= require trix/elements/trix_input_element
 #= require trix/controllers/editor_controller
 #= require trix/controllers/editor_element_controller
 
