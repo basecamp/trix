@@ -1,4 +1,5 @@
 {handleEvent, handleEventOnce, triggerEvent, defer} = Trix
+{classNames} = Trix.config.css
 
 Trix.registerElement "trix-document",
   defaultCSS: """
@@ -13,6 +14,16 @@ Trix.registerElement "trix-document",
 
     %t img {
       max-width: 100%;
+    }
+
+    %t .#{classNames.attachment.captionEditor} {
+      resize: none;
+    }
+
+    %t .#{classNames.attachment.captionEditor}.trix-autoresize-clone {
+      position: absolute;
+      left: -9999px;
+      max-height: 0px;
     }
   """
 

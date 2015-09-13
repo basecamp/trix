@@ -43,12 +43,10 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       tagName: "textarea"
       className: classNames.attachment.captionEditor
       attributes: placeholder: lang.captionPlaceholder
-      style: resize: "none"
     textarea.value = @attachmentPiece.getCaption()
 
     textareaClone = textarea.cloneNode()
-    for key, value of { maxHeight: "0px", position: "absolute", left: "-9999px" }
-      textareaClone.style[key] = value
+    textareaClone.classList.add("trix-autoresize-clone")
 
     autoresize = ->
       textareaClone.value = textarea.value
