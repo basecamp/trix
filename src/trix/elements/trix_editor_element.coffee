@@ -52,6 +52,10 @@ Trix.registerElement "trix-editor",
 
     @setAttribute("document", @editorController.document.id)
 
+  value:
+    get: ->
+      findInputElement(this).value
+
 findOrCreateToolbarElement = (parentElement) ->
   unless element = parentElement.querySelector("trix-toolbar")
     element = makeElement("trix-toolbar")
@@ -73,11 +77,14 @@ findOrCreateDocumentElement = (parentElement) ->
 findOrCreateInputElement = (parentElement) ->
   unless element = findInputElement(parentElement)
     name = parentElement.getAttribute("name")
-    value = parentElement.getAttribute("value")
     element = makeElement("input", type: "hidden")
     element.name = name if name?
-    element.value = value if value?
     parentElement.insertBefore(element, null)
+
+  if parentElement.hasAttribute("value")
+    element.value = parentElement.getAttribute("value")
+    parentElement.removeAttribute("value")
+
   element
 
 findInputElement = (parentElement) ->

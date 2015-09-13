@@ -8,7 +8,6 @@ class Trix.EditorElementController extends Trix.Controller
   save: ->
     value = Trix.serializeToContentType(@documentElement, "text/html")
     @inputElement.value = value
-    @element.setAttribute("value", value)
 
   # Editor controller delegate
 
