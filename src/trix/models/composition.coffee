@@ -14,7 +14,7 @@ class Trix.Composition extends Trix.BasicObject
       @document = document
       @refreshAttachments()
       @revision++
-      @delegate?.compositionDidChangeDocument(document)
+      @delegate?.compositionDidChangeDocument?(document)
 
   # Snapshots
 
@@ -406,11 +406,11 @@ class Trix.Composition extends Trix.BasicObject
 
     for attachment in removed
       attachment.delegate = null
-      @delegate?.compositionDidRemoveAttachment(attachment)
+      @delegate?.compositionDidRemoveAttachment?(attachment)
 
     for attachment in added
       attachment.delegate = this
-      @delegate?.compositionDidAddAttachment(attachment)
+      @delegate?.compositionDidAddAttachment?(attachment)
 
     @attachments = attachments
 
@@ -418,7 +418,7 @@ class Trix.Composition extends Trix.BasicObject
 
   attachmentDidChangeAttributes: (attachment) ->
     @revision++
-    @delegate?.compositionDidEditAttachment(attachment)
+    @delegate?.compositionDidEditAttachment?(attachment)
 
   # Attachment editing
 
@@ -426,11 +426,11 @@ class Trix.Composition extends Trix.BasicObject
     return if attachment is @editingAttachment
     @stopEditingAttachment()
     @editingAttachment = attachment
-    @delegate?.compositionDidStartEditingAttachment(@editingAttachment)
+    @delegate?.compositionDidStartEditingAttachment?(@editingAttachment)
 
   stopEditingAttachment: ->
     return unless @editingAttachment
-    @delegate?.compositionDidStopEditingAttachment(@editingAttachment)
+    @delegate?.compositionDidStopEditingAttachment?(@editingAttachment)
     delete @editingAttachment
 
   canEditAttachmentCaption: ->
