@@ -1,4 +1,4 @@
-{handleEvent, handleEventOnce, defer} = Trix
+{handleEvent, handleEventOnce, triggerEvent, defer} = Trix
 
 Trix.registerElement "trix-document",
   defaultCSS: """
@@ -21,7 +21,7 @@ Trix.registerElement "trix-document",
 
   attachedCallback: ->
     defer => autofocus(this)
-    @setAttribute("initialized", "")
+    triggerEvent("trix-element-attached", onElement: this)
 
 autofocus = (element) ->
   unless document.querySelector(":focus")

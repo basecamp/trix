@@ -4,29 +4,43 @@
 #= require trix/controllers/editor_controller
 #= require trix/controllers/editor_element_controller
 
-{makeElement, tagName, defer} = Trix
+{makeElement, tagName, handleEvent, defer} = Trix
+
+requiredChildren = ["trix-document", "trix-toolbar"]
 
 Trix.registerElement "trix-editor",
   createdCallback: ->
+    @attachedChildren = {}
+
+    handleEvent "trix-element-attached", onElement: this, withCallback: (event) =>
+      event.stopPropagation()
+      @attachedChildren[tagName(event.target)] = event.target
+
     findOrCreateInputElement(this)
     findOrCreateToolbarElement(this)
     findOrCreateDocumentElement(this)
 
   attachedCallback: ->
-    initialize = =>
-      toolbarElement = @querySelector("trix-toolbar[initialized]")
-      documentElement = @querySelector("trix-document[initialized]")
-
-      if toolbarElement? and documentElement?
-        @initializeEditorController(toolbarElement, documentElement)
-        true
-
-    defer(initialize) unless initialize()
+    @attachedChildrenReady =>
+      @initializeEditorController()
 
   detachedCallback: ->
     @editorController?.unregisterSelectionManager()
 
-  initializeEditorController: (toolbarElement, documentElement) ->
+  requiredChildrenAttached: ->
+    return false for child in requiredChildren when not @attachedChildren[child]
+    true
+
+  attachedChildrenReady: (callback) ->
+    if @requiredChildrenAttached()
+      callback()
+    else
+      handleEvent "trix-element-attached", onElement: this, withCallback: =>
+        @attachedChildrenReady(callback)
+
+  initializeEditorController: ->
+    documentElement = @attachedChildren["trix-document"]
+    toolbarElement = @attachedChildren["trix-toolbar"]
     inputElement = findInputElement(this)
 
     @editorController ?= new Trix.EditorController

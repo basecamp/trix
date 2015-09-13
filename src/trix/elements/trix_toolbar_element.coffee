@@ -1,4 +1,4 @@
-{makeFragment, cloneFragment} = Trix
+{makeFragment, cloneFragment, triggerEvent} = Trix
 {lang} = Trix.config
 
 Trix.registerElement "trix-toolbar",
@@ -36,8 +36,7 @@ Trix.registerElement "trix-toolbar",
     else
       @toolbarController = new Trix.ToolbarController this
 
-    @setAttribute("initialized", "")
-
+    triggerEvent("trix-element-attached", onElement: this)
 
 defaultHTML = """
   <div class="button_groups">
