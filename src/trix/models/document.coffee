@@ -4,8 +4,6 @@
 
 {arraysAreEqual, normalizeRange, rangeIsCollapsed} = Trix
 
-editOperationLog = Trix.Logger.get("editOperations")
-
 class Trix.Document extends Trix.Object
   @fromJSON: (documentJSON) ->
     blocks = for blockJSON in documentJSON
@@ -19,22 +17,11 @@ class Trix.Document extends Trix.Object
     text = Trix.Text.textForStringWithAttributes(string, textAttributes)
     new this [new Trix.Block text]
 
+
   constructor: (blocks = []) ->
     super
-    @editDepth = 0
-    @editCount = 0
-
-    @blockList = new Trix.SplittableList blocks
-    @ensureDocumentHasBlock()
-
-    @attachments = new Trix.Set
-    @attachments.delegate = this
-
-    @refresh()
-
-  ensureDocumentHasBlock: ->
-    if @blockList.length is 0
-      @blockList = new Trix.SplittableList [new Trix.Block]
+    blocks = [new Trix.Block] if blocks.length is 0
+    @blockList = Trix.SplittableList.box(blocks)
 
   isEmpty: ->
     @blockList.length is 1 and (
@@ -68,62 +55,24 @@ class Trix.Document extends Trix.Object
       block.copyWithAttributes(attributes)
     new @constructor blocks
 
-  edit = (name, fn) -> ->
-    @beginEditing()
-    fn.apply(this, arguments)
-    @ensureDocumentHasBlock()
 
-    editOperationLog.group(name)
-    editOperationLog.log(format(object)...) for object in arguments
-    editOperationLog.groupEnd()
-
-    @endEditing()
-
-  format = (object) ->
-    if (value = object?.toConsole?())?
-      ["%o%c%s%c", object, "color: #888", value, "color: auto"]
-    else if typeof object is "string"
-      ["%s", object]
-    else
-      ["%o", object]
-
-  edit: edit "edit", (fn) -> fn()
-
-  beginEditing: ->
-    if @editDepth++ is 0
-      @editCount++
-
-      editOperationLog.group("Document #{@id}: Edit operation #{@editCount}")
-      editOperationLog.groupCollapsed("Backtrace")
-      editOperationLog.trace()
-      editOperationLog.groupEnd()
-
-    this
-
-  endEditing: ->
-    if --@editDepth is 0
-      @refresh()
-      @delegate?.didEditDocument?(this)
-
-      editOperationLog.groupEnd()
-
-    this
-
-  insertDocumentAtRange: edit "insertDocumentAtRange", (document, range) ->
+  insertDocumentAtRange: (document, range) ->
+    {blockList} = document
     [position] = range = normalizeRange(range)
     {index, offset} = @locationFromPosition(position)
 
+    result = this
     block = @getBlockAtPosition(position)
 
     if rangeIsCollapsed(range) and block.isEmpty() and not block.hasAttributes()
-      @blockList = @blockList.removeObjectAtIndex(index)
+      result = new @constructor result.blockList.removeObjectAtIndex(index)
     else if block.getBlockBreakPosition() is offset
       position++
 
-    @removeTextAtRange(range)
-    @blockList = @blockList.insertSplittableListAtPosition(document.blockList, position)
+    result = result.removeTextAtRange(range)
+    new @constructor result.blockList.insertSplittableListAtPosition(blockList, position)
 
-  mergeDocumentAtRange: edit "mergeDocumentAtRange", (document, range) ->
+  mergeDocumentAtRange: (document, range) ->
     [startPosition] = range = normalizeRange(range)
     startLocation = @locationFromPosition(startPosition)
     blockAttributes = @getBlockAtIndex(startLocation.index).getAttributes()
@@ -141,29 +90,28 @@ class Trix.Document extends Trix.Object
 
     if arraysAreEqual(blockAttributes, firstBlock.getAttributes())
       firstText = firstBlock.getTextWithoutBlockBreak()
-      @insertTextAtRange(firstText, range)
+      result = @insertTextAtRange(firstText, range)
 
       if blockCount > 1
         formattedDocument = new @constructor formattedDocument.getBlocks().slice(1)
         position = startPosition + firstText.getLength()
-        @insertDocumentAtRange(formattedDocument, position)
+        result = result.insertDocumentAtRange(formattedDocument, position)
     else
-      @insertDocumentAtRange(formattedDocument, range)
+      result = @insertDocumentAtRange(formattedDocument, range)
 
-  replaceDocument: edit "replaceDocument", (document) ->
-    @blockList = document.blockList.copy()
+    result
 
-  insertTextAtRange: edit "insertTextAtRange", (text, range) ->
+  insertTextAtRange: (text, range) ->
     [startPosition] = range = normalizeRange(range)
     {index, offset} = @locationFromPosition(startPosition)
 
-    @removeTextAtRange(range)
-    @blockList = @blockList.editObjectAtIndex index, (block) ->
+    document = @removeTextAtRange(range)
+    new @constructor document.blockList.editObjectAtIndex index, (block) ->
       block.copyWithText(block.text.insertTextAtPosition(text, offset))
 
-  removeTextAtRange: edit "removeTextAtRange", (range) ->
+  removeTextAtRange: (range) ->
     [startPosition, endPosition] = range = normalizeRange(range)
-    return if rangeIsCollapsed(range)
+    return this if rangeIsCollapsed(range)
 
     leftLocation = @locationFromPosition(startPosition)
     leftIndex = leftLocation.index
@@ -189,19 +137,19 @@ class Trix.Document extends Trix.Object
     affectedBlockCount = rightIndex + 1 - leftIndex
     blocks.splice(leftIndex, affectedBlockCount, block)
 
-    @blockList = new Trix.SplittableList blocks
+    new @constructor blocks
 
-  moveTextFromRangeToPosition: edit "moveTextFromRangeToPosition", (range, position) ->
+  moveTextFromRangeToPosition: (range, position) ->
     [startPosition, endPosition] = range = normalizeRange(range)
-    return if startPosition <= position <= endPosition
+    return this if startPosition <= position <= endPosition
 
     document = @getDocumentAtRange(range)
-    @removeTextAtRange(range)
+    result = @removeTextAtRange(range)
 
     movingRightward = startPosition < position
     position -= document.getLength() if movingRightward
 
-    unless @firstBlockInRangeIsEntirelySelected(range)
+    unless result.firstBlockInRangeIsEntirelySelected(range)
       [firstBlock, blocks...] = document.getBlocks()
       if blocks.length is 0
         text = firstBlock.getTextWithoutBlockBreak()
@@ -209,17 +157,18 @@ class Trix.Document extends Trix.Object
       else
         text = firstBlock.text
 
-      @insertTextAtRange(text, position)
-      return if blocks.length is 0
+      result = result.insertTextAtRange(text, position)
+      return result if blocks.length is 0
 
-      document = new Trix.Document blocks
+      document = new @constructor blocks
       position += text.getLength()
 
-    @insertDocumentAtRange(document, position)
+    result.insertDocumentAtRange(document, position)
 
-  addAttributeAtRange: edit "addAttributeAtRange", (attribute, value, range) ->
-    @eachBlockAtRange range, (block, textRange, index) =>
-      @blockList = @blockList.editObjectAtIndex index, ->
+  addAttributeAtRange: (attribute, value, range) ->
+    blockList = @blockList
+    @eachBlockAtRange range, (block, textRange, index) ->
+      blockList = blockList.editObjectAtIndex index, ->
         if Trix.config.blockAttributes[attribute]
           block.addAttribute(attribute, value)
         else
@@ -227,59 +176,66 @@ class Trix.Document extends Trix.Object
             block
           else
             block.copyWithText(block.text.addAttributeAtRange(attribute, value, textRange))
+    new @constructor blockList
 
-  addAttribute: edit "addAttribute", (attribute, value) ->
-    @eachBlock (block, index) =>
-      @blockList = @blockList.editObjectAtIndex (index), ->
+  addAttribute: (attribute, value) ->
+    blockList = @blockList
+    @eachBlock (block, index) ->
+      blockList = blockList.editObjectAtIndex (index), ->
         block.addAttribute(attribute, value)
+    new @constructor blockList
 
-  removeAttributeAtRange: edit "removeAttributeAtRange", (attribute, range) ->
-    @eachBlockAtRange range, (block, textRange, index) =>
+  removeAttributeAtRange: (attribute, range) ->
+    blockList = @blockList
+    @eachBlockAtRange range, (block, textRange, index) ->
       if Trix.config.blockAttributes[attribute]
-        @blockList = @blockList.editObjectAtIndex index, ->
+        blockList = blockList.editObjectAtIndex index, ->
           block.removeAttribute(attribute)
       else if textRange[0] isnt textRange[1]
-        @blockList = @blockList.editObjectAtIndex index, ->
+        blockList = blockList.editObjectAtIndex index, ->
           block.copyWithText(block.text.removeAttributeAtRange(attribute, textRange))
+    new @constructor blockList
 
-  updateAttributesForAttachment: edit "updateAttributesForAttachment", (attributes, attachment) ->
+  updateAttributesForAttachment: (attributes, attachment) ->
     [startPosition] = range = @getRangeOfAttachment(attachment)
     {index} = @locationFromPosition(startPosition)
     text = @getTextAtIndex(index)
 
-    @blockList = @blockList.editObjectAtIndex index, (block) ->
+    new @constructor @blockList.editObjectAtIndex index, (block) ->
       block.copyWithText(text.updateAttributesForAttachment(attributes, attachment))
 
-  removeAttributeForAttachment: edit "removeAttributeForAttachment", (attribute, attachment) ->
+  removeAttributeForAttachment: (attribute, attachment) ->
     range = @getRangeOfAttachment(attachment)
     @removeAttributeAtRange(attribute, range)
 
-  insertBlockBreakAtRange: edit "insertBlockBreakAtRange", (range) ->
+  insertBlockBreakAtRange: (range) ->
     [startPosition] = range = normalizeRange(range)
     {offset} = @locationFromPosition(startPosition)
 
-    @removeTextAtRange(range)
+    document = @removeTextAtRange(range)
     blocks = [new Trix.Block] if offset is 0
-    @blockList = @blockList.insertSplittableListAtPosition(new Trix.SplittableList(blocks), startPosition)
+    new @constructor document.blockList.insertSplittableListAtPosition(new Trix.SplittableList(blocks), startPosition)
 
-  applyBlockAttributeAtRange: edit "applyBlockAttributeAtRange", (attributeName, value, range) ->
-    range = @expandRangeToLineBreaksAndSplitBlocks(range)
+  applyBlockAttributeAtRange: (attributeName, value, range) ->
+    {document, range} = @expandRangeToLineBreaksAndSplitBlocks(range)
 
     if Trix.config.blockAttributes[attributeName].listAttribute
-      @removeLastListAttributeAtRange(range, exceptAttributeName: attributeName)
-      range = @convertLineBreaksToBlockBreaksInRange(range)
+      document = document.removeLastListAttributeAtRange(range, exceptAttributeName: attributeName)
+      {document, range} = document.convertLineBreaksToBlockBreaksInRange(range)
     else
-      range = @consolidateBlocksAtRange(range)
+      document = document.consolidateBlocksAtRange(range)
 
-    @addAttributeAtRange(attributeName, value, range)
+    document.addAttributeAtRange(attributeName, value, range)
 
-  removeLastListAttributeAtRange: edit "removeLastListAttributeAtRange", (range, options = {}) ->
-    @eachBlockAtRange range, (block, textRange, index) =>
+  removeLastListAttributeAtRange: (range, options = {}) ->
+    blockList = @blockList
+    @eachBlockAtRange range, (block, textRange, index) ->
       return unless lastAttributeName = block.getLastAttribute()
       return unless Trix.config.blockAttributes[lastAttributeName].listAttribute
       return if lastAttributeName is options.exceptAttributeName
-      @blockList = @blockList.editObjectAtIndex index, ->
+      blockList = blockList.editObjectAtIndex index, ->
         block.removeAttribute(lastAttributeName)
+    new @constructor blockList
 
   firstBlockInRangeIsEntirelySelected: (range) ->
     [startPosition, endPosition] = range = normalizeRange(range)
@@ -298,52 +254,52 @@ class Trix.Document extends Trix.Object
     [startPosition, endPosition] = range = normalizeRange(range)
     startLocation = @locationFromPosition(startPosition)
     endLocation = @locationFromPosition(endPosition)
+    document = this
 
-    @edit =>
-      startBlock = @getBlockAtIndex(startLocation.index)
-      if (startLocation.offset = startBlock.findLineBreakInDirectionFromPosition("backward", startLocation.offset))?
-        position = @positionFromLocation(startLocation)
-        @insertBlockBreakAtRange([position, position + 1])
-        endLocation.index += 1
-        endLocation.offset -= @getBlockAtIndex(startLocation.index).getLength()
-        startLocation.index += 1
-      startLocation.offset = 0
+    startBlock = document.getBlockAtIndex(startLocation.index)
+    if (startLocation.offset = startBlock.findLineBreakInDirectionFromPosition("backward", startLocation.offset))?
+      position = document.positionFromLocation(startLocation)
+      document = document.insertBlockBreakAtRange([position, position + 1])
+      endLocation.index += 1
+      endLocation.offset -= document.getBlockAtIndex(startLocation.index).getLength()
+      startLocation.index += 1
+    startLocation.offset = 0
 
-      if endLocation.offset is 0 and endLocation.index > startLocation.index
-        endLocation.index -= 1
-        endLocation.offset = @getBlockAtIndex(endLocation.index).getBlockBreakPosition()
+    if endLocation.offset is 0 and endLocation.index > startLocation.index
+      endLocation.index -= 1
+      endLocation.offset = document.getBlockAtIndex(endLocation.index).getBlockBreakPosition()
+    else
+      endBlock = document.getBlockAtIndex(endLocation.index)
+      if endBlock.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is "\n"
+        endLocation.offset -= 1
       else
-        endBlock = @getBlockAtIndex(endLocation.index)
-        if endBlock.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is "\n"
-          endLocation.offset -= 1
-        else
-          endLocation.offset = endBlock.findLineBreakInDirectionFromPosition("forward", endLocation.offset)
-        unless endLocation.offset is endBlock.getBlockBreakPosition()
-          position = @positionFromLocation(endLocation)
-          @insertBlockBreakAtRange([position, position + 1])
+        endLocation.offset = endBlock.findLineBreakInDirectionFromPosition("forward", endLocation.offset)
+      unless endLocation.offset is endBlock.getBlockBreakPosition()
+        position = document.positionFromLocation(endLocation)
+        document = document.insertBlockBreakAtRange([position, position + 1])
 
-    startPosition = @positionFromLocation(startLocation)
-    endPosition = @positionFromLocation(endLocation)
-    normalizeRange([startPosition, endPosition])
+    startPosition = document.positionFromLocation(startLocation)
+    endPosition = document.positionFromLocation(endLocation)
+    range = normalizeRange([startPosition, endPosition])
+
+    {document, range}
 
   convertLineBreaksToBlockBreaksInRange: (range) ->
     [position] = range = normalizeRange(range)
     string = @getStringAtRange(range).slice(0, -1)
+    document = this
 
-    @edit =>
-      string.replace /.*?\n/g, (match) =>
-        position += match.length
-        @insertBlockBreakAtRange([position - 1, position])
+    string.replace /.*?\n/g, (match) ->
+      position += match.length
+      document = document.insertBlockBreakAtRange([position - 1, position])
 
-    range
+    {document, range}
 
   consolidateBlocksAtRange: (range) ->
     [startPosition, endPosition] = range = normalizeRange(range)
-    @edit =>
-      startIndex = @locationFromPosition(startPosition).index
-      endIndex = @locationFromPosition(endPosition).index
-      @blockList = @blockList.consolidateFromIndexToIndex(startIndex, endIndex)
-    range
+    startIndex = @locationFromPosition(startPosition).index
+    endIndex = @locationFromPosition(endPosition).index
+    new @constructor @blockList.consolidateFromIndexToIndex(startIndex, endIndex)
 
   getDocumentAtRange: (range) ->
     range = normalizeRange(range)
@@ -473,7 +429,7 @@ class Trix.Document extends Trix.Object
     attributes
 
   getAttachmentById: (attachmentId) ->
-    @attachments.get(attachmentId)
+    return attachment for attachment in @getAttachments() when attachment.id is attachmentId
 
   getAttachmentPieces: ->
     attachmentPieces = []
@@ -562,26 +518,3 @@ class Trix.Document extends Trix.Object
 
   toConsole: ->
     JSON.stringify(JSON.parse(block.text.toConsole()) for block in @blockList.toArray())
-
-  # Attachments collection delegate
-
-  collectionDidAddObject: (collection, object) ->
-    object.delegate ?= this
-    @delegate?.documentDidAddAttachment(this, object)
-
-  collectionDidRemoveObject: (collection, object) ->
-    delete object.delegate if object.delegate is this
-    @delegate?.documentDidRemoveAttachment(this, object)
-
-  # Attachment delegate
-
-  attachmentDidChangeAttributes: (attachment) ->
-    @delegate?.documentDidEditAttachment(this, attachment)
-
-  # Private
-
-  refresh: ->
-    @refreshAttachments()
-
-  refreshAttachments: ->
-    @attachments.refresh(@getAttachments())

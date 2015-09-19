@@ -7,7 +7,7 @@ DEBUG_METHODS =
     uninstall
   "
 
-  "Trix.DocumentController": "
+  "Trix.CompositionController": "
     didClickAttachment
   "
 

@@ -16,11 +16,11 @@
 @getEditor = ->
   getEditorController().editor
 
-@getDocument = ->
-  getEditorController().document
-
 @getComposition = ->
   getEditorController().composition
+
+@getDocument = ->
+  getComposition().document
 
 @getSelectionManager = ->
   getEditorController().selectionManager

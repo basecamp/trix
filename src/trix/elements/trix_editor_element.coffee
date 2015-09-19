@@ -50,8 +50,6 @@ Trix.registerElement "trix-editor",
 
     @editorController.registerSelectionManager()
 
-    @setAttribute("document", @editorController.document.id)
-
   value:
     get: ->
       findInputElement(this).value

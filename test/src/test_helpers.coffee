@@ -139,7 +139,7 @@ for code, name of Trix.InputController.keyNames
   render()
 
 @replaceDocument = (document) ->
-  getDocument().replaceDocument(document)
+  getComposition().setDocument(document)
   render()
 
 prepareEditor = ->

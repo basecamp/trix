@@ -9,4 +9,4 @@ test "deleteInDirection respects UTF-16 character boundaries", ->
   composition.insertString("abc😭")
   composition.deleteInDirection("backward")
   composition.insertString("d")
-  equal composition.getDocument().toString(), "abcd\n"
+  equal composition.document.toString(), "abcd\n"

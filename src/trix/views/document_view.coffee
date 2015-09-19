@@ -13,9 +13,13 @@ class Trix.DocumentView extends Trix.ObjectView
 
   constructor: ->
     super
-    @document = @object
     {@element} = @options
     @elementStore = new Trix.ElementStore
+    @setDocument(@object)
+
+  setDocument: (document) ->
+    unless document.isEqualTo(@document)
+      @document = @object = document
 
   render: ->
     @childViews = []

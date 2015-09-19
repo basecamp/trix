@@ -10,8 +10,7 @@ class Trix.SourcePanelView extends Trix.InspectorPanelView
     {documentKey} = target.dataset
     document = Trix.Document.fromJSON(window.trixDocuments[documentKey])
     @editor.undoManager.recordUndoEntry("Load Document", context: documentKey)
-    @editor.document.replaceDocument(document)
-    @editorController.render()
+    @editor.composition.setDocument(document)
 
   render: ->
     html = ""

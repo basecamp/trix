@@ -1,6 +1,6 @@
 #= require trix/controllers/controller
 #= require trix/controllers/input_controller
-#= require trix/controllers/document_controller
+#= require trix/controllers/composition_controller
 #= require trix/controllers/toolbar_controller
 #= require trix/models/selection_manager
 #= require trix/models/editor
@@ -9,14 +9,14 @@
 
 class Trix.EditorController extends Trix.Controller
   constructor: (@config) ->
-    {@documentElement, @toolbarController, @document, @delegate} = @config
-    @document ?= new Trix.Document
+    {@documentElement, @toolbarController, document, @delegate} = @config
+    document ?= new Trix.Document
     @toolbarController.delegate = this
 
     @selectionManager = new Trix.SelectionManager @documentElement
     @selectionManager.delegate = this
 
-    @setEditor(new Trix.Editor @document)
+    @setEditor(new Trix.Editor document)
     @delegate?.didInitialize?()
 
   setEditor: (editor) ->
@@ -26,11 +26,10 @@ class Trix.EditorController extends Trix.Controller
     @editor.delegate = this
 
     @composition = @editor.composition
-    @document = @composition.document
 
     @selectionManager.delegate = null
     @createInputController()
-    @createDocumentController()
+    @createCompositionController()
     @selectionManager.delegate = this
 
     for managedAttachment in @editor.getAttachments()
@@ -45,7 +44,7 @@ class Trix.EditorController extends Trix.Controller
     @delegate?.didSetEditor?(editor)
 
   loadDocument: (document) ->
-    return if @document is document
+    return if document is @composition.document
     @setEditor(new Trix.Editor document)
 
   registerSelectionManager: ->
@@ -75,7 +74,7 @@ class Trix.EditorController extends Trix.Controller
     @delegate?.didAddAttachment?(managedAttachment)
 
   compositionDidEditAttachment: (attachment) ->
-    @documentController.rerenderViewForObject(attachment)
+    @compositionController.rerenderViewForObject(attachment)
     managedAttachment = @editor.manageAttachment(attachment)
     @delegate?.didEditAttachment?(managedAttachment)
 
@@ -84,22 +83,23 @@ class Trix.EditorController extends Trix.Controller
     @delegate?.didRemoveAttachment?(managedAttachment)
 
   compositionDidStartEditingAttachment: (attachment) ->
-    attachmentRange = @document.getRangeOfAttachment(attachment)
-    @attachmentLocationRange = @document.locationRangeFromRange(attachmentRange)
-    @documentController.installAttachmentEditorForAttachment(attachment)
+    document = @composition.document
+    attachmentRange = document.getRangeOfAttachment(attachment)
+    @attachmentLocationRange = document.locationRangeFromRange(attachmentRange)
+    @compositionController.installAttachmentEditorForAttachment(attachment)
     @selectionManager.setLocationRange(@attachmentLocationRange)
 
   compositionDidStopEditingAttachment: (attachment) ->
-    @documentController.uninstallAttachmentEditor()
+    @compositionController.uninstallAttachmentEditor()
     delete @attachmentLocationRange
 
   compositionDidRequestLocationRange: (locationRange) ->
     @requestedLocationRange = locationRange
-    @editCountWhenLocationRangeRequested = @document.getEditCount()
+    @documentWhenLocationRangeRequested = @composition.document
     @render() unless @handlingInput
 
   compositionDidRestoreSnapshot: ->
-    @documentController.refreshViewCache()
+    @compositionController.refreshViewCache()
     @render()
 
   getSelectionManager: ->
@@ -115,40 +115,40 @@ class Trix.EditorController extends Trix.Controller
 
   # Document controller delegate
 
-  documentControllerWillSyncDocumentView: ->
+  compositionControllerWillSyncDocumentView: ->
     @inputController.editorWillSyncDocumentView()
     @selectionManager.lock()
     @selectionManager.clearSelection()
 
-  documentControllerDidSyncDocumentView: ->
+  compositionControllerDidSyncDocumentView: ->
     @inputController.editorDidSyncDocumentView()
     @selectionManager.unlock()
     @toolbarController.updateActions()
     @delegate?.didSyncDocumentView?()
 
-  documentControllerDidRender: ->
+  compositionControllerDidRender: ->
     if @requestedLocationRange?
-      if @editCountWhenLocationRangeRequested is @document.getEditCount()
+      if @documentWhenLocationRangeRequested.isEqualTo(@composition.document)
         @selectionManager.setLocationRange(@requestedLocationRange)
       @composition.updateCurrentAttributes()
       delete @requestedLocationRange
-      delete @editCountWhenLocationRangeRequested
+      delete @documentWhenLocationRangeRequested
     @delegate?.didRenderDocument?()
 
-  documentControllerDidFocus: ->
+  compositionControllerDidFocus: ->
     @toolbarController.hideDialog()
 
-  documentControllerDidSelectAttachment: (attachment) ->
+  compositionControllerDidSelectAttachment: (attachment) ->
     @composition.editAttachment(attachment)
 
-  documentControllerDidRequestDeselectingAttachment: (attachment) ->
+  compositionControllerDidRequestDeselectingAttachment: (attachment) ->
     if @attachmentLocationRange
       @selectionManager.setLocationRange(@attachmentLocationRange[1])
 
-  documentControllerWillUpdateAttachment: (attachment) ->
+  compositionControllerWillUpdateAttachment: (attachment) ->
     @editor.recordUndoEntry("Edit Attachment", context: attachment.id, consolidatable: true)
 
-  documentControllerDidRequestRemovalOfAttachment: (attachment) ->
+  compositionControllerDidRequestRemovalOfAttachment: (attachment) ->
     @removeAttachment(attachment)
 
   # Input controller delegate
@@ -231,7 +231,7 @@ class Trix.EditorController extends Trix.Controller
       perform: -> @composition.decreaseBlockAttributeLevel() and @render()
     editCaption:
       test: -> @composition.canEditAttachmentCaption()
-      perform: -> @documentController.editAttachmentCaption()
+      perform: -> @compositionController.editAttachmentCaption()
 
   toolbarDidClickButton: ->
     @setLocationRange(index: 0, offset: 0) unless @getLocationRange()
@@ -252,19 +252,19 @@ class Trix.EditorController extends Trix.Controller
     @recordFormattingUndoEntry()
     @composition.toggleCurrentAttribute(attributeName)
     @render()
-    @documentController.focus()
+    @compositionController.focus()
 
   toolbarDidUpdateAttribute: (attributeName, value) ->
     @recordFormattingUndoEntry()
     @composition.setCurrentAttribute(attributeName, value)
     @render()
-    @documentController.focus()
+    @compositionController.focus()
 
   toolbarDidRemoveAttribute: (attributeName) ->
     @recordFormattingUndoEntry()
     @composition.removeCurrentAttribute(attributeName)
     @render()
-    @documentController.focus()
+    @compositionController.focus()
 
   toolbarWillShowDialog: (dialogElement) ->
     @composition.expandSelectionForEditing()
@@ -274,7 +274,7 @@ class Trix.EditorController extends Trix.Controller
     @delegate?.didShowToolbarDialog?(dialogElement)
 
   toolbarDidHideDialog: (dialogElement) ->
-    @documentController.focus()
+    @compositionController.focus()
     @thawSelection()
     @delegate?.didHideToolbarDialog?(dialogElement)
 
@@ -312,17 +312,17 @@ class Trix.EditorController extends Trix.Controller
       @inputController.delegate = this
     @inputController.responder = @composition
 
-  createDocumentController: ->
-    delete @documentController?.delegate
-    @documentController = new Trix.DocumentController @documentElement, @document
-    @documentController.delegate = this
+  createCompositionController: ->
+    delete @compositionController?.delegate
+    @compositionController = new Trix.CompositionController @documentElement, @composition
+    @compositionController.delegate = this
     @render()
 
   reparse: ->
     @composition.replaceHTML(@documentElement.innerHTML)
 
   render: ->
-    @documentController.render()
+    @compositionController.render()
 
   removeAttachment: (attachment) ->
     @editor.recordUndoEntry("Delete Attachment")

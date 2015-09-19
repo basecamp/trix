@@ -11,17 +11,18 @@ class Trix.Editor extends Trix.Object
     locationRange = normalizeRange(json.locationRange)
     new this document, locationRange
 
-  constructor: (@document, @locationRange) ->
-    @composition = new Trix.Composition @document
+  constructor: (document, @locationRange) ->
+    @composition = new Trix.Composition
     @composition.delegate = this
+    @composition.setDocument(document)
 
-    @attachmentManager = new Trix.AttachmentManager @document.getAttachments()
+    @attachmentManager = new Trix.AttachmentManager @composition.getAttachments()
     @attachmentManager.delegate = this
 
     @undoManager = new Trix.UndoManager @composition
 
   toJSON: ->
-    document: @document.toSerializableDocument()
+    document: @composition.document.toSerializableDocument()
     locationRange: @locationRange
 
   # Forward attachment manager

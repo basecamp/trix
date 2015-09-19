@@ -5,9 +5,9 @@
 
 {attachmentSelector} = Trix.AttachmentView
 
-class Trix.DocumentController extends Trix.BasicObject
-  constructor: (@element, @document) ->
-    @documentView = new Trix.DocumentView @document, {@element}
+class Trix.CompositionController extends Trix.BasicObject
+  constructor: (@element, @composition) ->
+    @documentView = new Trix.DocumentView @composition.document, {@element}
 
     handleEvent "focus", onElement: @element, withCallback: @didFocus
     handleEvent "click", onElement: @element, matchingSelector: "a[contenteditable=false]", preventDefault: true
@@ -15,22 +15,25 @@ class Trix.DocumentController extends Trix.BasicObject
     handleEvent "click", onElement: @element, matchingSelector: "a#{attachmentSelector}", preventDefault: true
 
   didFocus: =>
-    @delegate?.documentControllerDidFocus?()
+    @delegate?.compositionControllerDidFocus?()
 
   didClickAttachment: (event, target) =>
     attachment = @findAttachmentForElement(target)
-    @delegate?.documentControllerDidSelectAttachment?(attachment)
+    @delegate?.compositionControllerDidSelectAttachment?(attachment)
 
-  render: benchmark "DocumentController#render", ->
-    @documentView.render()
+  render: benchmark "CompositionController#render", ->
+    unless @revision is @composition.revision
+      @documentView.setDocument(@composition.document)
+      @documentView.render()
+      @revision = @composition.revision
 
     unless @documentView.isSynced()
-      @delegate?.documentControllerWillSyncDocumentView?()
+      @delegate?.compositionControllerWillSyncDocumentView?()
       @documentView.sync()
       @reinstallAttachmentEditor()
-      @delegate?.documentControllerDidSyncDocumentView?()
+      @delegate?.compositionControllerDidSyncDocumentView?()
 
-    @delegate?.documentControllerDidRender?()
+    @delegate?.compositionControllerDidRender?()
 
   rerenderViewForObject: (object) ->
     @documentView.invalidateViewForObject(object)
@@ -57,7 +60,7 @@ class Trix.DocumentController extends Trix.BasicObject
     return if @attachmentEditor?.attachment is attachment
     return unless element = @documentView.findElementForObject(attachment)
     @uninstallAttachmentEditor()
-    attachmentPiece = @document.getAttachmentPieceForAttachment(attachment)
+    attachmentPiece = @composition.document.getAttachmentPieceForAttachment(attachment)
     @attachmentEditor = new Trix.AttachmentEditorController attachmentPiece, element, @element
     @attachmentEditor.delegate = this
 
@@ -80,20 +83,20 @@ class Trix.DocumentController extends Trix.BasicObject
     @render()
 
   attachmentEditorDidRequestUpdatingAttributesForAttachment: (attributes, attachment) ->
-    @delegate?.documentControllerWillUpdateAttachment?(attachment)
-    @document.updateAttributesForAttachment(attributes, attachment)
+    @delegate?.compositionControllerWillUpdateAttachment?(attachment)
+    @composition.document.updateAttributesForAttachment(attributes, attachment)
 
   attachmentEditorDidRequestRemovingAttributeForAttachment: (attribute, attachment) ->
-    @delegate?.documentControllerWillUpdateAttachment?(attachment)
-    @document.removeAttributeForAttachment(attribute, attachment)
+    @delegate?.compositionControllerWillUpdateAttachment?(attachment)
+    @composition.document.removeAttributeForAttachment(attribute, attachment)
 
   attachmentEditorDidRequestRemovalOfAttachment: (attachment) ->
-    @delegate?.documentControllerDidRequestRemovalOfAttachment?(attachment)
+    @delegate?.compositionControllerDidRequestRemovalOfAttachment?(attachment)
 
   attachmentEditorDidRequestDeselectingAttachment: (attachment) ->
-    @delegate?.documentControllerDidRequestDeselectingAttachment?(attachment)
+    @delegate?.compositionControllerDidRequestDeselectingAttachment?(attachment)
 
   # Private
 
   findAttachmentForElement: (element) ->
-    @document.getAttachmentById(Number(element.dataset.trixId))
+    @composition.document.getAttachmentById(parseInt(element.dataset.trixId, 10))
