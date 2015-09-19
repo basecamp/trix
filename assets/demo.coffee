@@ -7,64 +7,63 @@
 
 {handleEvent, defer} = Trix
 
-addEventListener "DOMContentLoaded", ->
-  defer ->
-    editorElement = document.querySelector("trix-editor")
-    documentElement = document.querySelector("trix-document")
+document.addEventListener "trix-initialize", ->
+  editorElement = document.querySelector("trix-editor")
+  documentElement = document.querySelector("trix-document")
 
-    documentElement.recorder = new Trix.Watchdog.Recorder documentElement
-    documentElement.recorder.start()
+  documentElement.recorder = new Trix.Watchdog.Recorder documentElement
+  documentElement.recorder.start()
 
-    inspectorElement = document.querySelector("#inspector")
-    inspectorController = new Trix.InspectorController inspectorElement, editorElement.editorController
-    inspectorElement.style.visibility = "visible"
+  inspectorElement = document.querySelector("#inspector")
+  inspectorController = new Trix.InspectorController inspectorElement, editorElement.editorController
+  inspectorElement.style.visibility = "visible"
 
-    handleEvent "selectionchange", onElement: editorElement, withCallback: ->
-      inspectorController.render()
+  handleEvent "selectionchange", onElement: editorElement, withCallback: ->
+    inspectorController.render()
 
-    handleEvent "trix-render", onElement: editorElement, withCallback: ->
-      inspectorController.incrementRenderCount()
-      inspectorController.render()
+  handleEvent "trix-render", onElement: editorElement, withCallback: ->
+    inspectorController.incrementRenderCount()
+    inspectorController.render()
 
-    handleEvent "trix-sync", onElement: editorElement, withCallback: ->
-      inspectorController.incrementSyncCount()
-      inspectorController.render()
+  handleEvent "trix-sync", onElement: editorElement, withCallback: ->
+    inspectorController.incrementSyncCount()
+    inspectorController.render()
 
-    handleEvent "trix-attachment-add", onElement: editorElement, withCallback: (event) ->
-      {attachment} = event
-      console.log "HOST: attachment added", attachment
-      if attachment.file
-        uploadAttachment(attachment)
-      else
-        saveAttachment(attachment)
+  handleEvent "trix-attachment-add", onElement: editorElement, withCallback: (event) ->
+    {attachment} = event
+    console.log "HOST: attachment added", attachment
+    if attachment.file
+      uploadAttachment(attachment)
+    else
+      saveAttachment(attachment)
 
-    handleEvent "trix-attachment-remove", onElement: editorElement, withCallback: (event) ->
-      {attachment} = event
-      console.log "HOST: attachment removed", attachment
-      removeAttachment(attachment)
+  handleEvent "trix-attachment-remove", onElement: editorElement, withCallback: (event) ->
+    {attachment} = event
+    console.log "HOST: attachment removed", attachment
+    removeAttachment(attachment)
 
-    handleEvent "trix-paste", onElement: editorElement, withCallback: (event) ->
-      {range} = event
-      {document, editor} = @editorController
+  handleEvent "trix-paste", onElement: editorElement, withCallback: (event) ->
+    {range} = event
+    {document, editor} = @editorController
 
-      unless document.getCommonAttributesAtRange(range).href
-        fragment = document.getDocumentAtRange(range)
-        value = fragment.toString().slice(0, -1)
+    unless document.getCommonAttributesAtRange(range).href
+      fragment = document.getDocumentAtRange(range)
+      value = fragment.toString().slice(0, -1)
 
-        if isURL(value)
-          editor.recordUndoEntry("Link Pasted URL")
-          document.addAttributeAtRange("href", value, range)
+      if isURL(value)
+        editor.recordUndoEntry("Link Pasted URL")
+        document.addAttributeAtRange("href", value, range)
 
-    form = document.querySelector("form#submit-trix-content")
-    handleEvent "submit", onElement: form, withCallback: (event) ->
-      event.preventDefault()
-      data = new FormData form
-      xhr = new XMLHttpRequest
-      xhr.open("POST", "/submit", true)
-      xhr.onload = ->
-        if xhr.status is 200
-          console.log "Form data submit:", JSON.parse(xhr.responseText)
-      xhr.send(data)
+  form = document.querySelector("form#submit-trix-content")
+  handleEvent "submit", onElement: form, withCallback: (event) ->
+    event.preventDefault()
+    data = new FormData form
+    xhr = new XMLHttpRequest
+    xhr.open("POST", "/submit", true)
+    xhr.onload = ->
+      if xhr.status is 200
+        console.log "Form data submit:", JSON.parse(xhr.responseText)
+    xhr.send(data)
 
 saveAttachment = (attachment) ->
   item = document.createElement("li")

@@ -1,9 +1,8 @@
-{handleEvent, handleEventOnce, defer} = Trix
+{handleEvent, handleEventOnce, triggerEvent, defer} = Trix
+{classNames} = Trix.config.css
 
-Trix.defineElement class extends Trix.Element
-  @tagName: "trix-document"
-
-  @defaultCSS: """
+Trix.registerElement "trix-document",
+  defaultCSS: """
     %t:empty:not(:focus)::before {
       content: attr(placeholder);
       color: graytext;
@@ -16,35 +15,46 @@ Trix.defineElement class extends Trix.Element
     %t img {
       max-width: 100%;
     }
+
+    %t .#{classNames.attachment.captionEditor} {
+      resize: none;
+    }
+
+    %t .#{classNames.attachment.captionEditor}.trix-autoresize-clone {
+      position: absolute;
+      left: -9999px;
+      max-height: 0px;
+    }
   """
 
   createdCallback: ->
-    super
     makeEditable(this)
 
   attachedCallback: ->
-    super
-    defer =>
-      unless document.querySelector(":focus")
-        if @hasAttribute("autofocus") and document.querySelector("[autofocus]") is this
-          @focus()
+    defer => autofocus(this)
+    triggerEvent("trix-element-attached", onElement: this)
 
-  makeEditable = (element) ->
-    return if element.hasAttribute("contenteditable")
-    element.setAttribute("contenteditable", "")
-    handleEventOnce("focus", onElement: element, withCallback: -> configureContentEditable(element))
+autofocus = (element) ->
+  unless document.querySelector(":focus")
+    if element.hasAttribute("autofocus") and document.querySelector("[autofocus]") is element
+      element.focus()
 
-  configureContentEditable = (element) ->
-    disableObjectResizing(element)
-    setDefaultParagraphSeparator(element)
+makeEditable = (element) ->
+  return if element.hasAttribute("contenteditable")
+  element.setAttribute("contenteditable", "")
+  handleEventOnce("focus", onElement: element, withCallback: -> configureContentEditable(element))
 
-  disableObjectResizing = (element) ->
-    if document.queryCommandSupported?("enableObjectResizing")
-      document.execCommand("enableObjectResizing", false, false)
-      handleEvent("mscontrolselect", onElement: element, preventDefault: true)
+configureContentEditable = (element) ->
+  disableObjectResizing(element)
+  setDefaultParagraphSeparator(element)
 
-  setDefaultParagraphSeparator = (element) ->
-    if document.queryCommandSupported?("DefaultParagraphSeparator")
-      {tagName} = Trix.config.blockAttributes.default
-      if tagName in ["div", "p"]
-        document.execCommand("DefaultParagraphSeparator", false, tagName)
+disableObjectResizing = (element) ->
+  if document.queryCommandSupported?("enableObjectResizing")
+    document.execCommand("enableObjectResizing", false, false)
+    handleEvent("mscontrolselect", onElement: element, preventDefault: true)
+
+setDefaultParagraphSeparator = (element) ->
+  if document.queryCommandSupported?("DefaultParagraphSeparator")
+    {tagName} = Trix.config.blockAttributes.default
+    if tagName in ["div", "p"]
+      document.execCommand("DefaultParagraphSeparator", false, tagName)

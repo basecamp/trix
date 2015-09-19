@@ -8,7 +8,6 @@ class Trix.EditorElementController extends Trix.Controller
   save: ->
     value = Trix.serializeToContentType(@documentElement, "text/html")
     @inputElement.value = value
-    @element.setAttribute("value", value)
 
   # Editor controller delegate
 
@@ -18,6 +17,10 @@ class Trix.EditorElementController extends Trix.Controller
 
   didChangeDocument: (document) ->
     @documentChangedSinceLastRender = true
+
+  didInitialize: ->
+    requestAnimationFrame =>
+      triggerEvent("trix-initialize", onElement: @element)
 
   didPasteDataAtRange: (pasteData, range) ->
     triggerEvent("trix-paste", onElement: @element, attributes: {pasteData, range})

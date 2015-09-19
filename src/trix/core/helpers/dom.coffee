@@ -1,5 +1,4 @@
 #= require_self
-#= require trix/elements/element
 
 html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector
@@ -132,12 +131,6 @@ Trix.extend
       element.textContent = options.textContent
 
     element
-
-  defineElement: (constructor) ->
-    tagName = constructor.tagName
-    constructorName = Trix.convertDashesToCamelCase(tagName, initial: true) + "Element"
-    registeredConstructor = document.registerElement(tagName, prototype: constructor.prototype, extends: constructor.extends)
-    window[constructorName] = Trix.extend.call(registeredConstructor, constructor)
 
   cloneFragment: (sourceFragment) ->
     fragment = document.createDocumentFragment()

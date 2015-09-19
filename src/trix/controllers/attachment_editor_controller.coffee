@@ -39,24 +39,35 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     undo: => @element.removeChild(removeButton)
 
   editCaption: undoable ->
-    input = document.createElement("textarea", "trix-input")
-    input.setAttribute("placeholder", lang.captionPlaceholder)
-    input.classList.add(classNames.attachment.captionEditor)
-    input.value = @attachmentPiece.getCaption()
+    textarea = makeElement
+      tagName: "textarea"
+      className: classNames.attachment.captionEditor
+      attributes: placeholder: lang.captionPlaceholder
+    textarea.value = @attachmentPiece.getCaption()
 
-    handleEvent("keydown", onElement: input, withCallback: @didKeyDownCaption)
-    handleEvent("change", onElement: input, withCallback: @didChangeCaption)
-    handleEvent("blur", onElement: input, withCallback: @uninstall)
+    textareaClone = textarea.cloneNode()
+    textareaClone.classList.add("trix-autoresize-clone")
+
+    autoresize = ->
+      textareaClone.value = textarea.value
+      textarea.style.height = textareaClone.scrollHeight + "px"
+
+    handleEvent("input", onElement: textarea, withCallback: autoresize)
+    handleEvent("keydown", onElement: textarea, withCallback: @didKeyDownCaption)
+    handleEvent("change", onElement: textarea, withCallback: @didChangeCaption)
+    handleEvent("blur", onElement: textarea, withCallback: @uninstall)
 
     figcaption = @element.querySelector("figcaption")
     editingFigcaption = figcaption.cloneNode()
 
     do: ->
       figcaption.style.display = "none"
-      editingFigcaption.appendChild(input)
+      editingFigcaption.appendChild(textarea)
+      editingFigcaption.appendChild(textareaClone)
       editingFigcaption.classList.add(classNames.attachment.editingCaption)
       figcaption.parentElement.insertBefore(editingFigcaption, figcaption)
-      input.focus()
+      autoresize()
+      textarea.focus()
     undo: ->
       editingFigcaption.parentNode.removeChild(editingFigcaption)
       figcaption.style.display = null

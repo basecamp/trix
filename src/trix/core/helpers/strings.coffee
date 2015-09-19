@@ -4,15 +4,6 @@ Trix.extend
       .replace(///#{Trix.ZERO_WIDTH_SPACE}///g, "")
       .replace(///#{Trix.NON_BREAKING_SPACE}///g, " ")
 
-  convertDashesToCamelCase: (string, {initial} = {}) ->
-    if initial
-      pattern = initialDashesToCamelCasePattern
-    else
-      pattern = trailingDashesToCamelCasePattern
-
-    string.replace pattern, (match) ->
-      match.toString().slice(-1).toUpperCase()
-
   summarizeStringChange: (oldString, newString) ->
     oldString = Trix.UTF16String.box(oldString)
     newString = Trix.UTF16String.box(newString)
@@ -23,9 +14,6 @@ Trix.extend
       [added, removed] = utf16StringDifferences(newString, oldString)
 
     {added, removed}
-
-trailingDashesToCamelCasePattern = /-[a-z]/g
-initialDashesToCamelCasePattern = /^[a-z]|-[a-z]/g
 
 utf16StringDifferences = (a, b) ->
   return ["", ""] if a.isEqualTo(b)

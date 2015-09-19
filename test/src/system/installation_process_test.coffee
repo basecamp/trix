@@ -9,7 +9,7 @@ editorTest "creates a contenteditable element", ->
 editorTest "loads the initial document", ->
   equal getDocumentElement().textContent, "Hello world"
 
-editorTest "sets value attribute", (done) ->
+editorTest "sets value property", (done) ->
   defer ->
-    equal getEditorElement().getAttribute("value"), "<div>Hello world</div>"
+    equal getEditorElement().value, "<div>Hello world</div>"
     done()
