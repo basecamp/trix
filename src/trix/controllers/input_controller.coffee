@@ -364,7 +364,7 @@ class Trix.InputController extends Trix.BasicObject
     types["Files"] or types["application/x-trix-document"] or types["text/html"] or types["text/plain"]
 
   getPastedHTMLUsingHiddenElement: (callback) ->
-    locationRange = @responder?.getLocationRange()
+    selectedRange = @responder?.getSelectedRange()
 
     element = makeElement(tagName: "div", editable: true, style: { position: "absolute", left: "-9999px" })
     document.body.appendChild(element)
@@ -373,7 +373,7 @@ class Trix.InputController extends Trix.BasicObject
     requestAnimationFrame =>
       html = element.innerHTML
       document.body.removeChild(element)
-      @responder?.setSelectionForLocationRange(locationRange)
+      @responder?.immediatelySetSelectedRange(selectedRange)
       callback(html)
 
   @proxyMethod "responder?.expandSelectionInDirection"

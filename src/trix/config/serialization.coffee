@@ -3,6 +3,8 @@ unserializableAttributeNames = ["contenteditable", "data-trix-id", "data-trix-st
 serializedAttributesAttribute = "data-trix-serialized-attributes"
 serializedAttributesSelector = "[#{serializedAttributesAttribute}]"
 
+blockCommentPattern = new RegExp("<!--block-->", "g")
+
 Trix.extend
   serializers:
     "application/json": (serializable) ->
@@ -39,7 +41,7 @@ Trix.extend
         for name, value of attributes
           el.setAttribute(name, value)
 
-      element.innerHTML
+      element.innerHTML.replace(blockCommentPattern, "")
 
   deserializers:
     "application/json": (string) ->

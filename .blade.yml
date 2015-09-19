@@ -12,10 +12,9 @@ plugins:
   sauce_labs:
     browsers:
       chrome:
-        platform: ["Mac", "Windows"]
+        os: Mac, Windows
       safari:
-        platform: ["Mac"]
+        platform: Mac
       firefox:
-        platform: ["Mac", "Windows"]
+        platform: Mac, Windows
       ie:
-        platform: ["Windows"]

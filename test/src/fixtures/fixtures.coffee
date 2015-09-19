@@ -17,6 +17,7 @@ cursorTarget = Trix.makeElement(
   "bold text":
     document: createDocument(["abc", bold: true])
     html: "<div>#{blockComment}<strong>abc</strong></div>"
+    serializedHTML: "<div><strong>abc</strong></div>"
 
   "bold, italic text":
     document: createDocument(["abc", bold: true, italic: true])
@@ -99,6 +100,11 @@ cursorTarget = Trix.makeElement(
     document: createDocument(["12\n3", {}, ["code"]])
     html: "<pre>#{blockComment}12\n3</pre>"
 
+  "multiple blocks with block comments in their text":
+    document: createDocument(["a#{blockComment}b", {}, ["quote"]], ["#{blockComment}c", {}, ["code"]])
+    html: "<blockquote>#{blockComment}a&lt;!--block--&gt;b</blockquote><pre>#{blockComment}&lt;!--block--&gt;c</pre>"
+    serializedHTML: "<blockquote>a&lt;!--block--&gt;b</blockquote><pre>&lt;!--block--&gt;c</pre>"
+
   "unordered list with one item":
     document: createDocument(["a", {}, ["bulletList", "bullet"]])
     html: "<ul><li>#{blockComment}a</li></ul>"
@@ -141,7 +147,7 @@ cursorTarget = Trix.makeElement(
 
   "image attachment": do ->
     imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
-    attrs = url: imageData, filename: "example.png", filesize: "123", contentType: "image/png", width: 1, height: 1
+    attrs = url: imageData, filename: "example.png", filesize: 98203, contentType: "image/png", width: 1, height: 1
     attachment = new Trix.Attachment attrs
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
@@ -149,7 +155,7 @@ cursorTarget = Trix.makeElement(
     image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, "data-trix-store-key": key, width: 1, height: 1)
 
     caption = Trix.makeElement(tagName: "figcaption", className: "attachment__caption")
-    caption.innerHTML = """#{attrs.filename}<span class="attachment__size">#{attrs.filesize}</span>"""
+    caption.innerHTML = """#{attrs.filename}<span class="attachment__size">95.9 KB</span>"""
 
     figure = Trix.makeElement
       tagName: "figure"
@@ -165,12 +171,19 @@ cursorTarget = Trix.makeElement(
     figure.appendChild(image)
     figure.appendChild(caption)
 
+    serializedFigure = figure.cloneNode(true)
+    for attribute in ["data-trix-id", "data-trix-mutable", "data-trix-store-key", "contenteditable"]
+      serializedFigure.removeAttribute(attribute)
+      for element in serializedFigure.querySelectorAll("[#{attribute}]")
+        element.removeAttribute(attribute)
+
     html: "<div>#{blockComment}#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"
+    serializedHTML: "<div>#{serializedFigure.outerHTML}</div>"
     document: new Trix.Document [new Trix.Block text]
 
   "image attachment with edited caption": do ->
     imageData = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
-    attrs = url: imageData, filename: "example.png", filesize: "123", contentType: "image/png", width: 1, height: 1
+    attrs = url: imageData, filename: "example.png", filesize: 123, contentType: "image/png", width: 1, height: 1
     attachment = new Trix.Attachment attrs
     textAttrs = caption: "Example"
     text = Trix.Text.textForAttachmentWithAttributes(attachment, textAttrs)
@@ -199,7 +212,7 @@ cursorTarget = Trix.makeElement(
     document: new Trix.Document [new Trix.Block text]
 
   "file attachment": do ->
-    attrs = href: "http://example.com/example.pdf", filename: "example.pdf", filesize: "345", contentType: "application/pdf"
+    attrs = href: "http://example.com/example.pdf", filename: "example.pdf", filesize: 34038769, contentType: "application/pdf"
     attachment = new Trix.Attachment attrs
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
@@ -217,7 +230,7 @@ cursorTarget = Trix.makeElement(
     link.setAttribute("contenteditable", false)
     link.appendChild(figure)
 
-    caption = """<figcaption class="attachment__caption">#{attrs.filename}<span class="attachment__size">#{attrs.filesize}</span></figcaption>"""
+    caption = """<figcaption class="attachment__caption">#{attrs.filename}<span class="attachment__size">32.46 MB</span></figcaption>"""
     figure.innerHTML = caption
 
     html: """<div>#{blockComment}#{cursorTarget}#{link.outerHTML}#{cursorTarget}</div>"""

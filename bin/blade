@@ -13,4 +13,4 @@ ENV['BUNDLE_GEMFILE'] ||= File.expand_path("../../Gemfile",
 require 'rubygems'
 require 'bundler/setup'
 
-load Gem.bin_path('blade_runner', 'blade')
+load Gem.bin_path('blade', 'blade')

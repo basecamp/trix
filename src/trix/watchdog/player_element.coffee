@@ -1,10 +1,8 @@
 #= require trix/watchdog/recording
 #= require trix/watchdog/player_controller
 
-Trix.defineElement class extends Trix.Element
-  @tagName: "trix-watchdog-player"
-
-  @defaultCSS: """
+Trix.registerElement "trix-watchdog-player",
+  defaultCSS: """
     %t > div { display: -webkit-flex; display: flex; font-size: 14px; margin: 10px 0 }
     %t > div > button { width: 65px }
     %t > div > input { width: 100%; -webkit-align-self: stretch; align-self: stretch; margin: 0 20px }

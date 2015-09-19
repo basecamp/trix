@@ -1,79 +1,89 @@
 #= require trix/elements/trix_toolbar_element
 #= require trix/elements/trix_document_element
-#= require trix/elements/trix_input_element
 #= require trix/controllers/editor_controller
 #= require trix/controllers/editor_element_controller
 
-{makeElement, tagName} = Trix
+{makeElement, tagName, handleEvent, defer} = Trix
 
-Trix.defineElement class extends Trix.Element
-  @tagName: "trix-editor"
+requiredChildren = ["trix-document", "trix-toolbar"]
 
+Trix.registerElement "trix-editor",
   createdCallback: ->
-    super
-    @setAttribute("content-type", "text/html") unless @getAttribute("content-type")
+    @attachedChildren = {}
+
+    handleEvent "trix-element-attached", onElement: this, withCallback: (event) =>
+      event.stopPropagation()
+      @attachedChildren[tagName(event.target)] = event.target
+
     findOrCreateInputElement(this)
     findOrCreateToolbarElement(this)
     findOrCreateDocumentElement(this)
 
   attachedCallback: ->
-    super
-    @initializeEditorController()
-
-  childAttachedCallback: (element) ->
-    super
-    @attachedChildren ?= {}
-    @attachedChildren[tagName(element)] = element
-    @initializeEditorController()
+    @attachedChildrenReady =>
+      @initializeEditorController()
 
   detachedCallback: ->
-    super
     @editorController?.unregisterSelectionManager()
-    delete @attachedChildren
+
+  requiredChildrenAttached: ->
+    return false for child in requiredChildren when not @attachedChildren[child]
+    true
+
+  attachedChildrenReady: (callback) ->
+    if @requiredChildrenAttached()
+      callback()
+    else
+      handleEvent "trix-element-attached", onElement: this, withCallback: =>
+        @attachedChildrenReady(callback)
 
   initializeEditorController: ->
-    toolbarElement = @attachedChildren?["trix-toolbar"]
-    documentElement = @attachedChildren?["trix-document"]
-    return unless toolbarElement? and documentElement?
-
-    contentType = @getAttribute("content-type")
+    documentElement = @attachedChildren["trix-document"]
+    toolbarElement = @attachedChildren["trix-toolbar"]
     inputElement = findInputElement(this)
 
     @editorController ?= new Trix.EditorController
       toolbarController: toolbarElement.toolbarController
       documentElement: documentElement
-      document: Trix.deserializeFromContentType(inputElement.value, contentType)
+      document: Trix.deserializeFromContentType(inputElement.value, "text/html")
       delegate: new Trix.EditorElementController this, documentElement, inputElement
 
     @editorController.registerSelectionManager()
 
-  findOrCreateToolbarElement = (parentElement) ->
-    unless element = parentElement.querySelector("trix-toolbar")
-      element = makeElement("trix-toolbar")
-      parentElement.insertBefore(element, parentElement.firstChild)
-    element
+  value:
+    get: ->
+      findInputElement(this).value
 
-  findOrCreateDocumentElement = (parentElement) ->
-    unless element = parentElement.querySelector("trix-document")
-      element = makeElement("trix-document")
-      if parentElement.hasAttribute("autofocus")
-        parentElement.removeAttribute("autofocus")
-        element.setAttribute("autofocus", "")
-      if placeholder = parentElement.getAttribute("placeholder")
-        parentElement.removeAttribute("placeholder")
-        element.setAttribute("placeholder", placeholder)
-      parentElement.insertBefore(element, null)
-    element
+findOrCreateToolbarElement = (parentElement) ->
+  unless element = parentElement.querySelector("trix-toolbar")
+    element = makeElement("trix-toolbar")
+    parentElement.insertBefore(element, parentElement.firstChild)
+  element
 
-  findOrCreateInputElement = (parentElement) ->
-    unless element = findInputElement(parentElement)
-      name = parentElement.getAttribute("name")
-      value = parentElement.getAttribute("value")
-      element = makeElement("input", type: "hidden")
-      element.name = name if name?
-      element.value = value if value?
-      parentElement.insertBefore(element, null)
-    element
+findOrCreateDocumentElement = (parentElement) ->
+  unless element = parentElement.querySelector("trix-document")
+    element = makeElement("trix-document")
+    if parentElement.hasAttribute("autofocus")
+      parentElement.removeAttribute("autofocus")
+      element.setAttribute("autofocus", "")
+    if placeholder = parentElement.getAttribute("placeholder")
+      parentElement.removeAttribute("placeholder")
+      element.setAttribute("placeholder", placeholder)
+    parentElement.insertBefore(element, null)
+  element
 
-  findInputElement = (parentElement) ->
-    parentElement.querySelector("input[type=hidden]")
+findOrCreateInputElement = (parentElement) ->
+  unless element = findInputElement(parentElement)
+    name = parentElement.getAttribute("name")
+    element = makeElement("input", type: "hidden")
+    element.name = name if name?
+    parentElement.insertBefore(element, null)
+
+  if parentElement.hasAttribute("value")
+    element.value = parentElement.getAttribute("value")
+    parentElement.removeAttribute("value")
+
+  element
+
+findInputElement = (parentElement) ->
+  parentElement.querySelector("input[type=hidden]")

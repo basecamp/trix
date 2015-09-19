@@ -2,8 +2,20 @@
 
 {normalizeRange, rangesAreEqual} = Trix
 
-keyCodes = {}
+initialized = false
+initializedCallbacks = []
 
+document.addEventListener "trix-initialize", ->
+  initialized = true
+  callback() while callback = initializedCallbacks.shift()
+
+editorInitialized = (callback) ->
+  if initialized
+    callback()
+  else
+    initializedCallbacks.push(callback)
+
+keyCodes = {}
 for code, name of Trix.InputController.keyNames
   keyCodes[name] = code
 
@@ -16,6 +28,7 @@ for code, name of Trix.InputController.keyNames
   module name,
 
     setup: ->
+      initialized = false
       if template?
         document.getElementById("trix-container").innerHTML = JST["fixtures/#{template}"]()
       setup?()
@@ -32,7 +45,7 @@ for code, name of Trix.InputController.keyNames
     QUnit.start()
 
   asyncTest name, ->
-    defer ->
+    editorInitialized ->
       prepareEditor()
       if callback.length is 0
         callback()

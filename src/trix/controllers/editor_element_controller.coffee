@@ -4,12 +4,10 @@
 
 class Trix.EditorElementController extends Trix.Controller
   constructor: (@element, @documentElement, @inputElement) ->
-    @contentType = @element.getAttribute("content-type")
 
   save: ->
-    value = Trix.serializeToContentType(@documentElement, @contentType)
+    value = Trix.serializeToContentType(@documentElement, "text/html")
     @inputElement.value = value
-    @element.setAttribute("value", value)
 
   # Editor controller delegate
 
@@ -18,6 +16,10 @@ class Trix.EditorElementController extends Trix.Controller
 
   didChangeDocument: (document) ->
     @documentChangedSinceLastRender = true
+
+  didInitialize: ->
+    requestAnimationFrame =>
+      triggerEvent("trix-initialize", onElement: @element)
 
   didPasteDataAtRange: (pasteData, range) ->
     triggerEvent("trix-paste", onElement: @element, attributes: {pasteData, range})
@@ -47,7 +49,7 @@ class Trix.EditorElementController extends Trix.Controller
     triggerEvent("trix-sync", onElement: @element)
 
   didChangeSelection: ->
-    triggerEvent("selectionchange", onElement: @element, bubbles: false)
+    triggerEvent("trix-selectionchange", onElement: @element)
 
   didInvokeExternalAction: (actionName) ->
     triggerEvent("trix-action-invoke", onElement: @element, attributes: {actionName})
@@ -62,4 +64,4 @@ class Trix.EditorElementController extends Trix.Controller
 
   saveAndNotify: =>
     @save()
-    triggerEvent("input", onElement: @element)
+    triggerEvent("trix-change", onElement: @element)

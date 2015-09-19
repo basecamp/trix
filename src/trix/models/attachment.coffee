@@ -74,10 +74,10 @@ class Trix.Attachment extends Trix.Object
 
   getFormattedFilesize: ->
     filesize = @attributes.get("filesize")
-    switch typeof filesize
-      when "number" then Trix.config.fileSize.formatter(filesize)
-      when "string" then filesize
-      else ""
+    if typeof filesize is "number"
+      Trix.config.fileSize.formatter(filesize)
+    else
+      ""
 
   getExtension: ->
     @getFilename().match(/\.(\w+)$/)?[1].toLowerCase()
