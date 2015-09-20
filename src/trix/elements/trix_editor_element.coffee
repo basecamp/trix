@@ -50,6 +50,10 @@ Trix.registerElement "trix-editor",
 
     @editorController.registerSelectionManager()
 
+  composition:
+    get: ->
+      @editorController?.composition
+
   value:
     get: ->
       findInputElement(this).value
