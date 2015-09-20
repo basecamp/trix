@@ -281,7 +281,7 @@ class Trix.EditorController extends Trix.Controller
   toolbarActionIsExternal = (actionName) ->
     /^x-./.test(actionName)
 
-  # Selection management
+  # Selection
 
   freezeSelection: ->
     unless @selectionFrozen
@@ -296,6 +296,17 @@ class Trix.EditorController extends Trix.Controller
       @selectionManager.unlock()
       @selectionFrozen = false
       @render()
+
+  getClientRectAtPosition: (position) ->
+    location = @composition.document.locationFromPosition(position)
+    [container, offset] = @selectionManager.findContainerAndOffsetFromLocation(location)
+
+    range = document.createRange()
+    range.setStart(container, offset)
+    range.setEnd(container, offset + 1)
+
+    rects = [range.getClientRects()...]
+    rects[-1..][0]
 
   # Private
 

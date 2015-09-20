@@ -8,6 +8,23 @@
 requiredChildren = ["trix-document", "trix-toolbar"]
 
 Trix.registerElement "trix-editor",
+  # Properties
+
+  composition:
+    get: ->
+      @editorController?.composition
+
+  value:
+    get: ->
+      findInputElement(this).value
+
+  # Selection methods
+
+  getClientRectAtPosition: (position) ->
+    @editorController?.getClientRectAtPosition(position)
+
+  # Element lifecycle
+
   createdCallback: ->
     @attachedChildren = {}
 
@@ -50,13 +67,6 @@ Trix.registerElement "trix-editor",
 
     @editorController.registerSelectionManager()
 
-  composition:
-    get: ->
-      @editorController?.composition
-
-  value:
-    get: ->
-      findInputElement(this).value
 
 findOrCreateToolbarElement = (parentElement) ->
   unless element = parentElement.querySelector("trix-toolbar")
