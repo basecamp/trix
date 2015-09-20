@@ -346,8 +346,7 @@ class Trix.InputController extends Trix.BasicObject
       @setInputSummary(didDelete: true)
 
   serializeSelectionToDataTransfer: (dataTransfer) ->
-    return unless dataTransfer?.setData?
-
+    return unless dataTransferIsWritable(dataTransfer)
     document = @responder?.getSelectedDocument().toSerializableDocument()
 
     dataTransfer.setData("application/x-trix-document", JSON.stringify(document))
@@ -398,3 +397,12 @@ keyEventIsKeyboardCommand = (event) ->
 pasteEventIsCrippledSafariHTMLPaste = (event) ->
   if types = event.clipboardData?.types
     "text/html" not in types and ("com.apple.webarchive" in types or "com.apple.flat-rtfd" in types)
+
+testTransferData = "application/x-trix-feature-detection": "test"
+
+dataTransferIsWritable = (dataTransfer) ->
+  return unless dataTransfer?.setData?
+  for key, value of testTransferData
+    dataTransfer.setData(key, value)
+    return unless dataTransfer.getData(key) is value
+  true
