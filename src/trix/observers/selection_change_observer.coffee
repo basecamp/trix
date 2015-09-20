@@ -35,7 +35,7 @@ class Trix.SelectionChangeObserver extends Trix.BasicObject
       @notifySelectionManagersOfSelectionChange()
 
   reset: ->
-    delete @domRange
+    @domRange = null
     @update()
 
   # Private

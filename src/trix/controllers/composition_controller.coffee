@@ -79,7 +79,7 @@ class Trix.CompositionController extends Trix.BasicObject
   # Attachment controller delegate
 
   didUninstallAttachmentEditor: ->
-    delete @attachmentEditor
+    @attachmentEditor = null
     @render()
 
   attachmentEditorDidRequestUpdatingAttributesForAttachment: (attributes, attachment) ->

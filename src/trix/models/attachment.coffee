@@ -106,7 +106,7 @@ class Trix.Attachment extends Trix.Object
 
   releaseFile: =>
     @releasePreloadedFile()
-    delete @file
+    @file = null
 
   getUploadProgress: ->
     @uploadProgress ? 0
@@ -140,7 +140,7 @@ class Trix.Attachment extends Trix.Object
   releasePreloadedFile: ->
     if @fileObjectURL
       URL.revokeObjectURL(@fileObjectURL)
-      delete @fileObjectURL
+      @fileObjectURL = null
 
   preload: (url, callback) ->
     if url and url isnt @preloadedURL

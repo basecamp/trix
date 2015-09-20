@@ -17,13 +17,13 @@ class Trix.Logger extends Trix.BasicObject
   enable: ->
     if @disabledConsole? and not @isEnabled()
       @console = @disabledConsole
-      delete @disabledConsole
+      @disabledConsole = null
       writeLoggerEnabledStateToSessionStorage(@name, true)
 
   disable: ->
     if @isEnabled()
       @disabledConsole = @console
-      delete @console
+      @console = null
       writeLoggerEnabledStateToSessionStorage(@name, false)
 
   isEnabled: ->

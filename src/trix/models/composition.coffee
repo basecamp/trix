@@ -431,7 +431,7 @@ class Trix.Composition extends Trix.BasicObject
   stopEditingAttachment: ->
     return unless @editingAttachment
     @delegate?.compositionDidStopEditingAttachment?(@editingAttachment)
-    delete @editingAttachment
+    @editingAttachment = null
 
   canEditAttachmentCaption: ->
     @editingAttachment?.isPreviewable()

@@ -44,7 +44,7 @@ class Trix.InspectorController
   deactivateActivePanel: ->
     return unless @activePanelView
     @activePanelView.destroy()
-    delete @activePanelView
+    @activePanelView = null
 
     for input in @element.querySelectorAll("input[name=inspector-panel]")
       input.checked = false

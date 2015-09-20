@@ -155,8 +155,8 @@ class Trix.InputController extends Trix.BasicObject
 
     dragend: (event) ->
       @delegate?.inputControllerDidCancelDrag?()
-      delete @draggedRange
-      delete @draggingPoint
+      @draggedRange = null
+      @draggingPoint = null
 
     drop: (event) ->
       event.preventDefault()
@@ -166,7 +166,7 @@ class Trix.InputController extends Trix.BasicObject
       if @draggedRange
         @delegate?.inputControllerWillMoveText()
         @responder?.moveTextFromRange(@draggedRange)
-        delete @draggedRange
+        @draggedRange = null
         @requestRender()
 
       else if documentJSON = event.dataTransfer.getData("application/x-trix-document")
@@ -177,8 +177,8 @@ class Trix.InputController extends Trix.BasicObject
       else if files = event.dataTransfer.files
         @attachFiles(event.dataTransfer.files)
 
-      delete @draggedRange
-      delete @draggingPoint
+      @draggedRange = null
+      @draggingPoint = null
 
     cut: (event) ->
       if @serializeSelectionToDataTransfer(event.clipboardData)

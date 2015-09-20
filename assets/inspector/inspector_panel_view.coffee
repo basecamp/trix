@@ -8,7 +8,7 @@ class Trix.InspectorPanelView
   destroy: ->
     @hide()
     handler.destroy() for handler in @handlers
-    delete @handlers
+    @handlers = null
 
   handleEvent: ->
     @handlers.push(handleEvent(arguments...))

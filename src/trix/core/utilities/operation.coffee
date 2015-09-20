@@ -15,7 +15,7 @@ class Trix.Operation extends Trix.BasicObject
     @promise ?= new Promise (resolve, reject) =>
       @performing = true
       @perform (@succeeded, result) =>
-        delete @performing
+        @performing = false
         @performed = true
 
         if @succeeded
@@ -28,10 +28,10 @@ class Trix.Operation extends Trix.BasicObject
 
   release: ->
     @promise?.cancel?()
-    delete @promise
-    delete @performing
-    delete @performed
-    delete @succeeded
+    @promise = null
+    @performing = null
+    @performed = null
+    @succeeded = null
 
   @proxyMethod "getPromise().then"
   @proxyMethod "getPromise().catch"

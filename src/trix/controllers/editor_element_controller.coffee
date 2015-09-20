@@ -40,7 +40,7 @@ class Trix.EditorElementController extends Trix.Controller
 
   didRenderDocument: ->
     if @documentChangedSinceLastRender
-      delete @documentChangedSinceLastRender
+      @documentChangedSinceLastRender = false
       @saveAndNotify()
 
     triggerEvent("trix-render", onElement: @element)

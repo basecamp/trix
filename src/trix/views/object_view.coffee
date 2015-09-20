@@ -11,7 +11,7 @@ class Trix.ObjectView extends Trix.BasicObject
     node.cloneNode(true) for node in @nodes
 
   invalidate: ->
-    delete @nodes
+    @nodes = null
     @parentView?.invalidate()
 
   invalidateViewForObject: (object) ->
@@ -67,7 +67,7 @@ class Trix.ObjectView extends Trix.BasicObject
     @shouldCacheViews isnt false
 
   enableViewCaching: ->
-    delete @shouldCacheViews
+    @shouldCacheViews = true
 
   disableViewCaching: ->
     @shouldCacheViews = false

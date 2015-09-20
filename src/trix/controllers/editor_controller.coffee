@@ -21,7 +21,7 @@ class Trix.EditorController extends Trix.Controller
 
   setEditor: (editor) ->
     return if @editor is editor
-    delete @editor?.delegate
+    @editor?.delegate = null
     @editor = editor
     @editor.delegate = this
 
@@ -91,7 +91,7 @@ class Trix.EditorController extends Trix.Controller
 
   compositionDidStopEditingAttachment: (attachment) ->
     @compositionController.uninstallAttachmentEditor()
-    delete @attachmentLocationRange
+    @attachmentLocationRange = null
 
   compositionDidRequestLocationRange: (locationRange) ->
     @requestedLocationRange = locationRange
@@ -131,8 +131,8 @@ class Trix.EditorController extends Trix.Controller
       if @documentWhenLocationRangeRequested.isEqualTo(@composition.document)
         @selectionManager.setLocationRange(@requestedLocationRange)
       @composition.updateCurrentAttributes()
-      delete @requestedLocationRange
-      delete @documentWhenLocationRangeRequested
+      @requestedLocationRange = null
+      @documentWhenLocationRangeRequested = null
     @delegate?.didRenderDocument?()
 
   compositionControllerDidFocus: ->
@@ -178,8 +178,8 @@ class Trix.EditorController extends Trix.Controller
 
   inputControllerDidPaste: (pasteData) ->
     range = @pastedRange
-    delete @pastedRange
-    delete @pasting
+    @pastedRange = null
+    @pasting = null
 
     @delegate?.didPasteDataAtRange?(pasteData, range)
     @render()
@@ -201,7 +201,7 @@ class Trix.EditorController extends Trix.Controller
 
   inputControllerDidCancelDrag: ->
     @selectionManager.setLocationRange(@locationRangeBeforeDrag)
-    delete @locationRangeBeforeDrag
+    @locationRangeBeforeDrag = null
 
   # Selection manager delegate
 
@@ -294,7 +294,7 @@ class Trix.EditorController extends Trix.Controller
     if @selectionFrozen
       @composition.thawSelection()
       @selectionManager.unlock()
-      delete @selectionFrozen
+      @selectionFrozen = false
       @render()
 
   # Private
@@ -306,7 +306,7 @@ class Trix.EditorController extends Trix.Controller
     @inputController.responder = @composition
 
   createCompositionController: ->
-    delete @compositionController?.delegate
+    @compositionController?.delegate = null
     @compositionController = new Trix.CompositionController @documentElement, @composition
     @compositionController.delegate = this
     @render()
