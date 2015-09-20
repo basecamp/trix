@@ -363,7 +363,13 @@ class Trix.InputController extends Trix.BasicObject
   getPastedHTMLUsingHiddenElement: (callback) ->
     selectedRange = @responder?.getSelectedRange()
 
-    element = makeElement(tagName: "div", editable: true, style: { position: "absolute", left: "-9999px" })
+    style =
+      position: "absolute"
+      left: "#{window.pageXOffset}px"
+      top: "#{window.pageYOffset}px"
+      opacity: 0
+
+    element = makeElement({style, tagName: "div", editable: true})
     document.body.appendChild(element)
     element.focus()
 
