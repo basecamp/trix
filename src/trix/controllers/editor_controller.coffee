@@ -341,4 +341,7 @@ class Trix.EditorController extends Trix.Controller
       locationRange
 
   getTimeContext: ->
-    Math.floor(new Date().getTime() / 5000)
+    if Trix.config.undoInterval > 0
+      Math.floor(new Date().getTime() / Trix.config.undoInterval)
+    else
+      0

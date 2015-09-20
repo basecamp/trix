@@ -5,3 +5,4 @@
 #= require trix/config/text_attributes
 #= require trix/config/serialization
 #= require trix/config/toolbar
+#= require trix/config/undo_interval
