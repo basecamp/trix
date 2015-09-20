@@ -143,7 +143,7 @@ for code, name of Trix.InputController.keyNames
   render()
 
 prepareEditor = ->
-  if getDocumentElement().hasAttribute("autofocus")
+  if getEditorElement().hasAttribute("autofocus")
     getEditorController().setLocationRange(index: 0, offset: 0)
 
 render = ->

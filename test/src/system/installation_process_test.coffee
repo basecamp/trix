@@ -4,10 +4,10 @@ editorTest "element.editorController", ->
   ok getEditorController() instanceof Trix.EditorController
 
 editorTest "creates a contenteditable element", ->
-  ok getDocumentElement()
+  ok getEditorElement()
 
 editorTest "loads the initial document", ->
-  equal getDocumentElement().textContent, "Hello world"
+  equal getEditorElement().textContent, "Hello world"
 
 editorTest "sets value property", (done) ->
   defer ->

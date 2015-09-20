@@ -3,10 +3,10 @@
 {triggerEvent, defer} = Trix
 
 class Trix.EditorElementController extends Trix.Controller
-  constructor: (@element, @documentElement, @inputElement) ->
+  constructor: (@element, @editorElement, @inputElement) ->
 
   save: ->
-    value = Trix.serializeToContentType(@documentElement, "text/html")
+    value = Trix.serializeToContentType(@editorElement, "text/html")
     @inputElement.value = value
 
   # Editor controller delegate

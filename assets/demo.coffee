@@ -9,10 +9,10 @@
 
 document.addEventListener "trix-initialize", ->
   editorElement = document.querySelector("trix-editor")
-  documentElement = document.querySelector("trix-document")
+  editorElement = editorElement
 
-  documentElement.recorder = new Trix.Watchdog.Recorder documentElement
-  documentElement.recorder.start()
+  editorElement.recorder = new Trix.Watchdog.Recorder editorElement
+  editorElement.recorder.start()
 
   inspectorElement = document.querySelector("#inspector")
   inspectorController = new Trix.InspectorController inspectorElement, editorElement.editorController

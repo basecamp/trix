@@ -1,11 +1,36 @@
 #= require trix/elements/trix_toolbar_element
-#= require trix/elements/trix_document_element
 #= require trix/controllers/editor_controller
 #= require trix/controllers/editor_element_controller
 
-{makeElement, tagName, handleEvent, defer} = Trix
+{makeElement, handleEvent, handleEventOnce, defer} = Trix
+{classNames} = Trix.config.css
 
 Trix.registerElement "trix-editor",
+  defaultCSS: """
+    %t:empty:not(:focus)::before {
+      content: attr(placeholder);
+      color: graytext;
+    }
+
+    %t a[contenteditable=false] {
+      cursor: text;
+    }
+
+    %t img {
+      max-width: 100%;
+    }
+
+    %t .#{classNames.attachment.captionEditor} {
+      resize: none;
+    }
+
+    %t .#{classNames.attachment.captionEditor}.trix-autoresize-clone {
+      position: absolute;
+      left: -9999px;
+      max-height: 0px;
+    }
+  """
+
   # Properties
 
   composition:
@@ -14,7 +39,7 @@ Trix.registerElement "trix-editor",
 
   value:
     get: ->
-      findInputElement(this).value
+      @inputElement?.value
 
   # Selection methods
 
@@ -23,50 +48,66 @@ Trix.registerElement "trix-editor",
 
   # Element lifecycle
 
+  createdCallback: ->
+    makeEditable(this)
+
   attachedCallback: ->
-    toolbarElement = findOrCreateToolbarElement(this)
-    documentElement = findOrCreateDocumentElement(this)
-    inputElement = findOrCreateInputElement(this)
+    autofocus(this)
+
+    @toolbarElement = findOrCreateToolbarElement(this)
+    @inputElement = findOrCreateInputElement(this)
+    editorElement = this
 
     document = Trix.deserializeFromContentType(@value, "text/html")
-    delegate = new Trix.EditorElementController this, documentElement, inputElement
+    delegate = new Trix.EditorElementController this, editorElement, @inputElement
 
-    @editorController = new Trix.EditorController {documentElement, toolbarElement, document, delegate}
+    @editorController = new Trix.EditorController {editorElement, @toolbarElement, document, delegate}
     @editorController.registerSelectionManager()
 
   detachedCallback: ->
     @editorController?.unregisterSelectionManager()
 
-findOrCreateToolbarElement = (parentElement) ->
-  unless element = parentElement.querySelector("trix-toolbar")
+findOrCreateToolbarElement = (editorElement) ->
+  {previousElementSibling} = editorElement
+  if Trix.tagName(previousElementSibling) is "trix-toolbar"
+    previousElementSibling
+  else
     element = makeElement("trix-toolbar")
-    parentElement.insertBefore(element, parentElement.firstChild)
-  element
+    editorElement.parentElement.insertBefore(element, editorElement)
+    element
 
-findOrCreateDocumentElement = (parentElement) ->
-  unless element = parentElement.querySelector("trix-document")
-    element = makeElement("trix-document")
-    if parentElement.hasAttribute("autofocus")
-      parentElement.removeAttribute("autofocus")
-      element.setAttribute("autofocus", "")
-    if placeholder = parentElement.getAttribute("placeholder")
-      parentElement.removeAttribute("placeholder")
-      element.setAttribute("placeholder", placeholder)
-    parentElement.insertBefore(element, null)
-  element
+findOrCreateInputElement = (editorElement) ->
+  {nextElementSibling} = editorElement
+  if nextElementSibling?.dataset?.trixInput
+    nextElementSibling
+  else
+    element = makeElement("input", type: "hidden", "data-trix-input": "")
+    element.name = editorElement.getAttribute("name")
+    element.value = editorElement.getAttribute("value")
+    editorElement.parentElement.insertBefore(element, nextElementSibling)
+    element
 
-findOrCreateInputElement = (parentElement) ->
-  unless element = findInputElement(parentElement)
-    name = parentElement.getAttribute("name")
-    element = makeElement("input", type: "hidden")
-    element.name = name if name?
-    parentElement.insertBefore(element, null)
+autofocus = (element) ->
+  unless document.querySelector(":focus")
+    if element.hasAttribute("autofocus") and document.querySelector("[autofocus]") is element
+      element.focus()
 
-  if parentElement.hasAttribute("value")
-    element.value = parentElement.getAttribute("value")
-    parentElement.removeAttribute("value")
+makeEditable = (element) ->
+  return if element.hasAttribute("contenteditable")
+  element.setAttribute("contenteditable", "")
+  handleEventOnce("focus", onElement: element, withCallback: -> configureContentEditable(element))
 
-  element
+configureContentEditable = (element) ->
+  disableObjectResizing(element)
+  setDefaultParagraphSeparator(element)
 
-findInputElement = (parentElement) ->
-  parentElement.querySelector("input[type=hidden]")
+disableObjectResizing = (element) ->
+  if document.queryCommandSupported?("enableObjectResizing")
+    document.execCommand("enableObjectResizing", false, false)
+    handleEvent("mscontrolselect", onElement: element, preventDefault: true)
+
+setDefaultParagraphSeparator = (element) ->
+  if document.queryCommandSupported?("DefaultParagraphSeparator")
+    {tagName} = Trix.config.blockAttributes.default
+    if tagName in ["div", "p"]
+      document.execCommand("DefaultParagraphSeparator", false, tagName)

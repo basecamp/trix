@@ -5,10 +5,7 @@
   document.querySelector("trix-editor")
 
 @getToolbarElement = ->
-  getEditorElement().querySelector("trix-toolbar")
-
-@getDocumentElement = ->
-  getEditorElement().querySelector("trix-document")
+  getEditorElement().toolbarElement
 
 @getEditorController = ->
   getEditorElement().editorController

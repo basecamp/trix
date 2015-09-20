@@ -4,8 +4,7 @@
 
 class Trix.DocumentView extends Trix.ObjectView
   @render: (document) ->
-    element = makeElement("trix-document")
-    element.removeAttribute("contenteditable")
+    element = makeElement("div")
     view = new this document, {element}
     view.render()
     view.sync()

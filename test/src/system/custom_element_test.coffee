@@ -60,8 +60,8 @@ editorTest "element triggers trix-selectionchange events when the location range
       equal eventCount, 2
       done()
 
-editorTest "element triggers toolbar dialog events", (done) ->
-  element = getEditorElement()
+editorTest "toolbar element triggers toolbar dialog events", (done) ->
+  element = getToolbarElement()
   events = []
 
   element.addEventListener "trix-toolbar-dialog-show", (event) ->

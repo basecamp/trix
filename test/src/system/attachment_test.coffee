@@ -17,4 +17,4 @@ editorTest "removing an image", (expectDocument) ->
         expectDocument "ab\n"
 
 getFigure = ->
-  getDocumentElement().querySelector("figure")
+  getEditorElement().querySelector("figure")

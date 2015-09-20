@@ -12,10 +12,10 @@
 
 class Trix.EditorController extends Trix.Controller
   constructor: (@config) ->
-    {@documentElement, @toolbarElement, document, @delegate} = @config
+    {@editorElement, @toolbarElement, document, @delegate} = @config
     document ?= new Trix.Document
 
-    @selectionManager = new Trix.SelectionManager @documentElement
+    @selectionManager = new Trix.SelectionManager @editorElement
     @selectionManager.delegate = this
 
     @composition = new Trix.Composition
@@ -26,11 +26,11 @@ class Trix.EditorController extends Trix.Controller
 
     @undoManager = new Trix.UndoManager @composition
 
-    @inputController = new Trix.InputController @documentElement
+    @inputController = new Trix.InputController @editorElement
     @inputController.delegate = this
     @inputController.responder = @composition
 
-    @compositionController = new Trix.CompositionController @documentElement, @composition
+    @compositionController = new Trix.CompositionController @editorElement, @composition
     @compositionController.delegate = this
 
     @toolbarController = @createToolbarController()
@@ -313,7 +313,7 @@ class Trix.EditorController extends Trix.Controller
   # Private
 
   reparse: ->
-    @composition.replaceHTML(@documentElement.innerHTML)
+    @composition.replaceHTML(@editorElement.innerHTML)
 
   render: ->
     @compositionController.render()
