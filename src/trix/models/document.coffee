@@ -471,11 +471,6 @@ class Trix.Document extends Trix.Object
   locationRangeFromPosition: (position) ->
     normalizeRange(@locationFromPosition(position))
 
-  locationRangeFromRange: ([start, end]) ->
-    startLocation = @locationFromPosition(start)
-    endLocation = @locationFromPosition(end)
-    normalizeRange([startLocation, endLocation])
-
   locationRangeFromRange: (range) ->
     return unless range = normalizeRange(range)
     [startPosition, endPosition] = range
