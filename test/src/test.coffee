@@ -5,3 +5,5 @@
 #= require_tree ./fixtures
 #= require_tree ./system
 #= require_tree ./unit
+
+Trix.config.undoInterval = 0

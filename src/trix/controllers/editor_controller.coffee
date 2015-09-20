@@ -297,13 +297,6 @@ class Trix.EditorController extends Trix.Controller
       delete @selectionFrozen
       @render()
 
-  getLocationContext: ->
-    locationRange = @selectionManager.getLocationRange()
-    if rangeIsCollapsed(locationRange)
-      locationRange[0].index
-    else
-      locationRange
-
   # Private
 
   createInputController: ->
@@ -332,8 +325,23 @@ class Trix.EditorController extends Trix.Controller
   recordFormattingUndoEntry: ->
     locationRange = @selectionManager.getLocationRange()
     unless rangeIsCollapsed(locationRange)
-      @editor.recordUndoEntry("Formatting", context: @getLocationContext(), consolidatable: true)
+      @editor.recordUndoEntry("Formatting", context: @getUndoContext(), consolidatable: true)
 
   recordTypingUndoEntry: ->
-    context = [@getLocationContext(), JSON.stringify(@currentAttributes)]
-    @editor.recordUndoEntry("Typing", context: context, consolidatable: true)
+    @editor.recordUndoEntry("Typing", context: @getUndoContext(@currentAttributes), consolidatable: true)
+
+  getUndoContext: (context...) ->
+    [@getLocationContext(), @getTimeContext(), context...]
+
+  getLocationContext: ->
+    locationRange = @selectionManager.getLocationRange()
+    if rangeIsCollapsed(locationRange)
+      locationRange[0].index
+    else
+      locationRange
+
+  getTimeContext: ->
+    if Trix.config.undoInterval > 0
+      Math.floor(new Date().getTime() / Trix.config.undoInterval)
+    else
+      0
