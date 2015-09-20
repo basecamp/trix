@@ -349,13 +349,10 @@ class Trix.InputController extends Trix.BasicObject
     return unless dataTransfer?.setData?
 
     document = @responder?.getSelectedDocument().toSerializableDocument()
-    element = Trix.DocumentView.render(document)
-    html = element.innerHTML
-    text = element.innerText
 
     dataTransfer.setData("application/x-trix-document", JSON.stringify(document))
-    dataTransfer.setData("text/html", html)
-    dataTransfer.setData("text/plain", text)
+    dataTransfer.setData("text/html", Trix.DocumentView.render(document).innerHTML)
+    dataTransfer.setData("text/plain", document.toString().replace(/\n$/, ""))
     true
 
   canAcceptDataTransfer: (dataTransfer) ->
