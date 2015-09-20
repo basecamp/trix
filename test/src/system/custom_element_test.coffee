@@ -2,12 +2,12 @@ editorModule "Custom element API", template: "editor_empty"
 
 editorTest "files are accepted by default", ->
   getComposition().insertFile(createFile())
-  equal getEditor().getAttachments().length, 1
+  equal getComposition().getAttachments().length, 1
 
 editorTest "rejecting a file by canceling the trix-file-accept event", ->
   getEditorElement().addEventListener "trix-file-accept", (event) -> event.preventDefault()
   getComposition().insertFile(createFile())
-  equal getEditor().getAttachments().length, 0
+  equal getComposition().getAttachments().length, 0
 
 editorTest "element triggers attachment events", ->
   file = createFile()

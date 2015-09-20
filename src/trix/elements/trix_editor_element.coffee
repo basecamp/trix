@@ -5,8 +5,6 @@
 
 {makeElement, tagName, handleEvent, defer} = Trix
 
-requiredChildren = ["trix-document", "trix-toolbar"]
-
 Trix.registerElement "trix-editor",
   # Properties
 
@@ -25,48 +23,19 @@ Trix.registerElement "trix-editor",
 
   # Element lifecycle
 
-  createdCallback: ->
-    @attachedChildren = {}
-
-    handleEvent "trix-element-attached", onElement: this, withCallback: (event) =>
-      event.stopPropagation()
-      @attachedChildren[tagName(event.target)] = event.target
-
-    findOrCreateInputElement(this)
-    findOrCreateToolbarElement(this)
-    findOrCreateDocumentElement(this)
-
   attachedCallback: ->
-    @attachedChildrenReady =>
-      @initializeEditorController()
+    toolbarElement = findOrCreateToolbarElement(this)
+    documentElement = findOrCreateDocumentElement(this)
+    inputElement = findOrCreateInputElement(this)
+
+    document = Trix.deserializeFromContentType(@value, "text/html")
+    delegate = new Trix.EditorElementController this, documentElement, inputElement
+
+    @editorController = new Trix.EditorController {documentElement, toolbarElement, document, delegate}
+    @editorController.registerSelectionManager()
 
   detachedCallback: ->
     @editorController?.unregisterSelectionManager()
-
-  requiredChildrenAttached: ->
-    return false for child in requiredChildren when not @attachedChildren[child]
-    true
-
-  attachedChildrenReady: (callback) ->
-    if @requiredChildrenAttached()
-      callback()
-    else
-      handleEvent "trix-element-attached", onElement: this, withCallback: =>
-        @attachedChildrenReady(callback)
-
-  initializeEditorController: ->
-    documentElement = @attachedChildren["trix-document"]
-    toolbarElement = @attachedChildren["trix-toolbar"]
-    inputElement = findInputElement(this)
-
-    @editorController ?= new Trix.EditorController
-      toolbarController: toolbarElement.toolbarController
-      documentElement: documentElement
-      document: Trix.deserializeFromContentType(inputElement.value, "text/html")
-      delegate: new Trix.EditorElementController this, documentElement, inputElement
-
-    @editorController.registerSelectionManager()
-
 
 findOrCreateToolbarElement = (parentElement) ->
   unless element = parentElement.querySelector("trix-toolbar")

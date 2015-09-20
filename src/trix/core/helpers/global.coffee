@@ -13,9 +13,6 @@
 @getEditorController = ->
   getEditorElement().editorController
 
-@getEditor = ->
-  getEditorController().editor
-
 @getComposition = ->
   getEditorController().composition
 

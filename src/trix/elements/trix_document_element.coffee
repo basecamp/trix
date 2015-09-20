@@ -1,4 +1,4 @@
-{handleEvent, handleEventOnce, triggerEvent, defer} = Trix
+{handleEvent, handleEventOnce, defer} = Trix
 {classNames} = Trix.config.css
 
 Trix.registerElement "trix-document",
@@ -32,7 +32,6 @@ Trix.registerElement "trix-document",
 
   attachedCallback: ->
     defer => autofocus(this)
-    triggerEvent("trix-element-attached", onElement: this)
 
 autofocus = (element) ->
   unless document.querySelector(":focus")
