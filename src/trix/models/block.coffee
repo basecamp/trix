@@ -10,7 +10,6 @@ class Trix.Block extends Trix.Object
   constructor: (text = new Trix.Text, attributes = []) ->
     super
     @text = applyBlockBreakToText(text)
-    debugger unless Array.isArray(attributes)
     @attributes = attributes
 
   isEmpty: ->
@@ -58,7 +57,6 @@ class Trix.Block extends Trix.Object
     getLastElement(@attributes)
 
   getAttributes: ->
-    debugger unless @attributes?
     @attributes.slice(0)
 
   getAttributeLevel: ->
