@@ -111,7 +111,7 @@ class Trix.HTMLParser extends Trix.BasicObject
     block
 
   appendEmptyBlock: ->
-    @appendBlockForAttributesWithElement({}, null)
+    @appendBlockForAttributesWithElement([], null)
 
   appendStringWithAttributes: (string, attributes) ->
     @appendPiece(pieceForString(string, attributes))

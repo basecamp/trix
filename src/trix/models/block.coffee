@@ -1,5 +1,7 @@
 #= require trix/models/text
 
+{arraysAreEqual} = Trix
+
 class Trix.Block extends Trix.Object
   @fromJSON: (blockJSON) ->
     text = Trix.Text.fromJSON(blockJSON.text)
@@ -8,13 +10,17 @@ class Trix.Block extends Trix.Object
   constructor: (text = new Trix.Text, attributes = []) ->
     super
     @text = applyBlockBreakToText(text)
-    @attributes = Trix.List.box(attributes)
+    debugger unless Array.isArray(attributes)
+    @attributes = attributes
 
   isEmpty: ->
     @text.isBlockBreak()
 
   isEqualTo: (block) ->
-    super or (@text.isEqualTo(block.text) and @attributes.isEqualTo(block.attributes))
+    super or (
+      @text.isEqualTo(block?.text) and
+      arraysAreEqual(@attributes, block?.attributes)
+    )
 
   copyWithText: (text) ->
     new @constructor text, @attributes
@@ -34,33 +40,32 @@ class Trix.Block extends Trix.Object
   addAttribute: (attribute) ->
     {listAttribute} = Trix.config.blockAttributes[attribute]
     attributes = if listAttribute
-      @attributes.push(listAttribute, attribute)
+      @attributes.concat([listAttribute, attribute])
     else
-      @attributes.push(attribute)
+      @attributes.concat([attribute])
     @copyWithAttributes(attributes)
 
   removeAttribute: (attribute) ->
     {listAttribute} = Trix.config.blockAttributes[attribute]
-    attributes = if listAttribute
-      @attributes.pop(attribute, listAttribute)
-    else
-      @attributes.pop(attribute)
+    attributes = removeLastElement(@attributes, attribute)
+    attributes = removeLastElement(attributes, listAttribute) if listAttribute?
     @copyWithAttributes(attributes)
 
   removeLastAttribute: ->
     @removeAttribute(@getLastAttribute())
 
   getLastAttribute: ->
-    @attributes.getLast()
+    getLastElement(@attributes)
 
   getAttributes: ->
-    @attributes.toArray()
+    debugger unless @attributes?
+    @attributes.slice(0)
 
   getAttributeLevel: ->
     @attributes.length
 
   getAttributeAtLevel: (level) ->
-    @getAttributes()[level - 1]
+    @attributes[level - 1]
 
   hasAttributes: ->
     @getAttributeLevel() > 0
@@ -85,14 +90,14 @@ class Trix.Block extends Trix.Object
 
   contentsForInspection: ->
     text: @text.inspect()
-    attributes: @attributes.inspect()
+    attributes: @attributes
 
   toString: ->
     @text.toString()
 
   toJSON: ->
     text: @text
-    attributes: @getAttributes()
+    attributes: @attributes
 
   # Splittable
 
@@ -134,10 +139,10 @@ class Trix.Block extends Trix.Object
   # Grouping
 
   canBeGrouped: (depth) ->
-    @getAttributes()[depth]
+    @attributes[depth]
 
   canBeGroupedWith: (otherBlock, depth) ->
-    attributes = @getAttributes()
+    attributes = @attributes
     otherAttributes = otherBlock.getAttributes()
     if attributes[depth] is otherAttributes[depth]
       if attributes[depth] in ["bullet", "number"] and otherAttributes[depth + 1] not in ["bulletList", "numberList"]
@@ -185,3 +190,14 @@ class Trix.Block extends Trix.Object
 
   unmarkBlockBreakPiece = (piece) ->
     piece.copyWithoutAttribute("blockBreak")
+
+  # Array helpers
+
+  removeLastElement = (array, element) ->
+    if getLastElement(array) is element
+      array.slice(0, -1)
+    else
+      array
+
+  getLastElement = (array) ->
+    array.slice(-1)[0]
