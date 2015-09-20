@@ -1,7 +1,7 @@
 {normalizeRange, rangeIsCollapsed} = Trix
 
 class Trix.TestCompositionDelegate
-  compositionDidRequestLocationRange: ->
+  compositionDidRequestChangingSelectionToLocationRange: ->
     @getSelectionManager().setLocationRange(arguments...)
 
   getSelectionManager: ->

@@ -93,7 +93,7 @@ class Trix.EditorController extends Trix.Controller
     @compositionController.uninstallAttachmentEditor()
     @attachmentLocationRange = null
 
-  compositionDidRequestLocationRange: (locationRange) ->
+  compositionDidRequestChangingSelectionToLocationRange: (locationRange) ->
     @requestedLocationRange = locationRange
     @documentWhenLocationRangeRequested = @composition.document
     @render() unless @handlingInput
