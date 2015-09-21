@@ -12,9 +12,6 @@ class Trix.EditorElementController extends Trix.Controller
 
   # Editor controller delegate
 
-  didSetEditor: (editor) ->
-    @save()
-
   didChangeDocument: (document) ->
     @documentChangedSinceLastRender = true
 
