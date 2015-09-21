@@ -508,6 +508,11 @@ class Trix.Document extends Trix.Object
   toString: ->
     @blockList.toString()
 
+  toArchive: ->
+    key: @id
+    type: "Trix.Document"
+    args: [@blockList.toArray()]
+
   toJSON: ->
     @blockList.toJSON()
 

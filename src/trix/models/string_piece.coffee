@@ -18,6 +18,11 @@ Trix.Piece.registerType "string", class Trix.StringPiece extends Trix.Piece
   isBlockBreak: ->
     @toString() is "\n" and @getAttribute("blockBreak") is true
 
+  toArchive: ->
+    key: @id
+    type: "Trix.StringPiece"
+    args: [@string, @attributes]
+
   toJSON: ->
     result = super
     result.string = @string

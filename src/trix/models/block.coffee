@@ -10,7 +10,7 @@ class Trix.Block extends Trix.Object
   constructor: (text = new Trix.Text, attributes = []) ->
     super
     @text = applyBlockBreakToText(text)
-    @attributes = attributes
+    @attributes = attributes.slice(0)
 
   isEmpty: ->
     @text.isBlockBreak()
@@ -92,6 +92,11 @@ class Trix.Block extends Trix.Object
 
   toString: ->
     @text.toString()
+
+  toArchive: ->
+    key: @id
+    type: "Trix.Block"
+    args: [@text, @attributes]
 
   toJSON: ->
     text: @text

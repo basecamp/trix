@@ -1,4 +1,4 @@
-class Trix.Watchdog.Recording
+class Trix.Watchdog.Recording extends Trix.Object
   @fromJSON: ({snapshots, frames}) ->
     new this snapshots, frames
 
@@ -49,6 +49,11 @@ class Trix.Watchdog.Recording
       [timestamp, index - offset, event]
 
     @snapshots = @snapshots.slice(offset)
+
+  toArchive: ->
+    key: @id
+    type: "Trix.Watchdog.Recording"
+    args: [@snapshots, @frames]
 
   toJSON: ->
     {@snapshots, @frames}

@@ -32,6 +32,11 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   toString: ->
     Trix.OBJECT_REPLACEMENT_CHARACTER
 
+  toArchive: ->
+    key: @id
+    type: "Trix.AttachmentPiece"
+    args: [@attachment, @attributes]
+
   toJSON: ->
     json = super
     json.attachment = @attachment

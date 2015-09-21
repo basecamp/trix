@@ -158,6 +158,11 @@ class Trix.Text extends Trix.Object
   toString: ->
     @pieceList.toString()
 
+  toArchive: ->
+    key: @id
+    type: "Trix.Text"
+    args: [@pieceList.toArray()]
+
   toJSON: ->
     @pieceList.toJSON()
 

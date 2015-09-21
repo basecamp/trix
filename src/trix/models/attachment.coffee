@@ -116,6 +116,11 @@ class Trix.Attachment extends Trix.Object
       @uploadProgress = value
       @uploadProgressDelegate?.attachmentDidChangeUploadProgress?(this)
 
+  toArchive: ->
+    key: @id
+    type: "Trix.Attachment"
+    args: [@attributes]
+
   toJSON: ->
     @getAttributes()
 
