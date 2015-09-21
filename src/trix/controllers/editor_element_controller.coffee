@@ -51,8 +51,14 @@ class Trix.EditorElementController extends Trix.Controller
   didChangeSelection: ->
     triggerEvent("trix-selectionchange", onElement: @element)
 
+  didChangeAttributes: (attributes) ->
+    triggerEvent("trix-attributes-change", onElement: @element, attributes: {attributes})
+
   didInvokeExternalAction: (actionName) ->
     triggerEvent("trix-action-invoke", onElement: @element, attributes: {actionName})
+
+  didChangeToolbarActions: (actions) ->
+    triggerEvent("trix-toolbar-actions-change", onElement: @element, attributes: {actions})
 
   didShowToolbarDialog: (dialogElement) ->
     triggerEvent("trix-toolbar-dialog-show", onElement: dialogElement)

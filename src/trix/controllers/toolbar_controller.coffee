@@ -61,11 +61,24 @@ class Trix.ToolbarController extends Trix.BasicObject
   # Action buttons
 
   updateActions: ->
+    changed = false
+    actions = {}
+
     @eachActionButton (element, actionName) =>
-      if @delegate?.toolbarCanInvokeAction(actionName)
-        element.removeAttribute("disabled")
+      enabled = !!@delegate?.toolbarCanInvokeAction(actionName)
+      actions[actionName] = enabled
+
+      if enabled
+        if element.disabled
+          element.removeAttribute("disabled")
+          changed = true
       else
-        element.setAttribute("disabled", "disabled")
+        unless element.disabled
+          element.setAttribute("disabled", "disabled")
+          changed = true
+
+    if changed
+      @delegate?.toolbarDidUpdateActions?(actions)
 
   eachActionButton: (callback) ->
     for element in @element.querySelectorAll(actionButtonSelector)

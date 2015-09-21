@@ -59,8 +59,13 @@ class Trix.EditorController extends Trix.Controller
     @delegate?.didChangeDocument?(document)
     @render() unless @handlingInput
 
-  compositionDidChangeCurrentAttributes: (@currentAttributes) ->
-    @toolbarController.updateAttributes(@currentAttributes)
+  compositionDidChangeCurrentAttributes: (currentAttributes) ->
+    currentAttributesHash = Trix.Hash.box(currentAttributes)
+    unless currentAttributesHash.isEqualTo(@currentAttributesHash)
+      @currentAttributesHash = currentAttributesHash
+      @currentAttributes = currentAttributes
+      @toolbarController.updateAttributes(@currentAttributes)
+      @delegate?.didChangeAttributes?(@currentAttributesHash.toObject())
     @toolbarController.updateActions()
 
   compositionDidPerformInsertionAtRange: (range) ->
@@ -269,6 +274,9 @@ class Trix.EditorController extends Trix.Controller
   toolbarWillShowDialog: (dialogElement) ->
     @composition.expandSelectionForEditing()
     @freezeSelection()
+
+  toolbarDidUpdateActions: (actions) ->
+    @delegate?.didChangeToolbarActions?(actions)
 
   toolbarDidShowDialog: (dialogElement) ->
     @delegate?.didShowToolbarDialog?(dialogElement)

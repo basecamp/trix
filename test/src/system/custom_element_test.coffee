@@ -90,3 +90,36 @@ editorTest "element triggers paste event with position range", (done) ->
       equal eventCount, 1
       ok Trix.rangesAreEqual([5, 5], range)
       done()
+
+editorTest "element triggers attribute change events", (done) ->
+  element = getEditorElement()
+  eventCount = 0
+  attributes = null
+
+  element.addEventListener "trix-attributes-change", (event) ->
+    eventCount++
+    {attributes} = event
+
+  typeCharacters "", ->
+    equal eventCount, 0
+    clickToolbarButton attribute: "bold", ->
+      equal eventCount, 1
+      deepEqual { bold: true }, attributes
+      done()
+
+editorTest "element triggers toolbar action change events", (done) ->
+  element = getEditorElement()
+  eventCount = 0
+  actions = null
+
+  element.addEventListener "trix-toolbar-actions-change", (event) ->
+    eventCount++
+    {actions} = event
+
+  typeCharacters "", ->
+    equal eventCount, 0
+    clickToolbarButton attribute: "bullet", ->
+      equal eventCount, 1
+      equal actions.decreaseBlockLevel, true
+      equal actions.increaseBlockLevel, false
+      done()
