@@ -78,12 +78,10 @@ findOrCreateToolbarElement = (editorElement) ->
 
 findOrCreateInputElement = (editorElement) ->
   {nextElementSibling} = editorElement
-  if nextElementSibling?.dataset?.trixInput
+  if nextElementSibling?.type is "hidden"
     nextElementSibling
   else
-    element = makeElement("input", type: "hidden", "data-trix-input": "")
-    element.name = editorElement.getAttribute("name")
-    element.value = editorElement.getAttribute("value")
+    element = makeElement("input", type: "hidden", name="content")
     editorElement.parentElement.insertBefore(element, nextElementSibling)
     element
 
