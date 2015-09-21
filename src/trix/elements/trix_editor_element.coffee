@@ -69,7 +69,10 @@ Trix.registerElement "trix-editor",
 
 findOrCreateToolbarElement = (editorElement) ->
   {previousElementSibling} = editorElement
-  if Trix.tagName(previousElementSibling) is "trix-toolbar"
+
+  if editorElement.hasAttribute("toolbar")
+    document.getElementById(editorElement.getAttribute("toolbar"))
+  else if Trix.tagName(previousElementSibling) is "trix-toolbar"
     previousElementSibling
   else
     element = makeElement("trix-toolbar")
@@ -78,10 +81,13 @@ findOrCreateToolbarElement = (editorElement) ->
 
 findOrCreateInputElement = (editorElement) ->
   {nextElementSibling} = editorElement
-  if nextElementSibling?.type is "hidden"
+
+  if editorElement.hasAttribute("input")
+    document.getElementById(editorElement.getAttribute("input"))
+  else if Trix.tagName(nextElementSibling) is "input" and nextElementSibling.type is "hidden"
     nextElementSibling
   else
-    element = makeElement("input", type: "hidden", name="content")
+    element = makeElement("input", type: "hidden", name: "content")
     editorElement.parentElement.insertBefore(element, nextElementSibling)
     element
 
