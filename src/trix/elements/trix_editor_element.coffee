@@ -56,12 +56,12 @@ Trix.registerElement "trix-editor",
 
     @toolbarElement = findOrCreateToolbarElement(this)
     @inputElement = findOrCreateInputElement(this)
-    editorElement = this
 
-    document = Trix.deserializeFromContentType(@value, "text/html")
-    delegate = new Trix.EditorElementController this, editorElement, @inputElement
+    @editorController = new Trix.EditorController
+      editorElement: this
+      document: Trix.deserializeFromContentType(@value, "text/html")
+      delegate: new Trix.EditorElementController this
 
-    @editorController = new Trix.EditorController {editorElement, @toolbarElement, document, delegate}
     @editorController.registerSelectionManager()
 
   detachedCallback: ->

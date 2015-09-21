@@ -11,8 +11,8 @@
 {rangeIsCollapsed, rangesAreEqual} = Trix
 
 class Trix.EditorController extends Trix.Controller
-  constructor: (@config) ->
-    {@editorElement, @toolbarElement, document, @delegate} = @config
+  constructor: ({@editorElement, document, @delegate}) ->
+    {@toolbarElement} = @editorElement
     document ?= new Trix.Document
 
     @selectionManager = new Trix.SelectionManager @editorElement
