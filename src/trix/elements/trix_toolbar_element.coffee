@@ -23,6 +23,6 @@ Trix.registerElement "trix-toolbar",
     }
   """
 
-  attachedCallback: ->
+  createdCallback: ->
     if @innerHTML is ""
       @appendChild(cloneFragment(Trix.config.toolbar.content))
