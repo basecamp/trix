@@ -107,12 +107,12 @@ editorTest "element triggers attribute change events", (done) ->
       deepEqual { bold: true }, attributes
       done()
 
-editorTest "element triggers toolbar action change events", (done) ->
+editorTest "element triggers action change events", (done) ->
   element = getEditorElement()
   eventCount = 0
   actions = null
 
-  element.addEventListener "trix-toolbar-actions-change", (event) ->
+  element.addEventListener "trix-actions-change", (event) ->
     eventCount++
     {actions} = event
 

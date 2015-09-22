@@ -27,7 +27,7 @@ getToolbarDialog = ({attribute, action}) ->
   button.classList.contains("active")
 
 @isToolbarButtonDisabled = (selector) ->
-  getToolbarButton(selector).getAttribute("disabled") is "disabled"
+  getToolbarButton(selector).disabled
 
 @typeInToolbarDialog = (string, {attribute}, callback) ->
   dialog = getToolbarDialog({attribute})
