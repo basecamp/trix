@@ -59,12 +59,10 @@ class Trix.EditorController extends Trix.Controller
     @delegate?.didChangeDocument?(document)
     @render() unless @handlingInput
 
-  compositionDidChangeCurrentAttributes: (currentAttributes) ->
-    unless objectsAreEqual(currentAttributes, @currentAttributes)
-      @currentAttributes = currentAttributes
-      @toolbarController.updateAttributes(@currentAttributes)
-      @delegate?.didChangeAttributes?(@currentAttributes)
+  compositionDidChangeCurrentAttributes: (@currentAttributes) ->
+    @toolbarController.updateAttributes(@currentAttributes)
     @updateCurrentActions()
+    @delegate?.didChangeAttributes?(@currentAttributes)
 
   compositionDidPerformInsertionAtRange: (range) ->
     @pastedRange = range if @pasting
@@ -211,6 +209,7 @@ class Trix.EditorController extends Trix.Controller
   locationRangeDidChange: (locationRange) ->
     @editor.locationRange = locationRange
     @composition.updateCurrentAttributes()
+    @updateCurrentActions()
     if @attachmentLocationRange and not rangesAreEqual(@attachmentLocationRange, locationRange)
       @composition.stopEditingAttachment()
     @delegate?.didChangeSelection?()
