@@ -84,11 +84,11 @@ class Trix.CompositionController extends Trix.BasicObject
 
   attachmentEditorDidRequestUpdatingAttributesForAttachment: (attributes, attachment) ->
     @delegate?.compositionControllerWillUpdateAttachment?(attachment)
-    @composition.document.updateAttributesForAttachment(attributes, attachment)
+    @composition.updateAttributesForAttachment(attributes, attachment)
 
   attachmentEditorDidRequestRemovingAttributeForAttachment: (attribute, attachment) ->
     @delegate?.compositionControllerWillUpdateAttachment?(attachment)
-    @composition.document.removeAttributeForAttachment(attribute, attachment)
+    @composition.removeAttributeForAttachment(attribute, attachment)
 
   attachmentEditorDidRequestRemovalOfAttachment: (attachment) ->
     @delegate?.compositionControllerDidRequestRemovalOfAttachment?(attachment)

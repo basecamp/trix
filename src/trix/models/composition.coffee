@@ -427,6 +427,12 @@ class Trix.Composition extends Trix.BasicObject
   canEditAttachmentCaption: ->
     @editingAttachment?.isPreviewable()
 
+  updateAttributesForAttachment: (attributes, attachment) ->
+    @setDocument(@document.updateAttributesForAttachment(attributes, attachment))
+
+  removeAttributeForAttachment: (attribute, attachment) ->
+    @setDocument(@document.removeAttributeForAttachment(attribute, attachment))
+
   # Private
 
   getPreviousBlock: ->
