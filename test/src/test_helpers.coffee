@@ -138,6 +138,18 @@ for code, name of Trix.InputController.keyNames
   getComposition().insertFile(file)
   render()
 
+@insertImageAttachment = (attributes) ->
+  attributes ?=
+    url: "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
+    width: 10
+    height: 10
+    filename: "image.gif"
+    contentType: "image/gif"
+
+  attachment = new Trix.Attachment attributes
+  text = Trix.Text.textForAttachmentWithAttributes(attachment)
+  insertText(text)
+
 @replaceDocument = (document) ->
   getComposition().setDocument(document)
   render()

@@ -123,3 +123,31 @@ editorTest "element triggers action change events", (done) ->
       equal actions.decreaseBlockLevel, true
       equal actions.increaseBlockLevel, false
       done()
+
+editorTest "element triggers custom focus and blur events", (done) ->
+  element = getEditorElement()
+  documentElement = getDocumentElement()
+
+  focusEventCount = 0
+  blurEventCount = 0
+  element.addEventListener "trix-focus", -> focusEventCount++
+  element.addEventListener "trix-blur", -> blurEventCount++
+
+  triggerEvent(documentElement, "blur")
+  defer ->
+    equal blurEventCount, 1
+    equal focusEventCount, 0
+
+    triggerEvent(documentElement, "focus")
+    defer ->
+      equal blurEventCount, 1
+      equal focusEventCount, 1
+
+      insertImageAttachment()
+      clickElement element.querySelector("figure"), ->
+        clickElement element.querySelector("figcaption"), ->
+          defer ->
+            equal document.activeElement, element.querySelector("textarea")
+            equal blurEventCount, 1
+            equal focusEventCount, 1
+            done()

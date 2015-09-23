@@ -138,6 +138,10 @@ class Trix.EditorController extends Trix.Controller
 
   compositionControllerDidFocus: ->
     @toolbarController.hideDialog()
+    @delegate?.didFocus?()
+
+  compositionControllerDidBlur: ->
+    @delegate?.didBlur?()
 
   compositionControllerDidSelectAttachment: (attachment) ->
     @composition.editAttachment(attachment)

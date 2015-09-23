@@ -21,6 +21,12 @@ class Trix.EditorElementController extends Trix.Controller
     requestAnimationFrame =>
       triggerEvent("trix-initialize", onElement: @element)
 
+  didFocus: ->
+    triggerEvent("trix-focus", onElement: @element)
+
+  didBlur: ->
+    triggerEvent("trix-blur", onElement: @element)
+
   didPasteDataAtRange: (pasteData, range) ->
     triggerEvent("trix-paste", onElement: @element, attributes: {pasteData, range})
 
