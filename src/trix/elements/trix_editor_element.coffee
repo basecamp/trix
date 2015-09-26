@@ -5,7 +5,9 @@
 {makeElement, handleEvent, handleEventOnce, defer} = Trix
 {classNames} = Trix.config.css
 
-Trix.registerElement "trix-editor",
+Trix.registerElement "trix-editor", do ->
+  id = 0
+
   defaultCSS: """
     %t:empty:not(:focus)::before {
       content: attr(placeholder);
@@ -49,6 +51,7 @@ Trix.registerElement "trix-editor",
   # Element lifecycle
 
   createdCallback: ->
+    @trixId = ++id
     makeEditable(this)
 
   attachedCallback: ->
@@ -68,27 +71,23 @@ Trix.registerElement "trix-editor",
     @editorController?.unregisterSelectionManager()
 
 findOrCreateToolbarElement = (editorElement) ->
-  {previousElementSibling} = editorElement
-
   if editorElement.hasAttribute("toolbar")
     document.getElementById(editorElement.getAttribute("toolbar"))
-  else if Trix.tagName(previousElementSibling) is "trix-toolbar"
-    previousElementSibling
   else
-    element = makeElement("trix-toolbar")
+    id = "trix-toolbar-#{editorElement.trixId}"
+    editorElement.setAttribute("toolbar", id)
+    element = makeElement("trix-toolbar", {id})
     editorElement.parentElement.insertBefore(element, editorElement)
     element
 
 findOrCreateInputElement = (editorElement) ->
-  {nextElementSibling} = editorElement
-
   if editorElement.hasAttribute("input")
     document.getElementById(editorElement.getAttribute("input"))
-  else if Trix.tagName(nextElementSibling) is "input" and nextElementSibling.type is "hidden"
-    nextElementSibling
   else
-    element = makeElement("input", type: "hidden", name: "content")
-    editorElement.parentElement.insertBefore(element, nextElementSibling)
+    id = "trix-input-#{editorElement.trixId}"
+    editorElement.setAttribute("input", id)
+    element = makeElement("input", type: "hidden", id: id)
+    editorElement.parentElement.insertBefore(element, editorElement.nextElementSibling)
     element
 
 autofocus = (element) ->
