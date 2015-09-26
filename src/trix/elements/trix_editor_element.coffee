@@ -39,12 +39,20 @@ Trix.registerElement "trix-editor", do ->
     get: ->
       @editorController?.composition
 
+  trixId:
+    get: ->
+      if @hasAttribute("trix-id")
+        @getAttribute("trix-id")
+      else
+        @setAttribute("trix-id", ++id)
+        @trixId
+
   toolbarElement:
     get: ->
       if @hasAttribute("toolbar")
         document.getElementById(@getAttribute("toolbar"))
       else
-        toolbarId = "trix-toolbar-#{++id}"
+        toolbarId = "trix-toolbar-#{@trixId}"
         @setAttribute("toolbar", toolbarId)
         element = makeElement("trix-toolbar", id: toolbarId)
         @parentElement.insertBefore(element, this)
@@ -55,7 +63,7 @@ Trix.registerElement "trix-editor", do ->
       if @hasAttribute("input")
         document.getElementById(@getAttribute("input"))
       else
-        inputId = "trix-input-#{++id}"
+        inputId = "trix-input-#{@trixId}"
         @setAttribute("input", inputId)
         element = makeElement("input", type: "hidden", id: inputId)
         @parentElement.insertBefore(element, @nextElementSibling)
