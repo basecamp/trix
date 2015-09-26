@@ -71,18 +71,15 @@ Trix.registerElement "trix-editor", do ->
   value:
     get: ->
       @inputElement.value
+    set: (value) ->
+      @inputElement.value = value
 
   # Selection methods
 
   getClientRectAtPosition: (position) ->
     @editorController?.getClientRectAtPosition(position)
 
-
   # Controller delegate methods
-
-  save: ->
-    value = Trix.serializeToContentType(this, "text/html")
-    @inputElement.value = value
 
   notify: (message, data) ->
     switch message
@@ -93,7 +90,7 @@ Trix.registerElement "trix-editor", do ->
           @documentChangedSinceLastRender = false
           @notify("change")
       when "change", "attachment-add", "attachment-edit", "attachment-remove"
-        @save()
+        @value = Trix.serializeToContentType(this, "text/html")
 
     triggerEvent("trix-#{message}", onElement: this, attributes: data)
 
