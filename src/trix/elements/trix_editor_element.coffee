@@ -39,9 +39,31 @@ Trix.registerElement "trix-editor", do ->
     get: ->
       @editorController?.composition
 
+  toolbarElement:
+    get: ->
+      if @hasAttribute("toolbar")
+        document.getElementById(@getAttribute("toolbar"))
+      else
+        toolbarId = "trix-toolbar-#{++id}"
+        @setAttribute("toolbar", toolbarId)
+        element = makeElement("trix-toolbar", id: toolbarId)
+        @parentElement.insertBefore(element, this)
+        element
+
+  inputElement:
+    get: ->
+      if @hasAttribute("input")
+        document.getElementById(@getAttribute("input"))
+      else
+        inputId = "trix-input-#{++id}"
+        @setAttribute("input", inputId)
+        element = makeElement("input", type: "hidden", id: inputId)
+        @parentElement.insertBefore(element, @nextElementSibling)
+        element
+
   value:
     get: ->
-      @inputElement?.value
+      @inputElement.value
 
   # Selection methods
 
@@ -51,14 +73,10 @@ Trix.registerElement "trix-editor", do ->
   # Element lifecycle
 
   createdCallback: ->
-    @trixId = ++id
     makeEditable(this)
 
   attachedCallback: ->
     autofocus(this)
-
-    @toolbarElement = findOrCreateToolbarElement(this)
-    @inputElement = findOrCreateInputElement(this)
 
     @editorController = new Trix.EditorController
       editorElement: this
@@ -69,26 +87,6 @@ Trix.registerElement "trix-editor", do ->
 
   detachedCallback: ->
     @editorController?.unregisterSelectionManager()
-
-findOrCreateToolbarElement = (editorElement) ->
-  if editorElement.hasAttribute("toolbar")
-    document.getElementById(editorElement.getAttribute("toolbar"))
-  else
-    id = "trix-toolbar-#{editorElement.trixId}"
-    editorElement.setAttribute("toolbar", id)
-    element = makeElement("trix-toolbar", {id})
-    editorElement.parentElement.insertBefore(element, editorElement)
-    element
-
-findOrCreateInputElement = (editorElement) ->
-  if editorElement.hasAttribute("input")
-    document.getElementById(editorElement.getAttribute("input"))
-  else
-    id = "trix-input-#{editorElement.trixId}"
-    editorElement.setAttribute("input", id)
-    element = makeElement("input", type: "hidden", id: id)
-    editorElement.parentElement.insertBefore(element, editorElement.nextElementSibling)
-    element
 
 autofocus = (element) ->
   unless document.querySelector(":focus")
