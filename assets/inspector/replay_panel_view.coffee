@@ -4,9 +4,9 @@ class Trix.ReplayPanelView extends Trix.InspectorPanelView
   constructor: ->
     super
     @playerElement = @element.querySelector("trix-watchdog-player")
-    @documentElement = @editorController.documentElement
+    @editorElement = @editorController.editorElement
 
-    @recorder = @documentElement.recorder
+    @recorder = @editorElement.recorder
     @recording = @recorder.recording
 
   show: ->
@@ -16,7 +16,7 @@ class Trix.ReplayPanelView extends Trix.InspectorPanelView
 
     @playerElement.loadRecording(@recording)
     @iframeElement = @playerElement.querySelector("iframe")
-    @documentElement.parentNode.insertBefore(@iframeElement, @documentElement)
+    @editorElement.parentNode.insertBefore(@iframeElement, @editorElement)
     @playerElement.controller.playerDidSeekToIndex(0)
 
   hide: ->

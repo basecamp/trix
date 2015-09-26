@@ -23,11 +23,11 @@ class Trix.StructurePanelView extends Trix.InspectorPanelView
 
   show: ->
     super
-    @editorController.documentElement.classList.add("outline-blocks")
+    @editorController.editorElement.classList.add("outline-blocks")
 
   hide: ->
     super
-    @editorController.documentElement.classList.remove("outline-blocks")
+    @editorController.editorElement.classList.remove("outline-blocks")
 
   renderBlock: (block, index) ->
     element = make("div", className: "block")

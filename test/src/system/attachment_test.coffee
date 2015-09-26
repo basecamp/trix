@@ -31,4 +31,4 @@ getFigure = ->
   findElement("figure")
 
 findElement = (selector) ->
-  getDocumentElement().querySelector(selector)
+  getEditorElement().querySelector(selector)

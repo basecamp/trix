@@ -1,4 +1,4 @@
-{cloneFragment, triggerEvent} = Trix
+{cloneFragment} = Trix
 
 Trix.registerElement "trix-toolbar",
   defaultCSS: """
@@ -23,10 +23,6 @@ Trix.registerElement "trix-toolbar",
     }
   """
 
-  attachedCallback: ->
+  createdCallback: ->
     if @innerHTML is ""
       @appendChild(cloneFragment(Trix.config.toolbar.content))
-
-    @toolbarController = new Trix.ToolbarController this
-
-    triggerEvent("trix-element-attached", onElement: this)

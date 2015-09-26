@@ -1,22 +1,77 @@
 #= require trix/elements/trix_toolbar_element
-#= require trix/elements/trix_document_element
 #= require trix/controllers/editor_controller
 #= require trix/controllers/editor_element_controller
 
-{makeElement, tagName, handleEvent, defer} = Trix
+{makeElement, handleEvent, handleEventOnce, defer} = Trix
+{classNames} = Trix.config.css
 
-requiredChildren = ["trix-document", "trix-toolbar"]
+Trix.registerElement "trix-editor", do ->
+  id = 0
 
-Trix.registerElement "trix-editor",
+  defaultCSS: """
+    %t:empty:not(:focus)::before {
+      content: attr(placeholder);
+      color: graytext;
+    }
+
+    %t a[contenteditable=false] {
+      cursor: text;
+    }
+
+    %t img {
+      max-width: 100%;
+    }
+
+    %t .#{classNames.attachment.captionEditor} {
+      resize: none;
+    }
+
+    %t .#{classNames.attachment.captionEditor}.trix-autoresize-clone {
+      position: absolute;
+      left: -9999px;
+      max-height: 0px;
+    }
+  """
+
   # Properties
 
   composition:
     get: ->
       @editorController?.composition
 
+  trixId:
+    get: ->
+      if @hasAttribute("trix-id")
+        @getAttribute("trix-id")
+      else
+        @setAttribute("trix-id", ++id)
+        @trixId
+
+  toolbarElement:
+    get: ->
+      if @hasAttribute("toolbar")
+        document.getElementById(@getAttribute("toolbar"))
+      else
+        toolbarId = "trix-toolbar-#{@trixId}"
+        @setAttribute("toolbar", toolbarId)
+        element = makeElement("trix-toolbar", id: toolbarId)
+        @parentElement.insertBefore(element, this)
+        element
+
+  inputElement:
+    get: ->
+      if @hasAttribute("input")
+        document.getElementById(@getAttribute("input"))
+      else
+        inputId = "trix-input-#{@trixId}"
+        @setAttribute("input", inputId)
+        element = makeElement("input", type: "hidden", id: inputId)
+        @parentElement.insertBefore(element, @nextElementSibling)
+        element
+
   value:
     get: ->
-      findInputElement(this).value
+      @inputElement.value
 
   # Selection methods
 
@@ -26,78 +81,42 @@ Trix.registerElement "trix-editor",
   # Element lifecycle
 
   createdCallback: ->
-    @attachedChildren = {}
-
-    handleEvent "trix-element-attached", onElement: this, withCallback: (event) =>
-      event.stopPropagation()
-      @attachedChildren[tagName(event.target)] = event.target
-
-    findOrCreateInputElement(this)
-    findOrCreateToolbarElement(this)
-    findOrCreateDocumentElement(this)
+    makeEditable(this)
 
   attachedCallback: ->
-    @attachedChildrenReady =>
-      @initializeEditorController()
+    autofocus(this)
+
+    @editorController = new Trix.EditorController
+      editorElement: this
+      document: Trix.deserializeFromContentType(@value, "text/html")
+      delegate: new Trix.EditorElementController this
+
+    @editorController.registerSelectionManager()
 
   detachedCallback: ->
     @editorController?.unregisterSelectionManager()
 
-  requiredChildrenAttached: ->
-    return false for child in requiredChildren when not @attachedChildren[child]
-    true
+autofocus = (element) ->
+  unless document.querySelector(":focus")
+    if element.hasAttribute("autofocus") and document.querySelector("[autofocus]") is element
+      element.focus()
 
-  attachedChildrenReady: (callback) ->
-    if @requiredChildrenAttached()
-      callback()
-    else
-      handleEvent "trix-element-attached", onElement: this, withCallback: =>
-        @attachedChildrenReady(callback)
+makeEditable = (element) ->
+  return if element.hasAttribute("contenteditable")
+  element.setAttribute("contenteditable", "")
+  handleEventOnce("focus", onElement: element, withCallback: -> configureContentEditable(element))
 
-  initializeEditorController: ->
-    documentElement = @attachedChildren["trix-document"]
-    toolbarElement = @attachedChildren["trix-toolbar"]
-    inputElement = findInputElement(this)
+configureContentEditable = (element) ->
+  disableObjectResizing(element)
+  setDefaultParagraphSeparator(element)
 
-    @editorController ?= new Trix.EditorController
-      toolbarController: toolbarElement.toolbarController
-      documentElement: documentElement
-      document: Trix.deserializeFromContentType(inputElement.value, "text/html")
-      delegate: new Trix.EditorElementController this, documentElement, inputElement
+disableObjectResizing = (element) ->
+  if document.queryCommandSupported?("enableObjectResizing")
+    document.execCommand("enableObjectResizing", false, false)
+    handleEvent("mscontrolselect", onElement: element, preventDefault: true)
 
-    @editorController.registerSelectionManager()
-
-
-findOrCreateToolbarElement = (parentElement) ->
-  unless element = parentElement.querySelector("trix-toolbar")
-    element = makeElement("trix-toolbar")
-    parentElement.insertBefore(element, parentElement.firstChild)
-  element
-
-findOrCreateDocumentElement = (parentElement) ->
-  unless element = parentElement.querySelector("trix-document")
-    element = makeElement("trix-document")
-    if parentElement.hasAttribute("autofocus")
-      parentElement.removeAttribute("autofocus")
-      element.setAttribute("autofocus", "")
-    if placeholder = parentElement.getAttribute("placeholder")
-      parentElement.removeAttribute("placeholder")
-      element.setAttribute("placeholder", placeholder)
-    parentElement.insertBefore(element, null)
-  element
-
-findOrCreateInputElement = (parentElement) ->
-  unless element = findInputElement(parentElement)
-    name = parentElement.getAttribute("name")
-    element = makeElement("input", type: "hidden")
-    element.name = name if name?
-    parentElement.insertBefore(element, null)
-
-  if parentElement.hasAttribute("value")
-    element.value = parentElement.getAttribute("value")
-    parentElement.removeAttribute("value")
-
-  element
-
-findInputElement = (parentElement) ->
-  parentElement.querySelector("input[type=hidden]")
+setDefaultParagraphSeparator = (element) ->
+  if document.queryCommandSupported?("DefaultParagraphSeparator")
+    {tagName} = Trix.config.blockAttributes.default
+    if tagName in ["div", "p"]
+      document.execCommand("DefaultParagraphSeparator", false, tagName)

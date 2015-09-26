@@ -2,12 +2,12 @@ editorModule "Custom element API", template: "editor_empty"
 
 editorTest "files are accepted by default", ->
   getComposition().insertFile(createFile())
-  equal getEditor().getAttachments().length, 1
+  equal getComposition().getAttachments().length, 1
 
 editorTest "rejecting a file by canceling the trix-file-accept event", ->
   getEditorElement().addEventListener "trix-file-accept", (event) -> event.preventDefault()
   getComposition().insertFile(createFile())
-  equal getEditor().getAttachments().length, 0
+  equal getComposition().getAttachments().length, 0
 
 editorTest "element triggers attachment events", ->
   file = createFile()
@@ -60,8 +60,8 @@ editorTest "element triggers trix-selectionchange events when the location range
       equal eventCount, 2
       done()
 
-editorTest "element triggers toolbar dialog events", (done) ->
-  element = getEditorElement()
+editorTest "toolbar element triggers toolbar dialog events", (done) ->
+  element = getToolbarElement()
   events = []
 
   element.addEventListener "trix-toolbar-dialog-show", (event) ->
@@ -126,19 +126,18 @@ editorTest "element triggers action change events", (done) ->
 
 editorTest "element triggers custom focus and blur events", (done) ->
   element = getEditorElement()
-  documentElement = getDocumentElement()
 
   focusEventCount = 0
   blurEventCount = 0
   element.addEventListener "trix-focus", -> focusEventCount++
   element.addEventListener "trix-blur", -> blurEventCount++
 
-  triggerEvent(documentElement, "blur")
+  triggerEvent(element, "blur")
   defer ->
     equal blurEventCount, 1
     equal focusEventCount, 0
 
-    triggerEvent(documentElement, "focus")
+    triggerEvent(element, "focus")
     defer ->
       equal blurEventCount, 1
       equal focusEventCount, 1
