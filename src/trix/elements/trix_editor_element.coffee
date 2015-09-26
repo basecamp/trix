@@ -86,7 +86,7 @@ Trix.registerElement "trix-editor", do ->
   attachedCallback: ->
     autofocus(this)
 
-    @editorController = new Trix.EditorController
+    @editorController ?= new Trix.EditorController
       editorElement: this
       document: Trix.deserializeFromContentType(@value, "text/html")
       delegate: new Trix.EditorElementController this
