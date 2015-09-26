@@ -32,7 +32,7 @@ test "findLocationFromContainerAndOffset", ->
     ],"attributes":[]},
     {"text":[
       {"type":"string","attributes":{},"string":"b😭cd"},
-      {"type":"attachment","attributes":{},"attachment":{"contentType":"image/png","filename":"x.png","filesize":0,"height":13,"href":"data:image/png,","identifier":"1","url":"data:image/png,","width":15}},
+      {"type":"attachment","attributes":{},"attachment":{"contentType":"image/png","filename":"x.png","filesize":0,"height":13,"href":TEST_IMAGE_URL,"identifier":"1","url":TEST_IMAGE_URL,"width":15}},
       {"type":"string","attributes":{},"string":"e"},
       {"type":"string","attributes":{"blockBreak":true},"string":"\n"}
     ],"attributes":["quote"]}

@@ -2,6 +2,8 @@
 
 {normalizeRange, rangesAreEqual} = Trix
 
+@TEST_IMAGE_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
+
 initialized = false
 initializedCallbacks = []
 
@@ -140,7 +142,7 @@ for code, name of Trix.InputController.keyNames
 
 @insertImageAttachment = (attributes) ->
   attributes ?=
-    url: "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
+    url: TEST_IMAGE_URL
     width: 10
     height: 10
     filename: "image.gif"
