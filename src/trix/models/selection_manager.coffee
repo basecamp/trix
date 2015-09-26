@@ -2,12 +2,13 @@
 #= require trix/observers/selection_change_observer
 
 {defer, benchmark, elementContainsNode, nodeIsCursorTarget, innerElementIsActive,
- normalizeRange, rangeIsCollapsed, rangesAreEqual} = Trix
+ handleEvent, handleEventOnce, normalizeRange, rangeIsCollapsed, rangesAreEqual} = Trix
 
 class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
     @locationMapper = new Trix.LocationMapper @element
     @lockCount = 0
+    handleEvent("mousedown", onElement: @element, withCallback: @didMouseDown)
 
   getLocationRange: (options = {}) ->
     locationRange = if options.ignoreLock
@@ -76,8 +77,15 @@ class Trix.SelectionManager extends Trix.BasicObject
   @proxyMethod "locationMapper.findContainerAndOffsetFromLocation"
   @proxyMethod "locationMapper.findNodeAndOffsetFromLocation"
 
+  didMouseDown: =>
+    @updatesPaused = true
+    handleEventOnce("mousemove", onElement: @element, withCallback: @didMouseMove)
+
+  didMouseMove: =>
+    @updatesPaused = null
+
   selectionDidChange: =>
-    unless innerElementIsActive(@element)
+    unless @updatesPaused or innerElementIsActive(@element)
       @updateCurrentLocationRange()
 
   updateCurrentLocationRange: (locationRange) ->

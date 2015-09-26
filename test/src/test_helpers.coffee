@@ -324,6 +324,7 @@ getElementCoordinates = (element) ->
 
 @dragToCoordinates = (coordinates, callback) ->
   element = document.activeElement
+  triggerEvent(element, "mousemove")
   triggerEvent(element, "dragstart")
   triggerEvent(element, "drop", coordinates)
   defer(callback)

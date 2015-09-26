@@ -1,4 +1,4 @@
-{defer, findClosestElementFromNode, normalizeSpaces, summarizeStringChange} = Trix
+{defer, findClosestElementFromNode, nodeIsEmptyTextNode, normalizeSpaces, summarizeStringChange} = Trix
 
 class Trix.MutationObserver extends Trix.BasicObject
   mutableSelector = "[data-trix-mutable]"
@@ -41,7 +41,7 @@ class Trix.MutationObserver extends Trix.BasicObject
     false
 
   nodeIsSignificant: (node) ->
-    node isnt @element and not @nodeIsMutable(node)
+    node isnt @element and not @nodeIsMutable(node) and not nodeIsEmptyTextNode(node)
 
   nodeIsMutable: (node) ->
     findClosestElementFromNode(node, matchingSelector: mutableSelector)
