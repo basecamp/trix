@@ -40,9 +40,6 @@ class Trix.DocumentView extends Trix.ObjectView
     @element.appendChild(fragment)
     @didSync()
 
-  focus: ->
-    @element.focus()
-
   # Private
 
   didSync: ->

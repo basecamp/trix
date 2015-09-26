@@ -48,9 +48,6 @@ class Trix.CompositionController extends Trix.BasicObject
     @documentView.invalidateViewForObject(object)
     @render()
 
-  focus: ->
-    @documentView.focus()
-
   isViewCachingEnabled: ->
     @documentView.isViewCachingEnabled()
 

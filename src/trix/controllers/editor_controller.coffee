@@ -220,19 +220,19 @@ class Trix.EditorController extends Trix.Controller
     @recordFormattingUndoEntry()
     @composition.toggleCurrentAttribute(attributeName)
     @render()
-    @compositionController.focus()
+    @editorElement.focus()
 
   toolbarDidUpdateAttribute: (attributeName, value) ->
     @recordFormattingUndoEntry()
     @composition.setCurrentAttribute(attributeName, value)
     @render()
-    @compositionController.focus()
+    @editorElement.focus()
 
   toolbarDidRemoveAttribute: (attributeName) ->
     @recordFormattingUndoEntry()
     @composition.removeCurrentAttribute(attributeName)
     @render()
-    @compositionController.focus()
+    @editorElement.focus()
 
   toolbarWillShowDialog: (dialogElement) ->
     @composition.expandSelectionForEditing()
@@ -242,7 +242,7 @@ class Trix.EditorController extends Trix.Controller
     @editorElement.notify("toolbar-dialog-show", {name})
 
   toolbarDidHideDialog: ({name}) ->
-    @compositionController.focus()
+    @editorElement.focus()
     @thawSelection()
     @editorElement.notify("toolbar-dialog-hide", {name})
 
