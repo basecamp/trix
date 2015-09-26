@@ -163,7 +163,10 @@ class Trix.InputController extends Trix.BasicObject
       point = [event.clientX, event.clientY]
       @responder?.setLocationRangeFromPoint(point)
 
-      if @draggedRange
+      if files = event.dataTransfer?.files
+        @attachFiles(files)
+
+      else if @draggedRange
         @delegate?.inputControllerWillMoveText()
         @responder?.moveTextFromRange(@draggedRange)
         @draggedRange = null
@@ -173,9 +176,6 @@ class Trix.InputController extends Trix.BasicObject
         document = Trix.Document.fromJSONString(documentJSON)
         @responder?.insertDocument(document)
         @requestRender()
-
-      else if files = event.dataTransfer.files
-        @attachFiles(event.dataTransfer.files)
 
       @draggedRange = null
       @draggingPoint = null
