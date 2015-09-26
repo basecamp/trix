@@ -1,8 +1,7 @@
 #= require trix/elements/trix_toolbar_element
 #= require trix/controllers/editor_controller
-#= require trix/controllers/editor_element_controller
 
-{makeElement, handleEvent, handleEventOnce, defer} = Trix
+{makeElement, triggerEvent, handleEvent, handleEventOnce, defer} = Trix
 {classNames} = Trix.config.css
 
 Trix.registerElement "trix-editor", do ->
@@ -78,6 +77,26 @@ Trix.registerElement "trix-editor", do ->
   getClientRectAtPosition: (position) ->
     @editorController?.getClientRectAtPosition(position)
 
+
+  # Controller delegate methods
+
+  save: ->
+    value = Trix.serializeToContentType(this, "text/html")
+    @inputElement.value = value
+
+  notify: (message, data) ->
+    switch message
+      when "document-change"
+        @documentChangedSinceLastRender = true
+      when "render"
+        if @documentChangedSinceLastRender
+          @documentChangedSinceLastRender = false
+          @notify("change")
+      when "change", "attachment-add", "attachment-edit", "attachment-remove"
+        @save()
+
+    triggerEvent("trix-#{message}", onElement: this, attributes: data)
+
   # Element lifecycle
 
   createdCallback: ->
@@ -89,9 +108,9 @@ Trix.registerElement "trix-editor", do ->
     @editorController ?= new Trix.EditorController
       editorElement: this
       document: Trix.deserializeFromContentType(@value, "text/html")
-      delegate: new Trix.EditorElementController this
 
     @editorController.registerSelectionManager()
+    requestAnimationFrame => @notify("initialize")
 
   detachedCallback: ->
     @editorController?.unregisterSelectionManager()

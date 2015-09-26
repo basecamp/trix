@@ -11,7 +11,7 @@
 {rangeIsCollapsed, rangesAreEqual, objectsAreEqual} = Trix
 
 class Trix.EditorController extends Trix.Controller
-  constructor: ({@editorElement, document, @delegate}) ->
+  constructor: ({@editorElement, document}) ->
     document ?= new Trix.Document
 
     @selectionManager = new Trix.SelectionManager @editorElement
@@ -38,8 +38,6 @@ class Trix.EditorController extends Trix.Controller
     @composition.setDocument(document)
     @render()
 
-    @delegate?.didInitialize?()
-
   registerSelectionManager: ->
     Trix.selectionChangeObserver.registerSelectionManager(@selectionManager)
 
@@ -49,32 +47,32 @@ class Trix.EditorController extends Trix.Controller
   # Composition delegate
 
   compositionDidChangeDocument: (document) ->
-    @delegate?.didChangeDocument?(document)
+    @editorElement.notify("document-change")
     @render() unless @handlingInput
 
   compositionDidChangeCurrentAttributes: (@currentAttributes) ->
     @toolbarController.updateAttributes(@currentAttributes)
     @updateCurrentActions()
-    @delegate?.didChangeAttributes?(@currentAttributes)
+    @editorElement.notify("attributes-change", attributes: @currentAttributes)
 
   compositionDidPerformInsertionAtRange: (range) ->
     @pastedRange = range if @pasting
 
   compositionShouldAcceptFile: (file) ->
-    @delegate?.shouldAcceptFile?(file)
+    @editorElement.notify("file-accept", {file})
 
   compositionDidAddAttachment: (attachment) ->
     managedAttachment = @attachmentManager.manageAttachment(attachment)
-    @delegate?.didAddAttachment?(managedAttachment)
+    @editorElement.notify("attachment-add", attachment: managedAttachment)
 
   compositionDidEditAttachment: (attachment) ->
     @compositionController.rerenderViewForObject(attachment)
     managedAttachment = @attachmentManager.manageAttachment(attachment)
-    @delegate?.didEditAttachment?(managedAttachment)
+    @editorElement.notify("attachment-edit", attachment: managedAttachment)
 
   compositionDidRemoveAttachment: (attachment) ->
     managedAttachment = @attachmentManager.unmanageAttachment(attachment)
-    @delegate?.didRemoveAttachment?(managedAttachment)
+    @editorElement.notify("attachment-remove", attachment: managedAttachment)
 
   compositionDidStartEditingAttachment: (attachment) ->
     document = @composition.document
@@ -118,7 +116,7 @@ class Trix.EditorController extends Trix.Controller
     @inputController.editorDidSyncDocumentView()
     @selectionManager.unlock()
     @updateCurrentActions()
-    @delegate?.didSyncDocumentView?()
+    @editorElement.notify("sync")
 
   compositionControllerDidRender: ->
     if @requestedLocationRange?
@@ -127,14 +125,14 @@ class Trix.EditorController extends Trix.Controller
       @composition.updateCurrentAttributes()
       @requestedLocationRange = null
       @documentWhenLocationRangeRequested = null
-    @delegate?.didRenderDocument?()
+    @editorElement.notify("render")
 
   compositionControllerDidFocus: ->
     @toolbarController.hideDialog()
-    @delegate?.didFocus?()
+    @editorElement.notify("focus")
 
   compositionControllerDidBlur: ->
-    @delegate?.didBlur?()
+    @editorElement.notify("blur")
 
   compositionControllerDidSelectAttachment: (attachment) ->
     @composition.editAttachment(attachment)
@@ -179,7 +177,7 @@ class Trix.EditorController extends Trix.Controller
     @pastedRange = null
     @pasting = null
 
-    @delegate?.didPasteDataAtRange?(pasteData, range)
+    @editorElement.notify("paste", {pasteData, range})
     @render()
 
   inputControllerWillMoveText: ->
@@ -208,7 +206,7 @@ class Trix.EditorController extends Trix.Controller
     @updateCurrentActions()
     if @attachmentLocationRange and not rangesAreEqual(@attachmentLocationRange, locationRange)
       @composition.stopEditingAttachment()
-    @delegate?.didChangeSelection?()
+    @editorElement.notify("selectionchange")
 
   # Toolbar controller delegate
 
@@ -240,13 +238,13 @@ class Trix.EditorController extends Trix.Controller
     @composition.expandSelectionForEditing()
     @freezeSelection()
 
-  toolbarDidShowDialog: (dialogElement) ->
-    @delegate?.didShowToolbarDialog?(dialogElement)
+  toolbarDidShowDialog: ({name}) ->
+    @editorElement.notify("toolbar-dialog-show", {name})
 
-  toolbarDidHideDialog: (dialogElement) ->
+  toolbarDidHideDialog: ({name}) ->
     @compositionController.focus()
     @thawSelection()
-    @delegate?.didHideToolbarDialog?(dialogElement)
+    @editorElement.notify("toolbar-dialog-hide", {name})
 
   # Selection
 
@@ -304,7 +302,7 @@ class Trix.EditorController extends Trix.Controller
 
   invokeAction: (actionName) ->
     if @actionIsExternal(actionName)
-      @delegate?.didInvokeExternalAction?(actionName)
+      @editorElement.notify("action-invoke", {actionName})
     else
       @actions[actionName]?.perform?.call(this)
 
@@ -322,7 +320,7 @@ class Trix.EditorController extends Trix.Controller
     unless objectsAreEqual(currentActions, @currentActions)
       @currentActions = currentActions
       @toolbarController.updateActions(@currentActions)
-      @delegate?.didChangeActions?(@currentActions)
+      @editorElement.notify("actions-change", actions: @currentActions)
 
   # Private
 
