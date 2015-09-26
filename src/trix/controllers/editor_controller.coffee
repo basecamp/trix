@@ -238,13 +238,13 @@ class Trix.EditorController extends Trix.Controller
     @composition.expandSelectionForEditing()
     @freezeSelection()
 
-  toolbarDidShowDialog: ({name}) ->
-    @editorElement.notify("toolbar-dialog-show", {name})
+  toolbarDidShowDialog: (dialogName) ->
+    @editorElement.notify("toolbar-dialog-show", {dialogName})
 
-  toolbarDidHideDialog: ({name}) ->
+  toolbarDidHideDialog: (dialogName) ->
     @editorElement.focus()
     @thawSelection()
-    @editorElement.notify("toolbar-dialog-hide", {name})
+    @editorElement.notify("toolbar-dialog-hide", {dialogName})
 
   # Selection
 

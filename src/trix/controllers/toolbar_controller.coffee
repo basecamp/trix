@@ -4,7 +4,7 @@ class Trix.ToolbarController extends Trix.BasicObject
   actionButtonSelector = "button[data-action]"
   attributeButtonSelector = "button[data-attribute]"
   toolbarButtonSelector = [actionButtonSelector, attributeButtonSelector].join(", ")
-  dialogSelector = ".dialog[data-attribute]"
+  dialogSelector = ".dialog[data-dialog]"
   activeDialogSelector = "#{dialogSelector}.active"
   dialogButtonSelector = "#{dialogSelector} input[data-method]"
   dialogInputSelector = "#{dialogSelector} input[type=text], #{dialogSelector} input[type=url]"
@@ -27,7 +27,7 @@ class Trix.ToolbarController extends Trix.BasicObject
     event.preventDefault()
     actionName = getActionName(element)
 
-    if @getDialogForAttributeName(actionName)
+    if @getDialog(actionName)
       @toggleDialog(actionName)
     else
       @delegate?.toolbarDidInvokeAction(actionName)
@@ -37,7 +37,7 @@ class Trix.ToolbarController extends Trix.BasicObject
     event.preventDefault()
     attributeName = getAttributeName(element)
 
-    if @getDialogForAttributeName(attributeName)
+    if @getDialog(attributeName)
       @toggleDialog(attributeName)
     else
       @delegate?.toolbarDidToggleAttribute(attributeName)
@@ -53,7 +53,7 @@ class Trix.ToolbarController extends Trix.BasicObject
     if event.keyCode is 13 # Enter key
       event.preventDefault()
       attribute = element.getAttribute("name")
-      dialog = @getDialogForAttributeName(attribute)
+      dialog = @getDialog(attribute)
       @setAttribute(dialog)
     if event.keyCode is 27 # Escape key
       event.preventDefault()
@@ -100,29 +100,30 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   # Dialogs
 
-  dialogIsVisible: (attributeName) ->
-    if element = @getDialogForAttributeName(attributeName)
+  dialogIsVisible: (dialogName) ->
+    if element = @getDialog(dialogName)
       element.classList.contains("active")
 
-  toggleDialog: (attributeName) ->
-    if @dialogIsVisible(attributeName)
+  toggleDialog: (dialogName) ->
+    if @dialogIsVisible(dialogName)
       @hideDialog()
     else
-      @showDialog(attributeName)
+      @showDialog(dialogName)
 
-  showDialog: (attributeName) ->
+  showDialog: (dialogName) ->
     @hideDialog()
     @delegate?.toolbarWillShowDialog()
 
-    element = @getDialogForAttributeName(attributeName)
+    element = @getDialog(dialogName)
     element.classList.add("active")
 
-    if input = getInputForDialog(element, attributeName)
-      input.removeAttribute("disabled")
-      input.value = @attributes[attributeName] ? ""
-      input.select()
+    if attributeName = getAttributeName(element)
+      if input = getInputForDialog(element, dialogName)
+        input.removeAttribute("disabled")
+        input.value = @attributes[attributeName] ? ""
+        input.select()
 
-    @delegate?.toolbarDidShowDialog(name: attributeName)
+    @delegate?.toolbarDidShowDialog(dialogName)
 
   setAttribute: (dialogElement) ->
     attributeName = getAttributeName(dialogElement)
@@ -143,15 +144,15 @@ class Trix.ToolbarController extends Trix.BasicObject
     if element = @element.querySelector(activeDialogSelector)
       element.classList.remove("active")
       @resetDialogInputs()
-      @delegate?.toolbarDidHideDialog(name: element.dataset.attribute)
+      @delegate?.toolbarDidHideDialog(getDialogName(element))
 
   resetDialogInputs: ->
     for input in @element.querySelectorAll(dialogInputSelector)
       input.setAttribute("disabled", "disabled")
       input.classList.remove("validate")
 
-  getDialogForAttributeName: (attributeName) ->
-    @element.querySelector(".dialog[data-attribute=#{attributeName}]")
+  getDialog: (dialogName) ->
+    @element.querySelector(".dialog[data-dialog=#{dialogName}]")
 
   getInputForDialog = (element, attributeName) ->
     attributeName ?= getAttributeName(element)
@@ -164,3 +165,6 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   getAttributeName = (element) ->
     element.getAttribute("data-attribute")
+
+  getDialogName = (element) ->
+    element.getAttribute("data-dialog")

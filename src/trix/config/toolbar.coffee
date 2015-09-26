@@ -31,7 +31,7 @@ Trix.config.toolbar =
     </div>
 
     <div class="dialogs">
-      <div class="dialog link_dialog" data-attribute="href">
+      <div class="dialog link_dialog" data-attribute="href" data-dialog="href">
         <div class="link_url_fields">
           <input type="url" required name="href" placeholder="#{lang.urlPlaceholder}">
           <input type="button" value="#{lang.link}" data-method="setAttribute">
