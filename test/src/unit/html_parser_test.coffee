@@ -44,7 +44,7 @@ test "translates block element margins to newlines", ->
 asyncTest "sanitizes unsafe html", ->
   window.unsanitized = []
   Trix.HTMLParser.parse """
-    <img onload="window.unsanitized.push('img.onload');" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=">
+    <img onload="window.unsanitized.push('img.onload');" src="#{TEST_IMAGE_URL}">
     <img onerror="window.unsanitized.push('img.onerror');" src="data:image/gif;base64,TOTALLYBOGUS">
     <script>
       window.unsanitized.push('script tag');
