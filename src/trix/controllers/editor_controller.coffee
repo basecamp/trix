@@ -12,7 +12,6 @@
 
 class Trix.EditorController extends Trix.Controller
   constructor: ({@editorElement, document, @delegate}) ->
-    {@toolbarElement} = @editorElement
     document ?= new Trix.Document
 
     @selectionManager = new Trix.SelectionManager @editorElement
@@ -33,22 +32,13 @@ class Trix.EditorController extends Trix.Controller
     @compositionController = new Trix.CompositionController @editorElement, @composition
     @compositionController.delegate = this
 
-    @toolbarController = @createToolbarController()
+    @toolbarController = new Trix.ToolbarController @editorElement.toolbarElement
     @toolbarController.delegate = this
 
     @composition.setDocument(document)
     @render()
 
     @delegate?.didInitialize?()
-
-  createToolbarController: ->
-    if @toolbarElement.hasAttribute("native")
-      if Trix.NativeToolbarController
-        new Trix.NativeToolbarController @toolbarElement
-      else
-        throw "Host application must implement Trix.NativeToolbarController"
-    else
-      new Trix.ToolbarController @toolbarElement
 
   registerSelectionManager: ->
     Trix.selectionChangeObserver.registerSelectionManager(@selectionManager)
