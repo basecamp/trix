@@ -11,6 +11,7 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   constructor: (@element) ->
     @attributes = {}
+    @actions = {}
     @resetDialogInputs()
 
     handleEvent "mousedown", onElement: @element, matchingSelector: actionButtonSelector, withCallback: @didClickActionButton
@@ -60,12 +61,12 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   # Action buttons
 
-  updateActions: ->
+  updateActions: (@actions) ->
+    @refreshActionButtons()
+
+  refreshActionButtons: ->
     @eachActionButton (element, actionName) =>
-      if @delegate?.toolbarCanInvokeAction(actionName)
-        element.removeAttribute("disabled")
-      else
-        element.setAttribute("disabled", "disabled")
+      element.disabled = @actions[actionName] is false
 
   eachActionButton: (callback) ->
     for element in @element.querySelectorAll(actionButtonSelector)
@@ -73,8 +74,7 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   # Attribute buttons
 
-  updateAttributes: (attributes) ->
-    @attributes = attributes
+  updateAttributes: (@attributes) ->
     @refreshAttributeButtons()
 
   refreshAttributeButtons: ->

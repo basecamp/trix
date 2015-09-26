@@ -1,7 +1,7 @@
 #= require trix/controllers/attachment_editor_controller
 #= require trix/views/document_view
 
-{handleEvent, tagName, benchmark, findClosestElementFromNode}  = Trix
+{handleEvent, tagName, benchmark, findClosestElementFromNode, innerElementIsActive, defer}  = Trix
 
 {attachmentSelector} = Trix.AttachmentView
 
@@ -10,12 +10,21 @@ class Trix.CompositionController extends Trix.BasicObject
     @documentView = new Trix.DocumentView @composition.document, {@element}
 
     handleEvent "focus", onElement: @element, withCallback: @didFocus
+    handleEvent "blur", onElement: @element, withCallback: @didBlur
     handleEvent "click", onElement: @element, matchingSelector: "a[contenteditable=false]", preventDefault: true
     handleEvent "mousedown", onElement: @element, matchingSelector: attachmentSelector, withCallback: @didClickAttachment
     handleEvent "click", onElement: @element, matchingSelector: "a#{attachmentSelector}", preventDefault: true
 
-  didFocus: =>
-    @delegate?.compositionControllerDidFocus?()
+  didFocus: (event) =>
+    unless @focused
+      @focused = true
+      @delegate?.compositionControllerDidFocus?()
+
+  didBlur: (event) =>
+    defer =>
+      unless innerElementIsActive(@element)
+        @focused = null
+        @delegate?.compositionControllerDidBlur?()
 
   didClickAttachment: (event, target) =>
     attachment = @findAttachmentForElement(target)
@@ -84,11 +93,11 @@ class Trix.CompositionController extends Trix.BasicObject
 
   attachmentEditorDidRequestUpdatingAttributesForAttachment: (attributes, attachment) ->
     @delegate?.compositionControllerWillUpdateAttachment?(attachment)
-    @composition.document.updateAttributesForAttachment(attributes, attachment)
+    @composition.updateAttributesForAttachment(attributes, attachment)
 
   attachmentEditorDidRequestRemovingAttributeForAttachment: (attribute, attachment) ->
     @delegate?.compositionControllerWillUpdateAttachment?(attachment)
-    @composition.document.removeAttributeForAttachment(attribute, attachment)
+    @composition.removeAttributeForAttachment(attribute, attachment)
 
   attachmentEditorDidRequestRemovalOfAttachment: (attachment) ->
     @delegate?.compositionControllerDidRequestRemovalOfAttachment?(attachment)

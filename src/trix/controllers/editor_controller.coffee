@@ -8,7 +8,7 @@
 #= require trix/models/attachment_manager
 #= require trix/models/undo_manager
 
-{rangeIsCollapsed, rangesAreEqual} = Trix
+{rangeIsCollapsed, rangesAreEqual, objectsAreEqual} = Trix
 
 class Trix.EditorController extends Trix.Controller
   constructor: ({@editorElement, document, @delegate}) ->
@@ -64,7 +64,8 @@ class Trix.EditorController extends Trix.Controller
 
   compositionDidChangeCurrentAttributes: (@currentAttributes) ->
     @toolbarController.updateAttributes(@currentAttributes)
-    @toolbarController.updateActions()
+    @updateCurrentActions()
+    @delegate?.didChangeAttributes?(@currentAttributes)
 
   compositionDidPerformInsertionAtRange: (range) ->
     @pastedRange = range if @pasting
@@ -126,7 +127,7 @@ class Trix.EditorController extends Trix.Controller
   compositionControllerDidSyncDocumentView: ->
     @inputController.editorDidSyncDocumentView()
     @selectionManager.unlock()
-    @toolbarController.updateActions()
+    @updateCurrentActions()
     @delegate?.didSyncDocumentView?()
 
   compositionControllerDidRender: ->
@@ -140,6 +141,10 @@ class Trix.EditorController extends Trix.Controller
 
   compositionControllerDidFocus: ->
     @toolbarController.hideDialog()
+    @delegate?.didFocus?()
+
+  compositionControllerDidBlur: ->
+    @delegate?.didBlur?()
 
   compositionControllerDidSelectAttachment: (attachment) ->
     @composition.editAttachment(attachment)
@@ -210,45 +215,18 @@ class Trix.EditorController extends Trix.Controller
 
   locationRangeDidChange: (locationRange) ->
     @composition.updateCurrentAttributes()
+    @updateCurrentActions()
     if @attachmentLocationRange and not rangesAreEqual(@attachmentLocationRange, locationRange)
       @composition.stopEditingAttachment()
     @delegate?.didChangeSelection?()
 
   # Toolbar controller delegate
 
-  @toolbarActions:
-    undo:
-      test: -> @undoManager.canUndo()
-      perform: -> @undoManager.undo()
-    redo:
-      test: -> @undoManager.canRedo()
-      perform: -> @undoManager.redo()
-    link:
-      test: -> @composition.canSetCurrentAttribute("href")
-    increaseBlockLevel:
-      test: -> @composition.canIncreaseBlockAttributeLevel()
-      perform: -> @composition.increaseBlockAttributeLevel() and @render()
-    decreaseBlockLevel:
-      test: -> @composition.canDecreaseBlockAttributeLevel()
-      perform: -> @composition.decreaseBlockAttributeLevel() and @render()
-    editCaption:
-      test: -> @composition.canEditAttachmentCaption()
-      perform: -> @compositionController.editAttachmentCaption()
-
   toolbarDidClickButton: ->
     @setLocationRange(index: 0, offset: 0) unless @getLocationRange()
 
-  toolbarCanInvokeAction: (actionName) ->
-    if toolbarActionIsExternal(actionName)
-      true
-    else
-      @constructor.toolbarActions[actionName]?.test?.call(this)
-
   toolbarDidInvokeAction: (actionName) ->
-    if toolbarActionIsExternal(actionName)
-      @delegate?.didInvokeExternalAction?(actionName)
-    else
-      @constructor.toolbarActions[actionName]?.perform?.call(this)
+    @invokeAction(actionName)
 
   toolbarDidToggleAttribute: (attributeName) ->
     @recordFormattingUndoEntry()
@@ -280,9 +258,6 @@ class Trix.EditorController extends Trix.Controller
     @thawSelection()
     @delegate?.didHideToolbarDialog?(dialogElement)
 
-  toolbarActionIsExternal = (actionName) ->
-    /^x-./.test(actionName)
-
   # Selection
 
   freezeSelection: ->
@@ -309,6 +284,55 @@ class Trix.EditorController extends Trix.Controller
 
     rects = [range.getClientRects()...]
     rects[-1..][0]
+
+  # Actions
+
+  actions:
+    undo:
+      test: -> @undoManager.canUndo()
+      perform: -> @undoManager.undo()
+    redo:
+      test: -> @undoManager.canRedo()
+      perform: -> @undoManager.redo()
+    link:
+      test: -> @composition.canSetCurrentAttribute("href")
+    increaseBlockLevel:
+      test: -> @composition.canIncreaseBlockAttributeLevel()
+      perform: -> @composition.increaseBlockAttributeLevel() and @render()
+    decreaseBlockLevel:
+      test: -> @composition.canDecreaseBlockAttributeLevel()
+      perform: -> @composition.decreaseBlockAttributeLevel() and @render()
+    editCaption:
+      test: -> @composition.canEditAttachmentCaption()
+      perform: -> @compositionController.editAttachmentCaption()
+
+  canInvokeAction: (actionName) ->
+    if @actionIsExternal(actionName)
+      true
+    else
+      !! @actions[actionName]?.test?.call(this)
+
+  invokeAction: (actionName) ->
+    if @actionIsExternal(actionName)
+      @delegate?.didInvokeExternalAction?(actionName)
+    else
+      @actions[actionName]?.perform?.call(this)
+
+  actionIsExternal: (actionName) ->
+    /^x-./.test(actionName)
+
+  getCurrentActions: ->
+    result = {}
+    for actionName of @actions
+      result[actionName] = @canInvokeAction(actionName)
+    result
+
+  updateCurrentActions: ->
+    currentActions = @getCurrentActions()
+    unless objectsAreEqual(currentActions, @currentActions)
+      @currentActions = currentActions
+      @toolbarController.updateActions(@currentActions)
+      @delegate?.didChangeActions?(@currentActions)
 
   # Private
 

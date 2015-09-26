@@ -19,6 +19,12 @@ class Trix.EditorElementController extends Trix.Controller
     requestAnimationFrame =>
       triggerEvent("trix-initialize", onElement: @element)
 
+  didFocus: ->
+    triggerEvent("trix-focus", onElement: @element)
+
+  didBlur: ->
+    triggerEvent("trix-blur", onElement: @element)
+
   didPasteDataAtRange: (pasteData, range) ->
     triggerEvent("trix-paste", onElement: @element, attributes: {pasteData, range})
 
@@ -48,6 +54,12 @@ class Trix.EditorElementController extends Trix.Controller
 
   didChangeSelection: ->
     triggerEvent("trix-selectionchange", onElement: @element)
+
+  didChangeAttributes: (attributes) ->
+    triggerEvent("trix-attributes-change", onElement: @element, attributes: {attributes})
+
+  didChangeActions: (actions) ->
+    triggerEvent("trix-actions-change", onElement: @element, attributes: {actions})
 
   didInvokeExternalAction: (actionName) ->
     triggerEvent("trix-action-invoke", onElement: @element, attributes: {actionName})

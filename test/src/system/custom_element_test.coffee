@@ -90,3 +90,63 @@ editorTest "element triggers paste event with position range", (done) ->
       equal eventCount, 1
       ok Trix.rangesAreEqual([5, 5], range)
       done()
+
+editorTest "element triggers attribute change events", (done) ->
+  element = getEditorElement()
+  eventCount = 0
+  attributes = null
+
+  element.addEventListener "trix-attributes-change", (event) ->
+    eventCount++
+    {attributes} = event
+
+  typeCharacters "", ->
+    equal eventCount, 0
+    clickToolbarButton attribute: "bold", ->
+      equal eventCount, 1
+      deepEqual { bold: true }, attributes
+      done()
+
+editorTest "element triggers action change events", (done) ->
+  element = getEditorElement()
+  eventCount = 0
+  actions = null
+
+  element.addEventListener "trix-actions-change", (event) ->
+    eventCount++
+    {actions} = event
+
+  typeCharacters "", ->
+    equal eventCount, 0
+    clickToolbarButton attribute: "bullet", ->
+      equal eventCount, 1
+      equal actions.decreaseBlockLevel, true
+      equal actions.increaseBlockLevel, false
+      done()
+
+editorTest "element triggers custom focus and blur events", (done) ->
+  element = getEditorElement()
+
+  focusEventCount = 0
+  blurEventCount = 0
+  element.addEventListener "trix-focus", -> focusEventCount++
+  element.addEventListener "trix-blur", -> blurEventCount++
+
+  triggerEvent(element, "blur")
+  defer ->
+    equal blurEventCount, 1
+    equal focusEventCount, 0
+
+    triggerEvent(element, "focus")
+    defer ->
+      equal blurEventCount, 1
+      equal focusEventCount, 1
+
+      insertImageAttachment()
+      clickElement element.querySelector("figure"), ->
+        clickElement element.querySelector("figcaption"), ->
+          defer ->
+            equal document.activeElement, element.querySelector("textarea")
+            equal blurEventCount, 1
+            equal focusEventCount, 1
+            done()
