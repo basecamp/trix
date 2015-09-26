@@ -17,15 +17,17 @@ editorTest "removing an image", (expectDocument) ->
         expectDocument "ab\n"
 
 editorTest "editing an image caption", (expectDocument) ->
-  clickElement findElement("figure"), ->
-    clickElement findElement("figcaption"), ->
-      ok findElement("textarea")
-      findElement("textarea").focus()
-      findElement("textarea").value = "my caption"
-      pressKey "return", ->
-        ok not findElement("textarea")
-        expectAttributes [2, 3], caption: "my caption"
-        expectDocument "ab#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+  after 20, ->
+    clickElement findElement("figure"), ->
+      clickElement findElement("figcaption"), ->
+        defer ->
+          ok findElement("textarea")
+          findElement("textarea").focus()
+          findElement("textarea").value = "my caption"
+          pressKey "return", ->
+            ok not findElement("textarea")
+            expectAttributes [2, 3], caption: "my caption"
+            expectDocument "ab#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
 
 getFigure = ->
   findElement("figure")

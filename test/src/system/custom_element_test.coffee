@@ -143,10 +143,11 @@ editorTest "element triggers custom focus and blur events", (done) ->
       equal focusEventCount, 1
 
       insertImageAttachment()
-      clickElement element.querySelector("figure"), ->
-        clickElement element.querySelector("figcaption"), ->
-          defer ->
-            equal document.activeElement, element.querySelector("textarea")
-            equal blurEventCount, 1
-            equal focusEventCount, 1
-            done()
+      after 20, ->
+        clickElement element.querySelector("figure"), ->
+          clickElement element.querySelector("figcaption"), ->
+            defer ->
+              equal document.activeElement, element.querySelector("textarea")
+              equal blurEventCount, 1
+              equal focusEventCount, 1
+              done()
