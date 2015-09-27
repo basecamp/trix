@@ -26,10 +26,12 @@ editorInitialized = (callback) ->
     setup: ->
       initialized = false
       if template?
-        document.getElementById("qunit-fixture").innerHTML = JST["test_helpers/fixtures/#{template}"]()
+        setFixtureHTML(JST["test_helpers/fixtures/#{template}"]())
       setup?()
 
     teardown: ->
+      if template?
+        setFixtureHTML("")
       teardown?()
 
 @editorTest = (name, callback) ->
@@ -82,3 +84,14 @@ editorInitialized = (callback) ->
 
 @getHTML = (trixDocument) ->
   Trix.DocumentView.render(trixDocument).innerHTML
+
+setFixtureHTML = (html) ->
+  element = findOrCreateTrixContainer()
+  element.innerHTML = html
+
+findOrCreateTrixContainer = ->
+  if container = document.getElementById("trix-container")
+    container
+  else
+    document.body.insertAdjacentHTML("afterbegin", """<div id="trix-container"></div>""")
+    document.getElementById("trix-container")
