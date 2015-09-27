@@ -1,62 +1,16 @@
-#= require trix/core/helpers/global
-
-{normalizeRange, rangesAreEqual} = Trix
-
-@TEST_IMAGE_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
-
-initialized = false
-initializedCallbacks = []
-
-document.addEventListener "trix-initialize", ->
-  initialized = true
-  callback() while callback = initializedCallbacks.shift()
-
-editorInitialized = (callback) ->
-  if initialized
-    callback()
-  else
-    initializedCallbacks.push(callback)
-
 keyCodes = {}
 for code, name of Trix.InputController.keyNames
   keyCodes[name] = code
 
-@after = (defer, callback) ->
-  setTimeout(callback, defer)
+@createEvent = (type, properties = {}) ->
+  event = document.createEvent("Events")
+  event.initEvent(type, true, true)
+  for key, value of properties
+    event[key] = value
+  event
 
-@defer = (callback) -> after 1, callback
-
-@editorModule = (name, {template, setup, teardown} = {}) ->
-  module name,
-
-    setup: ->
-      initialized = false
-      if template?
-        document.getElementById("qunit-fixture").innerHTML = JST["fixtures/#{template}"]()
-      setup?()
-
-    teardown: ->
-      teardown?()
-
-@editorTest = (name, callback) ->
-  done = (expectedDocumentValue) ->
-    if expectedDocumentValue
-      equal getDocument().toString(), expectedDocumentValue
-    QUnit.start()
-
-  asyncTest name, ->
-    editorInitialized ->
-      prepareEditor()
-      if callback.length is 0
-        callback()
-        done()
-      else
-        callback done
-
-@assertLocationRange = (start, end) ->
-  expectedLocationRange = normalizeRange([start, end])
-  actualLocationRange = getEditorController().getLocationRange()
-  ok rangesAreEqual(expectedLocationRange, actualLocationRange)
+@triggerEvent = (element, type, properties) ->
+  element.dispatchEvent(createEvent(type, properties))
 
 @pasteContent = (contentType, value, callback) ->
   testClipboardData =
@@ -122,125 +76,6 @@ for code, name of Trix.InputController.keyNames
       started = true
       compose(string.slice(0, index++), "start", continueComposition)
 
-@insertString = (string) ->
-  getComposition().insertString(string)
-  render()
-
-@insertText = (text) ->
-  getComposition().insertText(text)
-  render()
-
-@insertDocument = (document) ->
-  getComposition().insertDocument(document)
-  render()
-
-@insertFile = (file) ->
-  getComposition().insertFile(file)
-  render()
-
-@insertImageAttachment = (attributes) ->
-  attributes ?=
-    url: TEST_IMAGE_URL
-    width: 10
-    height: 10
-    filename: "image.gif"
-    contentType: "image/gif"
-
-  attachment = new Trix.Attachment attributes
-  text = Trix.Text.textForAttachmentWithAttributes(attachment)
-  insertText(text)
-
-@replaceDocument = (document) ->
-  getComposition().setDocument(document)
-  render()
-
-prepareEditor = ->
-  if getEditorElement().hasAttribute("autofocus")
-    getEditorController().setLocationRange(index: 0, offset: 0)
-
-render = ->
-  getEditorController().render()
-
-typeCharacterInElement = (character, element, callback) ->
-  charCode = character.charCodeAt(0)
-  keyCode = character.toUpperCase().charCodeAt(0)
-
-  return callback() unless triggerEvent(element, "keydown", keyCode: keyCode, charCode: 0)
-
-  defer ->
-    return callback() unless triggerEvent(element, "keypress", keyCode: charCode, charCode: charCode)
-    insertCharacter character, ->
-      triggerEvent(element, "input")
-
-      defer ->
-        triggerEvent(element, "keyup", keyCode: keyCode, charCode: 0)
-        callback()
-
-insertCharacter = (character, callback) ->
-  node = document.createTextNode(character)
-  insertNode(node, callback)
-
-simulateKeypress = (keyName, callback) ->
-  switch keyName
-    when "backspace"
-      deleteInDirection("left", callback)
-    when "delete"
-      deleteInDirection("right", callback)
-    when "return"
-      node = document.createElement("br")
-      insertNode(node, callback)
-
-compose = (string, name, callback) ->
-  element = document.activeElement
-  triggerEvent(element, "keydown", which: 229, keyCode: 229, charCode: 0)
-  defer ->
-    triggerEvent(element, "composition#{name}", data: string)
-    defer ->
-      triggerEvent(element, "input")
-      defer(callback)
-
-deleteInDirection = (direction, callback) ->
-  if getDOMRange()?.collapsed
-    expandSelection direction, ->
-      deleteSelection()
-      callback()
-  else
-    deleteSelection()
-    callback()
-
-deleteSelection = ->
-  getDOMRange()?.deleteContents()
-
-insertNode = (node, callback) ->
-  deleteSelection()
-  getDOMRange()?.insertNode(node)
-
-  domRange = document.createRange()
-  domRange.selectNode(node)
-  domRange.collapse(false)
-  setDOMRange(domRange)
-  callback?()
-
-getDOMRange = ->
-  selection = window.getSelection()
-  if selection.rangeCount
-    selection.getRangeAt(0)
-
-setDOMRange = (domRange) ->
-  selection = window.getSelection()
-  selection.removeAllRanges()
-  selection.addRange(domRange)
-
-@createEvent = (type, properties = {}) ->
-  event = document.createEvent("Events")
-  event.initEvent(type, true, true)
-  for key, value of properties
-    event[key] = value
-  event
-
-@triggerEvent = (element, type, properties) ->
-  element.dispatchEvent(createEvent(type, properties))
-
 @clickElement = (element, callback) ->
   if triggerEvent(element, "mousedown")
     defer ->
@@ -275,16 +110,6 @@ setDOMRange = (domRange) ->
       defer -> callback(getCursorCoordinates())
     else
       move()
-
-getCursorCoordinates = ->
-  if rect = window.getSelection().getRangeAt(0).getClientRects()[0]
-    clientX: rect.left
-    clientY: rect.top + rect.height / 2
-
-getElementCoordinates = (element) ->
-  rect = element.getBoundingClientRect()
-  clientX: rect.left + rect.width / 2
-  clientY: rect.top + rect.height / 2
 
 @expandSelection = (options, callback) -> defer ->
   if typeof options is "string"
@@ -348,3 +173,83 @@ getElementCoordinates = (element) ->
       else
         triggerEvent(element, "mouseup", destination(distance))
         after(dragSpeed, callback)
+
+compose = (string, name, callback) ->
+  element = document.activeElement
+  triggerEvent(element, "keydown", which: 229, keyCode: 229, charCode: 0)
+  defer ->
+    triggerEvent(element, "composition#{name}", data: string)
+    defer ->
+      triggerEvent(element, "input")
+      defer(callback)
+
+typeCharacterInElement = (character, element, callback) ->
+  charCode = character.charCodeAt(0)
+  keyCode = character.toUpperCase().charCodeAt(0)
+
+  return callback() unless triggerEvent(element, "keydown", keyCode: keyCode, charCode: 0)
+
+  defer ->
+    return callback() unless triggerEvent(element, "keypress", keyCode: charCode, charCode: charCode)
+    insertCharacter character, ->
+      triggerEvent(element, "input")
+
+      defer ->
+        triggerEvent(element, "keyup", keyCode: keyCode, charCode: 0)
+        callback()
+
+insertCharacter = (character, callback) ->
+  node = document.createTextNode(character)
+  insertNode(node, callback)
+
+simulateKeypress = (keyName, callback) ->
+  switch keyName
+    when "backspace"
+      deleteInDirection("left", callback)
+    when "delete"
+      deleteInDirection("right", callback)
+    when "return"
+      node = document.createElement("br")
+      insertNode(node, callback)
+
+deleteInDirection = (direction, callback) ->
+  if getDOMRange()?.collapsed
+    expandSelection direction, ->
+      deleteSelection()
+      callback()
+  else
+    deleteSelection()
+    callback()
+
+deleteSelection = ->
+  getDOMRange()?.deleteContents()
+
+insertNode = (node, callback) ->
+  deleteSelection()
+  getDOMRange()?.insertNode(node)
+
+  domRange = document.createRange()
+  domRange.selectNode(node)
+  domRange.collapse(false)
+  setDOMRange(domRange)
+  callback?()
+
+getDOMRange = ->
+  selection = window.getSelection()
+  if selection.rangeCount
+    selection.getRangeAt(0)
+
+setDOMRange = (domRange) ->
+  selection = window.getSelection()
+  selection.removeAllRanges()
+  selection.addRange(domRange)
+
+getCursorCoordinates = ->
+  if rect = window.getSelection().getRangeAt(0).getClientRects()[0]
+    clientX: rect.left
+    clientY: rect.top + rect.height / 2
+
+getElementCoordinates = (element) ->
+  rect = element.getBoundingClientRect()
+  clientX: rect.left + rect.width / 2
+  clientY: rect.top + rect.height / 2

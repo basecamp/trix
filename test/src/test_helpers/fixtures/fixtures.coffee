@@ -1,3 +1,5 @@
+@TEST_IMAGE_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
+
 createDocument = (parts...) ->
   blocks = for part in parts
     [string, textAttributes, blockAttributes] = part
