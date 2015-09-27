@@ -26,18 +26,16 @@ for code, name of Trix.InputController.keyNames
 
 @defer = (callback) -> after 1, callback
 
-@editorModule = (name, {template, setup, teardown, config, delegate} = {}) ->
+@editorModule = (name, {template, setup, teardown} = {}) ->
   module name,
 
     setup: ->
       initialized = false
       if template?
-        document.getElementById("trix-container").innerHTML = JST["fixtures/#{template}"]()
+        document.getElementById("qunit-fixture").innerHTML = JST["fixtures/#{template}"]()
       setup?()
 
     teardown: ->
-      if template?
-        document.getElementById("trix-container").innerHTML = ""
       teardown?()
 
 @editorTest = (name, callback) ->
