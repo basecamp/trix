@@ -1,0 +1,8 @@
+<% for logger in @loggers: %>
+  <p>
+    <label>
+      <input type="checkbox" value="<%= logger.name %>" <%= " checked" if logger.isEnabled() %>>
+      <%= logger.name %>
+    </label>
+  </p>
+<% end %>

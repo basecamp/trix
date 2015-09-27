@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <link rel="stylesheet" type="text/css" href="demo.css">
-    <link rel="stylesheet" type="text/css" href="inspector.css">
     <script type="text/javascript" src="polyfills.js"></script>
     <script type="text/javascript" src="trix.js"></script>
     <script type="text/javascript" src="demo.js"></script>
@@ -14,55 +13,5 @@
       <trix-editor placeholder="Type some rich text!" autofocus name="content" value=""></trix-editor>
       <input type="submit" value="Save">
     </form>
-
-    <div id="inspector" class="trix-inspector">
-      <div class="trix-inspector-toolbar">
-        <div class="trix-inspector-selection-view"></div>
-        <div class="trix-inspector-render-count-view"></div>
-        <input type="radio" name="inspector-panel" id="inspect-structure" value="structure"><label for="inspect-structure">Structure</label>
-        <input type="radio" name="inspector-panel" id="inspect-attachments" value="attachments"><label for="inspect-attachments">Attachments</label>
-        <input type="radio" name="inspector-panel" id="inspect-undo" value="undo"><label for="inspect-undo">Undo/Redo</label>
-        <input type="radio" name="inspector-panel" id="inspect-source" value="source"><label for="inspect-source">Source</label>
-        <input type="radio" name="inspector-panel" id="inspect-debugging" value="debugging"><label for="inspect-debugging">Debugging</label>
-        <input type="radio" name="inspector-panel" id="inspect-loggers" value="loggers"><label for="inspect-loggers">Loggers</label>
-        <input type="radio" name="inspector-panel" id="inspect-benchmark" value="benchmark"><label for="inspect-benchmark">Benchmark</label>
-        <input type="radio" name="inspector-panel" id="inspect-replay" value="replay"><label for="inspect-replay">Replay</label>
-      </div>
-      <div class="trix-inspector-panel" data-inspector-panel-name="structure" data-inspector-panel-view="StructurePanelView">
-      </div>
-      <div class="trix-inspector-panel" data-inspector-panel-name="attachments">
-        <ul id="attachments"></ul>
-      </div>
-      <div class="trix-inspector-panel" data-inspector-panel-name="undo" data-inspector-panel-view="UndoPanelView">
-      </div>
-      <div class="trix-inspector-panel" data-inspector-panel-name="source" data-inspector-panel-view="SourcePanelView">
-        <p>Load document:</p>
-        <ul></ul>
-      </div>
-      <div class="trix-inspector-panel" data-inspector-panel-name="debugging" data-inspector-panel-view="DebuggingPanelView">
-        <p><label>
-          <input type="checkbox" name="viewCaching">
-          Cache views between renders
-        </label></p>
-        <p>
-          <button data-action="render">Force Render</button> <button data-action="parse">Parse current HTML</button>
-        </p>
-      </div>
-      <div class="trix-inspector-panel" data-inspector-panel-name="loggers" data-inspector-panel-view="LoggersPanelView">
-      </div>
-      <div class="trix-inspector-panel trix-benchmark-panel" data-inspector-panel-name="benchmark" data-inspector-panel-view="BenchmarkPanelView">
-        <ol>
-          <li class="benchmark">
-            <textarea placeholder="Enter some JavaScript to run…"></textarea>
-            <div class="results"></div>
-          </li>
-        </ol>
-        <button class="add">Add another benchmark</button> <button class="run">Run benchmarks</button>
-      </div>
-      <div class="trix-inspector-panel" data-inspector-panel-name="replay" data-inspector-panel-view="ReplayPanelView">
-        <trix-watchdog-player></trix-watchdog-player>
-      </div>
-    </div>
-
   </body>
 </html>

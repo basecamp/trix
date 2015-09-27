@@ -2,8 +2,7 @@
 #= require trix/core/helpers/global
 #= require trix/core/utilities/debugger
 #= require trix/watchdog
-#= require ./documents
-#= require ./inspector/inspector_controller
+#= require trix/inspector
 
 {handleEvent, defer} = Trix
 
@@ -14,45 +13,17 @@ document.addEventListener "trix-initialize", ->
   editorElement.recorder = new Trix.Watchdog.Recorder editorElement
   editorElement.recorder.start()
 
-  inspectorElement = document.querySelector("#inspector")
-  inspectorController = new Trix.InspectorController inspectorElement, editorElement.editorController
-  inspectorElement.style.visibility = "visible"
-
-  handleEvent "selectionchange", onElement: editorElement, withCallback: ->
-    inspectorController.render()
-
-  handleEvent "trix-render", onElement: editorElement, withCallback: ->
-    inspectorController.incrementRenderCount()
-    inspectorController.render()
-
-  handleEvent "trix-sync", onElement: editorElement, withCallback: ->
-    inspectorController.incrementSyncCount()
-    inspectorController.render()
+  new Trix.Inspector editorElement
 
   handleEvent "trix-attachment-add", onElement: editorElement, withCallback: (event) ->
     {attachment} = event
     console.log "HOST: attachment added", attachment
     if attachment.file
       uploadAttachment(attachment)
-    else
-      saveAttachment(attachment)
 
   handleEvent "trix-attachment-remove", onElement: editorElement, withCallback: (event) ->
     {attachment} = event
     console.log "HOST: attachment removed", attachment
-    removeAttachment(attachment)
-
-  handleEvent "trix-paste", onElement: editorElement, withCallback: (event) ->
-    {range} = event
-    {document, editor} = @editorController
-
-    unless document.getCommonAttributesAtRange(range).href
-      fragment = document.getDocumentAtRange(range)
-      value = fragment.toString().slice(0, -1)
-
-      if isURL(value)
-        editor.recordUndoEntry("Link Pasted URL")
-        document.addAttributeAtRange("href", value, range)
 
   form = document.querySelector("form#submit-trix-content")
   handleEvent "submit", onElement: form, withCallback: (event) ->
@@ -64,25 +35,6 @@ document.addEventListener "trix-initialize", ->
       if xhr.status is 200
         console.log "Form data submit:", JSON.parse(xhr.responseText)
     xhr.send(data)
-
-saveAttachment = (attachment) ->
-  item = document.createElement("li")
-  item.setAttribute("id", "attachment_#{attachment.id}")
-  item.textContent = "#{attachment.getFilename() ? attachment.getURL()} "
-
-  link = document.createElement("a")
-  link.setAttribute("href", "#")
-  link.textContent = "(remove)"
-  link.addEventListener "click",  (event) ->
-    event.preventDefault()
-    attachment.remove()
-
-  item.appendChild(link)
-  document.getElementById("attachments").appendChild(item)
-
-removeAttachment = (attachment) ->
-  if item = document.getElementById("attachment_#{attachment.id}")
-    item.parentElement.removeChild(item)
 
 uploadAttachment = (attachment) ->
   {file} = attachment
@@ -109,10 +61,3 @@ uploadAttachment = (attachment) ->
       else
         console.warn "Host failed to upload file:", file
   xhr.send(file)
-
-isURL = (value) ->
-  input = document.createElement("input")
-  input.type = "url"
-  input.value = value
-  input.required = true
-  input.checkValidity()
