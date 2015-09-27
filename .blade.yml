@@ -1,6 +1,5 @@
 load_paths:
   - test/src
-  - test/blade_runner_assets
   - src
   - polyfills
 
