@@ -1,5 +1,3 @@
-#= require trix/core/helpers/global
-
 {normalizeRange, rangesAreEqual} = Trix
 
 initialized = false
