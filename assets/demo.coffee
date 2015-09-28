@@ -13,7 +13,7 @@ document.addEventListener "trix-initialize", ->
   editorElement.recorder = new Trix.Watchdog.Recorder editorElement
   editorElement.recorder.start()
 
-  new Trix.Inspector editorElement
+  new Trix.Inspector.install(editorElement)
 
   handleEvent "trix-attachment-add", onElement: editorElement, withCallback: (event) ->
     {attachment} = event
