@@ -1,9 +1,8 @@
 #= require trix/inspector/view
 
 Trix.Inspector.registerView class extends Trix.Inspector.View
-  name: "render"
   title: "Renders"
-  open: true
+  template: "render"
   events:
     "trix-render": ->
       @renderCount++

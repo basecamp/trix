@@ -1,6 +1,0 @@
- <% for view in @views: %>
-   <details data-name="<%= view.name %>" <%= "open" if view.open %>>
-     <summary data-title></summary>
-     <div data-content></div>
-   </details>
- <% end %>

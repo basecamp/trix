@@ -1,1 +1,2 @@
-<%= JSON.stringify(@document) %>
+<summary><%= @title %></summary>
+<div class="panel"><%= JSON.stringify(@document) %></div>

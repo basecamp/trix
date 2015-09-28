@@ -3,10 +3,10 @@
 {handleEvent} = Trix
 
 Trix.Inspector.registerView class extends Trix.Inspector.View
-  name: "loggers"
   title: "Loggers"
+  template: "loggers"
 
-  setElement: ->
+  constructor: ->
     super
     handleEvent("change", onElement: @element, withCallback: @didChangeInput)
 

@@ -10,23 +10,30 @@ class Trix.Inspector
     @views.push(constructor)
 
   constructor: (@editorElement) ->
-    element = document.createElement("trix-inspector")
-    views = @createViews()
+    @element = document.createElement("trix-inspector")
+    @views = @createViews()
 
-    @view = new Trix.Inspector.InspectorView {@editorElement, element, views}
-    @view.render()
+    for view in @views
+      view.render()
+      @element.appendChild(view.element)
 
-    document.body.appendChild(@view.element)
+    @reposition()
+    document.body.appendChild(@element)
 
   createViews: ->
     views = for View in @constructor.views
-      new View {@editorElement}
+      new View @editorElement
 
     views.sort (a, b) ->
-      if a.position is b.position
-        if a.open is b.open
-          a.name > b.name
-        else
-          b.open
-      else
-        a.position - b.position
+      a.title.toLowerCase() > b.title.toLowerCase()
+
+  reposition: ->
+    position = @editorElement.composition.getPosition() ? 0
+    selectionRect = try @editorElement.getClientRectAtPosition(position)
+    elementRect = @editorElement.getBoundingClientRect()
+
+    top = selectionRect?.top ? elementRect.top
+    left = elementRect.left + elementRect.width
+
+    @element.style.top = "#{top}px"
+    @element.style.left = "#{left}px"

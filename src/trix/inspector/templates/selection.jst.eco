@@ -1,1 +1,4 @@
-<%= JSON.stringify(@locationRange) %>
+<summary><%= @title %> (<%= @range.join() %>)</summary>
+<div class="panel">
+  <%= JSON.stringify(@locationRange) %>
+</div>

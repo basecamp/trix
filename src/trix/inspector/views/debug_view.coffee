@@ -3,10 +3,10 @@
 {handleEvent} = Trix
 
 Trix.Inspector.registerView class extends Trix.Inspector.View
-  name: "debug"
   title: "Debug"
+  template: "debug"
 
-  setElement: ->
+  constructor: ->
     super
     handleEvent "change", onElement: @element, matchingSelector: "input[name=viewCaching]", withCallback: @didToggleViewCaching
     handleEvent "click", onElement: @element, matchingSelector: "button[data-action=render]", withCallback: @didClickRenderButton
