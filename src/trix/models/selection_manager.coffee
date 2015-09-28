@@ -82,7 +82,9 @@ class Trix.SelectionManager extends Trix.BasicObject
     handleEventOnce("mousemove", onElement: @element, withCallback: @didMouseMove)
 
   didMouseMove: =>
-    @updatesPaused = null
+    if @updatesPaused
+      @updatesPaused = null
+      @updateCurrentLocationRange()
 
   selectionDidChange: =>
     unless @updatesPaused or innerElementIsActive(@element)
