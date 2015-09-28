@@ -1,29 +1,6 @@
-<details open="true">
-  <summary>Selection</summary>
-  <div class="panel" data-panel="selection"></div>
-</details>
-
-<details open="true">
-  <summary>Renders</summary>
-  <div class="panel" data-panel="render"></div>
-</details>
-
-<details>
-  <summary>Loggers</summary>
-  <div class="panel" data-panel="loggers"></div>
-</details>
-
-<details>
-  <summary>Debug</summary>
-  <div class="panel" data-panel="debug"></div>
-</details>
-
-<details>
-  <summary>Undo history</summary>
-  <div class="panel" data-panel="undo"></div>
-</details>
-
-<details>
-  <summary>Document</summary>
-  <div class="panel" data-panel="document"></div>
-</details>
+ <% for view in @views: %>
+   <details data-name="<%= view.name %>" <%= "open" if view.open %>>
+     <summary data-title></summary>
+     <div data-content></div>
+   </details>
+ <% end %>

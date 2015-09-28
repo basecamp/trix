@@ -1,6 +1,8 @@
 #= require trix/inspector/view
 
-class Trix.Inspector.DocumentView extends Trix.Inspector.View
+Trix.Inspector.registerView class extends Trix.Inspector.View
+  name: "document"
+  title: "Document"
   events:
     "trix-change": ->
       @render()

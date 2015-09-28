@@ -1,11 +1,20 @@
 {handleEvent} = Trix
 
 class Trix.Inspector.View
-  constructor: (@editorElement, @element, @template) ->
+  name: null
+  title: null
+  position: 2
+
+  constructor: ({@editorElement, @element}) ->
     {@editorController, @composition} = @editorElement
     {@compositionController} = @editorController
-    @render()
+
+    @setElement(@element) if @element
     @installEventHandlers() if @events
+
+  setElement: (@element) ->
+    @contentElement = @element.querySelector("[data-content]") ? @element
+    @titleElement = @element.querySelector("[data-title]")
 
   installEventHandlers: ->
     for eventName, handler of @events then do (eventName, handler) =>
@@ -14,4 +23,5 @@ class Trix.Inspector.View
           handler.call(this, event)
 
   render: ->
-    @element.innerHTML = JST["trix/inspector/templates/#{@template}"](this)
+    @contentElement?.innerHTML = JST["trix/inspector/templates/#{@name}"](this)
+    @titleElement?.textContent = @title

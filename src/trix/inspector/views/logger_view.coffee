@@ -2,11 +2,12 @@
 
 {handleEvent} = Trix
 
-class Trix.Inspector.LoggersView extends Trix.Inspector.View
-  constructor: ->
-    @loggers = Trix.Logger.getLoggers()
-    super
+Trix.Inspector.registerView class extends Trix.Inspector.View
+  name: "loggers"
+  title: "Loggers"
 
+  setElement: ->
+    super
     handleEvent("change", onElement: @element, withCallback: @didChangeInput)
 
   didChangeInput: ({target}) =>
@@ -16,3 +17,7 @@ class Trix.Inspector.LoggersView extends Trix.Inspector.View
       logger.enable()
     else
       logger.disable()
+
+  render: ->
+    @loggers = Trix.Logger.getLoggers()
+    super

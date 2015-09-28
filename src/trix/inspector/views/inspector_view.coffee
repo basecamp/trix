@@ -1,19 +1,25 @@
 #= require trix/inspector/view
 
-class Trix.Inspector.InspectorView extends Trix.Inspector.View
-  constructor: ->
-    super
-    @installPanelViews()
-    @reposition()
+{makeElement} = Trix
 
+class Trix.Inspector.InspectorView extends Trix.Inspector.View
+  name: "inspector"
   events:
     "trix-selectionchange": ->
       @reposition()
 
-  installPanelViews: ->
-    for element in @element.querySelectorAll("[data-panel]")
-      {panel} = element.dataset
-      @["#{panel}View"] = new Trix.Inspector["#{capitalize(panel)}View"] @editorElement, element, panel
+  constructor: ({@editorElement, @element, @views}) ->
+    super
+
+  render: ->
+    super
+
+    for view in @views
+      element = @element.querySelector("[data-name='#{view.name}']")
+      view.setElement(element)
+      view.render()
+
+    @reposition()
 
   reposition: ->
     position = @composition.getPosition() ? 0
@@ -25,6 +31,3 @@ class Trix.Inspector.InspectorView extends Trix.Inspector.View
 
     @element.style.top = "#{top}px"
     @element.style.left = "#{left}px"
-
-capitalize = (string) ->
-  string.charAt(0).toUpperCase() + string.substring(1)

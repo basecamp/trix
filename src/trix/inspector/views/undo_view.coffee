@@ -1,6 +1,8 @@
 #= require trix/inspector/view
 
-class Trix.Inspector.UndoView extends Trix.Inspector.View
+Trix.Inspector.registerView class extends Trix.Inspector.View
+  name: "undo"
+  title: "Undo"
   events:
     "trix-change": ->
       @render()

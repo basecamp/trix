@@ -1,11 +1,9 @@
 #= require trix/inspector/view
 
-class Trix.Inspector.RenderView extends Trix.Inspector.View
-  constructor: ->
-    @renderCount = 0
-    @syncCount = 0
-    super
-
+Trix.Inspector.registerView class extends Trix.Inspector.View
+  name: "render"
+  title: "Renders"
+  open: true
   events:
     "trix-render": ->
       @renderCount++
@@ -14,3 +12,8 @@ class Trix.Inspector.RenderView extends Trix.Inspector.View
     "trix-sync": ->
       @syncCount++
       @render()
+
+  constructor: ->
+    @renderCount = 0
+    @syncCount = 0
+    super

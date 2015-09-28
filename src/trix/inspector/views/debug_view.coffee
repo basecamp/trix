@@ -2,10 +2,12 @@
 
 {handleEvent} = Trix
 
-class Trix.Inspector.DebugView extends Trix.Inspector.View
-  constructor: ->
-    super
+Trix.Inspector.registerView class extends Trix.Inspector.View
+  name: "debug"
+  title: "Debug"
 
+  setElement: ->
+    super
     handleEvent "change", onElement: @element, matchingSelector: "input[name=viewCaching]", withCallback: @didToggleViewCaching
     handleEvent "click", onElement: @element, matchingSelector: "button[data-action=render]", withCallback: @didClickRenderButton
     handleEvent "click", onElement: @element, matchingSelector: "button[data-action=parse]", withCallback: @didClickParseButton
