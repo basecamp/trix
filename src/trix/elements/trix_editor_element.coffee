@@ -72,7 +72,7 @@ Trix.registerElement "trix-editor", do ->
     get: ->
       @inputElement.value
     set: (value) ->
-      @inputElement.value = value
+      @editorController?.loadHTML(value)
 
   # Selection methods
 
@@ -90,7 +90,7 @@ Trix.registerElement "trix-editor", do ->
           @documentChangedSinceLastRender = false
           @notify("change")
       when "change", "attachment-add", "attachment-edit", "attachment-remove"
-        @value = Trix.serializeToContentType(this, "text/html")
+        @inputElement.value = Trix.serializeToContentType(this, "text/html")
 
     triggerEvent("trix-#{message}", onElement: this, attributes: data)
 
@@ -101,11 +101,7 @@ Trix.registerElement "trix-editor", do ->
 
   attachedCallback: ->
     autofocus(this)
-
-    @editorController ?= new Trix.EditorController
-      editorElement: this
-      document: Trix.deserializeFromContentType(@value, "text/html")
-
+    @editorController ?= new Trix.EditorController(editorElement: this, html: @value)
     @editorController.registerSelectionManager()
     requestAnimationFrame => @notify("initialize")
 

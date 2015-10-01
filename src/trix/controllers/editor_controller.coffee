@@ -12,8 +12,6 @@
 
 class Trix.EditorController extends Trix.Controller
   constructor: ({@editorElement, document, html}) ->
-    document ?= new Trix.Document
-
     @selectionManager = new Trix.SelectionManager @editorElement
     @selectionManager.delegate = this
 
