@@ -11,7 +11,7 @@
 {rangeIsCollapsed, rangesAreEqual, objectsAreEqual} = Trix
 
 class Trix.EditorController extends Trix.Controller
-  constructor: ({@editorElement, document}) ->
+  constructor: ({@editorElement, document, html}) ->
     document ?= new Trix.Document
 
     @selectionManager = new Trix.SelectionManager @editorElement
@@ -23,8 +23,6 @@ class Trix.EditorController extends Trix.Controller
     @attachmentManager = new Trix.AttachmentManager @composition.getAttachments()
     @attachmentManager.delegate = this
 
-    @undoManager = new Trix.UndoManager @composition
-
     @inputController = new Trix.InputController @editorElement
     @inputController.delegate = this
     @inputController.responder = @composition
@@ -35,8 +33,20 @@ class Trix.EditorController extends Trix.Controller
     @toolbarController = new Trix.ToolbarController @editorElement.toolbarElement
     @toolbarController.delegate = this
 
-    @composition.setDocument(document)
-    @render()
+    if document?
+      @loadDocument(document)
+    else
+      @loadHTML(html)
+
+  loadHTML: (html = "") ->
+    @loadDocument(Trix.Document.fromHTML(html))
+
+  loadDocument: (document) ->
+    @loadSnapshot({document, selectedRange: [0, 0]})
+
+  loadSnapshot: (snapshot) ->
+    @undoManager = new Trix.UndoManager @composition
+    @composition.restoreSnapshot(snapshot)
 
   registerSelectionManager: ->
     Trix.selectionChangeObserver.registerSelectionManager(@selectionManager)
