@@ -57,8 +57,8 @@ Trix.registerElement "trix-editor", do ->
   toolbarElement:
     get: ->
       if @hasAttribute("toolbar")
-        document.getElementById(@getAttribute("toolbar"))
-      else
+        @ownerDocument?.getElementById(@getAttribute("toolbar"))
+      else if @parentElement
         toolbarId = "trix-toolbar-#{@trixId}"
         @setAttribute("toolbar", toolbarId)
         element = makeElement("trix-toolbar", id: toolbarId)
@@ -68,8 +68,8 @@ Trix.registerElement "trix-editor", do ->
   inputElement:
     get: ->
       if @hasAttribute("input")
-        document.getElementById(@getAttribute("input"))
-      else
+        @ownerDocument?.getElementById(@getAttribute("input"))
+      else if @parentElement
         inputId = "trix-input-#{@trixId}"
         @setAttribute("input", inputId)
         element = makeElement("input", type: "hidden", id: inputId)
@@ -78,11 +78,11 @@ Trix.registerElement "trix-editor", do ->
 
   name:
     get: ->
-      @inputElement.name
+      @inputElement?.name
 
   value:
     get: ->
-      @inputElement.value
+      @inputElement?.value
     set: (@defaultValue) ->
       @editorController?.loadHTML(@defaultValue)
 
@@ -102,7 +102,7 @@ Trix.registerElement "trix-editor", do ->
           @documentChangedSinceLastRender = false
           @notify("change")
       when "change", "attachment-add", "attachment-edit", "attachment-remove"
-        @inputElement.value = Trix.serializeToContentType(this, "text/html")
+        @inputElement?.value = Trix.serializeToContentType(this, "text/html")
 
     if @editorController
       triggerEvent("trix-#{message}", onElement: this, attributes: data)
