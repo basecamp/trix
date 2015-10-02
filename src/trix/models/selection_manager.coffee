@@ -84,15 +84,16 @@ class Trix.SelectionManager extends Trix.BasicObject
     @paused = true
 
     resume = =>
-      clearTimeout(resumeTimeout)
-      handler.destroy() for handler in resumeHandlers
       @paused = false
-      @selectionDidChange()
+      clearTimeout(resumeTimeout)
+      for handler in resumeHandlers
+        handler.destroy()
+      if elementContainsNode(document, @element)
+        @selectionDidChange()
 
+    resumeTimeout = setTimeout(resume, 200)
     resumeHandlers = for eventName in ["mousemove", "keydown"]
       handleEvent(eventName, onElement: document, withCallback: resume)
-
-    resumeTimeout = setTimeout(resume, 20)
 
   selectionDidChange: =>
     unless @paused or innerElementIsActive(@element)
