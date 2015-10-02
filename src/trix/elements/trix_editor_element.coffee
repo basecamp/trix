@@ -100,7 +100,8 @@ Trix.registerElement "trix-editor", do ->
       when "change", "attachment-add", "attachment-edit", "attachment-remove"
         @inputElement.value = Trix.serializeToContentType(this, "text/html")
 
-    triggerEvent("trix-#{message}", onElement: this, attributes: data)
+    if @editorController
+      triggerEvent("trix-#{message}", onElement: this, attributes: data)
 
   # Element lifecycle
 
