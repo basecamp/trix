@@ -91,5 +91,5 @@ findOrCreateTrixContainer = ->
   if container = document.getElementById("trix-container")
     container
   else
-    document.body.insertAdjacentHTML("afterbegin", """<div id="trix-container"></div>""")
+    document.body.insertAdjacentHTML("afterbegin", """<form id="trix-container"></form>""")
     document.getElementById("trix-container")

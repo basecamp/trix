@@ -71,8 +71,8 @@ Trix.registerElement "trix-editor", do ->
   value:
     get: ->
       @inputElement.value
-    set: (value) ->
-      @editorController?.loadHTML(value)
+    set: (@defaultValue) ->
+      @editorController?.loadHTML(@defaultValue)
 
   # Selection methods
 
@@ -101,12 +101,32 @@ Trix.registerElement "trix-editor", do ->
 
   attachedCallback: ->
     autofocus(this)
-    @editorController ?= new Trix.EditorController(editorElement: this, html: @value)
+    @editorController ?= new Trix.EditorController(editorElement: this, html: @defaultValue = @value)
     @editorController.registerSelectionManager()
+    @registerResetListener()
     requestAnimationFrame => @notify("initialize")
 
   detachedCallback: ->
     @editorController?.unregisterSelectionManager()
+    @unregisterResetListener()
+
+  # Form reset support
+
+  registerResetListener: ->
+    @resetListener = @resetBubbled.bind(this)
+    window.addEventListener("reset", @resetListener, false)
+
+  unregisterResetListener: ->
+    window.removeEventListener("reset", @resetListener, false)
+
+  resetBubbled: (event) ->
+    if event.target is @inputElement?.form
+      @reset() unless event.defaultPrevented
+
+  reset: ->
+    @value = @defaultValue
+
+# Contenteditable support
 
 autofocus = (element) ->
   unless document.querySelector(":focus")

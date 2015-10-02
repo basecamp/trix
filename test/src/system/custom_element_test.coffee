@@ -151,3 +151,31 @@ editorTest "element triggers custom focus and blur events", (done) ->
               equal blurEventCount, 1
               equal focusEventCount, 1
               done()
+
+editorTest "editor resets to its original value on form reset", (expectDocument) ->
+  element = getEditorElement()
+  form = element.inputElement.form
+
+  typeCharacters "hello", ->
+    form.reset()
+    expectDocument("\n")
+
+editorTest "editor resets to last-set value on form reset", (expectDocument) ->
+  element = getEditorElement()
+  form = element.inputElement.form
+
+  element.value = "hi"
+  typeCharacters "hello", ->
+    form.reset()
+    expectDocument("hi\n")
+
+editorTest "editor respects preventDefault on form reset", (expectDocument) ->
+  element = getEditorElement()
+  form = element.inputElement.form
+  preventDefault = (event) -> event.preventDefault()
+
+  typeCharacters "hello", ->
+    form.addEventListener("reset", preventDefault, false)
+    form.reset()
+    form.removeEventListener("reset", preventDefault, false)
+    expectDocument("hello\n")
