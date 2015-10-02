@@ -76,6 +76,10 @@ Trix.registerElement "trix-editor", do ->
         @parentElement.insertBefore(element, @nextElementSibling)
         element
 
+  name:
+    get: ->
+      @inputElement.name
+
   value:
     get: ->
       @inputElement.value
