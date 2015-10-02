@@ -126,6 +126,15 @@ Trix.registerElement "trix-editor", do ->
   reset: ->
     @value = @defaultValue
 
+  # JSON serialization
+
+  loadJSON: (json) ->
+    @editorController?.loadJSON(json)
+
+  toJSON: ->
+    @editorController?.toJSON()
+
+
 # Contenteditable support
 
 autofocus = (element) ->

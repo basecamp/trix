@@ -44,7 +44,17 @@ class Trix.EditorController extends Trix.Controller
 
   loadSnapshot: (snapshot) ->
     @undoManager = new Trix.UndoManager @composition
-    @composition.restoreSnapshot(snapshot)
+    @composition.loadSnapshot(snapshot)
+
+  loadJSON: ({document, selectedRange}) ->
+    document = Trix.Document.fromJSON(document)
+    @loadSnapshot({document, selectedRange})
+
+  getSnapshot: ->
+    @composition.getSnapshot()
+
+  toJSON: ->
+    @getSnapshot()
 
   registerSelectionManager: ->
     Trix.selectionChangeObserver.registerSelectionManager(@selectionManager)
@@ -98,7 +108,7 @@ class Trix.EditorController extends Trix.Controller
     @documentWhenLocationRangeRequested = @composition.document
     @render() unless @handlingInput
 
-  compositionDidRestoreSnapshot: ->
+  compositionDidLoadSnapshot: ->
     @compositionController.refreshViewCache()
     @render()
 

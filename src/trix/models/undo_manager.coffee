@@ -15,13 +15,13 @@ class Trix.UndoManager extends Trix.BasicObject
     if undoEntry = @undoEntries.pop()
       redoEntry = @createEntry(undoEntry)
       @redoEntries.push(redoEntry)
-      @composition.restoreSnapshot(undoEntry.snapshot)
+      @composition.loadSnapshot(undoEntry.snapshot)
 
   redo: ->
     if redoEntry = @redoEntries.pop()
       undoEntry = @createEntry(redoEntry)
       @undoEntries.push(undoEntry)
-      @composition.restoreSnapshot(redoEntry.snapshot)
+      @composition.loadSnapshot(redoEntry.snapshot)
 
   canUndo: ->
     @undoEntries.length > 0
@@ -34,7 +34,7 @@ class Trix.UndoManager extends Trix.BasicObject
   createEntry: ({description, context} = {}) ->
     description: description?.toString()
     context: JSON.stringify(context)
-    snapshot: @composition.createSnapshot()
+    snapshot: @composition.getSnapshot()
 
   entryHasDescriptionAndContext = (entry, description, context) ->
     entry?.description is description?.toString() and entry?.context is JSON.stringify(context)

@@ -18,14 +18,14 @@ class Trix.Composition extends Trix.BasicObject
 
   # Snapshots
 
-  createSnapshot: ->
+  getSnapshot: ->
     document: @document
     selectedRange: @getSelectedRange()
 
-  restoreSnapshot: ({document, selectedRange}) ->
-    @setDocument(document)
-    @setSelection(selectedRange)
-    @delegate?.compositionDidRestoreSnapshot?()
+  loadSnapshot: ({document, selectedRange}) ->
+    @setDocument(document ? new Trix.Document)
+    @setSelection(selectedRange ? [0, 0])
+    @delegate?.compositionDidLoadSnapshot?()
 
   # Responder protocol
 
