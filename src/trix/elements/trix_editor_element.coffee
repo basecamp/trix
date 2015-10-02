@@ -38,6 +38,14 @@ Trix.registerElement "trix-editor", do ->
     get: ->
       @editorController?.composition
 
+  document:
+    get: ->
+      @composition?.document
+
+  selectedRange:
+    get: ->
+      @composition?.getSelectedRange()
+
   trixId:
     get: ->
       if @hasAttribute("trix-id")
