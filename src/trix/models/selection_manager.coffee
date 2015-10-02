@@ -78,16 +78,24 @@ class Trix.SelectionManager extends Trix.BasicObject
   @proxyMethod "locationMapper.findNodeAndOffsetFromLocation"
 
   didMouseDown: =>
-    @updatesPaused = true
-    handleEventOnce("mousemove", onElement: @element, withCallback: @didMouseMove)
+    @pause()
+    setTimeout(@resume, 100)
 
-  didMouseMove: =>
-    if @updatesPaused
-      @updatesPaused = null
+    handlers = for eventName in ["mousemove", "keydown"]
+      handleEvent eventName, onElement: document, withCallback: =>
+        handler.destroy() for handler in handlers
+        @resume()
+
+  pause: ->
+    @paused = true
+
+  resume: =>
+    if @paused
+      @paused = null
       @selectionDidChange()
 
   selectionDidChange: =>
-    unless @updatesPaused or innerElementIsActive(@element)
+    unless @paused or innerElementIsActive(@element)
       @updateCurrentLocationRange()
 
   updateCurrentLocationRange: (locationRange) ->
