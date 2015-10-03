@@ -70,5 +70,5 @@ Trix automatically accepts files dragged or pasted into an editor and inserts th
 
 To store attachments, listen for the `trix-attachment-add` event. Upload the attached files with XMLHttpRequest yourself and set the attachment’s URL attribute upon completion. See the [attachment example](…) for detailed information.
 
-If you don’t want to accept dropped or pasted files, call `preventDefault()` on the `trix-file-accept` event, which is dispatched just before the `trix-attachment-add` event.
+If you don’t want to accept dropped or pasted files, call `preventDefault()` on the `trix-file-accept` event, which Trix dispatches just before the `trix-attachment-add` event.
 
