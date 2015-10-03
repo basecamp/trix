@@ -10,10 +10,18 @@ logical_paths:
 plugins:
   sauce_labs:
     browsers:
-      chrome:
+      Google Chrome:
         os: Mac, Windows
-      safari:
+        version: -2
+      Firefox:
+        os: Mac, Windows
+        version: -2
+      Safari:
         platform: Mac
-      firefox:
-        platform: Mac, Windows
-      ie:
+        version: -3
+      Internet Explorer:
+        version: -1
+      iPhone:
+        version: -2
+      Motorola Droid 4 Emulator:
+        version: -2
