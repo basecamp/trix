@@ -57,7 +57,7 @@ To populate a `<trix-editor>` with existing content, include that content in the
 
 ```html
 <form …>
-  <input id="x" value="&lt;Hello world&gt;" type="hidden" name="content">
+  <input id="x" value="Editor content goes here" type="hidden" name="content">
   <trix-editor input="x"></trix-editor>
 </form>
 ```
