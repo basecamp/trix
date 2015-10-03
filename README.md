@@ -66,6 +66,10 @@ To store attachments, listen for the `trix-attachment-add` event. Upload the att
 
 If you don’t want to accept dropped or pasted files, call `preventDefault()` on the `trix-file-accept` event, which Trix dispatches just before the `trix-attachment-add` event.
 
+# Advanced Usage
+
+Coming soon!
+
 ---
 
 © 2015 Basecamp, LLC. Trix is distributed under an MIT-style license; see `LICENSE` for details.
