@@ -30,9 +30,7 @@ To use your own polyfills, or to target only browsers that support all of the re
 
 Put an empty `<trix-editor></trix-editor>` tag on the page. Trix will automatically insert a separate `<trix-toolbar>` before the editor.
 
-Like an HTML `<textarea>`, `<trix-editor>` accepts `autofocus` and `placeholder` attributes.
-
-Unlike a `<textarea>`, `<trix-editor>` expands vertically to fit its contents. Specify a `height` in your page’s CSS to fix the editor's size.
+Like an HTML `<textarea>`, `<trix-editor>` accepts `autofocus` and `placeholder` attributes. Unlike a `<textarea>`, `<trix-editor>` automatically expands vertically to fit its contents. Specify a `height` in your page’s CSS to keep the editor at a fixed size.
 
 ## Integrating With Forms
 
