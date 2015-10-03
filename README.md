@@ -8,7 +8,9 @@ Trix is an open-source project from [Basecamp](https://basecamp.com/), the creat
 
 Trix is built with emerging web standards, notably [Custom Elements](http://www.w3.org/TR/custom-elements/), [Mutation Observer](https://dom.spec.whatwg.org/#mutation-observers), and [Promises](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects). Eventually we expect all browsers to implement these standards. In the meantime, Trix includes [polyfills](https://en.wikipedia.org/wiki/Polyfill) for missing functionality.
 
-Trix supports all evergreen, self-updating desktop browsers: Chrome, Safari, Firefox, and Internet Explorer 11 and up. It works great on mobile, too: Safari on iOS 8 and above, and Chrome on Android 4 and above.
+Trix supports all evergreen, self-updating desktop and mobile browsers.
+
+![Browser Test Status](https://saucelabs.com/browser-matrix/basecamp-trix.svg?auth=2a3e69c3aef98784a8828ddd533ec064)
 
 # Installation
 
