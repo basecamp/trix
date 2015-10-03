@@ -32,7 +32,7 @@ Put an empty `<trix-editor></trix-editor>` tag on the page. Trix will automatica
 
 Like an HTML `<textarea>`, `<trix-editor>` accepts `autofocus` and `placeholder` attributes.
 
-Like any block-level element, `<trix-editor>` expands vertically to fit its contents. You can specify `min-height`, `max-height`, or `height` in your page’s CSS to size the editor appropriately.
+Unlike a `<textarea>`, `<trix-editor>` expands vertically to fit its contents. Specify a `height` in your page’s CSS to fix the editor's size.
 
 ## Integrating With Forms
 
