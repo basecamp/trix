@@ -1,10 +1,11 @@
 load_paths:
   - test/src
-  - src
+  - assets
   - polyfills
+  - src
 
 logical_paths:
-  - polyfills.js
+  - trix.js
   - test.js
 
 plugins:

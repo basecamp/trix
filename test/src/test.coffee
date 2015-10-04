@@ -1,4 +1,3 @@
-#= require trix
 #= require trix/core/helpers/global
 #= require ./test_helpers/index
 #= require_tree ./system
