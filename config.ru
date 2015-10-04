@@ -10,10 +10,6 @@ require root.join('lib/trix/environment')
 environment = Trix::Environment.new(root)
 environment.paths = %w( assets polyfills src )
 
-require root.join('lib/trix/attachment_server')
-Trix::AttachmentServer.root = root.join('tmp/attachments')
-
-
 use Blade::RackAdapter, mount: '/test'
 
 map '/' do
@@ -21,10 +17,6 @@ map '/' do
   use Rack::Rewrite do
     rewrite '/', '/demo.html'
   end
-end
-
-map '/attachments' do
-  run Trix::AttachmentServer
 end
 
 map '/submit' do

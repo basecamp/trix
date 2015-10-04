@@ -36,28 +36,29 @@ document.addEventListener "trix-initialize", ->
         console.log "Form data submit:", JSON.parse(xhr.responseText)
     xhr.send(data)
 
+S3URL = "https://trix-uploads.s3.amazonaws.com/"
+
 uploadAttachment = (attachment) ->
   {file} = attachment
-  e = (string) -> encodeURIComponent(string)
-  url = "/attachments?contentType=#{e(file.type)}&filename=#{e(file.name)}"
+
+  date = new Date()
+  key = [date.toISOString().slice(0,10), date.getTime(), file.name].join("/")
+
+  form = new FormData
+  form.append("key", key)
+  form.append("Content-Type", file.type)
+  form.append("file", file)
 
   xhr = new XMLHttpRequest
-  xhr.open("POST", url, true)
-  xhr.setRequestHeader("Content-Type", "application/octet-stream")
-  xhr.onreadystatechange = (response) =>
-    if xhr.readyState is 4
-      if xhr.status is 200
-        progress = 0
-        fakeProgress = =>
-          attachment.setUploadProgress(progress)
-          if progress is 100
-            attributes = JSON.parse(xhr.responseText)
-            attributes.href = attributes.url
-            attachment.setAttributes(attributes)
-          else
-            progress += 5
-            setTimeout(fakeProgress, 30)
-        fakeProgress()
-      else
-        console.warn "Host failed to upload file:", file
-  xhr.send(file)
+  xhr.open("POST", S3URL, true)
+
+  xhr.upload.onprogress = (event) ->
+    progress = event.loaded / event.total * 100
+    attachment.setUploadProgress(progress)
+
+  xhr.onload = ->
+    if xhr.status is 204
+      url = href = S3URL + key
+      attachment.setAttributes({url, href})
+
+  xhr.send(form)

@@ -13,6 +13,11 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     addressable (2.3.8)
+    aws-sdk (1.57.0)
+      aws-sdk-v1 (= 1.57.0)
+    aws-sdk-v1 (1.57.0)
+      json (~> 1.4)
+      nokogiri (>= 1.4.4)
     blade (0.3.0)
       activesupport (>= 3.0.0)
       blade-qunit_adapter (~> 0.3.0)
@@ -72,9 +77,12 @@ GEM
     http_parser.rb (0.6.0)
     i18n (0.7.0)
     json (1.8.3)
+    mini_portile (0.6.2)
     minitest (5.8.0)
     multi_json (1.11.2)
     multipart-post (2.0.0)
+    nokogiri (1.6.6.2)
+      mini_portile (~> 0.6.0)
     rack (1.6.4)
     rack-rewrite (1.5.0)
     rake (10.0.4)
@@ -101,6 +109,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  aws-sdk (~> 1)
   blade (~> 0.3.0)
   blade-sauce_labs_plugin (~> 0.3.0)
   coffee-script

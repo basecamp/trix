@@ -11,6 +11,7 @@ gem 'eco'
 gem 'rack-rewrite'
 gem 'uglifier'
 gem 'sass'
+gem 'aws-sdk', '~> 1'
 
 gem 'blade', '~> 0.3.0'
 gem 'blade-sauce_labs_plugin', '~> 0.3.0'
