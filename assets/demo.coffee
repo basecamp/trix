@@ -36,13 +36,11 @@ document.addEventListener "trix-initialize", ->
         console.log "Form data submit:", JSON.parse(xhr.responseText)
     xhr.send(data)
 
-S3URL = "https://trix-uploads.s3.amazonaws.com/"
+host = "https://d13txem1unpe48.cloudfront.net/"
 
 uploadAttachment = (attachment) ->
   {file} = attachment
-
-  date = new Date()
-  key = [date.toISOString().slice(0,10), date.getTime(), file.name].join("/")
+  key = createStorageKey(file)
 
   form = new FormData
   form.append("key", key)
@@ -50,7 +48,7 @@ uploadAttachment = (attachment) ->
   form.append("file", file)
 
   xhr = new XMLHttpRequest
-  xhr.open("POST", S3URL, true)
+  xhr.open("POST", host, true)
 
   xhr.upload.onprogress = (event) ->
     progress = event.loaded / event.total * 100
@@ -58,7 +56,13 @@ uploadAttachment = (attachment) ->
 
   xhr.onload = ->
     if xhr.status is 204
-      url = href = S3URL + key
+      url = href = host + key
       attachment.setAttributes({url, href})
 
   xhr.send(form)
+
+createStorageKey = (file) ->
+  date = new Date()
+  day = date.toISOString().slice(0,10)
+  time = date.getTime()
+  "tmp/#{day}/#{time}-#{file.name}"
