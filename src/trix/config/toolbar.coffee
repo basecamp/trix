@@ -16,8 +16,8 @@ Trix.config.toolbar =
         <button type="button" class="code" data-attribute="code" title="#{lang.code}">#{lang.code}</button>
         <button type="button" class="list bullets" data-attribute="bullet" title="#{lang.bullets}">#{lang.bullets}</button>
         <button type="button" class="list numbers" data-attribute="number" title="#{lang.numbers}">#{lang.numbers}</button>
-        <button type="button" class="block-level decrease" data-action="decreaseBlockLevel" title="#{lang.outdent}">[</button>
-        <button type="button" class="block-level increase" data-action="increaseBlockLevel" title="#{lang.indent}">]</button>
+        <button type="button" class="block-level decrease" data-action="decreaseBlockLevel" title="#{lang.outdent}">#{lang.outdent}</button>
+        <button type="button" class="block-level increase" data-action="increaseBlockLevel" title="#{lang.indent}">#{lang.indent}</button>
       </span>
 
       <span class="button_group history_tools">

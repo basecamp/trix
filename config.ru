@@ -15,7 +15,7 @@ use Blade::RackAdapter, mount: '/test'
 map '/' do
   run environment.sprockets_environment
   use Rack::Rewrite do
-    rewrite '/', '/demo.html'
+    rewrite '/', '/index.html'
   end
 end
 

@@ -1,0 +1,57 @@
+trix-toolbar {
+  .button_groups {
+    height: 36px;
+  }
+
+  .button_group {
+    display: inline-block;
+    font-size: 0;
+    margin: 0 8px 0 0;
+    border: 1px solid #bbb;
+    border-top-color: #ccc;
+    border-bottom-color: #888;
+    border-radius: 5px;
+    overflow: hidden;
+
+    button {
+      position: relative;
+      font-size: 0;
+      margin: 0;
+      height: 28px;
+      width: 40px;
+      background: #fff;
+      border: none;
+      border-bottom: 1px solid #ddd;
+
+      &::before {
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: .6;
+        content: "";
+      }
+
+      &.active {
+        background: #cbeefa;
+
+        &::before {
+          opacity: 1;
+        }
+      }
+
+      &:disabled::before {
+        opacity: .125;
+      }
+
+      &:not(:first-child) {
+        border-left: 1px solid #ccc;
+      }
+    }
+  }
+}
+
