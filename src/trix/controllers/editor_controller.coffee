@@ -43,6 +43,7 @@ class Trix.EditorController extends Trix.Controller
     @loadSnapshot({document, selectedRange: [0, 0]})
 
   loadSnapshot: (snapshot) ->
+    @loadingSnapshot = true
     @undoManager = new Trix.UndoManager @composition
     @composition.loadSnapshot(snapshot)
 
@@ -104,6 +105,7 @@ class Trix.EditorController extends Trix.Controller
     @attachmentLocationRange = null
 
   compositionDidRequestChangingSelectionToLocationRange: (locationRange) ->
+    return if @loadingSnapshot and not @isFocused()
     @requestedLocationRange = locationRange
     @documentWhenLocationRangeRequested = @composition.document
     @render() unless @handlingInput
@@ -111,6 +113,7 @@ class Trix.EditorController extends Trix.Controller
   compositionDidLoadSnapshot: ->
     @compositionController.refreshViewCache()
     @render()
+    @loadingSnapshot = false
 
   getSelectionManager: ->
     @selectionManager
@@ -376,3 +379,6 @@ class Trix.EditorController extends Trix.Controller
       Math.floor(new Date().getTime() / Trix.config.undoInterval)
     else
       0
+
+  isFocused: ->
+    @editorElement is @editorElement.ownerDocument?.activeElement
