@@ -18,8 +18,6 @@ class Trix.Editor
     @undoManager = new Trix.UndoManager @composition
     @composition.loadSnapshot(snapshot)
 
-  # --
-
   getDocument: ->
     @composition.document
 
@@ -32,7 +30,7 @@ class Trix.Editor
   toJSON: ->
     @getSnapshot()
 
-  # --
+  # Document manipulation
 
   deleteInDirection: (direction) ->
     @composition.deleteInDirection(direction)
@@ -49,7 +47,7 @@ class Trix.Editor
   insertString: (string) ->
     @composition.insertString(string)
 
-  # --
+  # Selection
 
   getClientRectAtPosition: (position) ->
     location = @getDocument().locationFromPosition(position)
@@ -67,7 +65,7 @@ class Trix.Editor
   setSelectedRange: (selectedRange) ->
     @composition.setSelectedRange(selectedRange)
 
-  # --
+  # Current attributes
 
   getCurrentAttributes: ->
     @composition.getCurrentAttributes()
@@ -81,7 +79,7 @@ class Trix.Editor
   setCurrentAttribute: (name, value) ->
     @composition.setCurrentAttribute(name, value)
 
-  # --
+  # Indentation level
 
   canDecreaseIndentationLevel: ->
     @composition.canDecreaseIndentationLevel()
@@ -97,7 +95,7 @@ class Trix.Editor
     if @canIncreaseIndentationLevel()
       @composition.increaseIndentationLevel()
 
-  # --
+  # Undo/redo
 
   canRedo: ->
     @undoManager.canRedo()
