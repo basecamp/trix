@@ -16,17 +16,13 @@ Trix.config.toolbar =
         <button type="button" class="code" data-attribute="code" title="#{lang.code}">#{lang.code}</button>
         <button type="button" class="list bullets" data-attribute="bullet" title="#{lang.bullets}">#{lang.bullets}</button>
         <button type="button" class="list numbers" data-attribute="number" title="#{lang.numbers}">#{lang.numbers}</button>
-        <button type="button" class="block-level decrease" data-action="decreaseBlockLevel" title="#{lang.outdent}">[</button>
-        <button type="button" class="block-level increase" data-action="increaseBlockLevel" title="#{lang.indent}">]</button>
+        <button type="button" class="block-level decrease" data-action="decreaseBlockLevel" title="#{lang.outdent}">#{lang.outdent}</button>
+        <button type="button" class="block-level increase" data-action="increaseBlockLevel" title="#{lang.indent}">#{lang.indent}</button>
       </span>
 
       <span class="button_group history_tools">
         <button type="button" class="undo" data-action="undo" data-key="z" title="#{lang.undo}">#{lang.undo}</button>
         <button type="button" class="redo" data-action="redo" data-key="shift+z" title="#{lang.redo}">#{lang.redo}</button>
-      </span>
-
-      <span class="button_group attachment_tools" style="display:none">
-        <button type="button" data-action="editCaption" data-key="shift+e" title="#{lang.editCaption}">#{lang.editCaption}</button>
       </span>
     </div>
 
@@ -34,8 +30,10 @@ Trix.config.toolbar =
       <div class="dialog link_dialog" data-attribute="href" data-dialog="href">
         <div class="link_url_fields">
           <input type="url" required name="href" placeholder="#{lang.urlPlaceholder}">
-          <input type="button" value="#{lang.link}" data-method="setAttribute">
-          <input type="button" value="#{lang.unlink}" data-method="removeAttribute">
+          <div class="button_group">
+            <input type="button" value="#{lang.link}" data-method="setAttribute">
+            <input type="button" value="#{lang.unlink}" data-method="removeAttribute">
+          </div>
         </div>
       </div>
     </div>

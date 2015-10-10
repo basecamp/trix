@@ -1,0 +1,116 @@
+trix-toolbar {
+  display: inline-block;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .button_groups {
+    height: 36px;
+  }
+
+  .button_group {
+    display: inline-block;
+    font-size: 0;
+    margin: 0 8px 0 0;
+    border: 1px solid #bbb;
+    border-top-color: #ccc;
+    border-bottom-color: #888;
+    border-radius: 5px;
+    overflow: hidden;
+
+    &:last-of-type {
+      margin-right: 0;
+    }
+
+    button, input[type=button] {
+      position: relative;
+      font-size: 0;
+      margin: 0;
+      height: 28px;
+      width: 40px;
+      background: #fff;
+      border: none;
+      border-bottom: 1px solid #ddd;
+
+      &::before {
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: .6;
+        content: "";
+      }
+
+      &.active {
+        background: #cbeefa;
+
+        &::before {
+          opacity: 1;
+        }
+      }
+
+      &:disabled::before {
+        opacity: .125;
+      }
+
+      &:not(:first-child) {
+        border-left: 1px solid #ccc;
+      }
+    }
+  }
+
+  .dialogs {
+    position: relative;
+
+    .dialog {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 8px;
+      background: #fff;
+      box-shadow: 0 0.3rem 1rem #ccc;
+      border-top: 2px solid #888;
+      border-radius: 5px;
+      z-index: 5;
+
+      input[type=button] {
+        font-size: 12px;
+        height: 24px;
+        padding: 1px 8px 0 8px;
+        width: auto;
+        opacity: .6;
+      }
+
+      input[type=url], input[type=text] {
+        display: inline-block;
+        height: 26px;
+        font-size: 12px;
+        padding: 0 8px;
+        margin: 0 8px 0 0;
+        border-radius: 5px;
+        border: 1px solid #bbb;
+        background-color: #fff;
+        outline: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+      }
+
+      &.link_dialog {
+        .button_group {
+          max-width: 25%;
+        }
+
+        input[type=url] {
+          float: left;
+          width: 75%;
+        }
+      }
+    }
+  }
+}

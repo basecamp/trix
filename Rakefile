@@ -5,7 +5,7 @@ require File.join(File.dirname(__FILE__) + '/lib/trix/environment')
 namespace :trix do
   environment = Trix::Environment.new(".")
   environment.paths = %w( assets polyfills src )
-  environment.assets = %w( trix.js trix-core.js )
+  environment.assets = %w( trix.css trix.js trix-core.js )
   environment.sprockets_environment.js_compressor = Uglifier.new
 
   desc "Clean Trix distribution"
