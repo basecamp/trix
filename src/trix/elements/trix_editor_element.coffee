@@ -68,10 +68,6 @@ Trix.registerElement "trix-editor", do ->
 
   # Properties
 
-  editor:
-    get: ->
-      @editorController?.editor
-
   trixId:
     get: ->
       if @hasAttribute("trix-id")
@@ -101,6 +97,10 @@ Trix.registerElement "trix-editor", do ->
         element = makeElement("input", type: "hidden", id: inputId)
         @parentElement.insertBefore(element, @nextElementSibling)
         element
+
+  editor:
+    get: ->
+      @editorController?.editor
 
   name:
     get: ->
