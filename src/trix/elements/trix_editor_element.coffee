@@ -37,10 +37,6 @@ Trix.registerElement "trix-editor", do ->
   # Style
 
   defaultCSS: """
-    %t {
-      overflow: auto;
-    }
-
     %t:empty:not(:focus)::before {
       content: attr(placeholder);
       color: graytext;
