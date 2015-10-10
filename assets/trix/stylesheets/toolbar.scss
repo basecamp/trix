@@ -1,4 +1,11 @@
 trix-toolbar {
+  font-family: sans-serif;
+  display: inline-block;
+
+  * {
+    box-sizing: border-box;
+  }
+
   .button_groups {
     height: 36px;
   }
@@ -13,7 +20,11 @@ trix-toolbar {
     border-radius: 5px;
     overflow: hidden;
 
-    button {
+    &:last-of-type {
+      margin-right: 0;
+    }
+
+    button, input[type=button] {
       position: relative;
       font-size: 0;
       margin: 0;
@@ -53,5 +64,54 @@ trix-toolbar {
       }
     }
   }
-}
 
+  .dialogs {
+    position: relative;
+
+    .dialog {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 8px;
+      background: #fff;
+      box-shadow: 0 0.3rem 1rem #ccc;
+      border-top: 2px solid #888;
+      border-radius: 5px;
+      z-index: 5;
+
+      input[type=button] {
+        font-size: 12px;
+        height: 24px;
+        padding: 1px 8px 0 8px;
+        width: auto;
+        opacity: .6;
+      }
+
+      input[type=url], input[type=text] {
+        display: inline-block;
+        height: 26px;
+        font-size: 12px;
+        padding: 0 8px;
+        margin: 0 8px 0 0;
+        border-radius: 5px;
+        border: 1px solid #bbb;
+        background-color: #fff;
+        outline: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+      }
+
+      &.link_dialog {
+        .button_group {
+          max-width: 25%;
+        }
+
+        input[type=url] {
+          float: left;
+          width: 75%;
+        }
+      }
+    }
+  }
+}
