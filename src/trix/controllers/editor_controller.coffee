@@ -2,11 +2,10 @@
 #= require trix/controllers/input_controller
 #= require trix/controllers/composition_controller
 #= require trix/controllers/toolbar_controller
-#= require trix/models/selection_manager
-#= require trix/models/document
 #= require trix/models/composition
+#= require trix/models/editor
 #= require trix/models/attachment_manager
-#= require trix/models/undo_manager
+#= require trix/models/selection_manager
 
 {rangeIsCollapsed, rangesAreEqual, objectsAreEqual} = Trix
 
@@ -31,31 +30,11 @@ class Trix.EditorController extends Trix.Controller
     @toolbarController = new Trix.ToolbarController @editorElement.toolbarElement
     @toolbarController.delegate = this
 
+    @editor = new Trix.Editor @composition, @selectionManager
     if document?
-      @loadDocument(document)
+      @editor.loadDocument(document)
     else
-      @loadHTML(html)
-
-  loadHTML: (html = "") ->
-    @loadDocument(Trix.Document.fromHTML(html))
-
-  loadDocument: (document) ->
-    @loadSnapshot({document, selectedRange: [0, 0]})
-
-  loadSnapshot: (snapshot) ->
-    @loadingSnapshot = true
-    @undoManager = new Trix.UndoManager @composition
-    @composition.loadSnapshot(snapshot)
-
-  loadJSON: ({document, selectedRange}) ->
-    document = Trix.Document.fromJSON(document)
-    @loadSnapshot({document, selectedRange})
-
-  getSnapshot: ->
-    @composition.getSnapshot()
-
-  toJSON: ->
-    @getSnapshot()
+      @editor.loadHTML(html)
 
   registerSelectionManager: ->
     Trix.selectionChangeObserver.registerSelectionManager(@selectionManager)
@@ -110,6 +89,9 @@ class Trix.EditorController extends Trix.Controller
     @documentWhenLocationRangeRequested = @composition.document
     @render() unless @handlingInput
 
+  compositionWillLoadSnapshot: ->
+    @loadingSnapshot = true
+
   compositionDidLoadSnapshot: ->
     @compositionController.refreshViewCache()
     @render()
@@ -163,7 +145,7 @@ class Trix.EditorController extends Trix.Controller
       @selectionManager.setLocationRange(@attachmentLocationRange[1])
 
   compositionControllerWillUpdateAttachment: (attachment) ->
-    @undoManager.recordUndoEntry("Edit Attachment", context: attachment.id, consolidatable: true)
+    @editor.recordUndoEntry("Edit Attachment", context: attachment.id, consolidatable: true)
 
   compositionControllerDidRequestRemovalOfAttachment: (attachment) ->
     @removeAttachment(attachment)
@@ -187,10 +169,10 @@ class Trix.EditorController extends Trix.Controller
     @recordTypingUndoEntry()
 
   inputControllerWillCutText: ->
-    @undoManager.recordUndoEntry("Cut")
+    @editor.recordUndoEntry("Cut")
 
   inputControllerWillPasteText: (pasteData) ->
-    @undoManager.recordUndoEntry("Paste")
+    @editor.recordUndoEntry("Paste")
     @pasting = true
 
   inputControllerDidPaste: (pasteData) ->
@@ -202,10 +184,10 @@ class Trix.EditorController extends Trix.Controller
     @render()
 
   inputControllerWillMoveText: ->
-    @undoManager.recordUndoEntry("Move")
+    @editor.recordUndoEntry("Move")
 
   inputControllerWillAttachFiles: ->
-    @undoManager.recordUndoEntry("Drop Files")
+    @editor.recordUndoEntry("Drop Files")
 
   inputControllerDidReceiveKeyboardCommand: (keys) ->
     @toolbarController.applyKeyboardCommand(keys)
@@ -283,26 +265,15 @@ class Trix.EditorController extends Trix.Controller
       @selectionFrozen = false
       @render()
 
-  getClientRectAtPosition: (position) ->
-    location = @composition.document.locationFromPosition(position)
-    [container, offset] = @selectionManager.findContainerAndOffsetFromLocation(location)
-
-    range = document.createRange()
-    range.setStart(container, offset)
-    range.setEnd(container, offset + 1)
-
-    rects = [range.getClientRects()...]
-    rects[-1..][0]
-
   # Actions
 
   actions:
     undo:
-      test: -> @undoManager.canUndo()
-      perform: -> @undoManager.undo()
+      test: -> @editor.canUndo()
+      perform: -> @editor.undo()
     redo:
-      test: -> @undoManager.canRedo()
-      perform: -> @undoManager.redo()
+      test: -> @editor.canRedo()
+      perform: -> @editor.redo()
     link:
       test: -> @composition.canSetCurrentAttribute("href")
     increaseBlockLevel:
@@ -352,17 +323,17 @@ class Trix.EditorController extends Trix.Controller
     @compositionController.render()
 
   removeAttachment: (attachment) ->
-    @undoManager.recordUndoEntry("Delete Attachment")
+    @editor.recordUndoEntry("Delete Attachment")
     @composition.removeAttachment(attachment)
     @render()
 
   recordFormattingUndoEntry: ->
     locationRange = @selectionManager.getLocationRange()
     unless rangeIsCollapsed(locationRange)
-      @undoManager.recordUndoEntry("Formatting", context: @getUndoContext(), consolidatable: true)
+      @editor.recordUndoEntry("Formatting", context: @getUndoContext(), consolidatable: true)
 
   recordTypingUndoEntry: ->
-    @undoManager.recordUndoEntry("Typing", context: @getUndoContext(@currentAttributes), consolidatable: true)
+    @editor.recordUndoEntry("Typing", context: @getUndoContext(@currentAttributes), consolidatable: true)
 
   getUndoContext: (context...) ->
     [@getLocationContext(), @getTimeContext(), context...]

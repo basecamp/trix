@@ -68,18 +68,6 @@ Trix.registerElement "trix-editor", do ->
 
   # Properties
 
-  composition:
-    get: ->
-      @editorController?.composition
-
-  document:
-    get: ->
-      @composition?.document
-
-  selectedRange:
-    get: ->
-      @composition?.getSelectedRange()
-
   trixId:
     get: ->
       if @hasAttribute("trix-id")
@@ -110,6 +98,10 @@ Trix.registerElement "trix-editor", do ->
         @parentElement.insertBefore(element, @nextElementSibling)
         element
 
+  editor:
+    get: ->
+      @editorController?.editor
+
   name:
     get: ->
       @inputElement?.name
@@ -118,12 +110,7 @@ Trix.registerElement "trix-editor", do ->
     get: ->
       @inputElement?.value
     set: (@defaultValue) ->
-      @editorController?.loadHTML(@defaultValue)
-
-  # Selection methods
-
-  getClientRectAtPosition: (position) ->
-    @editorController?.getClientRectAtPosition(position)
+      @editor?.loadHTML(@defaultValue)
 
   # Controller delegate methods
 
@@ -172,11 +159,3 @@ Trix.registerElement "trix-editor", do ->
 
   reset: ->
     @value = @defaultValue
-
-  # JSON serialization
-
-  loadJSON: (json) ->
-    @editorController?.loadJSON(json)
-
-  toJSON: ->
-    @editorController?.toJSON()

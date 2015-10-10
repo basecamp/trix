@@ -23,6 +23,7 @@ class Trix.Composition extends Trix.BasicObject
     selectedRange: @getSelectedRange()
 
   loadSnapshot: ({document, selectedRange}) ->
+    @delegate?.compositionWillLoadSnapshot?()
     @setDocument(document ? new Trix.Document)
     @setSelection(selectedRange ? [0, 0])
     @delegate?.compositionDidLoadSnapshot?()
@@ -115,7 +116,7 @@ class Trix.Composition extends Trix.BasicObject
     else
       @insertString("\n")
 
-  pasteHTML: (html) ->
+  insertHTML: (html) ->
     startPosition = @getPosition()
     startLength = @document.getLength()
 
