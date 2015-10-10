@@ -1,3 +1,5 @@
+{classNames} = Trix.config.css
+
 @TEST_IMAGE_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
 
 createDocument = (parts...) ->
@@ -155,12 +157,12 @@ cursorTarget = Trix.makeElement(
     key = attachment.getCacheKey("imageElement")
     image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, "data-trix-store-key": key, width: 1, height: 1)
 
-    caption = Trix.makeElement(tagName: "figcaption", className: "attachment__caption")
-    caption.innerHTML = """#{attrs.filename}<span class="attachment__size">95.9 KB</span>"""
+    caption = Trix.makeElement(tagName: "figcaption", className: classNames.attachment.caption)
+    caption.innerHTML = """#{attrs.filename}<span class="#{classNames.attachment.size}">95.9 KB</span>"""
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment attachment--preview png"
+      className: "attachment attachment-preview png"
 
     data =
       trixAttachment: JSON.stringify(attachment)
@@ -191,11 +193,11 @@ cursorTarget = Trix.makeElement(
     key = attachment.getCacheKey("imageElement")
     image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, "data-trix-store-key": key, width: 1, height: 1)
 
-    caption = Trix.makeElement(tagName: "figcaption", className: "attachment__caption attachment__caption--edited", textContent: "Example")
+    caption = Trix.makeElement(tagName: "figcaption", className: "#{classNames.attachment.caption} #{classNames.attachment.captionEdited}", textContent: "Example")
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment attachment--preview png"
+      className: "attachment attachment-preview png"
 
     data =
       trixAttachment: JSON.stringify(attachment)
@@ -218,7 +220,7 @@ cursorTarget = Trix.makeElement(
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment attachment--file pdf"
+      className: "attachment attachment-file pdf"
 
     data =
       trixAttachment: JSON.stringify(attachment)
@@ -230,7 +232,7 @@ cursorTarget = Trix.makeElement(
     link.setAttribute("contenteditable", false)
     link.appendChild(figure)
 
-    caption = """<figcaption class="attachment__caption">#{attrs.filename}<span class="attachment__size">32.46 MB</span></figcaption>"""
+    caption = """<figcaption class="#{classNames.attachment.caption}">#{attrs.filename}<span class="#{classNames.attachment.size}">32.46 MB</span></figcaption>"""
     figure.innerHTML = caption
 
     html: """<div>#{blockComment}#{cursorTarget}#{link.outerHTML}#{cursorTarget}</div>"""
@@ -246,11 +248,11 @@ cursorTarget = Trix.makeElement(
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment attachment--content"
+      className: "attachment attachment-content"
 
     figure.innerHTML = content
 
-    caption = Trix.makeElement(tagName: "figcaption", className: "attachment__caption")
+    caption = Trix.makeElement(tagName: "figcaption", className: classNames.attachment.caption)
     figure.appendChild(caption)
 
     data =

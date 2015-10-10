@@ -12,7 +12,7 @@ editorTest "moving an image by drag and drop", (expectDocument) ->
 editorTest "removing an image", (expectDocument) ->
   after 20, ->
     clickElement getFigure(), ->
-      closeButton = getFigure().querySelector(".attachment__remover")
+      closeButton = getFigure().querySelector(".#{Trix.config.css.classNames.attachment.removeButton}")
       clickElement closeButton, ->
         expectDocument "ab\n"
 
