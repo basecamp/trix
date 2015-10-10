@@ -47,6 +47,9 @@ class Trix.Editor
   insertString: (string) ->
     @composition.insertString(string)
 
+  insertText: (text) ->
+    @composition.insertText(text)
+
   # Selection
 
   getClientRectAtPosition: (position) ->
