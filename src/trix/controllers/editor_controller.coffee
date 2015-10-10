@@ -285,14 +285,7 @@ class Trix.EditorController extends Trix.Controller
 
   getClientRectAtPosition: (position) ->
     location = @composition.document.locationFromPosition(position)
-    [container, offset] = @selectionManager.findContainerAndOffsetFromLocation(location)
-
-    range = document.createRange()
-    range.setStart(container, offset)
-    range.setEnd(container, offset + 1)
-
-    rects = [range.getClientRects()...]
-    rects[-1..][0]
+    @selectionManager.getClientRectAtLocation(location)
 
   # Actions
 
