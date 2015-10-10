@@ -201,7 +201,7 @@ class Trix.InputController extends Trix.BasicObject
         @getPastedHTMLUsingHiddenElement (html) =>
           pasteData.html = html
           @delegate?.inputControllerWillPasteText(pasteData)
-          @responder?.pasteHTML(html)
+          @responder?.insertHTML(html)
           @requestRender()
           @delegate?.inputControllerDidPaste(pasteData)
         return
@@ -209,7 +209,7 @@ class Trix.InputController extends Trix.BasicObject
       if html = paste.getData("text/html")
         pasteData.html = html
         @delegate?.inputControllerWillPasteText(pasteData)
-        @responder?.pasteHTML(html)
+        @responder?.insertHTML(html)
         @requestRender()
         @delegate?.inputControllerDidPaste(pasteData)
 

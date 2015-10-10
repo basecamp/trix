@@ -115,7 +115,7 @@ class Trix.Composition extends Trix.BasicObject
     else
       @insertString("\n")
 
-  pasteHTML: (html) ->
+  insertHTML: (html) ->
     startPosition = @getPosition()
     startLength = @document.getLength()
 
