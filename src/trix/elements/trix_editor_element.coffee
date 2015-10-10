@@ -159,11 +159,3 @@ Trix.registerElement "trix-editor", do ->
 
   reset: ->
     @value = @defaultValue
-
-  # JSON serialization
-
-  loadJSON: (json) ->
-    @editor?.loadJSON(json)
-
-  toJSON: ->
-    @editor?.toJSON()
