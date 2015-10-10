@@ -52,6 +52,7 @@ Trix.registerElement "trix-editor", do ->
 
     %t img {
       max-width: 100%;
+      height: auto;
     }
 
     %t .#{classNames.attachment.captionEditor} {
