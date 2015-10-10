@@ -68,17 +68,9 @@ Trix.registerElement "trix-editor", do ->
 
   # Properties
 
-  composition:
+  editor:
     get: ->
-      @editorController?.composition
-
-  document:
-    get: ->
-      @composition?.document
-
-  selectedRange:
-    get: ->
-      @composition?.getSelectedRange()
+      @editorController?.getEditor()
 
   trixId:
     get: ->
@@ -119,11 +111,6 @@ Trix.registerElement "trix-editor", do ->
       @inputElement?.value
     set: (@defaultValue) ->
       @editorController?.loadHTML(@defaultValue)
-
-  # Selection methods
-
-  getClientRectAtPosition: (position) ->
-    @editorController?.getClientRectAtPosition(position)
 
   # Controller delegate methods
 

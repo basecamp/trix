@@ -7,6 +7,7 @@
 #= require trix/models/composition
 #= require trix/models/attachment_manager
 #= require trix/models/undo_manager
+#= require trix/models/editor
 
 {rangeIsCollapsed, rangesAreEqual, objectsAreEqual} = Trix
 
@@ -35,6 +36,9 @@ class Trix.EditorController extends Trix.Controller
       @loadDocument(document)
     else
       @loadHTML(html)
+
+  getEditor: ->
+    new Trix.Editor this
 
   loadHTML: (html = "") ->
     @loadDocument(Trix.Document.fromHTML(html))
@@ -282,10 +286,6 @@ class Trix.EditorController extends Trix.Controller
       @selectionManager.unlock()
       @selectionFrozen = false
       @render()
-
-  getClientRectAtPosition: (position) ->
-    location = @composition.document.locationFromPosition(position)
-    @selectionManager.getClientRectAtLocation(location)
 
   # Actions
 
