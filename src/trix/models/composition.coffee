@@ -23,6 +23,7 @@ class Trix.Composition extends Trix.BasicObject
     selectedRange: @getSelectedRange()
 
   loadSnapshot: ({document, selectedRange}) ->
+    @delegate?.compositionWillLoadSnapshot?()
     @setDocument(document ? new Trix.Document)
     @setSelection(selectedRange ? [0, 0])
     @delegate?.compositionDidLoadSnapshot?()

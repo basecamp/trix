@@ -70,7 +70,7 @@ Trix.registerElement "trix-editor", do ->
 
   editor:
     get: ->
-      @editorController?.getEditor()
+      @editorController?.editor
 
   trixId:
     get: ->
@@ -110,7 +110,7 @@ Trix.registerElement "trix-editor", do ->
     get: ->
       @inputElement?.value
     set: (@defaultValue) ->
-      @editorController?.loadHTML(@defaultValue)
+      @editor?.loadHTML(@defaultValue)
 
   # Controller delegate methods
 
@@ -163,7 +163,7 @@ Trix.registerElement "trix-editor", do ->
   # JSON serialization
 
   loadJSON: (json) ->
-    @editorController?.loadJSON(json)
+    @editor?.loadJSON(json)
 
   toJSON: ->
-    @editorController?.toJSON()
+    @editor?.toJSON()

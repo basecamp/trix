@@ -1,11 +1,36 @@
+#= require trix/models/undo_manager
+
 class Trix.Editor
-  constructor: ({@composition, @selectionManager, @undoManager}) ->
+  constructor: (@composition, @selectionManager) ->
+    @undoManager = new Trix.UndoManager @composition
+
+  loadDocument: (document) ->
+    @loadSnapshot({document, selectedRange: [0, 0]})
+
+  loadHTML: (html = "") ->
+    @loadDocument(Trix.Document.fromHTML(html))
+
+  loadJSON: ({document, selectedRange}) ->
+    document = Trix.Document.fromJSON(document)
+    @loadSnapshot({document, selectedRange})
+
+  loadSnapshot: (snapshot) ->
+    @undoManager = new Trix.UndoManager @composition
+    @composition.loadSnapshot(snapshot)
+
+  # --
 
   getDocument: ->
     @composition.document
 
   getSelectedDocument: ->
     @composition.getSelectedDocument()
+
+  getSnapshot: ->
+    @composition.getSnapshot()
+
+  toJSON: ->
+    @getSnapshot()
 
   # --
 
@@ -80,10 +105,13 @@ class Trix.Editor
   canUndo: ->
     @undoManager.canUndo()
 
+  recordUndoEntry: (description, {context, consolidatable} = {}) ->
+    @undoManager.recordUndoEntry(description, {context, consolidatable})
+
   redo: ->
     if @canRedo()
-      @redo()
+      @undoManager.redo()
 
   undo: ->
     if @canUndo()
-      @undo()
+      @undoManager.undo()
