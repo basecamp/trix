@@ -68,6 +68,7 @@ class Trix.AttachmentView extends Trix.ObjectView
         figcaption.textContent = filename
 
         if filesize = @attachment.getFormattedFilesize()
+          figcaption.appendChild(document.createTextNode(" "))
           span = makeElement(tagName: "span", className: classNames.attachment.size, textContent: filesize)
           figcaption.appendChild(span)
 

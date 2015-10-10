@@ -158,7 +158,7 @@ cursorTarget = Trix.makeElement(
     image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, "data-trix-store-key": key, width: 1, height: 1)
 
     caption = Trix.makeElement(tagName: "figcaption", className: classNames.attachment.caption)
-    caption.innerHTML = """#{attrs.filename}<span class="#{classNames.attachment.size}">95.9 KB</span>"""
+    caption.innerHTML = """#{attrs.filename} <span class="#{classNames.attachment.size}">95.9 KB</span>"""
 
     figure = Trix.makeElement
       tagName: "figure"
@@ -232,7 +232,7 @@ cursorTarget = Trix.makeElement(
     link.setAttribute("contenteditable", false)
     link.appendChild(figure)
 
-    caption = """<figcaption class="#{classNames.attachment.caption}">#{attrs.filename}<span class="#{classNames.attachment.size}">32.46 MB</span></figcaption>"""
+    caption = """<figcaption class="#{classNames.attachment.caption}">#{attrs.filename} <span class="#{classNames.attachment.size}">32.46 MB</span></figcaption>"""
     figure.innerHTML = caption
 
     html: """<div>#{blockComment}#{cursorTarget}#{link.outerHTML}#{cursorTarget}</div>"""
