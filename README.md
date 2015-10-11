@@ -69,9 +69,110 @@ To store attachments, listen for the `trix-attachment-add` event. Upload the att
 
 If you don’t want to accept dropped or pasted files, call `preventDefault()` on the `trix-file-accept` event, which Trix dispatches just before the `trix-attachment-add` event.
 
-# Advanced Usage
+# Editing Text Programmatically
 
-Coming soon!
+You can manipulate a Trix editor programmatically through the `Trix.Editor` interface, available on each `<trix-editor>` element through its `editor` property.
+
+```js
+var element = document.querySelector(“trix-editor”)
+element.editor  // is a Trix.Editor instance
+```
+
+## Understanding the Document Model
+
+The formatted content of a Trix editor is known as a _document_, and is represented as an instance of the `Trix.Document` class. To get the editor’s current document, use the `editor.getDocument` method.
+
+```js
+element.editor.getDocument()  // is a Trix.Document instance
+```
+
+You can convert a document to an unformatted JavaScript string with the `document.toString` method.
+
+```js
+var document = element.editor.getDocument()
+document.toString()  // is a JavaScript string
+```
+
+### Characters and Positions
+
+Trix documents are structured as sequences of individually addressable characters. The index of one character in a document is called a _position_, and a start and end position together make up a _range_.
+
+### Attributes
+
+Trix represents formatting as sets of _attributes_ applied across ranges of a document. …
+
+Block attributes …
+
+### Immutability and Equality
+
+Documents are immutable values. Each change you make in an editor replaces the previous document with a new document. Capturing a snapshot of the editor’s content is as simple as keeping a reference to its document, since that document will never change over time. (This is how Trix implements undo.)
+
+To compare two documents for equality, use the `document.isEqualTo` method.
+
+```js
+var document = element.editor.getDocument()
+document.isEqualTo(element.editor.getDocument())  // true
+```
+
+## Getting and Setting the Current Selection
+
+To get the editor’s current selection, use the `editor.getSelectedRange` method, which returns a 2-element array containing the start and end positions.
+
+```js
+element.editor.getSelectedRange()  // [0, 0]
+```
+
+You can set the editor’s current selection by passing a range array to the `editor.setSelectedRange` method.
+
+```js
+// Select the first character in the document
+element.editor.setSelectedRange([0, 1])
+```
+
+### Collapsed Selections
+
+When the start and end positions of a range are equal, the range is said to be _collapsed_. In the editor, a collapsed selection appears as a blinking cursor rather than a highlighted span of text.
+
+For convenience, the following calls to `setSelectedRange` are equivalent when working with collapsed selections:
+
+```js
+element.editor.setSelectedRange(1)
+element.editor.setSelectedRange([1])
+element.editor.setSelectedRange([1, 1])
+```
+
+### Directional Movement
+
+moveCursorInDirection/expandSelectionInDirection
+
+### Converting Positions to Pixel Offsets
+
+getClientRectAtPosition
+
+## Inserting and Deleting Text
+
+* insertHTML
+* insertString
+* deleteInDirection
+
+## Working With Current Attributes and Indentation
+
+## Loading and Saving Editor State
+
+Serialize an editor’s state with `JSON.stringify` and restore saved state with the `editor.loadJSON` method. The serialized state includes the document and current selection.
+
+```js
+// Save editor state to local storage
+localStorage[“editorState”] = JSON.stringify(element.editor)
+
+// Restore editor state from local storage
+element.editor.loadJSON(JSON.parse(localStorage[“editorState”]))
+```
+
+## Using Undo and Redo
+
+# Observing Editor Changes
+
 
 ---
 
