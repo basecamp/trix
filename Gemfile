@@ -12,5 +12,5 @@ gem 'rack-rewrite'
 gem 'uglifier'
 gem 'sass'
 
-gem 'blade', '~> 0.3.0'
-gem 'blade-sauce_labs_plugin', '~> 0.3.0'
+gem 'blade', '~> 0.3.1'
+gem 'blade-sauce_labs_plugin', '~> 0.3.1'
