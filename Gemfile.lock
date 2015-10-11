@@ -13,7 +13,7 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     addressable (2.3.8)
-    blade (0.3.1)
+    blade (0.3.2)
       activesupport (>= 3.0.0)
       blade-qunit_adapter (~> 0.3.0)
       coffee-script (~> 2.4.0)
@@ -97,7 +97,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  blade (~> 0.3.1)
+  blade (~> 0.3.2)
   blade-sauce_labs_plugin (~> 0.3.1)
   coffee-script
   coffee-script-source (~> 1.9.1)
