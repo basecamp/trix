@@ -13,9 +13,9 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     addressable (2.3.8)
-    blade (0.3.2)
+    blade (0.4.0)
       activesupport (>= 3.0.0)
-      blade-qunit_adapter (~> 0.3.0)
+      blade-qunit_adapter (~> 0.4.0)
       coffee-script (~> 2.4.0)
       coffee-script-source (~> 1.9.0)
       curses (~> 1.0.0)
@@ -25,8 +25,8 @@ GEM
       thin (~> 1.6.0)
       thor (~> 0.19.1)
       useragent (~> 0.13.0)
-    blade-qunit_adapter (0.3.0)
-    blade-sauce_labs_plugin (0.3.1)
+    blade-qunit_adapter (0.4.0)
+    blade-sauce_labs_plugin (0.4.0)
       blade
       faraday
     coffee-script (2.4.1)
@@ -97,8 +97,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  blade (~> 0.3.2)
-  blade-sauce_labs_plugin (~> 0.3.1)
+  blade (~> 0.4.0)
+  blade-sauce_labs_plugin (~> 0.4.0)
   coffee-script
   coffee-script-source (~> 1.9.1)
   eco
