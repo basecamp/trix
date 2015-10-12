@@ -7,6 +7,16 @@ load_paths:
 logical_paths:
   - trix.js
   - test.js
+  - trix.css
+
+build:
+  logical_paths:
+    - trix.js
+    - trix-core.js
+    - trix.css
+  path: dist
+  js_compressor: uglifier
+  css_compressor: sass
 
 plugins:
   sauce_labs:

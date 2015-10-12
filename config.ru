@@ -1,22 +1,15 @@
 require 'bundler/setup'
-require 'rack/rewrite'
-require 'pathname'
-require 'json'
 require 'blade'
+require 'json'
 
-root = Pathname.new(File.dirname(__FILE__))
-
-require root.join('lib/trix/environment')
-environment = Trix::Environment.new(root)
-environment.paths = %w( assets polyfills src )
-
-use Blade::RackAdapter, mount: '/test'
+Blade.initialize!
 
 map '/' do
-  run environment.sprockets_environment
-  use Rack::Rewrite do
-    rewrite '/', '/index.html'
-  end
+  run Blade::Assets.environment(:user)
+end
+
+map '/test' do
+  run Blade::RackAdapter.new
 end
 
 map '/submit' do
