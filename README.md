@@ -13,7 +13,7 @@ Trix supports all evergreen, self-updating desktop and mobile browsers.
 
 Trix is built with emerging web standards, notably [Custom Elements](http://www.w3.org/TR/custom-elements/), [Mutation Observer](https://dom.spec.whatwg.org/#mutation-observers), and [Promises](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects). Eventually we expect all browsers to implement these standards. In the meantime, Trix includes [polyfills](https://en.wikipedia.org/wiki/Polyfill) for missing functionality.
 
-# Installation
+# Getting Started
 
 Include the bundled `trix.css` and `trix.js` files in the `<head>` of your page.
 
@@ -29,11 +29,11 @@ Include the bundled `trix.css` and `trix.js` files in the `<head>` of your page.
 
 To use your own polyfills, or to target only browsers that support all of the required standards, include `trix-core.js` instead.
 
-# Basic Usage
+## Creating an Editor
 
-Put an empty `<trix-editor></trix-editor>` tag on the page. Trix will automatically insert a separate `<trix-toolbar>` before the editor.
+Place an empty `<trix-editor></trix-editor>` tag on the page. Trix will automatically insert a separate `<trix-toolbar>` before the editor.
 
-Like an HTML `<textarea>`, `<trix-editor>` accepts `autofocus` and `placeholder` attributes. Unlike a `<textarea>`, `<trix-editor>` automatically expands vertically to fit its contents. Specify a `height` in your page’s CSS to keep the editor at a fixed size.
+Like an HTML `<textarea>`, `<trix-editor>` accepts `autofocus` and `placeholder` attributes. Unlike a `<textarea>`, `<trix-editor>` automatically expands vertically to fit its contents.
 
 ## Integrating With Forms
 
@@ -238,7 +238,7 @@ element.editor.loadJSON(JSON.parse(localStorage[“editorState”]))
 
 ## Using Undo and Redo
 
-# Observing Editor Changes
+## Observing Editor Changes
 
 
 ---
