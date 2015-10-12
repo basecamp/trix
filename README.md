@@ -93,15 +93,11 @@ var document = element.editor.getDocument()
 document.toString()  // is a JavaScript string
 ```
 
-### Characters and Positions
+### Characters, Positions, and Attributes
 
 Trix documents are structured as sequences of individually addressable characters. The index of one character in a document is called a _position_, and a start and end position together make up a _range_.
 
-### Attributes
-
 Trix represents formatting as sets of _attributes_ applied across ranges of a document. …
-
-Block attributes …
 
 ### Immutability and Equality
 
@@ -114,7 +110,7 @@ var document = element.editor.getDocument()
 document.isEqualTo(element.editor.getDocument())  // true
 ```
 
-## Getting and Setting the Current Selection
+## Getting and Setting the Selection
 
 To get the editor’s current selection, use the `editor.getSelectedRange` method, which returns a two-element array containing the start and end positions.
 
@@ -192,7 +188,7 @@ element.editor.insertHTML(“<strong>Hello</strong>”)
 
 ### Inserting a File
 
-To insert a DOM [`File`](…) object into the document, call the `editor.insertFile` method. Trix will insert a pending attachment for the file as if you had dragged and dropped the file onto the editor.
+To insert a DOM [`File`](…) object into the document, call the `editor.insertFile` method. Trix will insert a pending attachment for the file as if you had dragged and dropped it onto the editor.
 
 ```js
 // Insert the selected file from the first file input element
@@ -224,9 +220,32 @@ element.editor.deleteInDirection(“forward”)
 
 ## Working With Attributes and Indentation
 
+…
+
+## Using Undo and Redo
+
+Trix editors support unlimited undo and redo. Successive typing and formatting changes are consolidated together at five-second intervals; all other changes are recorded individually in undo history.
+
+Call the `editor.canUndo` and `editor.canRedo` methods to determine whether it is currently possible to undo or redo, and the `editor.undo` and `editor.redo` methods to perform an undo or redo operation.
+
+```js
+element.editor.canUndo()  // true
+element.editor.undo()
+
+element.editor.canRedo()  // true
+element.editor.redo()
+```
+
+You can save your own undo entries after making changes to the editor by calling the `editor.recordUndoEntry` method with a description argument.
+
+```js
+element.editor.insertString(“Hello”)
+element.editor.recordUndoEntry(“Insert Text”)
+```
+
 ## Loading and Saving Editor State
 
-Serialize an editor’s state with `JSON.stringify` and restore saved state with the `editor.loadJSON` method. The serialized state includes the document and current selection.
+Serialize an editor’s state with `JSON.stringify` and restore saved state with the `editor.loadJSON` method. The serialized state includes the document and current selection, but does not include undo history.
 
 ```js
 // Save editor state to local storage
@@ -236,10 +255,9 @@ localStorage[“editorState”] = JSON.stringify(element.editor)
 element.editor.loadJSON(JSON.parse(localStorage[“editorState”]))
 ```
 
-## Using Undo and Redo
-
 ## Observing Editor Changes
 
+…
 
 ---
 
