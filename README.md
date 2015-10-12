@@ -155,7 +155,7 @@ element.editor.expandSelectionInDirection(“forward”)
 
 ### Converting Positions to Pixel Offsets
 
-Sometimes you need to know the _x_ and _y_ coordinates of a character at a given position in the editor. For example, you might wish to absolutely position a pop-up menu element below the editor’s cursor.
+Sometimes you need to know the _x_ and _y_ coordinates of a character at a given position in the editor. For example, you might want to absolutely position a pop-up menu element below the editor’s cursor.
 
 Call the `editor.getClientRectAtPosition` method with a position argument to get a DOM [`ClientRect`](…) instance representing the left and top offsets, width, and height of the character at the given position.
 
@@ -166,9 +166,61 @@ var rect = element.editor.getClientRectAtPosition(0)
 
 ## Inserting and Deleting Text
 
-* insertHTML
-* insertString
-* deleteInDirection
+The editor interface provides methods for inserting, replacing, and deleting text at the current selection.
+
+To insert or replace text, begin by setting the selected range, then call one of the insertion methods below. Trix will first remove any selected text, then insert the new text at the start position of the selected range.
+
+### Inserting Plain Text
+
+To insert unformatted text into the document, call the `editor.insertString` method.
+
+```js
+// Insert “Hello” at the beginning of the document
+element.editor.setSelectedRange([0, 0])
+element.editor.insertString(“Hello”)
+```
+
+### Inserting HTML
+
+To insert HTML into the document, call the `editor.insertHTML` method. Trix will first convert the HTML into its internal document model. During this conversion, any formatting that cannot be represented in a Trix document will be lost.
+
+```js
+// Insert a bold “Hello” at the beginning of the document
+element.editor.setSelectedRange([0, 0])
+element.editor.insertHTML(“<strong>Hello</strong>”)
+```
+
+### Inserting a File
+
+To insert a DOM [`File`](…) object into the document, call the `editor.insertFile` method. Trix will insert a pending attachment for the file as if you had dragged and dropped the file onto the editor.
+
+```js
+// Insert the selected file from the first file input element
+var file = document.querySelector(‘input[type=file]’).file
+element.editor.insertFile(file)
+```
+
+### Deleting Text
+
+If the current selection is collapsed, you can simulate deleting text before or after the cursor with the `editor.deleteInDirection` method.
+
+```js
+// “Backspace” the first character in the document
+element.editor.setSelectedRange([1, 1])
+element.editor.deleteInDirection(“backward”)
+
+// Delete the second character in the document
+element.editor.setSelectedRange([1, 1])
+element.editor.deleteInDirection(“forward”)
+```
+
+To delete a range of text, first set the selected range, then call `editor.deleteInDirection` with either direction as the argument.
+
+```js
+// Delete the first five characters
+element.editor.setSelectedRange([0, 4])
+element.editor.deleteInDirection(“forward”)
+```
 
 ## Working With Attributes and Indentation
 
