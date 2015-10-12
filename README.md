@@ -74,7 +74,7 @@ If you don’t want to accept dropped or pasted files, call `preventDefault()` o
 You can manipulate a Trix editor programmatically through the `Trix.Editor` interface, available on each `<trix-editor>` element through its `editor` property.
 
 ```js
-var element = document.querySelector(“trix-editor”)
+var element = document.querySelector("trix-editor")
 element.editor  // is a Trix.Editor instance
 ```
 
@@ -139,14 +139,14 @@ element.editor.setSelectedRange([1, 1])
 
 ### Directional Movement
 
-To programmatically move the cursor or selection through the document, call the `editor.moveCursorInDirection` or `editor.expandSelectionInDirection` methods with a _direction_ argument. The direction can be either `“forward”` or `“backward”`.
+To programmatically move the cursor or selection through the document, call the `editor.moveCursorInDirection` or `editor.expandSelectionInDirection` methods with a _direction_ argument. The direction can be either `"forward"` or `"backward"`.
 
 ```js
 // Move the cursor backward one character
-element.editor.moveCursorInDirection(“backward”)
+element.editor.moveCursorInDirection("backward")
 
 // Expand the end of the selection forward by one character
-element.editor.expandSelectionInDirection(“forward”)
+element.editor.expandSelectionInDirection("forward")
 ```
 
 ### Converting Positions to Pixel Offsets
@@ -173,7 +173,7 @@ To insert unformatted text into the document, call the `editor.insertString` met
 ```js
 // Insert “Hello” at the beginning of the document
 element.editor.setSelectedRange([0, 0])
-element.editor.insertString(“Hello”)
+element.editor.insertString("Hello")
 ```
 
 ### Inserting HTML
@@ -183,7 +183,7 @@ To insert HTML into the document, call the `editor.insertHTML` method. Trix will
 ```js
 // Insert a bold “Hello” at the beginning of the document
 element.editor.setSelectedRange([0, 0])
-element.editor.insertHTML(“<strong>Hello</strong>”)
+element.editor.insertHTML("<strong>Hello</strong>")
 ```
 
 ### Inserting a File
@@ -192,7 +192,7 @@ To insert a DOM [`File`](…) object into the document, call the `editor.insertF
 
 ```js
 // Insert the selected file from the first file input element
-var file = document.querySelector(‘input[type=file]’).file
+var file = document.querySelector("input[type=file]").file
 element.editor.insertFile(file)
 ```
 
@@ -203,11 +203,11 @@ If the current selection is collapsed, you can simulate deleting text before or 
 ```js
 // “Backspace” the first character in the document
 element.editor.setSelectedRange([1, 1])
-element.editor.deleteInDirection(“backward”)
+element.editor.deleteInDirection("backward")
 
 // Delete the second character in the document
 element.editor.setSelectedRange([1, 1])
-element.editor.deleteInDirection(“forward”)
+element.editor.deleteInDirection("forward")
 ```
 
 To delete a range of text, first set the selected range, then call `editor.deleteInDirection` with either direction as the argument.
@@ -215,7 +215,7 @@ To delete a range of text, first set the selected range, then call `editor.delet
 ```js
 // Delete the first five characters
 element.editor.setSelectedRange([0, 4])
-element.editor.deleteInDirection(“forward”)
+element.editor.deleteInDirection("forward")
 ```
 
 ## Working With Attributes and Indentation
@@ -239,8 +239,8 @@ element.editor.redo()
 You can save your own undo entries after making changes to the editor by calling the `editor.recordUndoEntry` method with a description argument.
 
 ```js
-element.editor.insertString(“Hello”)
-element.editor.recordUndoEntry(“Insert Text”)
+element.editor.insertString("Hello")
+element.editor.recordUndoEntry("Insert Text")
 ```
 
 ## Loading and Saving Editor State
@@ -249,10 +249,10 @@ Serialize an editor’s state with `JSON.stringify` and restore saved state with
 
 ```js
 // Save editor state to local storage
-localStorage[“editorState”] = JSON.stringify(element.editor)
+localStorage["editorState"] = JSON.stringify(element.editor)
 
 // Restore editor state from local storage
-element.editor.loadJSON(JSON.parse(localStorage[“editorState”]))
+element.editor.loadJSON(JSON.parse(localStorage["editorState"]))
 ```
 
 ## Observing Editor Changes
