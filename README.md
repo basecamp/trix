@@ -116,7 +116,7 @@ document.isEqualTo(element.editor.getDocument())  // true
 
 ## Getting and Setting the Current Selection
 
-To get the editor’s current selection, use the `editor.getSelectedRange` method, which returns a 2-element array containing the start and end positions.
+To get the editor’s current selection, use the `editor.getSelectedRange` method, which returns a two-element array containing the start and end positions.
 
 ```js
 element.editor.getSelectedRange()  // [0, 0]
@@ -143,11 +143,26 @@ element.editor.setSelectedRange([1, 1])
 
 ### Directional Movement
 
-moveCursorInDirection/expandSelectionInDirection
+To programmatically move the cursor or selection through the document, call the `editor.moveCursorInDirection` or `editor.expandSelectionInDirection` methods with a _direction_ argument. The direction can be either `“forward”` or `“backward”`.
+
+```js
+// Move the cursor backward one character
+element.editor.moveCursorInDirection(“backward”)
+
+// Expand the end of the selection forward by one character
+element.editor.expandSelectionInDirection(“forward”)
+```
 
 ### Converting Positions to Pixel Offsets
 
-getClientRectAtPosition
+Sometimes you need to know the _x_ and _y_ coordinates of a character at a given position in the editor. For example, you might wish to absolutely position a pop-up menu element below the editor’s cursor.
+
+Call the `editor.getClientRectAtPosition` method with a position argument to get a DOM [`ClientRect`](…) instance representing the left and top offsets, width, and height of the character at the given position.
+
+```js
+var rect = element.editor.getClientRectAtPosition(0)
+[rect.left, rect.top]  // [17, 49]
+```
 
 ## Inserting and Deleting Text
 
@@ -155,7 +170,7 @@ getClientRectAtPosition
 * insertString
 * deleteInDirection
 
-## Working With Current Attributes and Indentation
+## Working With Attributes and Indentation
 
 ## Loading and Saving Editor State
 
