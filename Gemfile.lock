@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/javan/blade.git
-  revision: 09b6a162f38e0f6402879c0c378c7bb0ae8f2ed6
+  revision: 514879478f76859ee15323b5cc85dd931d8b481c
   specs:
     blade (0.4.0)
       activesupport (>= 3.0.0)
