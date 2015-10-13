@@ -52,12 +52,15 @@ class Trix.Editor
 
   # Selection
 
+  getSelectedRange: ->
+    @composition.getSelectedRange()
+
+  getPosition: ->
+    @composition.getPosition()
+
   getClientRectAtPosition: (position) ->
     location = @getDocument().locationFromPosition(position)
     @selectionManager.getClientRectAtLocation(location)
-
-  getSelectedRange: ->
-    @composition.getSelectedRange()
 
   expandSelectionInDirection: (direction) ->
     @composition.expandSelectionInDirection(direction)
