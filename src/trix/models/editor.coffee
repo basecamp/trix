@@ -76,6 +76,9 @@ class Trix.Editor
   getCurrentAttributes: ->
     @composition.getCurrentAttributes()
 
+  getCurrentTextAttributes: ->
+    @composition.getCurrentTextAttributes()
+
   hasCurrentAttribute: (name) ->
     @composition.hasCurrentAttribute(name)
 
