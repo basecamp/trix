@@ -1,6 +1,6 @@
 #= require trix/models/document
 
-{normalizeRange, rangesAreEqual, objectsAreEqual, summarizeArrayChange} = Trix
+{normalizeRange, rangesAreEqual, objectsAreEqual, summarizeArrayChange, extend} = Trix
 
 class Trix.Composition extends Trix.BasicObject
   constructor: ->
@@ -278,16 +278,14 @@ class Trix.Composition extends Trix.BasicObject
     @getBlock()?.getAttributeLevel() > 0
 
   updateCurrentAttributes: ->
-    currentAttributes = @getCurrentAttributes()
-    unless objectsAreEqual(currentAttributes, @currentAttributes)
-      @currentAttributes = currentAttributes
-      @notifyDelegateOfCurrentAttributesChange()
+    if selectedRange = @getSelectedRange(ignoreLock: true)
+      commonAttributes = @document.getCommonAttributesAtRange(selectedRange)
+      unless objectsAreEqual(commonAttributes, @currentAttributes)
+        @currentAttributes = commonAttributes
+        @notifyDelegateOfCurrentAttributesChange()
 
   getCurrentAttributes: ->
-    if selectedRange = @getSelectedRange(ignoreLock: true)
-      @document.getCommonAttributesAtRange(selectedRange)
-    else
-      {}
+    extend.call({}, @currentAttributes)
 
   getCurrentTextAttributes: ->
     attributes = {}
