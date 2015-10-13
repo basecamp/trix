@@ -75,7 +75,7 @@ class Trix.AttachmentView extends Trix.ObjectView
     figcaption
 
   getClassName: ->
-    names = ["attachment", "attachment-#{@attachment.getType()}"]
+    names = [classNames.attachment.container, "#{classNames.attachment.typePrefix}#{@attachment.getType()}"]
     if extension = @attachment.getExtension()
       names.push(extension)
     names.join(" ")
