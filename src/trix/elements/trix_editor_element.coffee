@@ -2,7 +2,8 @@
 #= require trix/controllers/editor_controller
 
 {makeElement, triggerEvent, handleEvent, handleEventOnce, defer} = Trix
-{classNames} = Trix.config.css
+
+{attachmentSelector} = Trix.AttachmentView
 
 Trix.registerElement "trix-editor", do ->
   id = 0
@@ -51,11 +52,11 @@ Trix.registerElement "trix-editor", do ->
       height: auto;
     }
 
-    %t .#{classNames.attachment.captionEditor} {
+    %t #{attachmentSelector} figcaption textarea {
       resize: none;
     }
 
-    %t .#{classNames.attachment.captionEditor}.trix-autoresize-clone {
+    %t #{attachmentSelector} figcaption textarea.trix-autoresize-clone {
       position: absolute;
       left: -9999px;
       max-height: 0px;
