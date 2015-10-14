@@ -93,12 +93,6 @@ var document = element.editor.getDocument()
 document.toString()  // is a JavaScript string
 ```
 
-### Characters, Positions, and Attributes
-
-Trix documents are structured as sequences of individually addressable characters. The index of one character in a document is called a _position_, and a start and end position together make up a _range_.
-
-Trix represents formatting as sets of _attributes_ applied across ranges of a document. …
-
 ### Immutability and Equality
 
 Documents are immutable values. Each change you make in an editor replaces the previous document with a new document. Capturing a snapshot of the editor’s content is as simple as keeping a reference to its document, since that document will never change over time. (This is how Trix implements undo.)
@@ -111,6 +105,8 @@ document.isEqualTo(element.editor.getDocument())  // true
 ```
 
 ## Getting and Setting the Selection
+
+Trix documents are structured as sequences of individually addressable characters. The index of one character in a document is called a _position_, and a start and end position together make up a _range_.
 
 To get the editor’s current selection, use the `editor.getSelectedRange` method, which returns a two-element array containing the start and end positions.
 
@@ -220,19 +216,64 @@ element.editor.deleteInDirection("forward")
 
 ## Working With Attributes and Indentation
 
-…
+Trix represents formatting as sets of _attributes_ applied across ranges of a document.
+
+By default, Trix supports the inline attributes `bold`, `italic`, `href`, and `strike`, and the block-level attributes `quote`, `code`, `bullet`, and `number`.
+
+### Applying Formatting
+
+To apply formatting to the current selection, use the `editor.activateAttribute` method.
+
+```js
+element.editor.insertString("Hello")
+element.editor.setSelectedRange([0, 5])
+element.editor.activateAttribute("bold")
+```
+
+To set the `href` attribute, pass a URL as the second argument to `editor.activateAttribute`.
+
+```js
+element.editor.insertString("Trix")
+element.editor.setSelectedRange([0, 4])
+element.editor.activateAttribute("href", "http://trix-editor.org/")
+```
+
+### Removing Formatting
+
+Use the `editor.deactivateAttribute` method to remove formatting from a selection.
+
+```js
+element.editor.setSelectedRange([2, 4])
+element.editor.deactivateAttribute("bold")
+```
+
+### Formatting With a Collapsed Selection
+
+If you activate or deactivate attributes when the selection is collapsed, your formatting changes will apply to the text inserted by any subsequent calls to `editor.insertString`.
+
+```js
+element.editor.activateAttribute("italic")
+element.editor.insertString("This is italic")
+```
+
+### Adjusting the Indentation Level
+
+To adjust the indentation level of block-level attributes, call the `editor.increaseIndentationLevel` and `editor.decreaseIndentationLevel` methods.
+
+```js
+element.editor.activateAttribute("quote")
+element.editor.increaseIndentationLevel()
+element.editor.decreaseIndentationLevel()
+```
 
 ## Using Undo and Redo
 
 Trix editors support unlimited undo and redo. Successive typing and formatting changes are consolidated together at five-second intervals; all other changes are recorded individually in undo history.
 
-Call the `editor.canUndo` and `editor.canRedo` methods to determine whether it is currently possible to undo or redo, and the `editor.undo` and `editor.redo` methods to perform an undo or redo operation.
+Call the `editor.undo` and `editor.redo` methods to perform an undo or redo operation.
 
 ```js
-element.editor.canUndo()  // true
 element.editor.undo()
-
-element.editor.canRedo()  // true
 element.editor.redo()
 ```
 
