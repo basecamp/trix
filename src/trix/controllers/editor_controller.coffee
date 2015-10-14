@@ -275,16 +275,13 @@ class Trix.EditorController extends Trix.Controller
       test: -> @editor.canRedo()
       perform: -> @editor.redo()
     link:
-      test: -> @composition.canSetCurrentAttribute("href")
+      test: -> @editor.canActivateAttribute("href")
     increaseBlockLevel:
-      test: -> @composition.canIncreaseBlockAttributeLevel()
-      perform: -> @composition.increaseBlockAttributeLevel() and @render()
+      test: -> @editor.canIncreaseIndentationLevel()
+      perform: -> @editor.increaseIndentationLevel() and @render()
     decreaseBlockLevel:
-      test: -> @composition.canDecreaseBlockAttributeLevel()
-      perform: -> @composition.decreaseBlockAttributeLevel() and @render()
-    editCaption:
-      test: -> @composition.canEditAttachmentCaption()
-      perform: -> @compositionController.editAttachmentCaption()
+      test: -> @editor.canDecreaseIndentationLevel()
+      perform: -> @editor.decreaseIndentationLevel() and @render()
 
   canInvokeAction: (actionName) ->
     if @actionIsExternal(actionName)

@@ -71,38 +71,35 @@ class Trix.Editor
   setSelectedRange: (selectedRange) ->
     @composition.setSelectedRange(selectedRange)
 
-  # Current attributes
+  # Attributes
 
-  getCurrentAttributes: ->
-    @composition.getCurrentAttributes()
+  activateAttribute: (name, value = true) ->
+    @composition.setCurrentAttribute(name, value)
 
-  getCurrentTextAttributes: ->
-    @composition.getCurrentTextAttributes()
-
-  hasCurrentAttribute: (name) ->
+  attributeIsActive: (name) ->
     @composition.hasCurrentAttribute(name)
 
-  removeCurrentAttribute: (name) ->
-    @composition.removeCurrentAttribute(name)
+  canActivateAttribute: (name) ->
+    @composition.canSetCurrentAttribute(name)
 
-  setCurrentAttribute: (name, value) ->
-    @composition.setCurrentAttribute(name, value)
+  deactivateAttribute: (name) ->
+    @composition.removeCurrentAttribute(name)
 
   # Indentation level
 
   canDecreaseIndentationLevel: ->
-    @composition.canDecreaseIndentationLevel()
+    @composition.canDecreaseBlockAttributeLevel()
 
   canIncreaseIndentationLevel: ->
-    @composition.canIncreaseIndentationLevel()
+    @composition.canIncreaseBlockAttributeLevel()
 
   decreaseIndentationLevel: ->
     if @canDecreaseIndentationLevel()
-      @composition.decreaseIndentationLevel()
+      @composition.decreaseBlockAttributeLevel()
 
   increaseIndentationLevel: ->
     if @canIncreaseIndentationLevel()
-      @composition.increaseIndentationLevel()
+      @composition.increaseBlockAttributeLevel()
 
   # Undo/redo
 
