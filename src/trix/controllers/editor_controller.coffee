@@ -209,7 +209,7 @@ class Trix.EditorController extends Trix.Controller
     @updateCurrentActions()
     if @attachmentLocationRange and not rangesAreEqual(@attachmentLocationRange, locationRange)
       @composition.stopEditingAttachment()
-    @editorElement.notify("selectionchange")
+    @editorElement.notify("selection-change")
 
   # Toolbar controller delegate
 
