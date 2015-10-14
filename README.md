@@ -268,7 +268,7 @@ element.editor.decreaseIndentationLevel()
 
 ## Using Undo and Redo
 
-Trix editors support unlimited undo and redo. Successive typing and formatting changes are consolidated together at five-second intervals; all other changes are recorded individually in undo history.
+Trix editors support unlimited undo and redo. Successive typing and formatting changes are consolidated together at five-second intervals; all other input changes are recorded individually in undo history.
 
 Call the `editor.undo` and `editor.redo` methods to perform an undo or redo operation.
 
@@ -277,7 +277,7 @@ element.editor.undo()
 element.editor.redo()
 ```
 
-You can save your own undo entries after making changes to the editor by calling the `editor.recordUndoEntry` method with a description argument.
+Changes you make through the editor interface will not automatically record undo entries. You can save your own undo entries by calling the `editor.recordUndoEntry` method with a description argument.
 
 ```js
 element.editor.insertString("Hello")
@@ -298,7 +298,22 @@ element.editor.loadJSON(JSON.parse(localStorage["editorState"]))
 
 ## Observing Editor Changes
 
-…
+The `<trix-editor>` element emits several events which you can use to observe and respond to changes in editor state.
+
+* `trix-initialize` fires when the `<trix-editor>` element is attached to the DOM and its `editor` object is ready for use.
+
+* `trix-change` fires whenever the editor’s contents have changed.
+
+* `trix-selection-change` fires any time the selected range changes in the editor.
+
+* `trix-focus` and `trix-blur` fire when the editor gains or loses focus, respectively.
+
+* `trix-file-accept` fires when a file is dropped or inserted into the editor. You can access the DOM `File` object through the `file` property on the event. Call `preventDefault` on the event to prevent attaching the file to the document.
+
+* `trix-attachment-add` fires after an attachment is added to the document. You can access the Trix attachment object through the `attachment` property on the event. If the `attachment` object has a `file` property, you should store this file remotely and set the attachment’s URL attribute. See the [attachment example](…) for detailed information.
+
+* `trix-attachment-remove` fires when an attachment is removed from the document. You can access the Trix attachment object through the `attachment` property on the event. You may wish to use this event to clean up remotely stored files.
+
 
 ---
 
