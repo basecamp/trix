@@ -137,8 +137,11 @@ class Trix.Composition extends Trix.BasicObject
   insertFile: (file) ->
     if @delegate?.compositionShouldAcceptFile(file)
       attachment = Trix.Attachment.attachmentForFile(file)
-      text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
-      @insertText(text)
+      @insertAttachment(attachment)
+
+  insertAttachment: (attachment) ->
+    text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
+    @insertText(text)
 
   deleteInDirection: (direction) ->
     range = [startPosition, endPosition] = @getSelectedRange()

@@ -35,6 +35,9 @@ class Trix.Editor
   deleteInDirection: (direction) ->
     @composition.deleteInDirection(direction)
 
+  insertAttachment: (attachment) ->
+    @composition.insertAttachment(attachment)
+
   insertDocument: (document) ->
     @composition.insertDocument(document)
 
