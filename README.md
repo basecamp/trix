@@ -318,3 +318,5 @@ The `<trix-editor>` element emits several events which you can use to observe an
 ---
 
 © 2015 Basecamp, LLC. Trix is distributed under an MIT-style license; see `LICENSE` for details.
+
+Also, please take note of our Code of Conduct, located in `CONDUCT.md`.
