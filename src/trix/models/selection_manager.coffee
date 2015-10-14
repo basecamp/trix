@@ -27,15 +27,10 @@ class Trix.SelectionManager extends Trix.BasicObject
     if locationRange = @getLocationRangeAtPoint(point)
       @setLocationRange(locationRange)
 
-  getClientRectAtLocation: (location) ->
-    [container, offset] = @findContainerAndOffsetFromLocation(location)
-
-    range = document.createRange()
-    range.setStart(container, offset)
-    range.setEnd(container, offset + 1)
-
-    rects = [range.getClientRects()...]
-    rects[-1..][0]
+  getClientRectAtLocationRange: (locationRange) ->
+    if range = @createDOMRangeFromLocationRange(locationRange)
+      rects = [range.getClientRects()...]
+      rects[-1..][0]
 
   locationIsCursorTarget: (location) ->
     [node, offset] = @findNodeAndOffsetFromLocation(location)
@@ -120,7 +115,7 @@ class Trix.SelectionManager extends Trix.BasicObject
     rangeEnd = if rangeIsCollapsed(locationRange)
       rangeStart
     else
-      @findContainerAndOffsetFromLocation(locationRange[1])
+      @findContainerAndOffsetFromLocation(locationRange[1]) ? rangeStart
 
     if rangeStart? and rangeEnd?
       domRange = document.createRange()
