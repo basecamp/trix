@@ -18,9 +18,6 @@ Trix.config.textAttributes =
       matchingSelector = "a:not(#{attachmentSelector})"
       if link = Trix.findClosestElementFromNode(element, {matchingSelector})
         link.getAttribute("href")
-  underline:
-    style: { "textDecoration": "underline" }
-    inheritable: true
   strike:
     tagName: "del"
     inheritable: true
