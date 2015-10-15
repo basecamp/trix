@@ -314,9 +314,36 @@ The `<trix-editor>` element emits several events which you can use to observe an
 
 * `trix-attachment-remove` fires when an attachment is removed from the document. You can access the Trix attachment object through the `attachment` property on the event. You may wish to use this event to clean up remotely stored files.
 
+# Contributing to Trix
+
+Trix is open-source software, freely distributable under the terms of an [MIT-style license](LICENSE). The [source code is hosted on GitHub](https://github.com/basecamp/trix).
+
+We welcome contributions in the form of bug reports, pull requests, or thoughtful discussions in the [GitHub issue tracker](https://github.com/basecamp/trix/issues). Please see the [Code of Conduct](CONDUCT.md) for our pledge to contributors.
+
+Trix is sponsored by [Basecamp](https://basecamp.com/) and maintained by [Javan Makhmali](javan@basecamp.com) and [Sam Stephenson](sam@basecamp.com).
+
+### Building From Source
+
+Trix is written in [CoffeeScript](https://github.com/jashkenas/coffee-script) and compiled to JavaScript with [Blade](https://github.com/javan/blade).
+
+To build Trix from source, you will need a recent version of Ruby. From inside a checkout of the Trix Git repository, issue the following commands to build the distributable files in `dist/`:
+
+```
+$ gem install bundler
+$ bundle install
+$ bin/blade build
+```
+
+### Developing In-Browser
+
+You can spawn a development web server to work on Trix. Instead of manually rebuilding the source each time, just reload a page in your browser to try your changes.
+
+To develop in-browser, run the `bin/rackup` command and visit the displayed URL.
+
+### Running Tests
+
+Make sure you’re set up to build from source using the instructions above. Then run `bin/blade` and visit `http://localhost:9876` to run the Trix test suite.
 
 ---
 
-© 2015 Basecamp, LLC. Trix is distributed under an MIT-style license; see `LICENSE` for details.
-
-Also, please take note of our Code of Conduct, located in `CONDUCT.md`.
+© 2015 Basecamp, LLC.
