@@ -16,7 +16,6 @@ build:
     - trix.css
   path: dist
   js_compressor: uglifier
-  css_compressor: sass
 
 plugins:
   sauce_labs:
