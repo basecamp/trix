@@ -33,6 +33,6 @@ plugins:
       Internet Explorer:
         version: -1
       iPhone:
-        version: -2
+        version: -1
       Motorola Droid 4 Emulator:
-        version: -2
+        version: -1
