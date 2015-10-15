@@ -5,6 +5,14 @@
 
 Trix is an open-source project from [Basecamp](https://basecamp.com/), the creators of [Ruby on Rails](http://rubyonrails.org/). Millions of people trust their text to Basecamp, and we built Trix to give them the best possible editing experience. See Trix in action in the [all-new Basecamp 3](https://basecamp.com/3-is-coming).
 
+### Different By Design
+
+Most WYSIWYG editors are wrappers around HTML’s `contenteditable` and `execCommand` APIs, designed by Microsoft to support live editing of web pages in Internet Explorer 5.5, and [eventually reverse-engineered](https://blog.whatwg.org/the-road-to-html-5-contenteditable#history) and copied by other browsers.
+
+Because these APIs were never fully specified or documented, and because WYSIWYG HTML editors are enormous in scope, each browser’s implementation has its own set of bugs and quirks, and JavaScript developers are left to resolve the inconsistencies.
+
+Trix sidesteps these inconsistencies by treating `contenteditable` as an I/O device: when input makes its way to the editor, Trix converts that input into an editing operation on its internal document model, then re-renders that document back into the editor. This gives Trix complete control over what happens after every keystroke, and avoids the need to use `execCommand` at all.
+
 ### Built for the Modern Web
 
 Trix supports all evergreen, self-updating desktop and mobile browsers.
