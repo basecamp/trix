@@ -56,9 +56,9 @@ To submit the contents of a `<trix-editor>` with a form, first define a hidden i
 
 Trix will automatically update the value of the hidden input field with each change to the editor.
 
-## Populating With Existing Content
+## Populating With Stored Content
 
-To populate a `<trix-editor>` with existing content, include that content in the associated input element’s `value` attribute.
+To populate a `<trix-editor>` with stored content, include that content in the associated input element’s `value` attribute.
 
 ```html
 <form …>
@@ -68,6 +68,20 @@ To populate a `<trix-editor>` with existing content, include that content in the
 ```
 
 Always use an associated input element to safely populate an editor. Trix won’t load any HTML content inside a `<trix-editor>…</trix-editor>` tag.
+
+## Styling Formatted Content
+
+To ensure what you see when you edit is what you see when you save, use a CSS class name to scope styles for Trix formatted content. Apply this class name to your `<trix-editor>` element, and to a containing element when you render stored Trix content for display in your application.
+
+```html
+<trix-editor class="trix-content"></trix-editor>
+```
+
+```html
+<div class="trix-content">Stored content here</div>
+```
+
+The default `trix.css` file includes styles for basic formatted content—including bulleted and numbered lists, code blocks, and block quotes—under the class name `trix-content`. We encourage you to use these styles as a starting point by copying them into your application’s CSS with a different class name.
 
 ## Storing Attached Files
 
