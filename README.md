@@ -328,7 +328,7 @@ Trix is open-source software, freely distributable under the terms of an [MIT-st
 
 We welcome contributions in the form of bug reports, pull requests, or thoughtful discussions in the [GitHub issue tracker](https://github.com/basecamp/trix/issues). Please see the [Code of Conduct](CONDUCT.md) for our pledge to contributors.
 
-Trix is sponsored by [Basecamp](https://basecamp.com/) and maintained by [Javan Makhmali](javan@basecamp.com) and [Sam Stephenson](sam@basecamp.com).
+Trix was created by [Javan Makhmali](javan@basecamp.com) and [Sam Stephenson](sam@basecamp.com), with development sponsored by [Basecamp](https://basecamp.com/).
 
 ### Building From Source
 
@@ -344,13 +344,13 @@ $ bin/blade build
 
 ### Developing In-Browser
 
-You can spawn a development web server to work on Trix. Instead of manually rebuilding the source each time, just reload a page in your browser to try your changes.
+You can spawn a development web server to work on Trix in a more convenient fashion. Instead of manually rebuilding the source each time, just reload a page in your browser to see your changes.
 
 To develop in-browser, run the `bin/rackup` command and visit the displayed URL.
 
 ### Running Tests
 
-Make sure you’re set up to build from source using the instructions above. Then run `bin/blade` and visit `http://localhost:9876` to run the Trix test suite.
+Make sure you’re set up to build from source using the instructions above. Then run `bin/blade` and visit the displayed URL to run the Trix test suite.
 
 ---
 
