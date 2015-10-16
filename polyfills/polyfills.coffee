@@ -1,3 +1,3 @@
 #= require ./set
 #= require ./vendor/promise
-#= require ./vendor/custom-elements
+#= require ./vendor/CustomElements
