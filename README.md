@@ -171,7 +171,7 @@ element.editor.expandSelectionInDirection("forward")
 
 Sometimes you need to know the _x_ and _y_ coordinates of a character at a given position in the editor. For example, you might want to absolutely position a pop-up menu element below the editor’s cursor.
 
-Call the `editor.getClientRectAtPosition` method with a position argument to get a DOM [`ClientRect`](…) instance representing the left and top offsets, width, and height of the character at the given position.
+Call the `editor.getClientRectAtPosition` method with a position argument to get a [`DOMRect`](https://drafts.fxtf.org/geometry/#DOMRect) instance representing the left and top offsets, width, and height of the character at the given position.
 
 ```js
 var rect = element.editor.getClientRectAtPosition(0)
@@ -206,7 +206,7 @@ element.editor.insertHTML("<strong>Hello</strong>")
 
 ### Inserting a File
 
-To insert a DOM [`File`](…) object into the document, call the `editor.insertFile` method. Trix will insert a pending attachment for the file as if you had dragged and dropped it onto the editor.
+To insert a DOM [`File`](http://www.w3.org/TR/FileAPI/#file) object into the document, call the `editor.insertFile` method. Trix will insert a pending attachment for the file as if you had dragged and dropped it onto the editor.
 
 ```js
 // Insert the selected file from the first file input element
