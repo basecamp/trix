@@ -1,20 +1,14 @@
-(function() {
-    var root;
+/*
+https://github.com/taylorhakes/promise-polyfill
+Copyright (c) 2014 Taylor Hakes
+Copyright (c) 2014 Forbes Lindesay
+*/
 
-	if (typeof window === 'object' && window) {
-		root = window;
-	} else {
-		root = global;
-	}
-
-	if (typeof module !== 'undefined' && module.exports) {
-		module.exports = root.Promise ? root.Promise : Promise;
-	} else if (!root.Promise) {
-		root.Promise = Promise;
-	}
+(function(root) {
 
 	// Use polyfill for setImmediate for performance gains
-	var asap = root.setImmediate || function(fn) { setTimeout(fn, 1); };
+	var asap = (typeof setImmediate === 'function' && setImmediate) ||
+		function(fn) { setTimeout(fn, 1); };
 
 	// Polyfill for Function.prototype.bind
 	function bind(fn, thisArg) {
@@ -183,4 +177,20 @@
 			}
 		});
 	};
-})();
+
+	/**
+	 * Set the immediate function to execute callbacks
+	 * @param fn {function} Function to execute
+	 * @private
+	 */
+	Promise._setImmediateFn = function _setImmediateFn(fn) {
+		asap = fn;
+	};
+
+	if (typeof module !== 'undefined' && module.exports) {
+		module.exports = Promise;
+	} else if (!root.Promise) {
+		root.Promise = Promise;
+	}
+
+})(this);
