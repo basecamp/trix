@@ -15,11 +15,6 @@ GIT
       thor (~> 0.19.1)
       useragent (~> 0.13.0)
 
-PATH
-  remote: .
-  specs:
-    trix (0.8.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -46,7 +41,6 @@ GEM
       eco-source
       execjs
     eco-source (1.1.0.rc.1)
-    ejs (1.1.1)
     em-http-request (1.1.2)
       addressable (>= 2.3.4)
       cookiejar
@@ -106,11 +100,9 @@ DEPENDENCIES
   coffee-script
   coffee-script-source (~> 1.9.1)
   eco
-  ejs
   rake
   sass
   sprockets
-  trix!
   uglifier
 
 BUNDLED WITH

@@ -1,15 +1,12 @@
 source 'https://rubygems.org'
 
-gemspec
-
 gem 'rake'
 gem 'sprockets'
 gem 'coffee-script'
 gem 'coffee-script-source', '~> 1.9.1'
-gem 'ejs'
 gem 'eco'
-gem 'uglifier'
 gem 'sass'
+gem 'uglifier'
 
 gem 'blade', github: 'javan/blade'
 gem 'blade-sauce_labs_plugin', '~> 0.4.0'
