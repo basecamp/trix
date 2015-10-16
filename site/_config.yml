@@ -1,9 +1,0 @@
-title: "Trix: A Rich Text Editor for Everyday Writing"
-description: "Compose beautifully formatted text in your web application. Trix is an editor for writing messages, comments, articles, and lists—the simple documents most web apps are made of. It features a sophisticated document model, support for embedded attachments, and outputs terse and consistent HTML."
-url: "http://trix-editor.org"
-exclude:
-  - bin
-  - Rakefile
-  - Gemfile
-  - Gemfile.lock
-  - s3_website.yml
