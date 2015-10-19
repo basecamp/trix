@@ -1,4 +1,13 @@
 GIT
+  remote: git://github.com/javan/blade-sauce_labs_plugin.git
+  revision: 768d7873183522c140d47bc32042fd4d25992073
+  specs:
+    blade-sauce_labs_plugin (0.4.0)
+      blade
+      childprocess
+      faraday
+
+GIT
   remote: git://github.com/javan/blade.git
   revision: d9804bf3a3a6f241dc66bf8ef03adf8da4a3af4e
   specs:
@@ -26,9 +35,8 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.3.8)
     blade-qunit_adapter (0.4.0)
-    blade-sauce_labs_plugin (0.4.0)
-      blade
-      faraday
+    childprocess (0.5.7)
+      ffi (~> 1.0, >= 1.0.11)
     coffee-script (2.4.1)
       coffee-script-source
       execjs
@@ -64,10 +72,11 @@ GEM
     faye-websocket (0.10.0)
       eventmachine (>= 0.12.0)
       websocket-driver (>= 0.5.1)
+    ffi (1.9.10)
     http_parser.rb (0.6.0)
     i18n (0.7.0)
     json (1.8.3)
-    minitest (5.8.1)
+    minitest (5.8.2)
     multi_json (1.11.2)
     multipart-post (2.0.0)
     rack (1.6.4)
@@ -96,7 +105,7 @@ PLATFORMS
 
 DEPENDENCIES
   blade!
-  blade-sauce_labs_plugin (~> 0.4.0)
+  blade-sauce_labs_plugin!
   coffee-script
   coffee-script-source (~> 1.9.1)
   eco

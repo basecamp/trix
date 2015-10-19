@@ -32,6 +32,6 @@ plugins:
       Internet Explorer:
         version: -1
       iPhone:
-        version: -1
+        version: [9.1, 8.4]
       Motorola Droid 4 Emulator:
-        version: -1
+        version: [5.1, 4.4]
