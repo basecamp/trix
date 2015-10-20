@@ -21,6 +21,8 @@ Trix supports all evergreen, self-updating desktop and mobile browsers.
 
 Trix is built with emerging web standards, notably [Custom Elements](http://www.w3.org/TR/custom-elements/), [Mutation Observer](https://dom.spec.whatwg.org/#mutation-observers), and [Promises](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects). Eventually we expect all browsers to implement these standards. In the meantime, Trix includes [polyfills](https://en.wikipedia.org/wiki/Polyfill) for missing functionality.
 
+**Want to use Trix with Ruby on Rails? Check out the [trix gem](https://github.com/maclover7/trix).**
+
 # Getting Started
 
 Include the bundled `trix.css` and `trix.js` files in the `<head>` of your page.
