@@ -9,6 +9,9 @@ trix-toolbar {
     height: 36px;
   }
 
+  button, input[type=button] {
+    cursor: pointer;
+  }
   .button_group {
     display: inline-block;
     font-size: 0;
@@ -56,6 +59,7 @@ trix-toolbar {
 
       &:disabled::before {
         opacity: .125;
+        cursor: not-allowed;
       }
 
       &:not(:first-child) {
