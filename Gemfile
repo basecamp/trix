@@ -9,4 +9,4 @@ gem 'sass'
 gem 'uglifier'
 
 gem 'blade', github: 'javan/blade'
-gem 'blade-sauce_labs_plugin', '~> 0.4.0'
+gem 'blade-sauce_labs_plugin', github: 'javan/blade-sauce_labs_plugin'
