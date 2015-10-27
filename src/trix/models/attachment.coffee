@@ -1,4 +1,5 @@
 #= require trix/operations/image_preload_operation
+#= require trix/operations/document_preload_operation
 
 class Trix.Attachment extends Trix.Object
   @previewablePattern: /^image(\/(gif|png|jpe?g)|$)/
@@ -117,7 +118,11 @@ class Trix.Attachment extends Trix.Object
       @uploadProgressDelegate?.attachmentDidChangeUploadProgress?(this)
 
   toJSON: ->
-    @getAttributes()
+    attributes = @getAttributes()
+    if @getContentType() == 'text/html' && @getURL()
+      delete attributes.content
+
+    attributes
 
   getCacheKey: (prependWith) ->
     parts = [super, @attributes.getCacheKey(), @getPreloadedURL()]
@@ -145,9 +150,16 @@ class Trix.Attachment extends Trix.Object
   preload: (url, callback) ->
     if url and url isnt @preloadedURL
       @preloadedURL ?= url
-      operation = new Trix.ImagePreloadOperation url
-      operation.then ({width, height}) =>
-        @preloadedURL = url
-        @setAttributes({width, height})
-        @previewDelegate?.attachmentDidPreload?()
-        callback?()
+      if @getContentType() == 'text/html'
+        operation = new Trix.DocumentPreloadOperation url
+        operation.then (content) =>
+          @setAttributes({content})
+          @previewDelegate?.attachmentDidPreload?()
+          callback?()
+      else
+        operation = new Trix.ImagePreloadOperation url
+        operation.then ({width, height}) =>
+          @preloadedURL = url
+          @setAttributes({width, height})
+          @previewDelegate?.attachmentDidPreload?()
+          callback?()
