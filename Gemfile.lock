@@ -1,17 +1,14 @@
-GIT
-  remote: git://github.com/javan/blade-sauce_labs_plugin.git
-  revision: 768d7873183522c140d47bc32042fd4d25992073
+GEM
+  remote: https://rubygems.org/
   specs:
-    blade-sauce_labs_plugin (0.4.0)
-      blade
-      childprocess
-      faraday
-
-GIT
-  remote: git://github.com/javan/blade.git
-  revision: d9804bf3a3a6f241dc66bf8ef03adf8da4a3af4e
-  specs:
-    blade (0.4.0)
+    activesupport (4.2.4)
+      i18n (~> 0.7)
+      json (~> 1.7, >= 1.7.7)
+      minitest (~> 5.1)
+      thread_safe (~> 0.3, >= 0.3.4)
+      tzinfo (~> 1.1)
+    addressable (2.3.8)
+    blade (0.4.1)
       activesupport (>= 3.0.0)
       blade-qunit_adapter (~> 0.4.0)
       coffee-script (~> 2.4.0)
@@ -23,18 +20,11 @@ GIT
       thin (~> 1.6.0)
       thor (~> 0.19.1)
       useragent (~> 0.13.0)
-
-GEM
-  remote: https://rubygems.org/
-  specs:
-    activesupport (4.2.4)
-      i18n (~> 0.7)
-      json (~> 1.7, >= 1.7.7)
-      minitest (~> 5.1)
-      thread_safe (~> 0.3, >= 0.3.4)
-      tzinfo (~> 1.1)
-    addressable (2.3.8)
     blade-qunit_adapter (0.4.0)
+    blade-sauce_labs_plugin (0.4.1)
+      blade
+      childprocess
+      faraday
     childprocess (0.5.7)
       ffi (~> 1.0, >= 1.0.11)
     coffee-script (2.4.1)
@@ -104,8 +94,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  blade!
-  blade-sauce_labs_plugin!
+  blade (= 0.4.1)
+  blade-sauce_labs_plugin (= 0.4.1)
   coffee-script
   coffee-script-source (~> 1.9.1)
   eco
