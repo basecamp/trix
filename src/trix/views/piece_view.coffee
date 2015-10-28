@@ -1,5 +1,6 @@
 #= require trix/views/attachment_view
 #= require trix/views/previewable_attachment_view
+#= require trix/views/previewable_document_attachment_view
 
 {makeElement, findInnerElement} = Trix
 
@@ -29,7 +30,10 @@ class Trix.PieceView extends Trix.ObjectView
 
   createAttachmentNodes: ->
     constructor = if @attachment.isPreviewable()
-      Trix.PreviewableAttachmentView
+      if @attachment.getContentType() == 'text/html'
+        Trix.PreviewableDocumentAttachmentView
+      else
+        Trix.PreviewableAttachmentView
     else
       Trix.AttachmentView
 
