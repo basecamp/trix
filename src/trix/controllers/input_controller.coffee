@@ -160,10 +160,12 @@ class Trix.InputController extends Trix.BasicObject
 
     drop: (event) ->
       event.preventDefault()
+      files = event.dataTransfer?.files
+
       point = [event.clientX, event.clientY]
       @responder?.setLocationRangeFromPoint(point)
 
-      if files = event.dataTransfer?.files
+      if files?.length
         @attachFiles(files)
 
       else if @draggedRange

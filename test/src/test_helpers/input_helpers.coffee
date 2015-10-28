@@ -149,9 +149,14 @@ for code, name of Trix.InputController.keyNames
 
 @dragToCoordinates = (coordinates, callback) ->
   element = document.activeElement
+
+  dropData = dataTransfer: files: []
+  dropData[key] = value for key, value of coordinates
+
   triggerEvent(element, "mousemove")
   triggerEvent(element, "dragstart")
-  triggerEvent(element, "drop", coordinates)
+  triggerEvent(element, "drop", dropData)
+
   defer(callback)
 
 @mouseDownOnElementAndMove = (element, distance, callback) ->
