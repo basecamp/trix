@@ -17,7 +17,7 @@ trix-toolbar {
   trix-toolbar * {
     box-sizing: border-box; }
   trix-toolbar .button_groups {
-    height: 36px; }
+    min-height: 36px; }
   trix-toolbar .button_group {
     display: inline-block;
     font-size: 0;
