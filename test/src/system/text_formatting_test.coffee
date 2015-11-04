@@ -143,3 +143,20 @@ editorTest "key command activates toolbar button", (done) ->
   typeToolbarKeyCommand attribute: "bold", ->
     ok isToolbarButtonActive(attribute: "bold")
     done()
+
+editorTest "composing formatted text", (expectDocument) ->
+  typeCharacters "abc", ->
+    clickToolbarButton attribute: "bold", ->
+      composeString "def", ->
+        expectAttributes([0, 3], {})
+        expectAttributes([3, 6], bold: true)
+        expectDocument("abcdef\n")
+
+editorTest "composing away from formatted text", (expectDocument) ->
+    clickToolbarButton attribute: "bold", ->
+      typeCharacters "abc", ->
+        clickToolbarButton attribute: "bold", ->
+          composeString "def", ->
+            expectAttributes([0, 3], bold: true)
+            expectAttributes([3, 6], {})
+            expectDocument("abcdef\n")
