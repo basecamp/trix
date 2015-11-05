@@ -1,0 +1,14 @@
+trix-toolbar .button_group button {
+  &.bold::before { background-image: asset-data-url('trix/images/bold.svg'); }
+  &.italic::before { background-image: asset-data-url('trix/images/italic.svg'); }
+  &.link::before { background-image: asset-data-url('trix/images/link.svg'); }
+  &.strike::before { background-image: asset-data-url('trix/images/strike.svg'); }
+  &.quote::before { background-image: asset-data-url('trix/images/quote.svg'); }
+  &.code::before { background-image: asset-data-url('trix/images/code.svg'); }
+  &.bullets::before { background-image: asset-data-url('trix/images/bullets.svg'); }
+  &.numbers::before { background-image: asset-data-url('trix/images/numbers.svg'); }
+  &.block-level.decrease::before { background-image: asset-data-url('trix/images/block_level_decrease.svg'); }
+  &.block-level.increase::before { background-image: asset-data-url('trix/images/block_level_increase.svg'); }
+  &.undo::before { background-image: asset-data-url('trix/images/undo.svg'); }
+  &.redo::before { background-image: asset-data-url('trix/images/redo.svg'); }
+}
