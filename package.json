@@ -1,6 +1,6 @@
 {
   "name": "trix",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "A rich text editor for everyday writing",
   "main": "dist/trix.js",
   "style": "dist/trix.css",

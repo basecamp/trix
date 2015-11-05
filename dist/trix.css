@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*
-Trix 0.9.0
+Trix 0.9.1
 Copyright © 2015 Basecamp, LLC
 http://trix-editor.org/
 */
@@ -12,87 +12,93 @@ trix-editor {
   padding: 4px 8px;
   min-height: 54px;
   outline: none; }
-trix-toolbar {
-  display: inline-block; }
-  trix-toolbar * {
-    box-sizing: border-box; }
-  trix-toolbar .button_groups {
-    height: 36px; }
-  trix-toolbar .button_group {
-    display: inline-block;
+trix-toolbar * {
+  box-sizing: border-box; }
+trix-toolbar .button_group {
+  display: inline-block;
+  font-size: 0;
+  margin: 0 8px 4px 0;
+  border: 1px solid #bbb;
+  border-top-color: #ccc;
+  border-bottom-color: #888;
+  border-radius: 5px;
+  overflow: hidden; }
+  trix-toolbar .button_group:last-of-type {
+    margin-right: 0; }
+  trix-toolbar .button_group button, trix-toolbar .button_group input[type=button] {
+    position: relative;
     font-size: 0;
-    margin: 0 8px 0 0;
-    border: 1px solid #bbb;
-    border-top-color: #ccc;
-    border-bottom-color: #888;
-    border-radius: 5px;
-    overflow: hidden; }
-    trix-toolbar .button_group:last-of-type {
-      margin-right: 0; }
-    trix-toolbar .button_group button, trix-toolbar .button_group input[type=button] {
-      position: relative;
-      font-size: 0;
-      margin: 0;
-      height: 28px;
-      width: 40px;
-      background: #fff;
-      border: none;
-      border-bottom: 1px solid #ddd; }
-      trix-toolbar .button_group button::before, trix-toolbar .button_group input[type=button]::before {
-        display: inline-block;
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        background-position: center;
-        background-repeat: no-repeat;
-        opacity: .6;
-        content: ""; }
-      trix-toolbar .button_group button.active, trix-toolbar .button_group input[type=button].active {
-        background: #cbeefa; }
-        trix-toolbar .button_group button.active::before, trix-toolbar .button_group input[type=button].active::before {
-          opacity: 1; }
-      trix-toolbar .button_group button:disabled::before, trix-toolbar .button_group input[type=button]:disabled::before {
-        opacity: .125; }
-      trix-toolbar .button_group button:not(:first-child), trix-toolbar .button_group input[type=button]:not(:first-child) {
-        border-left: 1px solid #ccc; }
-  trix-toolbar .dialogs {
-    position: relative; }
-    trix-toolbar .dialogs .dialog {
+    margin: 0;
+    height: 28px;
+    width: 40px;
+    background: #fff;
+    border: none;
+    border-bottom: 1px solid #ddd; }
+    trix-toolbar .button_group button::before, trix-toolbar .button_group input[type=button]::before {
+      display: inline-block;
       position: absolute;
       top: 0;
-      left: 0;
       right: 0;
-      padding: 12px 8px;
-      background: #fff;
-      box-shadow: 0 0.3rem 1rem #ccc;
-      border-top: 2px solid #888;
+      bottom: 0;
+      left: 0;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: .6;
+      content: ""; }
+    trix-toolbar .button_group button.active, trix-toolbar .button_group input[type=button].active {
+      background: #cbeefa; }
+      trix-toolbar .button_group button.active::before, trix-toolbar .button_group input[type=button].active::before {
+        opacity: 1; }
+    trix-toolbar .button_group button:disabled::before, trix-toolbar .button_group input[type=button]:disabled::before {
+      opacity: .125; }
+    trix-toolbar .button_group button:not(:first-child), trix-toolbar .button_group input[type=button]:not(:first-child) {
+      border-left: 1px solid #ccc; }
+trix-toolbar .dialogs {
+  position: relative; }
+  trix-toolbar .dialogs .dialog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 8px;
+    line-height: 12px;
+    background: #fff;
+    box-shadow: 0 0.3rem 1rem #ccc;
+    border-top: 2px solid #888;
+    border-radius: 5px;
+    z-index: 5; }
+    trix-toolbar .dialogs .dialog input[type=button] {
+      font-size: 12px;
+      height: 24px;
+      width: 50px;
+      padding: 1px 8px 0 8px;
+      width: auto;
+      opacity: .6;
+      -webkit-appearance: none;
+      -webkit-border-radius: 0; }
+    trix-toolbar .dialogs .dialog input[type=url], trix-toolbar .dialogs .dialog input[type=text] {
+      display: inline-block;
+      height: 26px;
+      font-size: 12px;
+      padding: 0 8px;
+      margin: 0 8px 0 0;
       border-radius: 5px;
-      z-index: 5; }
-      trix-toolbar .dialogs .dialog input[type=button] {
-        font-size: 12px;
-        height: 24px;
-        padding: 1px 8px 0 8px;
-        width: auto;
-        opacity: .6; }
-      trix-toolbar .dialogs .dialog input[type=url], trix-toolbar .dialogs .dialog input[type=text] {
-        display: inline-block;
-        height: 26px;
-        font-size: 12px;
-        padding: 0 8px;
-        margin: 0 8px 0 0;
-        border-radius: 5px;
-        border: 1px solid #bbb;
-        background-color: #fff;
-        outline: none;
-        -webkit-appearance: none;
-        -moz-appearance: none; }
+      border: 1px solid #bbb;
+      background-color: #fff;
+      box-shadow: none;
+      outline: none;
+      -webkit-appearance: none;
+      -moz-appearance: none; }
+      trix-toolbar .dialogs .dialog input[type=url].validate:invalid, trix-toolbar .dialogs .dialog input[type=text].validate:invalid {
+        box-shadow: #F00 0px 0px 1.5px 1px; }
+    trix-toolbar .dialogs .dialog.link_dialog {
+      min-width: 300px;
+      max-width: 600px; }
       trix-toolbar .dialogs .dialog.link_dialog .button_group {
-        max-width: 25%; }
+        max-width: 110px; }
       trix-toolbar .dialogs .dialog.link_dialog input[type=url] {
         float: left;
-        width: 75%; }
+        width: calc(100% - 120px); }
 trix-toolbar .button_group button.bold::before {
   background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgd2lkdGg9IjI0cHgiIHZlcnNpb249IjEuMSIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHZpZXdCb3g9IjAgMCAyNCAyNCI%2BCiA8cGF0aCBpZD0iU2hhcGUiIGZpbGw9IiMwMDAiIGQ9Im0xNS42IDExLjc5YzAuOTY1LTAuNjc1IDEuNjUtMS43NjUgMS42NS0yLjc5IDAtMi4yNTUtMS43NDUtNC00LTRoLTYuMjV2MTRoNy4wNGMyLjA5NSAwIDMuNzEtMS43IDMuNzEtMy43OSAwLTEuNTItMC44NjUtMi44MTUtMi4xNS0zLjQyem0tNS42LTQuMjloM2MwLjgzIDAgMS41IDAuNjcgMS41IDEuNXMtMC42NyAxLjUtMS41IDEuNWgtM3YtM3ptMy41IDloLTMuNXYtM2gzLjVjMC44MyAwIDEuNSAwLjY3IDEuNSAxLjVzLTAuNjcgMS41LTEuNSAxLjV6Ii8%2BCjwvc3ZnPgo%3D); }
 trix-toolbar .button_group button.italic::before {
