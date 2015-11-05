@@ -214,9 +214,9 @@ var file = document.querySelector("input[type=file]").file
 element.editor.insertFile(file)
 ```
 
-### Inserting Line Breaks
+### Inserting a Line Break
 
-To insert a line break, call the `editor.insertLineBreak` method. This is functionally equivalent to pressing the return key.
+To insert a line break, call the `editor.insertLineBreak` method, which is functionally equivalent to pressing the return key.
 
 ```js
 // Insert “Hello\n”
