@@ -197,6 +197,7 @@ class Trix.Composition extends Trix.BasicObject
   selectPlaceholder: ->
     if @placeholderPosition?
       @setSelectedRange([@placeholderPosition, @placeholderPosition + placeholder.length])
+      true
 
   forgetPlaceholder: ->
     @placeholderPosition = null
