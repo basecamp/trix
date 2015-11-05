@@ -1,7 +1,7 @@
 #= require trix/models/location_mapper
 #= require trix/observers/selection_change_observer
 
-{defer, benchmark, elementContainsNode, nodeIsCursorTarget, innerElementIsActive,
+{defer, elementContainsNode, nodeIsCursorTarget, innerElementIsActive,
  handleEvent, handleEventOnce, normalizeRange, rangeIsCollapsed, rangesAreEqual} = Trix
 
 class Trix.SelectionManager extends Trix.BasicObject

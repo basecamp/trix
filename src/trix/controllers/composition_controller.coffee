@@ -1,7 +1,7 @@
 #= require trix/controllers/attachment_editor_controller
 #= require trix/views/document_view
 
-{handleEvent, tagName, benchmark, findClosestElementFromNode, innerElementIsActive, defer}  = Trix
+{handleEvent, tagName, findClosestElementFromNode, innerElementIsActive, defer}  = Trix
 
 {attachmentSelector} = Trix.AttachmentView
 
@@ -30,7 +30,7 @@ class Trix.CompositionController extends Trix.BasicObject
     attachment = @findAttachmentForElement(target)
     @delegate?.compositionControllerDidSelectAttachment?(attachment)
 
-  render: benchmark "CompositionController#render", ->
+  render: ->
     unless @revision is @composition.revision
       @documentView.setDocument(@composition.document)
       @documentView.render()

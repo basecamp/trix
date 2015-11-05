@@ -1,4 +1,4 @@
-{arraysAreEqual, benchmark, normalizeSpaces, makeElement, tagName, walkTree,
+{arraysAreEqual, normalizeSpaces, makeElement, tagName, walkTree,
  findClosestElementFromNode, elementContainsNode, nodeIsAttachmentElement} = Trix
 
 class Trix.HTMLParser extends Trix.BasicObject
@@ -17,7 +17,7 @@ class Trix.HTMLParser extends Trix.BasicObject
   getDocument: ->
     Trix.Document.fromJSON(@blocks)
 
-  parse: benchmark "HTMLParser#parse", ->
+  parse: ->
     try
       @createHiddenContainer()
       html = sanitizeHTML(@html)

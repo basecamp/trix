@@ -4,8 +4,6 @@
 {handleEvent, findClosestElementFromNode, findElementFromContainerAndOffset,
   defer, makeElement, innerElementIsActive, summarizeStringChange} = Trix
 
-inputLog = Trix.Logger.get("input")
-
 class Trix.InputController extends Trix.BasicObject
   pastedFileCount = 0
 
@@ -34,9 +32,7 @@ class Trix.InputController extends Trix.BasicObject
       @handleInput ->
         unless innerElementIsActive(@element)
           @eventName = eventName
-          inputLog.group(eventName)
           @events[eventName].call(this, event)
-          inputLog.groupEnd()
 
   setInputSummary: (summary = {}) ->
     @inputSummary.eventName = @eventName
@@ -61,18 +57,11 @@ class Trix.InputController extends Trix.BasicObject
 
   elementDidMutate: (mutationSummary) ->
     @handleInput ->
-      inputLog.group("Mutation")
-      inputLog.log("mutationSummary =", JSON.stringify(mutationSummary))
-      inputLog.log("inputSummary =", JSON.stringify(@inputSummary))
-
       unless @mutationIsExpected(mutationSummary)
-        inputLog.log("mutation is unexpected, replacing HTML")
         @responder?.replaceHTML(@element.innerHTML)
       @resetInputSummary()
       @requestRender()
       Trix.selectionChangeObserver.reset()
-
-      inputLog.groupEnd()
 
   mutationIsExpected: (mutationSummary) ->
     if @inputSummary
