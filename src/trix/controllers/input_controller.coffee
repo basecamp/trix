@@ -236,15 +236,22 @@ class Trix.InputController extends Trix.BasicObject
       event.preventDefault()
 
     compositionstart: (event) ->
-      @insertPlaceholder()
+      unless @selectionIsExpanded()
+        textAdded = @responder?.insertPlaceholder()
+        @setInputSummary({textAdded})
+        @requestRender()
+
       @setInputSummary(composing: true, compositionStart: event.data)
 
     compositionupdate: (event) ->
-      @selectPlaceholder()
+      if @responder?.selectPlaceholder()
+        @responder?.forgetPlaceholder()
+
       @setInputSummary(composing: true, compositionUpdate: event.data)
 
     compositionend: (event) ->
-      @selectPlaceholder()
+      if @responder?.selectPlaceholder()
+        @responder?.forgetPlaceholder()
 
       {compositionStart} = @inputSummary
       {data} = event
@@ -335,20 +342,6 @@ class Trix.InputController extends Trix.BasicObject
         @delegate?.inputControllerWillPerformTyping()
 
   # Private
-
-  placeholder = " "
-
-  insertPlaceholder: ->
-    unless @selectionIsExpanded()
-      @placeholderPosition = @responder?.getPosition()
-      @setInputSummary(textAdded: placeholder)
-      @responder?.insertString(placeholder)
-      @requestRender()
-
-  selectPlaceholder: ->
-    if @placeholderPosition?
-      @responder?.setSelectedRange([@placeholderPosition, @placeholderPosition + placeholder.length])
-      @placeholderPosition = null
 
   handleInput: (callback) ->
     try
