@@ -236,21 +236,30 @@ class Trix.InputController extends Trix.BasicObject
       event.preventDefault()
 
     compositionstart: (event) ->
-      @mutationObserver.stop()
+      unless @selectionIsExpanded()
+        textAdded = @responder?.insertPlaceholder()
+        @setInputSummary({textAdded})
+        @requestRender()
+
       @setInputSummary(composing: true, compositionStart: event.data)
 
     compositionupdate: (event) ->
+      if @responder?.selectPlaceholder()
+        @responder?.forgetPlaceholder()
+
       @setInputSummary(composing: true, compositionUpdate: event.data)
 
     compositionend: (event) ->
-      @mutationObserver.start()
-      composedString = event.data
-      @setInputSummary(composing: true, compositionEnd: composedString)
+      if @responder?.selectPlaceholder()
+        @responder?.forgetPlaceholder()
 
-      if composedString? and composedString isnt @inputSummary.compositionStart
+      {compositionStart} = @inputSummary
+      {data} = event
+
+      if compositionStart? and data? and compositionStart isnt data
         @delegate?.inputControllerWillPerformTyping()
-        @responder?.insertString(composedString)
-        {added, removed} = summarizeStringChange(@inputSummary.compositionStart, composedString)
+        @responder?.insertString(data)
+        {added, removed} = summarizeStringChange(compositionStart, data)
         @setInputSummary(textAdded: added, didDelete: Boolean(removed))
 
     input: (event) ->

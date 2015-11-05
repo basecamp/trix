@@ -187,6 +187,21 @@ class Trix.Composition extends Trix.BasicObject
     @removeCurrentAttribute(block.getLastAttribute())
     @setSelection(startPosition)
 
+  placeholder = " "
+
+  insertPlaceholder: ->
+    @placeholderPosition = @getPosition()
+    @insertString(placeholder)
+    placeholder
+
+  selectPlaceholder: ->
+    if @placeholderPosition?
+      @setSelectedRange([@placeholderPosition, @placeholderPosition + placeholder.length])
+      true
+
+  forgetPlaceholder: ->
+    @placeholderPosition = null
+
   # Current attributes
 
   hasCurrentAttribute: (attributeName) ->

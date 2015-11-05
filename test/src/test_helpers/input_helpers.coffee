@@ -71,7 +71,12 @@ for code, name of Trix.InputController.keyNames
           insertNode(node, callback)
       else
         updated = true
-        compose(string.slice(0, index++), "update", continueComposition)
+        # The cursor doesn't acually move like this during a composition, but
+        # it can move and cause the location range and current attributes to change.
+        # Moving the cursor and then putting it back is enough exercise those changes.
+        moveCursor "left", ->
+          moveCursor "right", ->
+            compose(string.slice(0, index++), "update", continueComposition)
     else
       started = true
       compose(string.slice(0, index++), "start", continueComposition)

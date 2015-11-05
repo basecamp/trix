@@ -4,16 +4,6 @@ editorTest "typing", (expectDocument) ->
   typeCharacters "abc", ->
     expectDocument "abc\n"
 
-editorTest "composing", (expectDocument) ->
-  composeString "abc", ->
-    expectDocument "abc\n"
-
-editorTest "typing and composing", (expectDocument) ->
-  typeCharacters "a", ->
-    composeString "bcd", ->
-      typeCharacters "e", ->
-        expectDocument "abcde\n"
-
 editorTest "backspacing", (expectDocument) ->
   typeCharacters "abc\b", ->
     assertLocationRange(index: 0, offset: 2)
