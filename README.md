@@ -214,6 +214,16 @@ var file = document.querySelector("input[type=file]").file
 element.editor.insertFile(file)
 ```
 
+### Inserting Line Breaks
+
+To insert a line break, call the `editor.insertLineBreak` method. This is functionally equivalent to pressing the return key.
+
+```js
+// Insert “Hello\n”
+element.editor.insertString("Hello")
+element.editor.insertLineBreak()
+```
+
 ### Deleting Text
 
 If the current selection is collapsed, you can simulate deleting text before or after the cursor with the `editor.deleteInDirection` method.

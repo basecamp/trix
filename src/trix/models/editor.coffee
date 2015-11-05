@@ -53,6 +53,9 @@ class Trix.Editor
   insertText: (text) ->
     @composition.insertText(text)
 
+  insertLineBreak: ->
+    @composition.insertLineBreak()
+
   # Selection
 
   getSelectedRange: ->
