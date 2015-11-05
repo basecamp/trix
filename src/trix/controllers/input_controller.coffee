@@ -246,13 +246,13 @@ class Trix.InputController extends Trix.BasicObject
     compositionend: (event) ->
       @selectPlaceholder()
 
-      composedString = event.data
-      @setInputSummary(composing: true, compositionEnd: composedString)
+      {compositionStart} = @inputSummary
+      {data} = event
 
-      if composedString? and composedString isnt @inputSummary.compositionStart
+      if compositionStart? and data? and compositionStart isnt data
         @delegate?.inputControllerWillPerformTyping()
-        @responder?.insertString(composedString)
-        {added, removed} = summarizeStringChange(@inputSummary.compositionStart, composedString)
+        @responder?.insertString(data)
+        {added, removed} = summarizeStringChange(compositionStart, data)
         @setInputSummary(textAdded: added, didDelete: Boolean(removed))
 
     input: (event) ->

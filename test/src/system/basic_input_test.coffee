@@ -31,6 +31,12 @@ editorTest "pressing return", (expectDocument) ->
       typeCharacters "c", ->
         expectDocument "ab\nc\n"
 
+editorTest "pressing return after a canceled composition", (expectDocument) ->
+  typeCharacters "ab", ->
+    triggerEvent document.activeElement, "compositionend", data: "ab"
+    pressKey "return", ->
+      expectDocument "ab\n\n"
+
 editorTest "cursor left", (expectDocument) ->
   typeCharacters "ac", ->
     moveCursor "left", ->
