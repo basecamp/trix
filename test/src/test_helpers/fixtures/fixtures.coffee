@@ -274,6 +274,11 @@ cursorTarget = Trix.makeElement(
     document: createDocument(["ab3", {}, ["code", "quote"]])
     html: "<pre><blockquote>#{blockComment}ab3</blockquote></pre>"
 
+  "nested code blocks in quote":
+    document: createDocument(["a\n\n", {}, ["quote"]], ["b", {}, ["quote", "code"]], ["\nc\n\n", {}, ["quote"]], ["d", {}, ["quote", "code"]])
+    html: "<blockquote>#{blockComment}a<br><br><br><pre>#{blockComment}b</pre>#{blockComment}<br>c<br><br><br><pre>#{blockComment}d</pre></blockquote>"
+    serializedHTML: "<blockquote>a<br><br><br><pre>b</pre><br>c<br><br><br><pre>d</pre></blockquote>"
+
   "nested quote and list":
     document: createDocument(["ab3", {}, ["quote", "bulletList", "bullet"]])
     html: "<blockquote><ul><li>#{blockComment}ab3</li></ul></blockquote>"
