@@ -17,6 +17,9 @@ cursorTarget = Trix.makeElement(
   data: trixCursorTarget: true, trixSerialize: false
 ).outerHTML
 
+removeWhitespace = (string) ->
+  string.replace(/\s/g, "")
+
 @fixtures =
   "bold text":
     document: createDocument(["abc", bold: true])
@@ -273,6 +276,120 @@ cursorTarget = Trix.makeElement(
   "nested code and quote formatted block":
     document: createDocument(["ab3", {}, ["code", "quote"]])
     html: "<pre><blockquote>#{blockComment}ab3</blockquote></pre>"
+
+  "nested code blocks in quote":
+    document: createDocument(
+      ["a\n", {}, ["quote"]],
+      ["b", {}, ["quote", "code"]],
+      ["\nc\n", {}, ["quote"]],
+      ["d", {}, ["quote", "code"]]
+    )
+    html: removeWhitespace """
+      <blockquote>
+        #{blockComment}
+        a
+        <br>
+        <br>
+        <pre>
+          #{blockComment}
+          b
+        </pre>
+        #{blockComment}
+        <br>
+        c
+        <br>
+        <br>
+        <pre>
+          #{blockComment}
+          d
+        </pre>
+      </blockquote>
+    """
+    serializedHTML: removeWhitespace """
+      <blockquote>
+        a
+        <br>
+        <br>
+        <pre>
+          b
+        </pre>
+        <br>
+        c
+        <br>
+        <br>
+        <pre>
+          d
+        </pre>
+      </blockquote>
+    """
+
+  "nested code, quote, and list in quote":
+    document: createDocument(
+      ["a\n", {}, ["quote"]],
+      ["b", {}, ["quote", "code"]],
+      ["\nc\n", {}, ["quote"]],
+      ["d", {}, ["quote", "quote"]],
+      ["\ne\n", {}, ["quote"]],
+      ["f", {}, ["quote", "bulletList", "bullet"]]
+    )
+    html: removeWhitespace """
+     <blockquote>
+      #{blockComment}
+      a
+      <br>
+      <br>
+      <pre>
+        #{blockComment}
+        b
+      </pre>
+      #{blockComment}
+      <br>
+      c
+      <br>
+      <br>
+      <blockquote>
+        #{blockComment}
+        d
+      </blockquote>
+      #{blockComment}
+      <br>
+      e
+      <br>
+      <br>
+      <ul>
+        <li>
+          #{blockComment}
+          f
+        </li>
+      </ul>
+    </blockquote>
+    """
+    serializedHTML: removeWhitespace """
+      <blockquote>
+        a
+        <br>
+        <br>
+        <pre>
+          b
+        </pre>
+        <br>
+        c
+        <br>
+        <br>
+        <blockquote>
+          d
+        </blockquote>
+        <br>
+        e
+        <br>
+        <br>
+        <ul>
+          <li>
+            f
+          </li>
+        </ul>
+      </blockquote>
+    """
 
   "nested quote and list":
     document: createDocument(["ab3", {}, ["quote", "bulletList", "bullet"]])

@@ -1,9 +1,15 @@
 module "Trix.HTMLParser"
 
-eachFixture (name, {html, document}) ->
+eachFixture (name, {html, serializedHTML, document}) ->
   test name, ->
     parsedDocument = Trix.HTMLParser.parse(html).getDocument()
     expectHTML parsedDocument.copyUsingObjectsFromDocument(document), html
+
+eachFixture (name, {html, serializedHTML, document}) ->
+  if serializedHTML?
+    test "#{name} (serialized)", ->
+      parsedDocument = Trix.HTMLParser.parse(serializedHTML).getDocument()
+      expectHTML parsedDocument.copyUsingObjectsFromDocument(document), html
 
 test "parses unfamiliar html", ->
   html = """<meta charset="UTF-8"><span style="font-style: italic">abc</span><span>d</span><section style="margin:0"><blink>123</blink><a href="http://example.com">45<b>6</b></a>x<br />y</section><p style="margin:0">9</p>"""
