@@ -57,8 +57,20 @@ class Trix.HTMLParser extends Trix.BasicObject
         @currentBlockElement = element
 
     else if @currentBlockElement and not elementContainsNode(@currentBlockElement, element) and not @isBlockElement(element)
+      if parentBlockElement = @findParentBlockElement(element)
+        @appendBlockForElement(parentBlockElement)
+      else
         @currentBlock = @appendEmptyBlock()
         @currentBlockElement = null
+
+  findParentBlockElement: (element) ->
+    {parentElement} = element
+    while parentElement
+      if @isBlockElement(parentElement) and parentElement in @blockElements
+        return parentElement
+      else
+        {parentElement} = parentElement
+    null
 
   isExtraBR: (element) ->
     tagName(element) is "br" and
@@ -89,7 +101,7 @@ class Trix.HTMLParser extends Trix.BasicObject
     else
       switch tagName(element)
         when "br"
-          unless @isExtraBR(element)
+          unless @isExtraBR(element) or @isBlockElement(element.nextElementSibling)
             @appendStringWithAttributes("\n", getTextAttributes(element))
           @processedElements.push(element)
         when "img"

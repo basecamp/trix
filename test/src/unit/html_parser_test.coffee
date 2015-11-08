@@ -5,6 +5,7 @@ eachFixture (name, {html, serializedHTML, document}) ->
     parsedDocument = Trix.HTMLParser.parse(html).getDocument()
     expectHTML parsedDocument.copyUsingObjectsFromDocument(document), html
 
+eachFixture (name, {html, serializedHTML, document}) ->
   if serializedHTML?
     test "#{name} (serialized)", ->
       parsedDocument = Trix.HTMLParser.parse(serializedHTML).getDocument()
