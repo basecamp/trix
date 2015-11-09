@@ -136,7 +136,41 @@ trix-editor [data-trix-mutable=true] {
   user-select: none; }
   trix-editor [data-trix-mutable=true] img {
     box-shadow: 0 0 0 2px highlight; }
-trix-editor .attachment {
+trix-editor .attachment .remove {
+  display: block;
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 24px;
+  line-height: 22px;
+  font-size: 0;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  background-color: #fff;
+  border: 1px solid #bbb;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1); }
+  trix-editor .attachment .remove:after {
+    content: '×';
+    font-size: 18px;
+    font-weight: bold;
+    opacity: 0.6; }
+  trix-editor .attachment .remove:hover:after {
+    opacity: 1; }
+  trix-editor .attachment .caption.caption-editing textarea {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    line-height: 13px;
+    text-align: center;
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none; }
+.trix-content .attachment {
   position: relative;
   display: inline-block;
   max-width: 100%;
@@ -144,48 +178,14 @@ trix-editor .attachment {
   padding: 0;
   color: #666;
   font-size: 13px; }
-  trix-editor .attachment .remove {
-    display: block;
-    position: absolute;
-    top: -12px;
-    right: -12px;
-    width: 24px;
-    height: 24px;
-    border-radius: 24px;
-    line-height: 22px;
-    font-size: 0;
-    color: black;
-    text-align: center;
-    text-decoration: none;
-    background-color: #fff;
-    border: 1px solid #bbb;
-    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1); }
-    trix-editor .attachment .remove:after {
-      content: '×';
-      font-size: 18px;
-      font-weight: bold;
-      opacity: 0.6; }
-    trix-editor .attachment .remove:hover:after {
-      opacity: 1; }
-  trix-editor .attachment .caption {
+  .trix-content .attachment .caption {
     display: block;
     margin: 4px auto 0 auto;
     padding: 0;
     text-align: center; }
-    trix-editor .attachment .caption .size:before {
+    .trix-content .attachment .caption .size:before {
       content: ' · '; }
-    trix-editor .attachment .caption.caption-editing textarea {
-      width: 100%;
-      margin: 0;
-      padding: 0;
-      font-size: 13px;
-      line-height: 13px;
-      text-align: center;
-      border: none;
-      outline: none;
-      -webkit-appearance: none;
-      -moz-appearance: none; }
-  trix-editor .attachment.attachment-file {
+  .trix-content .attachment.attachment-file {
     color: #333;
     line-height: 30px;
     padding: 0 16px;
