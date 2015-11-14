@@ -27,6 +27,21 @@ editorTest "pressing return at the beginning of a non-empty list item", (expectD
           expectBlockAttributes([3, 5], ["bulletList", "bullet"])
           expectDocument("a\n\nb\n")
 
+editorTest "pressing delete at the beginning of a non-empty nested list item", (expectDocument) ->
+    clickToolbarButton attribute: "bullet", ->
+      typeCharacters "a\n", ->
+        clickToolbarButton action: "increaseBlockLevel", ->
+          typeCharacters "b\n", ->
+            clickToolbarButton action: "increaseBlockLevel", ->
+              typeCharacters "c", ->
+                getSelectionManager().setLocationRange(index: 1, offset: 0)
+                getComposition().deleteInDirection("backward")
+                getEditorController().render()
+                defer ->
+                  expectBlockAttributes([0, 2], ["bulletList", "bullet"])
+                  expectBlockAttributes([3, 4], ["bulletList", "bullet", "bulletList", "bullet"])
+                  expectDocument("ab\nc\n")
+
 editorTest "decreasing list item's level decreases its nested items level too", (expectDocument) ->
   clickToolbarButton attribute: "bullet", ->
     typeCharacters "a\n", ->

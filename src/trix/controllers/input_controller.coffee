@@ -341,7 +341,9 @@ class Trix.InputController extends Trix.BasicObject
 
   deleteInDirection: (direction, event) ->
     if @responder?.deleteInDirection(direction) is false
-      event?.preventDefault()
+      if event
+        event.preventDefault()
+        @requestRender()
     else
       @setInputSummary(didDelete: true)
 
