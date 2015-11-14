@@ -1,4 +1,4 @@
-class Trix.Logger extends Trix.BasicObject
+class Trix.Inspector.Logger extends Trix.BasicObject
   loggers = {}
 
   @getLoggers: ->
@@ -52,4 +52,3 @@ class Trix.Logger extends Trix.BasicObject
   @proxyMethod "console?.trace"
   @proxyMethod "console?.time"
   @proxyMethod "console?.timeEnd"
-

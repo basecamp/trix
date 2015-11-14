@@ -5,7 +5,18 @@
     <title>Trix</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <link rel="stylesheet" type="text/css" href="trix.css">
+    <style type="text/css">
+      trix-editor {
+        width: 500px;
+      }
+    </style>
     <script type="text/javascript" src="trix.js"></script>
+    <script type="text/javascript" src="trix/inspector.js"></script>
+    <script type="text/javascript">
+      document.addEventListener("trix-initialize", function(event) {
+        Trix.Inspector.install(event.target);
+      });
+    </script>
   </head>
   <body>
     <trix-editor autofocus class="trix-content"></trix-editor>

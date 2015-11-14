@@ -43,8 +43,8 @@ Trix.registerElement "trix-inspector",
       a.title.toLowerCase() > b.title.toLowerCase()
 
   reposition: ->
-    position = @editorElement.composition.getPosition() ? 0
-    selectionRect = try @editorElement.getClientRectAtPosition(position)
+    position = @editorElement.editor.getPosition() ? 0
+    selectionRect = try @editorElement.editor.getClientRectAtPosition(position)
     elementRect = @editorElement.getBoundingClientRect()
 
     top = selectionRect?.top ? elementRect.top

@@ -4,10 +4,10 @@ Trix.Inspector.registerView class extends Trix.Inspector.View
   title: "Selection"
   template: "selection"
   events:
-    "trix-selectionchange": ->
+    "trix-selection-change": ->
       @render()
 
   render: ->
-    @range = @composition.getSelectedRange()
+    @range = @editor.getSelectedRange()
     @locationRange = @composition.getLocationRange()
     super

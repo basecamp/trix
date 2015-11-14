@@ -2,8 +2,8 @@
 
 class Trix.Inspector.View
   constructor: (@editorElement) ->
-    {@editorController, @composition} = @editorElement
-    {@compositionController} = @editorController
+    {@editorController, @editor} = @editorElement
+    {@compositionController, @composition} = @editorController
 
     @element = document.createElement("details")
     @installEventHandlers() if @events

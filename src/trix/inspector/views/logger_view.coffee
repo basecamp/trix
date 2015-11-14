@@ -1,6 +1,7 @@
 #= require trix/inspector/view
 
 {handleEvent} = Trix
+{Logger} = Trix.Inspector
 
 Trix.Inspector.registerView class extends Trix.Inspector.View
   title: "Loggers"
@@ -11,7 +12,7 @@ Trix.Inspector.registerView class extends Trix.Inspector.View
     handleEvent("change", onElement: @element, withCallback: @didChangeInput)
 
   didChangeInput: ({target}) =>
-    logger = Trix.Logger.get(target.value)
+    logger = Logger.get(target.value)
 
     if target.checked
       logger.enable()
@@ -19,5 +20,5 @@ Trix.Inspector.registerView class extends Trix.Inspector.View
       logger.disable()
 
   render: ->
-    @loggers = Trix.Logger.getLoggers()
+    @loggers = Logger.getLoggers()
     super

@@ -8,5 +8,5 @@ Trix.Inspector.registerView class extends Trix.Inspector.View
       @render()
 
   render: ->
-    {@undoEntries, @redoEntries} = @editorController.undoManager
+    {@undoEntries, @redoEntries} = @editor.undoManager
     super
