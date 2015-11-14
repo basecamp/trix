@@ -89,8 +89,8 @@ class Trix.MutationObserver extends Trix.BasicObject
       for node in mutation.addedNodes when node.nodeType is Node.TEXT_NODE
         nodesAdded.push(node)
 
-    additions: (node.data for node, index in nodesAdded when node.data isnt nodesRemoved[index]?.data)
-    deletions: (node.data for node, index in nodesRemoved when node.data isnt nodesAdded[index]?.data)
+    additions: (normalizeSpaces(node.data) for node, index in nodesAdded when node.data isnt nodesRemoved[index]?.data)
+    deletions: (normalizeSpaces(node.data) for node, index in nodesRemoved when node.data isnt nodesAdded[index]?.data)
 
   getTextChangesFromCharacterData: ->
     characterMutations = @getMutationsByType("characterData")
