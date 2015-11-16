@@ -1,5 +1,6 @@
 load_paths:
   - test/src
+  - test/vendor
   - assets
   - polyfills
   - src
@@ -29,8 +30,10 @@ plugins:
       Safari:
         platform: Mac
         version: -3
+      Microsoft Edge:
+        version: -2
       Internet Explorer:
-        version: -1
+        version: 11
       iPhone:
         version: [9.1, 8.4]
       Motorola Droid 4 Emulator:
