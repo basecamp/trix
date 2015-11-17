@@ -8,6 +8,7 @@ class Trix.ToolbarController extends Trix.BasicObject
   activeDialogSelector = "#{dialogSelector}.active"
   dialogButtonSelector = "#{dialogSelector} input[data-method]"
   dialogInputSelector = "#{dialogSelector} input[type=text], #{dialogSelector} input[type=url]"
+  fileSelector = "input[type=file]"
 
   constructor: (@element) ->
     @attributes = {}
@@ -19,6 +20,7 @@ class Trix.ToolbarController extends Trix.BasicObject
     handleEvent "click", onElement: @element, matchingSelector: toolbarButtonSelector, preventDefault: true
     handleEvent "click", onElement: @element, matchingSelector: dialogButtonSelector, withCallback: @didClickDialogButton
     handleEvent "keydown", onElement: @element, matchingSelector: dialogInputSelector, withCallback: @didKeyDownDialogInput
+    handleEvent "change", onElement: @element, matchingSelector: fileSelector, withCallback: @didFileChanged
 
   # Event handlers
 
@@ -27,10 +29,17 @@ class Trix.ToolbarController extends Trix.BasicObject
     event.preventDefault()
     actionName = getActionName(element)
 
-    if @getDialog(actionName)
+    if actionName is "image"
+      triggerEvent 'click', onElement: @element.querySelector(fileSelector)
+    else if @getDialog(actionName)
       @toggleDialog(actionName)
     else
       @delegate?.toolbarDidInvokeAction(actionName)
+
+  didFileChanged: (event, element) =>
+    if element.files[0]?
+      @delegate?.editor.insertFile(element.files[0])
+      element.value = ''
 
   didClickAttributeButton: (event, element) =>
     @delegate?.toolbarDidClickButton()

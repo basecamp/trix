@@ -2,6 +2,7 @@ trix-toolbar .button_group button {
   &.bold::before { background-image: asset-data-url('trix/images/bold.svg'); }
   &.italic::before { background-image: asset-data-url('trix/images/italic.svg'); }
   &.link::before { background-image: asset-data-url('trix/images/link.svg'); }
+  &.image::before { background-image: asset-data-url('trix/images/image.svg'); }
   &.strike::before { background-image: asset-data-url('trix/images/strike.svg'); }
   &.quote::before { background-image: asset-data-url('trix/images/quote.svg'); }
   &.code::before { background-image: asset-data-url('trix/images/code.svg'); }

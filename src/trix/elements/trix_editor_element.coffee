@@ -120,8 +120,10 @@ Trix.registerElement "trix-editor", do ->
           @documentChangedSinceLastRender = false
           @notify("change")
       when "change", "attachment-add", "attachment-edit", "attachment-remove"
-        @inputElement?.value = Trix.serializeToContentType(this, "text/html")
-
+        if @inputElement?
+          @inputElement.value = Trix.serializeToContentType(this, "text/html")
+          triggerEvent 'change', onElement: @inputElement
+          
     if @editorController
       triggerEvent("trix-#{message}", onElement: this, attributes: data)
 
