@@ -1,5 +1,6 @@
 Trix.config.lang =
   bold: "Bold"
+  image: "Upload image"
   bullets: "Bullets"
   byte:  "Byte"
   bytes: "Bytes"

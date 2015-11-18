@@ -9,6 +9,8 @@ Trix.config.toolbar =
         <button type="button" class="italic" data-attribute="italic" data-key="i" title="#{lang.italic}">#{lang.italic}</button>
         <button type="button" class="strike" data-attribute="strike" title="#{lang.strike}">#{lang.strike}</button>
         <button type="button" class="link" data-attribute="href" data-action="link" data-key="k" title="#{lang.link}">#{lang.link}</button>
+        <button type="button" class="image" data-action="image" data-key="u" title="#{lang.image}">#{lang.image}</button>
+        <input type="file">
       </span>
 
       <span class="button_group block_tools">

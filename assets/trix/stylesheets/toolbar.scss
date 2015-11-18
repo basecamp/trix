@@ -17,6 +17,14 @@ trix-toolbar {
       margin-right: 0;
     }
 
+    input[type=file] {
+      height: 0px; 
+      width: 0px;
+      position: absolute; 
+      left: 0px;
+      top: 0px;
+    }
+
     button, input[type=button] {
       position: relative;
       font-size: 0;
