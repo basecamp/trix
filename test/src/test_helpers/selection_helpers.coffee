@@ -72,6 +72,12 @@ for code, name of Trix.InputController.keyNames
   selection.collapse(node, 0)
   callback?()
 
+@selectNode = (node, callback) ->
+  selection = rangy.getSelection()
+  selection.selectAllChildren(node)
+  Trix.selectionChangeObserver.update()
+  callback?()
+
 getCursorCoordinates = ->
   if rect = window.getSelection().getRangeAt(0).getClientRects()[0]
     clientX: rect.left
