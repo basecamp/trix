@@ -47,6 +47,10 @@ test "translates block element margins to newlines", ->
   document = Trix.HTMLParser.parse(html).getDocument()
   expectHTML document, expectedHTML
 
+test "preserves img's src", ->
+  html = """<img src="/test.jpg">"""
+  equal Trix.DocumentView.render(Trix.HTMLParser.parse(html).getDocument()).querySelector("img").attributes.src.value, "/test.jpg"
+
 asyncTest "sanitizes unsafe html", ->
   window.unsanitized = []
   Trix.HTMLParser.parse """
