@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-if [ "$TRAVIS_REPO_SLUG" == "basecamp/trix" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
+if [ "$TRAVIS_REPO_SLUG" == "basecamp/trix" ] && [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
   $(base64 --decode <<< ZXhwb3J0IFNBVUNFX1VTRVJOQU1FPWJhc2VjYW1wX3RyaXgK)
   $(base64 --decode <<< ZXhwb3J0IFNBVUNFX0FDQ0VTU19LRVk9MjY3OGE4NzMtNzJmNC00NzU2LTkzYjUtZjFhOGUyZTc3ODIxCg==)
 else
