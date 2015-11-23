@@ -229,6 +229,7 @@ class Trix.InputController extends Trix.BasicObject
 
     compositionstart: (event) ->
       unless @selectionIsExpanded()
+        # Skip placeholder if keypress input was received before the composition started
         unless @inputSummary.eventName is "keypress" and @inputSummary.textAdded
           textAdded = @responder?.insertPlaceholder()
           @setInputSummary({textAdded})
