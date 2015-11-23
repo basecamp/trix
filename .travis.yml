@@ -1,3 +1,6 @@
 language: ruby
 cache: bundler
 script: bin/ci
+branches:
+  only:
+    - master
