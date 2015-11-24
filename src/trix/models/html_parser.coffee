@@ -36,7 +36,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   createHiddenContainer: ->
     if @referenceElement
-      @containerElement = @referenceElement.cloneNode("false")
+      @containerElement = @referenceElement.cloneNode(false)
       @containerElement.removeAttribute("id")
       @containerElement.dataset.trixTemporary = true
       @containerElement.style.display = "none"
