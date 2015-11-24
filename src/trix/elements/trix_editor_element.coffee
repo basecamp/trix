@@ -131,7 +131,7 @@ Trix.registerElement "trix-editor", do ->
     makeEditable(this)
 
   attachedCallback: ->
-    unless @hasAttribute("data-trix-temporary")
+    unless @hasAttribute("data-trix-internal")
       autofocus(this)
       @editorController ?= new Trix.EditorController(editorElement: this, html: @defaultValue = @value)
       @editorController.registerSelectionManager()

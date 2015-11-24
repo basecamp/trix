@@ -38,7 +38,7 @@ class Trix.HTMLParser extends Trix.BasicObject
     if @referenceElement
       @containerElement = @referenceElement.cloneNode(false)
       @containerElement.removeAttribute("id")
-      @containerElement.dataset.trixTemporary = true
+      @containerElement.setAttribute("data-trix-internal", "")
       @containerElement.style.display = "none"
       @referenceElement.parentNode.insertBefore(@containerElement, @referenceElement.nextSibling)
     else
