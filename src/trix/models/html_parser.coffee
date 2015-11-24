@@ -21,8 +21,8 @@ class Trix.HTMLParser extends Trix.BasicObject
     try
       @createHiddenContainer()
       html = sanitizeHTML(@html)
-      @container.innerHTML = html
-      walker = walkTree(@container, usingFilter: nodeFilter)
+      @containerElement.innerHTML = html
+      walker = walkTree(@containerElement, usingFilter: nodeFilter)
       @processNode(walker.currentNode) while walker.nextNode()
       @translateBlockElementMarginsToNewlines()
     finally
@@ -36,17 +36,17 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   createHiddenContainer: ->
     if @referenceElement
-      @container = @referenceElement.cloneNode("false")
-      @container.removeAttribute("id")
-      @container.dataset.trixTemporary = true
-      @container.style.display = "none"
-      @referenceElement.parentNode.insertBefore(@container, @referenceElement.nextSibling)
+      @containerElement = @referenceElement.cloneNode("false")
+      @containerElement.removeAttribute("id")
+      @containerElement.dataset.trixTemporary = true
+      @containerElement.style.display = "none"
+      @referenceElement.parentNode.insertBefore(@containerElement, @referenceElement.nextSibling)
     else
-      @container = makeElement(tagName: "div",style: { display: "none" })
-      document.body.appendChild(@container)
+      @containerElement = makeElement(tagName: "div",style: { display: "none" })
+      document.body.appendChild(@containerElement)
 
   removeHiddenContainer: ->
-    @container.parentNode.removeChild(@container)
+    @containerElement.parentNode.removeChild(@containerElement)
 
   processNode: (node) ->
     switch node.nodeType
@@ -72,7 +72,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   findParentBlockElement: (element) ->
     {parentElement} = element
-    while parentElement and parentElement isnt @container
+    while parentElement and parentElement isnt @containerElement
       if @isBlockElement(parentElement) and parentElement in @blockElements
         return parentElement
       else
@@ -180,7 +180,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   getBlockAttributes: (element) ->
     attributes = []
-    while element and element isnt @container
+    while element and element isnt @containerElement
       for attribute, config of Trix.config.blockAttributes when config.parse isnt false
         if tagName(element) is config.tagName
           if config.test?(element) or not config.test
@@ -196,7 +196,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   getMarginOfDefaultBlockElement: ->
     element = makeElement(Trix.config.blockAttributes.default.tagName)
-    @container.appendChild(element)
+    @containerElement.appendChild(element)
     getBlockElementMargin(element)
 
   translateBlockElementMarginsToNewlines: ->
