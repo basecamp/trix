@@ -34,6 +34,27 @@ editorTest "element triggers attachment events", ->
   attachment.remove()
   deepEqual events, ["trix-file-accept", "trix-attachment-add", "trix-attachment-remove"]
 
+editorTest "element triggers trix-change when an attachment is edited", ->
+  file = createFile()
+  element = getEditorElement()
+  composition = getComposition()
+  attachment = null
+  events = []
+
+  element.addEventListener "trix-attachment-add", (event) ->
+    attachment = event.attachment
+
+  composition.insertFile(file)
+
+  element.addEventListener "trix-attachment-edit", (event) ->
+    events.push(event.type)
+
+  element.addEventListener "trix-change", (event) ->
+    events.push(event.type)
+
+  attachment.setAttributes(width: 9876)
+  deepEqual events, ["trix-attachment-edit", "trix-change"]
+
 editorTest "element triggers trix-change events when the document changes", (done) ->
   element = getEditorElement()
   eventCount = 0
