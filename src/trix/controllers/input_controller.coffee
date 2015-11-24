@@ -59,8 +59,11 @@ class Trix.InputController extends Trix.BasicObject
     @handleInput ->
       unless @mutationIsExpected(mutationSummary)
         @responder?.replaceHTML(@element.innerHTML)
+
+      unless @inputSummary.composing
+        @requestRender()
+
       @resetInputSummary()
-      @requestRender()
       Trix.selectionChangeObserver.reset()
 
   mutationIsExpected: (mutationSummary) ->
@@ -226,9 +229,11 @@ class Trix.InputController extends Trix.BasicObject
 
     compositionstart: (event) ->
       unless @selectionIsExpanded()
-        textAdded = @responder?.insertPlaceholder()
-        @setInputSummary({textAdded})
-        @requestRender()
+        # Skip placeholder if keypress input was received before the composition started
+        unless @inputSummary.eventName is "keypress" and @inputSummary.textAdded
+          textAdded = @responder?.insertPlaceholder()
+          @setInputSummary({textAdded})
+          @requestRender()
 
       @setInputSummary(composing: true, compositionStart: event.data)
 

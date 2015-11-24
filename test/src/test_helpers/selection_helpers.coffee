@@ -66,10 +66,19 @@ for code, name of Trix.InputController.keyNames
   rangy.getSelection().isCollapsed
 
 @insertNode = (node, callback) ->
-  deleteSelection()
   selection = rangy.getSelection()
-  selection.getRangeAt(0).insertNode(node)
-  selection.collapse(node, 0)
+  range = selection.getRangeAt(0)
+  range.splitBoundaries()
+  range.insertNode(node)
+  range.setStartAfter(node)
+  range.deleteContents()
+  range.normalizeBoundaries()
+  callback?()
+
+@selectNode = (node, callback) ->
+  selection = rangy.getSelection()
+  selection.selectAllChildren(node)
+  Trix.selectionChangeObserver.update()
   callback?()
 
 getCursorCoordinates = ->

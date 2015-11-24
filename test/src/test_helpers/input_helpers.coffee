@@ -58,28 +58,36 @@ for code, name of Trix.InputController.keyNames
       triggerEvent(element, "keyup", properties)
       defer(callback)
 
-@composeString = (string, callback) ->
-  index = 1
-  started = false
-  updated = false
+@startComposition = (data, callback) ->
+  element = document.activeElement
+  triggerEvent(element, "compositionstart", data: "")
+  triggerEvent(element, "compositionupdate", data: data)
+  triggerEvent(element, "input")
 
-  do continueComposition = -> defer ->
-    if started
-      if updated and index >= string.length
-        compose string, "end", ->
-          node = document.createTextNode(string)
-          insertNode(node, callback)
-      else
-        updated = true
-        # The cursor doesn't acually move like this during a composition, but
-        # it can move and cause the location range and current attributes to change.
-        # Moving the cursor and then putting it back is enough exercise those changes.
-        moveCursor "left", ->
-          moveCursor "right", ->
-            compose(string.slice(0, index++), "update", continueComposition)
-    else
-      started = true
-      compose(string.slice(0, index++), "start", continueComposition)
+  node = document.createTextNode(data)
+  insertNode(node)
+  selectNode(node, callback)
+
+@updateComposition = (data, callback) ->
+  element = document.activeElement
+  triggerEvent(element, "compositionupdate", data: data)
+  triggerEvent(element, "input")
+
+  node = document.createTextNode(data)
+  insertNode(node)
+  selectNode(node, callback)
+
+@endComposition = (data, callback) ->
+  element = document.activeElement
+  triggerEvent(element, "compositionupdate", data: data)
+  triggerEvent(element, "input")
+  triggerEvent(element, "compositionend", data: data)
+  triggerEvent(element, "input")
+
+  node = document.createTextNode(data)
+  insertNode(node)
+  selectNode(node)
+  collapseSelection("right", callback)
 
 @clickElement = (element, callback) ->
   if triggerEvent(element, "mousedown")
@@ -120,15 +128,6 @@ for code, name of Trix.InputController.keyNames
       else
         triggerEvent(element, "mouseup", destination(distance))
         after(dragSpeed, callback)
-
-compose = (string, name, callback) ->
-  element = document.activeElement
-  triggerEvent(element, "keydown", which: 229, keyCode: 229, charCode: 0)
-  defer ->
-    triggerEvent(element, "composition#{name}", data: string)
-    defer ->
-      triggerEvent(element, "input")
-      defer(callback)
 
 typeCharacterInElement = (character, element, callback) ->
   charCode = character.charCodeAt(0)
