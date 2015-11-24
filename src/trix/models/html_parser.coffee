@@ -42,7 +42,7 @@ class Trix.HTMLParser extends Trix.BasicObject
       @containerElement.style.display = "none"
       @referenceElement.parentNode.insertBefore(@containerElement, @referenceElement.nextSibling)
     else
-      @containerElement = makeElement(tagName: "div",style: { display: "none" })
+      @containerElement = makeElement(tagName: "div", style: { display: "none" })
       document.body.appendChild(@containerElement)
 
   removeHiddenContainer: ->
