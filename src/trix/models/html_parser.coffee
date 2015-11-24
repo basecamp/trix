@@ -9,7 +9,7 @@ class Trix.HTMLParser extends Trix.BasicObject
     parser.parse()
     parser
 
-  constructor: (@html) ->
+  constructor: (@html, {@referenceElement} = {}) ->
     @blocks = []
     @blockElements = []
     @processedElements = []
@@ -35,12 +35,18 @@ class Trix.HTMLParser extends Trix.BasicObject
       NodeFilter.FILTER_ACCEPT
 
   createHiddenContainer: ->
-    className = document.querySelector("trix-editor[class]")?.className ? ""
-    @container = makeElement(tagName: "div", className: className, style: { display: "none" })
-    document.body.appendChild(@container)
+    if @referenceElement
+      @container = @referenceElement.cloneNode("false")
+      @container.removeAttribute("id")
+      @container.dataset.trixTemporary = true
+      @container.style.display = "none"
+      @referenceElement.parentNode.insertBefore(@container, @referenceElement.nextSibling)
+    else
+      @container = makeElement(tagName: "div",style: { display: "none" })
+      document.body.appendChild(@container)
 
   removeHiddenContainer: ->
-    document.body.removeChild(@container)
+    @container.parentNode.removeChild(@container)
 
   processNode: (node) ->
     switch node.nodeType
