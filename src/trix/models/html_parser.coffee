@@ -35,7 +35,8 @@ class Trix.HTMLParser extends Trix.BasicObject
       NodeFilter.FILTER_ACCEPT
 
   createHiddenContainer: ->
-    @container = makeElement(tagName: "div", style: { display: "none" })
+    className = document.querySelector("trix-editor[class]")?.className ? ""
+    @container = makeElement(tagName: "div", className: className, style: { display: "none" })
     document.body.appendChild(@container)
 
   removeHiddenContainer: ->
