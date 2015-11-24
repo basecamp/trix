@@ -1,14 +1,14 @@
 #= require trix/models/undo_manager
 
 class Trix.Editor
-  constructor: (@composition, @selectionManager) ->
+  constructor: (@composition, @selectionManager, @element) ->
     @undoManager = new Trix.UndoManager @composition
 
   loadDocument: (document) ->
     @loadSnapshot({document, selectedRange: [0, 0]})
 
   loadHTML: (html = "") ->
-    @loadDocument(Trix.Document.fromHTML(html))
+    @loadDocument(Trix.Document.fromHTML(html, referenceElement: @element))
 
   loadJSON: ({document, selectedRange}) ->
     document = Trix.Document.fromJSON(document)

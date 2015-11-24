@@ -30,7 +30,7 @@ class Trix.EditorController extends Trix.Controller
     @toolbarController = new Trix.ToolbarController @editorElement.toolbarElement
     @toolbarController.delegate = this
 
-    @editor = new Trix.Editor @composition, @selectionManager
+    @editor = new Trix.Editor @composition, @selectionManager, @editorElement
     if document?
       @editor.loadDocument(document)
     else

@@ -187,6 +187,45 @@ removeWhitespace = (string) ->
     serializedHTML: "<div>#{serializedFigure.outerHTML}</div>"
     document: new Trix.Document [new Trix.Block text]
 
+  "text with newlines and image attachment": do ->
+    stringText = Trix.Text.textForStringWithAttributes("a\nb")
+
+    attrs = url: TEST_IMAGE_URL, filename: "example.png", filesize: 98203, contentType: "image/png", width: 1, height: 1
+    attachment = new Trix.Attachment attrs
+    attachmentText = Trix.Text.textForAttachmentWithAttributes(attachment)
+
+    key = attachment.getCacheKey("imageElement")
+    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, "data-trix-store-key": key, width: 1, height: 1)
+
+    caption = Trix.makeElement(tagName: "figcaption", className: classNames.attachment.caption)
+    caption.innerHTML = """#{attrs.filename} <span class="#{classNames.attachment.size}">95.9 KB</span>"""
+
+    figure = Trix.makeElement
+      tagName: "figure"
+      className: "attachment attachment-preview png"
+
+    data =
+      trixAttachment: JSON.stringify(attachment)
+      trixContentType: "image/png"
+      trixId: attachment.id
+
+    figure.dataset[key] = value for key, value of data
+    figure.setAttribute("contenteditable", false)
+    figure.appendChild(image)
+    figure.appendChild(caption)
+
+    serializedFigure = figure.cloneNode(true)
+    for attribute in ["data-trix-id", "data-trix-mutable", "data-trix-store-key", "contenteditable"]
+      serializedFigure.removeAttribute(attribute)
+      for element in serializedFigure.querySelectorAll("[#{attribute}]")
+        element.removeAttribute(attribute)
+
+    text = stringText.appendText(attachmentText)
+
+    html: "<div>#{blockComment}a<br>b#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"
+    serializedHTML: "<div>a<br>b#{serializedFigure.outerHTML}</div>"
+    document: new Trix.Document [new Trix.Block text]
+
   "image attachment with edited caption": do ->
     attrs = url: TEST_IMAGE_URL, filename: "example.png", filesize: 123, contentType: "image/png", width: 1, height: 1
     attachment = new Trix.Attachment attrs
@@ -422,6 +461,10 @@ removeWhitespace = (string) ->
   "blocks beginning with formatted text":
     document: createDocument(["a", { bold: true }, ["quote"]], ["b", { italic: true }, []], ["c", { bold: true }, ["quote"]])
     html: "<blockquote>#{blockComment}<strong>a</strong></blockquote><div>#{blockComment}<em>b</em></div><blockquote>#{blockComment}<strong>c</strong></blockquote>"
+
+  "text with newlines before block":
+    document: createDocument(["a\nb"], ["c", {}, ["quote"]])
+    html: "<div>#{blockComment}a<br>b</div><blockquote>#{blockComment}c</blockquote>"
 
 @eachFixture = (callback) ->
   for name, details of @fixtures
