@@ -58,7 +58,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   appendBlockForElement: (element) ->
     if @isBlockElement(element) and not @isBlockElement(element.firstChild)
-      attributes = getBlockAttributes(element)
+      attributes = @getBlockAttributes(element)
       unless elementContainsNode(@currentBlockElement, element) and arraysAreEqual(attributes, @currentBlock.attributes)
         @currentBlock = @appendBlockForAttributesWithElement(attributes, element)
         @currentBlockElement = element
@@ -72,7 +72,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   findParentBlockElement: (element) ->
     {parentElement} = element
-    while parentElement
+    while parentElement and parentElement isnt @container
       if @isBlockElement(parentElement) and parentElement in @blockElements
         return parentElement
       else
@@ -94,13 +94,13 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   processTextNode: (node) ->
     if string = normalizeSpaces(node.data)
-      @appendStringWithAttributes(string, getTextAttributes(node.parentNode))
+      @appendStringWithAttributes(string, @getTextAttributes(node.parentNode))
 
   processElement: (element) ->
     if nodeIsAttachmentElement(element)
       attributes = getAttachmentAttributes(element)
       if Object.keys(attributes).length
-        textAttributes = getTextAttributes(element)
+        textAttributes = @getTextAttributes(element)
         @appendAttachmentWithAttributes(attributes, textAttributes)
         # We have everything we need so avoid processing inner nodes
         element.innerHTML = ""
@@ -109,12 +109,12 @@ class Trix.HTMLParser extends Trix.BasicObject
       switch tagName(element)
         when "br"
           unless @isExtraBR(element) or @isBlockElement(element.nextSibling)
-            @appendStringWithAttributes("\n", getTextAttributes(element))
+            @appendStringWithAttributes("\n", @getTextAttributes(element))
           @processedElements.push(element)
         when "img"
           attributes = url: element.src, contentType: "image"
           attributes[key] = value for key, value of getImageDimensions(element)
-          @appendAttachmentWithAttributes(attributes, getTextAttributes(element))
+          @appendAttachmentWithAttributes(attributes, @getTextAttributes(element))
           @processedElements.push(element)
         when "tr"
           unless element.parentNode.firstChild is element
@@ -161,6 +161,34 @@ class Trix.HTMLParser extends Trix.BasicObject
     else
       text.unshift(pieceForString(string))
 
+  getTextAttributes: (element) ->
+    attributes = {}
+    for attribute, config of Trix.config.textAttributes
+      if config.parser
+        if value = config.parser(element)
+          attributes[attribute] = value
+      else if config.tagName
+        if tagName(element) is config.tagName
+          attributes[attribute] = true
+
+    if nodeIsAttachmentElement(element)
+      if json = element.dataset.trixAttributes
+        for key, value of JSON.parse(json)
+          attributes[key] = value
+
+    attributes
+
+  getBlockAttributes: (element) ->
+    attributes = []
+    while element and element isnt @container
+      for attribute, config of Trix.config.blockAttributes when config.parse isnt false
+        if tagName(element) is config.tagName
+          if config.test?(element) or not config.test
+            attributes.push(attribute)
+            attributes.push(config.listAttribute) if config.listAttribute
+      element = element.parentNode
+    attributes.reverse()
+
   getMarginOfBlockElementAtIndex: (index) ->
     if element = @blockElements[index]
       unless tagName(element) in @getBlockTagNames() or element in @processedElements
@@ -192,34 +220,6 @@ class Trix.HTMLParser extends Trix.BasicObject
   blockForAttributes = (attributes = {}) ->
     text = []
     {text, attributes}
-
-  getTextAttributes = (element) ->
-    attributes = {}
-    for attribute, config of Trix.config.textAttributes
-      if config.parser
-        if value = config.parser(element)
-          attributes[attribute] = value
-      else if config.tagName
-        if tagName(element) is config.tagName
-          attributes[attribute] = true
-
-    if nodeIsAttachmentElement(element)
-      if json = element.dataset.trixAttributes
-        for key, value of JSON.parse(json)
-          attributes[key] = value
-
-    attributes
-
-  getBlockAttributes = (element) ->
-    attributes = []
-    while element
-      for attribute, config of Trix.config.blockAttributes when config.parse isnt false
-        if tagName(element) is config.tagName
-          if config.test?(element) or not config.test
-            attributes.push(attribute)
-            attributes.push(config.listAttribute) if config.listAttribute
-      element = element.parentNode
-    attributes.reverse()
 
   getAttachmentAttributes = (element) ->
     JSON.parse(element.dataset.trixAttachment)
