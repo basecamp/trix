@@ -24,22 +24,7 @@ class Trix.SelectionManager extends Trix.BasicObject
       @updateCurrentLocationRange(locationRange)
 
   getSelectedPointRange: ->
-    return unless domRange = getDOMRange()
-    rects = domRange.getClientRects()
-    if rects.length > 0
-      startRect = rects[0]
-      endRect = rects[rects.length - 1]
-      start = x: startRect.left, y: startRect.top + 1
-      end = x: endRect.right, y: endRect.top + 1
-    else
-      node = makeElement(tagName: "span", style: { marginLeft: "-0.01em" }, data: { trixMutable: true, trixSerialize: false })
-      try
-        domRange.insertNode(node)
-        rect = node.getBoundingClientRect()
-      finally
-        node.parentNode.removeChild(node)
-      start = x: rect.left, y: rect.top + 1
-    normalizeRange([start, end])
+    getExpandedPointRange() ? getCollapsedPointRange()
 
   setLocationRangeFromPointRange: (pointRange) ->
     pointRange = normalizeRange(pointRange)
@@ -156,6 +141,32 @@ class Trix.SelectionManager extends Trix.BasicObject
       setDOMRange(originalDOMRange)
 
     @createLocationRangeFromDOMRange(domRange)
+
+  cursorPositionPlaceholder = makeElement
+    tagName: "span"
+    style: marginLeft: "-0.01em"
+    data: trixMutable: true, trixSerialize: false
+
+  getCollapsedPointRange = ->
+    return unless domRange = getDOMRange()
+    node = cursorPositionPlaceholder.cloneNode(true)
+    try
+      domRange.insertNode(node)
+      rect = node.getBoundingClientRect()
+    finally
+      node.parentNode.removeChild(node)
+    start = x: rect.left, y: rect.top + 1
+    normalizeRange(start)
+
+  getExpandedPointRange = ->
+    return unless domRange = getDOMRange()
+    rects = domRange.getClientRects()
+    if rects.length > 0
+      startRect = rects[0]
+      endRect = rects[rects.length - 1]
+      start = x: startRect.left, y: startRect.top + 1
+      end = x: endRect.right, y: endRect.top + 1
+      normalizeRange(start, end)
 
   getDOMSelection = ->
     selection = window.getSelection()
