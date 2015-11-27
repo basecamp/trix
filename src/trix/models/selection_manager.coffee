@@ -1,7 +1,7 @@
 #= require trix/models/location_mapper
 #= require trix/observers/selection_change_observer
 
-{defer, elementContainsNode, nodeIsCursorTarget, innerElementIsActive,
+{defer, elementContainsNode, nodeIsCursorTarget, innerElementIsActive, makeElement,
  handleEvent, handleEventOnce, normalizeRange, rangeIsCollapsed, rangesAreEqual} = Trix
 
 class Trix.SelectionManager extends Trix.BasicObject
@@ -27,6 +27,11 @@ class Trix.SelectionManager extends Trix.BasicObject
     if locationRange = @getLocationRangeAtPoint(point)
       @setLocationRange(locationRange)
 
+  setLocationRangeFromPoints: (points) ->
+    startLocation = @getLocationRangeAtPoint(points[0])?[0]
+    endLocation = @getLocationRangeAtPoint(points[1])?[0]
+    @setLocationRange([startLocation, endLocation])
+
   getClientRectAtLocationRange: (locationRange) ->
     if range = @createDOMRangeFromLocationRange(locationRange)
       rects = [range.getClientRects()...]
@@ -46,26 +51,6 @@ class Trix.SelectionManager extends Trix.BasicObject
       lockedLocationRange = @lockedLocationRange
       @lockedLocationRange = null
       @setLocationRange(lockedLocationRange) if lockedLocationRange?
-
-  preserveSelection: (block) ->
-    endPoints = @getSelectionEndPoints()
-    locationRange = @getLocationRange()
-    block()
-
-    if endPoints
-      start = @getLocationRangeAtPoint(endPoints[0])
-      end = @getLocationRangeAtPoint(endPoints[1])
-
-      if start? and not end?
-        end = start
-      else if end? and not start?
-        start = end
-
-      if start? and end?
-        locationRange = normalizeRange([start, end])
-
-    if locationRange
-      @setLocationRange(locationRange)
 
   clearSelection: ->
     getDOMSelection()?.removeAllRanges()
@@ -145,16 +130,17 @@ class Trix.SelectionManager extends Trix.BasicObject
       domRange = document.caretRangeFromPoint(clientX, clientY)
 
     else if document.body.createTextRange
-      # IE 11 throws "Unspecified error" when using moveToPoint
-      # during a drag-and-drop operation. We'll do our best to
-      # map the point to a location range and fall back to the
-      # current location range if there's a problem.
+      originalDOMRange = getDOMRange()
       try
-        domRange = document.body.createTextRange()
-        domRange.moveToPoint(clientX, clientY)
-        domRange.select()
+        # IE 11 throws "Unspecified error" when using moveToPoint
+        # during a drag-and-drop operation.
+        textRange = document.body.createTextRange()
+        textRange.moveToPoint(clientX, clientY)
+        textRange.select()
+      domRange = getDOMRange()
+      setDOMRange(originalDOMRange)
 
-    @createLocationRangeFromDOMRange(domRange ? getDOMRange())
+    @createLocationRangeFromDOMRange(domRange)
 
   getSelectionEndPoints: ->
     return unless domRange = getDOMRange()
@@ -163,10 +149,18 @@ class Trix.SelectionManager extends Trix.BasicObject
       leftRect = rects[0]
       rightRect = rects[rects.length - 1]
 
-      leftPoint = [leftRect.left, leftRect.top + leftRect.height / 2]
-      rightPoint = [rightRect.right, rightRect.top + rightRect.height / 2]
-
+      leftPoint = [leftRect.left, leftRect.top + 1]
+      rightPoint = [rightRect.right, rightRect.top + 1]
       [leftPoint, rightPoint]
+    else
+      node = makeElement(tagName: "span", style: { marginLeft: "-0.01em" }, data: { trixMutable: true, trixSerialize: false })
+      try
+        domRange.insertNode(node)
+        rect = node.getBoundingClientRect()
+      finally
+        node.parentNode.removeChild(node)
+      point = [rect.left, rect.top + 1]
+      [point, point]
 
   getDOMSelection = ->
     selection = window.getSelection()

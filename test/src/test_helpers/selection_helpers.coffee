@@ -73,7 +73,9 @@ for code, name of Trix.InputController.keyNames
   range.setStartAfter(node)
   range.deleteContents()
   range.normalizeBoundaries()
-  callback?()
+  selection.setSingleRange(range)
+  Trix.selectionChangeObserver.update()
+  defer(callback)
 
 @selectNode = (node, callback) ->
   selection = rangy.getSelection()

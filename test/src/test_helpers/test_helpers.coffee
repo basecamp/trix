@@ -52,7 +52,7 @@ editorInitialized = (callback) ->
 @assertLocationRange = (start, end) ->
   expectedLocationRange = normalizeRange([start, end])
   actualLocationRange = getEditorController().getLocationRange()
-  ok rangesAreEqual(expectedLocationRange, actualLocationRange)
+  ok rangesAreEqual(expectedLocationRange, actualLocationRange), "expected #{JSON.stringify(expectedLocationRange)}, actual #{JSON.stringify(actualLocationRange)}"
 
 @expectAttributes = (range, attributes) ->
   document = getDocument().getDocumentAtRange(range)
