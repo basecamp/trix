@@ -56,15 +56,14 @@ class Trix.InputController extends Trix.BasicObject
   # Mutation observer delegate
 
   elementDidMutate: (mutationSummary) ->
-    @handleInput ->
-      unless @mutationIsExpected(mutationSummary)
-        @responder?.replaceHTML(@element.innerHTML)
+    unless @inputSummary.composing
+      @handleInput ->
+        unless @mutationIsExpected(mutationSummary)
+          @responder?.replaceHTML(@element.innerHTML)
 
-      unless @inputSummary.composing
+        @resetInputSummary()
         @requestRender()
-
-      @resetInputSummary()
-      Trix.selectionChangeObserver.reset()
+        Trix.selectionChangeObserver.reset()
 
   mutationIsExpected: (mutationSummary) ->
     if @inputSummary
@@ -254,7 +253,7 @@ class Trix.InputController extends Trix.BasicObject
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString(data)
         {added, removed} = summarizeStringChange(compositionStart, data)
-        @setInputSummary(textAdded: added, didDelete: Boolean(removed))
+        @setInputSummary(composing: false, textAdded: added, didDelete: Boolean(removed))
 
     input: (event) ->
       event.stopPropagation()
