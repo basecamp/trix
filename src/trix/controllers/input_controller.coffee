@@ -140,7 +140,7 @@ class Trix.InputController extends Trix.BasicObject
     dragover: (event) ->
       if @draggedRange or @canAcceptDataTransfer(event.dataTransfer)
         event.preventDefault()
-        draggingPoint = [event.clientX, event.clientY]
+        draggingPoint = x: event.clientX, y: event.clientY
         if draggingPoint.toString() isnt @draggingPoint?.toString()
           @draggingPoint = draggingPoint
           @delegate?.inputControllerDidReceiveDragOverPoint?(@draggingPoint)
@@ -154,8 +154,8 @@ class Trix.InputController extends Trix.BasicObject
       event.preventDefault()
       files = event.dataTransfer?.files
 
-      point = [event.clientX, event.clientY]
-      @responder?.setLocationRangeFromPoint(point)
+      point = x: event.clientX, y: event.clientY
+      @responder?.setLocationRangeFromPointRange(point)
 
       if files?.length
         @attachFiles(files)

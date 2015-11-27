@@ -125,11 +125,11 @@ class Trix.EditorController extends Trix.Controller
   compositionControllerDidRender: ->
     if @requestedSelection?
       if @documentWhenSelectionRequested.isEqualTo(@composition.document)
-        {locationRange, points} = @requestedSelection
+        {locationRange, pointRange} = @requestedSelection
         if locationRange
           @selectionManager.setLocationRange(locationRange)
-        else if points
-          @selectionManager.setLocationRangeFromPoints(points)
+        else if pointRange
+          @selectionManager.setLocationRangeFromPointRange(pointRange)
 
       @composition.updateCurrentAttributes()
       @requestedSelection = null
@@ -202,7 +202,7 @@ class Trix.EditorController extends Trix.Controller
     @locationRangeBeforeDrag = @selectionManager.getLocationRange()
 
   inputControllerDidReceiveDragOverPoint: (point) ->
-    @selectionManager.setLocationRangeFromPoint(point)
+    @selectionManager.setLocationRangeFromPointRange(point)
 
   inputControllerDidCancelDrag: ->
     @selectionManager.setLocationRange(@locationRangeBeforeDrag)
