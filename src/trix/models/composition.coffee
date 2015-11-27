@@ -131,8 +131,9 @@ class Trix.Composition extends Trix.BasicObject
 
   replaceHTML: (html) ->
     document = Trix.Document.fromHTML(html).copyUsingObjectsFromDocument(@document)
-    @preserveSelection =>
-      @setDocument(document)
+    pointRange = @getSelectedPointRange()
+    @setDocument(document)
+    @setSelectionPointRange(pointRange)
 
   insertFile: (file) ->
     if @delegate?.compositionShouldAcceptFile(file)
@@ -325,15 +326,18 @@ class Trix.Composition extends Trix.BasicObject
 
   # Selection
 
-  @proxyMethod "getSelectionManager().setLocationRangeFromPoint"
-  @proxyMethod "getSelectionManager().preserveSelection"
+  @proxyMethod "getSelectionManager().getSelectedPointRange"
+  @proxyMethod "getSelectionManager().setLocationRangeFromPointRange"
   @proxyMethod "getSelectionManager().locationIsCursorTarget"
   @proxyMethod "getSelectionManager().selectionIsExpanded"
   @proxyMethod "delegate?.getSelectionManager"
 
   setSelection: (selectedRange) ->
     locationRange = @document.locationRangeFromRange(selectedRange)
-    @delegate?.compositionDidRequestChangingSelectionToLocationRange?(locationRange)
+    @delegate?.compositionDidRequestChangingSelection({locationRange})
+
+  setSelectionPointRange: (pointRange) ->
+    @delegate?.compositionDidRequestChangingSelection({pointRange})
 
   getSelectedRange: ->
     if locationRange = @getLocationRange()

@@ -1,7 +1,7 @@
 #= require trix/models/location_mapper
 #= require trix/observers/selection_change_observer
 
-{defer, elementContainsNode, nodeIsCursorTarget, innerElementIsActive,
+{defer, elementContainsNode, nodeIsCursorTarget, innerElementIsActive, makeElement,
  handleEvent, handleEventOnce, normalizeRange, rangeIsCollapsed, rangesAreEqual} = Trix
 
 class Trix.SelectionManager extends Trix.BasicObject
@@ -23,9 +23,14 @@ class Trix.SelectionManager extends Trix.BasicObject
       setDOMRange(domRange)
       @updateCurrentLocationRange(locationRange)
 
-  setLocationRangeFromPoint: (point) ->
-    if locationRange = @getLocationRangeAtPoint(point)
-      @setLocationRange(locationRange)
+  getSelectedPointRange: ->
+    getExpandedPointRange() ? getCollapsedPointRange()
+
+  setLocationRangeFromPointRange: (pointRange) ->
+    pointRange = normalizeRange(pointRange)
+    startLocation = @getLocationRangeAtPoint(pointRange[0])?[0]
+    endLocation = @getLocationRangeAtPoint(pointRange[1])?[0]
+    @setLocationRange([startLocation, endLocation])
 
   getClientRectAtLocationRange: (locationRange) ->
     if range = @createDOMRangeFromLocationRange(locationRange)
@@ -46,26 +51,6 @@ class Trix.SelectionManager extends Trix.BasicObject
       lockedLocationRange = @lockedLocationRange
       @lockedLocationRange = null
       @setLocationRange(lockedLocationRange) if lockedLocationRange?
-
-  preserveSelection: (block) ->
-    endPoints = @getSelectionEndPoints()
-    locationRange = @getLocationRange()
-    block()
-
-    if endPoints
-      start = @getLocationRangeAtPoint(endPoints[0])
-      end = @getLocationRangeAtPoint(endPoints[1])
-
-      if start? and not end?
-        end = start
-      else if end? and not start?
-        start = end
-
-      if start? and end?
-        locationRange = normalizeRange([start, end])
-
-    if locationRange
-      @setLocationRange(locationRange)
 
   clearSelection: ->
     getDOMSelection()?.removeAllRanges()
@@ -135,38 +120,53 @@ class Trix.SelectionManager extends Trix.BasicObject
     else
       elementContainsNode(@element, domRange.startContainer) and elementContainsNode(@element, domRange.endContainer)
 
-  getLocationRangeAtPoint: ([clientX, clientY]) ->
+  getLocationRangeAtPoint: ({x, y}) ->
     if document.caretPositionFromPoint
-      {offsetNode, offset} = document.caretPositionFromPoint(clientX, clientY)
+      {offsetNode, offset} = document.caretPositionFromPoint(x, y)
       domRange = document.createRange()
       domRange.setStart(offsetNode, offset)
 
     else if document.caretRangeFromPoint
-      domRange = document.caretRangeFromPoint(clientX, clientY)
+      domRange = document.caretRangeFromPoint(x, y)
 
     else if document.body.createTextRange
-      # IE 11 throws "Unspecified error" when using moveToPoint
-      # during a drag-and-drop operation. We'll do our best to
-      # map the point to a location range and fall back to the
-      # current location range if there's a problem.
+      originalDOMRange = getDOMRange()
       try
-        domRange = document.body.createTextRange()
-        domRange.moveToPoint(clientX, clientY)
-        domRange.select()
+        # IE 11 throws "Unspecified error" when using moveToPoint
+        # during a drag-and-drop operation.
+        textRange = document.body.createTextRange()
+        textRange.moveToPoint(x, y)
+        textRange.select()
+      domRange = getDOMRange()
+      setDOMRange(originalDOMRange)
 
-    @createLocationRangeFromDOMRange(domRange ? getDOMRange())
+    @createLocationRangeFromDOMRange(domRange)
 
-  getSelectionEndPoints: ->
+  cursorPositionPlaceholder = makeElement
+    tagName: "span"
+    style: marginLeft: "-0.01em"
+    data: trixMutable: true, trixSerialize: false
+
+  getCollapsedPointRange = ->
+    return unless domRange = getDOMRange()
+    node = cursorPositionPlaceholder.cloneNode(true)
+    try
+      domRange.insertNode(node)
+      rect = node.getBoundingClientRect()
+    finally
+      node.parentNode.removeChild(node)
+    start = x: rect.left, y: rect.top + 1
+    normalizeRange(start)
+
+  getExpandedPointRange = ->
     return unless domRange = getDOMRange()
     rects = domRange.getClientRects()
     if rects.length > 0
-      leftRect = rects[0]
-      rightRect = rects[rects.length - 1]
-
-      leftPoint = [leftRect.left, leftRect.top + leftRect.height / 2]
-      rightPoint = [rightRect.right, rightRect.top + rightRect.height / 2]
-
-      [leftPoint, rightPoint]
+      startRect = rects[0]
+      endRect = rects[rects.length - 1]
+      start = x: startRect.left, y: startRect.top + 1
+      end = x: endRect.right, y: endRect.top + 1
+      normalizeRange(start, end)
 
   getDOMSelection = ->
     selection = window.getSelection()
