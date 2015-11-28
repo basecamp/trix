@@ -23,6 +23,11 @@
     }
   }
 
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
   a[data-trix-attachment] {
     color: inherit;
     text-decoration: none;
