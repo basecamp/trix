@@ -92,15 +92,13 @@ class Trix.InputController extends Trix.BasicObject
 
       if keyName = @constructor.keyNames[event.keyCode]
         context = @keys
+
         for modifier in ["ctrl", "alt", "shift", "meta"] when event["#{modifier}Key"]
           modifier = "control" if modifier is "ctrl"
-          context = @keys[modifier]
-          if context[keyName]
-            keyModifier = modifier
-            break
+          context = context?[modifier]
 
-        if context[keyName]?
-          @setInputSummary({keyName, keyModifier})
+        if context?[keyName]?
+          @setInputSummary({keyName})
           Trix.selectionChangeObserver.reset()
           context[keyName].call(this, event)
 
