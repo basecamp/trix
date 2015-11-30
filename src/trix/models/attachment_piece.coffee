@@ -29,6 +29,9 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   canBeGrouped: ->
     super and not @attachment.hasAttribute("href")
 
+  isEqualTo: (piece) ->
+    super and @attachment.id is piece?.attachment?.id
+
   toString: ->
     Trix.OBJECT_REPLACEMENT_CHARACTER
 
