@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*
-Trix 0.9.1
+Trix 0.9.2
 Copyright © 2015 Basecamp, LLC
 http://trix-editor.org/
 */
@@ -124,11 +124,6 @@ trix-toolbar .button_group button.undo::before {
 trix-toolbar .button_group button.redo::before {
   background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij4KPHBhdGggZD0iTTE4LjM5NSAxMC42Yy0xLjg0LTEuNjE1LTQuMjUtMi42LTYuODk1LTIuNi00LjY1IDAtOC41ODUgMy4wMzAtOS45NiA3LjIybDIuMzY1IDAuNzhjMS4wNTAtMy4xOTUgNC4wNTAtNS41IDcuNTk1LTUuNSAxLjk1NSAwIDMuNzMgMC43MiA1LjExNSAxLjg4NWwtMy42MTUgMy42MTVoOXYtOWwtMy42MDUgMy42eiIgZmlsbD0iIzAwMCI%2BPC9wYXRoPgo8L3N2Zz4K); }
 @charset "UTF-8";
-trix-editor a[data-trix-attachment] {
-  color: inherit;
-  text-decoration: none; }
-  trix-editor a[data-trix-attachment]:hover, trix-editor a[data-trix-attachment]:visited:hover {
-    color: inherit; }
 trix-editor [data-trix-mutable=true] {
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -136,61 +131,41 @@ trix-editor [data-trix-mutable=true] {
   user-select: none; }
   trix-editor [data-trix-mutable=true] img {
     box-shadow: 0 0 0 2px highlight; }
-trix-editor .attachment {
-  position: relative;
-  display: inline-block;
-  max-width: 100%;
+trix-editor .attachment .remove {
+  display: block;
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 24px;
+  line-height: 22px;
+  font-size: 0;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  background-color: #fff;
+  border: 1px solid #bbb;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1); }
+  trix-editor .attachment .remove:after {
+    content: '×';
+    font-size: 18px;
+    font-weight: bold;
+    opacity: 0.6; }
+  trix-editor .attachment .remove:hover:after {
+    opacity: 1; }
+trix-editor .attachment .caption.caption-editing textarea {
+  width: 100%;
   margin: 0;
   padding: 0;
-  color: #666;
-  font-size: 13px; }
-  trix-editor .attachment .remove {
-    display: block;
-    position: absolute;
-    top: -12px;
-    right: -12px;
-    width: 24px;
-    height: 24px;
-    border-radius: 24px;
-    line-height: 22px;
-    font-size: 0;
-    color: black;
-    text-align: center;
-    text-decoration: none;
-    background-color: #fff;
-    border: 1px solid #bbb;
-    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1); }
-    trix-editor .attachment .remove:after {
-      content: '×';
-      font-size: 18px;
-      font-weight: bold;
-      opacity: 0.6; }
-    trix-editor .attachment .remove:hover:after {
-      opacity: 1; }
-  trix-editor .attachment .caption {
-    display: block;
-    margin: 4px auto 0 auto;
-    padding: 0;
-    text-align: center; }
-    trix-editor .attachment .caption .size:before {
-      content: ' · '; }
-    trix-editor .attachment .caption.caption-editing textarea {
-      width: 100%;
-      margin: 0;
-      padding: 0;
-      font-size: 13px;
-      line-height: 13px;
-      text-align: center;
-      border: none;
-      outline: none;
-      -webkit-appearance: none;
-      -moz-appearance: none; }
-  trix-editor .attachment.attachment-file {
-    color: #333;
-    line-height: 30px;
-    padding: 0 16px;
-    border: 1px solid #bbb;
-    border-radius: 5px; }
+  font-size: 13px;
+  line-height: 13px;
+  text-align: center;
+  border: none;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none; }
+@charset "UTF-8";
 .trix-content blockquote {
   margin: 0 0 0 5px;
   padding: 0 0 0 10px;
@@ -207,3 +182,32 @@ trix-editor .attachment {
   padding: 0; }
   .trix-content ul li, .trix-content ol li, .trix-content li li {
     margin-left: 20px; }
+.trix-content img {
+  max-width: 100%;
+  height: auto; }
+.trix-content a[data-trix-attachment] {
+  color: inherit;
+  text-decoration: none; }
+  .trix-content a[data-trix-attachment]:hover, .trix-content a[data-trix-attachment]:visited:hover {
+    color: inherit; }
+.trix-content .attachment {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  color: #666;
+  font-size: 13px; }
+  .trix-content .attachment.attachment-file {
+    color: #333;
+    line-height: 30px;
+    padding: 0 16px;
+    border: 1px solid #bbb;
+    border-radius: 5px; }
+  .trix-content .attachment .caption {
+    display: block;
+    margin: 4px auto 0 auto;
+    padding: 0;
+    text-align: center; }
+    .trix-content .attachment .caption .size:before {
+      content: ' · '; }
