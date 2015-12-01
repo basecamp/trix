@@ -1,0 +1,122 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "github_api"
+require "pathname"
+require "json"
+
+class Release
+  NAME = "Trix"
+  REPO = "trix"
+  OWNER = "basecamp"
+
+  def perform
+    confirm_version
+    check_github_release
+    check_npm
+
+    build
+    update_package_json
+    commit_changes
+    create_release
+    npm_publish
+  end
+
+  def version
+    @version ||= Pathname.new("src/trix/VERSION").read.chomp
+  end
+
+  def confirm_version
+    confirm("Release #{NAME} #{version}?") || abort
+  end
+
+  def build
+    puts "Building…"
+    system("rm -rf tmp/ && bin/blade build") || abort("Build failed")
+  end
+
+  def update_package_json
+    puts "Updating package.json…"
+
+    pathname = Pathname.new("package.json")
+    data = JSON.parse(pathname.read)
+    data["version"] = version
+    pathname.write(JSON.pretty_generate(data) + "\n")
+  end
+
+  def commit_changes
+    puts `git status #{pathspecs.join(' ')}`
+
+    if confirm "Commit changes?"
+      abort("Failed to commit") unless \
+        system("git add #{pathspecs.join(' ')}") &&
+        system("git commit -m '#{NAME} #{version}'") &&
+        system("git push") &&
+        system("git tag #{version}") &&
+        system("git push --tags")
+    else
+      abort
+    end
+  end
+
+  def create_release
+    puts "Creating release…"
+    release = github.repos.releases.create(OWNER, REPO, tag_name: version)
+
+    puts "Uploading dist files for release…"
+    dist_pathnames.each do |pathname|
+      github.repos.releases.assets.upload OWNER, REPO, release.id, pathname.to_s, name: pathname.basename.to_s, content_type: content_type(pathname)
+    end
+  end
+
+  def pathspecs
+    %w( dist/ src/ package.json )
+  end
+
+  def dist_pathnames
+    Pathname.new("dist").children
+  end
+
+  def content_type(pathname)
+    case pathname.extname
+    when ".js"  then "application/javascript"
+    when ".css" then "text/css"
+    end
+  end
+
+  def check_github_release
+    releases = github.repos.releases.list(OWNER, REPO)
+    if release = releases.detect { |release| release.tag_name == version }
+      abort "Already released #{version}: #{release.html_url}"
+    end
+  end
+
+  def github
+    @github ||= begin
+      username = `git config --global --get github.user`.chomp
+      password = `git config --global --get github.token`.chomp
+
+      if username.nil? || username == "" || password.nil? || password == ""
+        abort "Must set github.user and github.token in your global gitconfig"
+      end
+
+      Github.new basic_auth: "#{username}:#{password}"
+    end
+  end
+
+  def check_npm
+    system("npm whoami") || abort("Must be logged in to npm" )
+  end
+
+  def npm_publish
+    puts "Publishing to npm…"
+    system("npm publish") || abort("npm publish failed")
+  end
+
+  def confirm(question)
+    print "#{question} (y/n) "
+    gets.chomp.downcase == "y"
+  end
+end
+
+Release.new.perform

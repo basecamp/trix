@@ -10,3 +10,4 @@ gem 'uglifier'
 
 gem 'blade', github: 'javan/blade'
 gem 'blade-sauce_labs_plugin', github: 'javan/blade-sauce_labs_plugin'
+gem 'github_api'
