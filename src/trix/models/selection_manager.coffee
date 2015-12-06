@@ -142,9 +142,14 @@ class Trix.SelectionManager extends Trix.BasicObject
 
     @createLocationRangeFromDOMRange(domRange)
 
-  point =
-    placeholder: makeElement(tagName: "span", data: trixMutable: true, trixSerialize: false)
-    pad: 0.01
+  point = do ->
+    pad = 0.01
+    placeholder = makeElement
+      tagName: "span"
+      style: marginLeft: "-#{pad}em"
+      data: trixMutable: true
+      trixSerialize: false
+    {pad, placeholder}
 
   getCollapsedPointRange = ->
     return unless domRange = getDOMRange()
