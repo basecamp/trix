@@ -2,7 +2,8 @@
 #= require trix/observers/selection_change_observer
 
 {defer, elementContainsNode, nodeIsCursorTarget, innerElementIsActive, makeElement,
- handleEvent, handleEventOnce, normalizeRange, rangeIsCollapsed, rangesAreEqual} = Trix
+ handleEvent, handleEventOnce, normalizeRange, rangeIsCollapsed, rangesAreEqual,
+ findNodeFromContainerAndOffset, tagName} = Trix
 
 class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
@@ -24,7 +25,10 @@ class Trix.SelectionManager extends Trix.BasicObject
       @updateCurrentLocationRange(locationRange)
 
   getSelectedPointRange: ->
-    getExpandedPointRange() ? getCollapsedPointRange()
+    return unless getDOMSelection()
+    points = [getSelectionPoint("end")]
+    points.unshift(getSelectionPoint("start")) if @selectionIsExpanded()
+    normalizeRange(points)
 
   setLocationRangeFromPointRange: (pointRange) ->
     pointRange = normalizeRange(pointRange)
@@ -142,54 +146,26 @@ class Trix.SelectionManager extends Trix.BasicObject
 
     @createLocationRangeFromDOMRange(domRange)
 
-  point = do ->
-    pad = 0.01
-    placeholder = makeElement
+  getSelectionPoint = (side) ->
+    domRange = getDOMRange().cloneRange()
+    element = findNodeFromContainerAndOffset(domRange["#{side}Container"], domRange["#{side}Offset"])
+
+    if tagName(element) is "br"
+      {left, bottom} = element.getBoundingClientRect()
+      x: left, y: bottom
+    else
+      element = makeMeasurementElement()
+      domRange.collapse(false) if side is "end"
+      domRange.insertNode(element)
+      {left, top} = element.getBoundingClientRect()
+      left -= 1 if side is "end"
+      x: left, y: top + 1
+
+  makeMeasurementElement = ->
+    makeElement
       tagName: "span"
-      style: marginLeft: "-#{pad}em"
       data: trixMutable: true
       trixSerialize: false
-    {pad, placeholder}
-
-  getCollapsedPointRange = ->
-    return unless domRange = getDOMRange()
-
-    node = point.placeholder.cloneNode(true)
-    try
-      domRange.insertNode(node)
-      rect = node.getBoundingClientRect()
-    finally
-      node.parentNode.removeChild(node)
-      true
-
-    start =
-      x: rect.left - point.pad
-      y: rect.top + point.pad
-
-    normalizeRange(start)
-
-  getExpandedPointRange = ->
-    return unless domRange = getDOMRange()
-    rects = domRange.getClientRects()
-    return unless rects.length
-
-    startRect = rects[0]
-    endRect = rects[rects.length - 1]
-
-    start =
-      x: startRect.left - point.pad
-      y: startRect.top + 1
-
-    if startRect isnt endRect and Trix.tagName(domRange.cloneContents().lastChild) is "br"
-      end =
-        x: startRect.left - point.pad
-        y: startRect.bottom + (startRect.height / 2)
-    else
-      end =
-        x: endRect.right + point.pad
-        y: endRect.top + point.pad
-
-    normalizeRange([start, end])
 
   getDOMSelection = ->
     selection = window.getSelection()
@@ -203,7 +179,3 @@ class Trix.SelectionManager extends Trix.BasicObject
     selection.removeAllRanges()
     selection.addRange(domRange)
     Trix.selectionChangeObserver.update()
-
-  getClientRects = ->
-    rects = getDOMRange()?.getClientRects()
-    rects if rects?.length
