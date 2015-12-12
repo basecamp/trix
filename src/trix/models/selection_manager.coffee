@@ -1,13 +1,15 @@
 #= require trix/models/location_mapper
+#= require trix/models/point_mapper
 #= require trix/observers/selection_change_observer
 
-{defer, elementContainsNode, nodeIsCursorTarget, innerElementIsActive, makeElement,
- handleEvent, handleEventOnce, normalizeRange, rangeIsCollapsed, rangesAreEqual,
- findNodeFromContainerAndOffset, tagName} = Trix
+{getDOMSelection, getDOMRange, setDOMRange, defer, elementContainsNode,
+ nodeIsCursorTarget, innerElementIsActive, handleEvent, handleEventOnce,
+ normalizeRange, rangeIsCollapsed, rangesAreEqual} = Trix
 
 class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
     @locationMapper = new Trix.LocationMapper @element
+    @pointMapper = new Trix.PointMapper
     @lockCount = 0
     handleEvent("mousedown", onElement: @element, withCallback: @didMouseDown)
 
@@ -24,21 +26,19 @@ class Trix.SelectionManager extends Trix.BasicObject
       setDOMRange(domRange)
       @updateCurrentLocationRange(locationRange)
 
-  getSelectedPointRange: ->
-    return unless getDOMSelection()
-    points = [getSelectionPoint("end")]
-    points.unshift(getSelectionPoint("start")) if @selectionIsExpanded()
-    normalizeRange(points)
+  getPointRange: ->
+    if domRange = getDOMRange()
+      @findPointRangeFromDOMRange(domRange)
 
   setLocationRangeFromPointRange: (pointRange) ->
     pointRange = normalizeRange(pointRange)
-    startLocation = @getLocationRangeAtPoint(pointRange[0])?[0]
-    endLocation = @getLocationRangeAtPoint(pointRange[1])?[0]
+    startLocation = @getLocationAtPoint(pointRange[0])
+    endLocation = @getLocationAtPoint(pointRange[1])
     @setLocationRange([startLocation, endLocation])
 
   getClientRectAtLocationRange: (locationRange) ->
     if domRange = @createDOMRangeFromLocationRange(locationRange)
-      getClientRectForDOMRange(domRange)
+      @getClientRectsForDOMRange(domRange)[1]
 
   locationIsCursorTarget: (location) ->
     [node, offset] = @findNodeAndOffsetFromLocation(location)
@@ -69,6 +69,9 @@ class Trix.SelectionManager extends Trix.BasicObject
   @proxyMethod "locationMapper.findLocationFromContainerAndOffset"
   @proxyMethod "locationMapper.findContainerAndOffsetFromLocation"
   @proxyMethod "locationMapper.findNodeAndOffsetFromLocation"
+  @proxyMethod "pointMapper.findPointRangeFromDOMRange"
+  @proxyMethod "pointMapper.createDOMRangeFromPoint"
+  @proxyMethod "pointMapper.getClientRectsForDOMRange"
 
   didMouseDown: =>
     @pauseTemporarily()
@@ -117,81 +120,12 @@ class Trix.SelectionManager extends Trix.BasicObject
     end = @findLocationFromContainerAndOffset(domRange.endContainer, domRange.endOffset) unless domRange.collapsed
     normalizeRange([start, end])
 
+  getLocationAtPoint: (point) ->
+    if domRange = @createDOMRangeFromPoint(point)
+      @createLocationRangeFromDOMRange(domRange)?[0]
+
   domRangeWithinElement: (domRange) ->
     if domRange.collapsed
       elementContainsNode(@element, domRange.startContainer)
     else
       elementContainsNode(@element, domRange.startContainer) and elementContainsNode(@element, domRange.endContainer)
-
-  getLocationRangeAtPoint: ({x, y}) ->
-    if document.caretPositionFromPoint
-      {offsetNode, offset} = document.caretPositionFromPoint(x, y)
-      domRange = document.createRange()
-      domRange.setStart(offsetNode, offset)
-
-    else if document.caretRangeFromPoint
-      domRange = document.caretRangeFromPoint(x, y)
-
-    else if document.body.createTextRange
-      originalDOMRange = getDOMRange()
-      try
-        # IE 11 throws "Unspecified error" when using moveToPoint
-        # during a drag-and-drop operation.
-        textRange = document.body.createTextRange()
-        textRange.moveToPoint(x, y)
-        textRange.select()
-      domRange = getDOMRange()
-      setDOMRange(originalDOMRange)
-
-    @createLocationRangeFromDOMRange(domRange)
-
-  getSelectionPoint = (side) ->
-    domRange = getDOMRange().cloneRange()
-    element = findNodeFromContainerAndOffset(domRange["#{side}Container"], domRange["#{side}Offset"])
-
-    if tagName(element) is "br"
-      if rect = getClientRectForElement(element) ? getClientRectForDOMRange(domRange, side)
-        x: rect.left, y: rect.bottom
-    else
-      element = makeMeasurementElement()
-      domRange.collapse(false) if side is "end"
-      domRange.insertNode(element)
-      {left, top} = element.getBoundingClientRect()
-      left -= 1 if side is "end"
-      x: left, y: top + 1
-
-  makeMeasurementElement = ->
-    makeElement
-      tagName: "span"
-      data: trixMutable: true
-      trixSerialize: false
-
-  getClientRectForDOMRange = (domRange, side) ->
-    rects = [domRange.getClientRects()...]
-    if side is "start"
-      rects[0]
-    else
-      rects[-1..][0]
-
-  getClientRectForElement = (element) ->
-    rect = element.getBoundingClientRect()
-    rect if clientRectIsValid(rect)
-
-  # Android creates an empty bounding rect for
-  # BR elements where all values are 0.
-  clientRectIsValid = (rect) ->
-    return true for key, value of rect when Math.abs(value)
-    false
-
-  getDOMSelection = ->
-    selection = window.getSelection()
-    selection if selection.rangeCount > 0
-
-  getDOMRange = ->
-    getDOMSelection()?.getRangeAt(0)
-
-  setDOMRange = (domRange) ->
-    selection = window.getSelection()
-    selection.removeAllRanges()
-    selection.addRange(domRange)
-    Trix.selectionChangeObserver.update()
