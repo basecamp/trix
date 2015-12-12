@@ -1,5 +1,11 @@
 editorModule "HTML replacement", template: "editor_empty"
 
+copyWith = (object, properties = {}) ->
+  result = {}
+  result[key] = value for key, value of object
+  result[key] = value for key, value of properties
+  result
+
 testCases =
   "single character":
     document: [{"text":[{"type":"string","attributes":{},"string":"a"},{"type":"string","attributes":{"blockBreak":true},"string":"\n"}],"attributes":[]}]
@@ -19,12 +25,19 @@ for name, testCase of testCases
   testCase.selections = testCase.selections.map (selection) -> Trix.normalizeRange(selection)
 
 testStyles = [
-  { }
-  { textRendering: "auto" }
+  {}
   { textRendering: "optimizeSpeed" }
   { textRendering: "optimizeLegibility" }
   { textRendering: "geometricPrecision" }
 ]
+
+testStyleVariants = [
+  { padding: "3px" }
+]
+
+for styles in testStyles
+  for variant in testStyleVariants
+    testStyles.push(copyWith(styles, variant))
 
 for styles in testStyles
   for name, testCase of testCases
@@ -33,9 +46,14 @@ for styles in testStyles
         editorTest "#{name} with selected range #{JSON.stringify(range)} and styles #{JSON.stringify(styles)}", (expectDocument) ->
           {document, documentString} = testCase
 
+          applyStyles(styles)
           getEditor().loadDocument(document)
           getEditor().setSelectedRange(range)
           getComposition().replaceHTML(getEditorElement().innerHTML)
 
-          assertLocationRange document.locationRangeFromRange(range)...
+          deepEqual getEditor().getSelectedRange(), range
           expectDocument documentString
+
+applyStyles = (styles) ->
+  element = getEditorElement()
+  element.style[key] = value for key, value of styles
