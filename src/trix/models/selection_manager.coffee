@@ -37,9 +37,8 @@ class Trix.SelectionManager extends Trix.BasicObject
     @setLocationRange([startLocation, endLocation])
 
   getClientRectAtLocationRange: (locationRange) ->
-    if range = @createDOMRangeFromLocationRange(locationRange)
-      rects = [range.getClientRects()...]
-      rects[-1..][0]
+    if domRange = @createDOMRangeFromLocationRange(locationRange)
+      getClientRectForDOMRange(domRange)
 
   locationIsCursorTarget: (location) ->
     [node, offset] = @findNodeAndOffsetFromLocation(location)
@@ -151,8 +150,8 @@ class Trix.SelectionManager extends Trix.BasicObject
     element = findNodeFromContainerAndOffset(domRange["#{side}Container"], domRange["#{side}Offset"])
 
     if tagName(element) is "br"
-      {left, bottom} = element.getBoundingClientRect()
-      x: left, y: bottom
+      if rect = getClientRectForElement(element) ? getClientRectForDOMRange(domRange, side)
+        x: rect.left, y: rect.bottom
     else
       element = makeMeasurementElement()
       domRange.collapse(false) if side is "end"
@@ -166,6 +165,23 @@ class Trix.SelectionManager extends Trix.BasicObject
       tagName: "span"
       data: trixMutable: true
       trixSerialize: false
+
+  getClientRectForDOMRange = (domRange, side) ->
+    rects = [domRange.getClientRects()...]
+    if side is "start"
+      rects[0]
+    else
+      rects[-1..][0]
+
+  getClientRectForElement = (element) ->
+    rect = element.getBoundingClientRect()
+    rect if clientRectIsValid(rect)
+
+  # Android creates an empty bounding rect for
+  # BR elements where all values are 0.
+  clientRectIsValid = (rect) ->
+    return true for key, value of rect when Math.abs(value)
+    false
 
   getDOMSelection = ->
     selection = window.getSelection()
