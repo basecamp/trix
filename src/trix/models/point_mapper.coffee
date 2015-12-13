@@ -65,8 +65,7 @@ class Trix.PointMapper
   makeMeasurementElement = ->
     makeElement
       tagName: "span"
-      data: trixMutable: true
-      trixSerialize: false
+      data: trixMutable: true, trixSerialize: false
 
   getClientRectForElement = (element) ->
     rect = element.getBoundingClientRect()
