@@ -1,5 +1,5 @@
 {getDOMRange, setDOMRange, findNodeFromContainerAndOffset,
- tagName, makeElement, normalizeRange} = Trix
+ tagName, makeElement, normalizeRange, defer} = Trix
 
 class Trix.PointMapper
   findPointRangeFromDOMRange: (domRange) ->
@@ -56,6 +56,7 @@ class Trix.PointMapper
       domRange.collapse(false) if side is "end"
       domRange.insertNode(element)
       rect = element.getBoundingClientRect()
+      removeMeasurementElement(element)
       x = rect.left - index
       y = rect.top + 1
 
@@ -66,6 +67,13 @@ class Trix.PointMapper
     makeElement
       tagName: "span"
       data: trixMutable: true, trixSerialize: false
+
+  removeMeasurementElement = (element) ->
+    {parentElement} = element
+    parentElement.dataset.trixMutable = true
+    parentElement.removeChild(element)
+    defer ->
+      delete parentElement.dataset.trixMutable
 
   getClientRectForElement = (element) ->
     rect = element.getBoundingClientRect()
