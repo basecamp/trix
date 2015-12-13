@@ -2,7 +2,7 @@
 #= require trix/operations/file_verification_operation
 
 {handleEvent, findClosestElementFromNode, findElementFromContainerAndOffset,
-  defer, makeElement, innerElementIsActive, summarizeStringChange} = Trix
+  defer, makeElement, innerElementIsActive, summarizeStringChange, objectsAreEqual} = Trix
 
 class Trix.InputController extends Trix.BasicObject
   pastedFileCount = 0
@@ -138,7 +138,7 @@ class Trix.InputController extends Trix.BasicObject
       if @draggedRange or @canAcceptDataTransfer(event.dataTransfer)
         event.preventDefault()
         draggingPoint = x: event.clientX, y: event.clientY
-        if draggingPoint.toString() isnt @draggingPoint?.toString()
+        unless objectsAreEqual(draggingPoint, @draggingPoint)
           @draggingPoint = draggingPoint
           @delegate?.inputControllerDidReceiveDragOverPoint?(@draggingPoint)
 
