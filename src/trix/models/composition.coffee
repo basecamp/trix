@@ -195,12 +195,11 @@ class Trix.Composition extends Trix.BasicObject
   insertPlaceholder: ->
     @placeholderPosition = @getPosition()
     @insertString(placeholder)
-    placeholder
 
   selectPlaceholder: ->
     if @placeholderPosition?
       @setSelectedRange([@placeholderPosition, @placeholderPosition + placeholder.length])
-      true
+      @getSelectedRange()
 
   forgetPlaceholder: ->
     @placeholderPosition = null

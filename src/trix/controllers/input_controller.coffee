@@ -225,33 +225,34 @@ class Trix.InputController extends Trix.BasicObject
       event.preventDefault()
 
     compositionstart: (event) ->
-      unless @selectionIsExpanded()
-        # Skip placeholder if keypress input was received before the composition started
-        unless @inputSummary.eventName is "keypress" and @inputSummary.textAdded
-          textAdded = @responder?.insertPlaceholder()
-          @setInputSummary({textAdded})
-          @requestRender()
+      if @inputSummary.eventName is "keypress" and @inputSummary.textAdded
+        @responder?.deleteInDirection("left")
 
-      @setInputSummary(composing: true, compositionStart: event.data)
+      unless @selectionIsExpanded()
+        @responder?.insertPlaceholder()
+        @requestRender()
+
+      compositionRange = @responder?.getSelectedRange()
+      @setInputSummary({compositionRange, compositionStart: event.data, composing: true})
 
     compositionupdate: (event) ->
-      if @responder?.selectPlaceholder()
+      if compositionRange = @responder?.selectPlaceholder()
+        @setInputSummary({compositionRange})
         @responder?.forgetPlaceholder()
 
-      @setInputSummary(composing: true, compositionUpdate: event.data)
+      @setInputSummary(compositionUpdate: event.data)
 
     compositionend: (event) ->
-      if @responder?.selectPlaceholder()
-        @responder?.forgetPlaceholder()
+      {compositionStart, compositionRange} = @inputSummary
 
-      {compositionStart} = @inputSummary
-      {data} = event
-
-      if compositionStart? and data? and compositionStart isnt data
+      if compositionStart? and compositionRange?
         @delegate?.inputControllerWillPerformTyping()
-        @responder?.insertString(data)
-        {added, removed} = summarizeStringChange(compositionStart, data)
-        @setInputSummary(composing: false, textAdded: added, didDelete: Boolean(removed))
+        @responder?.setSelectedRange(compositionRange)
+        @responder?.insertString(event.data)
+        @setInputSummary(preferDocument: true)
+
+      @responder?.forgetPlaceholder()
+      @setInputSummary(composing: false)
 
     input: (event) ->
       event.stopPropagation()
