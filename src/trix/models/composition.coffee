@@ -131,7 +131,7 @@ class Trix.Composition extends Trix.BasicObject
 
   replaceHTML: (html) ->
     document = Trix.Document.fromHTML(html).copyUsingObjectsFromDocument(@document)
-    pointRange = @getSelectedPointRange()
+    pointRange = @getPointRange()
     @setDocument(document)
     @setSelectionPointRange(pointRange)
 
@@ -326,7 +326,7 @@ class Trix.Composition extends Trix.BasicObject
 
   # Selection
 
-  @proxyMethod "getSelectionManager().getSelectedPointRange"
+  @proxyMethod "getSelectionManager().getPointRange"
   @proxyMethod "getSelectionManager().setLocationRangeFromPointRange"
   @proxyMethod "getSelectionManager().locationIsCursorTarget"
   @proxyMethod "getSelectionManager().selectionIsExpanded"

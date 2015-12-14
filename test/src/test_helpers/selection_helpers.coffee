@@ -72,7 +72,6 @@ for code, name of Trix.InputController.keyNames
   range.insertNode(node)
   range.setStartAfter(node)
   range.deleteContents()
-  range.normalizeBoundaries()
   selection.setSingleRange(range)
   Trix.selectionChangeObserver.update()
   defer(callback)

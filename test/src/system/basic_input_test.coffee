@@ -47,18 +47,6 @@ editorTest "drag text", (expectDocument) ->
           dragToCoordinates coordinates, ->
             expectDocument "acb\n"
 
-editorTest "deleting a line (command + backspace) in a list item", (expectDocument) ->
-  clickToolbarButton attribute: "bullet", ->
-    typeCharacters "a\nb", ->
-      triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 8, which: 8, metaKey: true)
-      selectNode(document.activeElement.querySelectorAll("li")[1])
-      deleteSelection()
-      defer ->
-        assertLocationRange index: 1, offset: 0
-        expectBlockAttributes [0, 1], ["bulletList", "bullet"]
-        expectBlockAttributes [2, 3], ["bulletList", "bullet"]
-        expectDocument "a\n\n"
-
 editorTest "inserting newline after cursor (control + o)", (expectDocument) ->
   typeCharacters "ab", ->
     moveCursor "left", ->

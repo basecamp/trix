@@ -1,7 +1,8 @@
 {defer, findClosestElementFromNode, nodeIsEmptyTextNode, normalizeSpaces, summarizeStringChange} = Trix
 
 class Trix.MutationObserver extends Trix.BasicObject
-  mutableSelector = "[data-trix-mutable]"
+  mutableAttributeName = "data-trix-mutable"
+  mutableSelector = "[#{mutableAttributeName}]"
 
   options =
     attributes: true
@@ -41,7 +42,7 @@ class Trix.MutationObserver extends Trix.BasicObject
     false
 
   nodeIsSignificant: (node) ->
-    node isnt @element and not @nodeIsMutable(node) and not nodeIsEmptyTextNode(node)
+    node? and node isnt @element and not @nodeIsMutable(node) and not nodeIsEmptyTextNode(node)
 
   nodeIsMutable: (node) ->
     findClosestElementFromNode(node, matchingSelector: mutableSelector)
@@ -50,7 +51,8 @@ class Trix.MutationObserver extends Trix.BasicObject
     nodes = []
     switch mutation.type
       when "attributes"
-        nodes.push(mutation.target)
+        unless mutation.attributeName is mutableAttributeName
+          nodes.push(mutation.target)
       when "characterData"
         # Changes to text nodes should consider the parent element
         nodes.push(mutation.target.parentNode)
