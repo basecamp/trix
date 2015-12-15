@@ -5,12 +5,6 @@ Trix.extend
       return false unless value is b[index]
     true
 
-  objectsAreEqual: (a = {}, b = {}) ->
-    return false unless Object.keys(a).length is Object.keys(b).length
-    for key, value of a
-      return false unless value is b[key]
-    true
-
   summarizeArrayChange: (oldArray = [], newArray = []) ->
     added = []
     removed = []

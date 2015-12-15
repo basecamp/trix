@@ -1,4 +1,6 @@
-#= require trix/core/collections/hash
+#= require trix/core/helpers/objects
+
+{copyObject, objectsAreEqual} = Trix
 
 Trix.extend
   normalizeRange: normalizeRange = (range) ->
@@ -22,10 +24,10 @@ copyValue = (value) ->
   if typeof value is "number"
     value
   else
-    Trix.Hash.box(value).toObject()
+    copyObject(value)
 
 rangeValuesAreEqual = (left, right) ->
   if typeof left is "number"
     left is right
   else
-    Trix.Hash.box(left).isEqualTo(Trix.Hash.box(right))
+    objectsAreEqual(left, right)
