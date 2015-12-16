@@ -14,7 +14,7 @@ blockComment = "<!--block-->"
 cursorTarget = Trix.makeElement(
   tagName: "span"
   textContent: Trix.ZERO_WIDTH_SPACE
-  data: trixCursorTarget: true, trixSerialize: false
+  data: trixSelection: true, trixCursorTarget: true, trixSerialize: false
 ).outerHTML
 
 removeWhitespace = (string) ->

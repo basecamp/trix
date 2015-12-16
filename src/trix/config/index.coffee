@@ -6,3 +6,4 @@
 #= require trix/config/serialization
 #= require trix/config/toolbar
 #= require trix/config/undo_interval
+#= require trix/config/selection_elements
