@@ -7,7 +7,7 @@ Trix.config.toolbar =
       attribute: "bold"
       key: "b"
     italic:
-      attribute: "bold"
+      attribute: "italic"
       key: "i"
     strike:
       attribute: "strike"
