@@ -57,10 +57,6 @@ Trix.registerElement "trix-toolbar", do ->
     fragment
 
   defaultCSS: """
-    %t {
-      white-space: collapse;
-    }
-
     %t .dialog {
       display: none;
     }
@@ -71,10 +67,6 @@ Trix.registerElement "trix-toolbar", do ->
 
     %t .dialog input.validate:invalid {
       background-color: #ffdddd;
-    }
-
-    %t[native] {
-      display: none;
     }
   """
 
