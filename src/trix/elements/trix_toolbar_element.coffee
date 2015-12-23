@@ -1,4 +1,4 @@
-{makeElement} = Trix
+{makeElement, makeFragment} = Trix
 {lang} = Trix.config
 {buttons, groups} = Trix.config.toolbar
 
@@ -20,28 +20,21 @@ Trix.registerElement "trix-toolbar", do ->
 
   createDialog = (buttonName) ->
     if button = buttons[buttonName]
-      if button.createDialog
+      if button.dialog
         element = makeElement
           tagName: "div"
           className: "dialog dialog-#{buttonName}"
           data: attribute: button.attribute, dialog: button.attribute
 
-        innerElement = makeElement
-          tagName: "div"
-          className: "dialog-#{buttonName}-inner"
-          html: button.createDialog()
+        innerElement = makeElement(tagName: "div", className: "dialog-#{buttonName}-inner")
+        innerElement.appendChild(makeFragment(button.dialog))
 
         element.appendChild(innerElement)
         element
 
   createFragment = ->
-    fragment = document.createDocumentFragment()
-
     groupsElement = makeElement(tagName: "div", className: "button-groups")
-    fragment.appendChild(groupsElement)
-
     dialogsElement = makeElement(tagName: "div", className: "dialogs")
-    fragment.appendChild(dialogsElement)
 
     for group in groups
       groupElement = makeElement(tagName: "span", className: "button-group")
@@ -54,7 +47,7 @@ Trix.registerElement "trix-toolbar", do ->
         if dialogElement = createDialog(buttonName)
           dialogsElement.appendChild(dialogElement)
 
-    fragment
+    makeFragment(groupsElement, dialogsElement)
 
   defaultCSS: """
     %t .dialog {

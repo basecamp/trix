@@ -15,7 +15,7 @@ Trix.config.toolbar =
       attribute: "href"
       action: "link"
       key: "k"
-      createDialog: -> """
+      dialog: -> """
         <input type="url" required name="href" placeholder="#{lang.urlPlaceholder}">
         <div class="button-group">
           <input type="button" value="#{lang.link}" data-method="setAttribute">
