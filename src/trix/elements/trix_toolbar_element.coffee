@@ -15,6 +15,7 @@ Trix.registerElement "trix-toolbar", do ->
           data = {}
           data.attribute = button.attribute if button.attribute?
           data.action = button.action if button.action?
+          data.key = button.key if button.key?
           data
 
   createDialog = (buttonName) ->

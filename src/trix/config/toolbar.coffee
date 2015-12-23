@@ -5,13 +5,16 @@ Trix.config.toolbar =
     # Text
     bold:
       attribute: "bold"
+      key: "b"
     italic:
       attribute: "bold"
+      key: "i"
     strike:
       attribute: "strike"
     link:
       attribute: "href"
       action: "link"
+      key: "k"
       createDialog: -> """
         <input type="url" required name="href" placeholder="#{lang.urlPlaceholder}">
         <div class="button-group">
@@ -37,8 +40,10 @@ Trix.config.toolbar =
     # History
     undo:
       action: "undo"
+      key: "z"
     redo:
       action: "redo"
+      key: "shift+z"
 
   groups: [
     ["bold", "italic", "strike", "link"]
