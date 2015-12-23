@@ -43,13 +43,19 @@ Trix.registerElement "trix-toolbar", do ->
     dialogsElement = makeElement(tagName: "div", className: "dialogs")
     fragment.appendChild(dialogsElement)
 
+    [..., lastGroup] = groups
     for group in groups
       groupElement = makeElement(tagName: "span", className: "button-group")
       groupsElement.appendChild(groupElement)
+      unless group is lastGroup
+        groupsElement.appendChild(document.createTextNode(" "))
 
+      [..., lastButtonName] = group
       for buttonName in group
         if buttonElement = createButton(buttonName)
           groupElement.appendChild(buttonElement)
+          unless buttonName is lastButtonName
+            groupElement.appendChild(document.createTextNode(" "))
 
         if dialogElement = createDialog(buttonName)
           dialogsElement.appendChild(dialogElement)
