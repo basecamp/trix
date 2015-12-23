@@ -1,16 +1,23 @@
 {makeElement, makeFragment} = Trix
-{lang} = Trix.config
-{buttons, groups} = Trix.config.toolbar
 
 Trix.registerElement "trix-toolbar", do ->
+  getButtonConfig = (buttonName) ->
+    Trix.config.toolbar.buttons[buttonName]
+
+  getButtonTitle = (buttonName) ->
+    Trix.config.lang[buttonName] ? ""
+
+  getButtonGroups = ->
+    Trix.config.toolbar.groups
+
   createButton = (buttonName) ->
-    if button = buttons[buttonName]
+    if button = getButtonConfig(buttonName)
+      title = getButtonTitle(buttonName)
       makeElement
         tagName: "button"
-        attributes: type: "button"
+        attributes: type: "button", title: title
         className: "button button-#{buttonName}"
-        title: lang[buttonName]
-        textContent: lang[buttonName]
+        textContent: title
         data: do ->
           data = {}
           data.attribute = button.attribute if button.attribute?
@@ -19,7 +26,7 @@ Trix.registerElement "trix-toolbar", do ->
           data
 
   createDialog = (buttonName) ->
-    if button = buttons[buttonName]
+    if button = getButtonConfig(buttonName)
       if button.dialog
         element = makeElement
           tagName: "div"
@@ -36,7 +43,7 @@ Trix.registerElement "trix-toolbar", do ->
     groupsElement = makeElement(tagName: "div", className: "button-groups")
     dialogsElement = makeElement(tagName: "div", className: "dialogs")
 
-    for group in groups
+    for group in Trix.config.toolbar.groups
       groupElement = makeElement(tagName: "span", className: "button-group")
       groupsElement.appendChild(groupElement)
 
