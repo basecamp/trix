@@ -164,15 +164,8 @@ trix-toolbar {
         }
       }
 
-      .button_group {
-        input[type=button] {
-          font-size: inherit;
-          padding: 0.5em;
-          border-bottom: none;
-        }
-      }
-
-      &.link_dialog {
+      &.dialog-link {
+        min-width: 300px;
         max-width: 600px;
 
         .link_url_fields {
