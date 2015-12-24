@@ -246,6 +246,7 @@ class Trix.Composition extends Trix.BasicObject
       @setDocument(@document.addAttributeAtRange(attributeName, value, selectedRange))
 
   setBlockAttribute: (attributeName, value) ->
+    @removeLastBlockAttribute() if @getBlock()?.getConfig("leaf")
     return unless selectedRange = @getSelectedRange()
     @setDocument(@document.applyBlockAttributeAtRange(attributeName, value, selectedRange))
     @setSelection(selectedRange)
