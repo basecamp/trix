@@ -2,6 +2,18 @@ Trix.config.blockAttributes = attributes =
   default:
     tagName: "div"
     parse: false
+  h1:
+    singleLine: true
+  h2:
+    singleLine: true
+  h3:
+    singleLine: true
+  h4:
+    singleLine: true
+  h5:
+    singleLine: true
+  h6:
+    singleLine: true
   quote:
     tagName: "blockquote"
     nestable: true
