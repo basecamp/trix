@@ -1,16 +1,15 @@
 GIT
   remote: git://github.com/javan/blade-sauce_labs_plugin.git
-  revision: 2f8a01eaf73c6d14a356175b0a8c324a77b2d2c2
+  revision: 02d9c6d300c4465502305ccfd34f9b79e017cf86
   specs:
     blade-sauce_labs_plugin (0.4.1)
-      blade
       childprocess
       faraday
       selenium-webdriver
 
 GIT
   remote: git://github.com/javan/blade.git
-  revision: d9173854f1b3d004396f957e8339b94858f0bec0
+  revision: 3641230c669a0af258741c5aa347cd02a85f9532
   specs:
     blade (0.4.1)
       activesupport (>= 3.0.0)
@@ -34,7 +33,7 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    addressable (2.3.8)
+    addressable (2.4.0)
     blade-qunit_adapter (0.4.0)
     childprocess (0.5.8)
       ffi (~> 1.0, >= 1.0.11)
@@ -42,7 +41,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.9.3)
-    cookiejar (0.3.2)
+    cookiejar (0.3.0)
     curses (1.0.1)
     daemons (1.2.3)
     descendants_tracker (0.0.4)
@@ -52,9 +51,9 @@ GEM
       eco-source
       execjs
     eco-source (1.1.0.rc.1)
-    em-http-request (1.1.2)
+    em-http-request (1.1.3)
       addressable (>= 2.3.4)
-      cookiejar
+      cookiejar (<= 0.3.0)
       em-socksify (>= 0.3)
       eventmachine (>= 1.0.3)
       http_parser.rb (>= 0.6.0)
@@ -72,7 +71,7 @@ GEM
       multi_json (>= 1.0.0)
       rack (>= 1.0.0)
       websocket-driver (>= 0.5.1)
-    faye-websocket (0.10.0)
+    faye-websocket (0.10.2)
       eventmachine (>= 0.12.0)
       websocket-driver (>= 0.5.1)
     ffi (1.9.10)
