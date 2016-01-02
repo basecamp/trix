@@ -9,6 +9,8 @@ require "pathname"
 class UpdateStatusImage
   include FileUtils
 
+  SVG_CONTENT_TYPE = "image/svg+xml"
+
   attr_reader :config
 
   def initialize
@@ -27,12 +29,12 @@ class UpdateStatusImage
     download_file config[:status_image_url], to: tmp_image_path
     puts "Downloaded #{tmp_image_path} from #{config[:status_image_url]}"
 
-    upload_to_s3 tmp_image_path, key: image_filename
+    upload_to_s3 tmp_image_path, key: image_filename, content_type: SVG_CONTENT_TYPE
     puts "Uploaded #{image_filename} to S3"
 
     if update_current_image?
       current_image_filename = status_image_key("#{config[:name]}-current.svg")
-      upload_to_s3 tmp_image_path, key: current_image_filename
+      upload_to_s3 tmp_image_path, key: current_image_filename, content_type: SVG_CONTENT_TYPE
       puts "Uploaded #{current_image_filename} to S3"
     end
   end
@@ -46,7 +48,7 @@ class UpdateStatusImage
   end
 
   def status_image_key(filename)
-    Pathname.new("images/status").join(filename).to_s
+    Pathname.new("test-status-images").join(filename).to_s
   end
 
   def tmp_path
@@ -69,9 +71,9 @@ class UpdateStatusImage
     @s3_bucket ||= s3.bucket(config[:s3_bucket])
   end
 
-  def upload_to_s3(from, key:)
+  def upload_to_s3(from, key:, **options)
     object = s3_bucket.object(key)
-    object.upload_file(from.to_s)
+    object.upload_file(from.to_s, options)
   end
 
   def download_file(url, to:)
