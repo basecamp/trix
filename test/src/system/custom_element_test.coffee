@@ -81,6 +81,34 @@ editorTest "element triggers trix-selection-change events when the location rang
       equal eventCount, 2
       done()
 
+editorTest "only triggers trix-selection-change events on the active element", (done) ->
+  elementA = getEditorElement()
+  elementB = document.createElement("trix-editor")
+  elementA.parentNode.insertBefore(elementB, elementA.nextSibling)
+
+  elementB.addEventListener "trix-initialize", ->
+    elementA.editor.insertString("a")
+    elementB.editor.insertString("b")
+    rangy.getSelection().removeAllRanges()
+
+    eventCountA = 0
+    eventCountB = 0
+    elementA.addEventListener "trix-selection-change", (event) -> eventCountA++
+    elementB.addEventListener "trix-selection-change", (event) -> eventCountB++
+
+    elementA.editor.setSelectedRange(0)
+    equal eventCountA, 1
+    equal eventCountB, 0
+
+    elementB.editor.setSelectedRange(0)
+    equal eventCountA, 1
+    equal eventCountB, 1
+
+    elementA.editor.setSelectedRange(1)
+    equal eventCountA, 2
+    equal eventCountB, 1
+    done()
+
 editorTest "element triggers toolbar dialog events", (done) ->
   element = getEditorElement()
   events = []

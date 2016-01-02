@@ -96,10 +96,10 @@ class Trix.SelectionManager extends Trix.BasicObject
       @updateCurrentLocationRange()
 
   updateCurrentLocationRange: (locationRange) ->
-    locationRange ?= @createLocationRangeFromDOMRange(getDOMRange())
-    if not rangesAreEqual(locationRange, @currentLocationRange)
-      @currentLocationRange = locationRange
-      @delegate?.locationRangeDidChange?(@currentLocationRange?.slice(0))
+    if locationRange ?= @createLocationRangeFromDOMRange(getDOMRange())
+      if not rangesAreEqual(locationRange, @currentLocationRange)
+        @currentLocationRange = locationRange
+        @delegate?.locationRangeDidChange?(@currentLocationRange.slice(0))
 
   createDOMRangeFromLocationRange: (locationRange) ->
     rangeStart = @findContainerAndOffsetFromLocation(locationRange[0])
