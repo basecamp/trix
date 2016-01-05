@@ -4,7 +4,7 @@ require 'blade'
 Blade.initialize!
 
 map '/' do
-  run Blade::Assets.environment(:user)
+  run Blade::Assets.environment
 end
 
 map '/test' do
