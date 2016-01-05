@@ -42,6 +42,11 @@ test "ignores whitespace between block elements", ->
   expectedHTML = """<div><!--block-->a</div><div><!--block-->b</div>"""
   expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
+test "converts newlines to spaces", ->
+  html = "<div>a\nb \nc \n d \n\ne</div><pre>1\n2</pre>"
+  expectedHTML = """<div><!--block-->a b c d e</div><pre><!--block-->1\n2</pre>"""
+  expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
 test "parses entire HTML document", ->
   html = """<html><head><style>.bold {font-weight: bold}</style></head><body><span class="bold">abc</span></body></html>"""
   expectedHTML = """<div><!--block--><strong>abc</strong></div>"""

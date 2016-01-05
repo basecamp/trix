@@ -94,6 +94,8 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   processTextNode: (node) ->
     if string = normalizeSpaces(node.data)
+      unless elementCanDisplayNewlines(node.parentNode)
+        string = convertNewlinesToSpaces(string)
       @appendStringWithAttributes(string, @getTextAttributes(node.parentNode))
 
   processElement: (element) ->
@@ -259,6 +261,13 @@ class Trix.HTMLParser extends Trix.BasicObject
     html
       .replace(/>\n+</g, "><")
       .replace(/>\ +</g, "> <")
+
+  convertNewlinesToSpaces = (string) ->
+    string.replace(/\s?\n\s?/g, " ")
+
+  elementCanDisplayNewlines = (element) ->
+    {whiteSpace} = window.getComputedStyle(element)
+    whiteSpace in ["pre", "pre-wrap", "pre-line"]
 
   getBlockElementMargin = (element) ->
     style = window.getComputedStyle(element)
