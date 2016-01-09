@@ -151,6 +151,30 @@ editorTest "breaking out of the middle of a block before newline", (done) ->
 
               done()
 
+editorTest "breaking out a block after newline at offset 0", (done) ->
+  # * = cursor
+  #
+  #
+  # *a
+  #
+  typeCharacters "a", ->
+    clickToolbarButton attribute: "quote", ->
+      moveCursor "left", ->
+        typeCharacters "\n\n", ->
+          document = getDocument()
+          equal document.getBlockCount(), 2
+
+          block = document.getBlockAtIndex(0)
+          deepEqual block.getAttributes(), []
+          equal block.toString(), "\n"
+
+          block = document.getBlockAtIndex(1)
+          deepEqual block.getAttributes(), ["quote"]
+          equal block.toString(), "a\n"
+          assertLocationRange(index: 1, offset: 0)
+
+          done()
+
 editorTest "deleting the only non-block-break character in a block", (done) ->
   typeCharacters "ab", ->
     clickToolbarButton attribute: "quote", ->

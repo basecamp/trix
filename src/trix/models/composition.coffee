@@ -83,7 +83,7 @@ class Trix.Composition extends Trix.BasicObject
     else
       if block.text.getStringAtRange([offset, offset + 1]) is "\n"
         range = [position - 1, position + 1]
-      else
+      else if offset - 1 isnt 0
         position += 1
 
     newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
