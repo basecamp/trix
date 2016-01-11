@@ -58,7 +58,7 @@ helpers.extend
 
       done = (expectedDocumentValue) ->
         if expectedDocumentValue
-          equal getDocument().toString(), expectedDocumentValue
+          assert.equal getDocument().toString(), expectedDocumentValue
         doneAsync()
 
       ready ->
