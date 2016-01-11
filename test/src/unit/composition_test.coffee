@@ -1,4 +1,4 @@
-{assert, test, testGroup} = Trix.TEST_HELPERS
+{assert, test, testGroup} = Trix.TestHelpers
 
 composition = null
 setup = ->

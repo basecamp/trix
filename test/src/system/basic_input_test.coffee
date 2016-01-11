@@ -1,4 +1,4 @@
-{assert, defer, dragToCoordinates, expandSelection, insertNode, moveCursor, pressKey, selectAll, test, testGroup, triggerEvent, typeCharacters} = Trix.TEST_HELPERS
+{assert, defer, dragToCoordinates, expandSelection, insertNode, moveCursor, pressKey, selectAll, test, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
 
 testGroup "Basic input", template: "editor_empty", ->
   test "typing", (expectDocument) ->

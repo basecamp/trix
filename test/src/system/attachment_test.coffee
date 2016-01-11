@@ -1,4 +1,4 @@
-{after, assert, clickElement, defer, dragToCoordinates, moveCursor, pressKey, test, testGroup, triggerEvent, typeCharacters} = Trix.TEST_HELPERS
+{after, assert, clickElement, defer, dragToCoordinates, moveCursor, pressKey, test, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
 
 testGroup "Attachments", template: "editor_with_image", ->
   test "moving an image by drag and drop", (expectDocument) ->

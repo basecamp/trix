@@ -1,4 +1,4 @@
-{assert, test, testGroup} = Trix.TEST_HELPERS
+{assert, test, testGroup} = Trix.TestHelpers
 
 testGroup "Trix.Block", ->
   test "consolidating blocks creates text with one blockBreak piece", ->

@@ -5,7 +5,7 @@
 # Remove QUnit's globals
 delete window[key] for key, value of QUnit when window[key] is value
 
-Trix.TEST_HELPERS = helpers =
+Trix.TestHelpers = helpers =
   extend: (properties) ->
     for key, value of properties
       this[key] = value

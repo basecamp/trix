@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, defer, endComposition, pressKey, startComposition, test, testGroup, triggerEvent, typeCharacters, updateComposition} = Trix.TEST_HELPERS
+{assert, clickToolbarButton, defer, endComposition, pressKey, startComposition, test, testGroup, triggerEvent, typeCharacters, updateComposition} = Trix.TestHelpers
 
 testGroup "Composition input", template: "editor_empty", ->
   test "composing", (expectDocument) ->

@@ -1,4 +1,4 @@
-{assert, createFile, expandSelection, insertFile, insertString, moveCursor, test, testGroup} = Trix.TEST_HELPERS
+{assert, createFile, expandSelection, insertFile, insertString, moveCursor, test, testGroup} = Trix.TestHelpers
 
 testGroup "Cursor movement", template: "editor_empty", ->
   test "move cursor around attachment", (done) ->

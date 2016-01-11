@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, clickToolbarDialogButton, collapseSelection, expandSelection, insertString, insertText, isToolbarButtonActive, isToolbarButtonDisabled, isToolbarDialogActive, moveCursor, test, testGroup, typeCharacters, typeInToolbarDialog, typeToolbarKeyCommand} = Trix.TEST_HELPERS
+{assert, clickToolbarButton, clickToolbarDialogButton, collapseSelection, expandSelection, insertString, insertText, isToolbarButtonActive, isToolbarButtonDisabled, isToolbarDialogActive, moveCursor, test, testGroup, typeCharacters, typeInToolbarDialog, typeToolbarKeyCommand} = Trix.TestHelpers
 
 testGroup "Text formatting", template: "editor_empty", ->
   test "applying attributes to text", (done) ->

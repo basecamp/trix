@@ -1,6 +1,6 @@
 {normalizeRange, rangesAreEqual} = Trix
 
-helpers = Trix.TEST_HELPERS
+helpers = Trix.TestHelpers
 helpers.assert = QUnit.assert
 
 helpers.assert.locationRange = (start, end) ->

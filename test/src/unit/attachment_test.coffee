@@ -1,4 +1,4 @@
-{assert, test, testGroup} = Trix.TEST_HELPERS
+{assert, test, testGroup} = Trix.TestHelpers
 
 testGroup "Trix.Attachment", ->
   previewableTypes = "image image/gif image/png image/jpg".split(" ")

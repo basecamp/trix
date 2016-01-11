@@ -1,4 +1,4 @@
-{assert, defer, test, testGroup} = Trix.TEST_HELPERS
+{assert, defer, test, testGroup} = Trix.TestHelpers
 
 testGroup "Installation process", template: "editor_html", ->
   test "element.editorController", ->

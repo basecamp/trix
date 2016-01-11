@@ -1,4 +1,4 @@
-helpers = Trix.TEST_HELPERS
+helpers = Trix.TestHelpers
 
 helpers.extend
   clickToolbarButton: (selector, callback) ->

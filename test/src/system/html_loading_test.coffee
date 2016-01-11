@@ -1,4 +1,4 @@
-{test, testGroup} = Trix.TEST_HELPERS
+{test, testGroup} = Trix.TestHelpers
 
 testGroup "HTML loading", template: "editor_with_styled_content", ->
   cases =

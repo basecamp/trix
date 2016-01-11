@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, moveCursor, test, testGroup, typeCharacters} = Trix.TEST_HELPERS
+{assert, clickToolbarButton, moveCursor, test, testGroup, typeCharacters} = Trix.TestHelpers
 
 testGroup "View caching", template: "editor_empty", ->
   test "reparsing and rendering identical texts", (done) ->

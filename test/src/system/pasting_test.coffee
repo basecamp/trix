@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, createFile, defer, expandSelection, moveCursor, pasteContent, pressKey, test, testGroup, typeCharacters} = Trix.TEST_HELPERS
+{assert, clickToolbarButton, createFile, defer, expandSelection, moveCursor, pasteContent, pressKey, test, testGroup, typeCharacters} = Trix.TestHelpers
 
 testGroup "Pasting", template: "editor_empty", ->
   test "paste plain text", (expectDocument) ->

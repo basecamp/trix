@@ -1,7 +1,7 @@
 #= require rangy-core
 #= require rangy-textrange
 
-helpers = Trix.TEST_HELPERS
+helpers = Trix.TestHelpers
 
 keyCodes = {}
 for code, name of Trix.InputController.keyNames

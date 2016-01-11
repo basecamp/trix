@@ -1,4 +1,4 @@
-{after, assert, clickElement, clickToolbarButton, createFile, defer, insertImageAttachment, moveCursor, pasteContent, test, testGroup, triggerEvent, typeCharacters, typeInToolbarDialog} = Trix.TEST_HELPERS
+{after, assert, clickElement, clickToolbarButton, createFile, defer, insertImageAttachment, moveCursor, pasteContent, test, testGroup, triggerEvent, typeCharacters, typeInToolbarDialog} = Trix.TestHelpers
 
 testGroup "Custom element API", template: "editor_empty", ->
   test "files are accepted by default", ->

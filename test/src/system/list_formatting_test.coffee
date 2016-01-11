@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, defer, moveCursor, pressKey, test, testGroup, typeCharacters} = Trix.TEST_HELPERS
+{assert, clickToolbarButton, defer, moveCursor, pressKey, test, testGroup, typeCharacters} = Trix.TestHelpers
 
 testGroup "List formatting", template: "editor_empty", ->
   test "creating a new list item", (done) ->

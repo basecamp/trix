@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, defer, expandSelection, isToolbarButtonActive, isToolbarButtonDisabled, moveCursor, pressKey, replaceDocument, test, testGroup, typeCharacters} = Trix.TEST_HELPERS
+{assert, clickToolbarButton, defer, expandSelection, isToolbarButtonActive, isToolbarButtonDisabled, moveCursor, pressKey, replaceDocument, test, testGroup, typeCharacters} = Trix.TestHelpers
 
 testGroup "Block formatting", template: "editor_empty", ->
   test "applying block attributes", (done) ->

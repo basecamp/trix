@@ -1,4 +1,4 @@
-{after, assert, getHTML, test, testGroup} = Trix.TEST_HELPERS
+{after, assert, getHTML, test, testGroup} = Trix.TestHelpers
 
 testGroup "Trix.HTMLParser", ->
   eachFixture (name, {html, serializedHTML, document}) ->

@@ -1,4 +1,4 @@
-helpers = Trix.TEST_HELPERS
+helpers = Trix.TestHelpers
 
 initialized = false
 initializedCallbacks = []
