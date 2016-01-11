@@ -1,5 +1,6 @@
-module "Trix.DocumentView"
+{assert, test, testGroup} = Trix.TestHelpers
 
-eachFixture (name, details) ->
-  test name, ->
-    expectHTML details.document, details.html
+testGroup "Trix.DocumentView", ->
+  eachFixture (name, details) ->
+    test name, ->
+      assert.documentHTMLEqual details.document, details.html

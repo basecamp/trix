@@ -1,34 +1,37 @@
-@insertString = (string) ->
-  getComposition().insertString(string)
-  render()
+helpers = Trix.TestHelpers
 
-@insertText = (text) ->
-  getComposition().insertText(text)
-  render()
+helpers.extend
+  insertString: (string) ->
+    getComposition().insertString(string)
+    render()
 
-@insertDocument = (document) ->
-  getComposition().insertDocument(document)
-  render()
+  insertText: (text) ->
+    getComposition().insertText(text)
+    render()
 
-@insertFile = (file) ->
-  getComposition().insertFile(file)
-  render()
+  insertDocument: (document) ->
+    getComposition().insertDocument(document)
+    render()
 
-@insertImageAttachment = (attributes) ->
-  attributes ?=
-    url: TEST_IMAGE_URL
-    width: 10
-    height: 10
-    filename: "image.gif"
-    contentType: "image/gif"
+  insertFile: (file) ->
+    getComposition().insertFile(file)
+    render()
 
-  attachment = new Trix.Attachment attributes
-  text = Trix.Text.textForAttachmentWithAttributes(attachment)
-  insertText(text)
+  insertImageAttachment: (attributes) ->
+    attributes ?=
+      url: TEST_IMAGE_URL
+      width: 10
+      height: 10
+      filename: "image.gif"
+      contentType: "image/gif"
 
-@replaceDocument = (document) ->
-  getComposition().setDocument(document)
-  render()
+    attachment = new Trix.Attachment attributes
+    text = Trix.Text.textForAttachmentWithAttributes(attachment)
+    helpers.insertText(text)
+
+  replaceDocument: (document) ->
+    getComposition().setDocument(document)
+    render()
 
 render = ->
   getEditorController().render()

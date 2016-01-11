@@ -1,67 +1,68 @@
-editorModule "Basic input", template: "editor_empty"
+{assert, defer, dragToCoordinates, expandSelection, insertNode, moveCursor, pressKey, selectAll, test, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
 
-editorTest "typing", (expectDocument) ->
-  typeCharacters "abc", ->
-    expectDocument "abc\n"
+testGroup "Basic input", template: "editor_empty", ->
+  test "typing", (expectDocument) ->
+    typeCharacters "abc", ->
+      expectDocument "abc\n"
 
-editorTest "backspacing", (expectDocument) ->
-  typeCharacters "abc\b", ->
-    assertLocationRange(index: 0, offset: 2)
-    expectDocument "ab\n"
+  test "backspacing", (expectDocument) ->
+    typeCharacters "abc\b", ->
+      assert.locationRange(index: 0, offset: 2)
+      expectDocument "ab\n"
 
-editorTest "pressing delete", (expectDocument) ->
-  typeCharacters "ab", ->
-    moveCursor "left", ->
-      pressKey "delete", ->
-        expectDocument "a\n"
+  test "pressing delete", (expectDocument) ->
+    typeCharacters "ab", ->
+      moveCursor "left", ->
+        pressKey "delete", ->
+          expectDocument "a\n"
 
-editorTest "pressing return", (expectDocument) ->
-  typeCharacters "ab", ->
-    pressKey "return", ->
-      typeCharacters "c", ->
-        expectDocument "ab\nc\n"
+  test "pressing return", (expectDocument) ->
+    typeCharacters "ab", ->
+      pressKey "return", ->
+        typeCharacters "c", ->
+          expectDocument "ab\nc\n"
 
-editorTest "cursor left", (expectDocument) ->
-  typeCharacters "ac", ->
-    moveCursor "left", ->
-      typeCharacters "b", ->
-        expectDocument "abc\n"
+  test "cursor left", (expectDocument) ->
+    typeCharacters "ac", ->
+      moveCursor "left", ->
+        typeCharacters "b", ->
+          expectDocument "abc\n"
 
-editorTest "replace entire document", (expectDocument) ->
-  typeCharacters "abc", ->
-    selectAll ->
-      typeCharacters "d", ->
-        expectDocument "d\n"
+  test "replace entire document", (expectDocument) ->
+    typeCharacters "abc", ->
+      selectAll ->
+        typeCharacters "d", ->
+          expectDocument "d\n"
 
-editorTest "remove entire document", (expectDocument) ->
-  typeCharacters "abc", ->
-    selectAll ->
-      typeCharacters "\b", ->
-        expectDocument "\n"
+  test "remove entire document", (expectDocument) ->
+    typeCharacters "abc", ->
+      selectAll ->
+        typeCharacters "\b", ->
+          expectDocument "\n"
 
-editorTest "drag text", (expectDocument) ->
-  typeCharacters "abc", ->
-    moveCursor direction: "left", times: 2, (coordinates) ->
-      moveCursor "right", ->
-        expandSelection "right", ->
-          dragToCoordinates coordinates, ->
-            expectDocument "acb\n"
+  test "drag text", (expectDocument) ->
+    typeCharacters "abc", ->
+      moveCursor direction: "left", times: 2, (coordinates) ->
+        moveCursor "right", ->
+          expandSelection "right", ->
+            dragToCoordinates coordinates, ->
+              expectDocument "acb\n"
 
-editorTest "inserting newline after cursor (control + o)", (expectDocument) ->
-  typeCharacters "ab", ->
-    moveCursor "left", ->
-      triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 79, which: 79, ctrlKey: true)
-      defer ->
-        assertLocationRange index: 0, offset: 1
-        expectDocument "a\nb\n"
+  test "inserting newline after cursor (control + o)", (expectDocument) ->
+    typeCharacters "ab", ->
+      moveCursor "left", ->
+        triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 79, which: 79, ctrlKey: true)
+        defer ->
+          assert.locationRange index: 0, offset: 1
+          expectDocument "a\nb\n"
 
-editorTest "inserting ó with control + alt + o (AltGr)", (expectDocument) ->
-  typeCharacters "ab", ->
-    moveCursor "left", ->
-      if triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 79, which: 79, altKey: true, ctrlKey: true)
-        triggerEvent(document.activeElement, "keypress", charCode: 243, keyCode: 243, which: 243, altKey: true, ctrlKey: true)
-        insertNode(document.createTextNode("ó"))
+  test "inserting ó with control + alt + o (AltGr)", (expectDocument) ->
+    typeCharacters "ab", ->
+      moveCursor "left", ->
+        if triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 79, which: 79, altKey: true, ctrlKey: true)
+          triggerEvent(document.activeElement, "keypress", charCode: 243, keyCode: 243, which: 243, altKey: true, ctrlKey: true)
+          insertNode(document.createTextNode("ó"))
 
-      defer ->
-        assertLocationRange index: 0, offset: 2
-        expectDocument "aób\n"
+        defer ->
+          assert.locationRange index: 0, offset: 2
+          expectDocument "aób\n"

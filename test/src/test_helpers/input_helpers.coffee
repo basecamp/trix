@@ -1,152 +1,155 @@
+helpers = Trix.TestHelpers
+
 keyCodes = {}
 for code, name of Trix.InputController.keyNames
   keyCodes[name] = code
 
-@createEvent = (type, properties = {}) ->
-  event = document.createEvent("Events")
-  event.initEvent(type, true, true)
-  for key, value of properties
-    event[key] = value
-  event
+helpers.extend
+  createEvent: (type, properties = {}) ->
+    event = document.createEvent("Events")
+    event.initEvent(type, true, true)
+    for key, value of properties
+      event[key] = value
+    event
 
-@triggerEvent = (element, type, properties) ->
-  element.dispatchEvent(createEvent(type, properties))
+  triggerEvent: (element, type, properties) ->
+    element.dispatchEvent(helpers.createEvent(type, properties))
 
-@pasteContent = (contentType, value, callback) ->
-  testClipboardData =
-    getData: (type) ->
-      value if type is contentType
-    types: [contentType]
-    items: [value]
+  pasteContent: (contentType, value, callback) ->
+    testClipboardData =
+      getData: (type) ->
+        value if type is contentType
+      types: [contentType]
+      items: [value]
 
-  triggerEvent(document.activeElement, "paste", {testClipboardData})
-  defer callback
+    helpers.triggerEvent(document.activeElement, "paste", {testClipboardData})
+    helpers.defer callback
 
-@createFile = (properties = {}) ->
-  file = getAsFile: -> {}
-  file[key] = value for key, value of properties
-  file
+  createFile: (properties = {}) ->
+    file = getAsFile: -> {}
+    file[key] = value for key, value of properties
+    file
 
-@typeCharacters = (string, callback) ->
-  if Array.isArray(string)
-    characters = string
-  else
-    characters = string.split("")
-
-  do typeNextCharacter = -> defer ->
-    character = characters.shift()
-    if character?
-      switch character
-        when "\n"
-          pressKey("return", typeNextCharacter)
-        when "\b"
-          pressKey("backspace", typeNextCharacter)
-        else
-          typeCharacterInElement(character, document.activeElement, typeNextCharacter)
+  typeCharacters: (string, callback) ->
+    if Array.isArray(string)
+      characters = string
     else
-      callback()
+      characters = string.split("")
 
-@pressKey = (keyName, callback) ->
-  element = document.activeElement
-  code = keyCodes[keyName]
-  properties = which: code, keyCode: code, charCode: 0
-
-  return callback() unless triggerEvent(element, "keydown", properties)
-
-  simulateKeypress keyName, ->
-    defer ->
-      triggerEvent(element, "keyup", properties)
-      defer(callback)
-
-@startComposition = (data, callback) ->
-  element = document.activeElement
-  triggerEvent(element, "compositionstart", data: "")
-  triggerEvent(element, "compositionupdate", data: data)
-  triggerEvent(element, "input")
-
-  node = document.createTextNode(data)
-  insertNode(node)
-  selectNode(node, callback)
-
-@updateComposition = (data, callback) ->
-  element = document.activeElement
-  triggerEvent(element, "compositionupdate", data: data)
-  triggerEvent(element, "input")
-
-  node = document.createTextNode(data)
-  insertNode(node)
-  selectNode(node, callback)
-
-@endComposition = (data, callback) ->
-  element = document.activeElement
-  triggerEvent(element, "compositionupdate", data: data)
-  triggerEvent(element, "input")
-  triggerEvent(element, "compositionend", data: data)
-  triggerEvent(element, "input")
-
-  node = document.createTextNode(data)
-  insertNode(node)
-  selectNode(node)
-  collapseSelection("right", callback)
-
-@clickElement = (element, callback) ->
-  if triggerEvent(element, "mousedown")
-    defer ->
-      if triggerEvent(element, "mouseup")
-        defer ->
-          triggerEvent(element, "click")
-          defer(callback)
-
-@dragToCoordinates = (coordinates, callback) ->
-  element = document.activeElement
-
-  dropData = dataTransfer: files: []
-  dropData[key] = value for key, value of coordinates
-
-  triggerEvent(element, "mousemove")
-  triggerEvent(element, "dragstart")
-  triggerEvent(element, "drop", dropData)
-
-  defer(callback)
-
-@mouseDownOnElementAndMove = (element, distance, callback) ->
-  coordinates = getElementCoordinates(element)
-  triggerEvent(element, "mousedown", coordinates)
-
-  destination = (offset) ->
-    clientX: coordinates.clientX + offset
-    clientY: coordinates.clientY + offset
-
-  dragSpeed = 20
-
-  after dragSpeed, ->
-    offset = 0
-    do drag = =>
-      if ++offset <= distance
-        triggerEvent(element, "mousemove", destination(offset))
-        after(dragSpeed, drag)
+    do typeNextCharacter = -> helpers.defer ->
+      character = characters.shift()
+      if character?
+        switch character
+          when "\n"
+            helpers.pressKey("return", typeNextCharacter)
+          when "\b"
+            helpers.pressKey("backspace", typeNextCharacter)
+          else
+            typeCharacterInElement(character, document.activeElement, typeNextCharacter)
       else
-        triggerEvent(element, "mouseup", destination(distance))
-        after(dragSpeed, callback)
+        callback()
+
+  pressKey: (keyName, callback) ->
+    element = document.activeElement
+    code = keyCodes[keyName]
+    properties = which: code, keyCode: code, charCode: 0
+
+    return callback() unless helpers.triggerEvent(element, "keydown", properties)
+
+    simulateKeypress keyName, ->
+      helpers.defer ->
+        helpers.triggerEvent(element, "keyup", properties)
+        helpers.defer(callback)
+
+  startComposition: (data, callback) ->
+    element = document.activeElement
+    helpers.triggerEvent(element, "compositionstart", data: "")
+    helpers.triggerEvent(element, "compositionupdate", data: data)
+    helpers.triggerEvent(element, "input")
+
+    node = document.createTextNode(data)
+    helpers.insertNode(node)
+    helpers.selectNode(node, callback)
+
+  updateComposition: (data, callback) ->
+    element = document.activeElement
+    helpers.triggerEvent(element, "compositionupdate", data: data)
+    helpers.triggerEvent(element, "input")
+
+    node = document.createTextNode(data)
+    helpers.insertNode(node)
+    helpers.selectNode(node, callback)
+
+  endComposition: (data, callback) ->
+    element = document.activeElement
+    helpers.triggerEvent(element, "compositionupdate", data: data)
+    helpers.triggerEvent(element, "input")
+    helpers.triggerEvent(element, "compositionend", data: data)
+    helpers.triggerEvent(element, "input")
+
+    node = document.createTextNode(data)
+    helpers.insertNode(node)
+    helpers.selectNode(node)
+    helpers.collapseSelection("right", callback)
+
+  clickElement: (element, callback) ->
+    if helpers.triggerEvent(element, "mousedown")
+      helpers.defer ->
+        if helpers.triggerEvent(element, "mouseup")
+          helpers.defer ->
+            helpers.triggerEvent(element, "click")
+            helpers.defer(callback)
+
+  dragToCoordinates: (coordinates, callback) ->
+    element = document.activeElement
+
+    dropData = dataTransfer: files: []
+    dropData[key] = value for key, value of coordinates
+
+    helpers.triggerEvent(element, "mousemove")
+    helpers.triggerEvent(element, "dragstart")
+    helpers.triggerEvent(element, "drop", dropData)
+
+    helpers.defer(callback)
+
+  mouseDownOnElementAndMove: (element, distance, callback) ->
+    coordinates = getElementCoordinates(element)
+    helpers.triggerEvent(element, "mousedown", coordinates)
+
+    destination = (offset) ->
+      clientX: coordinates.clientX + offset
+      clientY: coordinates.clientY + offset
+
+    dragSpeed = 20
+
+    after dragSpeed, ->
+      offset = 0
+      do drag = =>
+        if ++offset <= distance
+          helpers.triggerEvent(element, "mousemove", destination(offset))
+          after(dragSpeed, drag)
+        else
+          helpers.triggerEvent(element, "mouseup", destination(distance))
+          after(dragSpeed, callback)
 
 typeCharacterInElement = (character, element, callback) ->
   charCode = character.charCodeAt(0)
   keyCode = character.toUpperCase().charCodeAt(0)
 
-  return callback() unless triggerEvent(element, "keydown", keyCode: keyCode, charCode: 0)
+  return callback() unless helpers.triggerEvent(element, "keydown", keyCode: keyCode, charCode: 0)
 
-  defer ->
-    return callback() unless triggerEvent(element, "keypress", keyCode: charCode, charCode: charCode)
+  helpers.defer ->
+    return callback() unless helpers.triggerEvent(element, "keypress", keyCode: charCode, charCode: charCode)
     insertCharacter character, ->
-      triggerEvent(element, "input")
+      helpers.triggerEvent(element, "input")
 
-      defer ->
-        triggerEvent(element, "keyup", keyCode: keyCode, charCode: 0)
+      helpers.defer ->
+        helpers.triggerEvent(element, "keyup", keyCode: keyCode, charCode: 0)
         callback()
 
 insertCharacter = (character, callback) ->
   node = document.createTextNode(character)
-  insertNode(node, callback)
+  helpers.insertNode(node, callback)
 
 simulateKeypress = (keyName, callback) ->
   switch keyName
@@ -156,15 +159,15 @@ simulateKeypress = (keyName, callback) ->
       deleteInDirection("right", callback)
     when "return"
       node = document.createElement("br")
-      insertNode(node, callback)
+      helpers.insertNode(node, callback)
 
 deleteInDirection = (direction, callback) ->
-  if selectionIsCollapsed()
-    expandSelection direction, ->
-      deleteSelection()
+  if helpers.selectionIsCollapsed()
+    helpers.expandSelection direction, ->
+      helpers.deleteSelection()
       callback()
   else
-    deleteSelection()
+    helpers.deleteSelection()
     callback()
 
 getElementCoordinates = (element) ->

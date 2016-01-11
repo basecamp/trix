@@ -1,61 +1,62 @@
-editorModule "List formatting", template: "editor_empty"
+{assert, clickToolbarButton, defer, moveCursor, pressKey, test, testGroup, typeCharacters} = Trix.TestHelpers
 
-editorTest "creating a new list item", (done) ->
-  typeCharacters "a", ->
+testGroup "List formatting", template: "editor_empty", ->
+  test "creating a new list item", (done) ->
+    typeCharacters "a", ->
+      clickToolbarButton attribute: "bullet", ->
+        typeCharacters "\n", ->
+          assert.locationRange(index: 1, offset: 0)
+          assert.blockAttributes([0, 2], ["bulletList", "bullet"])
+          assert.blockAttributes([2, 3], ["bulletList", "bullet"])
+          done()
+
+  test "breaking out of a list", (expectDocument) ->
+    typeCharacters "a", ->
+      clickToolbarButton attribute: "bullet", ->
+        typeCharacters "\n\n", ->
+          assert.blockAttributes([0, 2], ["bulletList", "bullet"])
+          assert.blockAttributes([2, 3], [])
+          expectDocument("a\n\n")
+
+  test "pressing return at the beginning of a non-empty list item", (expectDocument) ->
     clickToolbarButton attribute: "bullet", ->
-      typeCharacters "\n", ->
-        assertLocationRange(index: 1, offset: 0)
-        expectBlockAttributes([0, 2], ["bulletList", "bullet"])
-        expectBlockAttributes([2, 3], ["bulletList", "bullet"])
-        done()
+      typeCharacters "a\nb", ->
+        moveCursor "left", ->
+          pressKey "return", ->
+            assert.blockAttributes([0, 2], ["bulletList", "bullet"])
+            assert.blockAttributes([2, 3], ["bulletList", "bullet"])
+            assert.blockAttributes([3, 5], ["bulletList", "bullet"])
+            expectDocument("a\n\nb\n")
 
-editorTest "breaking out of a list", (expectDocument) ->
-  typeCharacters "a", ->
-    clickToolbarButton attribute: "bullet", ->
-      typeCharacters "\n\n", ->
-        expectBlockAttributes([0, 2], ["bulletList", "bullet"])
-        expectBlockAttributes([2, 3], [])
-        expectDocument("a\n\n")
+  test "pressing delete at the beginning of a non-empty nested list item", (expectDocument) ->
+      clickToolbarButton attribute: "bullet", ->
+        typeCharacters "a\n", ->
+          clickToolbarButton action: "increaseBlockLevel", ->
+            typeCharacters "b\n", ->
+              clickToolbarButton action: "increaseBlockLevel", ->
+                typeCharacters "c", ->
+                  getSelectionManager().setLocationRange(index: 1, offset: 0)
+                  getComposition().deleteInDirection("backward")
+                  getEditorController().render()
+                  defer ->
+                    assert.blockAttributes([0, 2], ["bulletList", "bullet"])
+                    assert.blockAttributes([3, 4], ["bulletList", "bullet", "bulletList", "bullet"])
+                    expectDocument("ab\nc\n")
 
-editorTest "pressing return at the beginning of a non-empty list item", (expectDocument) ->
-  clickToolbarButton attribute: "bullet", ->
-    typeCharacters "a\nb", ->
-      moveCursor "left", ->
-        pressKey "return", ->
-          expectBlockAttributes([0, 2], ["bulletList", "bullet"])
-          expectBlockAttributes([2, 3], ["bulletList", "bullet"])
-          expectBlockAttributes([3, 5], ["bulletList", "bullet"])
-          expectDocument("a\n\nb\n")
-
-editorTest "pressing delete at the beginning of a non-empty nested list item", (expectDocument) ->
+  test "decreasing list item's level decreases its nested items level too", (expectDocument) ->
     clickToolbarButton attribute: "bullet", ->
       typeCharacters "a\n", ->
         clickToolbarButton action: "increaseBlockLevel", ->
           typeCharacters "b\n", ->
             clickToolbarButton action: "increaseBlockLevel", ->
               typeCharacters "c", ->
-                getSelectionManager().setLocationRange(index: 1, offset: 0)
-                getComposition().deleteInDirection("backward")
-                getEditorController().render()
-                defer ->
-                  expectBlockAttributes([0, 2], ["bulletList", "bullet"])
-                  expectBlockAttributes([3, 4], ["bulletList", "bullet", "bulletList", "bullet"])
-                  expectDocument("ab\nc\n")
+                getSelectionManager().setLocationRange(index: 1, offset: 1)
 
-editorTest "decreasing list item's level decreases its nested items level too", (expectDocument) ->
-  clickToolbarButton attribute: "bullet", ->
-    typeCharacters "a\n", ->
-      clickToolbarButton action: "increaseBlockLevel", ->
-        typeCharacters "b\n", ->
-          clickToolbarButton action: "increaseBlockLevel", ->
-            typeCharacters "c", ->
-              getSelectionManager().setLocationRange(index: 1, offset: 1)
+                for n in [0...3]
+                  getComposition().deleteInDirection("backward")
+                  getEditorController().render()
 
-              for n in [0...3]
-                getComposition().deleteInDirection("backward")
-                getEditorController().render()
-
-              expectBlockAttributes([0, 2], ["bulletList", "bullet"])
-              expectBlockAttributes([2, 3], [])
-              expectBlockAttributes([3, 5], ["bulletList", "bullet"])
-              expectDocument("a\n\nc\n")
+                assert.blockAttributes([0, 2], ["bulletList", "bullet"])
+                assert.blockAttributes([2, 3], [])
+                assert.blockAttributes([3, 5], ["bulletList", "bullet"])
+                expectDocument("a\n\nc\n")

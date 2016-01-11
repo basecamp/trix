@@ -1,12 +1,13 @@
+{assert, test, testGroup} = Trix.TestHelpers
+
 composition = null
+setup = ->
+  composition = new Trix.Composition
+  composition.delegate = new Trix.TestCompositionDelegate
 
-module "Trix.Composition",
-  setup: ->
-    composition = new Trix.Composition
-    composition.delegate = new Trix.TestCompositionDelegate
-
-test "deleteInDirection respects UTF-16 character boundaries", ->
-  composition.insertString("abc😭")
-  composition.deleteInDirection("backward")
-  composition.insertString("d")
-  equal composition.document.toString(), "abcd\n"
+testGroup "Trix.Composition", {setup}, ->
+  test "deleteInDirection respects UTF-16 character boundaries", ->
+    composition.insertString("abc😭")
+    composition.deleteInDirection("backward")
+    composition.insertString("d")
+    assert.equal composition.document.toString(), "abcd\n"

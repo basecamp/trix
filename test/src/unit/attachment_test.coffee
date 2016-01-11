@@ -1,23 +1,23 @@
-module "Trix.Attachment"
+{assert, test, testGroup} = Trix.TestHelpers
 
-previewableTypes = "image image/gif image/png image/jpg".split(" ")
-nonPreviewableTypes = "image/tiff application/foo".split(" ")
+testGroup "Trix.Attachment", ->
+  previewableTypes = "image image/gif image/png image/jpg".split(" ")
+  nonPreviewableTypes = "image/tiff application/foo".split(" ")
 
-for contentType in previewableTypes then do (contentType) ->
-  test "#{contentType} content type is previewable", ->
-    ok createAttachment({contentType}).isPreviewable()
+  createAttachment = (attributes) ->
+    new Trix.Attachment attributes
 
-for contentType in nonPreviewableTypes then do (contentType) ->
-  test "#{contentType} content type is NOT previewable", ->
-    ok not createAttachment({contentType}).isPreviewable()
+  for contentType in previewableTypes then do (contentType) ->
+    test "#{contentType} content type is previewable", ->
+      assert.ok createAttachment({contentType}).isPreviewable()
 
-test "'previewable' attribute determines previewability", ->
-  attrs = previewable: true, contentType: nonPreviewableTypes[0]
-  ok createAttachment(attrs).isPreviewable()
+  for contentType in nonPreviewableTypes then do (contentType) ->
+    test "#{contentType} content type is NOT previewable", ->
+      assert.notOk createAttachment({contentType}).isPreviewable()
 
-  attrs = previewable: false, contentType: previewableTypes[0]
-  ok not createAttachment(attrs).isPreviewable()
+  test "'previewable' attribute determines previewability", ->
+    attrs = previewable: true, contentType: nonPreviewableTypes[0]
+    assert.ok createAttachment(attrs).isPreviewable()
 
-
-createAttachment = (attributes) ->
-  new Trix.Attachment attributes
+    attrs = previewable: false, contentType: previewableTypes[0]
+    assert.notOk createAttachment(attrs).isPreviewable()
