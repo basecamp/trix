@@ -1,19 +1,21 @@
-trix.testGroup "View caching", template: "editor_empty", ->
-  trix.test "reparsing and rendering identical texts", (done) ->
-    trix.typeCharacters "a\nb\na", ->
-      trix.moveCursor direction: "left", times: 2, ->
-        trix.clickToolbarButton attribute: "quote", ->
+{assert, clickToolbarButton, moveCursor, test, testGroup, typeCharacters} = Trix.TEST_HELPERS
+
+testGroup "View caching", template: "editor_empty", ->
+  test "reparsing and rendering identical texts", (done) ->
+    typeCharacters "a\nb\na", ->
+      moveCursor direction: "left", times: 2, ->
+        clickToolbarButton attribute: "quote", ->
           html = getEditorElement().innerHTML
           getEditorController().reparse()
           getEditorController().render()
-          trix.assert.equal getEditorElement().innerHTML, html
+          assert.equal getEditorElement().innerHTML, html
           done()
 
-  trix.test "reparsing and rendering identical blocks", (done) ->
-    trix.clickToolbarButton attribute: "bullet", ->
-      trix.typeCharacters "a\na", ->
+  test "reparsing and rendering identical blocks", (done) ->
+    clickToolbarButton attribute: "bullet", ->
+      typeCharacters "a\na", ->
         html = getEditorElement().innerHTML
         getEditorController().reparse()
         getEditorController().render()
-        trix.assert.equal getEditorElement().innerHTML, html
+        assert.equal getEditorElement().innerHTML, html
         done()

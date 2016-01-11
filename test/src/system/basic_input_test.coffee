@@ -1,66 +1,68 @@
-trix.testGroup "Basic input", template: "editor_empty", ->
-  trix.test "typing", (expectDocument) ->
-    trix.typeCharacters "abc", ->
+{assert, defer, dragToCoordinates, expandSelection, insertNode, moveCursor, pressKey, selectAll, test, testGroup, triggerEvent, typeCharacters} = Trix.TEST_HELPERS
+
+testGroup "Basic input", template: "editor_empty", ->
+  test "typing", (expectDocument) ->
+    typeCharacters "abc", ->
       expectDocument "abc\n"
 
-  trix.test "backspacing", (expectDocument) ->
-    trix.typeCharacters "abc\b", ->
-      trix.assert.locationRange(index: 0, offset: 2)
+  test "backspacing", (expectDocument) ->
+    typeCharacters "abc\b", ->
+      assert.locationRange(index: 0, offset: 2)
       expectDocument "ab\n"
 
-  trix.test "pressing delete", (expectDocument) ->
-    trix.typeCharacters "ab", ->
-      trix.moveCursor "left", ->
-        trix.pressKey "delete", ->
+  test "pressing delete", (expectDocument) ->
+    typeCharacters "ab", ->
+      moveCursor "left", ->
+        pressKey "delete", ->
           expectDocument "a\n"
 
-  trix.test "pressing return", (expectDocument) ->
-    trix.typeCharacters "ab", ->
-      trix.pressKey "return", ->
-        trix.typeCharacters "c", ->
+  test "pressing return", (expectDocument) ->
+    typeCharacters "ab", ->
+      pressKey "return", ->
+        typeCharacters "c", ->
           expectDocument "ab\nc\n"
 
-  trix.test "cursor left", (expectDocument) ->
-    trix.typeCharacters "ac", ->
-      trix.moveCursor "left", ->
-        trix.typeCharacters "b", ->
+  test "cursor left", (expectDocument) ->
+    typeCharacters "ac", ->
+      moveCursor "left", ->
+        typeCharacters "b", ->
           expectDocument "abc\n"
 
-  trix.test "replace entire document", (expectDocument) ->
-    trix.typeCharacters "abc", ->
-      trix.selectAll ->
-        trix.typeCharacters "d", ->
+  test "replace entire document", (expectDocument) ->
+    typeCharacters "abc", ->
+      selectAll ->
+        typeCharacters "d", ->
           expectDocument "d\n"
 
-  trix.test "remove entire document", (expectDocument) ->
-    trix.typeCharacters "abc", ->
-      trix.selectAll ->
-        trix.typeCharacters "\b", ->
+  test "remove entire document", (expectDocument) ->
+    typeCharacters "abc", ->
+      selectAll ->
+        typeCharacters "\b", ->
           expectDocument "\n"
 
-  trix.test "drag text", (expectDocument) ->
-    trix.typeCharacters "abc", ->
-      trix.moveCursor direction: "left", times: 2, (coordinates) ->
-        trix.moveCursor "right", ->
-          trix.expandSelection "right", ->
-            trix.dragToCoordinates coordinates, ->
+  test "drag text", (expectDocument) ->
+    typeCharacters "abc", ->
+      moveCursor direction: "left", times: 2, (coordinates) ->
+        moveCursor "right", ->
+          expandSelection "right", ->
+            dragToCoordinates coordinates, ->
               expectDocument "acb\n"
 
-  trix.test "inserting newline after cursor (control + o)", (expectDocument) ->
-    trix.typeCharacters "ab", ->
-      trix.moveCursor "left", ->
-        trix.triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 79, which: 79, ctrlKey: true)
-        trix.defer ->
-          trix.assert.locationRange index: 0, offset: 1
+  test "inserting newline after cursor (control + o)", (expectDocument) ->
+    typeCharacters "ab", ->
+      moveCursor "left", ->
+        triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 79, which: 79, ctrlKey: true)
+        defer ->
+          assert.locationRange index: 0, offset: 1
           expectDocument "a\nb\n"
 
-  trix.test "inserting ó with control + alt + o (AltGr)", (expectDocument) ->
-    trix.typeCharacters "ab", ->
-      trix.moveCursor "left", ->
-        if trix.triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 79, which: 79, altKey: true, ctrlKey: true)
-          trix.triggerEvent(document.activeElement, "keypress", charCode: 243, keyCode: 243, which: 243, altKey: true, ctrlKey: true)
-          trix.insertNode(document.createTextNode("ó"))
+  test "inserting ó with control + alt + o (AltGr)", (expectDocument) ->
+    typeCharacters "ab", ->
+      moveCursor "left", ->
+        if triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 79, which: 79, altKey: true, ctrlKey: true)
+          triggerEvent(document.activeElement, "keypress", charCode: 243, keyCode: 243, which: 243, altKey: true, ctrlKey: true)
+          insertNode(document.createTextNode("ó"))
 
-        trix.defer ->
-          trix.assert.locationRange index: 0, offset: 2
+        defer ->
+          assert.locationRange index: 0, offset: 2
           expectDocument "aób\n"

@@ -1,8 +1,10 @@
+helpers = Trix.TEST_HELPERS
+
 keyCodes = {}
 for code, name of Trix.InputController.keyNames
   keyCodes[name] = code
 
-trix.extend
+helpers.extend
   createEvent: (type, properties = {}) ->
     event = document.createEvent("Events")
     event.initEvent(type, true, true)
@@ -11,7 +13,7 @@ trix.extend
     event
 
   triggerEvent: (element, type, properties) ->
-    element.dispatchEvent(trix.createEvent(type, properties))
+    element.dispatchEvent(helpers.createEvent(type, properties))
 
   pasteContent: (contentType, value, callback) ->
     testClipboardData =
@@ -20,8 +22,8 @@ trix.extend
       types: [contentType]
       items: [value]
 
-    trix.triggerEvent(document.activeElement, "paste", {testClipboardData})
-    trix.defer callback
+    helpers.triggerEvent(document.activeElement, "paste", {testClipboardData})
+    helpers.defer callback
 
   createFile: (properties = {}) ->
     file = getAsFile: -> {}
@@ -34,14 +36,14 @@ trix.extend
     else
       characters = string.split("")
 
-    do typeNextCharacter = -> trix.defer ->
+    do typeNextCharacter = -> helpers.defer ->
       character = characters.shift()
       if character?
         switch character
           when "\n"
-            trix.pressKey("return", typeNextCharacter)
+            helpers.pressKey("return", typeNextCharacter)
           when "\b"
-            trix.pressKey("backspace", typeNextCharacter)
+            helpers.pressKey("backspace", typeNextCharacter)
           else
             typeCharacterInElement(character, document.activeElement, typeNextCharacter)
       else
@@ -52,51 +54,51 @@ trix.extend
     code = keyCodes[keyName]
     properties = which: code, keyCode: code, charCode: 0
 
-    return callback() unless trix.triggerEvent(element, "keydown", properties)
+    return callback() unless helpers.triggerEvent(element, "keydown", properties)
 
     simulateKeypress keyName, ->
-      trix.defer ->
-        trix.triggerEvent(element, "keyup", properties)
-        trix.defer(callback)
+      helpers.defer ->
+        helpers.triggerEvent(element, "keyup", properties)
+        helpers.defer(callback)
 
   startComposition: (data, callback) ->
     element = document.activeElement
-    trix.triggerEvent(element, "compositionstart", data: "")
-    trix.triggerEvent(element, "compositionupdate", data: data)
-    trix.triggerEvent(element, "input")
+    helpers.triggerEvent(element, "compositionstart", data: "")
+    helpers.triggerEvent(element, "compositionupdate", data: data)
+    helpers.triggerEvent(element, "input")
 
     node = document.createTextNode(data)
-    trix.insertNode(node)
-    trix.selectNode(node, callback)
+    helpers.insertNode(node)
+    helpers.selectNode(node, callback)
 
   updateComposition: (data, callback) ->
     element = document.activeElement
-    trix.triggerEvent(element, "compositionupdate", data: data)
-    trix.triggerEvent(element, "input")
+    helpers.triggerEvent(element, "compositionupdate", data: data)
+    helpers.triggerEvent(element, "input")
 
     node = document.createTextNode(data)
-    trix.insertNode(node)
-    trix.selectNode(node, callback)
+    helpers.insertNode(node)
+    helpers.selectNode(node, callback)
 
   endComposition: (data, callback) ->
     element = document.activeElement
-    trix.triggerEvent(element, "compositionupdate", data: data)
-    trix.triggerEvent(element, "input")
-    trix.triggerEvent(element, "compositionend", data: data)
-    trix.triggerEvent(element, "input")
+    helpers.triggerEvent(element, "compositionupdate", data: data)
+    helpers.triggerEvent(element, "input")
+    helpers.triggerEvent(element, "compositionend", data: data)
+    helpers.triggerEvent(element, "input")
 
     node = document.createTextNode(data)
-    trix.insertNode(node)
-    trix.selectNode(node)
-    trix.collapseSelection("right", callback)
+    helpers.insertNode(node)
+    helpers.selectNode(node)
+    helpers.collapseSelection("right", callback)
 
   clickElement: (element, callback) ->
-    if trix.triggerEvent(element, "mousedown")
-      trix.defer ->
-        if trix.triggerEvent(element, "mouseup")
-          trix.defer ->
-            trix.triggerEvent(element, "click")
-            trix.defer(callback)
+    if helpers.triggerEvent(element, "mousedown")
+      helpers.defer ->
+        if helpers.triggerEvent(element, "mouseup")
+          helpers.defer ->
+            helpers.triggerEvent(element, "click")
+            helpers.defer(callback)
 
   dragToCoordinates: (coordinates, callback) ->
     element = document.activeElement
@@ -104,15 +106,15 @@ trix.extend
     dropData = dataTransfer: files: []
     dropData[key] = value for key, value of coordinates
 
-    trix.triggerEvent(element, "mousemove")
-    trix.triggerEvent(element, "dragstart")
-    trix.triggerEvent(element, "drop", dropData)
+    helpers.triggerEvent(element, "mousemove")
+    helpers.triggerEvent(element, "dragstart")
+    helpers.triggerEvent(element, "drop", dropData)
 
-    trix.defer(callback)
+    helpers.defer(callback)
 
   mouseDownOnElementAndMove: (element, distance, callback) ->
     coordinates = getElementCoordinates(element)
-    trix.triggerEvent(element, "mousedown", coordinates)
+    helpers.triggerEvent(element, "mousedown", coordinates)
 
     destination = (offset) ->
       clientX: coordinates.clientX + offset
@@ -124,30 +126,30 @@ trix.extend
       offset = 0
       do drag = =>
         if ++offset <= distance
-          trix.triggerEvent(element, "mousemove", destination(offset))
+          helpers.triggerEvent(element, "mousemove", destination(offset))
           after(dragSpeed, drag)
         else
-          trix.triggerEvent(element, "mouseup", destination(distance))
+          helpers.triggerEvent(element, "mouseup", destination(distance))
           after(dragSpeed, callback)
 
 typeCharacterInElement = (character, element, callback) ->
   charCode = character.charCodeAt(0)
   keyCode = character.toUpperCase().charCodeAt(0)
 
-  return callback() unless trix.triggerEvent(element, "keydown", keyCode: keyCode, charCode: 0)
+  return callback() unless helpers.triggerEvent(element, "keydown", keyCode: keyCode, charCode: 0)
 
-  trix.defer ->
-    return callback() unless trix.triggerEvent(element, "keypress", keyCode: charCode, charCode: charCode)
+  helpers.defer ->
+    return callback() unless helpers.triggerEvent(element, "keypress", keyCode: charCode, charCode: charCode)
     insertCharacter character, ->
-      trix.triggerEvent(element, "input")
+      helpers.triggerEvent(element, "input")
 
-      trix.defer ->
-        trix.triggerEvent(element, "keyup", keyCode: keyCode, charCode: 0)
+      helpers.defer ->
+        helpers.triggerEvent(element, "keyup", keyCode: keyCode, charCode: 0)
         callback()
 
 insertCharacter = (character, callback) ->
   node = document.createTextNode(character)
-  trix.insertNode(node, callback)
+  helpers.insertNode(node, callback)
 
 simulateKeypress = (keyName, callback) ->
   switch keyName
@@ -157,15 +159,15 @@ simulateKeypress = (keyName, callback) ->
       deleteInDirection("right", callback)
     when "return"
       node = document.createElement("br")
-      trix.insertNode(node, callback)
+      helpers.insertNode(node, callback)
 
 deleteInDirection = (direction, callback) ->
-  if trix.selectionIsCollapsed()
-    trix.expandSelection direction, ->
-      trix.deleteSelection()
+  if helpers.selectionIsCollapsed()
+    helpers.expandSelection direction, ->
+      helpers.deleteSelection()
       callback()
   else
-    trix.deleteSelection()
+    helpers.deleteSelection()
     callback()
 
 getElementCoordinates = (element) ->

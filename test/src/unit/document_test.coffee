@@ -1,9 +1,11 @@
-trix.testGroup "Trix.Document", ->
+{assert, test, testGroup} = Trix.TEST_HELPERS
+
+testGroup "Trix.Document", ->
   createDocumentWithAttachment = (attachment) ->
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
     new Trix.Document [new Trix.Block text]
 
-  trix.test "documents with different attachments are not trix.assert.equal", ->
+  test "documents with different attachments are not assert.equal", ->
     a = createDocumentWithAttachment(new Trix.Attachment url: "a")
     b = createDocumentWithAttachment(new Trix.Attachment url: "b")
-    trix.assert.notOk a.isEqualTo(b)
+    assert.notOk a.isEqualTo(b)

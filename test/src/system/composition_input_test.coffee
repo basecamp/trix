@@ -1,69 +1,71 @@
-trix.testGroup "Composition input", template: "editor_empty", ->
-  trix.test "composing", (expectDocument) ->
-    trix.startComposition "a", ->
-      trix.updateComposition "ab", ->
-        trix.endComposition "abc", ->
+{assert, clickToolbarButton, defer, endComposition, pressKey, startComposition, test, testGroup, triggerEvent, typeCharacters, updateComposition} = Trix.TEST_HELPERS
+
+testGroup "Composition input", template: "editor_empty", ->
+  test "composing", (expectDocument) ->
+    startComposition "a", ->
+      updateComposition "ab", ->
+        endComposition "abc", ->
           expectDocument "abc\n"
 
-  trix.test "typing and composing", (expectDocument) ->
-    trix.typeCharacters "a", ->
-      trix.startComposition "b", ->
-        trix.updateComposition "bc", ->
-          trix.endComposition "bcd", ->
-            trix.typeCharacters "e", ->
+  test "typing and composing", (expectDocument) ->
+    typeCharacters "a", ->
+      startComposition "b", ->
+        updateComposition "bc", ->
+          endComposition "bcd", ->
+            typeCharacters "e", ->
               expectDocument "abcde\n"
 
-  trix.test "pressing return after a canceled composition", (expectDocument) ->
-    trix.typeCharacters "ab", ->
-      trix.triggerEvent document.activeElement, "compositionend", data: "ab"
-      trix.pressKey "return", ->
+  test "pressing return after a canceled composition", (expectDocument) ->
+    typeCharacters "ab", ->
+      triggerEvent document.activeElement, "compositionend", data: "ab"
+      pressKey "return", ->
         expectDocument "ab\n\n"
 
-  trix.test "composing formatted text", (expectDocument) ->
-    trix.typeCharacters "abc", ->
-      trix.clickToolbarButton attribute: "bold", ->
-        trix.startComposition "d", ->
-          trix.updateComposition "de", ->
-            trix.endComposition "def", ->
-              trix.assert.textAttributes([0, 3], {})
-              trix.assert.textAttributes([3, 6], bold: true)
+  test "composing formatted text", (expectDocument) ->
+    typeCharacters "abc", ->
+      clickToolbarButton attribute: "bold", ->
+        startComposition "d", ->
+          updateComposition "de", ->
+            endComposition "def", ->
+              assert.textAttributes([0, 3], {})
+              assert.textAttributes([3, 6], bold: true)
               expectDocument("abcdef\n")
 
-  trix.test "composing away from formatted text", (expectDocument) ->
-    trix.clickToolbarButton attribute: "bold", ->
-      trix.typeCharacters "abc", ->
-        trix.clickToolbarButton attribute: "bold", ->
-          trix.startComposition "d", ->
-            trix.updateComposition "de", ->
-              trix.endComposition "def", ->
-                trix.assert.textAttributes([0, 3], bold: true)
-                trix.assert.textAttributes([3, 6], {})
+  test "composing away from formatted text", (expectDocument) ->
+    clickToolbarButton attribute: "bold", ->
+      typeCharacters "abc", ->
+        clickToolbarButton attribute: "bold", ->
+          startComposition "d", ->
+            updateComposition "de", ->
+              endComposition "def", ->
+                assert.textAttributes([0, 3], bold: true)
+                assert.textAttributes([3, 6], {})
                 expectDocument("abcdef\n")
 
-  trix.test "composing another language using a QWERTY keyboard", (expectDocument) ->
+  test "composing another language using a QWERTY keyboard", (expectDocument) ->
     element = getEditorElement()
     keyCodes = x: 120, i: 105
 
-    trix.triggerEvent(element, "keypress", charCode: keyCodes.x, keyCode: keyCodes.x, which: keyCodes.x)
-    trix.startComposition "x", ->
-      trix.triggerEvent(element, "keypress", charCode: keyCodes.i, keyCode: keyCodes.i, which: keyCodes.i)
-      trix.updateComposition "xi", ->
-        trix.endComposition "喜", ->
+    triggerEvent(element, "keypress", charCode: keyCodes.x, keyCode: keyCodes.x, which: keyCodes.x)
+    startComposition "x", ->
+      triggerEvent(element, "keypress", charCode: keyCodes.i, keyCode: keyCodes.i, which: keyCodes.i)
+      updateComposition "xi", ->
+        endComposition "喜", ->
           expectDocument "喜\n"
 
   # Simulates the sequence of events when pressing backspace through a word on Android
-  trix.test "backspacing through a composition", (expectDocument) ->
+  test "backspacing through a composition", (expectDocument) ->
     element = getEditorElement()
     element.editor.insertString("a cat")
 
-    trix.triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
-    trix.triggerEvent(element, "compositionupdate", data: "ca")
+    triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
+    triggerEvent(element, "compositionupdate", data: "ca")
     removeCharacters -1, ->
-      trix.triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
-      trix.triggerEvent(element, "compositionupdate", data: "c")
-      trix.triggerEvent(element, "compositionend", data: "c")
+      triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
+      triggerEvent(element, "compositionupdate", data: "c")
+      triggerEvent(element, "compositionend", data: "c")
       removeCharacters -1, ->
-        trix.pressKey "backspace", ->
+        pressKey "backspace", ->
           expectDocument "a \n"
 
 removeCharacters = (direction, callback) ->
@@ -71,4 +73,4 @@ removeCharacters = (direction, callback) ->
   range = selection.getRangeAt(0)
   range.moveStart("character", direction)
   range.deleteContents()
-  trix.defer(callback)
+  defer(callback)

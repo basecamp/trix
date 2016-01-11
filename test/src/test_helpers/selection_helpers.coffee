@@ -1,11 +1,13 @@
 #= require rangy-core
 #= require rangy-textrange
 
+helpers = Trix.TEST_HELPERS
+
 keyCodes = {}
 for code, name of Trix.InputController.keyNames
   keyCodes[name] = code
 
-trix.extend
+helpers.extend
   moveCursor: (options, callback) ->
     if typeof options is "string"
       direction = options
@@ -15,18 +17,18 @@ trix.extend
 
     times ?= 1
 
-    do move = -> trix.defer ->
-      if trix.triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction])
+    do move = -> helpers.defer ->
+      if helpers.triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction])
         selection = rangy.getSelection()
         selection.move("character", if direction is "right" then 1 else -1)
         Trix.selectionChangeObserver.update()
 
       if --times is 0
-        trix.defer -> callback(getCursorCoordinates())
+        helpers.defer -> callback(getCursorCoordinates())
       else
         move()
 
-  expandSelection: (options, callback) -> trix.defer ->
+  expandSelection: (options, callback) -> helpers.defer ->
     if typeof options is "string"
       direction = options
     else
@@ -35,12 +37,12 @@ trix.extend
 
     times ?= 1
 
-    do expand = -> trix.defer ->
-      if trix.triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)
+    do expand = -> helpers.defer ->
+      if helpers.triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)
         getComposition().expandSelectionInDirection(if direction is "left" then "backward" else "forward")
 
       if --times is 0
-        trix.defer(callback)
+        helpers.defer(callback)
       else
         expand()
 
@@ -51,12 +53,12 @@ trix.extend
     else
       selection.collapseToEnd()
     Trix.selectionChangeObserver.update()
-    trix.defer(callback)
+    helpers.defer(callback)
 
   selectAll: (callback) ->
     rangy.getSelection().selectAllChildren(document.activeElement)
     Trix.selectionChangeObserver.update()
-    trix.defer(callback)
+    helpers.defer(callback)
 
   deleteSelection: ->
     selection = rangy.getSelection()
@@ -75,7 +77,7 @@ trix.extend
     range.deleteContents()
     selection.setSingleRange(range)
     Trix.selectionChangeObserver.update()
-    trix.defer(callback)
+    helpers.defer(callback)
 
   selectNode: (node, callback) ->
     selection = rangy.getSelection()

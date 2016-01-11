@@ -1,21 +1,23 @@
-trix.extend
+helpers = Trix.TEST_HELPERS
+
+helpers.extend
   clickToolbarButton: (selector, callback) ->
     Trix.selectionChangeObserver.update()
     button = getToolbarButton(selector)
-    trix.triggerEvent(button, "mousedown")
-    trix.defer(callback)
+    helpers.triggerEvent(button, "mousedown")
+    helpers.defer(callback)
 
   typeToolbarKeyCommand: (selector, callback) ->
     button = getToolbarButton(selector)
     if {key} = button.dataset
       keyCode = key.toUpperCase().charCodeAt(0)
-      trix.triggerEvent(getEditorElement(), "keydown", {keyCode, charCode: 0, metaKey: true, ctrlKey: true})
-    trix.defer(callback)
+      helpers.triggerEvent(getEditorElement(), "keydown", {keyCode, charCode: 0, metaKey: true, ctrlKey: true})
+    helpers.defer(callback)
 
   clickToolbarDialogButton: ({method}, callback) ->
     button = getToolbarElement().querySelector(".dialog input[type=button][data-method='#{method}']")
-    trix.triggerEvent(button, "click")
-    trix.defer(callback)
+    helpers.triggerEvent(button, "click")
+    helpers.defer(callback)
 
   isToolbarButtonActive: (selector) ->
     button = getToolbarButton(selector)
@@ -29,8 +31,8 @@ trix.extend
     input = dialog.querySelector("input[name='#{attribute}']")
     button = dialog.querySelector("input[data-method='setAttribute']")
     input.value = string
-    trix.triggerEvent(button, "click")
-    trix.defer(callback)
+    helpers.triggerEvent(button, "click")
+    helpers.defer(callback)
 
   isToolbarDialogActive: (selector) ->
     dialog = getToolbarDialog(selector)

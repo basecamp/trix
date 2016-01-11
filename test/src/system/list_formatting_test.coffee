@@ -1,60 +1,62 @@
-trix.testGroup "List formatting", template: "editor_empty", ->
-  trix.test "creating a new list item", (done) ->
-    trix.typeCharacters "a", ->
-      trix.clickToolbarButton attribute: "bullet", ->
-        trix.typeCharacters "\n", ->
-          trix.assert.locationRange(index: 1, offset: 0)
-          trix.assert.blockAttributes([0, 2], ["bulletList", "bullet"])
-          trix.assert.blockAttributes([2, 3], ["bulletList", "bullet"])
+{assert, clickToolbarButton, defer, moveCursor, pressKey, test, testGroup, typeCharacters} = Trix.TEST_HELPERS
+
+testGroup "List formatting", template: "editor_empty", ->
+  test "creating a new list item", (done) ->
+    typeCharacters "a", ->
+      clickToolbarButton attribute: "bullet", ->
+        typeCharacters "\n", ->
+          assert.locationRange(index: 1, offset: 0)
+          assert.blockAttributes([0, 2], ["bulletList", "bullet"])
+          assert.blockAttributes([2, 3], ["bulletList", "bullet"])
           done()
 
-  trix.test "breaking out of a list", (expectDocument) ->
-    trix.typeCharacters "a", ->
-      trix.clickToolbarButton attribute: "bullet", ->
-        trix.typeCharacters "\n\n", ->
-          trix.assert.blockAttributes([0, 2], ["bulletList", "bullet"])
-          trix.assert.blockAttributes([2, 3], [])
+  test "breaking out of a list", (expectDocument) ->
+    typeCharacters "a", ->
+      clickToolbarButton attribute: "bullet", ->
+        typeCharacters "\n\n", ->
+          assert.blockAttributes([0, 2], ["bulletList", "bullet"])
+          assert.blockAttributes([2, 3], [])
           expectDocument("a\n\n")
 
-  trix.test "pressing return at the beginning of a non-empty list item", (expectDocument) ->
-    trix.clickToolbarButton attribute: "bullet", ->
-      trix.typeCharacters "a\nb", ->
-        trix.moveCursor "left", ->
-          trix.pressKey "return", ->
-            trix.assert.blockAttributes([0, 2], ["bulletList", "bullet"])
-            trix.assert.blockAttributes([2, 3], ["bulletList", "bullet"])
-            trix.assert.blockAttributes([3, 5], ["bulletList", "bullet"])
+  test "pressing return at the beginning of a non-empty list item", (expectDocument) ->
+    clickToolbarButton attribute: "bullet", ->
+      typeCharacters "a\nb", ->
+        moveCursor "left", ->
+          pressKey "return", ->
+            assert.blockAttributes([0, 2], ["bulletList", "bullet"])
+            assert.blockAttributes([2, 3], ["bulletList", "bullet"])
+            assert.blockAttributes([3, 5], ["bulletList", "bullet"])
             expectDocument("a\n\nb\n")
 
-  trix.test "pressing delete at the beginning of a non-empty nested list item", (expectDocument) ->
-      trix.clickToolbarButton attribute: "bullet", ->
-        trix.typeCharacters "a\n", ->
-          trix.clickToolbarButton action: "increaseBlockLevel", ->
-            trix.typeCharacters "b\n", ->
-              trix.clickToolbarButton action: "increaseBlockLevel", ->
-                trix.typeCharacters "c", ->
+  test "pressing delete at the beginning of a non-empty nested list item", (expectDocument) ->
+      clickToolbarButton attribute: "bullet", ->
+        typeCharacters "a\n", ->
+          clickToolbarButton action: "increaseBlockLevel", ->
+            typeCharacters "b\n", ->
+              clickToolbarButton action: "increaseBlockLevel", ->
+                typeCharacters "c", ->
                   getSelectionManager().setLocationRange(index: 1, offset: 0)
                   getComposition().deleteInDirection("backward")
                   getEditorController().render()
-                  trix.defer ->
-                    trix.assert.blockAttributes([0, 2], ["bulletList", "bullet"])
-                    trix.assert.blockAttributes([3, 4], ["bulletList", "bullet", "bulletList", "bullet"])
+                  defer ->
+                    assert.blockAttributes([0, 2], ["bulletList", "bullet"])
+                    assert.blockAttributes([3, 4], ["bulletList", "bullet", "bulletList", "bullet"])
                     expectDocument("ab\nc\n")
 
-  trix.test "decreasing list item's level decreases its nested items level too", (expectDocument) ->
-    trix.clickToolbarButton attribute: "bullet", ->
-      trix.typeCharacters "a\n", ->
-        trix.clickToolbarButton action: "increaseBlockLevel", ->
-          trix.typeCharacters "b\n", ->
-            trix.clickToolbarButton action: "increaseBlockLevel", ->
-              trix.typeCharacters "c", ->
+  test "decreasing list item's level decreases its nested items level too", (expectDocument) ->
+    clickToolbarButton attribute: "bullet", ->
+      typeCharacters "a\n", ->
+        clickToolbarButton action: "increaseBlockLevel", ->
+          typeCharacters "b\n", ->
+            clickToolbarButton action: "increaseBlockLevel", ->
+              typeCharacters "c", ->
                 getSelectionManager().setLocationRange(index: 1, offset: 1)
 
                 for n in [0...3]
                   getComposition().deleteInDirection("backward")
                   getEditorController().render()
 
-                trix.assert.blockAttributes([0, 2], ["bulletList", "bullet"])
-                trix.assert.blockAttributes([2, 3], [])
-                trix.assert.blockAttributes([3, 5], ["bulletList", "bullet"])
+                assert.blockAttributes([0, 2], ["bulletList", "bullet"])
+                assert.blockAttributes([2, 3], [])
+                assert.blockAttributes([3, 5], ["bulletList", "bullet"])
                 expectDocument("a\n\nc\n")

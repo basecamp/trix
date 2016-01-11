@@ -1,4 +1,6 @@
-trix.testGroup "HTML replacement", template: "editor_empty", ->
+{assert, test, testGroup} = Trix.TEST_HELPERS
+
+testGroup "HTML replacement", template: "editor_empty", ->
   copyWith = (object, properties = {}) ->
     result = {}
     result[key] = value for key, value of object
@@ -42,7 +44,7 @@ trix.testGroup "HTML replacement", template: "editor_empty", ->
     for name, testCase of testCases
       for range in testCase.selections
         do (styles, name, testCase, range) ->
-          trix.test "#{name} with selected range #{JSON.stringify(range)} and styles #{JSON.stringify(styles)}", (expectDocument) ->
+          test "#{name} with selected range #{JSON.stringify(range)} and styles #{JSON.stringify(styles)}", (expectDocument) ->
             {document, documentString} = testCase
 
             applyStyles(styles)
@@ -50,7 +52,7 @@ trix.testGroup "HTML replacement", template: "editor_empty", ->
             getEditor().setSelectedRange(range)
             getComposition().replaceHTML(getEditorElement().innerHTML)
 
-            trix.assert.deepEqual getEditor().getSelectedRange(), range
+            assert.deepEqual getEditor().getSelectedRange(), range
             expectDocument documentString
 
   applyStyles = (styles) ->

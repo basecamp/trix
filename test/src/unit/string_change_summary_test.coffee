@@ -1,4 +1,6 @@
-trix.testGroup "Trix.summarizeStringChange", ->
+{assert, test, testGroup} = Trix.TEST_HELPERS
+
+testGroup "Trix.summarizeStringChange", ->
   assertions =
     "no change":
       oldString: "abc"
@@ -51,5 +53,5 @@ trix.testGroup "Trix.summarizeStringChange", ->
 
   for name, details of assertions
     do ({oldString, newString, change} = details) ->
-      trix.test name, ->
-        trix.assert.deepEqual Trix.summarizeStringChange(oldString, newString), change
+      test name, ->
+        assert.deepEqual Trix.summarizeStringChange(oldString, newString), change

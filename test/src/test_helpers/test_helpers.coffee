@@ -1,3 +1,5 @@
+helpers = Trix.TEST_HELPERS
+
 initialized = false
 initializedCallbacks = []
 
@@ -22,7 +24,7 @@ findOrCreateTrixContainer = ->
     document.body.insertAdjacentHTML("afterbegin", """<form id="trix-container"></form>""")
     document.getElementById("trix-container")
 
-trix.extend
+helpers.extend
   testGroup: (name, options, callback) ->
     if callback?
       {template, setup, teardown} = options

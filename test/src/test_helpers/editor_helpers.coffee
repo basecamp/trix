@@ -1,4 +1,6 @@
-trix.extend
+helpers = Trix.TEST_HELPERS
+
+helpers.extend
   insertString: (string) ->
     getComposition().insertString(string)
     render()
@@ -25,7 +27,7 @@ trix.extend
 
     attachment = new Trix.Attachment attributes
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
-    trix.insertText(text)
+    helpers.insertText(text)
 
   replaceDocument: (document) ->
     getComposition().setDocument(document)

@@ -1,4 +1,6 @@
-trix.testGroup "Trix.DocumentView", ->
+{assert, test, testGroup} = Trix.TEST_HELPERS
+
+testGroup "Trix.DocumentView", ->
   eachFixture (name, details) ->
-    trix.test name, ->
-      trix.assert.documentHTMLEqual details.document, details.html
+    test name, ->
+      assert.documentHTMLEqual details.document, details.html

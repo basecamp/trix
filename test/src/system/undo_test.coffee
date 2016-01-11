@@ -1,46 +1,48 @@
-trix.testGroup "Undo/Redo", template: "editor_empty", ->
-  trix.test "typing and undoing", (done) ->
+{assert, clickToolbarButton, expandSelection, moveCursor, test, testGroup, typeCharacters} = Trix.TEST_HELPERS
+
+testGroup "Undo/Redo", template: "editor_empty", ->
+  test "typing and undoing", (done) ->
     first = getDocument().copy()
-    trix.typeCharacters "abc", ->
-      trix.assert.notOk getDocument().isEqualTo(first)
-      trix.clickToolbarButton action: "undo", ->
-        trix.assert.ok getDocument().isEqualTo(first)
+    typeCharacters "abc", ->
+      assert.notOk getDocument().isEqualTo(first)
+      clickToolbarButton action: "undo", ->
+        assert.ok getDocument().isEqualTo(first)
         done()
 
-  trix.test "typing, formatting, typing, and undoing", (done) ->
+  test "typing, formatting, typing, and undoing", (done) ->
     first = getDocument().copy()
-    trix.typeCharacters "abc", ->
+    typeCharacters "abc", ->
       second = getDocument().copy()
-      trix.clickToolbarButton attribute: "bold", ->
-        trix.typeCharacters "def", ->
+      clickToolbarButton attribute: "bold", ->
+        typeCharacters "def", ->
           third = getDocument().copy()
-          trix.clickToolbarButton action: "undo", ->
-            trix.assert.ok getDocument().isEqualTo(second)
-            trix.clickToolbarButton action: "undo", ->
-              trix.assert.ok getDocument().isEqualTo(first)
-              trix.clickToolbarButton action: "redo", ->
-                trix.assert.ok getDocument().isEqualTo(second)
-                trix.clickToolbarButton action: "redo", ->
-                  trix.assert.ok getDocument().isEqualTo(third)
+          clickToolbarButton action: "undo", ->
+            assert.ok getDocument().isEqualTo(second)
+            clickToolbarButton action: "undo", ->
+              assert.ok getDocument().isEqualTo(first)
+              clickToolbarButton action: "redo", ->
+                assert.ok getDocument().isEqualTo(second)
+                clickToolbarButton action: "redo", ->
+                  assert.ok getDocument().isEqualTo(third)
                   done()
 
-  trix.test "formatting changes are batched by location range", (done) ->
-    trix.typeCharacters "abc", ->
+  test "formatting changes are batched by location range", (done) ->
+    typeCharacters "abc", ->
       first = getDocument().copy()
-      trix.expandSelection "left", ->
-        trix.clickToolbarButton attribute: "bold", ->
-          trix.clickToolbarButton attribute: "italic", ->
+      expandSelection "left", ->
+        clickToolbarButton attribute: "bold", ->
+          clickToolbarButton attribute: "italic", ->
             second = getDocument().copy()
-            trix.moveCursor "left", ->
-              trix.expandSelection "left", ->
-                trix.clickToolbarButton attribute: "italic", ->
+            moveCursor "left", ->
+              expandSelection "left", ->
+                clickToolbarButton attribute: "italic", ->
                   third = getDocument().copy()
-                  trix.clickToolbarButton action: "undo", ->
-                    trix.assert.ok getDocument().isEqualTo(second)
-                    trix.clickToolbarButton action: "undo", ->
-                      trix.assert.ok getDocument().isEqualTo(first)
-                      trix.clickToolbarButton action: "redo", ->
-                        trix.assert.ok getDocument().isEqualTo(second)
-                        trix.clickToolbarButton action: "redo", ->
-                          trix.assert.ok getDocument().isEqualTo(third)
+                  clickToolbarButton action: "undo", ->
+                    assert.ok getDocument().isEqualTo(second)
+                    clickToolbarButton action: "undo", ->
+                      assert.ok getDocument().isEqualTo(first)
+                      clickToolbarButton action: "redo", ->
+                        assert.ok getDocument().isEqualTo(second)
+                        clickToolbarButton action: "redo", ->
+                          assert.ok getDocument().isEqualTo(third)
                           done()

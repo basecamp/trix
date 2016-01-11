@@ -2,7 +2,7 @@
 #= require_tree ./fixtures
 #= require_tree .
 
-@trix =
+Trix.TEST_HELPERS = helpers =
   extend: (properties) ->
     for key, value of properties
       this[key] = value
@@ -12,4 +12,4 @@
     setTimeout(callback, delay)
 
   defer: (callback) ->
-    trix.after(1, callback)
+    helpers.after(1, callback)
