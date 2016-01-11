@@ -5,7 +5,7 @@ document.addEventListener "trix-initialize", ->
   initialized = true
   callback() while callback = initializedCallbacks.shift()
 
-editorInitialized = (callback) ->
+ready = (callback) ->
   if initialized
     callback()
   else
@@ -23,11 +23,18 @@ findOrCreateTrixContainer = ->
     document.getElementById("trix-container")
 
 trix.extend
-  testGroup: (name, {template, setup, teardown} = {}, callback) ->
+  testGroup: (name, options, callback) ->
+    if callback?
+      {template, setup, teardown} = options
+    else
+      callback = options
+
     beforeEach = ->
-      initialized = false
       if template?
+        initialized = false
         setFixtureHTML(JST["test_helpers/fixtures/#{template}"]())
+      else
+        initialized = true
       setup?()
 
     afterEach = ->
@@ -52,8 +59,8 @@ trix.extend
           equal getDocument().toString(), expectedDocumentValue
         doneAsync()
 
-      editorInitialized ->
-        if getEditorElement().hasAttribute("autofocus")
+      ready ->
+        if getEditorElement()?.hasAttribute("autofocus")
           getEditorController().setLocationRange(index: 0, offset: 0)
 
         if callback.length is 0
