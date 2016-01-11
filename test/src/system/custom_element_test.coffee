@@ -1,230 +1,229 @@
-editorModule "Custom element API", template: "editor_empty"
+editorModule "Custom element API", template: "editor_empty", ->
+  editorTest "files are accepted by default", ->
+    getComposition().insertFile(trix.createFile())
+    equal getComposition().getAttachments().length, 1
 
-editorTest "files are accepted by default", ->
-  getComposition().insertFile(createFile())
-  equal getComposition().getAttachments().length, 1
+  editorTest "rejecting a file by canceling the trix-file-accept event", ->
+    getEditorElement().addEventListener "trix-file-accept", (event) -> event.preventDefault()
+    getComposition().insertFile(trix.createFile())
+    equal getComposition().getAttachments().length, 0
 
-editorTest "rejecting a file by canceling the trix-file-accept event", ->
-  getEditorElement().addEventListener "trix-file-accept", (event) -> event.preventDefault()
-  getComposition().insertFile(createFile())
-  equal getComposition().getAttachments().length, 0
+  editorTest "element triggers attachment events", ->
+    file = trix.createFile()
+    element = getEditorElement()
+    composition = getComposition()
+    attachment = null
+    events = []
 
-editorTest "element triggers attachment events", ->
-  file = createFile()
-  element = getEditorElement()
-  composition = getComposition()
-  attachment = null
-  events = []
+    element.addEventListener "trix-file-accept", (event) ->
+      events.push(event.type)
+      ok file is event.file
 
-  element.addEventListener "trix-file-accept", (event) ->
-    events.push(event.type)
-    ok file is event.file
+    element.addEventListener "trix-attachment-add", (event) ->
+      events.push(event.type)
+      attachment = event.attachment
 
-  element.addEventListener "trix-attachment-add", (event) ->
-    events.push(event.type)
-    attachment = event.attachment
+    composition.insertFile(file)
+    deepEqual events, ["trix-file-accept", "trix-attachment-add"]
 
-  composition.insertFile(file)
-  deepEqual events, ["trix-file-accept", "trix-attachment-add"]
+    element.addEventListener "trix-attachment-remove", (event) ->
+      events.push(event.type)
+      ok attachment is event.attachment
 
-  element.addEventListener "trix-attachment-remove", (event) ->
-    events.push(event.type)
-    ok attachment is event.attachment
+    attachment.remove()
+    deepEqual events, ["trix-file-accept", "trix-attachment-add", "trix-attachment-remove"]
 
-  attachment.remove()
-  deepEqual events, ["trix-file-accept", "trix-attachment-add", "trix-attachment-remove"]
+  editorTest "element triggers trix-change when an attachment is edited", ->
+    file = trix.createFile()
+    element = getEditorElement()
+    composition = getComposition()
+    attachment = null
+    events = []
 
-editorTest "element triggers trix-change when an attachment is edited", ->
-  file = createFile()
-  element = getEditorElement()
-  composition = getComposition()
-  attachment = null
-  events = []
+    element.addEventListener "trix-attachment-add", (event) ->
+      attachment = event.attachment
 
-  element.addEventListener "trix-attachment-add", (event) ->
-    attachment = event.attachment
+    composition.insertFile(file)
 
-  composition.insertFile(file)
+    element.addEventListener "trix-attachment-edit", (event) ->
+      events.push(event.type)
 
-  element.addEventListener "trix-attachment-edit", (event) ->
-    events.push(event.type)
+    element.addEventListener "trix-change", (event) ->
+      events.push(event.type)
 
-  element.addEventListener "trix-change", (event) ->
-    events.push(event.type)
+    attachment.setAttributes(width: 9876)
+    deepEqual events, ["trix-attachment-edit", "trix-change"]
 
-  attachment.setAttributes(width: 9876)
-  deepEqual events, ["trix-attachment-edit", "trix-change"]
+  editorTest "element triggers trix-change events when the document changes", (done) ->
+    element = getEditorElement()
+    eventCount = 0
+    element.addEventListener "trix-change", (event) -> eventCount++
 
-editorTest "element triggers trix-change events when the document changes", (done) ->
-  element = getEditorElement()
-  eventCount = 0
-  element.addEventListener "trix-change", (event) -> eventCount++
-
-  typeCharacters "a", ->
-    equal eventCount, 1
-    moveCursor "left", ->
+    trix.typeCharacters "a", ->
       equal eventCount, 1
-      typeCharacters "bcd", ->
-        equal eventCount, 4
-        clickToolbarButton action: "undo", ->
-          equal eventCount, 5
-          done()
+      trix.moveCursor "left", ->
+        equal eventCount, 1
+        trix.typeCharacters "bcd", ->
+          equal eventCount, 4
+          trix.clickToolbarButton action: "undo", ->
+            equal eventCount, 5
+            done()
 
-editorTest "element triggers trix-selection-change events when the location range changes", (done) ->
-  element = getEditorElement()
-  eventCount = 0
-  element.addEventListener "trix-selection-change", (event) -> eventCount++
+  editorTest "element triggers trix-selection-change events when the location range changes", (done) ->
+    element = getEditorElement()
+    eventCount = 0
+    element.addEventListener "trix-selection-change", (event) -> eventCount++
 
-  typeCharacters "a", ->
-    equal eventCount, 1
-    moveCursor "left", ->
-      equal eventCount, 2
-      done()
-
-editorTest "only triggers trix-selection-change events on the active element", (done) ->
-  elementA = getEditorElement()
-  elementB = document.createElement("trix-editor")
-  elementA.parentNode.insertBefore(elementB, elementA.nextSibling)
-
-  elementB.addEventListener "trix-initialize", ->
-    elementA.editor.insertString("a")
-    elementB.editor.insertString("b")
-    rangy.getSelection().removeAllRanges()
-
-    eventCountA = 0
-    eventCountB = 0
-    elementA.addEventListener "trix-selection-change", (event) -> eventCountA++
-    elementB.addEventListener "trix-selection-change", (event) -> eventCountB++
-
-    elementA.editor.setSelectedRange(0)
-    equal eventCountA, 1
-    equal eventCountB, 0
-
-    elementB.editor.setSelectedRange(0)
-    equal eventCountA, 1
-    equal eventCountB, 1
-
-    elementA.editor.setSelectedRange(1)
-    equal eventCountA, 2
-    equal eventCountB, 1
-    done()
-
-editorTest "element triggers toolbar dialog events", (done) ->
-  element = getEditorElement()
-  events = []
-
-  element.addEventListener "trix-toolbar-dialog-show", (event) ->
-    events.push(event.type)
-
-  element.addEventListener "trix-toolbar-dialog-hide", (event) ->
-    events.push(event.type)
-
-  clickToolbarButton action: "link", ->
-    typeInToolbarDialog "http://example.com", attribute: "href", ->
-      defer ->
-        deepEqual events, ["trix-toolbar-dialog-show", "trix-toolbar-dialog-hide"]
+    trix.typeCharacters "a", ->
+      equal eventCount, 1
+      trix.moveCursor "left", ->
+        equal eventCount, 2
         done()
 
-editorTest "element triggers paste event with position range", (done) ->
-  element = getEditorElement()
-  eventCount = 0
-  range = null
+  editorTest "only triggers trix-selection-change events on the active element", (done) ->
+    elementA = getEditorElement()
+    elementB = document.createElement("trix-editor")
+    elementA.parentNode.insertBefore(elementB, elementA.nextSibling)
 
-  element.addEventListener "trix-paste", (event) ->
-    eventCount++
-    {range} = event
+    elementB.addEventListener "trix-initialize", ->
+      elementA.editor.insertString("a")
+      elementB.editor.insertString("b")
+      rangy.getSelection().removeAllRanges()
 
-  typeCharacters "", ->
-    pasteContent "text/html", "<strong>hello</strong>", ->
-      equal eventCount, 1
-      ok Trix.rangesAreEqual([5, 5], range)
+      eventCountA = 0
+      eventCountB = 0
+      elementA.addEventListener "trix-selection-change", (event) -> eventCountA++
+      elementB.addEventListener "trix-selection-change", (event) -> eventCountB++
+
+      elementA.editor.setSelectedRange(0)
+      equal eventCountA, 1
+      equal eventCountB, 0
+
+      elementB.editor.setSelectedRange(0)
+      equal eventCountA, 1
+      equal eventCountB, 1
+
+      elementA.editor.setSelectedRange(1)
+      equal eventCountA, 2
+      equal eventCountB, 1
       done()
 
-editorTest "element triggers attribute change events", (done) ->
-  element = getEditorElement()
-  eventCount = 0
-  attributes = null
+  editorTest "element triggers toolbar dialog events", (done) ->
+    element = getEditorElement()
+    events = []
 
-  element.addEventListener "trix-attributes-change", (event) ->
-    eventCount++
-    {attributes} = event
+    element.addEventListener "trix-toolbar-dialog-show", (event) ->
+      events.push(event.type)
 
-  typeCharacters "", ->
-    equal eventCount, 0
-    clickToolbarButton attribute: "bold", ->
-      equal eventCount, 1
-      deepEqual { bold: true }, attributes
-      done()
+    element.addEventListener "trix-toolbar-dialog-hide", (event) ->
+      events.push(event.type)
 
-editorTest "element triggers action change events", (done) ->
-  element = getEditorElement()
-  eventCount = 0
-  actions = null
+    trix.clickToolbarButton action: "link", ->
+      trix.typeInToolbarDialog "http://example.com", attribute: "href", ->
+        trix.defer ->
+          deepEqual events, ["trix-toolbar-dialog-show", "trix-toolbar-dialog-hide"]
+          done()
 
-  element.addEventListener "trix-actions-change", (event) ->
-    eventCount++
-    {actions} = event
+  editorTest "element triggers paste event with position range", (done) ->
+    element = getEditorElement()
+    eventCount = 0
+    range = null
 
-  typeCharacters "", ->
-    equal eventCount, 0
-    clickToolbarButton attribute: "bullet", ->
-      equal eventCount, 1
-      equal actions.decreaseBlockLevel, true
-      equal actions.increaseBlockLevel, false
-      done()
+    element.addEventListener "trix-paste", (event) ->
+      eventCount++
+      {range} = event
 
-editorTest "element triggers custom focus and blur events", (done) ->
-  element = getEditorElement()
+    trix.typeCharacters "", ->
+      trix.pasteContent "text/html", "<strong>hello</strong>", ->
+        equal eventCount, 1
+        ok Trix.rangesAreEqual([5, 5], range)
+        done()
 
-  focusEventCount = 0
-  blurEventCount = 0
-  element.addEventListener "trix-focus", -> focusEventCount++
-  element.addEventListener "trix-blur", -> blurEventCount++
+  editorTest "element triggers attribute change events", (done) ->
+    element = getEditorElement()
+    eventCount = 0
+    attributes = null
 
-  triggerEvent(element, "blur")
-  defer ->
-    equal blurEventCount, 1
-    equal focusEventCount, 0
+    element.addEventListener "trix-attributes-change", (event) ->
+      eventCount++
+      {attributes} = event
 
-    triggerEvent(element, "focus")
-    defer ->
+    trix.typeCharacters "", ->
+      equal eventCount, 0
+      trix.clickToolbarButton attribute: "bold", ->
+        equal eventCount, 1
+        deepEqual { bold: true }, attributes
+        done()
+
+  editorTest "element triggers action change events", (done) ->
+    element = getEditorElement()
+    eventCount = 0
+    actions = null
+
+    element.addEventListener "trix-actions-change", (event) ->
+      eventCount++
+      {actions} = event
+
+    trix.typeCharacters "", ->
+      equal eventCount, 0
+      trix.clickToolbarButton attribute: "bullet", ->
+        equal eventCount, 1
+        equal actions.decreaseBlockLevel, true
+        equal actions.increaseBlockLevel, false
+        done()
+
+  editorTest "element triggers custom focus and blur events", (done) ->
+    element = getEditorElement()
+
+    focusEventCount = 0
+    blurEventCount = 0
+    element.addEventListener "trix-focus", -> focusEventCount++
+    element.addEventListener "trix-blur", -> blurEventCount++
+
+    trix.triggerEvent(element, "blur")
+    trix.defer ->
       equal blurEventCount, 1
-      equal focusEventCount, 1
+      equal focusEventCount, 0
 
-      insertImageAttachment()
-      after 20, ->
-        clickElement element.querySelector("figure"), ->
-          clickElement element.querySelector("figcaption"), ->
-            defer ->
-              equal document.activeElement, element.querySelector("textarea")
-              equal blurEventCount, 1
-              equal focusEventCount, 1
-              done()
+      trix.triggerEvent(element, "focus")
+      trix.defer ->
+        equal blurEventCount, 1
+        equal focusEventCount, 1
 
-editorTest "editor resets to its original value on form reset", (expectDocument) ->
-  element = getEditorElement()
-  form = element.inputElement.form
+        trix.insertImageAttachment()
+        trix.after 20, ->
+          trix.clickElement element.querySelector("figure"), ->
+            trix.clickElement element.querySelector("figcaption"), ->
+              trix.defer ->
+                equal document.activeElement, element.querySelector("textarea")
+                equal blurEventCount, 1
+                equal focusEventCount, 1
+                done()
 
-  typeCharacters "hello", ->
-    form.reset()
-    expectDocument("\n")
+  editorTest "editor resets to its original value on form reset", (expectDocument) ->
+    element = getEditorElement()
+    form = element.inputElement.form
 
-editorTest "editor resets to last-set value on form reset", (expectDocument) ->
-  element = getEditorElement()
-  form = element.inputElement.form
+    trix.typeCharacters "hello", ->
+      form.reset()
+      expectDocument("\n")
 
-  element.value = "hi"
-  typeCharacters "hello", ->
-    form.reset()
-    expectDocument("hi\n")
+  editorTest "editor resets to last-set value on form reset", (expectDocument) ->
+    element = getEditorElement()
+    form = element.inputElement.form
 
-editorTest "editor respects preventDefault on form reset", (expectDocument) ->
-  element = getEditorElement()
-  form = element.inputElement.form
-  preventDefault = (event) -> event.preventDefault()
+    element.value = "hi"
+    trix.typeCharacters "hello", ->
+      form.reset()
+      expectDocument("hi\n")
 
-  typeCharacters "hello", ->
-    form.addEventListener("reset", preventDefault, false)
-    form.reset()
-    form.removeEventListener("reset", preventDefault, false)
-    expectDocument("hello\n")
+  editorTest "editor respects preventDefault on form reset", (expectDocument) ->
+    element = getEditorElement()
+    form = element.inputElement.form
+    preventDefault = (event) -> event.preventDefault()
+
+    trix.typeCharacters "hello", ->
+      form.addEventListener("reset", preventDefault, false)
+      form.reset()
+      form.removeEventListener("reset", preventDefault, false)
+      expectDocument("hello\n")

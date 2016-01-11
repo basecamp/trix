@@ -77,7 +77,7 @@ asyncTest "sanitizes unsafe html", ->
       window.unsanitized.push('script tag');
     </script>
   """
-  after 20, ->
+  trix.after 20, ->
     deepEqual window.unsanitized, []
     delete window.unsanitized
     QUnit.start()
