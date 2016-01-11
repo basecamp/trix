@@ -22,15 +22,15 @@ trix.testGroup "Pasting", template: "editor_empty", ->
       trix.clickToolbarButton attribute: "quote", ->
         trix.pasteContent "text/html", "<div>Hello world<br></div><pre>This is a test</pre>", ->
           document = getDocument()
-          equal document.getBlockCount(), 2
+          trix.assert.equal document.getBlockCount(), 2
 
           block = document.getBlockAtIndex(0)
-          deepEqual block.getAttributes(), ["quote"],
-          equal block.toString(), "abcHello world\n"
+          trix.assert.deepEqual block.getAttributes(), ["quote"],
+          trix.assert.equal block.toString(), "abcHello world\n"
 
           block = document.getBlockAtIndex(1)
-          deepEqual block.getAttributes(), ["quote", "code"]
-          equal block.toString(), "This is a test\n"
+          trix.assert.deepEqual block.getAttributes(), ["quote", "code"]
+          trix.assert.equal block.toString(), "This is a test\n"
 
           done()
 
@@ -39,19 +39,19 @@ trix.testGroup "Pasting", template: "editor_empty", ->
       trix.typeCharacters "abc\n", ->
         trix.pasteContent "text/html", "<ul><li>one</li><li>two</li></ul>", ->
           document = getDocument()
-          equal document.getBlockCount(), 3
+          trix.assert.equal document.getBlockCount(), 3
 
           block = document.getBlockAtIndex(0)
-          deepEqual block.getAttributes(), ["bulletList", "bullet"]
-          equal block.toString(), "abc\n"
+          trix.assert.deepEqual block.getAttributes(), ["bulletList", "bullet"]
+          trix.assert.equal block.toString(), "abc\n"
 
           block = document.getBlockAtIndex(1)
-          deepEqual block.getAttributes(), ["bulletList", "bullet"]
-          equal block.toString(), "one\n"
+          trix.assert.deepEqual block.getAttributes(), ["bulletList", "bullet"]
+          trix.assert.equal block.toString(), "one\n"
 
           block = document.getBlockAtIndex(2)
-          deepEqual block.getAttributes(), ["bulletList", "bullet"]
-          equal block.toString(), "two\n"
+          trix.assert.deepEqual block.getAttributes(), ["bulletList", "bullet"]
+          trix.assert.equal block.toString(), "two\n"
 
           done()
 
@@ -60,19 +60,19 @@ trix.testGroup "Pasting", template: "editor_empty", ->
       trix.typeCharacters "abc", ->
         trix.pasteContent "text/html", "<ul><li>one</li><li>two</li></ul>", ->
           document = getDocument()
-          equal document.getBlockCount(), 3
+          trix.assert.equal document.getBlockCount(), 3
 
           block = document.getBlockAtIndex(0)
-          deepEqual block.getAttributes(), ["quote"]
-          equal block.toString(), "abc\n"
+          trix.assert.deepEqual block.getAttributes(), ["quote"]
+          trix.assert.equal block.toString(), "abc\n"
 
           block = document.getBlockAtIndex(1)
-          deepEqual block.getAttributes(), ["quote", "bulletList", "bullet"]
-          equal block.toString(), "one\n"
+          trix.assert.deepEqual block.getAttributes(), ["quote", "bulletList", "bullet"]
+          trix.assert.equal block.toString(), "one\n"
 
           block = document.getBlockAtIndex(2)
-          deepEqual block.getAttributes(), ["quote", "bulletList", "bullet"]
-          equal block.toString(), "two\n"
+          trix.assert.deepEqual block.getAttributes(), ["quote", "bulletList", "bullet"]
+          trix.assert.equal block.toString(), "two\n"
 
           done()
 
@@ -82,19 +82,19 @@ trix.testGroup "Pasting", template: "editor_empty", ->
         trix.typeCharacters "abc\n", ->
           trix.pasteContent "text/html", "<ul><li>one</li><li>two</li></ul>", ->
             document = getDocument()
-            equal document.getBlockCount(), 3
+            trix.assert.equal document.getBlockCount(), 3
 
             block = document.getBlockAtIndex(0)
-            deepEqual block.getAttributes(), ["quote", "bulletList", "bullet"]
-            equal block.toString(), "abc\n"
+            trix.assert.deepEqual block.getAttributes(), ["quote", "bulletList", "bullet"]
+            trix.assert.equal block.toString(), "abc\n"
 
             block = document.getBlockAtIndex(1)
-            deepEqual block.getAttributes(), ["quote", "bulletList", "bullet"]
-            equal block.toString(), "one\n"
+            trix.assert.deepEqual block.getAttributes(), ["quote", "bulletList", "bullet"]
+            trix.assert.equal block.toString(), "one\n"
 
             block = document.getBlockAtIndex(2)
-            deepEqual block.getAttributes(), ["quote", "bulletList", "bullet"]
-            equal block.toString(), "two\n"
+            trix.assert.deepEqual block.getAttributes(), ["quote", "bulletList", "bullet"]
+            trix.assert.equal block.toString(), "two\n"
 
             done()
 
@@ -106,19 +106,19 @@ trix.testGroup "Pasting", template: "editor_empty", ->
           trix.pressKey "backspace", ->
             trix.pasteContent "text/html", "<ul><li>a<ul><li>b</li></ul></li></ul>", ->
             document = getDocument()
-            equal document.getBlockCount(), 3
+            trix.assert.equal document.getBlockCount(), 3
 
             block = document.getBlockAtIndex(0)
-            deepEqual block.getAttributes(), ["bulletList", "bullet"]
-            equal block.toString(), "a\n"
+            trix.assert.deepEqual block.getAttributes(), ["bulletList", "bullet"]
+            trix.assert.equal block.toString(), "a\n"
 
             block = document.getBlockAtIndex(1)
-            deepEqual block.getAttributes(), ["bulletList", "bullet", "bulletList", "bullet"]
-            equal block.toString(), "b\n"
+            trix.assert.deepEqual block.getAttributes(), ["bulletList", "bullet", "bulletList", "bullet"]
+            trix.assert.equal block.toString(), "b\n"
 
             block = document.getBlockAtIndex(2)
-            deepEqual block.getAttributes(), ["bulletList", "bullet"]
-            equal block.toString(), "zz\n"
+            trix.assert.deepEqual block.getAttributes(), ["bulletList", "bullet"]
+            trix.assert.equal block.toString(), "zz\n"
             done()
 
   trix.test "paste nested list over list item contents", (done) ->
@@ -129,19 +129,19 @@ trix.testGroup "Pasting", template: "editor_empty", ->
           trix.expandSelection "left", ->
             trix.pasteContent "text/html", "<ul><li>a<ul><li>b</li></ul></li></ul>", ->
             document = getDocument()
-            equal document.getBlockCount(), 3
+            trix.assert.equal document.getBlockCount(), 3
 
             block = document.getBlockAtIndex(0)
-            deepEqual block.getAttributes(), ["bulletList", "bullet"]
-            equal block.toString(), "a\n"
+            trix.assert.deepEqual block.getAttributes(), ["bulletList", "bullet"]
+            trix.assert.equal block.toString(), "a\n"
 
             block = document.getBlockAtIndex(1)
-            deepEqual block.getAttributes(), ["bulletList", "bullet", "bulletList", "bullet"]
-            equal block.toString(), "b\n"
+            trix.assert.deepEqual block.getAttributes(), ["bulletList", "bullet", "bulletList", "bullet"]
+            trix.assert.equal block.toString(), "b\n"
 
             block = document.getBlockAtIndex(2)
-            deepEqual block.getAttributes(), ["bulletList", "bullet"]
-            equal block.toString(), "zz\n"
+            trix.assert.deepEqual block.getAttributes(), ["bulletList", "bullet"]
+            trix.assert.equal block.toString(), "zz\n"
             done()
 
   trix.test "paste list into empty block before list", (done) ->
@@ -153,19 +153,19 @@ trix.testGroup "Pasting", template: "editor_empty", ->
             trix.defer ->
               trix.pasteContent "text/html", "<ul><li>a</li><li>b</li></ul>", ->
                 document = getDocument()
-                equal document.getBlockCount(), 3
+                trix.assert.equal document.getBlockCount(), 3
 
                 block = document.getBlockAtIndex(0)
-                deepEqual block.getAttributes(), ["bulletList", "bullet"]
-                equal block.toString(), "a\n"
+                trix.assert.deepEqual block.getAttributes(), ["bulletList", "bullet"]
+                trix.assert.equal block.toString(), "a\n"
 
                 block = document.getBlockAtIndex(1)
-                deepEqual block.getAttributes(), ["bulletList", "bullet"]
-                equal block.toString(), "b\n"
+                trix.assert.deepEqual block.getAttributes(), ["bulletList", "bullet"]
+                trix.assert.equal block.toString(), "b\n"
 
                 block = document.getBlockAtIndex(2)
-                deepEqual block.getAttributes(), ["bulletList", "bullet"]
-                equal block.toString(), "c\n"
+                trix.assert.deepEqual block.getAttributes(), ["bulletList", "bullet"]
+                trix.assert.equal block.toString(), "c\n"
                 done()
 
   trix.test "paste file", (expectDocument) ->

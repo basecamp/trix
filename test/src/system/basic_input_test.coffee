@@ -5,7 +5,7 @@ trix.testGroup "Basic input", template: "editor_empty", ->
 
   trix.test "backspacing", (expectDocument) ->
     trix.typeCharacters "abc\b", ->
-      assertLocationRange(index: 0, offset: 2)
+      trix.assert.locationRange(index: 0, offset: 2)
       expectDocument "ab\n"
 
   trix.test "pressing delete", (expectDocument) ->
@@ -51,7 +51,7 @@ trix.testGroup "Basic input", template: "editor_empty", ->
       trix.moveCursor "left", ->
         trix.triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 79, which: 79, ctrlKey: true)
         trix.defer ->
-          assertLocationRange index: 0, offset: 1
+          trix.assert.locationRange index: 0, offset: 1
           expectDocument "a\nb\n"
 
   trix.test "inserting ó with control + alt + o (AltGr)", (expectDocument) ->
@@ -62,5 +62,5 @@ trix.testGroup "Basic input", template: "editor_empty", ->
           trix.insertNode(document.createTextNode("ó"))
 
         trix.defer ->
-          assertLocationRange index: 0, offset: 2
+          trix.assert.locationRange index: 0, offset: 2
           expectDocument "aób\n"

@@ -5,16 +5,16 @@ trix.testGroup "Trix.Block", ->
     consolidatedBlock = blockA.consolidateWith(blockB)
     pieces = consolidatedBlock.text.getPieces()
 
-    equal pieces.length, 2, JSON.stringify(pieces)
-    deepEqual pieces[0].getAttributes(), {}
-    deepEqual pieces[1].getAttributes(), { blockBreak: true }
-    equal consolidatedBlock.toString(), "a\nb\n"
+    trix.assert.equal pieces.length, 2, JSON.stringify(pieces)
+    trix.assert.deepEqual pieces[0].getAttributes(), {}
+    trix.assert.deepEqual pieces[1].getAttributes(), { blockBreak: true }
+    trix.assert.equal consolidatedBlock.toString(), "a\nb\n"
 
   trix.test "consolidating empty blocks creates text with one blockBreak piece", ->
     consolidatedBlock = new Trix.Block().consolidateWith(new Trix.Block)
     pieces = consolidatedBlock.text.getPieces()
 
-    equal pieces.length, 2, JSON.stringify(pieces)
-    deepEqual pieces[0].getAttributes(), {}
-    deepEqual pieces[1].getAttributes(), { blockBreak: true }
-    equal consolidatedBlock.toString(), "\n\n"
+    trix.assert.equal pieces.length, 2, JSON.stringify(pieces)
+    trix.assert.deepEqual pieces[0].getAttributes(), {}
+    trix.assert.deepEqual pieces[1].getAttributes(), { blockBreak: true }
+    trix.assert.equal consolidatedBlock.toString(), "\n\n"

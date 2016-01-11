@@ -8,4 +8,4 @@ trix.testGroup "Trix.Composition", {setup}, ->
     composition.insertString("abc😭")
     composition.deleteInDirection("backward")
     composition.insertString("d")
-    equal composition.document.toString(), "abcd\n"
+    trix.assert.equal composition.document.toString(), "abcd\n"

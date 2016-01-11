@@ -7,15 +7,15 @@ trix.testGroup "Trix.Attachment", ->
 
   for contentType in previewableTypes then do (contentType) ->
     trix.test "#{contentType} content type is previewable", ->
-      ok createAttachment({contentType}).isPreviewable()
+      trix.assert.ok createAttachment({contentType}).isPreviewable()
 
   for contentType in nonPreviewableTypes then do (contentType) ->
     trix.test "#{contentType} content type is NOT previewable", ->
-      ok not createAttachment({contentType}).isPreviewable()
+      trix.assert.notOk createAttachment({contentType}).isPreviewable()
 
   trix.test "'previewable' attribute determines previewability", ->
     attrs = previewable: true, contentType: nonPreviewableTypes[0]
-    ok createAttachment(attrs).isPreviewable()
+    trix.assert.ok createAttachment(attrs).isPreviewable()
 
     attrs = previewable: false, contentType: previewableTypes[0]
-    ok not createAttachment(attrs).isPreviewable()
+    trix.assert.notOk createAttachment(attrs).isPreviewable()

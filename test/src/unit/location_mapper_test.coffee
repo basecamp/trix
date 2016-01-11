@@ -80,7 +80,7 @@ trix.testGroup "Trix.LocationMapper", ->
       expectedLocation = index: assertion.location[0], offset: assertion.location[1]
       actualLocation = mapper.findLocationFromContainerAndOffset(container, offset)
 
-      equal format(actualLocation), format(expectedLocation),
+      trix.assert.equal format(actualLocation), format(expectedLocation),
         "#{describe(container)} at [#{path.join(", ")}], offset #{offset} = #{format(expectedLocation)}"
 
 
@@ -103,7 +103,7 @@ trix.testGroup "Trix.LocationMapper", ->
     container = findContainer([0, 0])
     offset = 1
 
-    deepEqual mapper.findContainerAndOffsetFromLocation(location), [container, offset]
+    trix.assert.deepEqual mapper.findContainerAndOffsetFromLocation(location), [container, offset]
 
   trix.test "findContainerAndOffsetFromLocation after newline in formatted text", ->
     setDocument [
@@ -126,7 +126,7 @@ trix.testGroup "Trix.LocationMapper", ->
     container = findContainer([0])
     offset = 2
 
-    deepEqual mapper.findContainerAndOffsetFromLocation(location), [container, offset]
+    trix.assert.deepEqual mapper.findContainerAndOffsetFromLocation(location), [container, offset]
 
 # ---
 document = null

@@ -1,12 +1,12 @@
 trix.testGroup "Custom element API", template: "editor_empty", ->
   trix.test "files are accepted by default", ->
     getComposition().insertFile(trix.createFile())
-    equal getComposition().getAttachments().length, 1
+    trix.assert.equal getComposition().getAttachments().length, 1
 
   trix.test "rejecting a file by canceling the trix-file-accept event", ->
     getEditorElement().addEventListener "trix-file-accept", (event) -> event.preventDefault()
     getComposition().insertFile(trix.createFile())
-    equal getComposition().getAttachments().length, 0
+    trix.assert.equal getComposition().getAttachments().length, 0
 
   trix.test "element triggers attachment events", ->
     file = trix.createFile()
@@ -17,21 +17,21 @@ trix.testGroup "Custom element API", template: "editor_empty", ->
 
     element.addEventListener "trix-file-accept", (event) ->
       events.push(event.type)
-      ok file is event.file
+      trix.assert.ok file is event.file
 
     element.addEventListener "trix-attachment-add", (event) ->
       events.push(event.type)
       attachment = event.attachment
 
     composition.insertFile(file)
-    deepEqual events, ["trix-file-accept", "trix-attachment-add"]
+    trix.assert.deepEqual events, ["trix-file-accept", "trix-attachment-add"]
 
     element.addEventListener "trix-attachment-remove", (event) ->
       events.push(event.type)
-      ok attachment is event.attachment
+      trix.assert.ok attachment is event.attachment
 
     attachment.remove()
-    deepEqual events, ["trix-file-accept", "trix-attachment-add", "trix-attachment-remove"]
+    trix.assert.deepEqual events, ["trix-file-accept", "trix-attachment-add", "trix-attachment-remove"]
 
   trix.test "element triggers trix-change when an attachment is edited", ->
     file = trix.createFile()
@@ -52,7 +52,7 @@ trix.testGroup "Custom element API", template: "editor_empty", ->
       events.push(event.type)
 
     attachment.setAttributes(width: 9876)
-    deepEqual events, ["trix-attachment-edit", "trix-change"]
+    trix.assert.deepEqual events, ["trix-attachment-edit", "trix-change"]
 
   trix.test "element triggers trix-change events when the document changes", (done) ->
     element = getEditorElement()
@@ -60,13 +60,13 @@ trix.testGroup "Custom element API", template: "editor_empty", ->
     element.addEventListener "trix-change", (event) -> eventCount++
 
     trix.typeCharacters "a", ->
-      equal eventCount, 1
+      trix.assert.equal eventCount, 1
       trix.moveCursor "left", ->
-        equal eventCount, 1
+        trix.assert.equal eventCount, 1
         trix.typeCharacters "bcd", ->
-          equal eventCount, 4
+          trix.assert.equal eventCount, 4
           trix.clickToolbarButton action: "undo", ->
-            equal eventCount, 5
+            trix.assert.equal eventCount, 5
             done()
 
   trix.test "element triggers trix-selection-change events when the location range changes", (done) ->
@@ -75,9 +75,9 @@ trix.testGroup "Custom element API", template: "editor_empty", ->
     element.addEventListener "trix-selection-change", (event) -> eventCount++
 
     trix.typeCharacters "a", ->
-      equal eventCount, 1
+      trix.assert.equal eventCount, 1
       trix.moveCursor "left", ->
-        equal eventCount, 2
+        trix.assert.equal eventCount, 2
         done()
 
   trix.test "only triggers trix-selection-change events on the active element", (done) ->
@@ -96,16 +96,16 @@ trix.testGroup "Custom element API", template: "editor_empty", ->
       elementB.addEventListener "trix-selection-change", (event) -> eventCountB++
 
       elementA.editor.setSelectedRange(0)
-      equal eventCountA, 1
-      equal eventCountB, 0
+      trix.assert.equal eventCountA, 1
+      trix.assert.equal eventCountB, 0
 
       elementB.editor.setSelectedRange(0)
-      equal eventCountA, 1
-      equal eventCountB, 1
+      trix.assert.equal eventCountA, 1
+      trix.assert.equal eventCountB, 1
 
       elementA.editor.setSelectedRange(1)
-      equal eventCountA, 2
-      equal eventCountB, 1
+      trix.assert.equal eventCountA, 2
+      trix.assert.equal eventCountB, 1
       done()
 
   trix.test "element triggers toolbar dialog events", (done) ->
@@ -121,7 +121,7 @@ trix.testGroup "Custom element API", template: "editor_empty", ->
     trix.clickToolbarButton action: "link", ->
       trix.typeInToolbarDialog "http://example.com", attribute: "href", ->
         trix.defer ->
-          deepEqual events, ["trix-toolbar-dialog-show", "trix-toolbar-dialog-hide"]
+          trix.assert.deepEqual events, ["trix-toolbar-dialog-show", "trix-toolbar-dialog-hide"]
           done()
 
   trix.test "element triggers paste event with position range", (done) ->
@@ -135,8 +135,8 @@ trix.testGroup "Custom element API", template: "editor_empty", ->
 
     trix.typeCharacters "", ->
       trix.pasteContent "text/html", "<strong>hello</strong>", ->
-        equal eventCount, 1
-        ok Trix.rangesAreEqual([5, 5], range)
+        trix.assert.equal eventCount, 1
+        trix.assert.ok Trix.rangesAreEqual([5, 5], range)
         done()
 
   trix.test "element triggers attribute change events", (done) ->
@@ -149,10 +149,10 @@ trix.testGroup "Custom element API", template: "editor_empty", ->
       {attributes} = event
 
     trix.typeCharacters "", ->
-      equal eventCount, 0
+      trix.assert.equal eventCount, 0
       trix.clickToolbarButton attribute: "bold", ->
-        equal eventCount, 1
-        deepEqual { bold: true }, attributes
+        trix.assert.equal eventCount, 1
+        trix.assert.deepEqual { bold: true }, attributes
         done()
 
   trix.test "element triggers action change events", (done) ->
@@ -165,11 +165,11 @@ trix.testGroup "Custom element API", template: "editor_empty", ->
       {actions} = event
 
     trix.typeCharacters "", ->
-      equal eventCount, 0
+      trix.assert.equal eventCount, 0
       trix.clickToolbarButton attribute: "bullet", ->
-        equal eventCount, 1
-        equal actions.decreaseBlockLevel, true
-        equal actions.increaseBlockLevel, false
+        trix.assert.equal eventCount, 1
+        trix.assert.equal actions.decreaseBlockLevel, true
+        trix.assert.equal actions.increaseBlockLevel, false
         done()
 
   trix.test "element triggers custom focus and blur events", (done) ->
@@ -182,22 +182,22 @@ trix.testGroup "Custom element API", template: "editor_empty", ->
 
     trix.triggerEvent(element, "blur")
     trix.defer ->
-      equal blurEventCount, 1
-      equal focusEventCount, 0
+      trix.assert.equal blurEventCount, 1
+      trix.assert.equal focusEventCount, 0
 
       trix.triggerEvent(element, "focus")
       trix.defer ->
-        equal blurEventCount, 1
-        equal focusEventCount, 1
+        trix.assert.equal blurEventCount, 1
+        trix.assert.equal focusEventCount, 1
 
         trix.insertImageAttachment()
         trix.after 20, ->
           trix.clickElement element.querySelector("figure"), ->
             trix.clickElement element.querySelector("figcaption"), ->
               trix.defer ->
-                equal document.activeElement, element.querySelector("textarea")
-                equal blurEventCount, 1
-                equal focusEventCount, 1
+                trix.assert.equal document.activeElement, element.querySelector("textarea")
+                trix.assert.equal blurEventCount, 1
+                trix.assert.equal focusEventCount, 1
                 done()
 
   trix.test "editor resets to its original value on form reset", (expectDocument) ->

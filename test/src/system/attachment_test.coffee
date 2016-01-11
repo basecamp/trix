@@ -20,12 +20,12 @@ trix.testGroup "Attachments", template: "editor_with_image", ->
       trix.clickElement findElement("figure"), ->
         trix.clickElement findElement("figcaption"), ->
           trix.defer ->
-            ok findElement("textarea")
+            trix.assert.ok findElement("textarea")
             findElement("textarea").focus()
             findElement("textarea").value = "my caption"
             trix.pressKey "return", ->
-              ok not findElement("textarea")
-              expectAttributes [2, 3], caption: "my caption"
+              trix.assert.notOk findElement("textarea")
+              trix.assert.textAttributes [2, 3], caption: "my caption"
               expectDocument "ab#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
 
 getFigure = ->

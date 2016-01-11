@@ -6,7 +6,7 @@ trix.testGroup "View caching", template: "editor_empty", ->
           html = getEditorElement().innerHTML
           getEditorController().reparse()
           getEditorController().render()
-          equal getEditorElement().innerHTML, html
+          trix.assert.equal getEditorElement().innerHTML, html
           done()
 
   trix.test "reparsing and rendering identical blocks", (done) ->
@@ -15,5 +15,5 @@ trix.testGroup "View caching", template: "editor_empty", ->
         html = getEditorElement().innerHTML
         getEditorController().reparse()
         getEditorController().render()
-        equal getEditorElement().innerHTML, html
+        trix.assert.equal getEditorElement().innerHTML, html
         done()

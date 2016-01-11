@@ -52,4 +52,4 @@ trix.testGroup "Trix.summarizeStringChange", ->
   for name, details of assertions
     do ({oldString, newString, change} = details) ->
       trix.test name, ->
-        deepEqual Trix.summarizeStringChange(oldString, newString), change
+        trix.assert.deepEqual Trix.summarizeStringChange(oldString, newString), change

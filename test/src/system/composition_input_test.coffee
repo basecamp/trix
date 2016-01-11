@@ -25,8 +25,8 @@ trix.testGroup "Composition input", template: "editor_empty", ->
         trix.startComposition "d", ->
           trix.updateComposition "de", ->
             trix.endComposition "def", ->
-              expectAttributes([0, 3], {})
-              expectAttributes([3, 6], bold: true)
+              trix.assert.textAttributes([0, 3], {})
+              trix.assert.textAttributes([3, 6], bold: true)
               expectDocument("abcdef\n")
 
   trix.test "composing away from formatted text", (expectDocument) ->
@@ -36,8 +36,8 @@ trix.testGroup "Composition input", template: "editor_empty", ->
           trix.startComposition "d", ->
             trix.updateComposition "de", ->
               trix.endComposition "def", ->
-                expectAttributes([0, 3], bold: true)
-                expectAttributes([3, 6], {})
+                trix.assert.textAttributes([0, 3], bold: true)
+                trix.assert.textAttributes([3, 6], {})
                 expectDocument("abcdef\n")
 
   trix.test "composing another language using a QWERTY keyboard", (expectDocument) ->

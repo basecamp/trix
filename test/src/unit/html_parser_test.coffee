@@ -2,70 +2,70 @@ trix.testGroup "Trix.HTMLParser", ->
   eachFixture (name, {html, serializedHTML, document}) ->
     trix.test name, ->
       parsedDocument = Trix.HTMLParser.parse(html).getDocument()
-      expectHTML parsedDocument.copyUsingObjectsFromDocument(document), html
+      trix.assert.documentHTMLEqual parsedDocument.copyUsingObjectsFromDocument(document), html
 
   eachFixture (name, {html, serializedHTML, document}) ->
     if serializedHTML?
       trix.test "#{name} (serialized)", ->
         parsedDocument = Trix.HTMLParser.parse(serializedHTML).getDocument()
-        expectHTML parsedDocument.copyUsingObjectsFromDocument(document), html
+        trix.assert.documentHTMLEqual parsedDocument.copyUsingObjectsFromDocument(document), html
 
   trix.test "parses absolute image URLs", ->
     src = "#{getOrigin()}/test_helpers/fixtures/logo.png"
     pattern = ///src="#{src}"///
     html = """<img src="#{src}">"""
 
-    finalHTML = getHTML(Trix.HTMLParser.parse(html).getDocument())
-    ok pattern.test(finalHTML), "#{pattern} not found in #{JSON.stringify(finalHTML)}"
+    finalHTML = trix.getHTML(Trix.HTMLParser.parse(html).getDocument())
+    trix.assert.ok pattern.test(finalHTML), "#{pattern} not found in #{JSON.stringify(finalHTML)}"
 
   trix.test "parses relative image URLs", ->
     src = "/test_helpers/fixtures/logo.png"
     pattern = ///src="#{src}"///
     html = """<img src="#{src}">"""
 
-    finalHTML = getHTML(Trix.HTMLParser.parse(html).getDocument())
-    ok pattern.test(finalHTML), "#{pattern} not found in #{JSON.stringify(finalHTML)}"
+    finalHTML = trix.getHTML(Trix.HTMLParser.parse(html).getDocument())
+    trix.assert.ok pattern.test(finalHTML), "#{pattern} not found in #{JSON.stringify(finalHTML)}"
 
   trix.test "parses unfamiliar html", ->
     html = """<meta charset="UTF-8"><span style="font-style: italic">abc</span><span>d</span><section style="margin:0"><blink>123</blink><a href="http://example.com">45<b>6</b></a>x<br />y</section><p style="margin:0">9</p>"""
     expectedHTML = """<div><!--block--><em>abc</em>d</div><div><!--block-->123<a href="http://example.com">45<strong>6</strong></a>x<br>y</div><div><!--block-->9</div>"""
-    expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+    trix.assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
   trix.test "ignores leading whitespace before <meta> tag", ->
     html = """ \n <meta charset="UTF-8"><pre>abc</pre>"""
     expectedHTML = """<pre><!--block-->abc</pre>"""
-    expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+    trix.assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
   trix.test "ignores whitespace between block elements", ->
     html = """<div>a</div> \n <div>b</div>"""
     expectedHTML = """<div><!--block-->a</div><div><!--block-->b</div>"""
-    expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+    trix.assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
   trix.test "converts newlines to spaces", ->
     html = "<div>a\nb \nc \n d \n\ne</div><pre>1\n2</pre>"
     expectedHTML = """<div><!--block-->a b c d e</div><pre><!--block-->1\n2</pre>"""
-    expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+    trix.assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
   trix.test "parses entire HTML document", ->
     html = """<html><head><style>.bold {font-weight: bold}</style></head><body><span class="bold">abc</span></body></html>"""
     expectedHTML = """<div><!--block--><strong>abc</strong></div>"""
-    expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+    trix.assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
   trix.test "parses inline element following block element", ->
     html = """<blockquote>abc</blockquote><strong>123</strong>"""
     expectedHTML = """<blockquote><!--block-->abc</blockquote><div><!--block--><strong>123</strong></div>"""
-    expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+    trix.assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
   trix.test "translates tables into plain text", ->
     html = """<table><tr><td>a</td><td>b</td></tr><tr><td>1</td><td><p>2</p></td></tr><table>"""
     expectedHTML = """<div><!--block-->a | b<br>1 | 2</div>"""
-    expectHTML Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+    trix.assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
   trix.test "translates block element margins to newlines", ->
     html = """<p style="margin: 0 0 1em 0">a</p><p style="margin: 0">b</p><article style="margin: 1em 0 0 0">c</article>"""
     expectedHTML = """<div><!--block-->a<br><br></div><div><!--block-->b</div><div><!--block--><br>c</div>"""
     document = Trix.HTMLParser.parse(html).getDocument()
-    expectHTML document, expectedHTML
+    trix.assert.documentHTMLEqual document, expectedHTML
 
   trix.test "sanitizes unsafe html", (done) ->
     window.unsanitized = []
@@ -77,7 +77,7 @@ trix.testGroup "Trix.HTMLParser", ->
       </script>
     """
     trix.after 20, ->
-      deepEqual window.unsanitized, []
+      trix.assert.deepEqual window.unsanitized, []
       delete window.unsanitized
       done()
 

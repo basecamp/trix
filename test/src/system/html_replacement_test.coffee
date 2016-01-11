@@ -50,7 +50,7 @@ trix.testGroup "HTML replacement", template: "editor_empty", ->
             getEditor().setSelectedRange(range)
             getComposition().replaceHTML(getEditorElement().innerHTML)
 
-            deepEqual getEditor().getSelectedRange(), range
+            trix.assert.deepEqual getEditor().getSelectedRange(), range
             expectDocument documentString
 
   applyStyles = (styles) ->

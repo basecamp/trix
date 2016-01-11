@@ -1,11 +1,13 @@
 {normalizeRange, rangesAreEqual} = Trix
 
-@assertLocationRange = (start, end) ->
+trix.assert = QUnit.assert
+
+trix.assert.locationRange = (start, end) ->
   expectedLocationRange = normalizeRange([start, end])
   actualLocationRange = getEditorController().getLocationRange()
-  ok rangesAreEqual(expectedLocationRange, actualLocationRange), "expected #{JSON.stringify(expectedLocationRange)}, actual #{JSON.stringify(actualLocationRange)}"
+  @deepEqual(expectedLocationRange, actualLocationRange)
 
-@expectAttributes = (range, attributes) ->
+trix.assert.textAttributes = (range, attributes) ->
   document = getDocument().getDocumentAtRange(range)
   blocks = document.getBlocks()
   throw "range #{JSON.stringify(range)} spans more than one block" unless blocks.length is 1
@@ -18,18 +20,18 @@
   throw "range #{JSON.stringify(range)} must only span one piece" unless pieces.length is 1
 
   piece = pieces[0]
-  deepEqual piece.getAttributes(), attributes
+  @deepEqual piece.getAttributes(), attributes
 
-@expectBlockAttributes = (range, attributes) ->
+trix.assert.blockAttributes = (range, attributes) ->
   document = getDocument().getDocumentAtRange(range)
   blocks = document.getBlocks()
   throw "range #{JSON.stringify(range)} spans more than one block" unless blocks.length is 1
 
   block = blocks[0]
-  deepEqual block.getAttributes(), attributes
+  @deepEqual block.getAttributes(), attributes
 
-@expectHTML = (trixDocument, html) ->
-  equal getHTML(trixDocument), html
+trix.assert.documentHTMLEqual = (trixDocument, html) ->
+  @equal trix.getHTML(trixDocument), html
 
-@getHTML = (trixDocument) ->
+trix.getHTML = (trixDocument) ->
   Trix.DocumentView.render(trixDocument).innerHTML
