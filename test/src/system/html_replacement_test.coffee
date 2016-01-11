@@ -1,4 +1,4 @@
-editorModule "HTML replacement", template: "editor_empty", ->
+trix.testGroup "HTML replacement", template: "editor_empty", ->
   copyWith = (object, properties = {}) ->
     result = {}
     result[key] = value for key, value of object
@@ -42,7 +42,7 @@ editorModule "HTML replacement", template: "editor_empty", ->
     for name, testCase of testCases
       for range in testCase.selections
         do (styles, name, testCase, range) ->
-          editorTest "#{name} with selected range #{JSON.stringify(range)} and styles #{JSON.stringify(styles)}", (expectDocument) ->
+          trix.test "#{name} with selected range #{JSON.stringify(range)} and styles #{JSON.stringify(styles)}", (expectDocument) ->
             {document, documentString} = testCase
 
             applyStyles(styles)

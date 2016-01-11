@@ -1,5 +1,5 @@
-editorModule "List formatting", template: "editor_empty", ->
-  editorTest "creating a new list item", (done) ->
+trix.testGroup "List formatting", template: "editor_empty", ->
+  trix.test "creating a new list item", (done) ->
     trix.typeCharacters "a", ->
       trix.clickToolbarButton attribute: "bullet", ->
         trix.typeCharacters "\n", ->
@@ -8,7 +8,7 @@ editorModule "List formatting", template: "editor_empty", ->
           expectBlockAttributes([2, 3], ["bulletList", "bullet"])
           done()
 
-  editorTest "breaking out of a list", (expectDocument) ->
+  trix.test "breaking out of a list", (expectDocument) ->
     trix.typeCharacters "a", ->
       trix.clickToolbarButton attribute: "bullet", ->
         trix.typeCharacters "\n\n", ->
@@ -16,7 +16,7 @@ editorModule "List formatting", template: "editor_empty", ->
           expectBlockAttributes([2, 3], [])
           expectDocument("a\n\n")
 
-  editorTest "pressing return at the beginning of a non-empty list item", (expectDocument) ->
+  trix.test "pressing return at the beginning of a non-empty list item", (expectDocument) ->
     trix.clickToolbarButton attribute: "bullet", ->
       trix.typeCharacters "a\nb", ->
         trix.moveCursor "left", ->
@@ -26,7 +26,7 @@ editorModule "List formatting", template: "editor_empty", ->
             expectBlockAttributes([3, 5], ["bulletList", "bullet"])
             expectDocument("a\n\nb\n")
 
-  editorTest "pressing delete at the beginning of a non-empty nested list item", (expectDocument) ->
+  trix.test "pressing delete at the beginning of a non-empty nested list item", (expectDocument) ->
       trix.clickToolbarButton attribute: "bullet", ->
         trix.typeCharacters "a\n", ->
           trix.clickToolbarButton action: "increaseBlockLevel", ->
@@ -41,7 +41,7 @@ editorModule "List formatting", template: "editor_empty", ->
                     expectBlockAttributes([3, 4], ["bulletList", "bullet", "bulletList", "bullet"])
                     expectDocument("ab\nc\n")
 
-  editorTest "decreasing list item's level decreases its nested items level too", (expectDocument) ->
+  trix.test "decreasing list item's level decreases its nested items level too", (expectDocument) ->
     trix.clickToolbarButton attribute: "bullet", ->
       trix.typeCharacters "a\n", ->
         trix.clickToolbarButton action: "increaseBlockLevel", ->

@@ -1,5 +1,5 @@
-editorModule "Block formatting", template: "editor_empty", ->
-  editorTest "applying block attributes", (done) ->
+trix.testGroup "Block formatting", template: "editor_empty", ->
+  trix.test "applying block attributes", (done) ->
     trix.typeCharacters "abc", ->
       trix.clickToolbarButton attribute: "quote", ->
         expectBlockAttributes([0, 4], ["quote"])
@@ -13,14 +13,14 @@ editorModule "Block formatting", template: "editor_empty", ->
             ok trix.isToolbarButtonActive(attribute: "quote")
             done()
 
-  editorTest "applying block attributes to text after newline", (done) ->
+  trix.test "applying block attributes to text after newline", (done) ->
     trix.typeCharacters "a\nbc", ->
       trix.clickToolbarButton attribute: "quote", ->
         expectBlockAttributes([0, 2], [])
         expectBlockAttributes([2, 4], ["quote"])
         done()
 
-  editorTest "applying block attributes to text between newlines", (done) ->
+  trix.test "applying block attributes to text between newlines", (done) ->
     trix.typeCharacters """
       ab
       def
@@ -35,7 +35,7 @@ editorModule "Block formatting", template: "editor_empty", ->
             expectBlockAttributes([11, 13], [])
             done()
 
-  editorTest "applying bullets to text with newlines", (done) ->
+  trix.test "applying bullets to text with newlines", (done) ->
     trix.typeCharacters """
       abc
       def
@@ -53,7 +53,7 @@ editorModule "Block formatting", template: "editor_empty", ->
             expectBlockAttributes([16, 20], ["bulletList", "bullet"])
             done()
 
-  editorTest "applying block attributes to adjacent unformatted blocks consolidates them", (done) ->
+  trix.test "applying block attributes to adjacent unformatted blocks consolidates them", (done) ->
     document = new Trix.Document [
         new Trix.Block(Trix.Text.textForStringWithAttributes("1"), ["code"])
         new Trix.Block(Trix.Text.textForStringWithAttributes("a"), [])
@@ -73,7 +73,7 @@ editorModule "Block formatting", template: "editor_empty", ->
         expectBlockAttributes([10, 12], ["code", "quote"])
         done()
 
-  editorTest "breaking out of the end of a block", (done) ->
+  trix.test "breaking out of the end of a block", (done) ->
     trix.typeCharacters "abc", ->
       trix.clickToolbarButton attribute: "quote", ->
         trix.typeCharacters "\n\n", ->
@@ -92,7 +92,7 @@ editorModule "Block formatting", template: "editor_empty", ->
           done()
 
 
-  editorTest "breaking out of the middle of a block before character", (done) ->
+  trix.test "breaking out of the middle of a block before character", (done) ->
     # * = cursor
     #
     # ab
@@ -120,7 +120,7 @@ editorModule "Block formatting", template: "editor_empty", ->
             assertLocationRange(index: 2, offset: 0)
             done()
 
-  editorTest "breaking out of the middle of a block before newline", (done) ->
+  trix.test "breaking out of the middle of a block before newline", (done) ->
     # * = cursor
     #
     # ab
@@ -150,7 +150,7 @@ editorModule "Block formatting", template: "editor_empty", ->
 
                 done()
 
-  editorTest "breaking out a block after newline at offset 0", (done) ->
+  trix.test "breaking out a block after newline at offset 0", (done) ->
     # * = cursor
     #
     #
@@ -174,21 +174,21 @@ editorModule "Block formatting", template: "editor_empty", ->
 
             done()
 
-  editorTest "deleting the only non-block-break character in a block", (done) ->
+  trix.test "deleting the only non-block-break character in a block", (done) ->
     trix.typeCharacters "ab", ->
       trix.clickToolbarButton attribute: "quote", ->
         trix.typeCharacters "\b\b", ->
           expectBlockAttributes([0, 1], ["quote"])
           done()
 
-  editorTest "backspacing a quote", (done) ->
+  trix.test "backspacing a quote", (done) ->
     trix.clickToolbarButton attribute: "quote", ->
       expectBlockAttributes([0, 1], ["quote"])
       trix.pressKey "backspace", ->
         expectBlockAttributes([0, 1], [])
         done()
 
-  editorTest "backspacing a nested quote", (done) ->
+  trix.test "backspacing a nested quote", (done) ->
     trix.clickToolbarButton attribute: "quote", ->
       trix.clickToolbarButton action: "increaseBlockLevel", ->
         expectBlockAttributes([0, 1], ["quote", "quote"])
@@ -198,14 +198,14 @@ editorModule "Block formatting", template: "editor_empty", ->
             expectBlockAttributes([0, 1], [])
             done()
 
-  editorTest "backspacing a list item", (done) ->
+  trix.test "backspacing a list item", (done) ->
     trix.clickToolbarButton attribute: "bullet", ->
       expectBlockAttributes([0, 1], ["bulletList", "bullet"])
       trix.pressKey "backspace", ->
         expectBlockAttributes([0, 0], [])
         done()
 
-  editorTest "backspacing a nested list item", (expectDocument) ->
+  trix.test "backspacing a nested list item", (expectDocument) ->
     trix.clickToolbarButton attribute: "bullet", ->
       trix.typeCharacters "a\n", ->
         trix.clickToolbarButton action: "increaseBlockLevel", ->
@@ -214,7 +214,7 @@ editorModule "Block formatting", template: "editor_empty", ->
             expectBlockAttributes([2, 3], ["bulletList", "bullet"])
             expectDocument("a\n\n")
 
-  editorTest "backspacing a list item inside a quote", (done) ->
+  trix.test "backspacing a list item inside a quote", (done) ->
     trix.clickToolbarButton attribute: "quote", ->
       trix.clickToolbarButton attribute: "bullet", ->
         expectBlockAttributes([0, 1], ["quote", "bulletList", "bullet"])
@@ -224,7 +224,7 @@ editorModule "Block formatting", template: "editor_empty", ->
             expectBlockAttributes([0, 1], [])
             done()
 
-  editorTest "backspacing selected nested list items", (expectDocument) ->
+  trix.test "backspacing selected nested list items", (expectDocument) ->
     trix.clickToolbarButton attribute: "bullet", ->
       trix.typeCharacters "a\n", ->
         trix.clickToolbarButton action: "increaseBlockLevel", ->
@@ -234,7 +234,7 @@ editorModule "Block formatting", template: "editor_empty", ->
               expectBlockAttributes([0, 1], ["bulletList", "bullet"])
               expectDocument("\n")
 
-  editorTest "backspace selection spanning formatted blocks", (expectDocument) ->
+  trix.test "backspace selection spanning formatted blocks", (expectDocument) ->
     trix.clickToolbarButton attribute: "quote", ->
       trix.typeCharacters "ab\n\n", ->
         trix.clickToolbarButton attribute: "code", ->
@@ -244,7 +244,7 @@ editorModule "Block formatting", template: "editor_empty", ->
             expectBlockAttributes([0, 2], ["quote"])
             expectDocument("ad\n")
 
-  editorTest "backspace selection spanning and entire formatted block and a formatted block", (expectDocument) ->
+  trix.test "backspace selection spanning and entire formatted block and a formatted block", (expectDocument) ->
     trix.clickToolbarButton attribute: "quote", ->
       trix.typeCharacters "ab\n\n", ->
         trix.clickToolbarButton attribute: "code", ->
@@ -254,7 +254,7 @@ editorModule "Block formatting", template: "editor_empty", ->
             expectBlockAttributes([0, 2], ["code"])
             expectDocument("d\n")
 
-  editorTest "increasing list level", (done) ->
+  trix.test "increasing list level", (done) ->
     ok trix.isToolbarButtonDisabled(action: "increaseBlockLevel")
     ok trix.isToolbarButtonDisabled(action: "decreaseBlockLevel")
     trix.clickToolbarButton attribute: "bullet", ->
@@ -271,7 +271,7 @@ editorModule "Block formatting", template: "editor_empty", ->
             expectBlockAttributes([2, 4], ["bulletList", "bullet", "bulletList", "bullet"])
             done()
 
-  editorTest "changing list type", (done) ->
+  trix.test "changing list type", (done) ->
     trix.clickToolbarButton attribute: "bullet", ->
       expectBlockAttributes([0, 1], ["bulletList", "bullet"])
       trix.clickToolbarButton attribute: "number", ->

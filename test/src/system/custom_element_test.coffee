@@ -1,14 +1,14 @@
-editorModule "Custom element API", template: "editor_empty", ->
-  editorTest "files are accepted by default", ->
+trix.testGroup "Custom element API", template: "editor_empty", ->
+  trix.test "files are accepted by default", ->
     getComposition().insertFile(trix.createFile())
     equal getComposition().getAttachments().length, 1
 
-  editorTest "rejecting a file by canceling the trix-file-accept event", ->
+  trix.test "rejecting a file by canceling the trix-file-accept event", ->
     getEditorElement().addEventListener "trix-file-accept", (event) -> event.preventDefault()
     getComposition().insertFile(trix.createFile())
     equal getComposition().getAttachments().length, 0
 
-  editorTest "element triggers attachment events", ->
+  trix.test "element triggers attachment events", ->
     file = trix.createFile()
     element = getEditorElement()
     composition = getComposition()
@@ -33,7 +33,7 @@ editorModule "Custom element API", template: "editor_empty", ->
     attachment.remove()
     deepEqual events, ["trix-file-accept", "trix-attachment-add", "trix-attachment-remove"]
 
-  editorTest "element triggers trix-change when an attachment is edited", ->
+  trix.test "element triggers trix-change when an attachment is edited", ->
     file = trix.createFile()
     element = getEditorElement()
     composition = getComposition()
@@ -54,7 +54,7 @@ editorModule "Custom element API", template: "editor_empty", ->
     attachment.setAttributes(width: 9876)
     deepEqual events, ["trix-attachment-edit", "trix-change"]
 
-  editorTest "element triggers trix-change events when the document changes", (done) ->
+  trix.test "element triggers trix-change events when the document changes", (done) ->
     element = getEditorElement()
     eventCount = 0
     element.addEventListener "trix-change", (event) -> eventCount++
@@ -69,7 +69,7 @@ editorModule "Custom element API", template: "editor_empty", ->
             equal eventCount, 5
             done()
 
-  editorTest "element triggers trix-selection-change events when the location range changes", (done) ->
+  trix.test "element triggers trix-selection-change events when the location range changes", (done) ->
     element = getEditorElement()
     eventCount = 0
     element.addEventListener "trix-selection-change", (event) -> eventCount++
@@ -80,7 +80,7 @@ editorModule "Custom element API", template: "editor_empty", ->
         equal eventCount, 2
         done()
 
-  editorTest "only triggers trix-selection-change events on the active element", (done) ->
+  trix.test "only triggers trix-selection-change events on the active element", (done) ->
     elementA = getEditorElement()
     elementB = document.createElement("trix-editor")
     elementA.parentNode.insertBefore(elementB, elementA.nextSibling)
@@ -108,7 +108,7 @@ editorModule "Custom element API", template: "editor_empty", ->
       equal eventCountB, 1
       done()
 
-  editorTest "element triggers toolbar dialog events", (done) ->
+  trix.test "element triggers toolbar dialog events", (done) ->
     element = getEditorElement()
     events = []
 
@@ -124,7 +124,7 @@ editorModule "Custom element API", template: "editor_empty", ->
           deepEqual events, ["trix-toolbar-dialog-show", "trix-toolbar-dialog-hide"]
           done()
 
-  editorTest "element triggers paste event with position range", (done) ->
+  trix.test "element triggers paste event with position range", (done) ->
     element = getEditorElement()
     eventCount = 0
     range = null
@@ -139,7 +139,7 @@ editorModule "Custom element API", template: "editor_empty", ->
         ok Trix.rangesAreEqual([5, 5], range)
         done()
 
-  editorTest "element triggers attribute change events", (done) ->
+  trix.test "element triggers attribute change events", (done) ->
     element = getEditorElement()
     eventCount = 0
     attributes = null
@@ -155,7 +155,7 @@ editorModule "Custom element API", template: "editor_empty", ->
         deepEqual { bold: true }, attributes
         done()
 
-  editorTest "element triggers action change events", (done) ->
+  trix.test "element triggers action change events", (done) ->
     element = getEditorElement()
     eventCount = 0
     actions = null
@@ -172,7 +172,7 @@ editorModule "Custom element API", template: "editor_empty", ->
         equal actions.increaseBlockLevel, false
         done()
 
-  editorTest "element triggers custom focus and blur events", (done) ->
+  trix.test "element triggers custom focus and blur events", (done) ->
     element = getEditorElement()
 
     focusEventCount = 0
@@ -200,7 +200,7 @@ editorModule "Custom element API", template: "editor_empty", ->
                 equal focusEventCount, 1
                 done()
 
-  editorTest "editor resets to its original value on form reset", (expectDocument) ->
+  trix.test "editor resets to its original value on form reset", (expectDocument) ->
     element = getEditorElement()
     form = element.inputElement.form
 
@@ -208,7 +208,7 @@ editorModule "Custom element API", template: "editor_empty", ->
       form.reset()
       expectDocument("\n")
 
-  editorTest "editor resets to last-set value on form reset", (expectDocument) ->
+  trix.test "editor resets to last-set value on form reset", (expectDocument) ->
     element = getEditorElement()
     form = element.inputElement.form
 
@@ -217,7 +217,7 @@ editorModule "Custom element API", template: "editor_empty", ->
       form.reset()
       expectDocument("hi\n")
 
-  editorTest "editor respects preventDefault on form reset", (expectDocument) ->
+  trix.test "editor respects preventDefault on form reset", (expectDocument) ->
     element = getEditorElement()
     form = element.inputElement.form
     preventDefault = (event) -> event.preventDefault()

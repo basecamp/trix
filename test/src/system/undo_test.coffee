@@ -1,5 +1,5 @@
-editorModule "Undo/Redo", template: "editor_empty", ->
-  editorTest "typing and undoing", (done) ->
+trix.testGroup "Undo/Redo", template: "editor_empty", ->
+  trix.test "typing and undoing", (done) ->
     first = getDocument().copy()
     trix.typeCharacters "abc", ->
       ok not getDocument().isEqualTo(first)
@@ -7,7 +7,7 @@ editorModule "Undo/Redo", template: "editor_empty", ->
         ok getDocument().isEqualTo(first)
         done()
 
-  editorTest "typing, formatting, typing, and undoing", (done) ->
+  trix.test "typing, formatting, typing, and undoing", (done) ->
     first = getDocument().copy()
     trix.typeCharacters "abc", ->
       second = getDocument().copy()
@@ -24,7 +24,7 @@ editorModule "Undo/Redo", template: "editor_empty", ->
                   ok getDocument().isEqualTo(third)
                   done()
 
-  editorTest "formatting changes are batched by location range", (done) ->
+  trix.test "formatting changes are batched by location range", (done) ->
     trix.typeCharacters "abc", ->
       first = getDocument().copy()
       trix.expandSelection "left", ->

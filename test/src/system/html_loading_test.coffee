@@ -1,4 +1,4 @@
-editorModule "HTML loading", template: "editor_with_styled_content", ->
+trix.testGroup "HTML loading", template: "editor_with_styled_content", ->
   cases =
     "BR before block element styled otherwise":
       html: """a<br><figure class="attachment"><img src="#{TEST_IMAGE_URL}"></figure>"""
@@ -10,6 +10,6 @@ editorModule "HTML loading", template: "editor_with_styled_content", ->
 
   for name, details of cases
     do (name, details) ->
-      editorTest name, (expectDocument) ->
+      trix.test name, (expectDocument) ->
         getEditor().loadHTML(details.html)
         expectDocument(details.expectedDocument)

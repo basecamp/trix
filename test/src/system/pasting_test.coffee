@@ -1,23 +1,23 @@
-editorModule "Pasting", template: "editor_empty", ->
-  editorTest "paste plain text", (expectDocument) ->
+trix.testGroup "Pasting", template: "editor_empty", ->
+  trix.test "paste plain text", (expectDocument) ->
     trix.typeCharacters "abc", ->
       trix.moveCursor "left", ->
         trix.pasteContent "text/plain", "!", ->
           expectDocument "ab!c\n"
 
-  editorTest "paste simple html", (expectDocument) ->
+  trix.test "paste simple html", (expectDocument) ->
     trix.typeCharacters "abc", ->
       trix.moveCursor "left", ->
         trix.pasteContent "text/html", "&lt;", ->
           expectDocument "ab<c\n"
 
-  editorTest "paste complex html", (expectDocument) ->
+  trix.test "paste complex html", (expectDocument) ->
     trix.typeCharacters "abc", ->
       trix.moveCursor "left", ->
         trix.pasteContent "text/html", "<div>Hello world<br></div><div>This is a test</div>", ->
           expectDocument "abHello world\nThis is a test\nc\n"
 
-  editorTest "paste complex html into formatted block", (done) ->
+  trix.test "paste complex html into formatted block", (done) ->
     trix.typeCharacters "abc", ->
       trix.clickToolbarButton attribute: "quote", ->
         trix.pasteContent "text/html", "<div>Hello world<br></div><pre>This is a test</pre>", ->
@@ -34,7 +34,7 @@ editorModule "Pasting", template: "editor_empty", ->
 
           done()
 
-  editorTest "paste list into list", (done) ->
+  trix.test "paste list into list", (done) ->
     trix.clickToolbarButton attribute: "bullet", ->
       trix.typeCharacters "abc\n", ->
         trix.pasteContent "text/html", "<ul><li>one</li><li>two</li></ul>", ->
@@ -55,7 +55,7 @@ editorModule "Pasting", template: "editor_empty", ->
 
           done()
 
-  editorTest "paste list into quote", (done) ->
+  trix.test "paste list into quote", (done) ->
     trix.clickToolbarButton attribute: "quote", ->
       trix.typeCharacters "abc", ->
         trix.pasteContent "text/html", "<ul><li>one</li><li>two</li></ul>", ->
@@ -76,7 +76,7 @@ editorModule "Pasting", template: "editor_empty", ->
 
           done()
 
-  editorTest "paste list into quoted list", (done) ->
+  trix.test "paste list into quoted list", (done) ->
     trix.clickToolbarButton attribute: "quote", ->
       trix.clickToolbarButton attribute: "bullet", ->
         trix.typeCharacters "abc\n", ->
@@ -98,7 +98,7 @@ editorModule "Pasting", template: "editor_empty", ->
 
             done()
 
-  editorTest "paste nested list into empty list item", (done) ->
+  trix.test "paste nested list into empty list item", (done) ->
     trix.clickToolbarButton attribute: "bullet", ->
       trix.typeCharacters "y\nzz", ->
         getSelectionManager().setLocationRange(index: 0, offset: 1)
@@ -121,7 +121,7 @@ editorModule "Pasting", template: "editor_empty", ->
             equal block.toString(), "zz\n"
             done()
 
-  editorTest "paste nested list over list item contents", (done) ->
+  trix.test "paste nested list over list item contents", (done) ->
     trix.clickToolbarButton attribute: "bullet", ->
       trix.typeCharacters "y\nzz", ->
         getSelectionManager().setLocationRange(index: 0, offset: 1)
@@ -144,7 +144,7 @@ editorModule "Pasting", template: "editor_empty", ->
             equal block.toString(), "zz\n"
             done()
 
-  editorTest "paste list into empty block before list", (done) ->
+  trix.test "paste list into empty block before list", (done) ->
     trix.clickToolbarButton attribute: "bullet", ->
       trix.typeCharacters "c", ->
         trix.moveCursor "left", ->
@@ -168,7 +168,7 @@ editorModule "Pasting", template: "editor_empty", ->
                 equal block.toString(), "c\n"
                 done()
 
-  editorTest "paste file", (expectDocument) ->
+  trix.test "paste file", (expectDocument) ->
     trix.typeCharacters "a", ->
       trix.pasteContent "Files", (trix.createFile()), ->
         expectDocument "a#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"

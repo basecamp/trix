@@ -1,5 +1,5 @@
-editorModule "Cursor movement", template: "editor_empty", ->
-  editorTest "move cursor around attachment", (done) ->
+trix.testGroup "Cursor movement", template: "editor_empty", ->
+  trix.test "move cursor around attachment", (done) ->
     trix.insertFile(trix.createFile())
     assertLocationRange(index: 0, offset: 1)
     trix.moveCursor "left", ->
@@ -12,7 +12,7 @@ editorModule "Cursor movement", template: "editor_empty", ->
             assertLocationRange(index: 0, offset: 1)
             done()
 
-  editorTest "move cursor around attachment and text", (done) ->
+  trix.test "move cursor around attachment and text", (done) ->
     trix.insertString("a")
     trix.insertFile(trix.createFile())
     trix.insertString("b")
@@ -27,7 +27,7 @@ editorModule "Cursor movement", template: "editor_empty", ->
             assertLocationRange(index: 0, offset: 0)
             done()
 
-  editorTest "expand selection over attachment", (done) ->
+  trix.test "expand selection over attachment", (done) ->
     trix.insertFile(trix.createFile())
     assertLocationRange(index: 0, offset: 1)
     trix.expandSelection "left", ->
@@ -38,7 +38,7 @@ editorModule "Cursor movement", template: "editor_empty", ->
           assertLocationRange({index: 0, offset: 0}, {index: 0, offset: 1})
           done()
 
-  editorTest "expand selection over attachment and text", (done) ->
+  trix.test "expand selection over attachment and text", (done) ->
     trix.insertString("a")
     trix.insertFile(trix.createFile())
     trix.insertString("b")

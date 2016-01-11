@@ -1,11 +1,11 @@
-editorModule "Composition input", template: "editor_empty", ->
-  editorTest "composing", (expectDocument) ->
+trix.testGroup "Composition input", template: "editor_empty", ->
+  trix.test "composing", (expectDocument) ->
     trix.startComposition "a", ->
       trix.updateComposition "ab", ->
         trix.endComposition "abc", ->
           expectDocument "abc\n"
 
-  editorTest "typing and composing", (expectDocument) ->
+  trix.test "typing and composing", (expectDocument) ->
     trix.typeCharacters "a", ->
       trix.startComposition "b", ->
         trix.updateComposition "bc", ->
@@ -13,13 +13,13 @@ editorModule "Composition input", template: "editor_empty", ->
             trix.typeCharacters "e", ->
               expectDocument "abcde\n"
 
-  editorTest "pressing return after a canceled composition", (expectDocument) ->
+  trix.test "pressing return after a canceled composition", (expectDocument) ->
     trix.typeCharacters "ab", ->
       trix.triggerEvent document.activeElement, "compositionend", data: "ab"
       trix.pressKey "return", ->
         expectDocument "ab\n\n"
 
-  editorTest "composing formatted text", (expectDocument) ->
+  trix.test "composing formatted text", (expectDocument) ->
     trix.typeCharacters "abc", ->
       trix.clickToolbarButton attribute: "bold", ->
         trix.startComposition "d", ->
@@ -29,7 +29,7 @@ editorModule "Composition input", template: "editor_empty", ->
               expectAttributes([3, 6], bold: true)
               expectDocument("abcdef\n")
 
-  editorTest "composing away from formatted text", (expectDocument) ->
+  trix.test "composing away from formatted text", (expectDocument) ->
     trix.clickToolbarButton attribute: "bold", ->
       trix.typeCharacters "abc", ->
         trix.clickToolbarButton attribute: "bold", ->
@@ -40,7 +40,7 @@ editorModule "Composition input", template: "editor_empty", ->
                 expectAttributes([3, 6], {})
                 expectDocument("abcdef\n")
 
-  editorTest "composing another language using a QWERTY keyboard", (expectDocument) ->
+  trix.test "composing another language using a QWERTY keyboard", (expectDocument) ->
     element = getEditorElement()
     keyCodes = x: 120, i: 105
 
@@ -52,7 +52,7 @@ editorModule "Composition input", template: "editor_empty", ->
           expectDocument "喜\n"
 
   # Simulates the sequence of events when pressing backspace through a word on Android
-  editorTest "backspacing through a composition", (expectDocument) ->
+  trix.test "backspacing through a composition", (expectDocument) ->
     element = getEditorElement()
     element.editor.insertString("a cat")
 

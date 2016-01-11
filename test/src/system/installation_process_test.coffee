@@ -1,21 +1,21 @@
-editorModule "Installation process", template: "editor_html", ->
-  editorTest "element.editorController", ->
+trix.testGroup "Installation process", template: "editor_html", ->
+  trix.test "element.editorController", ->
     ok getEditorController() instanceof Trix.EditorController
 
-  editorTest "creates a contenteditable element", ->
+  trix.test "creates a contenteditable element", ->
     ok getEditorElement()
 
-  editorTest "loads the initial document", ->
+  trix.test "loads the initial document", ->
     equal getEditorElement().textContent, "Hello world"
 
-  editorTest "sets value property", (done) ->
+  trix.test "sets value property", (done) ->
     trix.defer ->
       equal getEditorElement().value, "<div>Hello world</div>"
       done()
 
 
-editorModule "Installation process without specified elements", template: "editor_empty", ->
-  editorTest "creates identified toolbar and input elements", (done) ->
+trix.testGroup "Installation process without specified elements", template: "editor_empty", ->
+  trix.test "creates identified toolbar and input elements", (done) ->
     editorElement = getEditorElement()
 
     toolbarId = editorElement.getAttribute("toolbar")
@@ -33,15 +33,15 @@ editorModule "Installation process without specified elements", template: "edito
     done()
 
 
-editorModule "Installation process with specified elements", template: "editor_with_toolbar_and_input", ->
-  editorTest "uses specified elements", (done) ->
+trix.testGroup "Installation process with specified elements", template: "editor_with_toolbar_and_input", ->
+  trix.test "uses specified elements", (done) ->
     editorElement = getEditorElement()
     equal editorElement.toolbarElement, document.getElementById("my_toolbar")
     equal editorElement.inputElement, document.getElementById("my_input")
     equal editorElement.value, "<div>Hello world</div>"
     done()
 
-  editorTest "can be cloned", (done) ->
+  trix.test "can be cloned", (done) ->
     originalElement = document.getElementById("my_editor")
     clonedElement = originalElement.cloneNode(true)
 

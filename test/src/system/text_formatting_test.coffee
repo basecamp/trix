@@ -1,5 +1,5 @@
-editorModule "Text formatting", template: "editor_empty", ->
-  editorTest "applying attributes to text", (done) ->
+trix.testGroup "Text formatting", template: "editor_empty", ->
+  trix.test "applying attributes to text", (done) ->
     trix.typeCharacters "abc", ->
       trix.expandSelection "left", ->
         trix.clickToolbarButton attribute: "bold", ->
@@ -8,7 +8,7 @@ editorModule "Text formatting", template: "editor_empty", ->
           expectAttributes([3, 4], blockBreak: true)
           done()
 
-  editorTest "applying a link to text", (done) ->
+  trix.test "applying a link to text", (done) ->
     trix.typeCharacters "abc", ->
       trix.moveCursor "left", ->
         trix.expandSelection "left", ->
@@ -20,7 +20,7 @@ editorModule "Text formatting", template: "editor_empty", ->
               expectAttributes([2, 3], {})
               done()
 
-  editorTest "inserting a link", (expectDocument) ->
+  trix.test "inserting a link", (expectDocument) ->
     trix.typeCharacters "a", ->
       trix.clickToolbarButton attribute: "href", ->
         ok trix.isToolbarDialogActive(attribute: "href")
@@ -29,7 +29,7 @@ editorModule "Text formatting", template: "editor_empty", ->
           expectAttributes([1, 19], href: "http://example.com")
           expectDocument("ahttp://example.com\n")
 
-  editorTest "editing a link", (done) ->
+  trix.test "editing a link", (done) ->
     trix.insertString("a")
     text = Trix.Text.textForStringWithAttributes("bc", href: "http://example.com")
     trix.insertText(text)
@@ -44,7 +44,7 @@ editorModule "Text formatting", template: "editor_empty", ->
           expectAttributes([3, 4], {})
           done()
 
-  editorTest "removing a link", (done) ->
+  trix.test "removing a link", (done) ->
     text = Trix.Text.textForStringWithAttributes("ab", href: "http://example.com")
     trix.insertText(text)
     expectAttributes([0, 2], href: "http://example.com")
@@ -54,7 +54,7 @@ editorModule "Text formatting", template: "editor_empty", ->
           expectAttributes([0, 2], {})
           done()
 
-  editorTest "applying a link to an attachment with a host-provided href", (done) ->
+  trix.test "applying a link to an attachment with a host-provided href", (done) ->
     text = fixtures["file attachment"].document.getBlockAtIndex(0).getTextWithoutBlockBreak()
     trix.insertText(text)
     trix.typeCharacters "a", ->
@@ -65,7 +65,7 @@ editorModule "Text formatting", template: "editor_empty", ->
           ok trix.isToolbarButtonDisabled(attribute: "href")
           done()
 
-  editorTest "typing after a link", (done) ->
+  trix.test "typing after a link", (done) ->
     trix.typeCharacters "ab", ->
       trix.expandSelection direction: "left", times: 2, ->
         trix.clickToolbarButton attribute: "href", ->
@@ -81,7 +81,7 @@ editorModule "Text formatting", template: "editor_empty", ->
                     ok trix.isToolbarButtonActive(attribute: "href")
                     done()
 
-  editorTest "applying formatting and then typing", (done) ->
+  trix.test "applying formatting and then typing", (done) ->
     trix.typeCharacters "a", ->
       trix.clickToolbarButton attribute: "bold", ->
         trix.typeCharacters "bcd", ->
@@ -92,7 +92,7 @@ editorModule "Text formatting", template: "editor_empty", ->
               expectAttributes([4, 5], {})
               done()
 
-  editorTest "applying formatting and then moving the cursor away", (done) ->
+  trix.test "applying formatting and then moving the cursor away", (done) ->
     trix.typeCharacters "abc", ->
       trix.moveCursor "left", ->
         ok not trix.isToolbarButtonActive(attribute: "bold")
@@ -106,7 +106,7 @@ editorModule "Text formatting", template: "editor_empty", ->
               expectAttributes([3, 4], blockBreak: true)
               done()
 
-  editorTest "applying formatting to an unfocused editor", (done) ->
+  trix.test "applying formatting to an unfocused editor", (done) ->
     input = Trix.makeElement("input", type: "text")
     document.body.appendChild(input)
     input.focus()
@@ -117,7 +117,7 @@ editorModule "Text formatting", template: "editor_empty", ->
         document.body.removeChild(input)
         done()
 
-  editorTest "editing formatted text", (done) ->
+  trix.test "editing formatted text", (done) ->
     trix.clickToolbarButton attribute: "bold", ->
       trix.typeCharacters "ab", ->
         trix.clickToolbarButton attribute: "bold", ->
@@ -138,7 +138,7 @@ editorModule "Text formatting", template: "editor_empty", ->
                       ok not trix.isToolbarButtonActive(attribute: "bold")
                       done()
 
-  editorTest "key command activates toolbar button", (done) ->
+  trix.test "key command activates toolbar button", (done) ->
     trix.typeToolbarKeyCommand attribute: "bold", ->
       ok trix.isToolbarButtonActive(attribute: "bold")
       done()
