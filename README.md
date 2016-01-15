@@ -374,7 +374,7 @@ To develop in-browser, run the `bin/rackup` command and visit the displayed URL.
 
 ### Running Tests
 
-Make sure you’re set up to build from source using the instructions above. Then run `bin/blade` and visit the displayed URL to run the Trix test suite.
+Make sure you’re set up to build from source using the instructions above. Then run `bin/blade runner` and visit the displayed URL to run the Trix test suite.
 
 ---
 
