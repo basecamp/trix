@@ -145,8 +145,21 @@ Trix.extend
     fragment.appendChild(node) while node = container.firstChild
     fragment
 
+  getBlockTagNames: ->
+    Trix.blockTagNames ?= (value.tagName for key, value of Trix.config.blockAttributes)
+
   nodeIsBlockContainer: (node) ->
     Trix.nodeIsBlockStartComment(node?.firstChild)
+
+  nodeProbablyIsBlockContainer: (node) ->
+    Trix.tagName(node) in Trix.getBlockTagNames() and
+      Trix.tagName(node.firstChild) not in Trix.getBlockTagNames()
+
+  nodeIsBlockStart: (node, {strict} = strict: true) ->
+    if strict
+      Trix.nodeIsBlockStartComment(node)
+    else
+      Trix.nodeProbablyIsBlockContainer(node)
 
   nodeIsBlockStartComment: (node) ->
     Trix.nodeIsCommentNode(node) and node?.data is "block"

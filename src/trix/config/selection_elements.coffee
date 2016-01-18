@@ -1,14 +1,6 @@
 {makeElement, defer} = Trix
 
 prototypes =
-  cursorPoint:
-    makeElement
-      tagName: "span"
-      data:
-        trixSelection: true
-        trixMutable: true
-        trixSerialize: false
-
   cursorTarget:
     makeElement
       tagName: "span"
@@ -31,10 +23,3 @@ Trix.extend
 
     create: (name) ->
       prototypes[name].cloneNode(true)
-
-    remove: (element) ->
-      {parentElement} = element
-      parentElement.dataset.trixMutable = true
-      parentElement.removeChild(element)
-      defer ->
-        delete parentElement.dataset.trixMutable

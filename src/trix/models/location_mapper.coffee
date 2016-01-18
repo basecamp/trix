@@ -1,12 +1,11 @@
-{elementContainsNode, findChildIndexOfNode, findClosestElementFromNode,
- findNodeFromContainerAndOffset, nodeIsBlockStartComment, nodeIsBlockContainer,
- nodeIsCursorTarget, nodeIsEmptyTextNode, nodeIsTextNode, nodeIsAttachmentElement,
- tagName, walkTree} = Trix
+{elementContainsNode, findChildIndexOfNode, findClosestElementFromNode, findNodeFromContainerAndOffset,
+ nodeIsBlockStart, nodeIsBlockStartComment, nodeIsBlockContainer, nodeIsCursorTarget,
+ nodeIsEmptyTextNode, nodeIsTextNode, nodeIsAttachmentElement, tagName, walkTree} = Trix
 
 class Trix.LocationMapper
   constructor: (@element) ->
 
-  findLocationFromContainerAndOffset: (container, offset) ->
+  findLocationFromContainerAndOffset: (container, offset, {strict} = strict: true) ->
     childIndex = 0
     foundBlock = false
     location = index: 0, offset: 0
@@ -31,7 +30,7 @@ class Trix.LocationMapper
         else unless elementContainsNode(container, node)
           break if childIndex > 0
 
-        if nodeIsBlockStartComment(node)
+        if nodeIsBlockStart(node, {strict})
           location.index++ if foundBlock
           location.offset = 0
           foundBlock = true

@@ -84,10 +84,10 @@ class Trix.EditorController extends Trix.Controller
     @compositionController.uninstallAttachmentEditor()
     @attachmentLocationRange = null
 
-  compositionDidRequestChangingSelection: (requestedSelection) ->
+  compositionDidRequestChangingSelectionToLocationRange: (locationRange) ->
     return if @loadingSnapshot and not @isFocused()
-    @requestedSelection = requestedSelection
-    @documentWhenSelectionRequested = @composition.document
+    @requestedLocationRange = locationRange
+    @documentWhenLocationRangeRequested = @composition.document
     @render() unless @handlingInput
 
   compositionWillLoadSnapshot: ->
@@ -123,17 +123,13 @@ class Trix.EditorController extends Trix.Controller
     @editorElement.notify("sync")
 
   compositionControllerDidRender: ->
-    if @requestedSelection?
-      if @documentWhenSelectionRequested.isEqualTo(@composition.document)
-        {locationRange, pointRange} = @requestedSelection
-        if locationRange
-          @selectionManager.setLocationRange(locationRange)
-        else if pointRange
-          @selectionManager.setLocationRangeFromPointRange(pointRange)
+    if @requestedLocationRange?
+      if @documentWhenLocationRangeRequested.isEqualTo(@composition.document)
+        @selectionManager.setLocationRange(@requestedLocationRange)
 
       @composition.updateCurrentAttributes()
-      @requestedSelection = null
-      @documentWhenSelectionRequested = null
+      @requestedLocationRange = null
+      @documentWhenLocationRangeRequested = null
     @editorElement.notify("render")
 
   compositionControllerDidFocus: ->
