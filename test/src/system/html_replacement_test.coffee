@@ -49,6 +49,12 @@ testGroup "HTML replacement", ->
         assert.blockAttributes([2, 4], ["bulletList", "bullet"])
         expectDocument("a\n\n")
 
+    test "a character that is its text node's only data", (expectDocument) ->
+      getEditor().loadHTML("<div>a<br>b<br><strong>c</strong></div>")
+      getSelectionManager().setLocationRange(index: 0, offset: 3)
+      pressCommandBackspace replaceText: "b", ->
+        assert.locationRange(index: 0, offset: 2)
+        expectDocument("a\n\nc\n")
 
 pressCommandBackspace = ({replaceText}, callback) ->
   triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 8, which: 8, metaKey: true)
@@ -58,17 +64,18 @@ pressCommandBackspace = ({replaceText}, callback) ->
   range.splitBoundaries()
 
   node = range.getNodes()[0]
-  {previousSibling, parentNode} = node
+  {previousSibling, nextSibling, parentNode} = node
 
   if previousSibling?.nodeType is Node.COMMENT_NODE
     parentNode.removeChild(previousSibling)
 
+  node.data = ""
   parentNode.removeChild(node)
 
   unless parentNode.hasChildNodes()
     parentNode.appendChild(document.createElement("br"))
 
-  range.collapseBefore(parentNode.firstChild)
+  range.collapseBefore(nextSibling ? parentNode.firstChild)
   range.select()
 
   requestAnimationFrame(callback)

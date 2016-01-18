@@ -42,7 +42,7 @@ class Trix.MutationObserver extends Trix.BasicObject
     false
 
   nodeIsSignificant: (node) ->
-    node? and node isnt @element and not @nodeIsMutable(node) and not nodeIsEmptyTextNode(node)
+    node isnt @element and not @nodeIsMutable(node) and not nodeIsEmptyTextNode(node)
 
   nodeIsMutable: (node) ->
     findClosestElementFromNode(node, matchingSelector: mutableSelector)
