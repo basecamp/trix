@@ -6,7 +6,7 @@ helpers.assert = QUnit.assert
 helpers.assert.locationRange = (start, end) ->
   expectedLocationRange = normalizeRange([start, end])
   actualLocationRange = getEditorController().getLocationRange()
-  @deepEqual(expectedLocationRange, actualLocationRange)
+  @deepEqual(actualLocationRange, expectedLocationRange)
 
 helpers.assert.textAttributes = (range, attributes) ->
   document = getDocument().getDocumentAtRange(range)
