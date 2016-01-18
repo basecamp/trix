@@ -159,7 +159,8 @@ Trix.extend
     if strict
       Trix.nodeIsBlockStartComment(node)
     else
-      Trix.nodeProbablyIsBlockContainer(node)
+      Trix.nodeIsBlockStartComment(node) or
+        (not Trix.nodeIsBlockStartComment(node.firstChild) and Trix.nodeProbablyIsBlockContainer(node))
 
   nodeIsBlockStartComment: (node) ->
     Trix.nodeIsCommentNode(node) and node?.data is "block"
