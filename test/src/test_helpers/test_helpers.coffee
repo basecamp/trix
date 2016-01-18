@@ -1,18 +1,5 @@
 helpers = Trix.TestHelpers
 
-initialized = false
-initializedCallbacks = []
-
-document.addEventListener "trix-initialize", ->
-  initialized = true
-  callback() while callback = initializedCallbacks.shift()
-
-ready = (callback) ->
-  if initialized
-    callback()
-  else
-    initializedCallbacks.push(callback)
-
 setFixtureHTML = (html) ->
   element = findOrCreateTrixContainer()
   element.innerHTML = html
@@ -24,6 +11,8 @@ findOrCreateTrixContainer = ->
     document.body.insertAdjacentHTML("afterbegin", """<form id="trix-container"></form>""")
     document.getElementById("trix-container")
 
+ready = null
+
 helpers.extend
   testGroup: (name, options, callback) ->
     if callback?
@@ -32,11 +21,17 @@ helpers.extend
       callback = options
 
     beforeEach = ->
-      if template?
-        initialized = false
-        setFixtureHTML(JST["test_helpers/fixtures/#{template}"]())
-      else
-        initialized = true
+      ready = (callback) ->
+        if template?
+          addEventListener "trix-initialize", handler = ({target}) ->
+            removeEventListener("trix-initialize", handler)
+            if target.hasAttribute("autofocus")
+              target.editor.setSelectedRange(0)
+            callback(target)
+
+          setFixtureHTML(JST["test_helpers/fixtures/#{template}"]())
+        else
+          callback()
       setup?()
 
     afterEach = ->
@@ -56,14 +51,14 @@ helpers.extend
     QUnit.test name, (assert) ->
       doneAsync = assert.async()
 
-      done = (expectedDocumentValue) ->
-        if expectedDocumentValue
-          assert.equal getDocument().toString(), expectedDocumentValue
-        doneAsync()
-
-      ready ->
-        if getEditorElement()?.hasAttribute("autofocus")
-          getEditorController().setLocationRange(index: 0, offset: 0)
+      ready (element) ->
+        done = (expectedDocumentValue) ->
+          if element?
+            if expectedDocumentValue
+              assert.equal element.editor.getDocument().toString(), expectedDocumentValue
+            requestAnimationFrame(doneAsync)
+          else
+            doneAsync()
 
         if callback.length is 0
           callback()
