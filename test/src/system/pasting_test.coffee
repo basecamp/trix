@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, createFile, defer, expandSelection, moveCursor, pasteContent, pressKey, test, testGroup, typeCharacters} = Trix.TestHelpers
+{assert, clickToolbarButton, createFile, defer, expandSelection, moveCursor, pasteContent, pressKey, test, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
 
 testGroup "Pasting", template: "editor_empty", ->
   test "paste plain text", (expectDocument) ->
@@ -174,3 +174,10 @@ testGroup "Pasting", template: "editor_empty", ->
     typeCharacters "a", ->
       pasteContent "Files", (createFile()), ->
         expectDocument "a#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+
+  test "paste event with no clipboardData", (expectDocument) ->
+    typeCharacters "a", ->
+      triggerEvent(document.activeElement, "paste")
+      document.activeElement.insertAdjacentHTML("beforeend", "<span>bc</span>")
+      requestAnimationFrame ->
+        expectDocument("abc\n")

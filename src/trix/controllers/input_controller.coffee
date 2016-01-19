@@ -185,10 +185,9 @@ class Trix.InputController extends Trix.BasicObject
 
     paste: (event) ->
       paste = event.clipboardData ? event.testClipboardData
-      return unless paste?
       pasteData = {paste}
 
-      if pasteEventIsCrippledSafariHTMLPaste(event)
+      if not paste? or pasteEventIsCrippledSafariHTMLPaste(event)
         @getPastedHTMLUsingHiddenElement (html) =>
           pasteData.html = html
           @delegate?.inputControllerWillPasteText(pasteData)
