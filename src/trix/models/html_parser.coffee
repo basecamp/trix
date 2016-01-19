@@ -198,7 +198,7 @@ class Trix.HTMLParser extends Trix.BasicObject
     while element and element isnt @containerElement
       if tagName(element) in getBlockTagNames()
         ancestors.push(element)
-      element = element.parentElement
+      element = element.parentNode
     ancestors
 
   getMarginOfBlockElementAtIndex: (index) ->
