@@ -163,12 +163,11 @@ class Trix.HTMLParser extends Trix.BasicObject
   getTextAttributes: (element) ->
     attributes = {}
     for attribute, config of Trix.config.textAttributes
-      if config.parser
+      if config.tagName and tagName(element) is config.tagName
+        attributes[attribute] = true
+      else if config.parser
         if value = config.parser(element)
           attributes[attribute] = value
-      else if config.tagName
-        if tagName(element) is config.tagName
-          attributes[attribute] = true
 
     if nodeIsAttachmentElement(element)
       if json = element.dataset.trixAttributes
