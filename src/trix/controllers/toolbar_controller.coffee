@@ -117,9 +117,11 @@ class Trix.ToolbarController extends Trix.BasicObject
     element = @getDialog(dialogName)
     element.classList.add("active")
 
+    for disabledInput in element.querySelectorAll("input[disabled]")
+      disabledInput.removeAttribute("disabled")
+
     if attributeName = getAttributeName(element)
       if input = getInputForDialog(element, dialogName)
-        input.removeAttribute("disabled")
         input.value = @attributes[attributeName] ? ""
         input.select()
 
