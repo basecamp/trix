@@ -1,60 +1,81 @@
-{assert, test, testGroup} = Trix.TestHelpers
+{assert, clickToolbarButton, collapseSelection, defer, moveCursor, selectNode, typeCharacters, test, testGroup, triggerEvent} = Trix.TestHelpers
 
-testGroup "HTML replacement", template: "editor_empty", ->
-  copyWith = (object, properties = {}) ->
-    result = {}
-    result[key] = value for key, value of object
-    result[key] = value for key, value of properties
-    result
+testGroup "HTML replacement", ->
+  testGroup "deleting with command+backspace", template: "editor_empty", ->
+    test "from the end of a line", (expectDocument) ->
+      getEditor().loadHTML("<div>a</div><blockquote>b</blockquote><div>c</div>")
+      getSelectionManager().setLocationRange(index: 1, offset: 1)
+      pressCommandBackspace replaceText: "b", ->
+        assert.locationRange(index: 1, offset: 0)
+        assert.blockAttributes [0, 2], []
+        assert.blockAttributes [2, 3], ["quote"]
+        assert.blockAttributes [3, 5], []
+        expectDocument("a\n\nc\n")
 
-  testCases =
-    "single character":
-      document: [{"text":[{"type":"string","attributes":{},"string":"a"},{"type":"string","attributes":{"blockBreak":true},"string":"\n"}],"attributes":[]}]
-      selections: [ 0, 1, [0,1] ]
+    test "in the first block", (expectDocument) ->
+      getEditor().loadHTML("<div>a</div><blockquote>b</blockquote>")
+      getSelectionManager().setLocationRange(index: 0, offset: 1)
+      pressCommandBackspace replaceText: "a", ->
+        assert.locationRange(index: 0, offset: 0)
+        assert.blockAttributes [0, 1], []
+        assert.blockAttributes [1, 3], ["quote"]
+        expectDocument("\nb\n")
 
-    "character and newline":
-      document: [{"text":[{"type":"string","attributes":{},"string":"a\n"},{"type":"string","attributes":{"blockBreak":true},"string":"\n"}],"attributes":[]}]
-      selections: [ 0, 1, 2, [0,1], [0,2] ]
+    test "from the middle of a line", (expectDocument) ->
+      getEditor().loadHTML("<div>a</div><blockquote>bc</blockquote><div>d</div>")
+      getSelectionManager().setLocationRange(index: 1, offset: 1)
+      pressCommandBackspace replaceText: "b", ->
+        assert.locationRange(index: 1, offset: 0)
+        assert.blockAttributes [0, 2], []
+        assert.blockAttributes [2, 4], ["quote"]
+        assert.blockAttributes [4, 6], []
+        expectDocument("a\nc\nd\n")
 
-    "bullets":
-      document: [{"text":[{"type":"string","attributes":{},"string":"a"},{"type":"string","attributes":{"blockBreak":true},"string":"\n"}],"attributes":["bulletList","bullet"]},{"text":[{"type":"string","attributes":{},"string":"b"},{"type":"string","attributes":{"blockBreak":true},"string":"\n"}],"attributes":["bulletList","bullet"]}]
-      selections: [ 0, 1, 2, 3, [0,1], [0,3], [2,3] ]
+    test "from the middle of a line in a multi-line block", (expectDocument) ->
+      getEditor().loadHTML("<div>a</div><blockquote>bc<br>d</blockquote><div>e</div>")
+      getSelectionManager().setLocationRange(index: 1, offset: 1)
+      pressCommandBackspace replaceText: "b", ->
+        assert.locationRange(index: 1, offset: 0)
+        assert.blockAttributes([0, 2], [])
+        assert.blockAttributes([2, 6], ["quote"])
+        expectDocument("a\nc\nd\ne\n")
 
-  for name, testCase of testCases
-    testCase.document = Trix.Document.fromJSON(testCase.document)
-    testCase.documentString = testCase.document.toString()
-    testCase.selections = testCase.selections.map (selection) -> Trix.normalizeRange(selection)
+    test "from the end of a list item", (expectDocument) ->
+      getEditor().loadHTML("<ul><li>a</li><li>b</li></ul>")
+      getSelectionManager().setLocationRange(index: 1, offset: 1)
+      pressCommandBackspace replaceText: "b", ->
+        assert.locationRange(index: 1, offset: 0)
+        assert.blockAttributes([0, 2], ["bulletList", "bullet"])
+        assert.blockAttributes([2, 4], ["bulletList", "bullet"])
+        expectDocument("a\n\n")
 
-  testStyles = [
-    {}
-    { textRendering: "optimizeSpeed" }
-    { textRendering: "optimizeLegibility" }
-    { textRendering: "geometricPrecision" }
-  ]
+    test "a character that is its text node's only data", (expectDocument) ->
+      getEditor().loadHTML("<div>a<br>b<br><strong>c</strong></div>")
+      getSelectionManager().setLocationRange(index: 0, offset: 3)
+      pressCommandBackspace replaceText: "b", ->
+        assert.locationRange(index: 0, offset: 2)
+        expectDocument("a\n\nc\n")
 
-  testStyleVariants = [
-    { padding: "3px" }
-  ]
+pressCommandBackspace = ({replaceText}, callback) ->
+  triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 8, which: 8, metaKey: true)
 
-  for styles in testStyles
-    for variant in testStyleVariants
-      testStyles.push(copyWith(styles, variant))
+  range = rangy.getSelection().getRangeAt(0)
+  range.findText(replaceText, direction: "backward")
+  range.splitBoundaries()
 
-  for styles in testStyles
-    for name, testCase of testCases
-      for range in testCase.selections
-        do (styles, name, testCase, range) ->
-          test "#{name} with selected range #{JSON.stringify(range)} and styles #{JSON.stringify(styles)}", (expectDocument) ->
-            {document, documentString} = testCase
+  node = range.getNodes()[0]
+  {previousSibling, nextSibling, parentNode} = node
 
-            applyStyles(styles)
-            getEditor().loadDocument(document)
-            getEditor().setSelectedRange(range)
-            getComposition().replaceHTML(getEditorElement().innerHTML)
+  if previousSibling?.nodeType is Node.COMMENT_NODE
+    parentNode.removeChild(previousSibling)
 
-            assert.deepEqual getEditor().getSelectedRange(), range
-            expectDocument documentString
+  node.data = ""
+  parentNode.removeChild(node)
 
-  applyStyles = (styles) ->
-    element = getEditorElement()
-    element.style[key] = value for key, value of styles
+  unless parentNode.hasChildNodes()
+    parentNode.appendChild(document.createElement("br"))
+
+  range.collapseBefore(nextSibling ? parentNode.firstChild)
+  range.select()
+
+  requestAnimationFrame(callback)

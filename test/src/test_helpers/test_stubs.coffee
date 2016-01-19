@@ -1,11 +1,8 @@
 {normalizeRange, rangeIsCollapsed} = Trix
 
 class Trix.TestCompositionDelegate
-  compositionDidRequestChangingSelection: ({locationRange, pointRange}) ->
-    if locationRange
-      @getSelectionManager().setLocationRange(locationRange)
-    else if pointRange
-      @getSelectionManager().setLocationRangeFromPointRange(pointRange)
+  compositionDidRequestChangingSelectionToLocationRange: ->
+    @getSelectionManager().setLocationRange(arguments...)
 
   getSelectionManager: ->
     @selectionManager ?= new Trix.TestSelectionManager

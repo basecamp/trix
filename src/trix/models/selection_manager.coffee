@@ -14,10 +14,13 @@ class Trix.SelectionManager extends Trix.BasicObject
     handleEvent("mousedown", onElement: @element, withCallback: @didMouseDown)
 
   getLocationRange: (options = {}) ->
-    locationRange = if options.ignoreLock
-      @currentLocationRange
-    else
-      @lockedLocationRange ? @currentLocationRange
+    locationRange =
+      if options.strict is false
+        @createLocationRangeFromDOMRange(getDOMRange(), strict: false)
+      else if options.ignoreLock
+        @currentLocationRange
+      else
+        @lockedLocationRange ? @currentLocationRange
 
   setLocationRange: (locationRange) ->
     return if @lockedLocationRange
@@ -25,10 +28,6 @@ class Trix.SelectionManager extends Trix.BasicObject
     if domRange = @createDOMRangeFromLocationRange(locationRange)
       setDOMRange(domRange)
       @updateCurrentLocationRange(locationRange)
-
-  getPointRange: ->
-    if domRange = getDOMRange()
-      @findPointRangeFromDOMRange(domRange)
 
   setLocationRangeFromPointRange: (pointRange) ->
     pointRange = normalizeRange(pointRange)
@@ -69,7 +68,6 @@ class Trix.SelectionManager extends Trix.BasicObject
   @proxyMethod "locationMapper.findLocationFromContainerAndOffset"
   @proxyMethod "locationMapper.findContainerAndOffsetFromLocation"
   @proxyMethod "locationMapper.findNodeAndOffsetFromLocation"
-  @proxyMethod "pointMapper.findPointRangeFromDOMRange"
   @proxyMethod "pointMapper.createDOMRangeFromPoint"
   @proxyMethod "pointMapper.getClientRectsForDOMRange"
 
@@ -114,10 +112,10 @@ class Trix.SelectionManager extends Trix.BasicObject
       domRange.setEnd(rangeEnd...)
       domRange
 
-  createLocationRangeFromDOMRange: (domRange) ->
+  createLocationRangeFromDOMRange: (domRange, options) ->
     return unless domRange? and @domRangeWithinElement(domRange)
-    return unless start = @findLocationFromContainerAndOffset(domRange.startContainer, domRange.startOffset)
-    end = @findLocationFromContainerAndOffset(domRange.endContainer, domRange.endOffset) unless domRange.collapsed
+    return unless start = @findLocationFromContainerAndOffset(domRange.startContainer, domRange.startOffset, options)
+    end = @findLocationFromContainerAndOffset(domRange.endContainer, domRange.endOffset, options) unless domRange.collapsed
     normalizeRange([start, end])
 
   getLocationAtPoint: (point) ->

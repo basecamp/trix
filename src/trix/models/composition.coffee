@@ -131,9 +131,10 @@ class Trix.Composition extends Trix.BasicObject
 
   replaceHTML: (html) ->
     document = Trix.Document.fromHTML(html).copyUsingObjectsFromDocument(@document)
-    pointRange = @getPointRange()
+    locationRange = @getLocationRange(strict: false)
+    selectedRange = @document.rangeFromLocationRange(locationRange)
     @setDocument(document)
-    @setSelectionPointRange(pointRange)
+    @setSelection(selectedRange)
 
   insertFile: (file) ->
     if @delegate?.compositionShouldAcceptFile(file)
@@ -333,10 +334,7 @@ class Trix.Composition extends Trix.BasicObject
 
   setSelection: (selectedRange) ->
     locationRange = @document.locationRangeFromRange(selectedRange)
-    @delegate?.compositionDidRequestChangingSelection({locationRange})
-
-  setSelectionPointRange: (pointRange) ->
-    @delegate?.compositionDidRequestChangingSelection({pointRange})
+    @delegate?.compositionDidRequestChangingSelectionToLocationRange(locationRange)
 
   getSelectedRange: ->
     if locationRange = @getLocationRange()
@@ -350,8 +348,8 @@ class Trix.Composition extends Trix.BasicObject
     if locationRange = @getLocationRange()
       @document.positionFromLocation(locationRange[0])
 
-  getLocationRange: ->
-    @getSelectionManager().getLocationRange() ? normalizeRange(index: 0, offset: 0)
+  getLocationRange: (options) ->
+    @getSelectionManager().getLocationRange(options) ? normalizeRange(index: 0, offset: 0)
 
   getExpandedRangeInDirection: (direction) ->
     [startPosition, endPosition] = @getSelectedRange()

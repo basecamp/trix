@@ -1,4 +1,4 @@
-{arraysAreEqual, normalizeSpaces, makeElement, tagName, walkTree,
+{arraysAreEqual, normalizeSpaces, makeElement, tagName, getBlockTagNames, walkTree,
  findClosestElementFromNode, elementContainsNode, nodeIsAttachmentElement} = Trix
 
 class Trix.HTMLParser extends Trix.BasicObject
@@ -87,10 +87,7 @@ class Trix.HTMLParser extends Trix.BasicObject
   isBlockElement: (element) ->
     return unless element?.nodeType is Node.ELEMENT_NODE
     return if findClosestElementFromNode(element, matchingSelector: "td")
-    tagName(element) in @getBlockTagNames() or window.getComputedStyle(element).display is "block"
-
-  getBlockTagNames: ->
-    @blockTagNames ?= (value.tagName for key, value of Trix.config.blockAttributes)
+    tagName(element) in getBlockTagNames() or window.getComputedStyle(element).display is "block"
 
   processTextNode: (node) ->
     if string = normalizeSpaces(node.data)
@@ -193,7 +190,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   getMarginOfBlockElementAtIndex: (index) ->
     if element = @blockElements[index]
-      unless tagName(element) in @getBlockTagNames() or element in @processedElements
+      unless tagName(element) in getBlockTagNames() or element in @processedElements
         getBlockElementMargin(element)
 
   getMarginOfDefaultBlockElement: ->
