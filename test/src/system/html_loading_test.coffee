@@ -32,3 +32,18 @@ testGroup "HTML loading", ->
       getEditor().loadHTML("<article>a</article>")
       assert.textAttributes([0, 1], bold: true)
       expectDocument("a\n")
+
+  testGroup "styled block elements", template: "editor_with_block_styles", ->
+    test "<em> in <blockquote> with font-style: italic", (expectDocument) ->
+      getEditor().loadHTML("<blockquote>a<em>b</em></blockquote>")
+      assert.textAttributes([0, 1], {})
+      assert.textAttributes([1, 2], italic: true)
+      assert.blockAttributes([0, 2], ["quote"])
+      expectDocument("ab\n")
+
+    test "<strong> in <li> with font-weight: bold", (expectDocument) ->
+      getEditor().loadHTML("<ul><li>a<strong>b</strong></li></ul>")
+      assert.textAttributes([0, 1], {})
+      assert.textAttributes([1, 2], bold: true)
+      assert.blockAttributes([0, 2], ["bulletList","bullet"])
+      expectDocument("ab\n")
