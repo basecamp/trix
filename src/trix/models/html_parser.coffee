@@ -167,7 +167,13 @@ class Trix.HTMLParser extends Trix.BasicObject
         attributes[attribute] = true
       else if config.parser
         if value = config.parser(element)
-          attributes[attribute] = value
+          attributeInheritedFromBlock = false
+          for blockElement in @findBlockElementAncestors(element.firstChild)
+            if config.parser(blockElement) is value
+              attributeInheritedFromBlock = true
+              break
+          unless attributeInheritedFromBlock
+            attributes[attribute] = value
 
     if nodeIsAttachmentElement(element)
       if json = element.dataset.trixAttributes
@@ -186,6 +192,14 @@ class Trix.HTMLParser extends Trix.BasicObject
             attributes.push(config.listAttribute) if config.listAttribute
       element = element.parentNode
     attributes.reverse()
+
+  findBlockElementAncestors: (element) ->
+    ancestors = []
+    while element and element isnt @containerElement
+      if tagName(element) in getBlockTagNames()
+        ancestors.push(element)
+      element = element.parentNode
+    ancestors
 
   getMarginOfBlockElementAtIndex: (index) ->
     if element = @blockElements[index]
