@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, defer, endComposition, pressKey, startComposition, test, testGroup, triggerEvent, typeCharacters, updateComposition} = Trix.TestHelpers
+{assert, clickToolbarButton, defer, endComposition, insertNode, pressKey, selectNode, startComposition, test, testGroup, triggerEvent, typeCharacters, updateComposition} = Trix.TestHelpers
 
 testGroup "Composition input", template: "editor_empty", ->
   test "composing", (expectDocument) ->
@@ -67,6 +67,25 @@ testGroup "Composition input", template: "editor_empty", ->
       removeCharacters -1, ->
         pressKey "backspace", ->
           expectDocument "a \n"
+
+  # Simulates compositions in Firefox where the final composition data is
+  # dispatched as both compositionupdate and compositionend.
+  test "composition ending with same data as last update", (expectDocument) ->
+    element = getEditorElement()
+
+    triggerEvent(element, "compositionstart", data: "")
+    triggerEvent(element, "compositionupdate", data: "´")
+    node = document.createTextNode("´")
+    insertNode(node)
+    selectNode(node)
+    defer ->
+      triggerEvent(element, "compositionupdate", data: "é")
+      node.data = "é"
+      defer ->
+        triggerEvent(element, "compositionend", data: "é")
+        defer ->
+          assert.locationRange(index: 0, offset: 1)
+          expectDocument("é\n")
 
 removeCharacters = (direction, callback) ->
   selection = rangy.getSelection()
