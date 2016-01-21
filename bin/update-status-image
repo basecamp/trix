@@ -17,7 +17,7 @@ class UpdateStatusImage
     @config = {
       name: "trix",
       status_image_url: "https://saucelabs.com/browser-matrix/basecamp_trix.svg",
-      s3_bucket: "trix-editor.org",
+      s3_bucket: "trix-depot",
       s3_region: "us-east-1"
     }
   end
