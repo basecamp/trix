@@ -21,6 +21,7 @@ class Trix.InputController extends Trix.BasicObject
   constructor: (@element) ->
     @resetInputSummary()
 
+    @mutationCount = 0
     @mutationObserver = new Trix.MutationObserver @element
     @mutationObserver.delegate = this
 
@@ -56,6 +57,7 @@ class Trix.InputController extends Trix.BasicObject
   # Mutation observer delegate
 
   elementDidMutate: (mutationSummary) ->
+    @mutationCount++
     unless @inputSummary.composing
       @handleInput ->
         unless @mutationIsExpected(mutationSummary)
@@ -73,6 +75,12 @@ class Trix.InputController extends Trix.BasicObject
         unhandledAddition = mutationSummary.textAdded isnt @inputSummary.textAdded
         unhandledDeletion = mutationSummary.textDeleted? and not @inputSummary.didDelete
         not (unhandledAddition or unhandledDeletion)
+
+  unlessMutationOccurs: (callback) ->
+    mutationCount = @mutationCount
+    defer =>
+      if mutationCount is @mutationCount
+        callback()
 
   # File verification
 
@@ -242,16 +250,27 @@ class Trix.InputController extends Trix.BasicObject
       @setInputSummary(compositionUpdate: event.data)
 
     compositionend: (event) ->
-      {compositionStart, compositionRange} = @inputSummary
+      compositionEnd = event.data
+      {compositionStart, compositionUpdate, compositionRange} = @inputSummary
+
+      @responder?.forgetPlaceholder()
+      @setInputSummary(composing: false)
 
       if compositionStart? and compositionRange?
         @delegate?.inputControllerWillPerformTyping()
         @responder?.setSelectedRange(compositionRange)
-        @responder?.insertString(event.data)
+        @responder?.insertString(compositionEnd)
         @setInputSummary(preferDocument: true)
 
-      @responder?.forgetPlaceholder()
-      @setInputSummary(composing: false)
+        # Fix for compositions remaining selected in Firefox:
+        # If the last composition update is the same as the final composition then
+        # it's likely there won't be another mutation (and subsequent render + selection change).
+        # In that case, collapse the selection and request a render.
+        if compositionEnd is compositionUpdate
+          @unlessMutationOccurs =>
+            if @selectionIsExpanded()
+              @responder?.setSelection(compositionRange[1])
+              @requestRender()
 
     input: (event) ->
       event.stopPropagation()
