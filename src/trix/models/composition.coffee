@@ -97,7 +97,12 @@ class Trix.Composition extends Trix.BasicObject
     block = @document.getBlockAtIndex(endLocation.index)
 
     if block.hasAttributes()
-      if block.isListItem()
+      if block.getConfig("singleLine")?
+        if block.isEmpty()
+          @removeLastBlockAttribute()
+        else
+          @breakFormattedBlock()
+      else if block.isListItem()
         if block.isEmpty()
           @decreaseListLevel()
           @setSelection(startPosition)
@@ -242,6 +247,7 @@ class Trix.Composition extends Trix.BasicObject
       @setDocument(@document.addAttributeAtRange(attributeName, value, selectedRange))
 
   setBlockAttribute: (attributeName, value) ->
+    @removeLastBlockAttribute() if @getBlock()?.getConfig("leaf")
     return unless selectedRange = @getSelectedRange()
     @setDocument(@document.applyBlockAttributeAtRange(attributeName, value, selectedRange))
     @setSelection(selectedRange)
