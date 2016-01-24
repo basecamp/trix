@@ -1,0 +1,27 @@
+<%
+def svgo_data_uri(path, precision: 0)
+  svgo = "node_modules/.bin/svgo"
+
+  if File.exists?(svgo)
+    asset = depend_on_asset(path)
+   `#{svgo} -i #{asset.filename} -o - -p #{precision} --multipass --enable=removeViewBox --datauri=base64`
+  else
+    raise "svgo not installed, run `npm install`"
+  end
+end
+%>
+
+trix-toolbar .button_group button {
+  &.bold::before { background-image: url(<%= svgo_data_uri('trix/images/bold.svg', precision: 1) %>); }
+  &.italic::before { background-image: url(<%= svgo_data_uri('trix/images/italic.svg', precision: 1) %>); }
+  &.link::before { background-image: url(<%= svgo_data_uri('trix/images/link.svg', precision: 2) %>); }
+  &.strike::before { background-image: url(<%= svgo_data_uri('trix/images/strike.svg', precision: 2) %>); }
+  &.quote::before { background-image: url(<%= svgo_data_uri('trix/images/quote.svg', precision: 0) %>); }
+  &.code::before { background-image: url(<%= svgo_data_uri('trix/images/code.svg', precision: 1) %>); }
+  &.bullets::before { background-image: url(<%= svgo_data_uri('trix/images/bullets.svg', precision: 0) %>); }
+  &.numbers::before { background-image: url(<%= svgo_data_uri('trix/images/numbers.svg', precision: 1) %>); }
+  &.block-level.decrease::before { background-image: url(<%= svgo_data_uri('trix/images/block_level_decrease.svg', precision: 1) %>); }
+  &.block-level.increase::before { background-image: url(<%= svgo_data_uri('trix/images/block_level_increase.svg', precision: 1) %>); }
+  &.undo::before { background-image: url(<%= svgo_data_uri('trix/images/undo.svg', precision: 1) %>); }
+  &.redo::before { background-image: url(<%= svgo_data_uri('trix/images/redo.svg', precision: 1) %>); }
+}
