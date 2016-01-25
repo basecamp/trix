@@ -4,7 +4,8 @@ def svgo_data_uri(path, precision: 0)
 
   if File.exists?(svgo)
     asset = depend_on_asset(path)
-   `#{svgo} -i #{asset.filename} -o - -p #{precision} --multipass --enable=removeViewBox --datauri=base64`
+    uri = `#{svgo} -i #{asset.filename} -o - -p #{precision} --multipass --enable=removeViewBox --datauri=unenc`.chomp
+    %Q('#{uri}')
   else
     raise "svgo not installed, run `npm install`"
   end
