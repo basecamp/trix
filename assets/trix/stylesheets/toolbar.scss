@@ -24,7 +24,7 @@ trix-toolbar {
       height: 28px;
       width: 40px;
       background: #fff;
-      border: none;
+      border: 0;
       border-bottom: 1px solid #ddd;
 
       &::before {
@@ -77,8 +77,7 @@ trix-toolbar {
       input[type=button] {
         font-size: 12px;
         height: 24px;
-        width: 50px;
-        padding: 1px 8px 0 8px;
+        padding: 1px 8px 0;
         width: auto;
         opacity: .6;
         -webkit-appearance: none;
@@ -100,7 +99,7 @@ trix-toolbar {
         -moz-appearance: none;
 
         &.validate:invalid {
-          box-shadow: #F00 0px 0px 1.5px 1px;
+          box-shadow: #F00 0 0 1.5px 1px;
         }
       }
 
