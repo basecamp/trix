@@ -8,9 +8,6 @@
     "dist/*.css",
     "dist/*.js"
   ],
-  "scripts": {
-    "test": "true"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/basecamp/trix.git"
@@ -25,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/basecamp/trix/issues"
   },
-  "homepage": "http://trix-editor.org/"
+  "homepage": "http://trix-editor.org/",
+  "devDependencies": {
+    "svgo": "^0.6.1"
+  }
 }
