@@ -2,7 +2,7 @@
  findClosestElementFromNode, elementContainsNode, nodeIsAttachmentElement} = Trix
 
 class Trix.HTMLParser extends Trix.BasicObject
-  allowedAttributes = "style href src width height class".split(" ")
+  allowedAttributes = "style href src width height class target".split(" ")
 
   @parse: (html, options) ->
     parser = new this html, options

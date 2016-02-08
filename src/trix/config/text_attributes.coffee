@@ -17,7 +17,7 @@ Trix.config.textAttributes =
       {attachmentSelector} = Trix.AttachmentView
       matchingSelector = "a:not(#{attachmentSelector})"
       if link = Trix.findClosestElementFromNode(element, {matchingSelector})
-        link.getAttribute("href")
+        {href: link.getAttribute("href"), target: link.getAttribute("target")}
   strike:
     tagName: "del"
     inheritable: true
