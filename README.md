@@ -358,9 +358,10 @@ Trix was created by [Javan Makhmali](https://twitter.com/javan) and [Sam Stephen
 
 Trix is written in [CoffeeScript](https://github.com/jashkenas/coffee-script) and compiled to JavaScript with [Blade](https://github.com/javan/blade).
 
-To build Trix from source, you will need a recent version of Ruby. From inside a checkout of the Trix Git repository, issue the following commands to build the distributable files in `dist/`:
+To build Trix from source, you will need a recent version of Ruby, as well npm. From inside a checkout of the Trix Git repository, issue the following commands to build the distributable files in `dist/`:
 
 ```
+$ npm install
 $ gem install bundler
 $ bundle install
 $ bin/blade build
