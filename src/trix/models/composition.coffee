@@ -114,7 +114,7 @@ class Trix.Composition extends Trix.BasicObject
         else
           @insertString("\n")
     else
-      @insertString("\n")
+      @insertBlockBreak()
 
   insertHTML: (html) ->
     startPosition = @getPosition()

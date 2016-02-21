@@ -21,6 +21,13 @@ testGroup "Composition input", template: "editor_empty", ->
       pressKey "return", ->
         expectDocument "ab\n\n"
 
+  test "pressing return creates new block", (expectDocument) ->
+    typeCharacters "ab", ->
+      pressKey "return", ->
+        document = getDocument()
+        assert.equal document.getBlockCount(), 2
+        expectDocument "ab\n\n"
+
   test "composing formatted text", (expectDocument) ->
     typeCharacters "abc", ->
       clickToolbarButton attribute: "bold", ->
