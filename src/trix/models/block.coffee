@@ -122,9 +122,6 @@ class Trix.Block extends Trix.Object
       right = @copyWithText(@text.getTextAtRange([offset, @getLength()]))
     [left, right]
 
-  toString: ->
-    @text.toString()
-
   getBlockBreakPosition: ->
     @text.getLength() - 1
 
