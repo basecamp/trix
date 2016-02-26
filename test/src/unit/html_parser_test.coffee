@@ -47,10 +47,22 @@ testGroup "Trix.HTMLParser", ->
     expectedHTML = """<div><!--block-->a</div><div><!--block-->b</div>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
+  test "preserves consecutive spaces", ->
+    html = """<div>a   b  c</div>"""
+    expectedHTML = """<div><!--block-->a   b  c</div>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
   test "converts newlines to spaces", ->
     html = "<div>a\nb \nc \n d \n\ne</div><pre>1\n2</pre>"
     expectedHTML = """<div><!--block-->a b c d e</div><pre><!--block-->1\n2</pre>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
+  test "preserves newlines if the reference element can render them", (done) ->
+    html = "<div>a\n\nb</div>"
+    expectedHTML = """<div><!--block-->a\n\nb</div>"""
+    getReferenceElement (referenceElement) ->
+      assert.documentHTMLEqual Trix.HTMLParser.parse(html, {referenceElement}).getDocument(), expectedHTML
+      done()
 
   test "parses entire HTML document", ->
     html = """<html><head><style>.bold {font-weight: bold}</style></head><body><span class="bold">abc</span></body></html>"""
