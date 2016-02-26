@@ -51,28 +51,28 @@ class Trix.HTMLParser extends Trix.BasicObject
   processNode: (node) ->
     switch node.nodeType
       when Node.TEXT_NODE
-        @appendBlockForElement(node)
+        @appendBlockForNode(node)
         @processTextNode(node)
       when Node.ELEMENT_NODE
-        @appendBlockForElement(node)
+        @appendBlockForNode(node)
         @processElement(node)
 
-  appendBlockForElement: (element) ->
-    if @isBlockElement(element) and not @isBlockElement(element.firstChild)
-      attributes = @getBlockAttributes(element)
-      unless elementContainsNode(@currentBlockElement, element) and arraysAreEqual(attributes, @currentBlock.attributes)
-        @currentBlock = @appendBlockForAttributesWithElement(attributes, element)
-        @currentBlockElement = element
+  appendBlockForNode: (node) ->
+    if @isBlockElement(node) and not @isBlockElement(node.firstChild)
+      attributes = @getBlockAttributes(node)
+      unless elementContainsNode(@currentBlockElement, node) and arraysAreEqual(attributes, @currentBlock.attributes)
+        @currentBlock = @appendBlockForAttributesWithElement(attributes, node)
+        @currentBlockElement = node
 
-    else if @currentBlockElement and not elementContainsNode(@currentBlockElement, element) and not @isBlockElement(element)
-      if parentBlockElement = @findParentBlockElement(element)
-        @appendBlockForElement(parentBlockElement)
+    else if @currentBlockElement and not elementContainsNode(@currentBlockElement, node) and not @isBlockElement(node)
+      if parentBlockElement = @findParentBlockElement(node)
+        @appendBlockForNode(parentBlockElement)
       else
         @currentBlock = @appendEmptyBlock()
         @currentBlockElement = null
 
-  findParentBlockElement: (element) ->
-    {parentNode} = element
+  findParentBlockElement: (node) ->
+    {parentNode} = node
     while parentNode and parentNode isnt @containerElement
       if @isBlockElement(parentNode) and parentNode in @blockElements
         return parentNode
