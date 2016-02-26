@@ -72,12 +72,12 @@ class Trix.HTMLParser extends Trix.BasicObject
         @currentBlockElement = null
 
   findParentBlockElement: (element) ->
-    {parentElement} = element
-    while parentElement and parentElement isnt @containerElement
-      if @isBlockElement(parentElement) and parentElement in @blockElements
-        return parentElement
+    {parentNode} = element
+    while parentNode and parentNode isnt @containerElement
+      if @isBlockElement(parentNode) and parentNode in @blockElements
+        return parentNode
       else
-        {parentElement} = parentElement
+        {parentNode} = parentNode
     null
 
   isExtraBR: (element) ->
