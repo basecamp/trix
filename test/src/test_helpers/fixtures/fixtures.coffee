@@ -17,9 +17,6 @@ cursorTarget = Trix.makeElement(
   data: trixSelection: true, trixCursorTarget: true, trixSerialize: false
 ).outerHTML
 
-removeWhitespace = (string) ->
-  string.replace(/\s/g, "")
-
 @fixtures =
   "bold text":
     document: createDocument(["abc", bold: true])
@@ -32,7 +29,7 @@ removeWhitespace = (string) ->
 
   "text with newline":
     document: createDocument(["ab\nc"])
-    html: "<div>#{blockComment}ab<br>c</div>"
+    html: "<div>#{blockComment}ab\nc</div>"
 
   "text with link":
     document: createDocument(["abc", href: "http://example.com"])
@@ -50,50 +47,6 @@ removeWhitespace = (string) ->
         ]
       ]
     html: """<div>#{blockComment}<a href="http://example.com">ab<em>c</em></a></div>"""
-
-  "spaces 1":
-    document: createDocument([" a"])
-    html: """<div>#{blockComment}&nbsp;a</div>"""
-
-  "spaces 2":
-    document: createDocument(["  a"])
-    html: """<div>#{blockComment}&nbsp; a</div>"""
-
-  "spaces 3":
-    document: createDocument(["   a"])
-    html: """<div>#{blockComment}&nbsp; &nbsp;a</div>"""
-
-  "spaces 4":
-    document: createDocument([" a "])
-    html: """<div>#{blockComment}&nbsp;a&nbsp;</div>"""
-
-  "spaces 5":
-    document: createDocument(["a  b"])
-    html: """<div>#{blockComment}a&nbsp; b</div>"""
-
-  "spaces 6":
-    document: createDocument(["a   b"])
-    html: """<div>#{blockComment}a &nbsp; b</div>"""
-
-  "spaces 7":
-    document: createDocument(["a    b"])
-    html: """<div>#{blockComment}a&nbsp; &nbsp; b</div>"""
-
-  "spaces 8":
-    document: createDocument(["a b "])
-    html: """<div>#{blockComment}a b&nbsp;</div>"""
-
-  "spaces 9":
-    document: createDocument(["a b c"])
-    html: """<div>#{blockComment}a b c</div>"""
-
-  "spaces 10":
-    document: createDocument(["a "])
-    html: """<div>#{blockComment}a&nbsp;</div>"""
-
-  "spaces 11":
-    document: createDocument(["a  "])
-    html: """<div>#{blockComment}a &nbsp;</div>"""
 
   "quote formatted block":
     document: createDocument(["abc", {}, ["quote"]])
@@ -222,8 +175,8 @@ removeWhitespace = (string) ->
 
     text = stringText.appendText(attachmentText)
 
-    html: "<div>#{blockComment}a<br>b#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"
-    serializedHTML: "<div>a<br>b#{serializedFigure.outerHTML}</div>"
+    html: "<div>#{blockComment}a\nb#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"
+    serializedHTML: "<div>a\nb#{serializedFigure.outerHTML}</div>"
     document: new Trix.Document [new Trix.Block text]
 
   "image attachment with edited caption": do ->
@@ -323,44 +276,8 @@ removeWhitespace = (string) ->
       ["\nc\n", {}, ["quote"]],
       ["d", {}, ["quote", "code"]]
     )
-    html: removeWhitespace """
-      <blockquote>
-        #{blockComment}
-        a
-        <br>
-        <br>
-        <pre>
-          #{blockComment}
-          b
-        </pre>
-        #{blockComment}
-        <br>
-        c
-        <br>
-        <br>
-        <pre>
-          #{blockComment}
-          d
-        </pre>
-      </blockquote>
-    """
-    serializedHTML: removeWhitespace """
-      <blockquote>
-        a
-        <br>
-        <br>
-        <pre>
-          b
-        </pre>
-        <br>
-        c
-        <br>
-        <br>
-        <pre>
-          d
-        </pre>
-      </blockquote>
-    """
+    html: "<blockquote>#{blockComment}a\n<br><pre>#{blockComment}b</pre>#{blockComment}\nc\n<br><pre>#{blockComment}d</pre></blockquote>"
+    serializedHTML: "<blockquote>a\n<br><pre>b</pre>\nc\n<br><pre>d</pre></blockquote>"
 
   "nested code, quote, and list in quote":
     document: createDocument(
@@ -371,64 +288,8 @@ removeWhitespace = (string) ->
       ["\ne\n", {}, ["quote"]],
       ["f", {}, ["quote", "bulletList", "bullet"]]
     )
-    html: removeWhitespace """
-     <blockquote>
-      #{blockComment}
-      a
-      <br>
-      <br>
-      <pre>
-        #{blockComment}
-        b
-      </pre>
-      #{blockComment}
-      <br>
-      c
-      <br>
-      <br>
-      <blockquote>
-        #{blockComment}
-        d
-      </blockquote>
-      #{blockComment}
-      <br>
-      e
-      <br>
-      <br>
-      <ul>
-        <li>
-          #{blockComment}
-          f
-        </li>
-      </ul>
-    </blockquote>
-    """
-    serializedHTML: removeWhitespace """
-      <blockquote>
-        a
-        <br>
-        <br>
-        <pre>
-          b
-        </pre>
-        <br>
-        c
-        <br>
-        <br>
-        <blockquote>
-          d
-        </blockquote>
-        <br>
-        e
-        <br>
-        <br>
-        <ul>
-          <li>
-            f
-          </li>
-        </ul>
-      </blockquote>
-    """
+    html: "<blockquote>#{blockComment}a\n<br><pre>#{blockComment}b</pre>#{blockComment}\nc\n<br><blockquote>#{blockComment}d</blockquote>#{blockComment}\ne\n<br><ul><li>#{blockComment}f</li></ul></blockquote>"
+    serializedHTML: "<blockquote>a\n<br><pre>b</pre>\nc\n<br><blockquote>d</blockquote>\ne\n<br><ul><li>f</li></ul></blockquote>"
 
   "nested quote and list":
     document: createDocument(["ab3", {}, ["quote", "bulletList", "bullet"]])
@@ -456,7 +317,7 @@ removeWhitespace = (string) ->
 
   "blocks beginning with newlines":
     document: createDocument(["\na", {}, ["quote"]], ["\nb", {}, []], ["\nc", {}, ["quote"]])
-    html: "<blockquote>#{blockComment}<br>a</blockquote><div>#{blockComment}<br>b</div><blockquote>#{blockComment}<br>c</blockquote>"
+    html: "<blockquote>#{blockComment}\na</blockquote><div>#{blockComment}\nb</div><blockquote>#{blockComment}\nc</blockquote>"
 
   "blocks beginning with formatted text":
     document: createDocument(["a", { bold: true }, ["quote"]], ["b", { italic: true }, []], ["c", { bold: true }, ["quote"]])
@@ -464,7 +325,7 @@ removeWhitespace = (string) ->
 
   "text with newlines before block":
     document: createDocument(["a\nb"], ["c", {}, ["quote"]])
-    html: "<div>#{blockComment}a<br>b</div><blockquote>#{blockComment}c</blockquote>"
+    html: "<div>#{blockComment}a\nb</div><blockquote>#{blockComment}c</blockquote>"
 
 @eachFixture = (callback) ->
   for name, details of @fixtures

@@ -8,7 +8,6 @@ class Trix.PieceView extends Trix.ObjectView
     super
     @piece = @object
     @attributes = @piece.getAttributes()
-    {@textConfig} = @options
 
     if @piece.attachment
       @attachment = @piece.attachment
@@ -19,7 +18,7 @@ class Trix.PieceView extends Trix.ObjectView
     nodes = if @attachment
       @createAttachmentNodes()
     else
-      @createStringNodes()
+      [document.createTextNode(@string)]
 
     if element = @createElement()
       innerElement = findInnerElement(element)
@@ -35,21 +34,6 @@ class Trix.PieceView extends Trix.ObjectView
 
     view = @createChildView(constructor, @piece.attachment, {@piece})
     view.getNodes()
-
-  createStringNodes: ->
-    if @textConfig?.plaintext
-      [document.createTextNode(@string)]
-    else
-      nodes = []
-      for substring, index in @string.split("\n")
-        if index > 0
-          element = makeElement("br")
-          nodes.push(element)
-
-        if length = substring.length
-          node = document.createTextNode(preserveSpaces(substring))
-          nodes.push(node)
-      nodes
 
   createElement: ->
     for key of @attributes when config = Trix.config.textAttributes[key]
@@ -79,12 +63,3 @@ class Trix.PieceView extends Trix.ObjectView
         attributes = {}
         attributes[key] = value
         return makeElement(config.groupTagName, attributes)
-
-  preserveSpaces = (string) ->
-    nbsp = Trix.NON_BREAKING_SPACE
-    string
-      .replace(/\ $/, nbsp)
-      .replace(/(\S)\ {3}(\S)/g, "$1 #{nbsp} $2")
-      .replace(/\ {2}/g, "#{nbsp} ")
-      .replace(/\ {2}/g, " #{nbsp}")
-      .replace(/^\ /, nbsp)

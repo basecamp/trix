@@ -61,7 +61,7 @@ class Trix.InputController extends Trix.BasicObject
     unless @inputSummary.composing
       @handleInput ->
         unless @mutationIsExpected(mutationSummary)
-          @responder?.replaceHTML(@element.innerHTML)
+          @responder?.replaceHTML(@element.innerHTML, referenceElement: @element)
 
         @resetInputSummary()
         @requestRender()

@@ -51,6 +51,7 @@ class Trix.HTMLParser extends Trix.BasicObject
   processNode: (node) ->
     switch node.nodeType
       when Node.TEXT_NODE
+        @appendBlockForElement(node)
         @processTextNode(node)
       when Node.ELEMENT_NODE
         @appendBlockForElement(node)
