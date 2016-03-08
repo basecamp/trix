@@ -116,7 +116,8 @@ Trix.extend
       for key, value of options.attributes
         if typeof value is "object"
           for innerKey, innerValue of value
-            element.setAttribute(innerKey, innerValue)
+            if innerValue
+              element.setAttribute(innerKey, innerValue)
         else
           element.setAttribute(key, value)
 
