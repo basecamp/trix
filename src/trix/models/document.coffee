@@ -451,12 +451,6 @@ class Trix.Document extends Trix.Object
   getAttachmentPieceForAttachment: (attachment) ->
     return piece for piece in @getAttachmentPieces() when piece.attachment is attachment
 
-  rangeFromLocationRange: (locationRange) ->
-    locationRange = normalizeRange(locationRange)
-    leftPosition = @positionFromLocation(locationRange[0])
-    rightPosition = @positionFromLocation(locationRange[1]) unless rangeIsCollapsed(locationRange)
-    [leftPosition, rightPosition ? leftPosition]
-
   locationFromPosition: (position) ->
     location = @blockList.findIndexAndOffsetAtPosition(Math.max(0, position))
     if location.index?
