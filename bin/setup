@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+# Use binstubs. Work from the root dir.
+app_root="$( cd "$(dirname "$0")/.."; pwd )"
+
+# Prefer bin/ executables
+export PATH="$app_root/bin:$PATH"
+
+if [ "$1" = "-v" ]; then
+  exec 3>&1
+else
+  exec 3>/dev/null
+  exec 4>&1
+  trap 'echo "Setup failed - run \`bin/setup -v\` to see the error output" >&4' ERR
+fi
+
+brew_install_missing() {
+  if which -s brew; then
+    if ! which -s "$1"; then
+      echo " -- Installing Homebrew package: $@"
+      brew reinstall "$@"
+    fi
+  else
+    return 1
+  fi
+}
+
+abort() {
+  echo "$@"
+  return 2
+}
+
+echo "--- Installing Ruby gems"
+{
+  if which -s rbenv; then
+    rbenv install --skip-existing
+  else
+    if ! which -s ruby; then
+      brew_install_missing ruby || abort "Can't find or install Ruby. Install it from https://www.ruby-lang.org or with https://github.com/rbenv/rbenv"
+    fi
+  fi
+  gem list -i bundler >/dev/null 2>&1 || gem install bundler
+  bundle check || bundle install
+} >&3 2>&1
+
+echo "--- Installing npm modules"
+{
+  if ! which -s npm; then
+    brew_install_missing "npm" || abort "Can't find or install npm. Install it from https://nodejs.org"
+  fi
+  npm install
+} >&3 2>&1
+
+if [ -d "$HOME/.pow" ]; then
+  echo "--- Setting up Pow"
+  { ln -nfs "$app_root" "$HOME/.pow/trix"
+    touch tmp/restart.txt
+  } >&3 2>&1
+fi
+
+echo
+echo "Done!"
+if [ -L "$HOME/.pow/trix" ]; then
+  echo " * Open http://trix.dev to develop in-browser"
+else
+  echo " * Run \`bin/rackup\` to develop in-browser"
+fi
+echo " * Run \`bin/blade build\` to build Trix"
