@@ -7,8 +7,7 @@ testGroup "Trix.LocationMapper", ->
       # 0 <div>
       #     0 <!--block-->
       #     1 <strong>
-      #         0 a
-      #         1 <br>
+      #         0 a\n
       #       </strong>
       #     2 <br>
       #   </div>
@@ -46,7 +45,6 @@ testGroup "Trix.LocationMapper", ->
       { location: [0, 0],  container: [0, 1],     offset: 0 }
       { location: [0, 0],  container: [0, 1, 0],  offset: 0 }
       { location: [0, 1],  container: [0, 1, 0],  offset: 1 }
-      { location: [0, 1],  container: [0, 1],     offset: 1 }
       { location: [0, 2],  container: [0, 1],     offset: 2 }
       { location: [0, 2],  container: [0],        offset: 2 }
       { location: [0, 3],  container: [],         offset: 1 }
@@ -113,8 +111,7 @@ testGroup "Trix.LocationMapper", ->
       # 0 <div>
       #     0 <!--block-->
       #     0 <strong>
-      #         0 a
-      #         1 <br>
+      #         0 a\n
       #       </strong>
       #   </div>
       # </trix-document>
@@ -125,7 +122,7 @@ testGroup "Trix.LocationMapper", ->
     ]
 
     location = index: 0, offset: 2
-    container = findContainer([0])
+    container = findContainer([0, 1, 0])
     offset = 2
 
     assert.deepEqual mapper.findContainerAndOffsetFromLocation(location), [container, offset]

@@ -38,6 +38,10 @@ Trix.registerElement "trix-editor", do ->
   # Style
 
   defaultCSS: """
+    %t {
+      white-space: pre-wrap;
+    }
+
     %t:empty:not(:focus)::before {
       content: attr(placeholder);
       color: graytext;

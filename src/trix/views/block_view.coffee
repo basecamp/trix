@@ -14,8 +14,7 @@ class Trix.BlockView extends Trix.ObjectView
     if @block.isEmpty()
       nodes.push(makeElement("br"))
     else
-      textConfig = Trix.config.blockAttributes[@block.getLastAttribute()]?.text
-      textView = @findOrCreateCachedChildView(Trix.TextView, @block.text, {textConfig})
+      textView = @findOrCreateCachedChildView(Trix.TextView, @block.text)
       nodes.push(textView.getNodes()...)
       nodes.push(makeElement("br")) if @shouldAddExtraNewlineElement()
 

@@ -7,8 +7,6 @@ Trix.config.blockAttributes = attributes =
     nestable: true
   code:
     tagName: "pre"
-    text:
-      plaintext: true
   bulletList:
     tagName: "ul"
     parse: false

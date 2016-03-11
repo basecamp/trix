@@ -1,4 +1,6 @@
 .trix-content {
+  white-space: pre-wrap;
+
   blockquote {
     margin: 0 0 0 5px;
     padding: 0 0 0 10px;
@@ -10,7 +12,6 @@
     font-size: 12px;
     margin: 0;
     padding: 10px;
-    white-space: pre-wrap;
     background-color: #eee;
   }
 

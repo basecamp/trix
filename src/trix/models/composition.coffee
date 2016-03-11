@@ -129,8 +129,8 @@ class Trix.Composition extends Trix.BasicObject
     @setSelection(endPosition)
     @notifyDelegateOfInsertionAtRange([endPosition, endPosition])
 
-  replaceHTML: (html) ->
-    document = Trix.Document.fromHTML(html).copyUsingObjectsFromDocument(@document)
+  replaceHTML: (html, options) ->
+    document = Trix.Document.fromHTML(html, options).copyUsingObjectsFromDocument(@document)
     locationRange = @getLocationRange(strict: false)
     selectedRange = @document.rangeFromLocationRange(locationRange)
     @setDocument(document)
