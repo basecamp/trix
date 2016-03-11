@@ -12,7 +12,12 @@ def svgo_data_uri(path, precision: 0)
 end
 %>
 
-trix-toolbar .button_group button {
+trix-toolbar button.icon {
+  &::before {
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
   &.bold::before { background-image: url(<%= svgo_data_uri('trix/images/bold.svg', precision: 1) %>); }
   &.italic::before { background-image: url(<%= svgo_data_uri('trix/images/italic.svg', precision: 1) %>); }
   &.link::before { background-image: url(<%= svgo_data_uri('trix/images/link.svg', precision: 2) %>); }
