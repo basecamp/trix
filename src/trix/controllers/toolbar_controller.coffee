@@ -1,12 +1,12 @@
 {handleEvent, triggerEvent, findClosestElementFromNode} = Trix
 
 class Trix.ToolbarController extends Trix.BasicObject
-  actionButtonSelector = "button[data-action]"
-  attributeButtonSelector = "button[data-attribute]"
+  actionButtonSelector = "button[data-trix-action]"
+  attributeButtonSelector = "button[data-trix-attribute]"
   toolbarButtonSelector = [actionButtonSelector, attributeButtonSelector].join(", ")
-  dialogSelector = ".dialog[data-dialog]"
+  dialogSelector = ".dialog[data-trix-dialog]"
   activeDialogSelector = "#{dialogSelector}.active"
-  dialogButtonSelector = "#{dialogSelector} input[data-method]"
+  dialogButtonSelector = "#{dialogSelector} input[data-trix-method]"
   dialogInputSelector = "#{dialogSelector} input[type=text], #{dialogSelector} input[type=url]"
 
   constructor: (@element) ->
@@ -46,7 +46,7 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   didClickDialogButton: (event, element) =>
     dialogElement = findClosestElementFromNode(element, matchingSelector: dialogSelector)
-    method = element.getAttribute("data-method")
+    method = element.getAttribute("data-trix-method")
     @[method].call(this, dialogElement)
 
   didKeyDownDialogInput: (event, element) =>
@@ -90,8 +90,8 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   applyKeyboardCommand: (keys) ->
     keyString = JSON.stringify(keys.sort())
-    for button in @element.querySelectorAll("[data-key]")
-      buttonKeys = button.getAttribute("data-key").split("+")
+    for button in @element.querySelectorAll("[data-trix-key]")
+      buttonKeys = button.getAttribute("data-trix-key").split("+")
       buttonKeyString = JSON.stringify(buttonKeys.sort())
       if buttonKeyString is keyString
         triggerEvent("mousedown", onElement: button)
@@ -154,7 +154,7 @@ class Trix.ToolbarController extends Trix.BasicObject
       input.classList.remove("validate")
 
   getDialog: (dialogName) ->
-    @element.querySelector(".dialog[data-dialog=#{dialogName}]")
+    @element.querySelector(".dialog[data-trix-dialog=#{dialogName}]")
 
   getInputForDialog = (element, attributeName) ->
     attributeName ?= getAttributeName(element)
@@ -163,10 +163,10 @@ class Trix.ToolbarController extends Trix.BasicObject
   # General helpers
 
   getActionName = (element) ->
-    element.getAttribute("data-action")
+    element.getAttribute("data-trix-action")
 
   getAttributeName = (element) ->
-    element.getAttribute("data-attribute")
+    element.getAttribute("data-trix-attribute")
 
   getDialogName = (element) ->
-    element.getAttribute("data-dialog")
+    element.getAttribute("data-trix-dialog")
