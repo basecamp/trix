@@ -25,7 +25,6 @@ trix-toolbar {
       position: relative;
       float: left; // Collapse whitespace between elements
       font-size: inherit;
-      font-weight: bold;
       padding: 0;
       margin: 0;
       outline: none;
@@ -33,6 +32,7 @@ trix-toolbar {
       border-bottom: 1px solid #ddd;
       border-radius: 0;
       background: transparent;
+      transition: all 0.2s ease;
 
       &:not(:first-child) {
         border-left: 1px solid #ccc;
@@ -74,9 +74,17 @@ trix-toolbar {
       }
 
       &:not(.icon) {
-        padding: 0 0.5em;
+        font-size: 75%;
+        font-weight: 600;
         white-space: nowrap;
+        padding: 0 0.5em;
         color: rgba(0,0,0, $opacity-normal);
+
+        @media(max-width: 767px) {
+          font-size: 70%;
+          letter-spacing: -0.01em;
+          padding: 0 0.3em;
+        }
 
         &.active {
           color: rgba(0,0,0, $opacity-active);
