@@ -63,6 +63,12 @@ testGroup "Trix.HTMLParser", ->
     expectedHTML = """<div><!--block-->a&nbsp;<strong>b</strong>&nbsp;<em>c</em></div>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
+  test "parses spanned text elements that don't have a parser function", ->
+    assert.notOk Trix.config.textAttributes.strike.parser
+    html = """<del>a <strong>b</strong></del>"""
+    expectedHTML = """<div><!--block--><del>a&nbsp;</del><strong><del>b</del></strong></div>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
   test "translates tables into plain text", ->
     html = """<table><tr><td>a</td><td>b</td></tr><tr><td>1</td><td><p>2</p></td></tr><table>"""
     expectedHTML = """<div><!--block-->a | b<br>1 | 2</div>"""
