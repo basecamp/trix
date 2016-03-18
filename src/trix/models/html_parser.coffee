@@ -153,7 +153,7 @@ class Trix.HTMLParser extends Trix.BasicObject
   getTextAttributes: (element) ->
     attributes = {}
     for attribute, config of Trix.config.textAttributes
-      if config.tagName and tagName(element) is config.tagName
+      if config.tagName and findClosestElementFromNode(element, matchingSelector: config.tagName)
         attributes[attribute] = true
       else if config.parser
         if value = config.parser(element)
