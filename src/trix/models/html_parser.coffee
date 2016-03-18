@@ -79,11 +79,6 @@ class Trix.HTMLParser extends Trix.BasicObject
         {parentElement} = parentElement
     null
 
-  isExtraBR: (element) ->
-    tagName(element) is "br" and
-      isBlockElement(element.parentNode) and
-      element.parentNode.lastChild is element
-
   processTextNode: (node) ->
     if string = normalizeSpaces(node.data)
       unless elementCanDisplayNewlines(node.parentNode)
@@ -102,7 +97,7 @@ class Trix.HTMLParser extends Trix.BasicObject
     else
       switch tagName(element)
         when "br"
-          unless @isExtraBR(element) or isBlockElement(element.nextSibling)
+          unless isExtraBR(element) or isBlockElement(element.nextSibling)
             @appendStringWithAttributes("\n", @getTextAttributes(element))
           @processedElements.push(element)
         when "img"
@@ -274,6 +269,11 @@ class Trix.HTMLParser extends Trix.BasicObject
     return unless /^\s*$/.test(node.data)
     return if elementCanDisplayNewlines(node.parentNode)
     isBlockElement(node.previousSibling) and isBlockElement(node.nextSibling)
+
+  isExtraBR = (element) ->
+    tagName(element) is "br" and
+      isBlockElement(element.parentNode) and
+      element.parentNode.lastChild is element
 
   elementCanDisplayNewlines = (element) ->
     {whiteSpace} = window.getComputedStyle(element)
