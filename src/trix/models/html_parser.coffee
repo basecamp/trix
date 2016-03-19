@@ -57,13 +57,16 @@ class Trix.HTMLParser extends Trix.BasicObject
         @processElement(node)
 
   appendBlockForElement: (element) ->
-    if isBlockElement(element) and not isBlockElement(element.firstChild)
+    elementIsBlockElement = isBlockElement(element)
+    currentBlockContainsElement = elementContainsNode(@currentBlockElement, element)
+
+    if elementIsBlockElement and not isBlockElement(element.firstChild)
       attributes = @getBlockAttributes(element)
-      unless elementContainsNode(@currentBlockElement, element) and arraysAreEqual(attributes, @currentBlock.attributes)
+      unless currentBlockContainsElement and arraysAreEqual(attributes, @currentBlock.attributes)
         @currentBlock = @appendBlockForAttributesWithElement(attributes, element)
         @currentBlockElement = element
 
-    else if @currentBlockElement and not elementContainsNode(@currentBlockElement, element) and not isBlockElement(element)
+    else if @currentBlockElement and not currentBlockContainsElement and not elementIsBlockElement
       if parentBlockElement = @findParentBlockElement(element)
         @appendBlockForElement(parentBlockElement)
       else
