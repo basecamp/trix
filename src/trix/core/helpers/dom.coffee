@@ -43,11 +43,15 @@ Trix.extend
 
   findClosestElementFromNode: (node, {matchingSelector} = {}) ->
     node = node.parentNode until not node? or node.nodeType is Node.ELEMENT_NODE
+    return unless node?
 
     if matchingSelector?
-      while node
-        return node if Trix.elementMatchesSelector(node, matchingSelector)
-        node = node.parentNode
+      if node.closest
+        node.closest(matchingSelector)
+      else
+        while node
+          return node if Trix.elementMatchesSelector(node, matchingSelector)
+          node = node.parentNode
     else
       node
 
