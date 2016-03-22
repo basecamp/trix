@@ -42,10 +42,12 @@ Trix.extend
       match.call(element, selector)
 
   findClosestElementFromNode: (node, {matchingSelector} = {}) ->
-    node = node.parentNode until not node? or node.nodeType is Node.ELEMENT_NODE
+    until not node? or node.nodeType is Node.ELEMENT_NODE
+      node = if node.nodeName.toLowerCase() == 'trix-editor' then null else node.parentNode
 
     if matchingSelector?
       while node
+        return null if node.nodeName.toLowerCase() == 'trix-editor'
         return node if Trix.elementMatchesSelector(node, matchingSelector)
         node = node.parentNode
     else
