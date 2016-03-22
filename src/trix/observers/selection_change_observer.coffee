@@ -1,3 +1,5 @@
+{getDOMRange} = Trix
+
 class Trix.SelectionChangeObserver extends Trix.BasicObject
   constructor: ->
     @selectionManagers = []
@@ -44,10 +46,6 @@ class Trix.SelectionChangeObserver extends Trix.BasicObject
     if @started
       @update()
       requestAnimationFrame(@run)
-
-  getDOMRange = ->
-    selection = window.getSelection()
-    selection.getRangeAt(0) if selection.rangeCount > 0
 
   domRangesAreEqual = (left, right) ->
     left?.startContainer is right?.startContainer and
