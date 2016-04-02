@@ -271,7 +271,7 @@ class Trix.HTMLParser extends Trix.BasicObject
     return unless node?.nodeType is Node.TEXT_NODE
     return unless /^\s*$/.test(node.data)
     return if elementCanDisplayNewlines(node.parentNode)
-    isBlockElement(node.previousSibling) and isBlockElement(node.nextSibling)
+    not node.previousSibling or isBlockElement(node.previousSibling) or not node.nextSibling or isBlockElement(node.nextSibling)
 
   isExtraBR = (element) ->
     tagName(element) is "br" and
