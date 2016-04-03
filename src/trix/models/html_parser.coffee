@@ -82,22 +82,21 @@ class Trix.HTMLParser extends Trix.BasicObject
   processNode: (node) ->
     switch node.nodeType
       when Node.TEXT_NODE
-        unless isInsignificantTextNode(node)
-          @processTextNode(node)
+        @processTextNode(node)
       when Node.ELEMENT_NODE
-        unless isInsignificantTextNode(node.firstChild)
-          @appendBlockForElement(node)
-          @processElement(node)
+        @appendBlockForElement(node)
+        @processElement(node)
 
   appendBlockForElement: (element) ->
     elementIsBlockElement = isBlockElement(element)
     currentBlockContainsElement = elementContainsNode(@currentBlockElement, element)
 
     if elementIsBlockElement and not isBlockElement(element.firstChild)
-      attributes = @getBlockAttributes(element)
-      unless currentBlockContainsElement and arraysAreEqual(attributes, @currentBlock.attributes)
-        @currentBlock = @appendBlockForAttributesWithElement(attributes, element)
-        @currentBlockElement = element
+      unless isInsignificantTextNode(element.firstChild) and isBlockElement(element.firstElementChild)
+        attributes = @getBlockAttributes(element)
+        unless currentBlockContainsElement and arraysAreEqual(attributes, @currentBlock.attributes)
+          @currentBlock = @appendBlockForAttributesWithElement(attributes, element)
+          @currentBlockElement = element
 
     else if @currentBlockElement and not currentBlockContainsElement and not elementIsBlockElement
       if parentBlockElement = @findParentBlockElement(element)
@@ -116,13 +115,14 @@ class Trix.HTMLParser extends Trix.BasicObject
     null
 
   processTextNode: (node) ->
-    string = node.data
-    unless elementCanDisplayPreformattedText(node.parentNode)
-      string = squishWhitespace(string)
-      # Remove leading space if the previous node has a trailing space
-      if /\s$/.test(node.previousSibling?.textContent)
-        string = string.replace(/^\s/, "")
-    @appendStringWithAttributes(string, @getTextAttributes(node.parentNode))
+    unless isInsignificantTextNode(node)
+      string = node.data
+      unless elementCanDisplayPreformattedText(node.parentNode)
+        string = squishWhitespace(string)
+        # Remove leading space if the previous node has a trailing space
+        if /\s$/.test(node.previousSibling?.textContent)
+          string = string.replace(/^\s/, "")
+      @appendStringWithAttributes(string, @getTextAttributes(node.parentNode))
 
   processElement: (element) ->
     if nodeIsAttachmentElement(element)

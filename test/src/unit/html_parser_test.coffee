@@ -53,6 +53,11 @@ testGroup "Trix.HTMLParser", ->
     expectedHTML = """<div><!--block-->a b c d e f &nbsp; g<br><br>&nbsp;h &nbsp;</div>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
+  test "parses block elements with leading whitespace", ->
+    html = """<blockquote> <span>a</span> <blockquote>\n <strong>b</strong> <pre> <span>c</span></pre></blockquote></blockquote>"""
+    expectedHTML = """<blockquote><!--block-->a<blockquote><!--block--><strong>b</strong><pre><!--block--> c</pre></blockquote></blockquote>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
   test "converts newlines to spaces", ->
     html = "<div>a\nb \nc \n d \n\ne</div><pre>1\n2</pre>"
     expectedHTML = """<div><!--block-->a b c d e</div><pre><!--block-->1\n2</pre>"""
