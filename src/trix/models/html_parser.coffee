@@ -118,10 +118,9 @@ class Trix.HTMLParser extends Trix.BasicObject
     unless isInsignificantTextNode(node)
       string = node.data
       unless elementCanDisplayPreformattedText(node.parentNode)
-        string = squishWhitespace(string)
-        # Remove leading space if the previous node has a trailing space
-        if /\s$/.test(node.previousSibling?.textContent)
-          string = string.replace(/^\s/, "")
+        string = squishBreakableWhitespace(string)
+        if stringEndsWithWhitespace(node.previousSibling?.textContent)
+          string = leftTrimBreakableWhitespace(string)
       @appendStringWithAttributes(string, @getTextAttributes(node.parentNode))
 
   processElement: (element) ->
@@ -267,7 +266,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   isInsignificantTextNode = (node) ->
     return unless node?.nodeType is Node.TEXT_NODE
-    return if /\S/.test(node.data)
+    return unless stringIsAllBreakableWhitespace(node.data)
     return if elementCanDisplayPreformattedText(node.parentNode)
     not node.previousSibling or isBlockElement(node.previousSibling) or not node.nextSibling or isBlockElement(node.nextSibling)
 
@@ -307,11 +306,22 @@ class Trix.HTMLParser extends Trix.BasicObject
     if style.display is "block"
       top: parseInt(style.marginTop), bottom: parseInt(style.marginBottom)
 
-  # Helpers
+  # Whitespace
 
-  squishWhitespace = (string) ->
+  breakableWhitespacePattern = ///[^\S#{Trix.NON_BREAKING_SPACE}]///
+
+  squishBreakableWhitespace = (string) ->
     string
-      # Replace all breaking whitespace characters with a space
-      .replace(///[^\S#{Trix.NON_BREAKING_SPACE}]///g, " ")
+      # Replace all breakable whitespace characters with a space
+      .replace(///#{breakableWhitespacePattern.source}///g, " ")
       # Replace two or more spaces with a single space
       .replace(/\ {2,}/g, " ")
+
+  leftTrimBreakableWhitespace = (string) ->
+    string.replace(///^#{breakableWhitespacePattern.source}+///, "")
+
+  stringIsAllBreakableWhitespace = (string) ->
+    ///^#{breakableWhitespacePattern.source}*$///.test(string)
+
+  stringEndsWithWhitespace = (string) ->
+    /\s$/.test(string)
