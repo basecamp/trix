@@ -85,10 +85,13 @@ class Trix.HTMLParser extends Trix.BasicObject
     null
 
   processTextNode: (node) ->
-    if string = normalizeSpaces(node.data)
-      unless elementCanDisplayNewlines(node.parentNode)
-        string = convertNewlinesToSpaces(string)
-      @appendStringWithAttributes(string, @getTextAttributes(node.parentNode))
+    string = node.data
+    unless elementCanDisplayPreformattedText(node.parentNode)
+      string = squishWhitespace(string)
+      # Remove leading space if the previous node has a trailing space
+      if /\s$/.test(node.previousSibling?.textContent)
+        string = string.replace(/^\s/, "")
+    @appendStringWithAttributes(string, @getTextAttributes(node.parentNode))
 
   processElement: (element) ->
     if nodeIsAttachmentElement(element)
@@ -218,6 +221,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   pieceForString = (string, attributes = {}) ->
     type = "string"
+    string = normalizeSpaces(string)
     {string, attributes, type}
 
   pieceForAttachment = (attachment, attributes = {}) ->
@@ -260,8 +264,12 @@ class Trix.HTMLParser extends Trix.BasicObject
 
     body.innerHTML
 
-  convertNewlinesToSpaces = (string) ->
-    string.replace(/\s?\n\s?/g, " ")
+  squishWhitespace = (string) ->
+    string
+      # Replace all breaking whitespace characters with a space
+      .replace(///[^\S#{Trix.NON_BREAKING_SPACE}]///g, " ")
+      # Replace two or more spaces with a single space
+      .replace(/\ {2,}/g, " ")
 
   isBlockElement = (element) ->
     return unless element?.nodeType is Node.ELEMENT_NODE
@@ -271,7 +279,7 @@ class Trix.HTMLParser extends Trix.BasicObject
   isInsignificantTextNode = (node) ->
     return unless node?.nodeType is Node.TEXT_NODE
     return if /\S/.test(node.data)
-    return if elementCanDisplayNewlines(node.parentNode)
+    return if elementCanDisplayPreformattedText(node.parentNode)
     not node.previousSibling or isBlockElement(node.previousSibling) or not node.nextSibling or isBlockElement(node.nextSibling)
 
   isExtraBR = (element) ->
@@ -279,7 +287,7 @@ class Trix.HTMLParser extends Trix.BasicObject
       isBlockElement(element.parentNode) and
       element.parentNode.lastChild is element
 
-  elementCanDisplayNewlines = (element) ->
+  elementCanDisplayPreformattedText = (element) ->
     {whiteSpace} = window.getComputedStyle(element)
     whiteSpace in ["pre", "pre-wrap", "pre-line"]
 
