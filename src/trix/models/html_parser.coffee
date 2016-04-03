@@ -246,10 +246,12 @@ class Trix.HTMLParser extends Trix.BasicObject
       node = walker.currentNode
       switch node.nodeType
         when Node.ELEMENT_NODE
-          element = node
-          for {name} in [element.attributes...]
-            unless name in allowedAttributes or name.indexOf("data-trix") is 0
-              element.removeAttribute(name)
+          if tagName(node) is "script"
+            nodesToRemove.push(node)
+          else
+            for {name} in [node.attributes...]
+              unless name in allowedAttributes or name.indexOf("data-trix") is 0
+                node.removeAttribute(name)
         when Node.COMMENT_NODE
           nodesToRemove.push(node)
 

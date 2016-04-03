@@ -85,6 +85,11 @@ testGroup "Trix.HTMLParser", ->
     document = Trix.HTMLParser.parse(html).getDocument()
     assert.documentHTMLEqual document, expectedHTML
 
+  test "ignores text nodes in script elements", ->
+    html = """<div>a<script>alert("b")</script></div>"""
+    expectedHTML = """<div><!--block-->a</div>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
   test "sanitizes unsafe html", (done) ->
     window.unsanitized = []
     Trix.HTMLParser.parse """
