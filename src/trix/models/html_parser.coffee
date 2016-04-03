@@ -268,7 +268,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   isInsignificantTextNode = (node) ->
     return unless node?.nodeType is Node.TEXT_NODE
-    return unless /^\s*$/.test(node.data)
+    return if /\S/.test(node.data)
     return if elementCanDisplayNewlines(node.parentNode)
     not node.previousSibling or isBlockElement(node.previousSibling) or not node.nextSibling or isBlockElement(node.nextSibling)
 
