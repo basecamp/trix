@@ -17,6 +17,8 @@ class Trix.HTMLParser extends Trix.BasicObject
   getDocument: ->
     Trix.Document.fromJSON(@blocks)
 
+  # HTML parsing
+
   parse: ->
     try
       @createHiddenContainer()
@@ -27,12 +29,6 @@ class Trix.HTMLParser extends Trix.BasicObject
       @translateBlockElementMarginsToNewlines()
     finally
       @removeHiddenContainer()
-
-  nodeFilter = (node) ->
-    if tagName(node) is "style"
-      NodeFilter.FILTER_REJECT
-    else
-      NodeFilter.FILTER_ACCEPT
 
   createHiddenContainer: ->
     if @referenceElement
@@ -47,6 +43,41 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   removeHiddenContainer: ->
     @containerElement.parentNode.removeChild(@containerElement)
+
+  sanitizeHTML = (html) ->
+    doc = document.implementation.createHTMLDocument("")
+    doc.documentElement.innerHTML = html
+    {body, head} = doc
+
+    for style in head.querySelectorAll("style")
+      body.appendChild(style)
+
+    nodesToRemove = []
+    walker = walkTree(body)
+
+    while walker.nextNode()
+      node = walker.currentNode
+      switch node.nodeType
+        when Node.ELEMENT_NODE
+          if tagName(node) is "script"
+            nodesToRemove.push(node)
+          else
+            for {name} in [node.attributes...]
+              unless name in allowedAttributes or name.indexOf("data-trix") is 0
+                node.removeAttribute(name)
+        when Node.COMMENT_NODE
+          nodesToRemove.push(node)
+
+    for node in nodesToRemove
+      node.parentNode.removeChild(node)
+
+    body.innerHTML
+
+  nodeFilter = (node) ->
+    if tagName(node) is "style"
+      NodeFilter.FILTER_REJECT
+    else
+      NodeFilter.FILTER_ACCEPT
 
   processNode: (node) ->
     switch node.nodeType
@@ -120,6 +151,8 @@ class Trix.HTMLParser extends Trix.BasicObject
           unless element.parentNode.firstChild is element
             @appendStringWithAttributes(" | ")
 
+  # Document construction
+
   appendBlockForAttributesWithElement: (attributes, element) ->
     @blockElements.push(element)
     block = blockForAttributes(attributes)
@@ -157,6 +190,21 @@ class Trix.HTMLParser extends Trix.BasicObject
       piece.string = string + piece.string
     else
       text.unshift(pieceForString(string))
+
+  pieceForString = (string, attributes = {}) ->
+    type = "string"
+    string = normalizeSpaces(string)
+    {string, attributes, type}
+
+  pieceForAttachment = (attachment, attributes = {}) ->
+    type = "attachment"
+    {attachment, attributes, type}
+
+  blockForAttributes = (attributes = {}) ->
+    text = []
+    {text, attributes}
+
+  # Attribute parsing
 
   getTextAttributes: (element) ->
     attributes = {}
@@ -199,77 +247,18 @@ class Trix.HTMLParser extends Trix.BasicObject
       element = element.parentNode
     ancestors
 
-  getMarginOfBlockElementAtIndex: (index) ->
-    if element = @blockElements[index]
-      unless tagName(element) in getBlockTagNames() or element in @processedElements
-        getBlockElementMargin(element)
-
-  getMarginOfDefaultBlockElement: ->
-    element = makeElement(Trix.config.blockAttributes.default.tagName)
-    @containerElement.appendChild(element)
-    getBlockElementMargin(element)
-
-  translateBlockElementMarginsToNewlines: ->
-    defaultMargin = @getMarginOfDefaultBlockElement()
-
-    for block, index in @blocks when margin = @getMarginOfBlockElementAtIndex(index)
-      if margin.top > defaultMargin.top * 2
-        @prependStringToTextAtIndex("\n", index)
-
-      if margin.bottom > defaultMargin.bottom * 2
-        @appendStringToTextAtIndex("\n", index)
-
-  pieceForString = (string, attributes = {}) ->
-    type = "string"
-    string = normalizeSpaces(string)
-    {string, attributes, type}
-
-  pieceForAttachment = (attachment, attributes = {}) ->
-    type = "attachment"
-    {attachment, attributes, type}
-
-  blockForAttributes = (attributes = {}) ->
-    text = []
-    {text, attributes}
-
   getAttachmentAttributes = (element) ->
     JSON.parse(element.dataset.trixAttachment)
 
-  sanitizeHTML = (html) ->
-    doc = document.implementation.createHTMLDocument("")
-    doc.documentElement.innerHTML = html
-    {body, head} = doc
+  getImageDimensions = (element) ->
+    width = element.getAttribute("width")
+    height = element.getAttribute("height")
+    dimensions = {}
+    dimensions.width = parseInt(width, 10) if width
+    dimensions.height = parseInt(height, 10) if height
+    dimensions
 
-    for style in head.querySelectorAll("style")
-      body.appendChild(style)
-
-    nodesToRemove = []
-    walker = walkTree(body)
-
-    while walker.nextNode()
-      node = walker.currentNode
-      switch node.nodeType
-        when Node.ELEMENT_NODE
-          if tagName(node) is "script"
-            nodesToRemove.push(node)
-          else
-            for {name} in [node.attributes...]
-              unless name in allowedAttributes or name.indexOf("data-trix") is 0
-                node.removeAttribute(name)
-        when Node.COMMENT_NODE
-          nodesToRemove.push(node)
-
-    for node in nodesToRemove
-      node.parentNode.removeChild(node)
-
-    body.innerHTML
-
-  squishWhitespace = (string) ->
-    string
-      # Replace all breaking whitespace characters with a space
-      .replace(///[^\S#{Trix.NON_BREAKING_SPACE}]///g, " ")
-      # Replace two or more spaces with a single space
-      .replace(/\ {2,}/g, " ")
+  # Element inspection
 
   isBlockElement = (element) ->
     return unless element?.nodeType is Node.ELEMENT_NODE
@@ -291,15 +280,38 @@ class Trix.HTMLParser extends Trix.BasicObject
     {whiteSpace} = window.getComputedStyle(element)
     whiteSpace in ["pre", "pre-wrap", "pre-line"]
 
+  # Margin translation
+
+  translateBlockElementMarginsToNewlines: ->
+    defaultMargin = @getMarginOfDefaultBlockElement()
+
+    for block, index in @blocks when margin = @getMarginOfBlockElementAtIndex(index)
+      if margin.top > defaultMargin.top * 2
+        @prependStringToTextAtIndex("\n", index)
+
+      if margin.bottom > defaultMargin.bottom * 2
+        @appendStringToTextAtIndex("\n", index)
+
+  getMarginOfBlockElementAtIndex: (index) ->
+    if element = @blockElements[index]
+      unless tagName(element) in getBlockTagNames() or element in @processedElements
+        getBlockElementMargin(element)
+
+  getMarginOfDefaultBlockElement: ->
+    element = makeElement(Trix.config.blockAttributes.default.tagName)
+    @containerElement.appendChild(element)
+    getBlockElementMargin(element)
+
   getBlockElementMargin = (element) ->
     style = window.getComputedStyle(element)
     if style.display is "block"
       top: parseInt(style.marginTop), bottom: parseInt(style.marginBottom)
 
-  getImageDimensions = (element) ->
-    width = element.getAttribute("width")
-    height = element.getAttribute("height")
-    dimensions = {}
-    dimensions.width = parseInt(width, 10) if width
-    dimensions.height = parseInt(height, 10) if height
-    dimensions
+  # Helpers
+
+  squishWhitespace = (string) ->
+    string
+      # Replace all breaking whitespace characters with a space
+      .replace(///[^\S#{Trix.NON_BREAKING_SPACE}]///g, " ")
+      # Replace two or more spaces with a single space
+      .replace(/\ {2,}/g, " ")
