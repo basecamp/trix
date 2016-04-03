@@ -51,10 +51,12 @@ class Trix.HTMLParser extends Trix.BasicObject
   processNode: (node) ->
     switch node.nodeType
       when Node.TEXT_NODE
-        @processTextNode(node)
+        unless isInsignificantTextNode(node)
+          @processTextNode(node)
       when Node.ELEMENT_NODE
-        @appendBlockForElement(node)
-        @processElement(node)
+        unless isInsignificantTextNode(node.firstChild)
+          @appendBlockForElement(node)
+          @processElement(node)
 
   appendBlockForElement: (element) ->
     elementIsBlockElement = isBlockElement(element)
@@ -250,9 +252,6 @@ class Trix.HTMLParser extends Trix.BasicObject
               element.removeAttribute(name)
         when Node.COMMENT_NODE
           nodesToRemove.push(node)
-        when Node.TEXT_NODE
-          if isInsignificantTextNode(node)
-            nodesToRemove.push(node)
 
     for node in nodesToRemove
       node.parentNode.removeChild(node)
