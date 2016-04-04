@@ -23,7 +23,7 @@ plugins:
     browsers:
       Google Chrome:
         os: Mac, Windows
-        version: -2
+        version: [48, 47]
       Firefox:
         os: Mac, Windows
         version: -2
