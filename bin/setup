@@ -41,6 +41,7 @@ echo "--- Installing Ruby gems"
     fi
   fi
   gem list -i bundler >/dev/null 2>&1 || gem install bundler
+  bundle config build.eventmachine --with-cppflags=-I/usr/local/opt/openssl/include
   bundle check || bundle install
 } >&3 2>&1
 
