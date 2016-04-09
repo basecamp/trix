@@ -80,13 +80,13 @@ testGroup "Trix.HTMLParser", ->
 
   test "parses whitespace-only text nodes without a containing block element", ->
     html = """a <strong>b</strong> <em>c</em>"""
-    expectedHTML = """<div><!--block-->a&nbsp;<strong>b</strong>&nbsp;<em>c</em></div>"""
+    expectedHTML = """<div><!--block-->a <strong>b</strong> <em>c</em></div>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
   test "parses spanned text elements that don't have a parser function", ->
     assert.notOk Trix.config.textAttributes.strike.parser
     html = """<del>a <strong>b</strong></del>"""
-    expectedHTML = """<div><!--block--><del>a&nbsp;</del><strong><del>b</del></strong></div>"""
+    expectedHTML = """<div><!--block--><del>a </del><strong><del>b</del></strong></div>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
   test "translates tables into plain text", ->

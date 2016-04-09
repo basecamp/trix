@@ -8,7 +8,7 @@ class Trix.PieceView extends Trix.ObjectView
     super
     @piece = @object
     @attributes = @piece.getAttributes()
-    {@textConfig} = @options
+    {@textConfig, @context} = @options
 
     if @piece.attachment
       @attachment = @piece.attachment
@@ -47,7 +47,7 @@ class Trix.PieceView extends Trix.ObjectView
           nodes.push(element)
 
         if length = substring.length
-          node = document.createTextNode(preserveSpaces(substring))
+          node = document.createTextNode(@preserveSpaces(substring))
           nodes.push(node)
       nodes
 
@@ -80,11 +80,18 @@ class Trix.PieceView extends Trix.ObjectView
         attributes[key] = value
         return makeElement(config.groupTagName, attributes)
 
-  preserveSpaces = (string) ->
-    nbsp = Trix.NON_BREAKING_SPACE
-    string
-      .replace(/\ $/, nbsp)
+  nbsp = Trix.NON_BREAKING_SPACE
+
+  preserveSpaces: (string) ->
+    if @context.isLast
+      string = string.replace(/\ $/, nbsp)
+
+    string = string
       .replace(/(\S)\ {3}(\S)/g, "$1 #{nbsp} $2")
       .replace(/\ {2}/g, "#{nbsp} ")
       .replace(/\ {2}/g, " #{nbsp}")
-      .replace(/^\ /, nbsp)
+
+    if @context.isFirst or @context.followsWhitespace
+      string = string.replace(/^\ /, nbsp)
+
+    string
