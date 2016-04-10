@@ -1,7 +1,7 @@
 <summary><%= @title %></summary>
 <div class="panel">
   <% for block, index in @document.getBlocks(): %>
-    <details class="block" open>
+    <details class="block">
       <summary class="title">
         Block <%= block.id %>, Index: <%= index %>
       </summary>
