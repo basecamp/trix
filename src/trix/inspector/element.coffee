@@ -22,6 +22,10 @@ Trix.registerElement "trix-inspector",
     %t details .panel {
       padding: 10px;
     }
+
+    %t .performance .metrics {
+      margin: 0 0 5px 5px;
+    }
   """
 
   attachedCallback: ->
