@@ -1,5 +1,4 @@
 #= require_self
-#= require ./logger
 #= require_tree ./templates
 #= require_tree ./views
 #= require ./element
