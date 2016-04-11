@@ -6,6 +6,19 @@ class Trix.Inspector.View
     {@compositionController, @composition} = @editorController
 
     @element = document.createElement("details")
+    @element.classList.add(@template)
+
+    @titleElement = document.createElement("summary")
+    @element.appendChild(@titleElement)
+
+    @panelElement = document.createElement("div")
+    @panelElement.classList.add("panel")
+    @element.appendChild(@panelElement)
+
+    @element.addEventListener "toggle", (event) =>
+      if event.target is @element
+        @didToggle()
+
     @installEventHandlers() if @events
 
   installEventHandlers: ->
@@ -14,5 +27,19 @@ class Trix.Inspector.View
         requestAnimationFrame =>
           handler.call(this, event)
 
+  didToggle: (event) ->
+    @render()
+
+  isOpen: ->
+    @element.hasAttribute("open")
+
+  getTitle: ->
+    @title ? ""
+
   render: ->
-    @element.innerHTML = JST["trix/inspector/templates/#{@template}"](this)
+    @renderTitle()
+    if @isOpen()
+      @panelElement.innerHTML = JST["trix/inspector/templates/#{@template}"](this)
+
+  renderTitle: ->
+    @titleElement.innerHTML = @getTitle()

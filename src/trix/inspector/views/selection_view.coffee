@@ -11,3 +11,6 @@ Trix.Inspector.registerView class extends Trix.Inspector.View
     @range = @editor.getSelectedRange()
     @locationRange = @composition.getLocationRange()
     super
+
+  getTitle: ->
+    "#{@title} (#{@range.join()})"
