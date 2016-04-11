@@ -27,6 +27,31 @@ Trix.registerElement "trix-inspector",
     %t .performance .metrics {
       margin: 0 0 5px 5px;
     }
+
+    %t .selection .characters {
+      margin-top: 10px;
+    }
+
+    %t .selection .character {
+      display: inline-block;
+      font-size: 8px;
+      font-family: courier, monospace;
+      line-height: 10px;
+      vertical-align: middle;
+      text-align: center;
+      width: 10px;
+      height: 10px;
+      margin: 0 1px 1px 0;
+      border: 1px solid #333;
+      border-radius: 1px;
+      background: #676666;
+      color: #fff;
+    }
+
+    %t .selection .character.selected {
+      background: yellow;
+      color: #000;
+    }
   """
 
   attachedCallback: ->
@@ -57,5 +82,5 @@ Trix.registerElement "trix-inspector",
 
     @style.top = "#{top}px"
     @style.left = "#{right + 10}px"
-    @style.maxWidth = "#{window.innerWidth - right - 30}px"
+    @style.maxWidth = "#{window.innerWidth - right - 40}px"
     @style.maxHeight = "#{window.innerHeight - top - 30}px"
