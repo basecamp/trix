@@ -17,15 +17,9 @@
       document.addEventListener("trix-initialize", function(event) {
         Trix.Inspector.install(event.target);
       });
-
-      document.addEventListener("trix-change", function(event) {
-        document.getElementById("formatted-content").innerHTML = event.target.value;
-      });
     </script>
   </head>
   <body>
     <trix-editor autofocus class="trix-content"></trix-editor>
-
-    <div id="formatted-content" class="trix-content"></div>
   </body>
 </html>
