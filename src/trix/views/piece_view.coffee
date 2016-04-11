@@ -52,6 +52,7 @@ class Trix.PieceView extends Trix.ObjectView
       nodes
 
   createElement: ->
+    classNames = []
     for key of @attributes when config = Trix.config.textAttributes[key]
       if config.tagName
         pendingElement = makeElement(config.tagName)
@@ -68,9 +69,14 @@ class Trix.PieceView extends Trix.ObjectView
         else
           styles = config.style
 
+      if config.render
+        {styles, classNames} = config.render(element, @attributes[key], styles?={}, classNames)
+
     if styles
       element ?= makeElement("span")
       element.style[key] = value for key, value of styles
+    if element and classNames
+        element.className = classNames.join(" ").trim()
     element
 
   createContainerElement: ->
