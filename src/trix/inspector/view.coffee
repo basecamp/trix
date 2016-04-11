@@ -6,6 +6,7 @@ class Trix.Inspector.View
     {@compositionController, @composition} = @editorController
 
     @element = document.createElement("details")
+    @element.open = true if @getSetting("open") is "true"
     @element.classList.add(@template)
 
     @titleElement = document.createElement("summary")
@@ -28,6 +29,7 @@ class Trix.Inspector.View
           handler.call(this, event)
 
   didToggle: (event) ->
+    @saveSetting("open", @isOpen())
     @render()
 
   isOpen: ->
@@ -43,3 +45,14 @@ class Trix.Inspector.View
 
   renderTitle: ->
     @titleElement.innerHTML = @getTitle()
+
+  getSetting: (key) ->
+    key = @getSettingsKey(key)
+    window.sessionStorage?[key]
+
+  saveSetting: (key, value) ->
+    key = @getSettingsKey(key)
+    window.sessionStorage?[key] = value
+
+  getSettingsKey: (key) ->
+    "trix/inspector/#{@template}/#{key}"
