@@ -377,4 +377,4 @@ Make sure you’re set up to build from source using the instructions above. The
 
 ---
 
-© 2015 Basecamp, LLC.
+© 2016 Basecamp, LLC.
