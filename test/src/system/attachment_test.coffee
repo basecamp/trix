@@ -30,8 +30,40 @@ testGroup "Attachments", template: "editor_with_image", ->
               assert.textAttributes [2, 3], caption: "my caption"
               expectDocument "ab#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
 
+  test "editing an attachment caption with no filename", (done) ->
+    after 20, ->
+      # Caption is initially empty
+      captionElement = findElement("figcaption")
+      assert.equal captionElement.clientHeight, 0
+      assert.equal getCaptionContent(captionElement), ""
+
+      clickElement findElement("figure"), ->
+        # Caption prompt is displayed when editing attachment
+        captionElement = findElement("figcaption")
+        assert.ok captionElement.clientHeight > 0
+        assert.equal getCaptionContent(captionElement), Trix.config.lang.captionPrompt
+        done()
+
 getFigure = ->
   findElement("figure")
 
 findElement = (selector) ->
   getEditorElement().querySelector(selector)
+
+getCaptionContent = (element) ->
+  element.textContent or getPseudoContent(element)
+
+
+getPseudoContent = (element) ->
+  before = getComputedStyle(element, "::before").content
+  after = getComputedStyle(element, "::after").content
+
+  content =
+    if before and before isnt "none"
+      before
+    else if after and after isnt "none"
+      after
+    else
+      ""
+
+  content.replace(/^['"]/, "").replace(/['"]$/, "")
