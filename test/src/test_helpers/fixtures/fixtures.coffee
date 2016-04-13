@@ -95,6 +95,20 @@ removeWhitespace = (string) ->
     document: createDocument(["a  "])
     html: """<div>#{blockComment}a &nbsp;</div>"""
 
+  "spaces and formatting":
+    document: new Trix.Document [
+      new Trix.Block new Trix.Text [
+          new Trix.StringPiece " a "
+          new Trix.StringPiece "b", href: "http://b.com"
+          new Trix.StringPiece " "
+          new Trix.StringPiece "c", bold: true
+          new Trix.StringPiece " d"
+          new Trix.StringPiece " e ", italic: true
+          new Trix.StringPiece " f  "
+        ]
+      ]
+    html: """<div>#{blockComment}&nbsp;a <a href="http://b.com">b</a> <strong>c</strong> d<em> e </em>&nbsp;f &nbsp;</div>"""
+
   "quote formatted block":
     document: createDocument(["abc", {}, ["quote"]])
     html: "<blockquote>#{blockComment}abc</blockquote>"
