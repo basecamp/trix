@@ -41,7 +41,7 @@ testGroup "Attachments", template: "editor_with_image", ->
         # Caption prompt is displayed when editing attachment
         captionElement = findElement("figcaption")
         assert.ok captionElement.clientHeight > 0
-        assert.equal getCaptionContent(captionElement), "\"#{Trix.config.lang.captionPrompt}\""
+        assert.equal getCaptionContent(captionElement), Trix.config.lang.captionPrompt
         done()
 
 getFigure = ->
@@ -51,6 +51,19 @@ findElement = (selector) ->
   getEditorElement().querySelector(selector)
 
 getCaptionContent = (element) ->
-  element.textContent or
-    getComputedStyle(element, "::before").content or
-    getComputedStyle(element, "::after").content
+  element.textContent or getPseudoContent(element)
+
+
+getPseudoContent = (element) ->
+  before = getComputedStyle(element, "::before").content
+  after = getComputedStyle(element, "::after").content
+
+  content =
+    if before and before isnt "none"
+      before
+    else if after and after isnt "none"
+      after
+    else
+      ""
+
+  content.replace(/^['"]/, "").replace(/['"]$/, "")
