@@ -59,7 +59,7 @@ class Trix.HTMLParser extends Trix.BasicObject
       node = walker.currentNode
       switch node.nodeType
         when Node.ELEMENT_NODE
-          if tagName(node) is "script"
+          if elementIsRemovable(node)
             nodesToRemove.push(node)
           else
             for {name} in [node.attributes...]
@@ -72,6 +72,10 @@ class Trix.HTMLParser extends Trix.BasicObject
       node.parentNode.removeChild(node)
 
     body.innerHTML
+
+  elementIsRemovable = (element) ->
+    return unless element?.nodeType is Node.ELEMENT_NODE
+    tagName(element) is "script" or element.dataset.trixSerialize is "false"
 
   nodeFilter = (node) ->
     if tagName(node) is "style"
