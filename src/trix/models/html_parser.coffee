@@ -75,7 +75,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   elementIsRemovable = (element) ->
     return unless element?.nodeType is Node.ELEMENT_NODE
-    tagName(element) is "script" or element.dataset.trixSerialize is "false"
+    tagName(element) is "script" or element.getAttribute("data-trix-serialize") is "false"
 
   nodeFilter = (node) ->
     if tagName(node) is "style"
