@@ -83,6 +83,12 @@ testGroup "Trix.HTMLParser", ->
     expectedHTML = """<div><!--block-->a <strong>b</strong> <em>c</em></div>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
+  test "parses spaces around cursor targets", ->
+    cursorTarget = Trix.selectionElements.create("cursorTarget").outerHTML
+    html = """<div>a #{cursorTarget}<span>b</span>#{cursorTarget} c</div>"""
+    expectedHTML = """<div><!--block-->a b c</div>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
   test "parses spanned text elements that don't have a parser function", ->
     assert.notOk Trix.config.textAttributes.strike.parser
     html = """<del>a <strong>b</strong></del>"""
