@@ -211,6 +211,14 @@ class Trix.InputController extends Trix.BasicObject
         @requestRender()
         @delegate?.inputControllerDidPaste(pasteData)
 
+      else if href = paste.getData("URL")
+        pasteData.string = href
+        @setInputSummary(textAdded: href, didDelete: @selectionIsExpanded())
+        @delegate?.inputControllerWillPasteText(pasteData)
+        @responder?.insertText(Trix.Text.textForStringWithAttributes(href, {href}))
+        @requestRender()
+        @delegate?.inputControllerDidPaste(pasteData)
+
       else if string = paste.getData("text/plain")
         pasteData.string = string
         @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())

@@ -19,6 +19,12 @@ testGroup "Pasting", template: "editor_empty", ->
         pasteContent "text/html", "<div>Hello world<br></div><div>This is a test</div>", ->
           expectDocument "abHello world\nThis is a test\nc\n"
 
+  test "paste URL", (expectDocument) ->
+    typeCharacters "a", ->
+      pasteContent "URL", "http://example.com", ->
+        assert.textAttributes([1, 18], href: "http://example.com")
+        expectDocument "ahttp://example.com\n"
+
   test "paste complex html into formatted block", (done) ->
     typeCharacters "abc", ->
       clickToolbarButton attribute: "quote", ->
