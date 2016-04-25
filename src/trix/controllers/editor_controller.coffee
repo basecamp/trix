@@ -33,7 +33,7 @@ class Trix.EditorController extends Trix.Controller
     @editor = new Trix.Editor @composition, @selectionManager, @editorElement
     if document?
       @editor.loadDocument(document)
-    else
+    else if html isnt ''
       @editor.loadHTML(html)
 
   registerSelectionManager: ->

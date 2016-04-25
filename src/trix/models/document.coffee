@@ -302,9 +302,12 @@ class Trix.Document extends Trix.Object
     new @constructor @blockList.consolidateFromIndexToIndex(startIndex, endIndex)
 
   getDocumentAtRange: (range) ->
-    range = normalizeRange(range)
-    blocks = @blockList.getSplittableListInRange(range).toArray()
-    new @constructor blocks
+    if @isEmpty()
+      this
+    else
+      range = normalizeRange(range)
+      blocks = @blockList.getSplittableListInRange(range).toArray()
+      new @constructor blocks
 
   getStringAtRange: (range) ->
     @getDocumentAtRange(range).toString()
