@@ -43,6 +43,10 @@ class Trix.InputController extends Trix.BasicObject
   resetInputSummary: ->
     @inputSummary = {}
 
+  reset: ->
+    @resetInputSummary()
+    Trix.selectionChangeObserver.reset()
+
   # Render cycle
 
   editorWillSyncDocumentView: ->
@@ -54,18 +58,21 @@ class Trix.InputController extends Trix.BasicObject
   requestRender: ->
     @delegate?.inputControllerDidRequestRender?()
 
+  requestReparse: ->
+    @delegate?.inputControllerDidRequestReparse?()
+    @requestRender()
+
   # Mutation observer delegate
 
   elementDidMutate: (mutationSummary) ->
     @mutationCount++
     unless @inputSummary.composing
       @handleInput ->
-        unless @mutationIsExpected(mutationSummary)
-          @responder?.replaceHTML(@element.innerHTML)
-
-        @resetInputSummary()
-        @requestRender()
-        Trix.selectionChangeObserver.reset()
+        if @mutationIsExpected(mutationSummary)
+          @requestRender()
+        else
+          @requestReparse()
+        @reset()
 
   mutationIsExpected: (mutationSummary) ->
     if @inputSummary
@@ -264,7 +271,7 @@ class Trix.InputController extends Trix.BasicObject
       @responder?.forgetPlaceholder()
       @setInputSummary(composing: false)
 
-      if compositionStart? and compositionRange?
+      if compositionStart?.length is 0 and compositionRange?
         @delegate?.inputControllerWillPerformTyping()
         @responder?.setSelectedRange(compositionRange)
         @responder?.insertString(compositionEnd)
@@ -279,6 +286,10 @@ class Trix.InputController extends Trix.BasicObject
             if @selectionIsExpanded()
               @responder?.setSelection(compositionRange[1])
               @requestRender()
+
+      else if compositionStart? or compositionUpdate?
+        @requestReparse()
+        @reset()
 
     input: (event) ->
       event.stopPropagation()
