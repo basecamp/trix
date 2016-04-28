@@ -271,7 +271,7 @@ class Trix.InputController extends Trix.BasicObject
       @responder?.forgetPlaceholder()
       @setInputSummary(composing: false)
 
-      if compositionStart?.length is 0 and compositionRange?
+      if compositionStart?.length is 0 and compositionEnd.length > 0 and compositionRange?
         @delegate?.inputControllerWillPerformTyping()
         @responder?.setSelectedRange(compositionRange)
         @responder?.insertString(compositionEnd)
