@@ -8,5 +8,5 @@ testGroup "Mutation input", template: "editor_empty", ->
     triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
     br = element.querySelectorAll("br")[1]
     br.parentNode.removeChild(br)
-    defer ->
+    requestAnimationFrame ->
       expectDocument("a\nb\n")
