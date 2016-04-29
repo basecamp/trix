@@ -1,4 +1,4 @@
-{defer, findClosestElementFromNode, nodeIsEmptyTextNode, normalizeSpaces, summarizeStringChange} = Trix
+{defer, findClosestElementFromNode, nodeIsEmptyTextNode, normalizeSpaces, summarizeStringChange, tagName} = Trix
 
 class Trix.MutationObserver extends Trix.BasicObject
   mutableAttributeName = "data-trix-mutable"
@@ -69,7 +69,7 @@ class Trix.MutationObserver extends Trix.BasicObject
   getTextMutationSummary: ->
     {additions, deletions} = @getTextChangesFromCharacterData()
 
-    textChanges = @getTextChangesFromTextNodes()
+    textChanges = @getTextChangesFromChildList()
     additions.push(addition) for addition in textChanges.additions when addition not in additions
     deletions.push(textChanges.deletions...)
 
@@ -81,18 +81,16 @@ class Trix.MutationObserver extends Trix.BasicObject
   getMutationsByType: (type) ->
     mutation for mutation in @mutations when mutation.type is type
 
-  getTextChangesFromTextNodes: ->
-    nodesAdded = []
-    nodesRemoved = []
+  getTextChangesFromChildList: ->
+    textAdded = []
+    textRemoved = []
 
-    for mutation in @getMutationsByType("childList")
-      for node in mutation.removedNodes when node.nodeType is Node.TEXT_NODE
-        nodesRemoved.push(node)
-      for node in mutation.addedNodes when node.nodeType is Node.TEXT_NODE
-        nodesAdded.push(node)
+    for {addedNodes, removedNodes} in @getMutationsByType("childList")
+      textAdded.push(getTextForNodes(addedNodes)...)
+      textRemoved.push(getTextForNodes(removedNodes)...)
 
-    additions: (normalizeSpaces(node.data) for node, index in nodesAdded when node.data isnt nodesRemoved[index]?.data)
-    deletions: (normalizeSpaces(node.data) for node, index in nodesRemoved when node.data isnt nodesAdded[index]?.data)
+    additions: (normalizeSpaces(text) for text, index in textAdded when text isnt textRemoved[index])
+    deletions: (normalizeSpaces(text) for text, index in textRemoved when text isnt textAdded[index])
 
   getTextChangesFromCharacterData: ->
     characterMutations = @getMutationsByType("characterData")
@@ -106,3 +104,14 @@ class Trix.MutationObserver extends Trix.BasicObject
 
     additions: if added then [added] else []
     deletions: if removed then [removed] else []
+
+  getTextForNodes = (nodes = []) ->
+    text = []
+    for node in nodes
+      switch node.nodeType
+        when Node.TEXT_NODE
+          text.push(node.data)
+        when Node.ELEMENT_NODE
+          if tagName(node) is "br"
+            text.push("\n")
+    text
