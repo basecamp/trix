@@ -27,7 +27,7 @@ GEM
       thor (~> 0.19.1)
       useragent (~> 0.13.0)
     blade-qunit_adapter (1.20.0)
-    blade-sauce_labs_plugin (0.5.0)
+    blade-sauce_labs_plugin (0.5.1)
       childprocess
       faraday
       selenium-webdriver
@@ -132,7 +132,7 @@ PLATFORMS
 DEPENDENCIES
   aws-sdk
   blade (~> 0.5.0)
-  blade-sauce_labs_plugin (~> 0.5.0)
+  blade-sauce_labs_plugin (~> 0.5.1)
   coffee-script
   coffee-script-source (~> 1.9.1)
   eco
