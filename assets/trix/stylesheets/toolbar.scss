@@ -1,3 +1,4 @@
+$font-size-normal: 0.75rem;
 $opacity-normal: 0.6;
 $opacity-disabled: 0.125;
 $opacity-active: 1;
@@ -73,14 +74,13 @@ trix-toolbar {
       }
 
       &:not(.icon) {
-        font-size: 75%;
+        font-size: $font-size-normal;
         font-weight: 600;
         white-space: nowrap;
         padding: 0 0.5em;
         color: rgba(0,0,0, $opacity-normal);
 
         @media(max-width: 767px) {
-          font-size: 70%;
           letter-spacing: -0.01em;
           padding: 0 0.3em;
         }
@@ -104,7 +104,7 @@ trix-toolbar {
       top: 0;
       left: 0;
       right: 0;
-      font-size: 0.8rem;
+      font-size: $font-size-normal;
       padding: 15px 10px;
       background: #fff;
       box-shadow: 0 0.3rem 1rem #ccc;
@@ -135,7 +135,6 @@ trix-toolbar {
 
       .button_group {
         input[type=button] {
-          font-size: 100%;
           padding: 0.5em;
           border-bottom: none;
         }
