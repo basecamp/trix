@@ -47,10 +47,10 @@ class Trix.CompositionInputController extends Trix.BasicObject
   # it's likely there won't be another mutation (and subsequent render + selection change).
   # In that case, collapse the selection and request a render.
   setFinalSelection: ->
-    if  @data.end? and @data.end is @data.update
+    if @data.end? and @data.end is @data.update
       @unlessMutationOccurs =>
         if @selectionIsExpanded()
-          @responder?.setSelection(@range[1])
+          @responder?.setSelection(@range[0] + @data.end.length)
           @requestRender()
 
   @proxyMethod "inputController.setInputSummary"

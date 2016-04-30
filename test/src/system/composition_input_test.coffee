@@ -116,10 +116,13 @@ testGroup "Composition input", template: "editor_empty", ->
       triggerEvent(element, "compositionupdate", data: "é")
       node.data = "é"
       defer ->
-        triggerEvent(element, "compositionend", data: "é")
+        triggerEvent(element, "compositionupdate", data: "éé")
+        node.data = "éé"
         defer ->
-          assert.locationRange(index: 0, offset: 1)
-          expectDocument("é\n")
+          triggerEvent(element, "compositionend", data: "éé")
+          defer ->
+            assert.locationRange(index: 0, offset: 2)
+            expectDocument("éé\n")
 
 removeCharacters = (direction, callback) ->
   selection = rangy.getSelection()
