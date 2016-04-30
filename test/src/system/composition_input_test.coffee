@@ -68,6 +68,40 @@ testGroup "Composition input", template: "editor_empty", ->
         pressKey "backspace", ->
           expectDocument "a \n"
 
+  # Simulates the sequence of events when pressing backspace at the end of a
+  # word and updating it on Android (running older versions of System WebView)
+  test "updating a composition", (expectDocument) ->
+    element = getEditorElement()
+    element.editor.insertString("cat")
+
+    triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
+    triggerEvent(element, "compositionstart", data: "cat")
+    triggerEvent(element, "compositionupdate", data: "cat")
+    removeCharacters -1, ->
+      triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
+      triggerEvent(element, "compositionupdate", data: "car")
+      triggerEvent(element, "compositionend", data: "car")
+      insertNode document.createTextNode("r"), ->
+        expectDocument("car\n")
+
+  # Simulates the sequence of events when typing on Android and then tapping elsewhere
+  test "leaving a composition", (expectDocument) ->
+    element = getEditorElement()
+
+    triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
+    triggerEvent(element, "compositionstart", data: "")
+    triggerEvent(element, "compositionupdate", data: "c")
+    node = document.createTextNode("c")
+    insertNode(node)
+    defer ->
+      triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
+      triggerEvent(element, "compositionupdate", data: "ca")
+      node.data = "ca"
+      defer ->
+        triggerEvent(element, "compositionend", data: "")
+        defer ->
+          expectDocument("ca\n")
+
   # Simulates compositions in Firefox where the final composition data is
   # dispatched as both compositionupdate and compositionend.
   test "composition ending with same data as last update", (expectDocument) ->
@@ -82,10 +116,13 @@ testGroup "Composition input", template: "editor_empty", ->
       triggerEvent(element, "compositionupdate", data: "é")
       node.data = "é"
       defer ->
-        triggerEvent(element, "compositionend", data: "é")
+        triggerEvent(element, "compositionupdate", data: "éé")
+        node.data = "éé"
         defer ->
-          assert.locationRange(index: 0, offset: 1)
-          expectDocument("é\n")
+          triggerEvent(element, "compositionend", data: "éé")
+          defer ->
+            assert.locationRange(index: 0, offset: 2)
+            expectDocument("éé\n")
 
 removeCharacters = (direction, callback) ->
   selection = rangy.getSelection()

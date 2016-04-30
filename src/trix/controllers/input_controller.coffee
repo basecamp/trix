@@ -1,5 +1,6 @@
 #= require trix/observers/mutation_observer
 #= require trix/operations/file_verification_operation
+#= require trix/controllers/composition_input_controller
 
 {handleEvent, findClosestElementFromNode, findElementFromContainerAndOffset,
   defer, makeElement, innerElementIsActive, summarizeStringChange, objectsAreEqual} = Trix
@@ -43,6 +44,10 @@ class Trix.InputController extends Trix.BasicObject
   resetInputSummary: ->
     @inputSummary = {}
 
+  reset: ->
+    @resetInputSummary()
+    Trix.selectionChangeObserver.reset()
+
   # Render cycle
 
   editorWillSyncDocumentView: ->
@@ -54,18 +59,21 @@ class Trix.InputController extends Trix.BasicObject
   requestRender: ->
     @delegate?.inputControllerDidRequestRender?()
 
+  requestReparse: ->
+    @delegate?.inputControllerDidRequestReparse?()
+    @requestRender()
+
   # Mutation observer delegate
 
   elementDidMutate: (mutationSummary) ->
     @mutationCount++
-    unless @inputSummary.composing
+    unless @isComposing()
       @handleInput ->
-        unless @mutationIsExpected(mutationSummary)
-          @responder?.replaceHTML(@element.innerHTML)
-
-        @resetInputSummary()
-        @requestRender()
-        Trix.selectionChangeObserver.reset()
+        if @mutationIsExpected(mutationSummary)
+          @requestRender()
+        else
+          @requestReparse()
+        @reset()
 
   mutationIsExpected: (mutationSummary) ->
     if @inputSummary
@@ -96,7 +104,7 @@ class Trix.InputController extends Trix.BasicObject
 
   events:
     keydown: (event) ->
-      @resetInputSummary() unless @inputSummary.composing
+      @resetInputSummary() unless @isComposing()
 
       if keyName = @constructor.keyNames[event.keyCode]
         context = @keys
@@ -240,45 +248,17 @@ class Trix.InputController extends Trix.BasicObject
       event.preventDefault()
 
     compositionstart: (event) ->
-      if @inputSummary.eventName is "keypress" and @inputSummary.textAdded
-        @responder?.deleteInDirection("left")
-
-      unless @selectionIsExpanded()
-        @responder?.insertPlaceholder()
-        @requestRender()
-
-      compositionRange = @responder?.getSelectedRange()
-      @setInputSummary({compositionRange, compositionStart: event.data, composing: true})
+      @compositionInputController = new Trix.CompositionInputController this
+      @compositionInputController.start(event.data)
 
     compositionupdate: (event) ->
-      if compositionRange = @responder?.selectPlaceholder()
-        @setInputSummary({compositionRange})
-        @responder?.forgetPlaceholder()
-
-      @setInputSummary(compositionUpdate: event.data)
+      @compositionInputController ?= new Trix.CompositionInputController this
+      @compositionInputController.update(event.data)
 
     compositionend: (event) ->
-      compositionEnd = event.data
-      {compositionStart, compositionUpdate, compositionRange} = @inputSummary
-
-      @responder?.forgetPlaceholder()
-      @setInputSummary(composing: false)
-
-      if compositionStart? and compositionRange?
-        @delegate?.inputControllerWillPerformTyping()
-        @responder?.setSelectedRange(compositionRange)
-        @responder?.insertString(compositionEnd)
-        @setInputSummary(preferDocument: true)
-
-        # Fix for compositions remaining selected in Firefox:
-        # If the last composition update is the same as the final composition then
-        # it's likely there won't be another mutation (and subsequent render + selection change).
-        # In that case, collapse the selection and request a render.
-        if compositionEnd is compositionUpdate
-          @unlessMutationOccurs =>
-            if @selectionIsExpanded()
-              @responder?.setSelection(compositionRange[1])
-              @requestRender()
+      @compositionInputController ?= new Trix.CompositionInputController this
+      @compositionInputController.end(event.data)
+      @compositionInputController = null
 
     input: (event) ->
       event.stopPropagation()
@@ -367,6 +347,9 @@ class Trix.InputController extends Trix.BasicObject
       callback.call(this)
     finally
       @delegate?.inputControllerDidHandleInput()
+
+  isComposing: ->
+    @compositionInputController?
 
   deleteInDirection: (direction, event) ->
     if @responder?.deleteInDirection(direction) is false

@@ -167,6 +167,9 @@ class Trix.EditorController extends Trix.Controller
       @requestedRender = false
       @render()
 
+  inputControllerDidRequestReparse: ->
+    @reparse()
+
   inputControllerWillPerformTyping: ->
     @recordTypingUndoEntry()
 
