@@ -375,6 +375,10 @@ To develop in-browser, run `bin/setup` and follow the displayed instructions.
 
 Make sure you’re set up to build from source using the instructions above. Then run `bin/blade runner` and visit the displayed URL to run the Trix test suite.
 
+### Pull Requests
+
+Only commit changes to Trix’s source (everything except the compiled files in `/dist`) and leave the [VERSION](src/trix/VERSION) unchanged. We update both when publishing new [releases](https://github.com/basecamp/trix/releases). :heart:
+
 ---
 
 © 2016 Basecamp, LLC.
