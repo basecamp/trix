@@ -136,6 +136,7 @@ trix-toolbar {
 
       .button_group {
         input[type=button] {
+          font-size: 100%;
           padding: 0.5em;
           border-bottom: none;
         }
@@ -153,7 +154,7 @@ trix-toolbar {
           }
 
           .button_group {
-            flex: 1 content;
+            flex: 0 0 content;
             margin: 0;
           }
         }
