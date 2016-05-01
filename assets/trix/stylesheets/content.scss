@@ -15,8 +15,9 @@
     font-size: 0.8rem;
     margin: 0;
     padding: 0.5rem;
-    white-space: pre-wrap;
+    white-space: pre;
     background-color: #eee;
+    overflow-x: auto;
   }
 
   ul, ol, li {
