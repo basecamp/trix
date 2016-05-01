@@ -51,17 +51,9 @@
     padding: 0;
     color: #666;
 
-    &.attachment-file {
-      color: #333;
-      line-height: 2;
-      padding: 0 1rem;
-      border: 1px solid #bbb;
-      border-radius: 5px;
-    }
-
     .caption {
       display: block;
-      margin: 4px auto 0 auto;
+      margin: 0.1rem auto 0 auto;
       padding: 0;
       text-align: center;
 
@@ -69,6 +61,18 @@
         &:before {
           content: ' · ';
         }
+      }
+    }
+
+    &.attachment-file {
+      color: #333;
+      line-height: 1;
+      padding: 0.4rem 1rem;
+      border: 1px solid #bbb;
+      border-radius: 5px;
+
+      .caption {
+        margin-bottom: 0.1rem;
       }
     }
   }
