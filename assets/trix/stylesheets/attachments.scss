@@ -5,6 +5,10 @@ trix-editor {
     -ms-user-select: none;
     user-select: none;
 
+    ::-moz-selection {
+      background: none;
+    }
+
     img {
       box-shadow: 0 0 0 2px highlight;
     }
