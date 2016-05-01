@@ -14,12 +14,11 @@ trix-editor {
     .remove {
       display: block;
       position: absolute;
-      top: -12px;
-      right: -12px;
-      width: 24px;
-      height: 24px;
-      border-radius: 24px;
-      line-height: 22px;
+      top: -0.75rem;
+      right: -0.75rem;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 1.5rem;
       font-size: 0;
       color: black;
       text-align: center;
@@ -30,7 +29,8 @@ trix-editor {
 
       &:after {
         content: '×';
-        font-size: 18px;
+        font-size: 1rem;
+        line-height: 1.5;
         font-weight: bold;
         opacity: 0.6;
       }
@@ -45,11 +45,14 @@ trix-editor {
     .caption {
       &.caption-editing {
         textarea {
+          display: block;
           width: 100%;
           margin: 0;
           padding: 0;
-          font-size: 13px;
-          line-height: 13px;
+          font-size: inherit;
+          font-family: inherit;
+          line-height: inherit;
+          color: inherit;
           text-align: center;
           border: none;
           outline: none;

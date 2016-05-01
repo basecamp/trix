@@ -5,16 +5,16 @@
   }
 
   blockquote {
-    margin: 0 0 0 5px;
-    padding: 0 0 0 10px;
-    border-left: 5px solid #ccc;
+    margin: 0 0 0 0.3rem;
+    padding: 0 0 0 0.6rem;
+    border-left: 0.3rem solid #ccc;
   }
 
   pre {
     font-family: monospace;
-    font-size: 12px;
+    font-size: 0.8rem;
     margin: 0;
-    padding: 10px;
+    padding: 0.5rem;
     white-space: pre-wrap;
     background-color: #eee;
   }
@@ -24,7 +24,7 @@
     padding: 0;
 
     li {
-      margin-left: 20px;
+      margin-left: 1rem;
     }
   }
 
@@ -50,12 +50,11 @@
     margin: 0;
     padding: 0;
     color: #666;
-    font-size: 13px;
 
     &.attachment-file {
       color: #333;
-      line-height: 30px;
-      padding: 0 16px;
+      line-height: 2;
+      padding: 0 1rem;
       border: 1px solid #bbb;
       border-radius: 5px;
     }
