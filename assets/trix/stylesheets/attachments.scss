@@ -12,34 +12,41 @@ trix-editor {
     img {
       box-shadow: 0 0 0 2px highlight;
     }
+
+    &.attachment.attachment-file {
+      box-shadow: 0 0 0 2px highlight;
+      border-color: transparent;
+    }
   }
 
   .attachment {
     .remove {
       display: block;
       position: absolute;
-      top: -0.75rem;
-      right: -0.75rem;
-      width: 1.5rem;
-      height: 1.5rem;
-      border-radius: 1.5rem;
+      top: -0.8rem;
+      right: -0.8rem;
+      width: 1.2rem;
+      height: 1.2rem;
+      line-height: 1.2rem;
+      border-radius: 1.2rem;
       font-size: 0;
       color: black;
       text-align: center;
       text-decoration: none;
       background-color: #fff;
-      border: 1px solid #bbb;
-      box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+      border: 2px solid highlight;
+      box-shadow: -2px 2px 6px rgba(0, 0, 0, 0.12);
 
       &:after {
+        font-family:  arial, sans-serif;;
         content: '×';
         font-size: 1rem;
-        line-height: 1.5;
-        font-weight: bold;
-        opacity: 0.6;
+        opacity: 0.5;
       }
 
       &:hover {
+        border-color: #333;
+
         &:after {
           opacity: 1;
         }
