@@ -20,6 +20,16 @@ trix-editor {
   }
 
   .attachment {
+    &:hover {
+      cursor: default;
+    }
+
+    &.attachment-preview {
+      .caption:hover {
+        cursor: text;
+      }
+    }
+
     .remove {
       display: block;
       position: absolute;
