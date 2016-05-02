@@ -49,8 +49,8 @@ trix-toolbar {
       &.icon {
         width: 2.6em;
         height: 1.6em;
-        max-width: 7vw;
-        max-height: 7vw;
+        max-width: calc(0.8em + 4vw);
+        max-height: calc(0.8em + 4vw);
         text-indent: -9999px;
 
         &::before {
