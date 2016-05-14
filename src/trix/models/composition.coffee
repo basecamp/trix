@@ -114,7 +114,13 @@ class Trix.Composition extends Trix.BasicObject
         else
           @insertString("\n")
     else
-      @insertString("\n")
+      if @shouldBreakParagraphsIntoBlocks()
+        @insertBlockBreak()
+      else
+        @insertString("\n")
+
+  shouldBreakParagraphsIntoBlocks: ->
+    Trix.config.blockAttributes.default.tagName is "p"
 
   insertHTML: (html) ->
     startPosition = @getPosition()
