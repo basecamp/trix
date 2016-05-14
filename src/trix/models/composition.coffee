@@ -71,15 +71,15 @@ class Trix.Composition extends Trix.BasicObject
 
   breakFormattedBlock: ->
     position = @getPosition()
-    range = [position - 1, position]
+    range = [position, position]
 
     document = @document
     {index, offset} = document.locationFromPosition(position)
     block = document.getBlockAtIndex(index)
 
     if block.getBlockBreakPosition() is offset
-      if block.text.getStringAtRange([offset-1, offset]) is "\n"
-        document = document.removeTextAtRange([position-1, position])
+      if block.text.getStringAtRange([offset - 1, offset]) is "\n"
+        document = document.removeTextAtRange([position - 1, position])
       else if offset - 1 isnt 0
         position += 1
     else
@@ -88,11 +88,13 @@ class Trix.Composition extends Trix.BasicObject
       else if offset - 1 isnt 0
         position += 1
 
-    if block.isSingleLine()
-      newDocument = new Trix.Document
+    if block.isSingleLine() and not block.offsetIsAtEnd(offset)
+      @setDocument(document.insertBlockBreakAtRange(range))
     else
+      position += 1
       newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
-    @setDocument(document.insertDocumentAtRange(newDocument, range))
+      @setDocument(document.insertDocumentAtRange(newDocument, range))
+    
     @setSelection(position)
 
   insertLineBreak: ->
@@ -108,7 +110,6 @@ class Trix.Composition extends Trix.BasicObject
         else
           console.log "breaking singline block"
           @breakFormattedBlock()
-          @removeLastBlockAttribute()
       else if block.isListItem()
         if block.isEmpty()
           @decreaseListLevel()

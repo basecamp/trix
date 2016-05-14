@@ -134,6 +134,9 @@ class Trix.Block extends Trix.Object
     else
       @text.copy()
 
+  offsetIsAtEnd: (offset) ->
+    @getLength() - 1 is offset
+
   # Grouping
 
   canBeGrouped: (depth) ->
@@ -147,6 +150,8 @@ class Trix.Block extends Trix.Object
         false
       else
         true
+    else
+      not attributes[depth] in ["h1", "h2"]
 
   # Block breaks
 
