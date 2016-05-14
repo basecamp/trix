@@ -108,7 +108,6 @@ class Trix.Composition extends Trix.BasicObject
         if block.isEmpty()
           @removeLastBlockAttribute()
         else
-          console.log "breaking singline block"
           @breakFormattedBlock()
       else if block.isListItem()
         if block.isEmpty()

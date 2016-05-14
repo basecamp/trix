@@ -145,13 +145,12 @@ class Trix.Block extends Trix.Object
   canBeGroupedWith: (otherBlock, depth) ->
     attributes = @attributes
     otherAttributes = otherBlock.getAttributes()
-    if attributes[depth] is otherAttributes[depth]
+    if attributes[depth] is otherAttributes[depth] and not @isSingleLine()
       if attributes[depth] in ["bullet", "number"] and otherAttributes[depth + 1] not in ["bulletList", "numberList"]
         false
       else
         true
-    else
-      not attributes[depth] in ["h1", "h2"]
+    
 
   # Block breaks
 
