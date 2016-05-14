@@ -22,7 +22,7 @@ class Trix.BlockView extends Trix.ObjectView
     if @attributes.length
       nodes
     else
-      element = makeElement(Trix.config.blockAttributes.default.tagName)
+      element = makeElement(Trix.config.blockAttributes.default)
       element.appendChild(node) for node in nodes
       [element]
 
