@@ -91,7 +91,6 @@ class Trix.Composition extends Trix.BasicObject
     if block.isSingleLine() and not block.offsetIsAtEnd(offset)
       @setDocument(document.insertBlockBreakAtRange(range))
     else
-      position += 1
       newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
       @setDocument(document.insertDocumentAtRange(newDocument, range))
     
