@@ -12,6 +12,9 @@ class Trix.Block extends Trix.Object
     @text = applyBlockBreakToText(text)
     @attributes = attributes
 
+  isSingleCharacter: ->
+    @getConfig("singleCharacter")
+
   isEmpty: ->
     @text.isBlockBreak()
 

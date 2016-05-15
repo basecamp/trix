@@ -1,10 +1,12 @@
 Trix.config.blockAttributes = attributes =
   default:
-    tagName: "div"
+    tagName: "p"
     parse: false
   quote:
     tagName: "blockquote"
     nestable: true
+  attachment:
+    singleCharacter: true
   code:
     tagName: "pre"
     text:

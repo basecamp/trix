@@ -150,13 +150,17 @@ class Trix.Composition extends Trix.BasicObject
   insertAttachment: (attachment) ->
     if @shouldBreakParagraphsIntoBlocks()
       console.log "should break paragraphs into blocks"
-      @breakFormattedBlock()
-      [startPosition, endPosition] = @getSelectedRange()
-      @setSelection(startPosition + 1)
-      @setBlockAttribute("attachment", true)
+      @createBlockForAttachment()
 
     text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
     @insertText(text)
+
+  createBlockForAttachment: ->
+    @insertBlockBreak()
+    @breakFormattedBlock()
+    [startPosition, endPosition] = @getSelectedRange()
+    @setSelection(startPosition + 1)
+    @setCurrentAttribute("attachment", true)
 
   deleteInDirection: (direction) ->
     range = [startPosition, endPosition] = @getSelectedRange()
