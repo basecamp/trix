@@ -8,7 +8,7 @@ gem 'eco'
 gem 'sass'
 gem 'uglifier'
 
-gem 'blade', github: 'javan/blade'
+gem 'blade', '~> 0.5.2'
 gem 'blade-sauce_labs_plugin', '~> 0.5.1'
 gem 'github_api'
 gem 'aws-sdk'
