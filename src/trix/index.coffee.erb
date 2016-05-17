@@ -1,10 +1,11 @@
+#= export Trix
 #= require_self
 #= require trix/core
 #= require trix/config
 #= require trix/elements/trix_editor_element
 
 @Trix =
-  VERSION: "<%= render_asset("trix/VERSION").chomp %>"
+  VERSION: "<%= depend_on_asset("trix/VERSION").to_s.chomp %>"
 
   ZERO_WIDTH_SPACE: "\uFEFF"
   NON_BREAKING_SPACE: "\u00A0"
