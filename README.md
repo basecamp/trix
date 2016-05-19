@@ -87,7 +87,7 @@ The default `trix.css` file includes styles for basic formatted content—includ
 
 Trix automatically accepts files dragged or pasted into an editor and inserts them as attachments in the document. Each attachment is considered _pending_ until you store it remotely and provide Trix with a permanent URL.
 
-To store attachments, listen for the `trix-attachment-add` event. Upload the attached files with XMLHttpRequest yourself and set the attachment’s URL attribute upon completion. See the [attachment example](http://trix-editor.org/js/attachments.js) for detailed information.
+To store attachments, listen for the `trix-attachment-add` event. Upload the attached files with XMLHttpRequest yourself and set the attachment’s URL attribute upon completion. See the [attachment example](https://trix-editor.org/js/attachments.js) for detailed information.
 
 If you don’t want to accept dropped or pasted files, call `preventDefault()` on the `trix-file-accept` event, which Trix dispatches just before the `trix-attachment-add` event.
 
@@ -267,7 +267,7 @@ To set the `href` attribute, pass a URL as the second argument to `editor.activa
 ```js
 element.editor.insertString("Trix")
 element.editor.setSelectedRange([0, 4])
-element.editor.activateAttribute("href", "http://trix-editor.org/")
+element.editor.activateAttribute("href", "https://trix-editor.org/")
 ```
 
 ### Removing Formatting
@@ -356,7 +356,7 @@ Trix was created by [Javan Makhmali](https://twitter.com/javan) and [Sam Stephen
 
 ### Building From Source
 
-Trix is written in [CoffeeScript](https://github.com/jashkenas/coffee-script) and compiled to JavaScript with [Blade](https://github.com/javan/blade).
+Trix is written in [CoffeeScript](https://github.com/jashkenas/coffeescript) and compiled to JavaScript with [Blade](https://github.com/javan/blade).
 
 From inside a checkout of the Trix Git repository, issue the following commands to build the distributable files in `dist/`:
 
