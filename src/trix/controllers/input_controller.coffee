@@ -77,20 +77,20 @@ class Trix.InputController extends Trix.BasicObject
         @reset()
 
   mutationIsExpected: ({textAdded, textDeleted}) ->
-    if @inputSummary
-      if @inputSummary.preferDocument?
-        @inputSummary.preferDocument
-      else
-        unhandledAddition = textAdded isnt @inputSummary.textAdded
-        unhandledDeletion = textDeleted? and not @inputSummary.didDelete
+    return true if @inputSummary.preferDocument
 
-        if textDeleted is "\n" and unhandledDeletion
-          if textAdded and not unhandledAddition
-            if range = @responder?.getSelectedRange()
-              if @responder?.positionIsBlockBreak(range[1] + textAdded.length)
-                unhandledDeletion = false
+    unhandledAddition = textAdded isnt @inputSummary.textAdded
+    unhandledDeletion = textDeleted? and not @inputSummary.didDelete
 
-        not (unhandledAddition or unhandledDeletion)
+    # Expect newline removal at the end of a block caused
+    # by the extra <br> rendered to represent them.
+    if textDeleted is "\n" and unhandledDeletion
+      if textAdded and not unhandledAddition
+        if range = @responder?.getSelectedRange()
+          if @responder?.positionIsBlockBreak(range[1] + textAdded.length)
+            unhandledDeletion = false
+
+    not (unhandledAddition or unhandledDeletion)
 
   unlessMutationOccurs: (callback) ->
     mutationCount = @mutationCount
