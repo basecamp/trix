@@ -402,6 +402,9 @@ class Trix.Composition extends Trix.BasicObject
     if location = @document.locationFromPosition(position)
       @locationIsCursorTarget(location)
 
+  positionIsBlockBreak: (position) ->
+    @document.getPieceAtPosition(position)?.isBlockBreak()
+
   getSelectedDocument: ->
     if selectedRange = @getSelectedRange()
       @document.getDocumentAtRange(selectedRange)

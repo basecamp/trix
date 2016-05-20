@@ -76,13 +76,20 @@ class Trix.InputController extends Trix.BasicObject
           @requestReparse()
         @reset()
 
-  mutationIsExpected: (mutationSummary) ->
+  mutationIsExpected: ({textAdded, textDeleted}) ->
     if @inputSummary
       if @inputSummary.preferDocument?
         @inputSummary.preferDocument
       else
-        unhandledAddition = mutationSummary.textAdded isnt @inputSummary.textAdded
-        unhandledDeletion = mutationSummary.textDeleted? and not @inputSummary.didDelete
+        unhandledAddition = textAdded isnt @inputSummary.textAdded
+        unhandledDeletion = textDeleted? and not @inputSummary.didDelete
+
+        if textDeleted is "\n" and unhandledDeletion
+          if textAdded and not unhandledAddition
+            if range = @responder?.getSelectedRange()
+              if @responder?.positionIsBlockBreak(range[1] + textAdded.length)
+                unhandledDeletion = false
+
         not (unhandledAddition or unhandledDeletion)
 
   unlessMutationOccurs: (callback) ->
