@@ -202,6 +202,21 @@ testGroup "Custom element API", template: "editor_empty", ->
                 assert.equal focusEventCount, 1
                 done()
 
+  test "element triggers custom focus event when autofocusing", (done) ->
+    element = document.createElement("trix-editor")
+    element.setAttribute("autofocus", "")
+
+    focusEventCount = 0
+    element.addEventListener "trix-focus", -> focusEventCount++
+
+    container = document.getElementById("trix-container")
+    container.innerHTML = ""
+    container.appendChild(element)
+
+    element.addEventListener "trix-initialize", ->
+      assert.equal focusEventCount, 1
+      done()
+
   test "editor resets to its original value on form reset", (expectDocument) ->
     element = getEditorElement()
     form = element.inputElement.form
