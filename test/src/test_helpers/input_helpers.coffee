@@ -16,11 +16,17 @@ helpers.extend
     element.dispatchEvent(helpers.createEvent(type, properties))
 
   pasteContent: (contentType, value, callback) ->
+    if typeof contentType is "object"
+      data = contentType
+      callback = value
+    else
+      data = "#{contentType}": value
+
     testClipboardData =
       getData: (type) ->
-        value if type is contentType
-      types: [contentType]
-      items: [value]
+        data[type]
+      types: (key for key of data)
+      items: (value for key, value of data)
 
     helpers.triggerEvent(document.activeElement, "paste", {testClipboardData})
     helpers.defer callback

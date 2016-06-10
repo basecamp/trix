@@ -3,7 +3,8 @@
 #= require trix/controllers/composition_input_controller
 
 {handleEvent, findClosestElementFromNode, findElementFromContainerAndOffset,
-  defer, makeElement, innerElementIsActive, summarizeStringChange, objectsAreEqual} = Trix
+  defer, makeElement, innerElementIsActive, summarizeStringChange, objectsAreEqual,
+  tagName} = Trix
 
 class Trix.InputController extends Trix.BasicObject
   pastedFileCount = 0
@@ -212,7 +213,17 @@ class Trix.InputController extends Trix.BasicObject
           @delegate?.inputControllerDidPaste(pasteData)
         return
 
-      if html = paste.getData("text/html")
+      if dataTransferIsPlainText(paste)
+        string = paste.getData("text/plain")
+        pasteData.string = string
+        @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())
+        @delegate?.inputControllerWillPasteText(pasteData)
+        @responder?.insertString(string)
+        @requestRender()
+        @delegate?.inputControllerDidPaste(pasteData)
+
+      else if html = paste.getData("text/html")
+        console.log "pasting HTML"
         pasteData.html = html
         @delegate?.inputControllerWillPasteText(pasteData)
         @responder?.insertHTML(html)
@@ -224,14 +235,6 @@ class Trix.InputController extends Trix.BasicObject
         @setInputSummary(textAdded: href, didDelete: @selectionIsExpanded())
         @delegate?.inputControllerWillPasteText(pasteData)
         @responder?.insertText(Trix.Text.textForStringWithAttributes(href, {href}))
-        @requestRender()
-        @delegate?.inputControllerDidPaste(pasteData)
-
-      else if string = paste.getData("text/plain")
-        pasteData.string = string
-        @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())
-        @delegate?.inputControllerWillPasteText(pasteData)
-        @responder?.insertString(string)
         @requestRender()
         @delegate?.inputControllerDidPaste(pasteData)
 
@@ -411,6 +414,18 @@ keyEventIsKeyboardCommand = (event) ->
 pasteEventIsCrippledSafariHTMLPaste = (event) ->
   if types = event.clipboardData?.types
     "text/html" not in types and ("com.apple.webarchive" in types or "com.apple.flat-rtfd" in types)
+
+dataTransferIsPlainText = (dataTransfer) ->
+  text = dataTransfer.getData("text/plain")
+  html = dataTransfer.getData("text/html")
+
+  if text and html
+    element = makeElement("div")
+    element.innerHTML = html
+    if element.textContent is text
+      not element.querySelector(":not(meta)")
+  else
+    text?.length
 
 testTransferData = "application/x-trix-feature-detection": "test"
 
