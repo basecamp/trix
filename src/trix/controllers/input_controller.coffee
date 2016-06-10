@@ -223,7 +223,6 @@ class Trix.InputController extends Trix.BasicObject
         @delegate?.inputControllerDidPaste(pasteData)
 
       else if html = paste.getData("text/html")
-        console.log "pasting HTML"
         pasteData.html = html
         @delegate?.inputControllerWillPasteText(pasteData)
         @responder?.insertHTML(html)
