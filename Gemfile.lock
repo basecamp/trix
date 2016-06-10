@@ -61,7 +61,7 @@ GEM
     execjs (2.7.0)
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
-    faye (1.1.2)
+    faye (1.1.1)
       cookiejar (>= 0.3.0)
       em-http-request (>= 0.3.0)
       eventmachine (>= 0.12.0)
@@ -139,6 +139,7 @@ DEPENDENCIES
   coffee-script
   coffee-script-source (~> 1.9.1)
   eco
+  faye (= 1.1.1)
   github_api
   rake
   sass
