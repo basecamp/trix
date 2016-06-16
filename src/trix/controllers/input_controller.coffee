@@ -149,6 +149,15 @@ class Trix.InputController extends Trix.BasicObject
         @responder?.insertString(character)
         @setInputSummary(textAdded: character, didDelete: @selectionIsExpanded())
 
+    textInput: (event) ->
+      # Handle autocapitalization
+      {data} = event
+      {textAdded} = @inputSummary
+      if textAdded and textAdded isnt data and textAdded.toUpperCase() is data
+        @expandSelectionInDirection("forward")
+        @responder?.insertString(data)
+        @setInputSummary(textAdded: data)
+
     dragenter: (event) ->
       event.preventDefault()
 

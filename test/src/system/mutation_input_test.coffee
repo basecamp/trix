@@ -1,4 +1,4 @@
-{assert, defer, test, testGroup, triggerEvent, typeCharacters, clickToolbarButton, isToolbarButtonActive} = Trix.TestHelpers
+{assert, defer, test, testGroup, triggerEvent, typeCharacters, clickToolbarButton, isToolbarButtonActive, insertNode} = Trix.TestHelpers
 
 testGroup "Mutation input", template: "editor_empty", ->
   test "deleting a newline", (expectDocument) ->
@@ -31,3 +31,17 @@ testGroup "Mutation input", template: "editor_empty", ->
         assert.textAttributes([2, 3], bold: true)
         assert.textAttributes([3, 4], blockBreak: true)
         expectDocument("a\nb\n")
+
+  test "typing formatted text with autocapitalization on", (expectDocument) ->
+    element = getEditorElement()
+
+    clickToolbarButton attribute: "bold", ->
+      # Type "b", autocapitalize to "B"
+      triggerEvent(element, "keydown", charCode: 0, keyCode: 66, which: 66)
+      triggerEvent(element, "keypress", charCode: 98, keyCode: 98, which: 98)
+      triggerEvent(element, "textInput", data: "B")
+
+      insertNode document.createTextNode("B"), ->
+        assert.ok isToolbarButtonActive(attribute: "bold")
+        assert.textAttributes([0, 1], bold: true)
+        expectDocument("B\n")
