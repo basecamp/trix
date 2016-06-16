@@ -86,9 +86,8 @@ class Trix.InputController extends Trix.BasicObject
     # by the extra <br> rendered to represent them.
     if textDeleted is "\n" and unhandledDeletion
       if textAdded and not unhandledAddition
-        Trix.selectionChangeObserver.update()
         if range = @responder?.getSelectedRange()
-          if @responder?.positionIsBlockBreak(range[1])
+          if @responder?.positionIsBlockBreak(range[1] + textAdded.length)
             unhandledDeletion = false
 
     not (unhandledAddition or unhandledDeletion)
@@ -155,9 +154,11 @@ class Trix.InputController extends Trix.BasicObject
       {data} = event
       {textAdded} = @inputSummary
       if textAdded and textAdded isnt data and textAdded.toUpperCase() is data
-        @expandSelectionInDirection("forward")
+        range = @responder?.getSelectedRange()
+        @responder?.setSelectedRange([range[0], range[1] + textAdded.length])
         @responder?.insertString(data)
         @setInputSummary(textAdded: data)
+        @responder?.setSelectedRange(range)
 
     dragenter: (event) ->
       event.preventDefault()
