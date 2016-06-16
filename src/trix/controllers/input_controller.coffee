@@ -86,8 +86,9 @@ class Trix.InputController extends Trix.BasicObject
     # by the extra <br> rendered to represent them.
     if textDeleted is "\n" and unhandledDeletion
       if textAdded and not unhandledAddition
+        Trix.selectionChangeObserver.update()
         if range = @responder?.getSelectedRange()
-          if @responder?.positionIsBlockBreak(range[1] + textAdded.length)
+          if @responder?.positionIsBlockBreak(range[1])
             unhandledDeletion = false
 
     not (unhandledAddition or unhandledDeletion)
