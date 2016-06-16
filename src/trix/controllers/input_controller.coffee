@@ -86,7 +86,7 @@ class Trix.InputController extends Trix.BasicObject
     # by the extra <br> rendered to represent them.
     if textDeleted is "\n" and unhandledDeletion
       if textAdded and not unhandledAddition
-        if range = @responder?.getSelectedRange()
+        if range = @getSelectedRange()
           if @responder?.positionIsBlockBreak(range[1] + textAdded.length)
             unhandledDeletion = false
 
@@ -154,11 +154,11 @@ class Trix.InputController extends Trix.BasicObject
       {data} = event
       {textAdded} = @inputSummary
       if textAdded and textAdded isnt data and textAdded.toUpperCase() is data
-        range = @responder?.getSelectedRange()
-        @responder?.setSelectedRange([range[0], range[1] + textAdded.length])
+        range = @getSelectedRange()
+        @setSelectedRange([range[0], range[1] + textAdded.length])
         @responder?.insertString(data)
         @setInputSummary(textAdded: data)
-        @responder?.setSelectedRange(range)
+        @setSelectedRange(range)
 
     dragenter: (event) ->
       event.preventDefault()
@@ -166,7 +166,7 @@ class Trix.InputController extends Trix.BasicObject
     dragstart: (event) ->
       target = event.target
       @serializeSelectionToDataTransfer(event.dataTransfer)
-      @draggedRange = @responder?.getSelectedRange()
+      @draggedRange = @getSelectedRange()
       @delegate?.inputControllerDidStartDrag?()
 
     dragover: (event) ->
@@ -394,7 +394,7 @@ class Trix.InputController extends Trix.BasicObject
     types["Files"] or types["application/x-trix-document"] or types["text/html"] or types["text/plain"]
 
   getPastedHTMLUsingHiddenElement: (callback) ->
-    selectedRange = @responder?.getSelectedRange()
+    selectedRange = @getSelectedRange()
 
     style =
       position: "absolute"
@@ -409,9 +409,11 @@ class Trix.InputController extends Trix.BasicObject
     requestAnimationFrame =>
       html = element.innerHTML
       document.body.removeChild(element)
-      @responder?.setSelectedRange(selectedRange)
+      @setSelectedRange(selectedRange)
       callback(html)
 
+  @proxyMethod "responder?.getSelectedRange"
+  @proxyMethod "responder?.setSelectedRange"
   @proxyMethod "responder?.expandSelectionInDirection"
   @proxyMethod "responder?.selectionIsInCursorTarget"
   @proxyMethod "responder?.selectionIsExpanded"
