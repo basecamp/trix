@@ -21,6 +21,9 @@ helpers.extend
       callback = options
 
     beforeEach = ->
+      # Ensure window is active on CI so focus and blur events are natively dispatched
+      window.focus()
+
       ready = (callback) ->
         if template?
           addEventListener "trix-initialize", handler = ({target}) ->
