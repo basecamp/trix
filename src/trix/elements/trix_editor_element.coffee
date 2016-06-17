@@ -10,6 +10,11 @@ Trix.registerElement "trix-editor", do ->
 
   # Contenteditable support helpers
 
+  autofocus = (element) ->
+    unless document.querySelector(":focus")
+      if element.hasAttribute("autofocus") and document.querySelector("[autofocus]") is element
+        element.focus()
+
   makeEditable = (element) ->
     return if element.hasAttribute("contenteditable")
     element.setAttribute("contenteditable", "")
@@ -137,22 +142,12 @@ Trix.registerElement "trix-editor", do ->
       @editorController ?= new Trix.EditorController(editorElement: this, html: @defaultValue = @value)
       @editorController.registerSelectionManager()
       @registerResetListener()
-      @autofocus()
+      autofocus(this)
       requestAnimationFrame => @notify("initialize")
 
   detachedCallback: ->
     @editorController?.unregisterSelectionManager()
     @unregisterResetListener()
-
-  # Autofocus support
-
-  autofocus: ->
-    unless document.querySelector(":focus")
-      if @hasAttribute("autofocus") and document.querySelector("[autofocus]") is this
-        focusTriggered = false
-        handleEventOnce("focus", onElement: this, withCallback: -> focusTriggered = true)
-        @focus()
-        triggerEvent("focus", onElement: this) unless focusTriggered
 
   # Form reset support
 
