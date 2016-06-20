@@ -13,7 +13,8 @@ testGroup "Mutation input", template: "editor_empty", ->
 
   test "typing formatted text after a newline at the end of block", (expectDocument) ->
     element = getEditorElement()
-    element.editor.insertString("a\n")
+    element.editor.insertHTML("<ul><li>a</li><li><br></li></ul>")
+    element.editor.setSelectedRange(3)
 
     clickToolbarButton attribute: "bold", ->
       # Press B key
@@ -27,10 +28,9 @@ testGroup "Mutation input", template: "editor_empty", ->
 
       requestAnimationFrame ->
         assert.ok isToolbarButtonActive(attribute: "bold")
-        assert.textAttributes([0, 2], {})
-        assert.textAttributes([2, 3], bold: true)
-        assert.textAttributes([3, 4], blockBreak: true)
-        expectDocument("a\nb\n")
+        assert.textAttributes([0, 1], {})
+        assert.textAttributes([3, 4], bold: true)
+        expectDocument("a\n\nb\n")
 
   test "typing formatted text with autocapitalization on", (expectDocument) ->
     element = getEditorElement()

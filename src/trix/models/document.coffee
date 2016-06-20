@@ -325,7 +325,7 @@ class Trix.Document extends Trix.Object
 
   getPieceAtPosition: (position) ->
     {index, offset} = @locationFromPosition(position)
-    @getTextAtIndex(index).getPieceAtPosition(position)
+    @getTextAtIndex(index).getPieceAtPosition(offset)
 
   getCharacterAtPosition: (position) ->
     {index, offset} = @locationFromPosition(position)
