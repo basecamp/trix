@@ -89,7 +89,6 @@ class Trix.ToolbarController extends Trix.BasicObject
       else
         element.disabled = false
 
-
   eachAttributeButton: (callback) ->
     for element in @element.querySelectorAll(attributeButtonSelector)
       callback(element, getAttributeName(element))

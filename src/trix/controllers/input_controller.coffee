@@ -293,7 +293,6 @@ class Trix.InputController extends Trix.BasicObject
       @deleteInDirection("forward", event)
 
     return: (event) ->
-      # if not "header" in @responder.currentAttributes
       @setInputSummary(preferDocument: true)
       @delegate?.inputControllerWillPerformTyping()
       @responder?.insertLineBreak()

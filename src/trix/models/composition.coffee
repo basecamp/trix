@@ -96,7 +96,6 @@ class Trix.Composition extends Trix.BasicObject
       @setDocument(document.insertDocumentAtRange(newDocument, range))
     @setSelection(position)
 
-
   insertLineBreak: ->
     [startPosition, endPosition] = @getSelectedRange()
     startLocation = @document.locationFromPosition(startPosition)
