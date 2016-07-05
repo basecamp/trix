@@ -68,3 +68,5 @@ helpers.extend
           done()
         else
           callback(done)
+
+  skip: QUnit.skip
