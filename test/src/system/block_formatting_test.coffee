@@ -283,6 +283,7 @@ testGroup "Block formatting", template: "editor_empty", ->
   test "adding bullet to header block", (done) ->
     clickToolbarButton attribute: "header", ->
       clickToolbarButton attribute: "bullet", ->
+        assert.ok isToolbarButtonActive(attribute: "header")
         assert.blockAttributes([1, 2], [])
         done()
 
@@ -290,14 +291,17 @@ testGroup "Block formatting", template: "editor_empty", ->
     clickToolbarButton attribute: "bullet", ->
       clickToolbarButton attribute: "header", ->
         clickToolbarButton attribute: "bullet", ->
+          assert.ok isToolbarButtonActive(attribute: "header")
           assert.blockAttributes([0, 1], ["header"])
           done()
 
   test "breaking out of header in list", (done) ->
     clickToolbarButton attribute: "bullet", ->
       clickToolbarButton attribute: "header", ->
+        assert.ok isToolbarButtonActive(attribute: "header")
         typeCharacters "abc", ->
           typeCharacters "\n", ->
+            assert.ok isToolbarButtonActive(attribute: "bullet")
             document = getDocument()
             assert.equal document.getBlockCount(), 2
 
@@ -315,6 +319,8 @@ testGroup "Block formatting", template: "editor_empty", ->
       typeCharacters "abc", ->
         moveCursor direction: "left", times: 1, ->
           typeCharacters "\n", ->
+            assert.ok isToolbarButtonActive(attribute: "header")
+
             document = getDocument()
             assert.equal document.getBlockCount(), 1
 
