@@ -320,7 +320,6 @@ testGroup "Block formatting", template: "editor_empty", ->
 
             block = document.getBlockAtIndex(0)
             assert.deepEqual block.getAttributes(), ["header"]
-            assert.equal block.toString(), "ab\nc"
+            assert.equal block.toString(), "ab\nc\n"
 
             done()
-

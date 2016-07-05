@@ -116,7 +116,9 @@ class Trix.Composition extends Trix.BasicObject
       else
         if block.isEmpty()
           @removeLastBlockAttribute()
-        else if block.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is "\n" or "header" in block.attributes
+        else if block.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is "\n"
+          @breakFormattedBlock()
+        else if "header" in block.attributes and block.text.getStringAtRange([endLocation.offset, endLocation.offset + 1]) is "\n"
           @breakFormattedBlock()
         else
           @insertString("\n")
