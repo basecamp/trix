@@ -84,6 +84,12 @@ class Trix.ToolbarController extends Trix.BasicObject
       else
         element.classList.remove("active")
 
+      if not @delegate.composition.canAddBlockAttribute(attributeName)
+        element.disabled = true
+      else
+        element.disabled = false
+
+
   eachAttributeButton: (callback) ->
     for element in @element.querySelectorAll(attributeButtonSelector)
       callback(element, getAttributeName(element))

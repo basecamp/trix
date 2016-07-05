@@ -279,3 +279,48 @@ testGroup "Block formatting", template: "editor_empty", ->
       clickToolbarButton attribute: "number", ->
         assert.blockAttributes([0, 1], ["numberList", "number"])
         done()
+
+  test "adding bullet to header block", (done) ->
+    clickToolbarButton attribute: "header", ->
+      clickToolbarButton attribute: "bullet", ->
+        assert.blockAttributes([1, 2], [])
+        done()
+
+  test "removing bullet from header block", (done) ->
+    clickToolbarButton attribute: "bullet", ->
+      clickToolbarButton attribute: "header", ->
+        clickToolbarButton attribute: "bullet", ->
+          assert.blockAttributes([0, 1], ["header"])
+          done()
+
+  test "breaking out of header in list", (done) ->
+    clickToolbarButton attribute: "bullet", ->
+      clickToolbarButton attribute: "header", ->
+        typeCharacters "abc", ->
+          typeCharacters "\n", ->
+            document = getDocument()
+            assert.equal document.getBlockCount(), 2
+
+            block = document.getBlockAtIndex(0)
+            assert.deepEqual block.getAttributes(), ["bulletList", "bullet", "header"]
+            assert.equal block.toString(), "abc\n"
+
+            block = document.getBlockAtIndex(1)
+            assert.deepEqual block.getAttributes(), ["bulletList", "bullet"]
+
+            done()
+
+  test "breaking out of middle of header block", (done) ->
+    clickToolbarButton attribute: "header", ->
+      typeCharacters "abc", ->
+        moveCursor direction: "left", times: 1, ->
+          typeCharacters "\n", ->
+            document = getDocument()
+            assert.equal document.getBlockCount(), 1
+
+            block = document.getBlockAtIndex(0)
+            assert.deepEqual block.getAttributes(), ["header"]
+            assert.equal block.toString(), "ab\nc"
+
+            done()
+

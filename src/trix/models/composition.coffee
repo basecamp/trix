@@ -78,8 +78,10 @@ class Trix.Composition extends Trix.BasicObject
     block = document.getBlockAtIndex(index)
 
     if block.getBlockBreakPosition() is offset
-      document = document.removeTextAtRange(range)
-      range = [position, position]
+      if block.text.getStringAtRange([offset - 1, offset]) is "\n"
+        document = document.removeTextAtRange([position - 1, position])
+      else if offset - 1 isnt 0
+        position += 1
     else
       if block.text.getStringAtRange([offset, offset + 1]) is "\n"
         range = [position - 1, position + 1]
@@ -87,8 +89,13 @@ class Trix.Composition extends Trix.BasicObject
         position += 1
 
     newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
-    @setDocument(document.insertDocumentAtRange(newDocument, range))
+    if "header" in block.attributes
+      document = document.removeTextAtRange([position - 1, position])
+      @setDocument(document.insertDocumentAtRange(newDocument, [position - 1, position]))
+    else
+      @setDocument(document.insertDocumentAtRange(newDocument, range))
     @setSelection(position)
+
 
   insertLineBreak: ->
     [startPosition, endPosition] = @getSelectedRange()
@@ -109,7 +116,7 @@ class Trix.Composition extends Trix.BasicObject
       else
         if block.isEmpty()
           @removeLastBlockAttribute()
-        else if block.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is "\n"
+        else if block.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is "\n" or "header" in block.attributes
           @breakFormattedBlock()
         else
           @insertString("\n")
@@ -243,8 +250,10 @@ class Trix.Composition extends Trix.BasicObject
 
   setBlockAttribute: (attributeName, value) ->
     return unless selectedRange = @getSelectedRange()
-    @setDocument(@document.applyBlockAttributeAtRange(attributeName, value, selectedRange))
-    @setSelection(selectedRange)
+    if @canAddBlockAttribute(attributeName)
+      block = @getBlock()
+      @setDocument(@document.applyBlockAttributeAtRange(attributeName, value, selectedRange))
+      @setSelection(selectedRange)
 
   removeCurrentAttribute: (attributeName) ->
     if Trix.config.blockAttributes[attributeName]
@@ -297,6 +306,12 @@ class Trix.Composition extends Trix.BasicObject
 
   canDecreaseBlockAttributeLevel: ->
     @getBlock()?.getAttributeLevel() > 0
+
+  canAddBlockAttribute: (attributeName) ->
+    return true unless @getBlock()?.hasAttributes()
+    if attributeName in ["quote", "code", "bullet", "number"] and "header" in @getBlock()?.getAttributes()
+      return false
+    return true
 
   updateCurrentAttributes: ->
     if selectedRange = @getSelectedRange(ignoreLock: true)
