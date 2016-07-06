@@ -316,7 +316,8 @@ class Trix.Composition extends Trix.BasicObject
 
   canAddBlockAttribute: (attributeName) ->
     return true unless @getBlock()?.hasAttributes()
-    if attributeName in ["quote", "code", "bullet", "number"]
+    if attributeName in Object.keys(Trix.config.blockAttributes)
+      console.log Trix.config.blockAttributes
       if @hasCurrentAttribute("header") and attributeName not in @getBlock()?.getAttributes()
         return false
       return true
