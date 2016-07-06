@@ -89,7 +89,7 @@ class Trix.Composition extends Trix.BasicObject
         position += 1
 
     newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
-    if "header" in block.attributes
+    if @hasCurrentAttribute("header")
       document = document.removeTextAtRange([position - 1, position])
       @setDocument(document.insertDocumentAtRange(newDocument, [position - 1, position]))
     else
@@ -117,7 +117,7 @@ class Trix.Composition extends Trix.BasicObject
           @removeLastBlockAttribute()
         else if block.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is "\n"
           @breakFormattedBlock()
-        else if "header" in block.attributes and block.text.getStringAtRange([endLocation.offset, endLocation.offset + 1]) is "\n"
+        else if @hasCurrentAttribute("header") and block.text.getStringAtRange([endLocation.offset, endLocation.offset + 1]) is "\n"
           @breakFormattedBlock()
         else
           @insertString("\n")
@@ -219,7 +219,7 @@ class Trix.Composition extends Trix.BasicObject
     @currentAttributes[attributeName]?
 
   toggleCurrentAttribute: (attributeName) ->
-    if ("header" in @getBlock()?.getAttributes() and 
+    if (@hasCurrentAttribute("header") and 
     attributeName in @getBlock()?.getAttributes() and
     attributeName != "header")
       @removeBlockAttribute("header")
@@ -317,7 +317,7 @@ class Trix.Composition extends Trix.BasicObject
   canAddBlockAttribute: (attributeName) ->
     return true unless @getBlock()?.hasAttributes()
     if attributeName in ["quote", "code", "bullet", "number"]
-      if "header" in @getBlock()?.getAttributes() and attributeName not in @getBlock()?.getAttributes()
+      if @hasCurrentAttribute("header") and attributeName not in @getBlock()?.getAttributes()
         return false
       return true
     return true
