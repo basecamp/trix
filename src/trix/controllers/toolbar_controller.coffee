@@ -79,15 +79,11 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   refreshAttributeButtons: ->
     @eachAttributeButton (element, attributeName) =>
+      element.disabled = @attributes[attributeName] is false
       if @attributes[attributeName] or @dialogIsVisible(attributeName)
         element.classList.add("active")
       else
         element.classList.remove("active")
-
-      if not @delegate.composition.canSetCurrentAttribute(attributeName)
-        element.disabled = true
-      else
-        element.disabled = false
 
   eachAttributeButton: (callback) ->
     for element in @element.querySelectorAll(attributeButtonSelector)

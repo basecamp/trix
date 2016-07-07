@@ -312,6 +312,9 @@ class Trix.Composition extends Trix.BasicObject
       commonAttributes = @document.getCommonAttributesAtRange(selectedRange)
       unless objectsAreEqual(commonAttributes, @currentAttributes)
         @currentAttributes = commonAttributes
+        for blockAttribute in Object.keys(Trix.config.blockAttributes)
+          if not @canSetCurrentAttribute(blockAttribute)
+            @currentAttributes[blockAttribute] = false
         @notifyDelegateOfCurrentAttributesChange()
 
   getCurrentAttributes: ->
