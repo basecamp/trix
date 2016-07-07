@@ -225,11 +225,10 @@ class Trix.Composition extends Trix.BasicObject
       @removeCurrentAttribute(attributeName)
 
   canSetCurrentAttribute: (attributeName) ->
-    switch attributeName
-      when "href"
-        not @selectionContainsAttachmentWithAttribute(attributeName)
-      else
-        true
+    return not @selectionContainsAttachmentWithAttribute(attributeName) if attributeName is "href"
+    if @getBlock()?.hasAttributes() and @hasCurrentAttribute("header") and attributeName != "header"
+      return false
+    true
 
   setCurrentAttribute: (attributeName, value) ->
     if Trix.config.blockAttributes[attributeName]
@@ -251,7 +250,7 @@ class Trix.Composition extends Trix.BasicObject
 
   setBlockAttribute: (attributeName, value) ->
     return unless selectedRange = @getSelectedRange()
-    if @canAddBlockAttribute(attributeName)
+    if @canSetCurrentAttribute(attributeName)
       block = @getBlock()
       @setDocument(@document.applyBlockAttributeAtRange(attributeName, value, selectedRange))
       @setSelection(selectedRange)
@@ -307,12 +306,6 @@ class Trix.Composition extends Trix.BasicObject
 
   canDecreaseBlockAttributeLevel: ->
     @getBlock()?.getAttributeLevel() > 0
-
-  canAddBlockAttribute: (attributeName) ->
-    return true unless @getBlock()?.hasAttributes()
-    if @hasCurrentAttribute("header") and attributeName != "header"
-      return false
-    true
 
   updateCurrentAttributes: ->
     if selectedRange = @getSelectedRange(ignoreLock: true)
