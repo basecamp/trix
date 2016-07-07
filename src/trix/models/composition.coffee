@@ -219,13 +219,7 @@ class Trix.Composition extends Trix.BasicObject
     @currentAttributes[attributeName]?
 
   toggleCurrentAttribute: (attributeName) ->
-    if (@hasCurrentAttribute("header") and 
-    attributeName in @getBlock()?.getAttributes() and
-    attributeName != "header")
-      @removeBlockAttribute("header")
-      @removeCurrentAttribute(attributeName)
-      @setBlockAttribute("header")
-    else if value = not @currentAttributes[attributeName]
+    if value = not @currentAttributes[attributeName]
       @setCurrentAttribute(attributeName, value)
     else
       @removeCurrentAttribute(attributeName)
@@ -316,12 +310,9 @@ class Trix.Composition extends Trix.BasicObject
 
   canAddBlockAttribute: (attributeName) ->
     return true unless @getBlock()?.hasAttributes()
-    if attributeName in Object.keys(Trix.config.blockAttributes)
-      console.log Trix.config.blockAttributes
-      if @hasCurrentAttribute("header") and attributeName not in @getBlock()?.getAttributes()
-        return false
-      return true
-    return true
+    if @hasCurrentAttribute("header") and attributeName != "header"
+      return false
+    true
 
   updateCurrentAttributes: ->
     if selectedRange = @getSelectedRange(ignoreLock: true)

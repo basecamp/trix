@@ -290,10 +290,8 @@ testGroup "Block formatting", template: "editor_empty", ->
   test "removing bullet from header block", (done) ->
     clickToolbarButton attribute: "bullet", ->
       clickToolbarButton attribute: "header", ->
-        clickToolbarButton attribute: "bullet", ->
-          assert.ok isToolbarButtonActive(attribute: "header")
-          assert.blockAttributes([0, 1], ["header"])
-          done()
+        assert.ok isToolbarButtonDisabled(attribute: "bullet")
+        done()
 
   test "breaking out of header in list", (done) ->
     clickToolbarButton attribute: "bullet", ->
