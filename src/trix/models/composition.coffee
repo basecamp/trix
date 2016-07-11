@@ -117,9 +117,9 @@ class Trix.Composition extends Trix.BasicObject
           @removeLastBlockAttribute()
         else if block.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is "\n" 
           @breakFormattedBlock()
-        else if @hasCurrentAttribute("header") and block.text.getStringAtRange([endLocation.offset, endLocation.offset + 1]) is "\n"
+        else if @positionInHeaderBlock() is "end"
           @breakFormattedBlock()
-        else if @hasCurrentAttribute("header") and block.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is ""
+        else if @positionInHeaderBlock() is "start"
           @insertBlockBreak()
         else
           @insertString("\n")
@@ -491,6 +491,16 @@ class Trix.Composition extends Trix.BasicObject
 
   notifyDelegateOfInsertionAtRange: (range) ->
     @delegate?.compositionDidPerformInsertionAtRange?(range)
+
+  positionInHeaderBlock: ->
+    [startPosition, endPosition] = @getSelectedRange()
+    startLocation = @document.locationFromPosition(startPosition)
+    endLocation = @document.locationFromPosition(endPosition)
+    block = @document.getBlockAtIndex(endLocation.index)
+    return "end" if @hasCurrentAttribute("header") and block.text.getStringAtRange([endLocation.offset, endLocation.offset + 1]) is "\n"
+    return "start" if @hasCurrentAttribute("header") and block.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is ""
+    return [startPosition, endPosition] if @hasCurrentAttribute("header")
+    false
 
   translateUTF16PositionFromOffset: (position, offset) ->
     utf16string = @document.toUTF16String()
