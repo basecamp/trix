@@ -327,3 +327,23 @@ testGroup "Block formatting", template: "editor_empty", ->
             assert.equal block.toString(), "ab\nc\n"
 
             done()
+
+  test "inserting newline before header", (done) ->
+    clickToolbarButton attribute: "header", ->
+      typeCharacters "abc", ->
+        moveCursor direction: "left", times: 3, ->
+          typeCharacters "\n", ->
+            moveCursor direction: "left", ->
+              typeCharacters "\n\n\n", ->
+
+                document = getDocument()
+                assert.equal document.getBlockCount(), 3
+                done()
+
+                block = document.getBlockAtIndex(1)
+                assert.deepEqual block.getAttributes(), []
+                assert.equal block.toString(), "\n\n\n"
+
+                block = document.getBlockAtIndex(2)
+                assert.deepEqual block.getAttributes(), ["header"]
+                assert.equal block.toString(), "abc\n"
