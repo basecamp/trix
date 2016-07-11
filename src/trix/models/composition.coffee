@@ -89,7 +89,7 @@ class Trix.Composition extends Trix.BasicObject
         position += 1
 
     newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
-    if @hasCurrentAttribute("heading")
+    if @getBlock()?.getConfig("breakOnReturn")
       document = document.removeTextAtRange([position - 1, position])
       @setDocument(document.insertDocumentAtRange(newDocument, [position - 1, position]))
     else
@@ -117,9 +117,9 @@ class Trix.Composition extends Trix.BasicObject
           @removeLastBlockAttribute()
         else if block.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is "\n" 
           @breakFormattedBlock()
-        else if @positionInHeadingBlock() is "end"
+        else if @getPositionInBlock() is "end"
           @breakFormattedBlock()
-        else if @positionInHeadingBlock() is "start"
+        else if @getPositionInBlock() is "start"
           @insertBlockBreak()
         else
           @insertString("\n")
@@ -228,7 +228,8 @@ class Trix.Composition extends Trix.BasicObject
 
   canSetCurrentAttribute: (attributeName) ->
     return not @selectionContainsAttachmentWithAttribute(attributeName) if attributeName is "href"
-    if @getBlock()?.hasAttributes() and @hasCurrentAttribute("heading") and attributeName != "heading"
+    return true if attributeName is @getBlock()?.getLastAttribute()
+    if @getBlock()?.hasAttributes() and @getBlock()?.getConfig("terminal")
       return false
     true
 
@@ -492,15 +493,14 @@ class Trix.Composition extends Trix.BasicObject
   notifyDelegateOfInsertionAtRange: (range) ->
     @delegate?.compositionDidPerformInsertionAtRange?(range)
 
-  positionInHeadingBlock: ->
+  getPositionInBlock: ->
     [startPosition, endPosition] = @getSelectedRange()
     startLocation = @document.locationFromPosition(startPosition)
     endLocation = @document.locationFromPosition(endPosition)
     block = @document.getBlockAtIndex(endLocation.index)
-    return "end" if @hasCurrentAttribute("heading") and block.text.getStringAtRange([endLocation.offset, endLocation.offset + 1]) is "\n"
-    return "start" if @hasCurrentAttribute("heading") and block.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is ""
-    return [startPosition, endPosition] if @hasCurrentAttribute("heading")
-    false
+    return "end" if @getBlock()?.getConfig("breakOnReturn") and block.text.getStringAtRange([endLocation.offset, endLocation.offset + 1]) is "\n"
+    return "start" if @getBlock()?.getConfig("breakOnReturn") and block.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is ""
+    return [startPosition, endPosition] if @getBlock()?.getConfig("breakOnReturn")
 
   translateUTF16PositionFromOffset: (position, offset) ->
     utf16string = @document.toUTF16String()

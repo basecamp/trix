@@ -7,6 +7,8 @@ Trix.config.blockAttributes = attributes =
     nestable: true
   heading:
     tagName: "h1"
+    terminal: true
+    breakOnReturn: true
   code:
     tagName: "pre"
     text:
