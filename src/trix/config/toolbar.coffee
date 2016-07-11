@@ -12,7 +12,7 @@ Trix.config.toolbar =
       </span>
 
       <span class="button_group block_tools">
-        <button type="button" class="header" data-trix-attribute="header" data-trix-key="h" title="Header">Header</button>
+        <button type="button" class="heading" data-trix-attribute="heading" title="#{lang.heading}">#{lang.heading}</button>
         <button type="button" class="quote" data-trix-attribute="quote" title="#{lang.quote}">#{lang.quote}</button>
         <button type="button" class="code" data-trix-attribute="code" title="#{lang.code}">#{lang.code}</button>
         <button type="button" class="list bullets" data-trix-attribute="bullet" title="#{lang.bullets}">#{lang.bullets}</button>
