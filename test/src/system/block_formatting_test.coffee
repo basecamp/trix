@@ -337,13 +337,14 @@ testGroup "Block formatting", template: "editor_empty", ->
               typeCharacters "\n\n\n", ->
 
                 document = getDocument()
-                assert.equal document.getBlockCount(), 3
-                done()
+                assert.equal document.getBlockCount(), 2
 
-                block = document.getBlockAtIndex(1)
+                block = document.getBlockAtIndex(0)
                 assert.deepEqual block.getAttributes(), []
                 assert.equal block.toString(), "\n\n\n"
 
-                block = document.getBlockAtIndex(2)
+                block = document.getBlockAtIndex(1)
                 assert.deepEqual block.getAttributes(), ["heading"]
                 assert.equal block.toString(), "abc\n"
+
+                done()
