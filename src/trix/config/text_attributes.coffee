@@ -11,6 +11,12 @@ Trix.config.textAttributes =
     parser: (element) ->
       style = window.getComputedStyle(element)
       style["fontStyle"] is "italic"
+  underline:
+    tagName: "u"
+    inheritable: true
+    parser: (element) ->
+      style = window.getComputedStyle(element)
+      style["textDecoration"].match("underline")
   href:
     groupTagName: "a"
     parser: (element) ->
