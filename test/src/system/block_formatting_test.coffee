@@ -329,22 +329,26 @@ testGroup "Block formatting", template: "editor_empty", ->
             done()
 
   test "inserting newline before heading", (done) ->
-    clickToolbarButton attribute: "heading", ->
-      typeCharacters "abc", ->
-        moveCursor direction: "left", times: 3, ->
-          typeCharacters "\n", ->
-            moveCursor direction: "left", ->
-              typeCharacters "\n\n\n", ->
 
-                document = getDocument()
-                assert.equal document.getBlockCount(), 2
+    document = new Trix.Document [
+        new Trix.Block(Trix.Text.textForStringWithAttributes("\n"), [])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("abc"), ["heading"])
 
-                block = document.getBlockAtIndex(0)
-                assert.deepEqual block.getAttributes(), []
-                assert.equal block.toString(), "\n\n\n"
+      ]
 
-                block = document.getBlockAtIndex(1)
-                assert.deepEqual block.getAttributes(), ["heading"]
-                assert.equal block.toString(), "abc\n"
+    replaceDocument(document)
+    getEditorController().setLocationRange([{index: 0, offset: 0}, {index: 0, offset: 0}])
 
-                done()
+    typeCharacters "\n", ->
+      document = getDocument()
+      assert.equal document.getBlockCount(), 2
+
+      block = document.getBlockAtIndex(0)
+      assert.deepEqual block.getAttributes(), []
+      assert.equal block.toString(), "\n\n\n"
+
+      block = document.getBlockAtIndex(1)
+      assert.deepEqual block.getAttributes(), ["heading"]
+      assert.equal block.toString(), "abc\n"
+
+      done()
