@@ -15,6 +15,7 @@ Trix.config.textAttributes =
     tagName: "u"
     inheritable: true
     parser: (element) ->
+      return false if element.tagName is "A"
       style = window.getComputedStyle(element)
       style["textDecoration"].match("underline")
   href:
