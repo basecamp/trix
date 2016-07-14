@@ -5,7 +5,7 @@ Trix.config.blockAttributes = attributes =
   quote:
     tagName: "blockquote"
     nestable: true
-  heading:
+  heading1:
     tagName: "h1"
     terminal: true
     breakOnReturn: true
