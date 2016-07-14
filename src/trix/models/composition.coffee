@@ -76,24 +76,26 @@ class Trix.Composition extends Trix.BasicObject
     document = @document
     {index, offset} = document.locationFromPosition(position)
     block = document.getBlockAtIndex(index)
+    previousCharacter = block.getPreviousCharacter(offset)
+    nextCharacter = block.getNextCharacter(offset)
 
     if block.getBlockBreakPosition() is offset
-      if block.text.getStringAtRange([offset - 1, offset]) is "\n"
+      if previousCharacter is "\n"
         document = document.removeTextAtRange([position - 1, position])
       else if offset - 1 isnt 0
         position += 1
     else
-      if block.text.getStringAtRange([offset, offset + 1]) is "\n"
+      if nextCharacter is "\n"
         range = [position - 1, position + 1]
       else if offset - 1 isnt 0
         position += 1
 
     newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
-    if @getBlock()?.getConfig("breakOnReturn")
+    if block.getConfig("breakOnReturn")
       document = document.removeTextAtRange([position - 1, position])
-      @setDocument(document.insertDocumentAtRange(newDocument, [position - 1, position]))
-    else
-      @setDocument(document.insertDocumentAtRange(newDocument, range))
+      range = [position - 1, position]
+
+    @setDocument(document.insertDocumentAtRange(newDocument, range))
     @setSelection(position)
 
   insertLineBreak: ->
@@ -101,6 +103,9 @@ class Trix.Composition extends Trix.BasicObject
     startLocation = @document.locationFromPosition(startPosition)
     endLocation = @document.locationFromPosition(endPosition)
     block = @document.getBlockAtIndex(endLocation.index)
+    breaksOnReturn = block.breaksOnReturn()
+    previousCharacter = block.getPreviousCharacter(endLocation.offset)
+    nextCharacter = block.getNextCharacter(endLocation.offset)
 
     if block.hasAttributes()
       if block.isListItem()
@@ -115,11 +120,11 @@ class Trix.Composition extends Trix.BasicObject
       else
         if block.isEmpty()
           @removeLastBlockAttribute()
-        else if block.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is "\n" 
+        else if previousCharacter is "\n"
           @breakFormattedBlock()
-        else if @getPositionInBlock() is "end"
+        else if breaksOnReturn and nextCharacter is "\n"
           @breakFormattedBlock()
-        else if @getPositionInBlock() is "start"
+        else if breaksOnReturn and previousCharacter is ""
           @insertBlockBreak()
         else
           @insertString("\n")
@@ -227,11 +232,14 @@ class Trix.Composition extends Trix.BasicObject
       @removeCurrentAttribute(attributeName)
 
   canSetCurrentAttribute: (attributeName) ->
-    return not @selectionContainsAttachmentWithAttribute(attributeName) if attributeName is "href"
-    return true if attributeName is @getBlock()?.getLastAttribute()
-    if @getBlock()?.hasAttributes() and @getBlock()?.getConfig("terminal")
-      return false
-    true
+    isTerminalBlock = @getBlock()?.isTerminalBlock()
+    switch attributeName
+      when "href"
+        not @selectionContainsAttachmentWithAttribute(attributeName)
+      when @getBlock()?.getLastAttribute()
+        true
+      else
+        not (@getBlock()?.hasAttributes() and isTerminalBlock)
 
   setCurrentAttribute: (attributeName, value) ->
     if Trix.config.blockAttributes[attributeName]
@@ -316,7 +324,7 @@ class Trix.Composition extends Trix.BasicObject
       unless objectsAreEqual(commonAttributes, @currentAttributes)
         @currentAttributes = commonAttributes
         for blockAttribute in Object.keys(Trix.config.blockAttributes)
-          if not @canSetCurrentAttribute(blockAttribute)
+          unless @canSetCurrentAttribute(blockAttribute)
             @currentAttributes[blockAttribute] = false
         @notifyDelegateOfCurrentAttributesChange()
 
@@ -492,15 +500,6 @@ class Trix.Composition extends Trix.BasicObject
 
   notifyDelegateOfInsertionAtRange: (range) ->
     @delegate?.compositionDidPerformInsertionAtRange?(range)
-
-  getPositionInBlock: ->
-    [startPosition, endPosition] = @getSelectedRange()
-    startLocation = @document.locationFromPosition(startPosition)
-    endLocation = @document.locationFromPosition(endPosition)
-    block = @document.getBlockAtIndex(endLocation.index)
-    return "end" if @getBlock()?.getConfig("breakOnReturn") and block.text.getStringAtRange([endLocation.offset, endLocation.offset + 1]) is "\n"
-    return "start" if @getBlock()?.getConfig("breakOnReturn") and block.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is ""
-    return [startPosition, endPosition] if @getBlock()?.getConfig("breakOnReturn")
 
   translateUTF16PositionFromOffset: (position, offset) ->
     utf16string = @document.toUTF16String()

@@ -76,6 +76,12 @@ class Trix.Block extends Trix.Object
   isListItem: ->
     @getConfig("listAttribute")?
 
+  isTerminalBlock: ->
+    @getConfig("terminal")?
+
+  breaksOnReturn: ->
+    @getConfig("breakOnReturn")?
+
   findLineBreakInDirectionFromPosition: (direction, position) ->
     string = @toString()
     result = switch direction
@@ -196,3 +202,11 @@ class Trix.Block extends Trix.Object
 
   getLastElement = (array) ->
     array.slice(-1)[0]
+
+  # Text helpers
+
+  getPreviousCharacter: (offset) ->
+    @text.getStringAtRange([offset - 1, offset])
+
+  getNextCharacter: (offset) ->
+    @text.getStringAtRange([offset, offset + 1])
