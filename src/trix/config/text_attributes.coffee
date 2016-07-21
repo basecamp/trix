@@ -3,8 +3,10 @@ Trix.config.textAttributes =
     tagName: "strong"
     inheritable: true
     parser: (element) ->
+      return false if /H\d$/.test(element.tagName) or element.tagName is "BR"
       style = window.getComputedStyle(element)
       style["fontWeight"] is "bold" or style["fontWeight"] >= 600
+
   italic:
     tagName: "em"
     inheritable: true
