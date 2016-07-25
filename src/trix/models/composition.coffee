@@ -82,6 +82,10 @@ class Trix.Composition extends Trix.BasicObject
     if block.getBlockBreakPosition() is offset
       if previousCharacter is "\n"
         document = document.removeTextAtRange([position - 1, position])
+      else if block.getConfig("breakOnReturn")
+        position += 1
+        document = document.removeTextAtRange([position - 1, position])
+        range = [position - 1, position]
       else if offset - 1 isnt 0
         position += 1
     else
@@ -91,10 +95,6 @@ class Trix.Composition extends Trix.BasicObject
         position += 1
 
     newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
-    if block.getConfig("breakOnReturn")
-      document = document.removeTextAtRange([position - 1, position])
-      range = [position - 1, position]
-
     @setDocument(document.insertDocumentAtRange(newDocument, range))
     @setSelection(position)
 

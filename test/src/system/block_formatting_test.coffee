@@ -352,3 +352,17 @@ testGroup "Block formatting", template: "editor_empty", ->
       assert.equal block.toString(), "abc\n"
 
       done()
+
+  test "inserting newline after single character header", (done) ->
+    clickToolbarButton attribute: "heading1", ->
+      typeCharacters "a", ->
+        typeCharacters "\n", ->
+
+          document = getDocument()
+          assert.equal document.getBlockCount(), 2
+
+          block = document.getBlockAtIndex(0)
+          assert.deepEqual block.getAttributes(), ["heading1"]
+          assert.equal block.toString(), "a\n"
+
+          done()
