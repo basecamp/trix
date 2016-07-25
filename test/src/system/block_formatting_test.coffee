@@ -293,7 +293,7 @@ testGroup "Block formatting", template: "editor_empty", ->
         assert.ok isToolbarButtonDisabled(attribute: "bullet")
         done()
 
-  test "breaking out of heading in list", (done) ->
+  test "breaking out of heading in list", (expectDocument) ->
     clickToolbarButton attribute: "bullet", ->
       clickToolbarButton attribute: "heading1", ->
         assert.ok isToolbarButtonActive(attribute: "heading1")
@@ -302,42 +302,30 @@ testGroup "Block formatting", template: "editor_empty", ->
             assert.ok isToolbarButtonActive(attribute: "bullet")
             document = getDocument()
             assert.equal document.getBlockCount(), 2
+            assert.blockAttributes([0, 4], ["bulletList", "bullet", "heading1"])
+            assert.blockAttributes([4, 5], ["bulletList", "bullet"])
+            expectDocument("abc\n\n")
 
-            block = document.getBlockAtIndex(0)
-            assert.deepEqual block.getAttributes(), ["bulletList", "bullet", "heading1"]
-            assert.equal block.toString(), "abc\n"
-
-            block = document.getBlockAtIndex(1)
-            assert.deepEqual block.getAttributes(), ["bulletList", "bullet"]
-
-            done()
-
-  test "breaking out of middle of heading block", (done) ->
+  test "breaking out of middle of heading block", (expectDocument) ->
     clickToolbarButton attribute: "heading1", ->
       typeCharacters "abc", ->
         moveCursor direction: "left", times: 1, ->
           typeCharacters "\n", ->
             assert.ok isToolbarButtonActive(attribute: "heading1")
-
             document = getDocument()
             assert.equal document.getBlockCount(), 1
-
-            block = document.getBlockAtIndex(0)
-            assert.deepEqual block.getAttributes(), ["heading1"]
-            assert.equal block.toString(), "ab\nc\n"
-
-            done()
+            assert.blockAttributes([3, 4], ["heading1"])
+            expectDocument("ab\nc\n")
 
   test "inserting newline before heading", (done) ->
 
     document = new Trix.Document [
         new Trix.Block(Trix.Text.textForStringWithAttributes("\n"), [])
         new Trix.Block(Trix.Text.textForStringWithAttributes("abc"), ["heading1"])
-
       ]
 
     replaceDocument(document)
-    getEditorController().setLocationRange([{index: 0, offset: 0}, {index: 0, offset: 0}])
+    getEditor().setSelectedRange(0)
 
     typeCharacters "\n", ->
       document = getDocument()
@@ -353,16 +341,11 @@ testGroup "Block formatting", template: "editor_empty", ->
 
       done()
 
-  test "inserting newline after single character header", (done) ->
+  test "inserting newline after single character header", (expectDocument) ->
     clickToolbarButton attribute: "heading1", ->
       typeCharacters "a", ->
         typeCharacters "\n", ->
-
           document = getDocument()
           assert.equal document.getBlockCount(), 2
-
-          block = document.getBlockAtIndex(0)
-          assert.deepEqual block.getAttributes(), ["heading1"]
-          assert.equal block.toString(), "a\n"
-
-          done()
+          assert.blockAttributes([0, 1], ["heading1"])
+          expectDocument("a\n\n")
