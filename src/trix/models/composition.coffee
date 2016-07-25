@@ -331,12 +331,15 @@ class Trix.Composition extends Trix.BasicObject
 
   updateCurrentAttributes: ->
     if selectedRange = @getSelectedRange(ignoreLock: true)
-      commonAttributes = @document.getCommonAttributesAtRange(selectedRange)
-      unless objectsAreEqual(commonAttributes, @currentAttributes)
-        @currentAttributes = commonAttributes
-        for blockAttribute in Object.keys(Trix.config.blockAttributes)
-          unless @canSetCurrentAttribute(blockAttribute)
-            @currentAttributes[blockAttribute] = false
+      currentAttributes = @document.getCommonAttributesAtRange(selectedRange)
+
+      for attributeName in getAllAttributeNames()
+        unless currentAttributes[attributeName]
+          unless @canSetCurrentAttribute(attributeName)
+            currentAttributes[attributeName] = false
+
+      unless objectsAreEqual(currentAttributes, @currentAttributes)
+        @currentAttributes = currentAttributes
         @notifyDelegateOfCurrentAttributesChange()
 
   getCurrentAttributes: ->
@@ -346,6 +349,16 @@ class Trix.Composition extends Trix.BasicObject
     attributes = {}
     attributes[key] = value for key, value of @currentAttributes when Trix.config.textAttributes[key]
     attributes
+
+  allAttributeNames = null
+
+  getAllAttributeNames = ->
+    allAttributeNames ?= (
+      result = []
+      result.push(key) for key of Trix.config.textAttributes
+      result.push(key) for key of Trix.config.blockAttributes
+      result
+    )
 
   # Selection freezing
 
