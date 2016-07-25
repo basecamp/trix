@@ -232,14 +232,25 @@ class Trix.Composition extends Trix.BasicObject
       @removeCurrentAttribute(attributeName)
 
   canSetCurrentAttribute: (attributeName) ->
-    block = @getBlock()
+    if Trix.config.blockAttributes[attributeName]
+      @canSetCurrentBlockAttribute(attributeName)
+    else
+      @canSetCurrentTextAttribute(attributeName)
+
+  canSetCurrentTextAttribute: (attributeName) ->
     switch attributeName
       when "href"
         not @selectionContainsAttachmentWithAttribute(attributeName)
-      when block.getLastAttribute()
-        true
       else
-        not (block.hasAttributes() and block.isTerminalBlock())
+        true
+
+  canSetCurrentBlockAttribute: (attributeName) ->
+    block = @getBlock()
+    switch
+      when block.isTerminalBlock()
+        false
+      else
+        true
 
   setCurrentAttribute: (attributeName, value) ->
     if Trix.config.blockAttributes[attributeName]
