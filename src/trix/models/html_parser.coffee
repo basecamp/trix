@@ -217,7 +217,7 @@ class Trix.HTMLParser extends Trix.BasicObject
       else if config.parser
         if value = config.parser(element)
           attributeInheritedFromBlock = false
-          for blockElement in @findBlockElementAncestors(element.firstChild)
+          for blockElement in @findBlockElementAncestors(element)
             if config.parser(blockElement) is value
               attributeInheritedFromBlock = true
               break
