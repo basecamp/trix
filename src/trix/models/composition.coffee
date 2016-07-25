@@ -124,7 +124,7 @@ class Trix.Composition extends Trix.BasicObject
           @breakFormattedBlock()
         else if breaksOnReturn and nextCharacter is "\n"
           @breakFormattedBlock()
-        else if breaksOnReturn and previousCharacter is ""
+        else if breaksOnReturn and startLocation.offset is 0
           @insertBlockBreak()
         else
           @insertString("\n")
@@ -232,14 +232,14 @@ class Trix.Composition extends Trix.BasicObject
       @removeCurrentAttribute(attributeName)
 
   canSetCurrentAttribute: (attributeName) ->
-    isTerminalBlock = @getBlock()?.isTerminalBlock()
+    block = @getBlock()
     switch attributeName
       when "href"
         not @selectionContainsAttachmentWithAttribute(attributeName)
-      when @getBlock()?.getLastAttribute()
+      when block.getLastAttribute()
         true
       else
-        not (@getBlock()?.hasAttributes() and isTerminalBlock)
+        not (block.hasAttributes() and block.isTerminalBlock())
 
   setCurrentAttribute: (attributeName, value) ->
     if Trix.config.blockAttributes[attributeName]
