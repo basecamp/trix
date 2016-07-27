@@ -480,6 +480,10 @@ removeWhitespace = (string) ->
     document: createDocument(["a\nb"], ["c", {}, ["quote"]])
     html: "<div>#{blockComment}a<br>b</div><blockquote>#{blockComment}c</blockquote>"
 
+  "two adjacent headers":
+    document: createDocument( ["a", {}, ["heading1"]], ["b", {}, ["heading1"]])
+    html: "<h1>#{blockComment}a</h1><h1>#{blockComment}b</h1>"
+
 @eachFixture = (callback) ->
   for name, details of @fixtures
     callback(name, details)

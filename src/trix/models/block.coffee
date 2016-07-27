@@ -145,8 +145,11 @@ class Trix.Block extends Trix.Object
   canBeGroupedWith: (otherBlock, depth) ->
     attributes = @attributes
     otherAttributes = otherBlock.getAttributes()
-    if attributes[depth] is otherAttributes[depth]
-      if attributes[depth] in ["bullet", "number"] and otherAttributes[depth + 1] not in ["bulletList", "numberList"]
+    areSameType = attributes[depth] is otherAttributes[depth]
+    cannotGroupWithSameType = Trix.config.blockAttributes[attributes[depth]].groupsWithSameType is false
+
+    if areSameType
+      if cannotGroupWithSameType and otherAttributes[depth + 1] not in ["bulletList", "numberList"]
         false
       else
         true
