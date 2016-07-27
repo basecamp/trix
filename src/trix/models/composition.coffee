@@ -91,11 +91,15 @@ class Trix.Composition extends Trix.BasicObject
     else
       if nextCharacter is "\n"
         range = [position - 1, position + 1]
+      else if block.getConfig("breakOnReturn")
+        fullDocument = document.insertBlockBreakAtRange([position, position])
+        fullDocument = fullDocument.removeAttributeAtRange(block.getLastAttribute(), [position + 1, block.getLength()])
+        position += 1
       else if offset - 1 isnt 0
         position += 1
 
     newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
-    @setDocument(document.insertDocumentAtRange(newDocument, range))
+    @setDocument(fullDocument or document.insertDocumentAtRange(newDocument, range))
     @setSelection(position)
 
   insertLineBreak: ->
@@ -127,7 +131,7 @@ class Trix.Composition extends Trix.BasicObject
         else if breaksOnReturn and startLocation.offset is 0
           @insertBlockBreak()
         else if breaksOnReturn
-          @insertBlockBreak()
+          @breakFormattedBlock()
         else
           @insertString("\n")
     else

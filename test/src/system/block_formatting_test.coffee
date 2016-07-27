@@ -309,13 +309,13 @@ testGroup "Block formatting", template: "editor_empty", ->
   test "breaking out of middle of heading block", (expectDocument) ->
     clickToolbarButton attribute: "heading1", ->
       typeCharacters "abc", ->
+        assert.ok isToolbarButtonActive(attribute: "heading1")
         moveCursor direction: "left", times: 1, ->
           typeCharacters "\n", ->
-            assert.ok isToolbarButtonActive(attribute: "heading1")
             document = getDocument()
             assert.equal document.getBlockCount(), 2
             assert.blockAttributes([0, 3], ["heading1"])
-            assert.blockAttributes([3, 4], ["heading1"])
+            assert.blockAttributes([3, 4], [])
             expectDocument("ab\nc\n")
 
   test "inserting newline before heading", (done) ->
