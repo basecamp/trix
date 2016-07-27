@@ -126,6 +126,8 @@ class Trix.Composition extends Trix.BasicObject
           @breakFormattedBlock()
         else if breaksOnReturn and startLocation.offset is 0
           @insertBlockBreak()
+        else if breaksOnReturn
+          @insertBlockBreak()
         else
           @insertString("\n")
     else

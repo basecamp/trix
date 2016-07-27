@@ -313,7 +313,8 @@ testGroup "Block formatting", template: "editor_empty", ->
           typeCharacters "\n", ->
             assert.ok isToolbarButtonActive(attribute: "heading1")
             document = getDocument()
-            assert.equal document.getBlockCount(), 1
+            assert.equal document.getBlockCount(), 2
+            assert.blockAttributes([0, 3], ["heading1"])
             assert.blockAttributes([3, 4], ["heading1"])
             expectDocument("ab\nc\n")
 
