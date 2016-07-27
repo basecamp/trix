@@ -480,9 +480,21 @@ removeWhitespace = (string) ->
     document: createDocument(["a\nb"], ["c", {}, ["quote"]])
     html: "<div>#{blockComment}a<br>b</div><blockquote>#{blockComment}c</blockquote>"
 
-  "two adjacent headers":
+  "empty heading block":
+    document: createDocument(["", {}, ["heading1"]])
+    html: "<h1>#{blockComment}<br></h1>"
+
+  "two adjacent heading":
     document: createDocument( ["a", {}, ["heading1"]], ["b", {}, ["heading1"]])
     html: "<h1>#{blockComment}a</h1><h1>#{blockComment}b</h1>"
+
+  "heading in ordered list":
+    document: createDocument(["a", {}, ["numberList", "number", "heading1"]])
+    html: "<ol><li><h1>#{blockComment}a</h1></li></ol>"
+
+  "headings with formatted text":
+    document: createDocument(["a", { bold: true }, ["heading1"]], ["b", { italic: true, bold: true }, ["heading1"]])
+    html: "<h1>#{blockComment}<strong>a</strong></h1><h1>#{blockComment}<strong><em>b</em></strong></h1>"
 
 @eachFixture = (callback) ->
   for name, details of @fixtures
