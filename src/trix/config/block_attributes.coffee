@@ -9,7 +9,7 @@ Trix.config.blockAttributes = attributes =
     tagName: "h1"
     terminal: true
     breakOnReturn: true
-    groupsWithSameType: false
+    groups: false
   code:
     tagName: "pre"
     text:
@@ -20,7 +20,7 @@ Trix.config.blockAttributes = attributes =
   bullet:
     tagName: "li"
     listAttribute: "bulletList"
-    groupsWithSameType: false
+    groups: false
     test: (element) ->
       Trix.tagName(element.parentNode) is attributes[@listAttribute].tagName
   numberList:
@@ -29,6 +29,6 @@ Trix.config.blockAttributes = attributes =
   number:
     tagName: "li"
     listAttribute: "numberList"
-    groupsWithSameType: false
+    groups: false
     test: (element) ->
       Trix.tagName(element.parentNode) is attributes[@listAttribute].tagName
