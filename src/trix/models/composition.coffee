@@ -109,7 +109,6 @@ class Trix.Composition extends Trix.BasicObject
     block = @document.getBlockAtIndex(endLocation.index)
     breaksOnReturn = block.breaksOnReturn()
     previousCharacter = block.getPreviousCharacter(endLocation.offset)
-    nextCharacter = block.getNextCharacter(endLocation.offset)
 
     if block.hasAttributes()
       if block.isListItem()
@@ -124,13 +123,9 @@ class Trix.Composition extends Trix.BasicObject
       else
         if block.isEmpty()
           @removeLastBlockAttribute()
-        else if previousCharacter is "\n"
-          @breakFormattedBlock()
-        else if breaksOnReturn and nextCharacter is "\n"
-          @breakFormattedBlock()
         else if breaksOnReturn and startLocation.offset is 0
           @insertBlockBreak()
-        else if breaksOnReturn
+        else if previousCharacter is "\n" or breaksOnReturn
           @breakFormattedBlock()
         else
           @insertString("\n")
