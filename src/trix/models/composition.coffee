@@ -92,8 +92,9 @@ class Trix.Composition extends Trix.BasicObject
       if nextCharacter is "\n"
         range = [position - 1, position + 1]
       else if block.getConfig("breakOnReturn")
+        range = [position + 1, position + (block.getLength() - offset) ]
         fullDocument = document.insertBlockBreakAtRange([position, position])
-        fullDocument = fullDocument.removeAttributeAtRange(block.getLastAttribute(), [position + 1, block.getLength()])
+        fullDocument = fullDocument.removeAttributeAtRange(block.getLastAttribute(), range)
         position += 1
       else if offset - 1 isnt 0
         position += 1

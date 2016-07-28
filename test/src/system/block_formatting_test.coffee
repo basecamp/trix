@@ -318,6 +318,27 @@ testGroup "Block formatting", template: "editor_empty", ->
             assert.blockAttributes([3, 4], [])
             expectDocument("ab\nc\n")
 
+  test "breaking out of middle of heading block with preceding blocks", (expectDocument) ->
+
+    document = new Trix.Document [
+        new Trix.Block(Trix.Text.textForStringWithAttributes("a"), ["heading1"])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("b"), [])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("cd"), ["heading1"])
+      ]
+
+    replaceDocument(document)
+    getEditor().setSelectedRange(5)
+    assert.ok isToolbarButtonActive(attribute: "heading1")
+
+    typeCharacters "\n", ->
+      document = getDocument()
+      assert.equal document.getBlockCount(), 4
+      assert.blockAttributes([0, 1], ["heading1"])
+      assert.blockAttributes([2, 3], [])
+      assert.blockAttributes([4, 5], ["heading1"])
+      assert.blockAttributes([6, 7], [])
+      expectDocument("a\nb\nc\nd\n")
+
   test "inserting newline before heading", (done) ->
 
     document = new Trix.Document [
