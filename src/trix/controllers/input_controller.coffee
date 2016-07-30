@@ -70,10 +70,11 @@ class Trix.InputController extends Trix.BasicObject
     @mutationCount++
     unless @isComposing()
       @handleInput ->
-        if @mutationIsExpected(mutationSummary)
-          @requestRender()
-        else
-          @requestReparse()
+        if @mutationIsSignificant(mutationSummary)
+          if @mutationIsExpected(mutationSummary)
+            @requestRender()
+          else
+            @requestReparse()
         @reset()
 
   mutationIsExpected: ({textAdded, textDeleted}) ->
@@ -91,6 +92,15 @@ class Trix.InputController extends Trix.BasicObject
             unhandledDeletion = false
 
     not (unhandledAddition or unhandledDeletion)
+
+  mutationIsSignificant: (mutationSummary) ->
+    textWasNotChanged = Object.keys(mutationSummary).length is 0
+    composedEmptyString = @compositionInputController?.getEndData() is ""
+
+    if textWasNotChanged and composedEmptyString
+      false
+    else
+      true
 
   unlessMutationOccurs: (callback) ->
     mutationCount = @mutationCount
@@ -268,17 +278,13 @@ class Trix.InputController extends Trix.BasicObject
       event.preventDefault()
 
     compositionstart: (event) ->
-      @compositionInputController = new Trix.CompositionInputController this
-      @compositionInputController.start(event.data)
+      @getCompositionInputController().start(event.data)
 
     compositionupdate: (event) ->
-      @compositionInputController ?= new Trix.CompositionInputController this
-      @compositionInputController.update(event.data)
+      @getCompositionInputController().update(event.data)
 
     compositionend: (event) ->
-      @compositionInputController ?= new Trix.CompositionInputController this
-      @compositionInputController.end(event.data)
-      @compositionInputController = null
+      @getCompositionInputController().end(event.data)
 
     input: (event) ->
       event.stopPropagation()
@@ -368,8 +374,14 @@ class Trix.InputController extends Trix.BasicObject
     finally
       @delegate?.inputControllerDidHandleInput()
 
+  getCompositionInputController: ->
+    if @isComposing()
+      @compositionInputController
+    else
+      @compositionInputController = new Trix.CompositionInputController this
+
   isComposing: ->
-    @compositionInputController?
+    @compositionInputController? and not @compositionInputController.isEnded()
 
   deleteInDirection: (direction, event) ->
     if @responder?.deleteInDirection(direction) is false

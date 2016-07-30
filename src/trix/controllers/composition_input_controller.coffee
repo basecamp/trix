@@ -37,6 +37,12 @@ class Trix.CompositionInputController extends Trix.BasicObject
       @requestReparse()
       @inputController.reset()
 
+  getEndData: ->
+    @data.end
+
+  isEnded: ->
+    @getEndData()?
+
   # Private
 
   canApplyToDocument: ->
