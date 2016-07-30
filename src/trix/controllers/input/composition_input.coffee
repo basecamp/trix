@@ -1,4 +1,4 @@
-class Trix.CompositionInputController extends Trix.BasicObject
+class Trix.CompositionInput extends Trix.BasicObject
   constructor: (@inputController) ->
     {@responder, @delegate, @inputSummary} = @inputController
     @data = {}

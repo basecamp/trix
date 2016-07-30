@@ -1,6 +1,6 @@
 #= require trix/observers/mutation_observer
 #= require trix/operations/file_verification_operation
-#= require trix/controllers/composition_input_controller
+#= require trix/controllers/input/composition_input
 
 {handleEvent, findClosestElementFromNode, findElementFromContainerAndOffset,
   defer, makeElement, innerElementIsActive, summarizeStringChange, objectsAreEqual,
@@ -95,7 +95,7 @@ class Trix.InputController extends Trix.BasicObject
 
   mutationIsSignificant: (mutationSummary) ->
     textWasNotChanged = Object.keys(mutationSummary).length is 0
-    composedEmptyString = @compositionInputController?.getEndData() is ""
+    composedEmptyString = @compositionInput?.getEndData() is ""
 
     if textWasNotChanged and composedEmptyString
       false
@@ -278,13 +278,13 @@ class Trix.InputController extends Trix.BasicObject
       event.preventDefault()
 
     compositionstart: (event) ->
-      @getCompositionInputController().start(event.data)
+      @getCompositionInput().start(event.data)
 
     compositionupdate: (event) ->
-      @getCompositionInputController().update(event.data)
+      @getCompositionInput().update(event.data)
 
     compositionend: (event) ->
-      @getCompositionInputController().end(event.data)
+      @getCompositionInput().end(event.data)
 
     input: (event) ->
       event.stopPropagation()
@@ -374,14 +374,14 @@ class Trix.InputController extends Trix.BasicObject
     finally
       @delegate?.inputControllerDidHandleInput()
 
-  getCompositionInputController: ->
+  getCompositionInput: ->
     if @isComposing()
-      @compositionInputController
+      @compositionInput
     else
-      @compositionInputController = new Trix.CompositionInputController this
+      @compositionInput = new Trix.CompositionInput this
 
   isComposing: ->
-    @compositionInputController? and not @compositionInputController.isEnded()
+    @compositionInput? and not @compositionInput.isEnded()
 
   deleteInDirection: (direction, event) ->
     if @responder?.deleteInDirection(direction) is false
