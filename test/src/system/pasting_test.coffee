@@ -203,12 +203,3 @@ testGroup "Pasting", template: "editor_empty", ->
       document.activeElement.insertAdjacentHTML("beforeend", "<span>bc</span>")
       requestAnimationFrame ->
         expectDocument("abc\n")
-
-  test "paste headings", (done) ->
-    pasteContent "text/html", "<h1>a</h1><h2>b</h2><h3>c</h3>", ->
-      document = getDocument()
-      assert.equal document.getBlockCount(), 4
-      assert.blockAttributes([0, 1], ["heading1"])
-      assert.textAttributes([2, 3], bold: true)
-      assert.textAttributes([4, 5], bold: true)
-      done()
