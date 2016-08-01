@@ -94,13 +94,9 @@ class Trix.InputController extends Trix.BasicObject
     not (unhandledAddition or unhandledDeletion)
 
   mutationIsSignificant: (mutationSummary) ->
-    textWasNotChanged = Object.keys(mutationSummary).length is 0
+    textChanged = Object.keys(mutationSummary).length > 0
     composedEmptyString = @compositionInput?.getEndData() is ""
-
-    if textWasNotChanged and composedEmptyString
-      false
-    else
-      true
+    textChanged and not composedEmptyString
 
   unlessMutationOccurs: (callback) ->
     mutationCount = @mutationCount
