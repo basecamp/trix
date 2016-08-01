@@ -80,14 +80,10 @@ class Trix.Composition extends Trix.BasicObject
     nextCharacter = block.getNextCharacter(offset)
 
     if block.getBlockBreakPosition() is offset
-      if previousCharacter is "\n"
-        document = document.removeTextAtRange([position - 1, position])
-      else if block.getConfig("breakOnReturn")
+      if block.getConfig("breakOnReturn")
         position += 1
-        document = document.removeTextAtRange([position - 1, position])
         range = [position - 1, position]
-      else if offset - 1 isnt 0
-        position += 1
+      document = document.removeTextAtRange([position - 1, position])
     else
       if nextCharacter is "\n"
         range = [position - 1, position + 1]
