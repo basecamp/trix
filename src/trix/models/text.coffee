@@ -92,6 +92,9 @@ class Trix.Text extends Trix.Object
   getStringAtRange: (range) ->
     @pieceList.getSplittableListInRange(range).toString()
 
+  getStringAtPosition: (position) ->
+    @getStringAtRange([position, position + 1])
+
   startsWithString: (string) ->
     @getStringAtRange([0, string.length]) is string
 

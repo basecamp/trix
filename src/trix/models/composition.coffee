@@ -76,8 +76,8 @@ class Trix.Composition extends Trix.BasicObject
     document = @document
     {index, offset} = document.locationFromPosition(position)
     block = document.getBlockAtIndex(index)
-    previousCharacter = block.getPreviousCharacter(offset)
-    nextCharacter = block.getNextCharacter(offset)
+    previousCharacter = block.text.getStringAtPosition(offset - 1)
+    nextCharacter = block.text.getStringAtPosition(offset)
 
     if block.getBlockBreakPosition() is offset
       if block.getConfig("breakOnReturn")
@@ -105,7 +105,7 @@ class Trix.Composition extends Trix.BasicObject
     endLocation = @document.locationFromPosition(endPosition)
     block = @document.getBlockAtIndex(endLocation.index)
     breaksOnReturn = block.breaksOnReturn()
-    previousCharacter = block.getPreviousCharacter(endLocation.offset)
+    previousCharacter = block.text.getStringAtPosition(endLocation.offset - 1)
 
     if block.hasAttributes()
       if block.isListItem()

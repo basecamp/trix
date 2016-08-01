@@ -202,11 +202,3 @@ class Trix.Block extends Trix.Object
 
   getLastElement = (array) ->
     array.slice(-1)[0]
-
-  # Text helpers
-
-  getPreviousCharacter: (offset) ->
-    @text.getStringAtRange([offset - 1, offset])
-
-  getNextCharacter: (offset) ->
-    @text.getStringAtRange([offset, offset + 1])
