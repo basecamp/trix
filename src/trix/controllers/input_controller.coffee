@@ -96,7 +96,7 @@ class Trix.InputController extends Trix.BasicObject
   mutationIsSignificant: (mutationSummary) ->
     textChanged = Object.keys(mutationSummary).length > 0
     composedEmptyString = @compositionInput?.getEndData() is ""
-    textChanged and not composedEmptyString
+    textChanged or not composedEmptyString
 
   unlessMutationOccurs: (callback) ->
     mutationCount = @mutationCount
