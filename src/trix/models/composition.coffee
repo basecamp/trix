@@ -96,12 +96,8 @@ class Trix.Composition extends Trix.BasicObject
 
   insertLineBreak: ->
     [startPosition, endPosition] = @getSelectedRange()
-    startLocation = @document.locationFromPosition(startPosition)
     endLocation = @document.locationFromPosition(endPosition)
     block = @document.getBlockAtIndex(endLocation.index)
-    breaksOnReturn = block.breaksOnReturn()
-    previousCharacter = block.text.getStringAtPosition(endLocation.offset - 1)
-    nextCharacter = block.text.getStringAtPosition(endLocation.offset)
 
     if @returnShouldDecreaseListLevel()
       @decreaseListLevel()
