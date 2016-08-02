@@ -87,16 +87,11 @@ class Trix.Composition extends Trix.BasicObject
     else
       if nextCharacter is "\n"
         range = [position - 1, position + 1]
-      else if block.getConfig("breakOnReturn")
-        range = [position + 1, position + (block.getLength() - offset) ]
-        fullDocument = document.insertBlockBreakAtRange([position, position])
-        fullDocument = fullDocument.removeAttributeAtRange(block.getLastAttribute(), range)
-        position += 1
       else if offset - 1 isnt 0
         position += 1
 
     newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
-    @setDocument(fullDocument or document.insertDocumentAtRange(newDocument, range))
+    @setDocument( document.insertDocumentAtRange(newDocument, range))
     @setSelection(position)
 
   insertLineBreak: ->
@@ -106,26 +101,20 @@ class Trix.Composition extends Trix.BasicObject
     block = @document.getBlockAtIndex(endLocation.index)
     breaksOnReturn = block.breaksOnReturn()
     previousCharacter = block.text.getStringAtPosition(endLocation.offset - 1)
+    nextCharacter = block.text.getStringAtPosition(endLocation.offset)
 
-    if block.hasAttributes()
-      if block.isListItem()
-        if block.isEmpty()
-          @decreaseListLevel()
-          @setSelection(startPosition)
-        else if startLocation.offset is 0
-          document = new Trix.Document [block.copyWithoutText()]
-          @insertDocument(document)
-        else
-          @insertBlockBreak()
-      else
-        if block.isEmpty()
-          @removeLastBlockAttribute()
-        else if breaksOnReturn and startLocation.offset is 0
-          @insertBlockBreak()
-        else if previousCharacter is "\n" or breaksOnReturn
-          @breakFormattedBlock()
-        else
-          @insertString("\n")
+    if @returnShouldDecreaseListLevel()
+      @decreaseListLevel()
+      @setSelection(startPosition)
+    else if @returnShouldPrependListItem()
+      document = new Trix.Document [block.copyWithoutText()]
+      @insertDocument(document)
+    else if @returnShouldInsertBlockBreak()
+      @insertBlockBreak()
+    else if @returnShouldRemoveLastBlockAttribute()
+      @removeLastBlockAttribute()
+    else if @returnShouldBreakFormattedBlock()
+      @breakFormattedBlock()
     else
       @insertString("\n")
 
@@ -527,3 +516,57 @@ class Trix.Composition extends Trix.BasicObject
     utf16string = @document.toUTF16String()
     utf16position = utf16string.offsetFromUCS2Offset(position)
     utf16string.offsetToUCS2Offset(utf16position + offset)
+
+  returnShouldInsertBlockBreak: ->
+    [startPosition, endPosition] = @getSelectedRange()
+    startLocation = @document.locationFromPosition(startPosition)
+    endLocation = @document.locationFromPosition(endPosition)
+    block = @document.getBlockAtIndex(endLocation.index)
+    breaksOnReturn = block.breaksOnReturn()
+    previousCharacter = block.text.getStringAtPosition(endLocation.offset - 1)
+    nextCharacter = block.text.getStringAtPosition(endLocation.offset)
+
+    if block.hasAttributes() and block.isListItem()
+      unless block.isEmpty()
+        return startLocation.offset isnt 0
+
+    breaksOnReturn and nextCharacter isnt "\n"
+
+  returnShouldBreakFormattedBlock: ->
+    [startPosition, endPosition] = @getSelectedRange()
+    endLocation = @document.locationFromPosition(endPosition)
+    block = @document.getBlockAtIndex(endLocation.index)
+    breaksOnReturn = block.breaksOnReturn()
+    previousCharacter = block.text.getStringAtPosition(endLocation.offset - 1)
+    nextCharacter = block.text.getStringAtPosition(endLocation.offset)
+
+    if block.hasAttributes()
+      unless block.isListItem()
+        (breaksOnReturn and nextCharacter is "\n") or previousCharacter is "\n"
+
+  returnShouldDecreaseListLevel: ->
+    [startPosition, endPosition] = @getSelectedRange()
+    endLocation = @document.locationFromPosition(endPosition)
+    block = @document.getBlockAtIndex(endLocation.index)
+    breaksOnReturn = block.breaksOnReturn()
+
+    block.hasAttributes() and block.isListItem() and block.isEmpty()
+
+  returnShouldPrependListItem: ->
+    [startPosition, endPosition] = @getSelectedRange()
+    startLocation = @document.locationFromPosition(startPosition)
+    endLocation = @document.locationFromPosition(endPosition)
+    block = @document.getBlockAtIndex(endLocation.index)
+
+    if block.hasAttributes() and block.isListItem()
+      unless block.isEmpty()
+        startLocation.offset is 0
+
+  returnShouldRemoveLastBlockAttribute: ->
+    [startPosition, endPosition] = @getSelectedRange()
+    endLocation = @document.locationFromPosition(endPosition)
+    block = @document.getBlockAtIndex(endLocation.index)
+
+    if block.hasAttributes()
+      unless block.isListItem()
+        block.isEmpty()
