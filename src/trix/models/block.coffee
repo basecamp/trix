@@ -143,12 +143,12 @@ class Trix.Block extends Trix.Object
     @attributes[depth]
 
   canBeGroupedWith: (otherBlock, depth) ->
-    otherAttributes = otherBlock.getAttributes() 
+    otherAttributes = otherBlock.getAttributes()
     otherAttribute = otherAttributes[depth]
     attribute = @attributes[depth]
 
     attribute is otherAttribute and
-      not (Trix.config.blockAttributes[attribute].groups is false and
+      not (Trix.config.blockAttributes[attribute].group is false and
            otherAttributes[depth + 1] not in ["bulletList", "numberList"])
 
   # Block breaks
