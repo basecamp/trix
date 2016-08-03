@@ -11,6 +11,7 @@ Trix.Inspector.registerView class extends Trix.Inspector.View
     handleEvent "change", onElement: @element, matchingSelector: "input[name=viewCaching]", withCallback: @didToggleViewCaching
     handleEvent "click", onElement: @element, matchingSelector: "button[data-action=render]", withCallback: @didClickRenderButton
     handleEvent "click", onElement: @element, matchingSelector: "button[data-action=parse]", withCallback: @didClickParseButton
+    handleEvent "change", onElement: @element, matchingSelector: "input[name=controlElement]", withCallback: @didToggleControlElement
 
   didToggleViewCaching: ({target}) =>
     if target.checked
@@ -23,3 +24,10 @@ Trix.Inspector.registerView class extends Trix.Inspector.View
 
   didClickParseButton: =>
     @editorController.reparse()
+
+  didToggleControlElement: ({target}) =>
+    if target.checked
+      @control = new Trix.Inspector.ControlElement @editorElement
+    else
+      @control?.uninstall()
+      @control = null

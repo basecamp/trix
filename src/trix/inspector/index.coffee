@@ -1,7 +1,8 @@
 #= require_self
+#= require ./element
+#= require ./control_element
 #= require_tree ./templates
 #= require_tree ./views
-#= require ./element
 
 Trix.Inspector =
   views: []

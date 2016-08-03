@@ -1,4 +1,4 @@
-class Trix.CompositionInputController extends Trix.BasicObject
+class Trix.CompositionInput extends Trix.BasicObject
   constructor: (@inputController) ->
     {@responder, @delegate, @inputSummary} = @inputController
     @data = {}
@@ -36,6 +36,12 @@ class Trix.CompositionInputController extends Trix.BasicObject
     else if @data.start? or @data.update?
       @requestReparse()
       @inputController.reset()
+
+  getEndData: ->
+    @data.end
+
+  isEnded: ->
+    @getEndData()?
 
   # Private
 

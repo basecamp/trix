@@ -16,8 +16,8 @@ else
 fi
 
 brew_install_missing() {
-  if which -s brew; then
-    if ! which -s "$1"; then
+  if which brew > /dev/null; then
+    if ! which "$1" > /dev/null; then
       echo " -- Installing Homebrew package: $@"
       brew reinstall "$@"
     fi
@@ -33,10 +33,10 @@ abort() {
 
 echo "--- Installing Ruby gems"
 {
-  if which -s rbenv; then
+  if which rbenv > /dev/null; then
     rbenv install --skip-existing
   else
-    if ! which -s ruby; then
+    if ! which ruby > /dev/null; then
       brew_install_missing ruby || abort "Can't find or install Ruby. Install it from https://www.ruby-lang.org or with https://github.com/rbenv/rbenv"
     fi
   fi
@@ -46,7 +46,7 @@ echo "--- Installing Ruby gems"
 
 echo "--- Installing npm modules"
 {
-  if ! which -s npm; then
+  if ! which npm > /dev/null; then
     brew_install_missing "npm" || abort "Can't find or install npm. Install it from https://nodejs.org"
   fi
   npm install
