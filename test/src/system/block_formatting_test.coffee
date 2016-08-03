@@ -315,7 +315,7 @@ testGroup "Block formatting", template: "editor_empty", ->
             document = getDocument()
             assert.equal document.getBlockCount(), 2
             assert.blockAttributes([0, 3], ["heading1"])
-            assert.blockAttributes([3, 4], [])
+            assert.blockAttributes([3, 4], ["heading1"])
             expectDocument("ab\nc\n")
 
   test "breaking out of middle of heading block with preceding blocks", (expectDocument) ->
@@ -336,7 +336,7 @@ testGroup "Block formatting", template: "editor_empty", ->
       assert.blockAttributes([0, 1], ["heading1"])
       assert.blockAttributes([2, 3], [])
       assert.blockAttributes([4, 5], ["heading1"])
-      assert.blockAttributes([6, 7], [])
+      assert.blockAttributes([6, 7], ["heading1"])
       expectDocument("a\nb\nc\nd\n")
 
   test "inserting newline before heading", (done) ->
