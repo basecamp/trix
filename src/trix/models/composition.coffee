@@ -1,6 +1,6 @@
 #= require trix/models/document
 
-{normalizeRange, rangesAreEqual, objectsAreEqual, summarizeArrayChange, extend} = Trix
+{normalizeRange, rangesAreEqual, objectsAreEqual, summarizeArrayChange, getAllAttributeNames, extend} = Trix
 
 class Trix.Composition extends Trix.BasicObject
   constructor: ->
@@ -332,16 +332,6 @@ class Trix.Composition extends Trix.BasicObject
     attributes = {}
     attributes[key] = value for key, value of @currentAttributes when Trix.config.textAttributes[key]
     attributes
-
-  allAttributeNames = null
-
-  getAllAttributeNames = ->
-    allAttributeNames ?= (
-      result = []
-      result.push(key) for key of Trix.config.textAttributes
-      result.push(key) for key of Trix.config.blockAttributes
-      result
-    )
 
   # Selection freezing
 

@@ -1,6 +1,6 @@
 #= require trix/models/text
 
-{arraysAreEqual, getListBlockAttributes} = Trix
+{arraysAreEqual, getListAttributeNames} = Trix
 
 class Trix.Block extends Trix.Object
   @fromJSON: (blockJSON) ->
@@ -149,7 +149,7 @@ class Trix.Block extends Trix.Object
 
     attribute is otherAttribute and
       not (Trix.config.blockAttributes[attribute].group is false and
-           otherAttributes[depth + 1] not in getListBlockAttributes())
+           otherAttributes[depth + 1] not in getListAttributeNames())
 
   # Block breaks
 
