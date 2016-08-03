@@ -41,10 +41,11 @@ class Trix.LineBreakInsertion
     range = [position - 1, position]
 
     if @block.getBlockBreakPosition() is offset
-      if @block.getConfig("breakOnReturn")
+      if @block.getConfig("breakOnReturn") and @nextCharacter is "\n"
         position += 1
-        range = [position - 1, position]
-      document = document.removeTextAtRange([position - 1, position])
+        range = [position, position]
+      else
+        document = document.removeTextAtRange([position - 1, position])
     else
       if @nextCharacter is "\n"
         range = [position - 1, position + 1]

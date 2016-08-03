@@ -363,6 +363,24 @@ testGroup "Block formatting", template: "editor_empty", ->
 
       done()
 
+  test "inserting newline after heading with text in following block", (expectDocument) ->
+
+    document = new Trix.Document [
+        new Trix.Block(Trix.Text.textForStringWithAttributes("ab"), ["heading1"])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("cd"), [])
+      ]
+
+    replaceDocument(document)
+    getEditor().setSelectedRange(2)
+
+    typeCharacters "\n", ->
+      document = getDocument()
+      assert.equal document.getBlockCount(), 3
+      assert.blockAttributes([0, 2], ["heading1"])
+      assert.blockAttributes([3, 4], [])
+      assert.blockAttributes([5, 6], [])
+      expectDocument("ab\n\ncd\n")
+
   test "inserting newline after single character header", (expectDocument) ->
     clickToolbarButton attribute: "heading1", ->
       typeCharacters "a", ->
