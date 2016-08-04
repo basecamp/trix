@@ -1,10 +1,10 @@
+allAttributeNames = null
+listAttributeNames = null
+
 Trix.extend
 
-  allAttributeNames: null
-  listAttributeNames: null
-
   getAllAttributeNames: ->
-    @allAttributeNames ?= (
+    allAttributeNames ?= (
       result = []
       result.push(key) for key of Trix.config.textAttributes
       result.push(key) for key of Trix.config.blockAttributes
@@ -12,7 +12,7 @@ Trix.extend
     )
 
   getListAttributeNames: ->
-    @listAttributeNames ?= (
+    listAttributeNames ?= (
       result = []
       for key, object of Trix.config.blockAttributes
         if object.hasOwnProperty("listAttribute")
