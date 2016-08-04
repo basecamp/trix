@@ -2,7 +2,7 @@
 #= require trix/models/splittable_list
 #= require trix/models/html_parser
 
-{arraysAreEqual, normalizeRange, rangeIsCollapsed} = Trix
+{arraysAreEqual, normalizeRange, rangeIsCollapsed, getBlockAttributes} = Trix
 
 class Trix.Document extends Trix.Object
   @fromJSON: (documentJSON) ->
@@ -169,7 +169,7 @@ class Trix.Document extends Trix.Object
     blockList = @blockList
     @eachBlockAtRange range, (block, textRange, index) ->
       blockList = blockList.editObjectAtIndex index, ->
-        if Trix.config.blockAttributes[attribute]
+        if getBlockAttributes()[attribute]
           block.addAttribute(attribute, value)
         else
           if textRange[0] is textRange[1]
@@ -188,7 +188,7 @@ class Trix.Document extends Trix.Object
   removeAttributeAtRange: (attribute, range) ->
     blockList = @blockList
     @eachBlockAtRange range, (block, textRange, index) ->
-      if Trix.config.blockAttributes[attribute]
+      if getBlockAttributes()[attribute]
         blockList = blockList.editObjectAtIndex index, ->
           block.removeAttribute(attribute)
       else if textRange[0] isnt textRange[1]
@@ -219,7 +219,7 @@ class Trix.Document extends Trix.Object
   applyBlockAttributeAtRange: (attributeName, value, range) ->
     {document, range} = @expandRangeToLineBreaksAndSplitBlocks(range)
 
-    if Trix.config.blockAttributes[attributeName].listAttribute
+    if getBlockAttributes()[attributeName].listAttribute
       document = document.removeLastListAttributeAtRange(range, exceptAttributeName: attributeName)
       {document, range} = document.convertLineBreaksToBlockBreaksInRange(range)
     else
@@ -231,7 +231,7 @@ class Trix.Document extends Trix.Object
     blockList = @blockList
     @eachBlockAtRange range, (block, textRange, index) ->
       return unless lastAttributeName = block.getLastAttribute()
-      return unless Trix.config.blockAttributes[lastAttributeName].listAttribute
+      return unless getBlockAttributes()[lastAttributeName].listAttribute
       return if lastAttributeName is options.exceptAttributeName
       blockList = blockList.editObjectAtIndex index, ->
         block.removeAttribute(lastAttributeName)

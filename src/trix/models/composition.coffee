@@ -1,7 +1,7 @@
 #= require trix/models/document
 #= require trix/models/line_break_insertion
 
-{normalizeRange, rangesAreEqual, objectsAreEqual, summarizeArrayChange, getAllAttributeNames, extend} = Trix
+{normalizeRange, rangesAreEqual, objectsAreEqual, summarizeArrayChange, getAllAttributeNames, getBlockAttributes, getTextAttributes, extend} = Trix
 
 class Trix.Composition extends Trix.BasicObject
   constructor: ->
@@ -174,7 +174,7 @@ class Trix.Composition extends Trix.BasicObject
       @removeCurrentAttribute(attributeName)
 
   canSetCurrentAttribute: (attributeName) ->
-    if Trix.config.blockAttributes[attributeName]
+    if getBlockAttributes()[attributeName]
       @canSetCurrentBlockAttribute(attributeName)
     else
       @canSetCurrentTextAttribute(attributeName)
@@ -191,7 +191,7 @@ class Trix.Composition extends Trix.BasicObject
     not block.isTerminalBlock()
 
   setCurrentAttribute: (attributeName, value) ->
-    if Trix.config.blockAttributes[attributeName]
+    if getBlockAttributes()[attributeName]
       @setBlockAttribute(attributeName, value)
     else
       @setTextAttribute(attributeName, value)
@@ -216,7 +216,7 @@ class Trix.Composition extends Trix.BasicObject
       @setSelection(selectedRange)
 
   removeCurrentAttribute: (attributeName) ->
-    if Trix.config.blockAttributes[attributeName]
+    if getBlockAttributes()[attributeName]
       @removeBlockAttribute(attributeName)
       @updateCurrentAttributes()
     else
@@ -285,7 +285,7 @@ class Trix.Composition extends Trix.BasicObject
 
   getCurrentTextAttributes: ->
     attributes = {}
-    attributes[key] = value for key, value of @currentAttributes when Trix.config.textAttributes[key]
+    attributes[key] = value for key, value of @currentAttributes when getTextAttributes()[key]
     attributes
 
   # Selection freezing
