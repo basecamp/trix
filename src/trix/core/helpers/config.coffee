@@ -21,10 +21,4 @@ Trix.extend
     textAttributeNames ?= Object.keys(Trix.config.textAttributes)
 
   getListAttributeNames: ->
-    listAttributeNames ?= (
-      result = []
-      for key, object of Trix.config.blockAttributes
-        if object.hasOwnProperty("listAttribute")
-          result.push(object.listAttribute)
-      result
-    )
+    listAttributeNames ?= (listAttribute for key, {listAttribute} of Trix.config.blockAttributes when listAttribute?)

@@ -71,7 +71,25 @@ class Trix.Composition extends Trix.BasicObject
     @notifyDelegateOfInsertionAtRange([startPosition, endPosition])
 
   insertLineBreak: ->
-    Trix.LineBreakInsertion.perform(this)
+    [startPosition, endPosition] = @getSelectedRange()
+    endLocation = @document.locationFromPosition(endPosition)
+    block = @document.getBlockAtIndex(endLocation.index)
+    insertion = new Trix.LineBreakInsertion this
+
+    if insertion.shouldDecreaseListLevel()
+      @decreaseListLevel()
+      @setSelection(startPosition)
+    else if insertion.shouldPrependListItem()
+      document = new Trix.Document [block.copyWithoutText()]
+      @insertDocument(document)
+    else if insertion.shouldInsertBlockBreak()
+      @insertBlockBreak()
+    else if insertion.shouldRemoveLastBlockAttribute()
+      @removeLastBlockAttribute()
+    else if insertion.shouldBreakFormattedBlock()
+      @breakFormattedBlock()
+    else
+      @insertString("\n")
 
   insertHTML: (html) ->
     startPosition = @getPosition()
@@ -432,6 +450,32 @@ class Trix.Composition extends Trix.BasicObject
     @setDocument(@document.removeAttributeForAttachment(attribute, attachment))
 
   # Private
+
+  breakFormattedBlock: ->
+    position = @getPosition()
+    range = [position - 1, position]
+
+    document = @document
+    {index, offset} = document.locationFromPosition(position)
+    block = document.getBlockAtIndex(index)
+    previousCharacter = block.text.getStringAtPosition(offset - 1)
+    nextCharacter = block.text.getStringAtPosition(offset)
+
+    if block.getBlockBreakPosition() is offset
+      if block.breaksOnReturn() and nextCharacter is "\n"
+        position += 1
+        range = [position, position]
+      else
+        document = document.removeTextAtRange([position - 1, position])
+    else
+      if nextCharacter is "\n"
+        range = [position - 1, position + 1]
+      else if offset - 1 isnt 0
+        position += 1
+
+    newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
+    @setDocument(document.insertDocumentAtRange(newDocument, range))
+    @setSelection(position)
 
   getPreviousBlock: ->
     if locationRange = @getLocationRange()
