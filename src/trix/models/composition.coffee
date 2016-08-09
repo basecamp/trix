@@ -459,11 +459,14 @@ class Trix.Composition extends Trix.BasicObject
         range = [position, position]
       else
         document = document.removeTextAtRange([position - 1, position])
-    else
-      if insertion.nextCharacter is "\n"
+    else if insertion.nextCharacter is "\n"
+      if insertion.previousCharacter is "\n"
         range = [position - 1, position + 1]
-      else if insertion.endPosition - 1 isnt 0
+      else
+        range = [position, position + 1]
         position += 1
+    else if insertion.endPosition - 1 isnt 0
+      position += 1
 
     newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
     @setDocument(document.insertDocumentAtRange(newDocument, range))
