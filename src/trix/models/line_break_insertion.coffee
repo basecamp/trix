@@ -19,7 +19,7 @@ class Trix.LineBreakInsertion
 
   shouldBreakFormattedBlock: ->
     @block.hasAttributes() and not @block.isListItem() and
-      (@breaksOnReturn and @nextCharacter is "\n") or @previousCharacter is "\n"
+      ((@breaksOnReturn and @nextCharacter is "\n") or @previousCharacter is "\n")
 
   shouldDecreaseListLevel: ->
     @block.hasAttributes() and @block.isListItem() and @block.isEmpty()

@@ -363,6 +363,29 @@ testGroup "Block formatting", template: "editor_empty", ->
 
       done()
 
+  test "inserting multiple newlines before heading", (done) ->
+
+    document = new Trix.Document [
+        new Trix.Block(Trix.Text.textForStringWithAttributes("\n"), [])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("abc"), ["heading1"])
+      ]
+
+    replaceDocument(document)
+    getEditor().setSelectedRange(0)
+
+    typeCharacters "\n\n", ->
+      document = getDocument()
+      assert.equal document.getBlockCount(), 2
+
+      block = document.getBlockAtIndex(0)
+      assert.deepEqual block.getAttributes(), []
+      assert.equal block.toString(), "\n\n\n\n"
+
+      block = document.getBlockAtIndex(1)
+      assert.deepEqual block.getAttributes(), ["heading1"]
+      assert.equal block.toString(), "abc\n"
+      done()
+
   test "inserting newline after heading with text in following block", (expectDocument) ->
 
     document = new Trix.Document [

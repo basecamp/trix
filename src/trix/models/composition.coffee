@@ -84,7 +84,7 @@ class Trix.Composition extends Trix.BasicObject
     else if insertion.shouldRemoveLastBlockAttribute()
       @removeLastBlockAttribute()
     else if insertion.shouldBreakFormattedBlock()
-       @breakFormattedBlock(insertion)
+      @breakFormattedBlock(insertion)
     else
       @insertString("\n")
 
