@@ -71,23 +71,20 @@ class Trix.Composition extends Trix.BasicObject
     @notifyDelegateOfInsertionAtRange([startPosition, endPosition])
 
   insertLineBreak: ->
-    [startPosition, endPosition] = @getSelectedRange()
-    endLocation = @document.locationFromPosition(endPosition)
-    block = @document.getBlockAtIndex(endLocation.index)
     insertion = new Trix.LineBreakInsertion this
 
     if insertion.shouldDecreaseListLevel()
       @decreaseListLevel()
-      @setSelection(startPosition)
+      @setSelection(insertion.startPosition)
     else if insertion.shouldPrependListItem()
-      document = new Trix.Document [block.copyWithoutText()]
+      document = new Trix.Document [insertion.block.copyWithoutText()]
       @insertDocument(document)
     else if insertion.shouldInsertBlockBreak()
       @insertBlockBreak()
     else if insertion.shouldRemoveLastBlockAttribute()
       @removeLastBlockAttribute()
     else if insertion.shouldBreakFormattedBlock()
-      @breakFormattedBlock()
+       @breakFormattedBlock(insertion)
     else
       @insertString("\n")
 
@@ -451,26 +448,21 @@ class Trix.Composition extends Trix.BasicObject
 
   # Private
 
-  breakFormattedBlock: ->
-    position = @getPosition()
+  breakFormattedBlock: (insertion) ->
+    {document, block} = insertion
+    position = insertion.startPosition
     range = [position - 1, position]
 
-    document = @document
-    {index, offset} = document.locationFromPosition(position)
-    block = document.getBlockAtIndex(index)
-    previousCharacter = block.text.getStringAtPosition(offset - 1)
-    nextCharacter = block.text.getStringAtPosition(offset)
-
-    if block.getBlockBreakPosition() is offset
-      if block.breaksOnReturn() and nextCharacter is "\n"
+    if block.getBlockBreakPosition() is insertion.endPosition
+      if block.breaksOnReturn() and insertion.nextCharacter is "\n"
         position += 1
         range = [position, position]
       else
         document = document.removeTextAtRange([position - 1, position])
     else
-      if nextCharacter is "\n"
+      if insertion.nextCharacter is "\n"
         range = [position - 1, position + 1]
-      else if offset - 1 isnt 0
+      else if insertion.endPosition - 1 isnt 0
         position += 1
 
     newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
