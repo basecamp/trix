@@ -453,12 +453,12 @@ class Trix.Composition extends Trix.BasicObject
     position = insertion.startPosition
     range = [position - 1, position]
 
-    if block.getBlockBreakPosition() is insertion.endPosition
+    if block.getBlockBreakPosition() is insertion.offset
       if block.breaksOnReturn() and insertion.nextCharacter is "\n"
         position += 1
-        range = [position, position]
       else
-        document = document.removeTextAtRange([position - 1, position])
+        document = document.removeTextAtRange(range)
+      range = [position, position]
     else if insertion.nextCharacter is "\n"
       if insertion.previousCharacter is "\n"
         range = [position - 1, position + 1]

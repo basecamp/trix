@@ -152,6 +152,31 @@ testGroup "Block formatting", template: "editor_empty", ->
 
                 done()
 
+  test "breaking out of a formatted block with adjacent non-formatted blocks", (expectDocument) ->
+    # * = cursor
+    #
+    # a
+    # b*
+    # c
+
+    document = new Trix.Document [
+        new Trix.Block(Trix.Text.textForStringWithAttributes("a"), [])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("b"), ["quote"])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("c"), [])
+      ]
+
+    replaceDocument(document)
+    getEditor().setSelectedRange(3)
+
+    typeCharacters "\n\n", ->
+      document = getDocument()
+      assert.equal document.getBlockCount(), 4
+      assert.blockAttributes([0, 1], [])
+      assert.blockAttributes([2, 3], ["quote"])
+      assert.blockAttributes([4, 5], [])
+      assert.blockAttributes([5, 6], [])
+      expectDocument("a\nb\n\nc\n")
+
   test "breaking out a block after newline at offset 0", (done) ->
     # * = cursor
     #
