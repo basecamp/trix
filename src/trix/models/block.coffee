@@ -73,6 +73,9 @@ class Trix.Block extends Trix.Object
     return unless config = Trix.config.blockAttributes[attribute]
     if key then config[key] else config
 
+  isSingleLine: ->
+    @getConfig("singleLine")?
+
   isListItem: ->
     @getConfig("listAttribute")?
 
@@ -131,6 +134,9 @@ class Trix.Block extends Trix.Object
     else
       @text.copy()
 
+  offsetIsAtEnd: (offset) ->
+    @getLength() - 1 is offset
+
   # Grouping
 
   canBeGrouped: (depth) ->
@@ -139,11 +145,12 @@ class Trix.Block extends Trix.Object
   canBeGroupedWith: (otherBlock, depth) ->
     attributes = @attributes
     otherAttributes = otherBlock.getAttributes()
-    if attributes[depth] is otherAttributes[depth]
+    if attributes[depth] is otherAttributes[depth] and not @isSingleLine()
       if attributes[depth] in ["bullet", "number"] and otherAttributes[depth + 1] not in ["bulletList", "numberList"]
         false
       else
         true
+    
 
   # Block breaks
 

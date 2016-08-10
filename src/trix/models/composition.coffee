@@ -71,23 +71,29 @@ class Trix.Composition extends Trix.BasicObject
 
   breakFormattedBlock: ->
     position = @getPosition()
-    range = [position - 1, position]
+    range = [position, position]
 
     document = @document
     {index, offset} = document.locationFromPosition(position)
     block = document.getBlockAtIndex(index)
 
     if block.getBlockBreakPosition() is offset
-      document = document.removeTextAtRange(range)
-      range = [position, position]
+      if block.text.getStringAtRange([offset - 1, offset]) is "\n"
+        document = document.removeTextAtRange([position - 1, position])
+      else if offset - 1 isnt 0
+        position += 1
     else
       if block.text.getStringAtRange([offset, offset + 1]) is "\n"
         range = [position - 1, position + 1]
       else if offset - 1 isnt 0
         position += 1
 
-    newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
-    @setDocument(document.insertDocumentAtRange(newDocument, range))
+    if block.isSingleLine() and not block.offsetIsAtEnd(offset)
+      @setDocument(document.insertBlockBreakAtRange(range))
+    else
+      newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
+      @setDocument(document.insertDocumentAtRange(newDocument, range))
+    
     @setSelection(position)
 
   insertLineBreak: ->
@@ -97,7 +103,12 @@ class Trix.Composition extends Trix.BasicObject
     block = @document.getBlockAtIndex(endLocation.index)
 
     if block.hasAttributes()
-      if block.isListItem()
+      if block.isSingleLine()
+        if block.isEmpty()
+          @removeLastBlockAttribute()
+        else
+          @breakFormattedBlock()
+      else if block.isListItem()
         if block.isEmpty()
           @decreaseListLevel()
           @setSelection(startPosition)
@@ -114,7 +125,7 @@ class Trix.Composition extends Trix.BasicObject
         else
           @insertString("\n")
     else
-      @insertString("\n")
+      @insertBlockBreak()
 
   insertHTML: (html) ->
     startPosition = @getPosition()
@@ -243,6 +254,9 @@ class Trix.Composition extends Trix.BasicObject
 
   setBlockAttribute: (attributeName, value) ->
     return unless selectedRange = @getSelectedRange()
+    if @getBlock()?.isSingleLine()
+      @removeBlockAttribute(@getBlock().getLastAttribute())
+
     @setDocument(@document.applyBlockAttributeAtRange(attributeName, value, selectedRange))
     @setSelection(selectedRange)
 
