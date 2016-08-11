@@ -114,7 +114,13 @@ class Trix.Composition extends Trix.BasicObject
         else
           @insertString("\n")
     else
-      @insertString("\n")
+      if @shouldBreakParagraphsIntoBlocks()
+        @insertBlockBreak()
+      else
+        @insertString("\n")
+
+  shouldBreakParagraphsIntoBlocks: ->
+    Trix.config.blockAttributes.default.tagName is "p"
 
   insertHTML: (html) ->
     startPosition = @getPosition()
@@ -142,8 +148,19 @@ class Trix.Composition extends Trix.BasicObject
       @insertAttachment(attachment)
 
   insertAttachment: (attachment) ->
+    if @shouldBreakParagraphsIntoBlocks()
+      console.log "should break paragraphs into blocks"
+      @createBlockForAttachment()
+
     text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
     @insertText(text)
+
+  createBlockForAttachment: ->
+    @insertBlockBreak()
+    @breakFormattedBlock()
+    [startPosition, endPosition] = @getSelectedRange()
+    @setSelection(startPosition + 1)
+    @setCurrentAttribute("attachment", true)
 
   deleteInDirection: (direction) ->
     range = [startPosition, endPosition] = @getSelectedRange()

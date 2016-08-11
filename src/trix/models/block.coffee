@@ -12,6 +12,9 @@ class Trix.Block extends Trix.Object
     @text = applyBlockBreakToText(text)
     @attributes = attributes
 
+  isSingleCharacter: ->
+    @getConfig("singleCharacter")
+
   isEmpty: ->
     @text.isBlockBreak()
 
@@ -45,7 +48,7 @@ class Trix.Block extends Trix.Object
     @copyWithAttributes(attributes)
 
   removeAttribute: (attribute) ->
-    {listAttribute} = Trix.config.blockAttributes[attribute]
+    {listAttribute} = Trix.config.blockAttributes[attribute]?
     attributes = removeLastElement(@attributes, attribute)
     attributes = removeLastElement(attributes, listAttribute) if listAttribute?
     @copyWithAttributes(attributes)
