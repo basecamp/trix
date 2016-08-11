@@ -222,6 +222,8 @@ class Trix.Document extends Trix.Object
     if getBlockAttributes()[attributeName].listAttribute
       document = document.removeLastListAttributeAtRange(range, exceptAttributeName: attributeName)
       {document, range} = document.convertLineBreaksToBlockBreaksInRange(range)
+    else if getBlockAttributes()[attributeName].terminal
+      {document, range} = document.convertLineBreaksToBlockBreaksInRange(range)
     else
       document = document.consolidateBlocksAtRange(range)
 

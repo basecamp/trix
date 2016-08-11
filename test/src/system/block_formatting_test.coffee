@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, defer, expandSelection, isToolbarButtonActive, isToolbarButtonDisabled, moveCursor, pressKey, replaceDocument, test, testGroup, typeCharacters} = Trix.TestHelpers
+{assert, clickToolbarButton, defer, expandSelection, isToolbarButtonActive, isToolbarButtonDisabled, moveCursor, pressKey, replaceDocument, selectAll, test, testGroup, typeCharacters} = Trix.TestHelpers
 
 testGroup "Block formatting", template: "editor_empty", ->
   test "applying block attributes", (done) ->
@@ -458,3 +458,22 @@ testGroup "Block formatting", template: "editor_empty", ->
           assert.equal document.getBlockCount(), 2
           assert.blockAttributes([0, 1], ["heading1"])
           expectDocument("a\n\n")
+
+  test "adding heading to selection only adds heading to blocks without heading", (expectDocument) ->
+
+    document = new Trix.Document [
+        new Trix.Block(Trix.Text.textForStringWithAttributes("a"), [])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("b"), ["heading1"])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("c"), [])
+      ]
+
+    replaceDocument(document)
+
+    selectAll ->
+      clickToolbarButton attribute: "heading1", ->
+        document = getDocument()
+        assert.equal document.getBlockCount(), 3
+        assert.blockAttributes([0, 1], ["heading1"])
+        assert.blockAttributes([2, 3], ["heading1"])
+        assert.blockAttributes([4, 5], ["heading1"])
+        expectDocument("a\nb\nc\n")
