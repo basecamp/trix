@@ -294,6 +294,33 @@ removeWhitespace = (string) ->
     html: """<div>#{blockComment}#{cursorTarget}#{link.outerHTML}#{cursorTarget}</div>"""
     document: new Trix.Document [new Trix.Block text]
 
+  "pending file attachment": do ->
+    attrs = filename: "example.pdf", filesize: 34038769, contentType: "application/pdf"
+    attachment = new Trix.Attachment attrs
+    attachment.file = {}
+    text = Trix.Text.textForAttachmentWithAttributes(attachment)
+
+    figure = Trix.makeElement
+      tagName: "figure"
+      className: "attachment attachment-file pdf"
+
+    data =
+      trixAttachment: JSON.stringify(attachment)
+      trixContentType: "application/pdf"
+      trixId: attachment.id
+      trixSerialize: false
+
+    figure.dataset[key] = value for key, value of data
+    figure.setAttribute("contenteditable", false)
+
+    caption = """<figcaption class="#{classNames.attachment.caption}">#{attrs.filename} <span class="#{classNames.attachment.size}">32.46 MB</span></figcaption>"""
+    progress = """<progress class="progress" value="0" max="100" data-trix-mutable="true" data-trix-store-key="#{attachment.getCacheKey("progressElement")}"></progress>"""
+
+    figure.innerHTML = caption + progress
+
+    html: """<div>#{blockComment}#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"""
+    document: new Trix.Document [new Trix.Block text]
+
   "content attachment": do ->
     content = """<blockquote class="twitter-tweet" data-cards="hidden"><p>ruby-build 20150413 is out, with definitions for 2.2.2, 2.1.6, and 2.0.0-p645 to address recent security issues: <a href="https://t.co/YEwV6NtRD8">https://t.co/YEwV6NtRD8</a></p>&mdash; Sam Stephenson (@sstephenson) <a href="https://twitter.com/sstephenson/status/587715996783218688">April 13, 2015</a></blockquote>"""
     href = "https://twitter.com/sstephenson/status/587715996783218688"
