@@ -1,6 +1,6 @@
 #= require trix/views/text_view
 
-{makeElement} = Trix
+{makeElement, getBlockConfig} = Trix
 
 class Trix.BlockView extends Trix.ObjectView
   constructor: ->
@@ -14,7 +14,7 @@ class Trix.BlockView extends Trix.ObjectView
     if @block.isEmpty()
       nodes.push(makeElement("br"))
     else
-      textConfig = Trix.config.blockAttributes[@block.getLastAttribute()]?.text
+      textConfig = getBlockConfig(@block.getLastAttribute())?.text
       textView = @findOrCreateCachedChildView(Trix.TextView, @block.text, {textConfig})
       nodes.push(textView.getNodes()...)
       nodes.push(makeElement("br")) if @shouldAddExtraNewlineElement()
@@ -28,7 +28,7 @@ class Trix.BlockView extends Trix.ObjectView
 
   createContainerElement: (depth) ->
     attribute = @attributes[depth]
-    config = Trix.config.blockAttributes[attribute]
+    config = getBlockConfig(attribute)
     makeElement(config.tagName)
 
   # A single <br> at the end of a block element has no visual representation

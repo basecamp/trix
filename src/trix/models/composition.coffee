@@ -1,6 +1,7 @@
 #= require trix/models/document
+#= require trix/models/line_break_insertion
 
-{normalizeRange, rangesAreEqual, objectsAreEqual, summarizeArrayChange, extend} = Trix
+{normalizeRange, rangesAreEqual, objectsAreEqual, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
 
 class Trix.Composition extends Trix.BasicObject
   constructor: ->
@@ -69,50 +70,21 @@ class Trix.Composition extends Trix.BasicObject
     @setSelection(endPosition)
     @notifyDelegateOfInsertionAtRange([startPosition, endPosition])
 
-  breakFormattedBlock: ->
-    position = @getPosition()
-    range = [position - 1, position]
-
-    document = @document
-    {index, offset} = document.locationFromPosition(position)
-    block = document.getBlockAtIndex(index)
-
-    if block.getBlockBreakPosition() is offset
-      document = document.removeTextAtRange(range)
-      range = [position, position]
-    else
-      if block.text.getStringAtRange([offset, offset + 1]) is "\n"
-        range = [position - 1, position + 1]
-      else if offset - 1 isnt 0
-        position += 1
-
-    newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
-    @setDocument(document.insertDocumentAtRange(newDocument, range))
-    @setSelection(position)
-
   insertLineBreak: ->
-    [startPosition, endPosition] = @getSelectedRange()
-    startLocation = @document.locationFromPosition(startPosition)
-    endLocation = @document.locationFromPosition(endPosition)
-    block = @document.getBlockAtIndex(endLocation.index)
+    insertion = new Trix.LineBreakInsertion this
 
-    if block.hasAttributes()
-      if block.isListItem()
-        if block.isEmpty()
-          @decreaseListLevel()
-          @setSelection(startPosition)
-        else if startLocation.offset is 0
-          document = new Trix.Document [block.copyWithoutText()]
-          @insertDocument(document)
-        else
-          @insertBlockBreak()
-      else
-        if block.isEmpty()
-          @removeLastBlockAttribute()
-        else if block.text.getStringAtRange([endLocation.offset - 1, endLocation.offset]) is "\n"
-          @breakFormattedBlock()
-        else
-          @insertString("\n")
+    if insertion.shouldDecreaseListLevel()
+      @decreaseListLevel()
+      @setSelection(insertion.startPosition)
+    else if insertion.shouldPrependListItem()
+      document = new Trix.Document [insertion.block.copyWithoutText()]
+      @insertDocument(document)
+    else if insertion.shouldInsertBlockBreak()
+      @insertBlockBreak()
+    else if insertion.shouldRemoveLastBlockAttribute()
+      @removeLastBlockAttribute()
+    else if insertion.shouldBreakFormattedBlock()
+      @breakFormattedBlock(insertion)
     else
       @insertString("\n")
 
@@ -217,14 +189,24 @@ class Trix.Composition extends Trix.BasicObject
       @removeCurrentAttribute(attributeName)
 
   canSetCurrentAttribute: (attributeName) ->
+    if getBlockConfig(attributeName)
+      @canSetCurrentBlockAttribute(attributeName)
+    else
+      @canSetCurrentTextAttribute(attributeName)
+
+  canSetCurrentTextAttribute: (attributeName) ->
     switch attributeName
       when "href"
         not @selectionContainsAttachmentWithAttribute(attributeName)
       else
         true
 
+  canSetCurrentBlockAttribute: (attributeName) ->
+    block = @getBlock()
+    not block.isTerminalBlock()
+
   setCurrentAttribute: (attributeName, value) ->
-    if Trix.config.blockAttributes[attributeName]
+    if getBlockConfig(attributeName)
       @setBlockAttribute(attributeName, value)
     else
       @setTextAttribute(attributeName, value)
@@ -243,11 +225,13 @@ class Trix.Composition extends Trix.BasicObject
 
   setBlockAttribute: (attributeName, value) ->
     return unless selectedRange = @getSelectedRange()
-    @setDocument(@document.applyBlockAttributeAtRange(attributeName, value, selectedRange))
-    @setSelection(selectedRange)
+    if @canSetCurrentAttribute(attributeName)
+      block = @getBlock()
+      @setDocument(@document.applyBlockAttributeAtRange(attributeName, value, selectedRange))
+      @setSelection(selectedRange)
 
   removeCurrentAttribute: (attributeName) ->
-    if Trix.config.blockAttributes[attributeName]
+    if getBlockConfig(attributeName)
       @removeBlockAttribute(attributeName)
       @updateCurrentAttributes()
     else
@@ -300,9 +284,15 @@ class Trix.Composition extends Trix.BasicObject
 
   updateCurrentAttributes: ->
     if selectedRange = @getSelectedRange(ignoreLock: true)
-      commonAttributes = @document.getCommonAttributesAtRange(selectedRange)
-      unless objectsAreEqual(commonAttributes, @currentAttributes)
-        @currentAttributes = commonAttributes
+      currentAttributes = @document.getCommonAttributesAtRange(selectedRange)
+
+      for attributeName in getAllAttributeNames()
+        unless currentAttributes[attributeName]
+          unless @canSetCurrentAttribute(attributeName)
+            currentAttributes[attributeName] = false
+
+      unless objectsAreEqual(currentAttributes, @currentAttributes)
+        @currentAttributes = currentAttributes
         @notifyDelegateOfCurrentAttributesChange()
 
   getCurrentAttributes: ->
@@ -310,7 +300,7 @@ class Trix.Composition extends Trix.BasicObject
 
   getCurrentTextAttributes: ->
     attributes = {}
-    attributes[key] = value for key, value of @currentAttributes when Trix.config.textAttributes[key]
+    attributes[key] = value for key, value of @currentAttributes when getTextConfig(key)
     attributes
 
   # Selection freezing
@@ -457,6 +447,30 @@ class Trix.Composition extends Trix.BasicObject
     @setDocument(@document.removeAttributeForAttachment(attribute, attachment))
 
   # Private
+
+  breakFormattedBlock: (insertion) ->
+    {document, block} = insertion
+    position = insertion.startPosition
+    range = [position - 1, position]
+
+    if block.getBlockBreakPosition() is insertion.offset
+      if block.breaksOnReturn() and insertion.nextCharacter is "\n"
+        position += 1
+      else
+        document = document.removeTextAtRange(range)
+      range = [position, position]
+    else if insertion.nextCharacter is "\n"
+      if insertion.previousCharacter is "\n"
+        range = [position - 1, position + 1]
+      else
+        range = [position, position + 1]
+        position += 1
+    else if insertion.endPosition - 1 isnt 0
+      position += 1
+
+    newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
+    @setDocument(document.insertDocumentAtRange(newDocument, range))
+    @setSelection(position)
 
   getPreviousBlock: ->
     if locationRange = @getLocationRange()

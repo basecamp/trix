@@ -1,7 +1,7 @@
 #= require trix/views/attachment_view
 #= require trix/views/previewable_attachment_view
 
-{makeElement, findInnerElement} = Trix
+{makeElement, findInnerElement, getTextConfig} = Trix
 
 class Trix.PieceView extends Trix.ObjectView
   constructor: ->
@@ -52,7 +52,7 @@ class Trix.PieceView extends Trix.ObjectView
       nodes
 
   createElement: ->
-    for key of @attributes when config = Trix.config.textAttributes[key]
+    for key of @attributes when config = getTextConfig(key)
       if config.tagName
         pendingElement = makeElement(config.tagName)
 
@@ -74,7 +74,7 @@ class Trix.PieceView extends Trix.ObjectView
     element
 
   createContainerElement: ->
-    for key, value of @attributes when config = Trix.config.textAttributes[key]
+    for key, value of @attributes when config = getTextConfig(key)
       if config.groupTagName
         attributes = {}
         attributes[key] = value

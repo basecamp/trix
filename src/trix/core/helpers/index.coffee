@@ -3,6 +3,7 @@
 #= require trix/core/helpers/strings
 #= require trix/core/helpers/objects
 #= require trix/core/helpers/collections
+#= require trix/core/helpers/config
 #= require trix/core/helpers/dom
 #= require trix/core/helpers/ranges
 #= require trix/core/helpers/custom_elements

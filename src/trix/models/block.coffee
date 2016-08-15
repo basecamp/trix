@@ -1,6 +1,6 @@
 #= require trix/models/text
 
-{arraysAreEqual} = Trix
+{arraysAreEqual, getBlockConfig, getBlockAttributeNames, getListAttributeNames} = Trix
 
 class Trix.Block extends Trix.Object
   @fromJSON: (blockJSON) ->
@@ -37,7 +37,7 @@ class Trix.Block extends Trix.Object
       @copyWithText(@text.copyUsingObjectMap(objectMap))
 
   addAttribute: (attribute) ->
-    {listAttribute} = Trix.config.blockAttributes[attribute]
+    {listAttribute} = getBlockConfig(attribute)
     attributes = if listAttribute
       @attributes.concat([listAttribute, attribute])
     else
@@ -45,7 +45,7 @@ class Trix.Block extends Trix.Object
     @copyWithAttributes(attributes)
 
   removeAttribute: (attribute) ->
-    {listAttribute} = Trix.config.blockAttributes[attribute]
+    {listAttribute} = getBlockConfig(attribute)
     attributes = removeLastElement(@attributes, attribute)
     attributes = removeLastElement(attributes, listAttribute) if listAttribute?
     @copyWithAttributes(attributes)
@@ -70,11 +70,17 @@ class Trix.Block extends Trix.Object
 
   getConfig: (key) ->
     return unless attribute = @getLastAttribute()
-    return unless config = Trix.config.blockAttributes[attribute]
+    return unless config = getBlockConfig(attribute)
     if key then config[key] else config
 
   isListItem: ->
     @getConfig("listAttribute")?
+
+  isTerminalBlock: ->
+    @getConfig("terminal")?
+
+  breaksOnReturn: ->
+    @getConfig("breakOnReturn")?
 
   findLineBreakInDirectionFromPosition: (direction, position) ->
     string = @toString()
@@ -137,13 +143,13 @@ class Trix.Block extends Trix.Object
     @attributes[depth]
 
   canBeGroupedWith: (otherBlock, depth) ->
-    attributes = @attributes
     otherAttributes = otherBlock.getAttributes()
-    if attributes[depth] is otherAttributes[depth]
-      if attributes[depth] in ["bullet", "number"] and otherAttributes[depth + 1] not in ["bulletList", "numberList"]
-        false
-      else
-        true
+    otherAttribute = otherAttributes[depth]
+    attribute = @attributes[depth]
+
+    attribute is otherAttribute and
+      not (getBlockConfig(attribute).group is false and
+           otherAttributes[depth + 1] not in getListAttributeNames())
 
   # Block breaks
 

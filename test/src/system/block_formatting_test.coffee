@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, defer, expandSelection, isToolbarButtonActive, isToolbarButtonDisabled, moveCursor, pressKey, replaceDocument, test, testGroup, typeCharacters} = Trix.TestHelpers
+{assert, clickToolbarButton, defer, expandSelection, isToolbarButtonActive, isToolbarButtonDisabled, moveCursor, pressKey, replaceDocument, selectAll, test, testGroup, typeCharacters} = Trix.TestHelpers
 
 testGroup "Block formatting", template: "editor_empty", ->
   test "applying block attributes", (done) ->
@@ -152,6 +152,30 @@ testGroup "Block formatting", template: "editor_empty", ->
 
                 done()
 
+  test "breaking out of a formatted block with adjacent non-formatted blocks", (expectDocument) ->
+    # * = cursor
+    #
+    # a
+    # b*
+    # c
+    document = new Trix.Document [
+        new Trix.Block(Trix.Text.textForStringWithAttributes("a"), [])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("b"), ["quote"])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("c"), [])
+      ]
+
+    replaceDocument(document)
+    getEditor().setSelectedRange(3)
+
+    typeCharacters "\n\n", ->
+      document = getDocument()
+      assert.equal document.getBlockCount(), 4
+      assert.blockAttributes([0, 1], [])
+      assert.blockAttributes([2, 3], ["quote"])
+      assert.blockAttributes([4, 5], [])
+      assert.blockAttributes([5, 6], [])
+      expectDocument("a\nb\n\nc\n")
+
   test "breaking out a block after newline at offset 0", (done) ->
     # * = cursor
     #
@@ -279,3 +303,170 @@ testGroup "Block formatting", template: "editor_empty", ->
       clickToolbarButton attribute: "number", ->
         assert.blockAttributes([0, 1], ["numberList", "number"])
         done()
+
+  test "adding bullet to heading block", (done) ->
+    clickToolbarButton attribute: "heading1", ->
+      clickToolbarButton attribute: "bullet", ->
+        assert.ok isToolbarButtonActive(attribute: "heading1")
+        assert.blockAttributes([1, 2], [])
+        done()
+
+  test "removing bullet from heading block", (done) ->
+    clickToolbarButton attribute: "bullet", ->
+      clickToolbarButton attribute: "heading1", ->
+        assert.ok isToolbarButtonDisabled(attribute: "bullet")
+        done()
+
+  test "breaking out of heading in list", (expectDocument) ->
+    clickToolbarButton attribute: "bullet", ->
+      clickToolbarButton attribute: "heading1", ->
+        assert.ok isToolbarButtonActive(attribute: "heading1")
+        typeCharacters "abc", ->
+          typeCharacters "\n", ->
+            assert.ok isToolbarButtonActive(attribute: "bullet")
+            document = getDocument()
+            assert.equal document.getBlockCount(), 2
+            assert.blockAttributes([0, 4], ["bulletList", "bullet", "heading1"])
+            assert.blockAttributes([4, 5], ["bulletList", "bullet"])
+            expectDocument("abc\n\n")
+
+  test "breaking out of middle of heading block", (expectDocument) ->
+    clickToolbarButton attribute: "heading1", ->
+      typeCharacters "abc", ->
+        assert.ok isToolbarButtonActive(attribute: "heading1")
+        moveCursor direction: "left", times: 1, ->
+          typeCharacters "\n", ->
+            document = getDocument()
+            assert.equal document.getBlockCount(), 2
+            assert.blockAttributes([0, 3], ["heading1"])
+            assert.blockAttributes([3, 4], ["heading1"])
+            expectDocument("ab\nc\n")
+
+  test "breaking out of middle of heading block with preceding blocks", (expectDocument) ->
+    document = new Trix.Document [
+        new Trix.Block(Trix.Text.textForStringWithAttributes("a"), ["heading1"])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("b"), [])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("cd"), ["heading1"])
+      ]
+
+    replaceDocument(document)
+    getEditor().setSelectedRange(5)
+    assert.ok isToolbarButtonActive(attribute: "heading1")
+
+    typeCharacters "\n", ->
+      document = getDocument()
+      assert.equal document.getBlockCount(), 4
+      assert.blockAttributes([0, 1], ["heading1"])
+      assert.blockAttributes([2, 3], [])
+      assert.blockAttributes([4, 5], ["heading1"])
+      assert.blockAttributes([6, 7], ["heading1"])
+      expectDocument("a\nb\nc\nd\n")
+
+  test "breaking out of end of heading block with preceding blocks", (expectDocument) ->
+    document = new Trix.Document [
+        new Trix.Block(Trix.Text.textForStringWithAttributes("a"), ["heading1"])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("b"), [])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("cd"), ["heading1"])
+      ]
+
+    replaceDocument(document)
+    getEditor().setSelectedRange(6)
+    assert.ok isToolbarButtonActive(attribute: "heading1")
+
+    typeCharacters "\n", ->
+      document = getDocument()
+      assert.equal document.getBlockCount(), 4
+      assert.blockAttributes([0, 1], ["heading1"])
+      assert.blockAttributes([2, 3], [])
+      assert.blockAttributes([4, 6], ["heading1"])
+      assert.blockAttributes([7, 8], [])
+      expectDocument("a\nb\ncd\n\n")
+
+  test "inserting newline before heading", (done) ->
+    document = new Trix.Document [
+        new Trix.Block(Trix.Text.textForStringWithAttributes("\n"), [])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("abc"), ["heading1"])
+      ]
+
+    replaceDocument(document)
+    getEditor().setSelectedRange(0)
+
+    typeCharacters "\n", ->
+      document = getDocument()
+      assert.equal document.getBlockCount(), 2
+
+      block = document.getBlockAtIndex(0)
+      assert.deepEqual block.getAttributes(), []
+      assert.equal block.toString(), "\n\n\n"
+
+      block = document.getBlockAtIndex(1)
+      assert.deepEqual block.getAttributes(), ["heading1"]
+      assert.equal block.toString(), "abc\n"
+
+      done()
+
+  test "inserting multiple newlines before heading", (done) ->
+    document = new Trix.Document [
+        new Trix.Block(Trix.Text.textForStringWithAttributes("\n"), [])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("abc"), ["heading1"])
+      ]
+
+    replaceDocument(document)
+    getEditor().setSelectedRange(0)
+
+    typeCharacters "\n\n", ->
+      document = getDocument()
+      assert.equal document.getBlockCount(), 2
+
+      block = document.getBlockAtIndex(0)
+      assert.deepEqual block.getAttributes(), []
+      assert.equal block.toString(), "\n\n\n\n"
+
+      block = document.getBlockAtIndex(1)
+      assert.deepEqual block.getAttributes(), ["heading1"]
+      assert.equal block.toString(), "abc\n"
+      done()
+
+  test "inserting newline after heading with text in following block", (expectDocument) ->
+    document = new Trix.Document [
+        new Trix.Block(Trix.Text.textForStringWithAttributes("ab"), ["heading1"])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("cd"), [])
+      ]
+
+    replaceDocument(document)
+    getEditor().setSelectedRange(2)
+
+    typeCharacters "\n", ->
+      document = getDocument()
+      assert.equal document.getBlockCount(), 3
+      assert.blockAttributes([0, 2], ["heading1"])
+      assert.blockAttributes([3, 4], [])
+      assert.blockAttributes([5, 6], [])
+      expectDocument("ab\n\ncd\n")
+
+  test "inserting newline after single character header", (expectDocument) ->
+    clickToolbarButton attribute: "heading1", ->
+      typeCharacters "a", ->
+        typeCharacters "\n", ->
+          document = getDocument()
+          assert.equal document.getBlockCount(), 2
+          assert.blockAttributes([0, 1], ["heading1"])
+          expectDocument("a\n\n")
+
+  test "adding heading to selection only adds heading to blocks without heading", (expectDocument) ->
+    document = new Trix.Document [
+        new Trix.Block(Trix.Text.textForStringWithAttributes("a"), [])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("b"), ["heading1"])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("c"), [])
+      ]
+
+    replaceDocument(document)
+
+    selectAll ->
+      clickToolbarButton attribute: "heading1", ->
+        document = getDocument()
+        assert.equal document.getBlockCount(), 3
+        assert.blockAttributes([0, 1], ["heading1"])
+        assert.blockAttributes([2, 3], ["heading1"])
+        assert.blockAttributes([4, 5], ["heading1"])
+        expectDocument("a\nb\nc\n")
