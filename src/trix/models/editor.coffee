@@ -94,7 +94,7 @@ class Trix.Editor
   # Indentation level
 
   canDecreaseIndentationLevel: ->
-    @composition.canDecreaseIndentationLevel()
+    @composition.canDecreaseBlockAttributeLevel()
 
   canIncreaseIndentationLevel: ->
     @composition.canIncreaseBlockAttributeLevel()

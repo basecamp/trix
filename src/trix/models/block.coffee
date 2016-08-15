@@ -1,6 +1,6 @@
 #= require trix/models/text
 
-{arraysAreEqual, getBlockConfig, getBlockAttributeNames, getListAttributeNames, getIndentableAttributeNames} = Trix
+{arraysAreEqual, getBlockConfig, getBlockAttributeNames, getListAttributeNames} = Trix
 
 class Trix.Block extends Trix.Object
   @fromJSON: (blockJSON) ->
@@ -61,9 +61,6 @@ class Trix.Block extends Trix.Object
 
   getAttributeLevel: ->
     @attributes.length
-
-  getIndentationLevel: ->
-    (attr for attr in @attributes when attr in getIndentableAttributeNames()).length
 
   getAttributeAtLevel: (level) ->
     @attributes[level - 1]

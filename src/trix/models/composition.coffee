@@ -1,7 +1,7 @@
 #= require trix/models/document
 #= require trix/models/line_break_insertion
 
-{normalizeRange, rangesAreEqual, objectsAreEqual, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, getIndentableAttributeNames, extend} = Trix
+{normalizeRange, rangesAreEqual, objectsAreEqual, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
 
 class Trix.Composition extends Trix.BasicObject
   constructor: ->
@@ -124,7 +124,7 @@ class Trix.Composition extends Trix.BasicObject
     if startPosition is endPosition
       startLocation = @document.locationFromPosition(startPosition)
       if direction is "backward" and startLocation.offset is 0
-        if @canDecreaseIndentationLevel()
+        if @canDecreaseBlockAttributeLevel()
           if block.isListItem()
             @decreaseListLevel()
           else
@@ -252,12 +252,7 @@ class Trix.Composition extends Trix.BasicObject
       @setCurrentAttribute(attribute)
 
   decreaseBlockAttributeLevel: ->
-    if @getBlock()?.isTerminalBlock()
-      terminalAttribute = @getBlock().getLastAttribute()
-      @removeCurrentAttribute(terminalAttribute)
-      @removeLastBlockAttribute()
-      @setBlockAttribute(terminalAttribute)
-    else if attribute = @getBlock()?.getLastAttribute()
+    if attribute = @getBlock()?.getLastAttribute()
       @removeCurrentAttribute(attribute)
 
   decreaseListLevel: ->
@@ -286,9 +281,6 @@ class Trix.Composition extends Trix.BasicObject
 
   canDecreaseBlockAttributeLevel: ->
     @getBlock()?.getAttributeLevel() > 0
-
-  canDecreaseIndentationLevel: ->
-    @getBlock()?.getIndentationLevel() > 0
 
   updateCurrentAttributes: ->
     if selectedRange = @getSelectedRange(ignoreLock: true)

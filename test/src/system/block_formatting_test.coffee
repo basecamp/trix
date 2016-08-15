@@ -331,17 +331,6 @@ testGroup "Block formatting", template: "editor_empty", ->
             assert.blockAttributes([4, 5], ["bulletList", "bullet"])
             expectDocument("abc\n\n")
 
-  test "unindenting heading in list", (expectDocument) ->
-    clickToolbarButton attribute: "bullet", ->
-      clickToolbarButton attribute: "heading1", ->
-        typeCharacters "a", ->
-          assert.ok isToolbarButtonActive(attribute: "heading1")
-          clickToolbarButton action: "decreaseBlockLevel", ->
-            document = getDocument()
-            assert.equal document.getBlockCount(), 1
-            assert.blockAttributes([0, 1], ["heading1"])
-            expectDocument("a\n")
-
   test "breaking out of middle of heading block", (expectDocument) ->
     clickToolbarButton attribute: "heading1", ->
       typeCharacters "abc", ->

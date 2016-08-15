@@ -2,7 +2,6 @@ allAttributeNames = null
 blockAttributeNames = null
 textAttributeNames = null
 listAttributeNames = null
-indentableAttributeNames = null
 
 Trix.extend
 
@@ -23,6 +22,3 @@ Trix.extend
 
   getListAttributeNames: ->
     listAttributeNames ?= (listAttribute for key, {listAttribute} of Trix.config.blockAttributes when listAttribute?)
-
-  getIndentableAttributeNames: ->
-    indentableAttributeNames ?= (key for key, attr of Trix.config.blockAttributes when not attr.terminal?)
