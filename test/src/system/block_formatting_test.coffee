@@ -158,7 +158,6 @@ testGroup "Block formatting", template: "editor_empty", ->
     # a
     # b*
     # c
-
     document = new Trix.Document [
         new Trix.Block(Trix.Text.textForStringWithAttributes("a"), [])
         new Trix.Block(Trix.Text.textForStringWithAttributes("b"), ["quote"])
@@ -344,7 +343,6 @@ testGroup "Block formatting", template: "editor_empty", ->
             expectDocument("ab\nc\n")
 
   test "breaking out of middle of heading block with preceding blocks", (expectDocument) ->
-
     document = new Trix.Document [
         new Trix.Block(Trix.Text.textForStringWithAttributes("a"), ["heading1"])
         new Trix.Block(Trix.Text.textForStringWithAttributes("b"), [])
@@ -365,7 +363,6 @@ testGroup "Block formatting", template: "editor_empty", ->
       expectDocument("a\nb\nc\nd\n")
 
   test "breaking out of end of heading block with preceding blocks", (expectDocument) ->
-
     document = new Trix.Document [
         new Trix.Block(Trix.Text.textForStringWithAttributes("a"), ["heading1"])
         new Trix.Block(Trix.Text.textForStringWithAttributes("b"), [])
@@ -386,7 +383,6 @@ testGroup "Block formatting", template: "editor_empty", ->
       expectDocument("a\nb\ncd\n\n")
 
   test "inserting newline before heading", (done) ->
-
     document = new Trix.Document [
         new Trix.Block(Trix.Text.textForStringWithAttributes("\n"), [])
         new Trix.Block(Trix.Text.textForStringWithAttributes("abc"), ["heading1"])
@@ -410,7 +406,6 @@ testGroup "Block formatting", template: "editor_empty", ->
       done()
 
   test "inserting multiple newlines before heading", (done) ->
-
     document = new Trix.Document [
         new Trix.Block(Trix.Text.textForStringWithAttributes("\n"), [])
         new Trix.Block(Trix.Text.textForStringWithAttributes("abc"), ["heading1"])
@@ -433,7 +428,6 @@ testGroup "Block formatting", template: "editor_empty", ->
       done()
 
   test "inserting newline after heading with text in following block", (expectDocument) ->
-
     document = new Trix.Document [
         new Trix.Block(Trix.Text.textForStringWithAttributes("ab"), ["heading1"])
         new Trix.Block(Trix.Text.textForStringWithAttributes("cd"), [])
@@ -460,7 +454,6 @@ testGroup "Block formatting", template: "editor_empty", ->
           expectDocument("a\n\n")
 
   test "adding heading to selection only adds heading to blocks without heading", (expectDocument) ->
-
     document = new Trix.Document [
         new Trix.Block(Trix.Text.textForStringWithAttributes("a"), [])
         new Trix.Block(Trix.Text.textForStringWithAttributes("b"), ["heading1"])

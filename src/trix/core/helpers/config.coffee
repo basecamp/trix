@@ -4,7 +4,6 @@ textAttributeNames = null
 listAttributeNames = null
 
 Trix.extend
-
   getAllAttributeNames: ->
     allAttributeNames ?= Trix.getTextAttributeNames().concat Trix.getBlockAttributeNames()
 

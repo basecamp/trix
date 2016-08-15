@@ -511,7 +511,7 @@ removeWhitespace = (string) ->
     document: createDocument(["", {}, ["heading1"]])
     html: "<h1>#{blockComment}<br></h1>"
 
-  "two adjacent heading":
+  "two adjacent headings":
     document: createDocument( ["a", {}, ["heading1"]], ["b", {}, ["heading1"]])
     html: "<h1>#{blockComment}a</h1><h1>#{blockComment}b</h1>"
 
