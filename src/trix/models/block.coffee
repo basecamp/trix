@@ -1,6 +1,6 @@
 #= require trix/models/text
 
-{arraysAreEqual, getBlockAttributes, getBlockAttributeNames, getListAttributeNames, getIndentableAttributeNames} = Trix
+{arraysAreEqual, getBlockConfig, getBlockAttributeNames, getListAttributeNames, getIndentableAttributeNames} = Trix
 
 class Trix.Block extends Trix.Object
   @fromJSON: (blockJSON) ->
@@ -37,7 +37,7 @@ class Trix.Block extends Trix.Object
       @copyWithText(@text.copyUsingObjectMap(objectMap))
 
   addAttribute: (attribute) ->
-    {listAttribute} = getBlockAttributes()[attribute]
+    {listAttribute} = getBlockConfig(attribute)
     attributes = if listAttribute
       @attributes.concat([listAttribute, attribute])
     else
@@ -45,7 +45,7 @@ class Trix.Block extends Trix.Object
     @copyWithAttributes(attributes)
 
   removeAttribute: (attribute) ->
-    {listAttribute} = getBlockAttributes()[attribute]
+    {listAttribute} = getBlockConfig(attribute)
     attributes = removeLastElement(@attributes, attribute)
     attributes = removeLastElement(attributes, listAttribute) if listAttribute?
     @copyWithAttributes(attributes)
@@ -73,7 +73,7 @@ class Trix.Block extends Trix.Object
 
   getConfig: (key) ->
     return unless attribute = @getLastAttribute()
-    return unless config = getBlockAttributes()[attribute]
+    return unless config = getBlockConfig(attribute)
     if key then config[key] else config
 
   isListItem: ->
@@ -151,7 +151,7 @@ class Trix.Block extends Trix.Object
     attribute = @attributes[depth]
 
     attribute is otherAttribute and
-      not (getBlockAttributes()[attribute].group is false and
+      not (getBlockConfig(attribute).group is false and
            otherAttributes[depth + 1] not in getListAttributeNames())
 
   # Block breaks

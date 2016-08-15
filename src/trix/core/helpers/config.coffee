@@ -9,14 +9,14 @@ Trix.extend
   getAllAttributeNames: ->
     allAttributeNames ?= Trix.getTextAttributeNames().concat Trix.getBlockAttributeNames()
 
-  getBlockAttributes: ->
-    Trix.config.blockAttributes
+  getBlockConfig: (attributeName) ->
+    Trix.config.blockAttributes[attributeName]
 
   getBlockAttributeNames: ->
     blockAttributeNames ?= Object.keys(Trix.config.blockAttributes)
 
-  getTextAttributes: ->
-    Trix.config.textAttributes
+  getTextConfig: (attributeName) ->
+    Trix.config.textAttributes[attributeName]
 
   getTextAttributeNames: ->
     textAttributeNames ?= Object.keys(Trix.config.textAttributes)
