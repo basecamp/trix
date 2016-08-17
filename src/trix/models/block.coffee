@@ -46,8 +46,7 @@ class Trix.Block extends Trix.Object
 
   removeAttribute: (attribute) ->
     {listAttribute} = getBlockConfig(attribute)
-    attributes = removeLastElement(@attributes, attribute)
-    attributes = removeLastElement(attributes, listAttribute) if listAttribute?
+    attributes = removeLastValue(removeLastValue(@attributes, attribute), listAttribute)
     @copyWithAttributes(attributes)
 
   removeLastAttribute: ->
@@ -204,11 +203,12 @@ class Trix.Block extends Trix.Object
 
   # Array helpers
 
-  removeLastElement = (array, element) ->
-    if getLastElement(array) is element
-      array.slice(0, -1)
-    else
-      array
-
   getLastElement = (array) ->
     array.slice(-1)[0]
+
+  removeLastValue = (array, value) ->
+    index = array.lastIndexOf(value)
+    if index is -1
+      array
+    else
+      array.slice(0, index).concat(array.slice(index + 1))

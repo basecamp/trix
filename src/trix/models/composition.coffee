@@ -260,7 +260,6 @@ class Trix.Composition extends Trix.BasicObject
 
   decreaseIndentationLevel: ->
     if attribute = @getBlock()?.getLastIndentableAttribute()
-      console.log "removing current attribute", attribute
       @removeCurrentAttribute(attribute)
 
   increaseIndentationLevel: ->

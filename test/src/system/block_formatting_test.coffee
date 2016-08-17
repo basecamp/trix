@@ -470,3 +470,18 @@ testGroup "Block formatting", template: "editor_empty", ->
         assert.blockAttributes([2, 3], ["heading1"])
         assert.blockAttributes([4, 5], ["heading1"])
         expectDocument("a\nb\nc\n")
+
+  test "code blocks are not indentable", (done) ->
+    clickToolbarButton attribute: "code", ->
+      assert.notOk isToolbarButtonActive(action: "increaseBlockLevel")
+      done()
+
+  test "unindenting a code block inside a bullet", (expectDocument) ->
+    clickToolbarButton attribute: "bullet", ->
+      clickToolbarButton attribute: "code", ->
+        typeCharacters "a", ->
+          clickToolbarButton action: "decreaseBlockLevel", ->
+            document = getDocument()
+            assert.equal document.getBlockCount(), 1
+            assert.blockAttributes([0, 1], ["code"])
+            expectDocument("a\n")
