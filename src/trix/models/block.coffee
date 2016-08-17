@@ -83,7 +83,7 @@ class Trix.Block extends Trix.Object
     @getListItemAttributes().length
 
   isListItem: ->
-    @getListLevel() > 0
+    getBlockConfig(@getLastAttribute())?.listAttribute
 
   isTerminalBlock: ->
     getBlockConfig(@getLastAttribute())?.terminal
