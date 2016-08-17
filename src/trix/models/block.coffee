@@ -68,19 +68,29 @@ class Trix.Block extends Trix.Object
   hasAttributes: ->
     @getAttributeLevel() > 0
 
-  getConfig: (key) ->
-    return unless attribute = @getLastAttribute()
-    return unless config = getBlockConfig(attribute)
-    if key then config[key] else config
+  getLastIndentableAttribute: ->
+    getLastElement(@getIndentableAttributes())
+
+  getIndentableAttributes: ->
+    attribute for attribute in @attributes when getBlockConfig(attribute).indentable
+
+  getIndentationLevel: ->
+    @getIndentableAttributes().length
+
+  getListItemAttributes: ->
+    attribute for attribute in @attributes when getBlockConfig(attribute).listAttribute
+
+  getListLevel: ->
+    @getListItemAttributes().length
 
   isListItem: ->
-    @getConfig("listAttribute")?
+    @getListLevel() > 0
 
   isTerminalBlock: ->
-    @getConfig("terminal")?
+    getBlockConfig(@getLastAttribute())?.terminal
 
   breaksOnReturn: ->
-    @getConfig("breakOnReturn")?
+    getBlockConfig(@getLastAttribute())?.breakOnReturn
 
   findLineBreakInDirectionFromPosition: (direction, position) ->
     string = @toString()

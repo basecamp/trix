@@ -4,7 +4,7 @@ Trix.config.blockAttributes = attributes =
     parse: false
   quote:
     tagName: "blockquote"
-    nestable: true
+    indentable: true
   heading1:
     tagName: "h1"
     terminal: true
@@ -21,6 +21,7 @@ Trix.config.blockAttributes = attributes =
     tagName: "li"
     listAttribute: "bulletList"
     group: false
+    indentable: true
     test: (element) ->
       Trix.tagName(element.parentNode) is attributes[@listAttribute].tagName
   numberList:
@@ -30,5 +31,6 @@ Trix.config.blockAttributes = attributes =
     tagName: "li"
     listAttribute: "numberList"
     group: false
+    indentable: true
     test: (element) ->
       Trix.tagName(element.parentNode) is attributes[@listAttribute].tagName

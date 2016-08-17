@@ -300,8 +300,8 @@ class Trix.InputController extends Trix.BasicObject
       @responder?.insertLineBreak()
 
     tab: (event) ->
-      if @responder?.canIncreaseBlockAttributeLevel()
-        @responder?.increaseBlockAttributeLevel()
+      if @responder?.canIncreaseIndentationLevel()
+        @responder?.increaseIndentationLevel()
         @requestRender()
         event.preventDefault()
 
@@ -336,8 +336,8 @@ class Trix.InputController extends Trix.BasicObject
         @responder?.insertString("\n")
 
       tab: (event) ->
-        if @responder?.canDecreaseBlockAttributeLevel()
-          @responder?.decreaseBlockAttributeLevel()
+        if @responder?.canDecreaseIndentationLevel()
+          @responder?.decreaseIndentationLevel()
           @requestRender()
           event.preventDefault()
 

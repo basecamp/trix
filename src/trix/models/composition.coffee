@@ -247,9 +247,28 @@ class Trix.Composition extends Trix.BasicObject
     return unless selectedRange = @getSelectedRange()
     @setDocument(@document.removeAttributeAtRange(attributeName, selectedRange))
 
-  increaseBlockAttributeLevel: ->
-    if attribute = @getBlock()?.getLastAttribute()
+  canDecreaseIndentationLevel: ->
+    @getBlock()?.getIndentationLevel() > 0
+
+  canIncreaseIndentationLevel: ->
+    return unless block = @getBlock()
+    if block.isListItem()
+      if previousBlock = @getPreviousBlock()
+        block.getListLevel() is previousBlock.getListLevel()
+    else
+      block.getIndentationLevel() > 0
+
+  decreaseIndentationLevel: ->
+    if attribute = @getBlock()?.getLastIndentableAttribute()
+      console.log "removing current attribute", attribute
+      @removeCurrentAttribute(attribute)
+
+  increaseIndentationLevel: ->
+    if attribute = @getBlock()?.getLastIndentableAttribute()
       @setCurrentAttribute(attribute)
+
+  canDecreaseBlockAttributeLevel: ->
+    @getBlock()?.getAttributeLevel() > 0
 
   decreaseBlockAttributeLevel: ->
     if attribute = @getBlock()?.getLastAttribute()
@@ -268,19 +287,6 @@ class Trix.Composition extends Trix.BasicObject
     startPosition = @document.positionFromLocation(index: index, offset: 0)
     endPosition = @document.positionFromLocation(index: endIndex, offset: 0)
     @setDocument(@document.removeLastListAttributeAtRange([startPosition, endPosition]))
-
-  canIncreaseBlockAttributeLevel: ->
-    return unless block = @getBlock()
-    nestable = block.getConfig("nestable")
-    if nestable?
-      nestable
-    else if block.isListItem()
-      if previousBlock = @getPreviousBlock()
-        level = block.getAttributeLevel()
-        previousBlock.getAttributeAtLevel(level) is block.getAttributeAtLevel(level)
-
-  canDecreaseBlockAttributeLevel: ->
-    @getBlock()?.getAttributeLevel() > 0
 
   updateCurrentAttributes: ->
     if selectedRange = @getSelectedRange(ignoreLock: true)
