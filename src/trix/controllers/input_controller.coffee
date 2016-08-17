@@ -90,7 +90,14 @@ class Trix.InputController extends Trix.BasicObject
         if range = @getSelectedRange()
           if @responder?.positionIsBlockBreak(range[1] + textAdded.length)
             unhandledDeletion = false
-
+    
+    # Expect newline addition at the removal of last letter of a block
+    if textAdded is "\n" and unhandledAddition
+      if textDeleted and not unhandledDeletion
+        if range = @getSelectedRange()
+          if @responder?.positionIsBlockBreak(range[1] - textAdded.length)
+            unhandledAddition = false
+    
     not (unhandledAddition or unhandledDeletion)
 
   mutationIsSignificant: (mutationSummary) ->
