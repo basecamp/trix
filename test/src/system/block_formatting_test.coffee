@@ -485,3 +485,16 @@ testGroup "Block formatting", template: "editor_empty", ->
             assert.equal document.getBlockCount(), 1
             assert.blockAttributes([0, 1], ["code"])
             expectDocument("a\n")
+
+  test "indenting a heading inside a bullet", (expectDocument) ->
+    clickToolbarButton attribute: "bullet", ->
+      typeCharacters "a", ->
+        typeCharacters "\n", ->
+          clickToolbarButton attribute: "heading1", ->
+            typeCharacters "b", ->
+              clickToolbarButton action: "increaseBlockLevel", ->
+                document = getDocument()
+                assert.equal document.getBlockCount(), 2
+                assert.blockAttributes([0, 1], ["bulletList", "bullet"])
+                assert.blockAttributes([2, 3], ["bulletList", "bullet", "bulletList", "bullet", "heading1"])
+                expectDocument("a\nb\n")

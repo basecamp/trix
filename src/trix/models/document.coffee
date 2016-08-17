@@ -55,6 +55,11 @@ class Trix.Document extends Trix.Object
       block.copyWithAttributes(attributes)
     new @constructor blocks
 
+  replaceBlock: (oldBlock, newBlock) ->
+    index = @blockList.toArray().indexOf(oldBlock)
+    return this if index is -1
+    new @constructor @blockList.replaceObjectAtIndex(newBlock, index)
+
 
   insertDocumentAtRange: (document, range) ->
     {blockList} = document

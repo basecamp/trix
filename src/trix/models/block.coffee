@@ -37,11 +37,7 @@ class Trix.Block extends Trix.Object
       @copyWithText(@text.copyUsingObjectMap(objectMap))
 
   addAttribute: (attribute) ->
-    {listAttribute} = getBlockConfig(attribute)
-    attributes = if listAttribute
-      @attributes.concat([listAttribute, attribute])
-    else
-      @attributes.concat([attribute])
+    attributes = @attributes.concat(expandAttribute(attribute))
     @copyWithAttributes(attributes)
 
   removeAttribute: (attribute) ->
@@ -75,6 +71,20 @@ class Trix.Block extends Trix.Object
 
   getIndentationLevel: ->
     @getIndentableAttributes().length
+
+  decreaseIndentationLevel: ->
+    if attribute = @getLastIndentableAttribute()
+      @removeAttribute(attribute)
+    else
+      this
+
+  increaseIndentationLevel: ->
+    if attribute = @getLastIndentableAttribute()
+      index = @attributes.lastIndexOf(attribute)
+      attributes = splice(@attributes, index + 1, 0, expandAttribute(attribute)...)
+      @copyWithAttributes(attributes)
+    else
+      this
 
   getListItemAttributes: ->
     attribute for attribute in @attributes when getBlockConfig(attribute).listAttribute
@@ -201,6 +211,15 @@ class Trix.Block extends Trix.Object
   unmarkBlockBreakPiece = (piece) ->
     piece.copyWithoutAttribute("blockBreak")
 
+  # Attributes
+
+  expandAttribute = (attribute) ->
+    {listAttribute} = getBlockConfig(attribute)
+    if listAttribute?
+      [listAttribute, attribute]
+    else
+      [attribute]
+
   # Array helpers
 
   getLastElement = (array) ->
@@ -212,3 +231,8 @@ class Trix.Block extends Trix.Object
       array
     else
       array.slice(0, index).concat(array.slice(index + 1))
+
+  splice = (array, args...) ->
+    result = array.slice(0)
+    result.splice(args...)
+    result
