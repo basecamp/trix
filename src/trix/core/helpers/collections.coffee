@@ -5,6 +5,9 @@ Trix.extend
       return false unless value is b[index]
     true
 
+  arrayStartsWith: (a = [], b = []) ->
+    Trix.arraysAreEqual(a.slice(0, b.length), b)
+
   summarizeArrayChange: (oldArray = [], newArray = []) ->
     added = []
     removed = []

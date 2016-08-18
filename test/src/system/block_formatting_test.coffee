@@ -507,3 +507,14 @@ testGroup "Block formatting", template: "editor_empty", ->
           assert.equal document.getBlockCount(), 1
           assert.blockAttributes([0, 1], ["bulletList", "bullet", "quote", "quote"])
           expectDocument("\n")
+
+  test "list indentation constraints consider the list type", (expectDocument) ->
+    clickToolbarButton attribute: "bullet", ->
+      typeCharacters "a\n\n", ->
+        clickToolbarButton attribute: "number", ->
+          clickToolbarButton action: "increaseBlockLevel", ->
+            document = getDocument()
+            assert.equal document.getBlockCount(), 2
+            assert.blockAttributes([0, 1], ["bulletList", "bullet"])
+            assert.blockAttributes([2, 3], ["numberList", "number"])
+            expectDocument("a\n\n")

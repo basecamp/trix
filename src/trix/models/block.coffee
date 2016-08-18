@@ -89,9 +89,6 @@ class Trix.Block extends Trix.Object
   getListItemAttributes: ->
     attribute for attribute in @attributes when getBlockConfig(attribute).listAttribute
 
-  getListLevel: ->
-    @getListItemAttributes().length
-
   isListItem: ->
     getBlockConfig(@getLastAttribute())?.listAttribute
 

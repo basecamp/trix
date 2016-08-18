@@ -1,7 +1,7 @@
 #= require trix/models/document
 #= require trix/models/line_break_insertion
 
-{normalizeRange, rangesAreEqual, objectsAreEqual, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
+{normalizeRange, rangesAreEqual, objectsAreEqual, arrayStartsWith, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
 
 class Trix.Composition extends Trix.BasicObject
   constructor: ->
@@ -254,7 +254,7 @@ class Trix.Composition extends Trix.BasicObject
     return unless block = @getBlock()
     if getBlockConfig(block.getLastIndentableAttribute())?.listAttribute
       if previousBlock = @getPreviousBlock()
-        block.getListLevel() <= previousBlock.getListLevel()
+        arrayStartsWith(previousBlock.getListItemAttributes(), block.getListItemAttributes())
     else
       block.getIndentationLevel() > 0
 
