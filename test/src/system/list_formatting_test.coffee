@@ -31,9 +31,9 @@ testGroup "List formatting", template: "editor_empty", ->
   test "pressing delete at the beginning of a non-empty nested list item", (expectDocument) ->
       clickToolbarButton attribute: "bullet", ->
         typeCharacters "a\n", ->
-          clickToolbarButton action: "increaseBlockLevel", ->
+          clickToolbarButton action: "increaseIndentationLevel", ->
             typeCharacters "b\n", ->
-              clickToolbarButton action: "increaseBlockLevel", ->
+              clickToolbarButton action: "increaseIndentationLevel", ->
                 typeCharacters "c", ->
                   getSelectionManager().setLocationRange(index: 1, offset: 0)
                   getComposition().deleteInDirection("backward")
@@ -46,9 +46,9 @@ testGroup "List formatting", template: "editor_empty", ->
   test "decreasing list item's level decreases its nested items level too", (expectDocument) ->
     clickToolbarButton attribute: "bullet", ->
       typeCharacters "a\n", ->
-        clickToolbarButton action: "increaseBlockLevel", ->
+        clickToolbarButton action: "increaseIndentationLevel", ->
           typeCharacters "b\n", ->
-            clickToolbarButton action: "increaseBlockLevel", ->
+            clickToolbarButton action: "increaseIndentationLevel", ->
               typeCharacters "c", ->
                 getSelectionManager().setLocationRange(index: 1, offset: 1)
 

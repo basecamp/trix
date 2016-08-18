@@ -281,10 +281,16 @@ class Trix.EditorController extends Trix.Controller
       perform: -> @editor.redo()
     link:
       test: -> @editor.canActivateAttribute("href")
-    increaseBlockLevel:
+    increaseIndentationLevel:
       test: -> @editor.canIncreaseIndentationLevel()
       perform: -> @editor.increaseIndentationLevel() and @render()
-    decreaseBlockLevel:
+    decreaseIndentationLevel:
+      test: -> @editor.canDecreaseIndentationLevel()
+      perform: -> @editor.decreaseIndentationLevel() and @render()
+    increaseBlockLevel: # deprecated in favor of increaseIndentationLevel
+      test: -> @editor.canIncreaseIndentationLevel()
+      perform: -> @editor.increaseIndentationLevel() and @render()
+    decreaseBlockLevel: # deprecated in favor of decreaseIndentationLevel
       test: -> @editor.canDecreaseIndentationLevel()
       perform: -> @editor.decreaseIndentationLevel() and @render()
 

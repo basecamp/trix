@@ -17,8 +17,8 @@ Trix.config.toolbar =
         <button type="button" class="code" data-trix-attribute="code" title="#{lang.code}">#{lang.code}</button>
         <button type="button" class="list bullets" data-trix-attribute="bullet" title="#{lang.bullets}">#{lang.bullets}</button>
         <button type="button" class="list numbers" data-trix-attribute="number" title="#{lang.numbers}">#{lang.numbers}</button>
-        <button type="button" class="block-level decrease" data-trix-action="decreaseBlockLevel" title="#{lang.outdent}">#{lang.outdent}</button>
-        <button type="button" class="block-level increase" data-trix-action="increaseBlockLevel" title="#{lang.indent}">#{lang.indent}</button>
+        <button type="button" class="indentation-level decrease" data-trix-action="decreaseIndentationLevel" title="#{lang.outdent}">#{lang.outdent}</button>
+        <button type="button" class="indentation-level increase" data-trix-action="increaseIndentationLevel" title="#{lang.indent}">#{lang.indent}</button>
       </span>
 
       <span class="button_group history_tools">
