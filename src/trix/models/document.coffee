@@ -56,10 +56,9 @@ class Trix.Document extends Trix.Object
     new @constructor blocks
 
   replaceBlock: (oldBlock, newBlock) ->
-    index = @blockList.toArray().indexOf(oldBlock)
+    index = @blockList.indexOf(oldBlock)
     return this if index is -1
     new @constructor @blockList.replaceObjectAtIndex(newBlock, index)
-
 
   insertDocumentAtRange: (document, range) ->
     {blockList} = document
@@ -140,7 +139,7 @@ class Trix.Document extends Trix.Object
 
     blocks = @blockList.toArray()
     affectedBlockCount = rightIndex + 1 - leftIndex
-    blocks.splice(leftIndex, affectedBlockCount, block)
+    blocks = @blockList.splice(leftIndex, affectedBlockCount, block)
 
     new @constructor blocks
 

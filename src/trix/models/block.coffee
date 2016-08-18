@@ -1,6 +1,6 @@
 #= require trix/models/text
 
-{arraysAreEqual, getBlockConfig, getBlockAttributeNames, getListAttributeNames} = Trix
+{arraysAreEqual, spliceArray, getBlockConfig, getBlockAttributeNames, getListAttributeNames} = Trix
 
 class Trix.Block extends Trix.Object
   @fromJSON: (blockJSON) ->
@@ -81,7 +81,7 @@ class Trix.Block extends Trix.Object
   increaseIndentationLevel: ->
     if attribute = @getLastIndentableAttribute()
       index = @attributes.lastIndexOf(attribute)
-      attributes = splice(@attributes, index + 1, 0, expandAttribute(attribute)...)
+      attributes = spliceArray(@attributes, index + 1, 0, expandAttribute(attribute)...)
       @copyWithAttributes(attributes)
     else
       this
@@ -227,9 +227,4 @@ class Trix.Block extends Trix.Object
     if index is -1
       array
     else
-      splice(array, index, 1)
-
-  splice = (array, args...) ->
-    result = array.slice(0)
-    result.splice(args...)
-    result
+      spliceArray(array, index, 1)

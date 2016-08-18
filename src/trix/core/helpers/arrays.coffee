@@ -8,6 +8,11 @@ Trix.extend
   arrayStartsWith: (a = [], b = []) ->
     Trix.arraysAreEqual(a.slice(0, b.length), b)
 
+  spliceArray: (array, args...) ->
+    result = array.slice(0)
+    result.splice(args...)
+    result
+
   summarizeArrayChange: (oldArray = [], newArray = []) ->
     added = []
     removed = []

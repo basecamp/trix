@@ -2,7 +2,7 @@
 #= require trix/core/helpers/functions
 #= require trix/core/helpers/strings
 #= require trix/core/helpers/objects
-#= require trix/core/helpers/collections
+#= require trix/core/helpers/arrays
 #= require trix/core/helpers/config
 #= require trix/core/helpers/dom
 #= require trix/core/helpers/ranges
