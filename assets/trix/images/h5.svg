@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 14px;
+        font-family: "DIN Condensed";
+        font-weight: 700;
+      }
+    </style>
+  </defs>
+  <text id="h5" class="cls-1" x="6.149" y="17.375">H5</text>
+</svg>
