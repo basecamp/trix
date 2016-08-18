@@ -230,7 +230,7 @@ class Trix.Block extends Trix.Object
     if index is -1
       array
     else
-      array.slice(0, index).concat(array.slice(index + 1))
+      splice(array, index, 1)
 
   splice = (array, args...) ->
     result = array.slice(0)
