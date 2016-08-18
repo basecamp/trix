@@ -1,6 +1,6 @@
 #= require trix/models/text
 
-{arraysAreEqual, getBlockConfig, getBlockAttributeNames, getListAttributeNames} = Trix
+{arraysAreEqual, spliceArray, getBlockConfig, getBlockAttributeNames, getListAttributeNames} = Trix
 
 class Trix.Block extends Trix.Object
   @fromJSON: (blockJSON) ->
@@ -37,17 +37,12 @@ class Trix.Block extends Trix.Object
       @copyWithText(@text.copyUsingObjectMap(objectMap))
 
   addAttribute: (attribute) ->
-    {listAttribute} = getBlockConfig(attribute)
-    attributes = if listAttribute
-      @attributes.concat([listAttribute, attribute])
-    else
-      @attributes.concat([attribute])
+    attributes = @attributes.concat(expandAttribute(attribute))
     @copyWithAttributes(attributes)
 
   removeAttribute: (attribute) ->
     {listAttribute} = getBlockConfig(attribute)
-    attributes = removeLastElement(@attributes, attribute)
-    attributes = removeLastElement(attributes, listAttribute) if listAttribute?
+    attributes = removeLastValue(removeLastValue(@attributes, attribute), listAttribute)
     @copyWithAttributes(attributes)
 
   removeLastAttribute: ->
@@ -68,19 +63,40 @@ class Trix.Block extends Trix.Object
   hasAttributes: ->
     @getAttributeLevel() > 0
 
-  getConfig: (key) ->
-    return unless attribute = @getLastAttribute()
-    return unless config = getBlockConfig(attribute)
-    if key then config[key] else config
+  getLastNestableAttribute: ->
+    getLastElement(@getNestableAttributes())
+
+  getNestableAttributes: ->
+    attribute for attribute in @attributes when getBlockConfig(attribute).nestable
+
+  getNestingLevel: ->
+    @getNestableAttributes().length
+
+  decreaseNestingLevel: ->
+    if attribute = @getLastNestableAttribute()
+      @removeAttribute(attribute)
+    else
+      this
+
+  increaseNestingLevel: ->
+    if attribute = @getLastNestableAttribute()
+      index = @attributes.lastIndexOf(attribute)
+      attributes = spliceArray(@attributes, index + 1, 0, expandAttribute(attribute)...)
+      @copyWithAttributes(attributes)
+    else
+      this
+
+  getListItemAttributes: ->
+    attribute for attribute in @attributes when getBlockConfig(attribute).listAttribute
 
   isListItem: ->
-    @getConfig("listAttribute")?
+    getBlockConfig(@getLastAttribute())?.listAttribute
 
   isTerminalBlock: ->
-    @getConfig("terminal")?
+    getBlockConfig(@getLastAttribute())?.terminal
 
   breaksOnReturn: ->
-    @getConfig("breakOnReturn")?
+    getBlockConfig(@getLastAttribute())?.breakOnReturn
 
   findLineBreakInDirectionFromPosition: (direction, position) ->
     string = @toString()
@@ -192,13 +208,23 @@ class Trix.Block extends Trix.Object
   unmarkBlockBreakPiece = (piece) ->
     piece.copyWithoutAttribute("blockBreak")
 
-  # Array helpers
+  # Attributes
 
-  removeLastElement = (array, element) ->
-    if getLastElement(array) is element
-      array.slice(0, -1)
+  expandAttribute = (attribute) ->
+    {listAttribute} = getBlockConfig(attribute)
+    if listAttribute?
+      [listAttribute, attribute]
     else
-      array
+      [attribute]
+
+  # Array helpers
 
   getLastElement = (array) ->
     array.slice(-1)[0]
+
+  removeLastValue = (array, value) ->
+    index = array.lastIndexOf(value)
+    if index is -1
+      array
+    else
+      spliceArray(array, index, 1)

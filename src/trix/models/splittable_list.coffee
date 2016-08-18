@@ -1,3 +1,5 @@
+{spliceArray} = Trix
+
 class Trix.SplittableList extends Trix.Object
   @box: (objects) ->
     if objects instanceof this
@@ -10,18 +12,20 @@ class Trix.SplittableList extends Trix.Object
     @objects = objects.slice(0)
     @length = @objects.length
 
+  indexOf: (object) ->
+    @objects.indexOf(object)
+
+  splice: (args...) ->
+    new @constructor spliceArray(@objects, args...)
+
   eachObject: (callback) ->
     callback(object, index) for object, index in @objects
 
   insertObjectAtIndex: (object, index) ->
-    objects = @objects.slice(0)
-    objects.splice(index, 0, object)
-    new @constructor objects
+    @splice(index, 0, object)
 
   insertSplittableListAtIndex: (splittableList, index) ->
-    objects = @objects.slice(0)
-    objects.splice(index, 0, splittableList.objects...)
-    new @constructor objects
+    @splice(index, 0, splittableList.objects...)
 
   insertSplittableListAtPosition: (splittableList, position) ->
     [objects, index] = @splitObjectAtPosition(position)
@@ -31,14 +35,10 @@ class Trix.SplittableList extends Trix.Object
     @replaceObjectAtIndex(callback(@objects[index]), index)
 
   replaceObjectAtIndex: (object, index) ->
-    objects = @objects.slice(0)
-    objects.splice(index, 1, object)
-    new @constructor objects
+    @splice(index, 1, object)
 
   removeObjectAtIndex: (index) ->
-    objects = @objects.slice(0)
-    objects.splice(index, 1)
-    new @constructor objects
+    @splice(index, 1)
 
   getObjectAtIndex: (index) ->
     @objects[index]
@@ -53,8 +53,7 @@ class Trix.SplittableList extends Trix.Object
 
   removeObjectsInRange: (range) ->
     [objects, leftIndex, rightIndex] = @splitObjectsAtRange(range)
-    objects.splice(leftIndex, rightIndex - leftIndex + 1)
-    new @constructor objects
+    @splice(leftIndex, rightIndex - leftIndex + 1)
 
   transformObjectsInRange: (range, transform) ->
     [objects, leftIndex, rightIndex] = @splitObjectsAtRange(range)
@@ -113,8 +112,7 @@ class Trix.SplittableList extends Trix.Object
     objects = @objects.slice(0)
     objectsInRange = objects.slice(startIndex, endIndex + 1)
     consolidatedInRange = new @constructor(objectsInRange).consolidate().toArray()
-    objects.splice(startIndex, objectsInRange.length, consolidatedInRange...)
-    new @constructor objects
+    @splice(startIndex, objectsInRange.length, consolidatedInRange...)
 
   findIndexAndOffsetAtPosition: (position) ->
     currentPosition = 0

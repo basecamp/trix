@@ -246,7 +246,7 @@ element.editor.setSelectedRange([0, 4])
 element.editor.deleteInDirection("forward")
 ```
 
-## Working With Attributes and Indentation
+## Working With Attributes and Nesting
 
 Trix represents formatting as sets of _attributes_ applied across ranges of a document.
 
@@ -288,14 +288,14 @@ element.editor.activateAttribute("italic")
 element.editor.insertString("This is italic")
 ```
 
-### Adjusting the Indentation Level
+### Adjusting the Nesting Level
 
-To adjust the indentation level of block-level attributes, call the `editor.increaseIndentationLevel` and `editor.decreaseIndentationLevel` methods.
+To adjust the nesting level of quotes, bulleted lists, or numbered lists, call the `editor.increaseNestingLevel` and `editor.decreaseNestingLevel` methods.
 
 ```js
 element.editor.activateAttribute("quote")
-element.editor.increaseIndentationLevel()
-element.editor.decreaseIndentationLevel()
+element.editor.increaseNestingLevel()
+element.editor.decreaseNestingLevel()
 ```
 
 ## Using Undo and Redo

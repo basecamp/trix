@@ -1,7 +1,7 @@
 #= require trix/models/document
 #= require trix/models/line_break_insertion
 
-{normalizeRange, rangesAreEqual, objectsAreEqual, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
+{normalizeRange, rangesAreEqual, objectsAreEqual, arrayStartsWith, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
 
 class Trix.Composition extends Trix.BasicObject
   constructor: ->
@@ -247,9 +247,27 @@ class Trix.Composition extends Trix.BasicObject
     return unless selectedRange = @getSelectedRange()
     @setDocument(@document.removeAttributeAtRange(attributeName, selectedRange))
 
-  increaseBlockAttributeLevel: ->
-    if attribute = @getBlock()?.getLastAttribute()
-      @setCurrentAttribute(attribute)
+  canDecreaseNestingLevel: ->
+    @getBlock()?.getNestingLevel() > 0
+
+  canIncreaseNestingLevel: ->
+    return unless block = @getBlock()
+    if getBlockConfig(block.getLastNestableAttribute())?.listAttribute
+      if previousBlock = @getPreviousBlock()
+        arrayStartsWith(previousBlock.getListItemAttributes(), block.getListItemAttributes())
+    else
+      block.getNestingLevel() > 0
+
+  decreaseNestingLevel: ->
+    return unless block = @getBlock()
+    @setDocument(@document.replaceBlock(block, block.decreaseNestingLevel()))
+
+  increaseNestingLevel: ->
+    return unless block = @getBlock()
+    @setDocument(@document.replaceBlock(block, block.increaseNestingLevel()))
+
+  canDecreaseBlockAttributeLevel: ->
+    @getBlock()?.getAttributeLevel() > 0
 
   decreaseBlockAttributeLevel: ->
     if attribute = @getBlock()?.getLastAttribute()
@@ -268,19 +286,6 @@ class Trix.Composition extends Trix.BasicObject
     startPosition = @document.positionFromLocation(index: index, offset: 0)
     endPosition = @document.positionFromLocation(index: endIndex, offset: 0)
     @setDocument(@document.removeLastListAttributeAtRange([startPosition, endPosition]))
-
-  canIncreaseBlockAttributeLevel: ->
-    return unless block = @getBlock()
-    nestable = block.getConfig("nestable")
-    if nestable?
-      nestable
-    else if block.isListItem()
-      if previousBlock = @getPreviousBlock()
-        level = block.getAttributeLevel()
-        previousBlock.getAttributeAtLevel(level) is block.getAttributeAtLevel(level)
-
-  canDecreaseBlockAttributeLevel: ->
-    @getBlock()?.getAttributeLevel() > 0
 
   updateCurrentAttributes: ->
     if selectedRange = @getSelectedRange(ignoreLock: true)

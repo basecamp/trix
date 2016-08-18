@@ -21,6 +21,7 @@ Trix.config.blockAttributes = attributes =
     tagName: "li"
     listAttribute: "bulletList"
     group: false
+    nestable: true
     test: (element) ->
       Trix.tagName(element.parentNode) is attributes[@listAttribute].tagName
   numberList:
@@ -30,5 +31,6 @@ Trix.config.blockAttributes = attributes =
     tagName: "li"
     listAttribute: "numberList"
     group: false
+    nestable: true
     test: (element) ->
       Trix.tagName(element.parentNode) is attributes[@listAttribute].tagName

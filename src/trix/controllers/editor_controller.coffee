@@ -281,12 +281,18 @@ class Trix.EditorController extends Trix.Controller
       perform: -> @editor.redo()
     link:
       test: -> @editor.canActivateAttribute("href")
-    increaseBlockLevel:
-      test: -> @editor.canIncreaseIndentationLevel()
-      perform: -> @editor.increaseIndentationLevel() and @render()
-    decreaseBlockLevel:
-      test: -> @editor.canDecreaseIndentationLevel()
-      perform: -> @editor.decreaseIndentationLevel() and @render()
+    increaseNestingLevel:
+      test: -> @editor.canIncreaseNestingLevel()
+      perform: -> @editor.increaseNestingLevel() and @render()
+    decreaseNestingLevel:
+      test: -> @editor.canDecreaseNestingLevel()
+      perform: -> @editor.decreaseNestingLevel() and @render()
+    increaseBlockLevel: # deprecated in favor of increaseNestingLevel
+      test: -> @editor.canIncreaseNestingLevel()
+      perform: -> @editor.increaseNestingLevel() and @render()
+    decreaseBlockLevel: # deprecated in favor of decreaseNestingLevel
+      test: -> @editor.canDecreaseNestingLevel()
+      perform: -> @editor.decreaseNestingLevel() and @render()
 
   canInvokeAction: (actionName) ->
     if @actionIsExternal(actionName)
