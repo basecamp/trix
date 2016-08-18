@@ -22,10 +22,8 @@ trix-toolbar .button_group button {
   &.code::before { background-image: url(<%= svgo_data_uri('trix/images/code.svg', precision: 1) %>); }
   &.bullets::before { background-image: url(<%= svgo_data_uri('trix/images/bullets.svg', precision: 0) %>); }
   &.numbers::before { background-image: url(<%= svgo_data_uri('trix/images/numbers.svg', precision: 1) %>); }
-  &.indentation-level, &.block-level {
+  &.nesting-level, &.block-level {
     &.decrease::before { background-image: url(<%= svgo_data_uri('trix/images/block_level_decrease.svg', precision: 1) %>); }
-  }
-  &.indentation-level, &.block-level {
     &.increase::before { background-image: url(<%= svgo_data_uri('trix/images/block_level_increase.svg', precision: 1) %>); }
   }
   &.undo::before { background-image: url(<%= svgo_data_uri('trix/images/undo.svg', precision: 1) %>); }
