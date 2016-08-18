@@ -91,21 +91,35 @@ class Trix.Editor
   deactivateAttribute: (name) ->
     @composition.removeCurrentAttribute(name)
 
-  # Indentation level
+  # Nesting level
+
+  canDecreaseNestingLevel: ->
+    @composition.canDecreaseNestingLevel()
+
+  canIncreaseNestingLevel: ->
+    @composition.canIncreaseNestingLevel()
+
+  decreaseNestingLevel: ->
+    if @canDecreaseNestingLevel()
+      @composition.decreaseNestingLevel()
+
+  increaseNestingLevel: ->
+    if @canIncreaseNestingLevel()
+      @composition.increaseNestingLevel()
+
+  # Indentation level (deprecated aliases to be removed in v1.0)
 
   canDecreaseIndentationLevel: ->
-    @composition.canDecreaseIndentationLevel()
+    @canDecreaseNestingLevel()
 
   canIncreaseIndentationLevel: ->
-    @composition.canIncreaseIndentationLevel()
+    @canIncreaseNestingLevel()
 
   decreaseIndentationLevel: ->
-    if @canDecreaseIndentationLevel()
-      @composition.decreaseIndentationLevel()
+    @decreaseNestingLevel()
 
   increaseIndentationLevel: ->
-    if @canIncreaseIndentationLevel()
-      @composition.increaseIndentationLevel()
+    @increaseNestingLevel()
 
   # Undo/redo
 

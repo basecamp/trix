@@ -247,24 +247,24 @@ class Trix.Composition extends Trix.BasicObject
     return unless selectedRange = @getSelectedRange()
     @setDocument(@document.removeAttributeAtRange(attributeName, selectedRange))
 
-  canDecreaseIndentationLevel: ->
-    @getBlock()?.getIndentationLevel() > 0
+  canDecreaseNestingLevel: ->
+    @getBlock()?.getNestingLevel() > 0
 
-  canIncreaseIndentationLevel: ->
+  canIncreaseNestingLevel: ->
     return unless block = @getBlock()
-    if getBlockConfig(block.getLastIndentableAttribute())?.listAttribute
+    if getBlockConfig(block.getLastNestableAttribute())?.listAttribute
       if previousBlock = @getPreviousBlock()
         arrayStartsWith(previousBlock.getListItemAttributes(), block.getListItemAttributes())
     else
-      block.getIndentationLevel() > 0
+      block.getNestingLevel() > 0
 
-  decreaseIndentationLevel: ->
+  decreaseNestingLevel: ->
     return unless block = @getBlock()
-    @setDocument(@document.replaceBlock(block, block.decreaseIndentationLevel()))
+    @setDocument(@document.replaceBlock(block, block.decreaseNestingLevel()))
 
-  increaseIndentationLevel: ->
+  increaseNestingLevel: ->
     return unless block = @getBlock()
-    @setDocument(@document.replaceBlock(block, block.increaseIndentationLevel()))
+    @setDocument(@document.replaceBlock(block, block.increaseNestingLevel()))
 
   canDecreaseBlockAttributeLevel: ->
     @getBlock()?.getAttributeLevel() > 0

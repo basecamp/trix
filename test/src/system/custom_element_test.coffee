@@ -170,8 +170,8 @@ testGroup "Custom element API", template: "editor_empty", ->
       assert.equal eventCount, 0
       clickToolbarButton attribute: "bullet", ->
         assert.equal eventCount, 1
-        assert.equal actions.decreaseIndentationLevel, true
-        assert.equal actions.increaseIndentationLevel, false
+        assert.equal actions.decreaseNestingLevel, true
+        assert.equal actions.increaseNestingLevel, false
         done()
 
   test "element triggers custom focus and blur events", (done) ->

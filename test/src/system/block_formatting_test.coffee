@@ -216,7 +216,7 @@ testGroup "Block formatting", template: "editor_empty", ->
 
   test "backspacing a nested quote", (done) ->
     clickToolbarButton attribute: "quote", ->
-      clickToolbarButton action: "increaseIndentationLevel", ->
+      clickToolbarButton action: "increaseNestingLevel", ->
         assert.blockAttributes([0, 1], ["quote", "quote"])
         pressKey "backspace", ->
           assert.blockAttributes([0, 1], ["quote"])
@@ -234,7 +234,7 @@ testGroup "Block formatting", template: "editor_empty", ->
   test "backspacing a nested list item", (expectDocument) ->
     clickToolbarButton attribute: "bullet", ->
       typeCharacters "a\n", ->
-        clickToolbarButton action: "increaseIndentationLevel", ->
+        clickToolbarButton action: "increaseNestingLevel", ->
           assert.blockAttributes([2, 3], ["bulletList", "bullet", "bulletList", "bullet"])
           pressKey "backspace", ->
             assert.blockAttributes([2, 3], ["bulletList", "bullet"])
@@ -253,7 +253,7 @@ testGroup "Block formatting", template: "editor_empty", ->
   test "backspacing selected nested list items", (expectDocument) ->
     clickToolbarButton attribute: "bullet", ->
       typeCharacters "a\n", ->
-        clickToolbarButton action: "increaseIndentationLevel", ->
+        clickToolbarButton action: "increaseNestingLevel", ->
           typeCharacters "b", ->
             getSelectionManager().setLocationRange([{index: 0, offset: 0}, {index: 1, offset: 1}])
             pressKey "backspace", ->
@@ -281,18 +281,18 @@ testGroup "Block formatting", template: "editor_empty", ->
             expectDocument("d\n")
 
   test "increasing list level", (done) ->
-    assert.ok isToolbarButtonDisabled(action: "increaseIndentationLevel")
-    assert.ok isToolbarButtonDisabled(action: "decreaseIndentationLevel")
+    assert.ok isToolbarButtonDisabled(action: "increaseNestingLevel")
+    assert.ok isToolbarButtonDisabled(action: "decreaseNestingLevel")
     clickToolbarButton attribute: "bullet", ->
-      assert.ok isToolbarButtonDisabled(action: "increaseIndentationLevel")
-      assert.notOk isToolbarButtonDisabled(action: "decreaseIndentationLevel")
+      assert.ok isToolbarButtonDisabled(action: "increaseNestingLevel")
+      assert.notOk isToolbarButtonDisabled(action: "decreaseNestingLevel")
       typeCharacters "a\n", ->
-        assert.notOk isToolbarButtonDisabled(action: "increaseIndentationLevel")
-        assert.notOk isToolbarButtonDisabled(action: "decreaseIndentationLevel")
-        clickToolbarButton action: "increaseIndentationLevel", ->
+        assert.notOk isToolbarButtonDisabled(action: "increaseNestingLevel")
+        assert.notOk isToolbarButtonDisabled(action: "decreaseNestingLevel")
+        clickToolbarButton action: "increaseNestingLevel", ->
           typeCharacters "b", ->
-            assert.ok isToolbarButtonDisabled(action: "increaseIndentationLevel")
-            assert.notOk isToolbarButtonDisabled(action: "decreaseIndentationLevel")
+            assert.ok isToolbarButtonDisabled(action: "increaseNestingLevel")
+            assert.notOk isToolbarButtonDisabled(action: "decreaseNestingLevel")
             assert.blockAttributes([0, 2], ["bulletList", "bullet"])
             assert.blockAttributes([2, 4], ["bulletList", "bullet", "bulletList", "bullet"])
             done()
@@ -473,14 +473,14 @@ testGroup "Block formatting", template: "editor_empty", ->
 
   test "code blocks are not indentable", (done) ->
     clickToolbarButton attribute: "code", ->
-      assert.notOk isToolbarButtonActive(action: "increaseIndentationLevel")
+      assert.notOk isToolbarButtonActive(action: "increaseNestingLevel")
       done()
 
   test "unindenting a code block inside a bullet", (expectDocument) ->
     clickToolbarButton attribute: "bullet", ->
       clickToolbarButton attribute: "code", ->
         typeCharacters "a", ->
-          clickToolbarButton action: "decreaseIndentationLevel", ->
+          clickToolbarButton action: "decreaseNestingLevel", ->
             document = getDocument()
             assert.equal document.getBlockCount(), 1
             assert.blockAttributes([0, 1], ["code"])
@@ -492,7 +492,7 @@ testGroup "Block formatting", template: "editor_empty", ->
         typeCharacters "\n", ->
           clickToolbarButton attribute: "heading1", ->
             typeCharacters "b", ->
-              clickToolbarButton action: "increaseIndentationLevel", ->
+              clickToolbarButton action: "increaseNestingLevel", ->
                 document = getDocument()
                 assert.equal document.getBlockCount(), 2
                 assert.blockAttributes([0, 1], ["bulletList", "bullet"])
@@ -502,7 +502,7 @@ testGroup "Block formatting", template: "editor_empty", ->
   test "indenting a quote inside a bullet", (expectDocument) ->
     clickToolbarButton attribute: "bullet", ->
       clickToolbarButton attribute: "quote", ->
-        clickToolbarButton action: "increaseIndentationLevel", ->
+        clickToolbarButton action: "increaseNestingLevel", ->
           document = getDocument()
           assert.equal document.getBlockCount(), 1
           assert.blockAttributes([0, 1], ["bulletList", "bullet", "quote", "quote"])
@@ -512,7 +512,7 @@ testGroup "Block formatting", template: "editor_empty", ->
     clickToolbarButton attribute: "bullet", ->
       typeCharacters "a\n\n", ->
         clickToolbarButton attribute: "number", ->
-          clickToolbarButton action: "increaseIndentationLevel", ->
+          clickToolbarButton action: "increaseNestingLevel", ->
             document = getDocument()
             assert.equal document.getBlockCount(), 2
             assert.blockAttributes([0, 1], ["bulletList", "bullet"])

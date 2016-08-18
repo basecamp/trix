@@ -63,23 +63,23 @@ class Trix.Block extends Trix.Object
   hasAttributes: ->
     @getAttributeLevel() > 0
 
-  getLastIndentableAttribute: ->
-    getLastElement(@getIndentableAttributes())
+  getLastNestableAttribute: ->
+    getLastElement(@getNestableAttributes())
 
-  getIndentableAttributes: ->
-    attribute for attribute in @attributes when getBlockConfig(attribute).indentable
+  getNestableAttributes: ->
+    attribute for attribute in @attributes when getBlockConfig(attribute).nestable
 
-  getIndentationLevel: ->
-    @getIndentableAttributes().length
+  getNestingLevel: ->
+    @getNestableAttributes().length
 
-  decreaseIndentationLevel: ->
-    if attribute = @getLastIndentableAttribute()
+  decreaseNestingLevel: ->
+    if attribute = @getLastNestableAttribute()
       @removeAttribute(attribute)
     else
       this
 
-  increaseIndentationLevel: ->
-    if attribute = @getLastIndentableAttribute()
+  increaseNestingLevel: ->
+    if attribute = @getLastNestableAttribute()
       index = @attributes.lastIndexOf(attribute)
       attributes = spliceArray(@attributes, index + 1, 0, expandAttribute(attribute)...)
       @copyWithAttributes(attributes)
