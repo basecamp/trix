@@ -498,3 +498,12 @@ testGroup "Block formatting", template: "editor_empty", ->
                 assert.blockAttributes([0, 1], ["bulletList", "bullet"])
                 assert.blockAttributes([2, 3], ["bulletList", "bullet", "bulletList", "bullet", "heading1"])
                 expectDocument("a\nb\n")
+
+  test "indenting a quote inside a bullet", (expectDocument) ->
+    clickToolbarButton attribute: "bullet", ->
+      clickToolbarButton attribute: "quote", ->
+        clickToolbarButton action: "increaseBlockLevel", ->
+          document = getDocument()
+          assert.equal document.getBlockCount(), 1
+          assert.blockAttributes([0, 1], ["bulletList", "bullet", "quote", "quote"])
+          expectDocument("\n")

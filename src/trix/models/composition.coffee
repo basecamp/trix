@@ -252,7 +252,7 @@ class Trix.Composition extends Trix.BasicObject
 
   canIncreaseIndentationLevel: ->
     return unless block = @getBlock()
-    if block.getListLevel() > 0
+    if getBlockConfig(block.getLastIndentableAttribute())?.listAttribute
       if previousBlock = @getPreviousBlock()
         block.getListLevel() <= previousBlock.getListLevel()
     else
