@@ -128,10 +128,27 @@ class Trix.Document extends Trix.Object
     removingLeftBlock = leftIndex isnt rightIndex and leftLocation.offset is 0
     useRightBlock = removingLeftBlock and leftBlock.getAttributeLevel() >= rightBlock.getAttributeLevel()
 
+    hasBlockAttributes = @getBlockAtIndex(rightIndex).getAttributes().length > 0
+    rangeContainsNewline = @getCharacterAtPosition(startPosition, endPosition) is "\n"
+    nextCharacterIsNewline = @getCharacterAtPosition(endPosition, endPosition + 1) is "\n"
+    previousCharacterIsNewline = @getCharacterAtPosition(startPosition, startPosition + 1) is "\n"
+
+    isEmptyBlock = @getBlockAtIndex(rightIndex).text.toString() is "\n"
+    removingNewline = rangeContainsNewline and nextCharacterIsNewline and not hasBlockAttributes and not isEmptyBlock
+
     if useRightBlock
       block = rightBlock.copyWithText(text)
-    else
+    else if not removingNewline
       block = leftBlock.copyWithText(text)
+    else
+      if rightBlock.text.getTextAtRange([startPosition - 1, endPosition - 1]).toString() is "\n"
+        newText = rightBlock.text.removeTextAtRange([startPosition - 1, endPosition - 1])
+      else
+        newText = rightBlock.text.removeTextAtRange(range)
+      block = rightBlock.copyWithText(newText)
+      blocks = @blockList.toArray()
+      blocks.splice(rightIndex, 1, block)
+      return new @constructor blocks
 
     blocks = @blockList.toArray()
     affectedBlockCount = rightIndex + 1 - leftIndex
