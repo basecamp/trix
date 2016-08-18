@@ -1,7 +1,7 @@
 #= require trix/models/document
 #= require trix/models/line_break_insertion
 
-{normalizeRange, rangesAreEqual, objectsAreEqual, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
+{normalizeRange, rangesAreEqual, rangeIsCollapsed, objectsAreEqual, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
 
 class Trix.Composition extends Trix.BasicObject
   constructor: ->
@@ -225,10 +225,21 @@ class Trix.Composition extends Trix.BasicObject
 
   setBlockAttribute: (attributeName, value) ->
     return unless selectedRange = @getSelectedRange()
-    if @canSetCurrentAttribute(attributeName)
-      block = @getBlock()
-      @setDocument(@document.applyBlockAttributeAtRange(attributeName, value, selectedRange))
-      @setSelection(selectedRange)
+    return unless @canSetCurrentAttribute(attributeName)
+    document = @document
+
+    unless rangeIsCollapsed(selectedRange)
+      [startPosition, endPosition] = selectedRange
+
+      unless document.getCharacterAtPosition(endPosition) is "\n"
+        document = document.insertTextAtRange(Trix.Text.textForStringWithAttributes("\n"), endPosition)
+
+      unless startPosition is 0 or document.getCharacterAtPosition(startPosition - 1) is "\n"
+        document = document.insertTextAtRange(Trix.Text.textForStringWithAttributes("\n"), startPosition)
+        selectedRange = [startPosition + 1, endPosition + 1]
+
+    @setDocument(document.applyBlockAttributeAtRange(attributeName, value, selectedRange))
+    @setSelection(selectedRange)
 
   removeCurrentAttribute: (attributeName) ->
     if getBlockConfig(attributeName)
