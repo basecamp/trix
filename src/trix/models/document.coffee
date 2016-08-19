@@ -140,7 +140,7 @@ class Trix.Document extends Trix.Object
     removingNewline = currentCharacter is "\n" and nextCharacter is "\n" and not hasBlockAttributes and not isEmptyBlock
 
     if removingNewline
-      newText = rightBlock.text.removeTextAtRange(range)
+      newText = rightBlock.text.removeTextAtRange([0, 1])
       block = rightBlock.copyWithText(newText)
       blockIndex = rightIndex
       affectedBlockCount = 1
