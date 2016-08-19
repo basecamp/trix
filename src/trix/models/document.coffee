@@ -1,7 +1,6 @@
 #= require trix/models/block
 #= require trix/models/splittable_list
 #= require trix/models/html_parser
-#= require trix/models/text_deletion
 
 {arraysAreEqual, normalizeRange, rangeIsCollapsed, getBlockConfig} = Trix
 
@@ -111,25 +110,48 @@ class Trix.Document extends Trix.Object
       block.copyWithText(block.text.insertTextAtPosition(text, offset))
 
   removeTextAtRange: (range) ->
-    deletion = new Trix.TextDeletion this, range
+    [startPosition, endPosition] = range = normalizeRange(range)
     return this if rangeIsCollapsed(range)
 
-    if deletion.shouldUseRightBlock()
-      block = deletion.rightBlock.copyWithText(deletion.text)
-    else if deletion.shouldUseLeftBlock()
-      block = deletion.leftBlock.copyWithText(deletion.text)
-    else
-      if deletion.previousCharacter is "\n"
-        newText = deletion.rightBlock.text.removeTextAtRange([deletion.startPosition - 1, deletion.endPosition - 1])
-      else
-        newText = deletion.rightBlock.text.removeTextAtRange(range)
-      block = deletion.rightBlock.copyWithText(newText)
-      blockIndex = deletion.rightIndex
+    leftLocation = @locationFromPosition(startPosition)
+    leftIndex = leftLocation.index
+    leftBlock = @getBlockAtIndex(leftIndex)
+    leftText = leftBlock.text.getTextAtRange([0, leftLocation.offset])
+
+    rightLocation = @locationFromPosition(endPosition)
+    rightIndex = rightLocation.index
+    rightBlock = @getBlockAtIndex(rightIndex)
+    rightText = rightBlock.text.getTextAtRange([rightLocation.offset, rightBlock.getLength()])
+
+    text = leftText.appendText(rightText)
+
+    previousCharacterRange = [startPosition - 1, endPosition - 1]
+    previousCharacter = rightBlock.text.getTextAtRange(previousCharacterRange).toString()
+    currentCharacter = @getCharacterAtPosition(startPosition, endPosition)
+    nextCharacter = @getCharacterAtPosition(endPosition, endPosition + 1)
+
+    hasBlockAttributes = @getBlockAtIndex(rightIndex).getAttributes().length > 0
+    isEmptyBlock = @getBlockAtIndex(rightIndex).text.toString() is "\n"
+    multipleBlocksInRange = leftIndex isnt rightIndex
+
+    removingLeftBlock = multipleBlocksInRange and
+                        leftBlock.getAttributeLevel() >= rightBlock.getAttributeLevel() and
+                        leftLocation.offset is 0
+    removingNewline = currentCharacter is "\n" and nextCharacter is "\n" and not hasBlockAttributes and not isEmptyBlock
+
+    if removingNewline
+      newText = rightBlock.text.removeTextAtRange(range)
+      block = rightBlock.copyWithText(newText)
+      blockIndex = rightIndex
       affectedBlockCount = 1
+    else if removingLeftBlock
+      block = rightBlock.copyWithText(text)
+    else
+      block = leftBlock.copyWithText(text)
 
     blocks = @blockList.toArray()
-    blockIndex ?= deletion.leftIndex
-    affectedBlockCount ?= deletion.rightIndex + 1 - deletion.leftIndex
+    blockIndex ?= leftIndex
+    affectedBlockCount ?= rightIndex + 1 - leftIndex
     blocks.splice(blockIndex, affectedBlockCount, block)
 
     new @constructor blocks
