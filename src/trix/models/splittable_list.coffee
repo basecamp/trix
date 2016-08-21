@@ -53,7 +53,7 @@ class Trix.SplittableList extends Trix.Object
 
   removeObjectsInRange: (range) ->
     [objects, leftIndex, rightIndex] = @splitObjectsAtRange(range)
-    @splice(leftIndex, rightIndex - leftIndex + 1)
+    new @constructor(objects).splice(leftIndex, rightIndex - leftIndex + 1)
 
   transformObjectsInRange: (range, transform) ->
     [objects, leftIndex, rightIndex] = @splitObjectsAtRange(range)
