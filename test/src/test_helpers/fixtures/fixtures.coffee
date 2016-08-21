@@ -313,10 +313,18 @@ removeWhitespace = (string) ->
     figure.dataset[key] = value for key, value of data
     figure.setAttribute("contenteditable", false)
 
-    caption = """<figcaption class="#{classNames.attachment.caption}">#{attrs.filename} <span class="#{classNames.attachment.size}">32.46 MB</span></figcaption>"""
-    progress = """<progress class="progress" value="0" max="100" data-trix-mutable="true" data-trix-store-key="#{attachment.getCacheKey("progressElement")}"></progress>"""
+    progress = Trix.makeElement
+      tagName: "progress"
+      attributes:
+        class: "progress"
+        value: 0
+        max: 100
+      data:
+        trixMutable: true
+        trixStoreKey: attachment.getCacheKey("progressElement")
 
-    figure.innerHTML = caption + progress
+    caption = """<figcaption class="#{classNames.attachment.caption}">#{attrs.filename} <span class="#{classNames.attachment.size}">32.46 MB</span></figcaption>"""
+    figure.innerHTML = caption + progress.outerHTML
 
     html: """<div>#{blockComment}#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"""
     document: new Trix.Document [new Trix.Block text]
