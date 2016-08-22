@@ -1,3 +1,4 @@
+#= require_tree ./polyfills
 #= require_self
 #= require ./element
 #= require ./control_element
