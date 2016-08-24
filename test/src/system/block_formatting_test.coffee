@@ -479,6 +479,22 @@ testGroup "Block formatting", template: "editor_empty", ->
       assert.blockAttributes([2, 3], ["heading1"])
       expectDocument("abc\nd\n")
 
+  test "backspacing a newline at beginning of non-formatted block", (expectDocument) ->
+     document = new Trix.Document [
+         new Trix.Block(Trix.Text.textForStringWithAttributes("ab"), ["heading1"])
+         new Trix.Block(Trix.Text.textForStringWithAttributes("\ncd"), [])
+       ]
+
+     replaceDocument(document)
+     getEditor().setSelectedRange(3)
+
+     pressKey "backspace", ->
+       document = getDocument()
+       assert.equal document.getBlockCount(), 2
+       assert.blockAttributes([0, 2], ["heading1"])
+       assert.blockAttributes([3, 5], [])
+       expectDocument("ab\ncd\n")
+
   test "inserting newline after single character header", (expectDocument) ->
     clickToolbarButton attribute: "heading1", ->
       typeCharacters "a", ->
