@@ -141,7 +141,7 @@ class Trix.Document extends Trix.Object
 
     if removingNewline
       return new @constructor this.blockList.editObjectAtIndex rightIndex, (block) ->
-        block.copyWithText(block.text.removeTextAtRange([0, 1]))
+        block.copyWithText(block.text.removeTextAtRange([rightLocation.offset, endPosition - startPosition]))
     else if removingLeftBlock
       block = rightBlock.copyWithText(text)
     else
