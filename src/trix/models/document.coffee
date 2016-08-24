@@ -140,18 +140,16 @@ class Trix.Document extends Trix.Object
     removingNewline = currentCharacter is "\n" and nextCharacter is "\n" and not hasBlockAttributes and not isEmptyBlock
 
     if removingNewline
-      newText = rightBlock.text.removeTextAtRange([0, 1])
-      block = rightBlock.copyWithText(newText)
-      blockIndex = rightIndex
-      affectedBlockCount = 1
+      return new @constructor this.blockList.editObjectAtIndex rightIndex, (block) ->
+        block.copyWithText(block.text.removeTextAtRange([0, 1]))
     else if removingLeftBlock
       block = rightBlock.copyWithText(text)
     else
       block = leftBlock.copyWithText(text)
 
     blocks = @blockList.toArray()
-    blockIndex ?= leftIndex
-    affectedBlockCount ?= rightIndex + 1 - leftIndex
+    blockIndex = leftIndex
+    affectedBlockCount = rightIndex + 1 - leftIndex
     blocks.splice(blockIndex, affectedBlockCount, block)
 
     new @constructor blocks
