@@ -427,6 +427,24 @@ testGroup "Block formatting", template: "editor_empty", ->
       assert.equal block.toString(), "abc\n"
       done()
 
+  test "inserting multiple newlines before formatted block", (expectDocument) ->
+    document = new Trix.Document [
+        new Trix.Block(Trix.Text.textForStringWithAttributes("\n"), [])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("abc"), ["quote"])
+      ]
+
+    replaceDocument(document)
+    getEditor().setSelectedRange(1)
+
+    typeCharacters "\n\n", ->
+      document = getDocument()
+      assert.equal document.getBlockCount(), 2
+      assert.blockAttributes([0, 1], [])
+      assert.blockAttributes([2, 3], [])
+      assert.blockAttributes([4, 6], ["quote"])
+      assert.locationRange(index: 0, offset: 3)
+      expectDocument("\n\n\n\nabc\n")
+
   test "inserting newline after heading with text in following block", (expectDocument) ->
     document = new Trix.Document [
         new Trix.Block(Trix.Text.textForStringWithAttributes("ab"), ["heading1"])

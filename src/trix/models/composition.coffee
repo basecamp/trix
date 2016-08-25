@@ -458,7 +458,7 @@ class Trix.Composition extends Trix.BasicObject
     position = insertion.startPosition
     range = [position - 1, position]
 
-    if block.getBlockBreakPosition() is insertion.offset
+    if block.getBlockBreakPosition() is insertion.startLocation.offset
       if block.breaksOnReturn() and insertion.nextCharacter is "\n"
         position += 1
       else
@@ -470,7 +470,7 @@ class Trix.Composition extends Trix.BasicObject
       else
         range = [position, position + 1]
         position += 1
-    else if insertion.endPosition - 1 isnt 0
+    else if insertion.startLocation.offset - 1 isnt 0
       position += 1
 
     newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]

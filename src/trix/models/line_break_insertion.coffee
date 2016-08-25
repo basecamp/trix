@@ -3,7 +3,6 @@ class Trix.LineBreakInsertion
     {@document} = @composition
 
     [@startPosition, @endPosition] = @composition.getSelectedRange()
-    {@index, @offset} = @document.locationFromPosition(@startPosition)
     @startLocation = @document.locationFromPosition(@startPosition)
     @endLocation = @document.locationFromPosition(@endPosition)
 
