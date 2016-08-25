@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, clickToolbarDialogButton, collapseSelection, expandSelection, insertString, insertText, isToolbarButtonActive, isToolbarButtonDisabled, isToolbarDialogActive, moveCursor, test, testGroup, typeCharacters, typeInToolbarDialog, typeToolbarKeyCommand} = Trix.TestHelpers
+{assert, clickToolbarButton, clickToolbarDialogButton, collapseSelection, expandSelection, insertString, insertText, isToolbarButtonActive, isToolbarButtonDisabled, isToolbarDialogActive, moveCursor, pressKey, test, testGroup, typeCharacters, typeInToolbarDialog, typeToolbarKeyCommand} = Trix.TestHelpers
 
 testGroup "Text formatting", template: "editor_empty", ->
   test "applying attributes to text", (done) ->
@@ -144,3 +144,8 @@ testGroup "Text formatting", template: "editor_empty", ->
     typeToolbarKeyCommand attribute: "bold", ->
       assert.ok isToolbarButtonActive(attribute: "bold")
       done()
+
+  test "backspacing newline after text", (expectDocument) ->
+    typeCharacters "a\n", ->
+      pressKey "backspace", ->
+        expectDocument("a\n")

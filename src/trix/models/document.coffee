@@ -114,32 +114,41 @@ class Trix.Document extends Trix.Object
       block.copyWithText(block.text.insertTextAtPosition(text, offset))
 
   removeTextAtRange: (range) ->
-    [startPosition, endPosition] = range = normalizeRange(range)
+    [leftPosition, rightPosition] = range = normalizeRange(range)
     return this if rangeIsCollapsed(range)
+    [leftLocation, rightLocation] = @locationRangeFromRange(range)
 
-    leftLocation = @locationFromPosition(startPosition)
     leftIndex = leftLocation.index
+    leftOffset = leftLocation.offset
     leftBlock = @getBlockAtIndex(leftIndex)
-    leftText = leftBlock.text.getTextAtRange([0, leftLocation.offset])
 
-    rightLocation = @locationFromPosition(endPosition)
     rightIndex = rightLocation.index
+    rightOffset = rightLocation.offset
     rightBlock = @getBlockAtIndex(rightIndex)
-    rightText = rightBlock.text.getTextAtRange([rightLocation.offset, rightBlock.getLength()])
 
-    text = leftText.appendText(rightText)
+    removeRightNewline = rightPosition - leftPosition is 1 and
+      leftBlock.getBlockBreakPosition() is leftOffset and
+      rightBlock.getBlockBreakPosition() isnt rightOffset and
+      rightBlock.text.getStringAtPosition(rightOffset) is "\n"
 
-    removingLeftBlock = leftIndex isnt rightIndex and leftLocation.offset is 0
-    useRightBlock = removingLeftBlock and leftBlock.getAttributeLevel() >= rightBlock.getAttributeLevel()
-
-    if useRightBlock
-      block = rightBlock.copyWithText(text)
+    if removeRightNewline
+      blocks = @blockList.editObjectAtIndex rightIndex, (block) ->
+        block.copyWithText(block.text.removeTextAtRange([rightOffset, rightOffset + 1]))
     else
-      block = leftBlock.copyWithText(text)
+      leftText = leftBlock.text.getTextAtRange([0, leftOffset])
+      rightText = rightBlock.text.getTextAtRange([rightOffset, rightBlock.getLength()])
+      text = leftText.appendText(rightText)
 
-    blocks = @blockList.toArray()
-    affectedBlockCount = rightIndex + 1 - leftIndex
-    blocks = @blockList.splice(leftIndex, affectedBlockCount, block)
+      removingLeftBlock = leftIndex isnt rightIndex and leftOffset is 0
+      useRightBlock = removingLeftBlock and leftBlock.getAttributeLevel() >= rightBlock.getAttributeLevel()
+
+      if useRightBlock
+        block = rightBlock.copyWithText(text)
+      else
+        block = leftBlock.copyWithText(text)
+
+      affectedBlockCount = rightIndex + 1 - leftIndex
+      blocks = @blockList.splice(leftIndex, affectedBlockCount, block)
 
     new @constructor blocks
 
