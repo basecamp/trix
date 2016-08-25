@@ -12,6 +12,7 @@ Trix.config.blockAttributes = attributes =
     group: false
   code:
     tagName: "pre"
+    terminal: true
     text:
       plaintext: true
   bulletList:

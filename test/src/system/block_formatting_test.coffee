@@ -57,22 +57,22 @@ testGroup "Block formatting", template: "editor_empty", ->
 
   test "applying block attributes to adjacent unformatted blocks consolidates them", (done) ->
     document = new Trix.Document [
-        new Trix.Block(Trix.Text.textForStringWithAttributes("1"), ["code"])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("1"), ["bulletList", "bullet"])
         new Trix.Block(Trix.Text.textForStringWithAttributes("a"), [])
         new Trix.Block(Trix.Text.textForStringWithAttributes("b"), [])
         new Trix.Block(Trix.Text.textForStringWithAttributes("c"), [])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("2"), ["code"])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("3"), ["code"])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("2"), ["bulletList", "bullet"])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("3"), ["bulletList", "bullet"])
       ]
 
     replaceDocument(document)
     getEditorController().setLocationRange([{index: 0, offset: 0}, {index: 5, offset: 1}])
     defer ->
       clickToolbarButton attribute: "quote", ->
-        assert.blockAttributes([0, 2], ["code", "quote"])
+        assert.blockAttributes([0, 2], ["bulletList", "bullet", "quote"])
         assert.blockAttributes([2, 8], ["quote"])
-        assert.blockAttributes([8, 10], ["code", "quote"])
-        assert.blockAttributes([10, 12], ["code", "quote"])
+        assert.blockAttributes([8, 10], ["bulletList", "bullet", "quote"])
+        assert.blockAttributes([10, 12], ["bulletList", "bullet", "quote"])
         done()
 
   test "breaking out of the end of a block", (done) ->
@@ -525,6 +525,17 @@ testGroup "Block formatting", template: "editor_empty", ->
   test "code blocks are not indentable", (done) ->
     clickToolbarButton attribute: "code", ->
       assert.notOk isToolbarButtonActive(action: "increaseNestingLevel")
+      done()
+
+  test "code blocks are terminal", (done) ->
+    clickToolbarButton attribute: "code", ->
+      assert.ok isToolbarButtonDisabled(attribute: "quote")
+      assert.ok isToolbarButtonDisabled(attribute: "heading1")
+      assert.ok isToolbarButtonDisabled(attribute: "bullet")
+      assert.ok isToolbarButtonDisabled(attribute: "number")
+      assert.notOk isToolbarButtonDisabled(attribute: "code")
+      assert.notOk isToolbarButtonDisabled(attribute: "bold")
+      assert.notOk isToolbarButtonDisabled(attribute: "italic")
       done()
 
   test "unindenting a code block inside a bullet", (expectDocument) ->
