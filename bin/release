@@ -17,6 +17,7 @@ class Release
 
     build
     update_package_json
+    update_license
     commit_changes
     create_release
     npm_publish
@@ -42,6 +43,22 @@ class Release
     data = JSON.parse(pathname.read)
     data["version"] = version
     pathname.write(JSON.pretty_generate(data) + "\n")
+  end
+
+  def update_license
+    puts "Updating LICENSE…"
+
+    pathname = Pathname.new("LICENSE")
+    contents = pathname.read
+    year = Time.now.year
+
+    (year - 1).downto(year - 3) do |previous_year|
+      pattern = / #{previous_year} /
+      if contents =~ pattern
+        pathname.write(contents.gsub!(pattern, " #{year} "))
+        break
+      end
+    end
   end
 
   def commit_changes
@@ -70,7 +87,7 @@ class Release
   end
 
   def pathspecs
-    %w( dist/ src/ package.json )
+    %w( dist/ src/ package.json LICENSE )
   end
 
   def dist_pathnames
