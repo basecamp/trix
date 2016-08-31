@@ -71,6 +71,16 @@ testGroup "Custom element API", template: "editor_empty", ->
             assert.equal eventCount, 5
             done()
 
+  test "element triggers trix-change event after activating attributes", (done) ->
+    element = getEditorElement()
+    editor = element.editor
+
+    typeCharacters "hello", ->
+      element.addEventListener "trix-change", (event) ->
+        assert.ok editor.attributeIsActive("quote")
+        done()
+      editor.activateAttribute("quote")
+
   test "element triggers trix-selection-change events when the location range changes", (done) ->
     element = getEditorElement()
     eventCount = 0

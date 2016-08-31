@@ -130,7 +130,7 @@ class Trix.EditorController extends Trix.Controller
       @composition.updateCurrentAttributes()
       @requestedLocationRange = null
       @documentWhenLocationRangeRequested = null
-    @editorElement.notify("render")
+      @editorElement.notify("render")
 
   compositionControllerDidFocus: ->
     @toolbarController.hideDialog()
