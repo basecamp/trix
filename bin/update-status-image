@@ -33,8 +33,8 @@ class UpdateStatusImage
     puts "Uploaded #{image_filename} to S3"
 
     if update_current_image?
-      current_image_filename = status_image_key("#{config[:name]}-current.svg")
-      upload_to_s3 tmp_image_path, key: current_image_filename, content_type: SVG_CONTENT_TYPE
+      current_image_filename = status_image_key("#{config[:name]}.svg")
+      upload_to_s3 tmp_image_path, key: current_image_filename, content_type: SVG_CONTENT_TYPE, cache_control: "no-cache"
       puts "Uploaded #{current_image_filename} to S3"
     end
   end
