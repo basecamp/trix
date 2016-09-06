@@ -202,7 +202,7 @@ class Trix.Composition extends Trix.BasicObject
         true
 
   canSetCurrentBlockAttribute: (attributeName) ->
-    block = @getBlock()
+    return unless block = @getBlock()
     not block.isTerminalBlock()
 
   setCurrentAttribute: (attributeName, value) ->
