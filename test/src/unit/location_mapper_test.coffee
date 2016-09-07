@@ -3,7 +3,7 @@
 testGroup "Trix.LocationMapper", ->
   test "findLocationFromContainerAndOffset", ->
     setDocument [
-      # <trix-document>
+      # <trix-editor>
       # 0 <div>
       #     0 <!--block-->
       #     1 <strong>
@@ -26,7 +26,7 @@ testGroup "Trix.LocationMapper", ->
       #       </span>
       #     5 e
       #   </blockquote>
-      # </trix-document>
+      # </trix-editor>
       {"text":[
         {"type":"string","attributes":{"bold":true},"string":"a\n"},
         {"type":"string","attributes":{"blockBreak":true},"string":"\n"}
@@ -88,14 +88,14 @@ testGroup "Trix.LocationMapper", ->
 
   test "findContainerAndOffsetFromLocation: (0/0)", ->
     setDocument [
-      # <trix-document>
+      # <trix-editor>
       # 0 <ul>
       #     0 <li>
       #         0 <!--block-->
       #         1 <br>
       #       </li>
       #   </ul>
-      # </trix-document>
+      # </trix-editor>
       {"text":[
         {"type":"string","attributes":{"blockBreak":true},"string":"\n"}
       ],"attributes":["bulletList","bullet"]},
@@ -109,7 +109,7 @@ testGroup "Trix.LocationMapper", ->
 
   test "findContainerAndOffsetFromLocation after newline in formatted text", ->
     setDocument [
-      # <trix-document>
+      # <trix-editor>
       # 0 <div>
       #     0 <!--block-->
       #     0 <strong>
@@ -117,7 +117,7 @@ testGroup "Trix.LocationMapper", ->
       #         1 <br>
       #       </strong>
       #   </div>
-      # </trix-document>
+      # </trix-editor>
       {"text":[
         {"type":"string","attributes":{"bold":true},"string":"a\n"}
         {"type":"string","attributes":{"blockBreak":true},"string":"\n"}
@@ -125,6 +125,36 @@ testGroup "Trix.LocationMapper", ->
     ]
 
     location = index: 0, offset: 2
+    container = findContainer([0])
+    offset = 2
+
+    assert.deepEqual mapper.findContainerAndOffsetFromLocation(location), [container, offset]
+
+  test "findContainerAndOffsetFromLocation after nested block", ->
+    setDocument [
+      # <trix-editor>
+      #   <blockquote>
+      #     <ul>
+      #       <li>
+      #         <!--block-->
+      #         a
+      #       </li>
+      #     </ul>
+      #     <!--block-->
+      #     <br>
+      #   </blockquote>
+      # </trix-editor>
+      {
+        "text":[{"type":"string","attributes":{},"string":"a"},{"type":"string","attributes":{"blockBreak":true},"string":"\n"}],
+        "attributes":["quote","bulletList","bullet"]
+      },
+      {
+        "text":[{"type":"string","attributes":{"blockBreak":true},"string":"\n"}],
+        "attributes":["quote"]
+      }
+    ]
+
+    location = index: 1, offset: 0
     container = findContainer([0])
     offset = 2
 
