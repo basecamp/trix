@@ -126,11 +126,14 @@ class Trix.EditorController extends Trix.Controller
     if @requestedLocationRange?
       if @documentWhenLocationRangeRequested.isEqualTo(@composition.document)
         @selectionManager.setLocationRange(@requestedLocationRange)
-
-      @composition.updateCurrentAttributes()
       @requestedLocationRange = null
       @documentWhenLocationRangeRequested = null
+
+    unless @renderedCompositionRevision is @composition.revision
+      @composition.updateCurrentAttributes()
       @editorElement.notify("render")
+
+    @renderedCompositionRevision = @composition.revision
 
   compositionControllerDidFocus: ->
     @toolbarController.hideDialog()

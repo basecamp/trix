@@ -230,6 +230,22 @@ testGroup "Custom element API", template: "editor_empty", ->
       assert.equal focusEventCount, 1
       done()
 
+  test "element serializes HTML after attribute changes", (done) ->
+    element = getEditorElement()
+    serializedHTML = element.value
+
+    typeCharacters "a", ->
+      assert.notEqual serializedHTML, element.value
+      serializedHTML = element.value
+
+      clickToolbarButton attribute: "quote", ->
+        assert.notEqual serializedHTML, element.value
+        serializedHTML = element.value
+
+        clickToolbarButton attribute: "quote", ->
+          assert.notEqual serializedHTML, element.value
+          done()
+
   test "editor resets to its original value on form reset", (expectDocument) ->
     element = getEditorElement()
     form = element.inputElement.form
