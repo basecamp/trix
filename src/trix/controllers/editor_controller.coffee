@@ -187,9 +187,7 @@ class Trix.EditorController extends Trix.Controller
     range = @pastedRange
     @pastedRange = null
     @pasting = null
-
     @editorElement.notify("paste", {pasteData, range})
-    @render()
 
   inputControllerWillMoveText: ->
     @editor.recordUndoEntry("Move")
