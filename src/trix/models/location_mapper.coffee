@@ -63,11 +63,12 @@ class Trix.LocationMapper
     else
       container = node.parentNode
 
-      unless nodeIsBlockContainer(container)
-        while node is container.lastChild
-          node = container
-          container = container.parentNode
-          break if nodeIsBlockContainer(container)
+      unless nodeIsBlockStart(node.previousSibling)
+        unless nodeIsBlockContainer(container)
+          while node is container.lastChild
+            node = container
+            container = container.parentNode
+            break if nodeIsBlockContainer(container)
 
       offset = findChildIndexOfNode(node)
       offset++ unless location.offset is 0
