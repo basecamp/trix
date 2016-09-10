@@ -87,7 +87,7 @@ class Trix.EditorController extends Trix.Controller
   compositionDidRequestChangingSelectionToLocationRange: (locationRange) ->
     return if @loadingSnapshot and not @isFocused()
     @requestedLocationRange = locationRange
-    @documentWhenLocationRangeRequested = @composition.document
+    @compositionRevisionWhenLocationRangeRequested = @composition.revision
     @render() unless @handlingInput
 
   compositionWillLoadSnapshot: ->
@@ -124,10 +124,10 @@ class Trix.EditorController extends Trix.Controller
 
   compositionControllerDidRender: ->
     if @requestedLocationRange?
-      if @documentWhenLocationRangeRequested.isEqualTo(@composition.document)
+      if @compositionRevisionWhenLocationRangeRequested is @composition.revision
         @selectionManager.setLocationRange(@requestedLocationRange)
       @requestedLocationRange = null
-      @documentWhenLocationRangeRequested = null
+      @compositionRevisionWhenLocationRangeRequested = null
 
     unless @renderedCompositionRevision is @composition.revision
       @composition.updateCurrentAttributes()
