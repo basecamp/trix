@@ -28,6 +28,7 @@ testGroup "Attachments", template: "editor_with_image", ->
             pressKey "return", ->
               assert.notOk findElement("textarea")
               assert.textAttributes [2, 3], caption: "my caption"
+              assert.locationRange index: 0, offset: 3
               expectDocument "ab#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
 
   test "editing an attachment caption with no filename", (done) ->

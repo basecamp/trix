@@ -464,6 +464,10 @@ class Trix.Document extends Trix.Object
       position += text.getLength()
     return
 
+  getLocationRangeOfAttachment: (attachment) ->
+    range = @getRangeOfAttachment(attachment)
+    @locationRangeFromRange(range)
+
   getAttachmentPieceForAttachment: (attachment) ->
     return piece for piece in @getAttachmentPieces() when piece.attachment is attachment
 
