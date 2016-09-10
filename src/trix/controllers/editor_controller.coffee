@@ -87,7 +87,7 @@ class Trix.EditorController extends Trix.Controller
   compositionDidRequestChangingSelectionToLocationRange: (locationRange) ->
     return if @loadingSnapshot and not @isFocused()
     @requestedLocationRange = locationRange
-    @documentWhenLocationRangeRequested = @composition.document
+    @compositionRevisionWhenLocationRangeRequested = @composition.revision
     @render() unless @handlingInput
 
   compositionWillLoadSnapshot: ->
@@ -124,13 +124,16 @@ class Trix.EditorController extends Trix.Controller
 
   compositionControllerDidRender: ->
     if @requestedLocationRange?
-      if @documentWhenLocationRangeRequested.isEqualTo(@composition.document)
+      if @compositionRevisionWhenLocationRangeRequested is @composition.revision
         @selectionManager.setLocationRange(@requestedLocationRange)
-
-      @composition.updateCurrentAttributes()
       @requestedLocationRange = null
-      @documentWhenLocationRangeRequested = null
+      @compositionRevisionWhenLocationRangeRequested = null
+
+    unless @renderedCompositionRevision is @composition.revision
+      @composition.updateCurrentAttributes()
       @editorElement.notify("render")
+
+    @renderedCompositionRevision = @composition.revision
 
   compositionControllerDidFocus: ->
     @toolbarController.hideDialog()
@@ -184,9 +187,7 @@ class Trix.EditorController extends Trix.Controller
     range = @pastedRange
     @pastedRange = null
     @pasting = null
-
     @editorElement.notify("paste", {pasteData, range})
-    @render()
 
   inputControllerWillMoveText: ->
     @editor.recordUndoEntry("Move")
