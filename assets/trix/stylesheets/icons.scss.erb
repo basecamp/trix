@@ -35,3 +35,17 @@ trix-toolbar button.icon {
   &.undo::before { background-image: url(<%= svgo_data_uri('trix/images/undo.svg', precision: 1) %>); }
   &.redo::before { background-image: url(<%= svgo_data_uri('trix/images/redo.svg', precision: 1) %>); }
 }
+
+trix-editor {
+  [data-trix-mutable=true] {
+    button.icon {
+      &::before {
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+      }
+
+      &.remove::before { background-image: url(<%= svgo_data_uri('trix/images/remove.svg', precision: 1) %>); }
+    }
+  }
+}

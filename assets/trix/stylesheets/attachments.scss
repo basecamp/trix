@@ -30,34 +30,40 @@ trix-editor {
       }
     }
 
-    .remove {
-      display: block;
-      position: absolute;
-      top: -0.8rem;
-      right: -0.8rem;
-      width: 1.2rem;
-      height: 1.2rem;
-      line-height: 1.2rem;
-      border-radius: 1.2rem;
-      font-size: 0;
-      color: black;
-      text-align: center;
-      text-decoration: none;
-      background-color: #fff;
-      border: 2px solid highlight;
-      box-shadow: -2px 2px 6px rgba(0, 0, 0, 0.12);
+    button.remove {
+      cursor: pointer;
 
-      &:after {
-        font-family:  arial, sans-serif;;
-        content: '×';
-        font-size: 1rem;
-        opacity: 0.5;
+      &.icon {
+        text-indent: -9999px;
+        display: block;
+        position: absolute;
+        top: -0.8rem;
+        right: -0.8rem;
+        width: 1.2rem;
+        height: 1.2rem;
+        line-height: 1.2rem;
+        border-radius: 1.2rem;
+        text-indent: -9999px;
+        background-color: #fff;
+        border: 2px solid highlight;
+        box-shadow: -2px 2px 6px rgba(0, 0, 0, 0.12);
+
+        &::before {
+          display: inline-block;
+          position: absolute;
+          top: 1px;
+          right: 1px;
+          bottom: 1px;
+          left: 1px;
+          opacity: 0.6;
+          content: "";
+        }
       }
 
       &:hover {
         border-color: #333;
 
-        &:after {
+        &::before {
           opacity: 1;
         }
       }
