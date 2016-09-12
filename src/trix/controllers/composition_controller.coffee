@@ -16,15 +16,21 @@ class Trix.CompositionController extends Trix.BasicObject
     handleEvent "click", onElement: @element, matchingSelector: "a#{attachmentSelector}", preventDefault: true
 
   didFocus: (event) =>
-    unless @focused
-      @focused = true
-      @delegate?.compositionControllerDidFocus?()
+    perform = =>
+      unless @focused
+        @focused = true
+        @delegate?.compositionControllerDidFocus?()
+
+    @blurPromise?.then(perform) ? perform()
 
   didBlur: (event) =>
-    defer =>
-      unless innerElementIsActive(@element)
-        @focused = null
-        @delegate?.compositionControllerDidBlur?()
+    @blurPromise = new Promise (resolve) =>
+      defer =>
+        unless innerElementIsActive(@element)
+          @focused = null
+          @delegate?.compositionControllerDidBlur?()
+        @blurPromise = null
+        resolve()
 
   didClickAttachment: (event, target) =>
     attachment = @findAttachmentForElement(target)
