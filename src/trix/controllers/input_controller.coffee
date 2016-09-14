@@ -80,18 +80,32 @@ class Trix.InputController extends Trix.BasicObject
   mutationIsExpected: ({textAdded, textDeleted}) ->
     return true if @inputSummary.preferDocument
 
-    unhandledAddition = textAdded isnt @inputSummary.textAdded
-    unhandledDeletion = textDeleted? and not @inputSummary.didDelete
+    mutationAdditionMatchesSummary =
+      if textAdded?
+        textAdded is @inputSummary.textAdded
+      else
+        not @inputSummary.textAdded
+    mutationDeletionMatchesSummary =
+      if textDeleted?
+        @inputSummary.didDelete
+      else
+        not @inputSummary.didDelete
 
-    # Expect newline removal at the end of a block caused
-    # by the extra <br> rendered to represent them.
-    if textDeleted is "\n" and unhandledDeletion
-      if textAdded and not unhandledAddition
-        if range = @getSelectedRange()
-          if @responder?.positionIsBlockBreak(range[1] + textAdded.length)
-            unhandledDeletion = false
+    unexpectedNewlineAddition =
+      textAdded is "\n" and not mutationAdditionMatchesSummary
+    unexpectedNewlineDeletion =
+      textDeleted is "\n" and not mutationDeletionMatchesSummary
+    singleUnexpectedNewline =
+      (unexpectedNewlineAddition and not unexpectedNewlineDeletion) or
+      (unexpectedNewlineDeletion and not unexpectedNewlineAddition)
 
-    not (unhandledAddition or unhandledDeletion)
+    if singleUnexpectedNewline
+      if range = @getSelectedRange()
+        offset = if unexpectedNewlineAddition then -1 else 1
+        if @responder?.positionIsBlockBreak(range[1] + offset)
+          return true
+
+    mutationAdditionMatchesSummary and mutationDeletionMatchesSummary
 
   mutationIsSignificant: (mutationSummary) ->
     textChanged = Object.keys(mutationSummary).length > 0

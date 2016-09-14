@@ -32,6 +32,20 @@ testGroup "Mutation input", template: "editor_empty", ->
         assert.textAttributes([3, 4], bold: true)
         expectDocument("a\n\nb\n")
 
+  test "backspacing an attachment at the beginning of an otherwise empty document", (expectDocument) ->
+    element = getEditorElement()
+    element.editor.loadHTML("""<img src="#{TEST_IMAGE_URL}" width="10" height="10">""")
+
+    requestAnimationFrame ->
+      element.editor.setSelectedRange([0, 1])
+      triggerEvent(element, "keydown", charCode: 0, keyCode: 8, which: 8)
+
+      element.firstElementChild.innerHTML = "<br>"
+
+      requestAnimationFrame ->
+        assert.locationRange index: 0, offset: 0
+        expectDocument("\n")
+
   test "typing formatted text with autocapitalization on", (expectDocument) ->
     element = getEditorElement()
 
