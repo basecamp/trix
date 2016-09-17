@@ -125,6 +125,18 @@ testGroup "Trix.HTMLParser", ->
       delete window.unsanitized
       done()
 
+  test "parses attachment caption from large html string", (done) ->
+    html = fixtures["image attachment with edited caption"].html
+
+    for i in [1..30]
+      html += fixtures["image attachment"].html
+
+    for n in [1..3]
+      attachmentPiece = Trix.HTMLParser.parse(html).getDocument().getAttachmentPieces()[0]
+      assert.equal attachmentPiece.getCaption(), "Example"
+
+    done()
+
 getOrigin = ->
   {protocol, hostname, port} = window.location
   "#{protocol}//#{hostname}#{if port then ":#{port}" else ""}"
