@@ -38,6 +38,26 @@ testGroup "Trix.HTMLParser", ->
     expectedHTML = """<pre><!--block-->abc</pre>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
+  test "ignores content after </html>", ->
+    html = """
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+    <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+    <meta name=ProgId content=Word.Document>
+    </head>
+
+    <body lang=EN-US link=blue vlink="#954F72" style='tab-interval:.5in'>
+    <!--StartFragment--><span lang=EN style='font-size:12.0pt;font-family:
+    "Arial",sans-serif;mso-fareast-font-family:"Times New Roman";mso-ansi-language:
+    EN;mso-fareast-language:EN-US;mso-bidi-language:AR-SA'>abc</span><!--EndFragment-->
+    </body>
+
+    </html>
+    TAxelFCg��K��
+    """
+    expectedHTML = """<div><!--block-->abc</div>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
   test "ignores whitespace between block elements", ->
     html = """<div>a</div> \n <div>b</div>     <article>c</article>  \n\n <section>d</section> """
     expectedHTML = """<div><!--block-->a</div><div><!--block-->b</div><div><!--block-->c</div><div><!--block-->d</div>"""

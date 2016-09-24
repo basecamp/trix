@@ -45,6 +45,9 @@ class Trix.HTMLParser extends Trix.BasicObject
     @containerElement.parentNode.removeChild(@containerElement)
 
   sanitizeHTML = (html) ->
+    # Remove everything after </html>
+    html = html.replace(/<\/html[^>]*>[^]*$/i, "</html>")
+
     doc = document.implementation.createHTMLDocument("")
     doc.documentElement.innerHTML = html
     {body, head} = doc
