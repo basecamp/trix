@@ -23,7 +23,6 @@ class Trix.InputController extends Trix.BasicObject
   constructor: (@element) ->
     @resetInputSummary()
 
-    @mutationCount = 0
     @mutationObserver = new Trix.MutationObserver @element
     @mutationObserver.delegate = this
 
@@ -67,7 +66,6 @@ class Trix.InputController extends Trix.BasicObject
   # Mutation observer delegate
 
   elementDidMutate: (mutationSummary) ->
-    @mutationCount++
     unless @isComposing()
       @handleInput ->
         if @mutationIsSignificant(mutationSummary)
@@ -111,12 +109,6 @@ class Trix.InputController extends Trix.BasicObject
     textChanged = Object.keys(mutationSummary).length > 0
     composedEmptyString = @compositionInput?.getEndData() is ""
     textChanged or not composedEmptyString
-
-  unlessMutationOccurs: (callback) ->
-    mutationCount = @mutationCount
-    defer =>
-      if mutationCount is @mutationCount
-        callback()
 
   # File verification
 
