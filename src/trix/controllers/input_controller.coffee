@@ -41,8 +41,10 @@ class Trix.InputController extends Trix.BasicObject
     @inputSummary[key] = value for key, value of summary
     @inputSummary
 
+  inputSummaryId = 0
+
   resetInputSummary: ->
-    @inputSummary = {}
+    @inputSummary = id: inputSummaryId++
 
   reset: ->
     @resetInputSummary()

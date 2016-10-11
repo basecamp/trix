@@ -1,3 +1,5 @@
+{defer} = Trix
+
 class Trix.CompositionInput extends Trix.BasicObject
   constructor: (@inputController) ->
     {@responder, @delegate, @inputSummary} = @inputController
@@ -32,7 +34,7 @@ class Trix.CompositionInput extends Trix.BasicObject
       @responder?.setSelectedRange(@range)
       @responder?.insertString(@data.end)
       @responder?.setSelectedRange(@range[0] + @data.end.length)
-      @requestRender()
+      @renderUnlessInputSummaryChanges()
 
     else if @data.start? or @data.update?
       @requestReparse()
@@ -49,7 +51,14 @@ class Trix.CompositionInput extends Trix.BasicObject
   canApplyToDocument: ->
     @data.start?.length is 0 and @data.end?.length > 0 and @range?
 
+  renderUnlessInputSummaryChanges: ->
+    defer =>
+      if @inputSummary.id is @inputController.inputSummary.id
+        @handleInput =>
+          @requestRender()
+
   @proxyMethod "inputController.setInputSummary"
+  @proxyMethod "inputController.handleInput"
   @proxyMethod "inputController.requestRender"
   @proxyMethod "inputController.requestReparse"
   @proxyMethod "responder?.selectionIsExpanded"

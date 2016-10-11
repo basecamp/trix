@@ -96,7 +96,7 @@ helpers.extend
     helpers.collapseSelection "right", ->
       helpers.triggerEvent(element, "input")
       helpers.triggerEvent(element, "compositionend", data: data)
-      callback?()
+      helpers.defer(callback)
 
   clickElement: (element, callback) ->
     if helpers.triggerEvent(element, "mousedown")
