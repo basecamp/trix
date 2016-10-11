@@ -32,6 +32,7 @@ class Trix.CompositionInput extends Trix.BasicObject
       @responder?.insertString(@data.end)
       @setInputSummary(preferDocument: true)
       @responder?.setSelectedRange(@range[0] + @data.end.length)
+      @requestRender()
 
     else if @data.start? or @data.update?
       @requestReparse()
