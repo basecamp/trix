@@ -52,7 +52,6 @@ class Trix.CompositionInput extends Trix.BasicObject
   @proxyMethod "inputController.setInputSummary"
   @proxyMethod "inputController.requestRender"
   @proxyMethod "inputController.requestReparse"
-  @proxyMethod "inputController.unlessMutationOccurs"
   @proxyMethod "responder?.selectionIsExpanded"
   @proxyMethod "responder?.insertPlaceholder"
   @proxyMethod "responder?.selectPlaceholder"
