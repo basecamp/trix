@@ -89,14 +89,14 @@ helpers.extend
   endComposition: (data, callback) ->
     element = document.activeElement
     helpers.triggerEvent(element, "compositionupdate", data: data)
-    helpers.triggerEvent(element, "input")
-    helpers.triggerEvent(element, "compositionend", data: data)
-    helpers.triggerEvent(element, "input")
 
     node = document.createTextNode(data)
     helpers.insertNode(node)
     helpers.selectNode(node)
-    helpers.collapseSelection("right", callback)
+    helpers.collapseSelection "right", ->
+      helpers.triggerEvent(element, "input")
+      helpers.triggerEvent(element, "compositionend", data: data)
+      callback?()
 
   clickElement: (element, callback) ->
     if helpers.triggerEvent(element, "mousedown")
