@@ -27,10 +27,10 @@ class Trix.CompositionInput extends Trix.BasicObject
     @forgetPlaceholder()
 
     if @canApplyToDocument()
+      @setInputSummary(preferDocument: true)
       @delegate?.inputControllerWillPerformTyping()
       @responder?.setSelectedRange(@range)
       @responder?.insertString(@data.end)
-      @setInputSummary(preferDocument: true)
       @responder?.setSelectedRange(@range[0] + @data.end.length)
       @requestRender()
 
