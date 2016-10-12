@@ -41,10 +41,8 @@ class Trix.InputController extends Trix.BasicObject
     @inputSummary[key] = value for key, value of summary
     @inputSummary
 
-  inputSummaryId = 0
-
   resetInputSummary: ->
-    @inputSummary = id: inputSummaryId++
+    @inputSummary = {}
 
   reset: ->
     @resetInputSummary()
@@ -68,7 +66,9 @@ class Trix.InputController extends Trix.BasicObject
   # Mutation observer delegate
 
   elementDidMutate: (mutationSummary) ->
-    unless @isComposing()
+    if @isComposing()
+      @delegate?.inputControllerDidAllowUnhandledInput?()
+    else
       @handleInput ->
         if @mutationIsSignificant(mutationSummary)
           if @mutationIsExpected(mutationSummary)
