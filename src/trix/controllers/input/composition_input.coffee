@@ -1,5 +1,3 @@
-{defer} = Trix
-
 class Trix.CompositionInput extends Trix.BasicObject
   constructor: (@inputController) ->
     {@responder, @delegate, @inputSummary} = @inputController
@@ -51,7 +49,6 @@ class Trix.CompositionInput extends Trix.BasicObject
     @data.start?.length is 0 and @data.end?.length > 0 and @range?
 
   @proxyMethod "inputController.setInputSummary"
-  @proxyMethod "inputController.handleInput"
   @proxyMethod "inputController.requestRender"
   @proxyMethod "inputController.requestReparse"
   @proxyMethod "responder?.selectionIsExpanded"
