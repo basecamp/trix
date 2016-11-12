@@ -66,7 +66,9 @@ class Trix.InputController extends Trix.BasicObject
   # Mutation observer delegate
 
   elementDidMutate: (mutationSummary) ->
-    unless @isComposing()
+    if @isComposing()
+      @delegate?.inputControllerDidAllowUnhandledInput?()
+    else
       @handleInput ->
         if @mutationIsSignificant(mutationSummary)
           if @mutationIsExpected(mutationSummary)

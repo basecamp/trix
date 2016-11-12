@@ -168,6 +168,9 @@ class Trix.EditorController extends Trix.Controller
       @requestedRender = false
       @render()
 
+  inputControllerDidAllowUnhandledInput: ->
+    @editorElement.notify("change")
+
   inputControllerDidRequestReparse: ->
     @reparse()
 
