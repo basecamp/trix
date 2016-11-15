@@ -504,23 +504,43 @@ testGroup "Block formatting", template: "editor_empty", ->
           assert.blockAttributes([0, 1], ["heading1"])
           expectDocument("a\n\n")
 
-  test "adding heading to selection only adds heading to blocks without heading", (expectDocument) ->
-    document = new Trix.Document [
+  test "terminal attributes are only added once", (expectDocument) ->
+    replaceDocument new Trix.Document [
         new Trix.Block(Trix.Text.textForStringWithAttributes("a"), [])
         new Trix.Block(Trix.Text.textForStringWithAttributes("b"), ["heading1"])
         new Trix.Block(Trix.Text.textForStringWithAttributes("c"), [])
       ]
 
-    replaceDocument(document)
-
     selectAll ->
       clickToolbarButton attribute: "heading1", ->
-        document = getDocument()
-        assert.equal document.getBlockCount(), 3
+        assert.equal getDocument().getBlockCount(), 3
         assert.blockAttributes([0, 1], ["heading1"])
         assert.blockAttributes([2, 3], ["heading1"])
         assert.blockAttributes([4, 5], ["heading1"])
         expectDocument("a\nb\nc\n")
+
+  test "terminal attributes replace existing terminal attributes", (expectDocument) ->
+    replaceDocument new Trix.Document [
+        new Trix.Block(Trix.Text.textForStringWithAttributes("a"), [])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("b"), ["heading1"])
+        new Trix.Block(Trix.Text.textForStringWithAttributes("c"), [])
+      ]
+
+    selectAll ->
+      clickToolbarButton attribute: "code", ->
+        assert.equal getDocument().getBlockCount(), 3
+        assert.blockAttributes([0, 1], ["code"])
+        assert.blockAttributes([2, 3], ["code"])
+        assert.blockAttributes([4, 5], ["code"])
+        expectDocument("a\nb\nc\n")
+
+  test "code blocks preserve newlines", (expectDocument) ->
+    typeCharacters "a\nb", ->
+      selectAll ->
+        clickToolbarButton attribute: "code", ->
+          assert.equal getDocument().getBlockCount(), 1
+          assert.blockAttributes([0, 3], ["code"])
+          expectDocument("a\nb\n")
 
   test "code blocks are not indentable", (done) ->
     clickToolbarButton attribute: "code", ->

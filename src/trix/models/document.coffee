@@ -237,7 +237,7 @@ class Trix.Document extends Trix.Object
       document = document.removeLastListAttributeAtRange(range, exceptAttributeName: attributeName)
       {document, range} = document.convertLineBreaksToBlockBreaksInRange(range)
     else if config.terminal
-      {document, range} = document.convertLineBreaksToBlockBreaksInRange(range)
+      document = document.removeLastTerminalAttributeAtRange(range)
     else
       document = document.consolidateBlocksAtRange(range)
 
@@ -249,6 +249,15 @@ class Trix.Document extends Trix.Object
       return unless lastAttributeName = block.getLastAttribute()
       return unless getBlockConfig(lastAttributeName).listAttribute
       return if lastAttributeName is options.exceptAttributeName
+      blockList = blockList.editObjectAtIndex index, ->
+        block.removeAttribute(lastAttributeName)
+    new @constructor blockList
+
+  removeLastTerminalAttributeAtRange: (range) ->
+    blockList = @blockList
+    @eachBlockAtRange range, (block, textRange, index) ->
+      return unless lastAttributeName = block.getLastAttribute()
+      return unless getBlockConfig(lastAttributeName).terminal
       blockList = blockList.editObjectAtIndex index, ->
         block.removeAttribute(lastAttributeName)
     new @constructor blockList
