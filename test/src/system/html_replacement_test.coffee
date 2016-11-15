@@ -56,26 +56,46 @@ testGroup "HTML replacement", ->
         assert.locationRange(index: 0, offset: 2)
         expectDocument("a\n\nc\n")
 
-pressCommandBackspace = ({replaceText}, callback) ->
+    test "a formatted word", (expectDocument) ->
+      getEditor().loadHTML("<div>a<strong>bc</strong></div>")
+      getSelectionManager().setLocationRange(index: 0, offset: 4)
+      pressCommandBackspace replaceElementWithText: "bc", ->
+        assert.locationRange(index: 0, offset: 1)
+        expectDocument("a\n")
+
+pressCommandBackspace = ({replaceText, replaceElementWithText}, callback) ->
   triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 8, which: 8, metaKey: true)
-
   range = rangy.getSelection().getRangeAt(0)
-  range.findText(replaceText, direction: "backward")
-  range.splitBoundaries()
 
-  node = range.getNodes()[0]
-  {previousSibling, nextSibling, parentNode} = node
+  if replaceElementWithText
+    element = getElementWithText(replaceElementWithText)
+    {previousSibling} = element
+    element.parentNode.removeChild(element)
+    range.collapseAfter(previousSibling)
+  else
+    range.findText(replaceText, direction: "backward")
+    range.splitBoundaries()
 
-  if previousSibling?.nodeType is Node.COMMENT_NODE
-    parentNode.removeChild(previousSibling)
+    node = range.getNodes()[0]
+    {previousSibling, nextSibling, parentNode} = node
 
-  node.data = ""
-  parentNode.removeChild(node)
+    if previousSibling?.nodeType is Node.COMMENT_NODE
+      parentNode.removeChild(previousSibling)
 
-  unless parentNode.hasChildNodes()
-    parentNode.appendChild(document.createElement("br"))
+    node.data = ""
+    parentNode.removeChild(node)
 
-  range.collapseBefore(nextSibling ? parentNode.firstChild)
+    unless parentNode.hasChildNodes()
+      parentNode.appendChild(document.createElement("br"))
+
+    range.collapseBefore(nextSibling ? parentNode.firstChild)
+
   range.select()
-
   requestAnimationFrame(callback)
+
+
+getElementWithText = (text) ->
+  for element in document.activeElement.querySelectorAll("*")
+    if element.innerText is text
+      return element
+  null

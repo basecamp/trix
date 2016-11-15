@@ -126,4 +126,6 @@ class Trix.MutationObserver extends Trix.BasicObject
         when Node.ELEMENT_NODE
           if tagName(node) is "br"
             text.push("\n")
+          else
+            text.push(getTextForNodes(node.childNodes)...)
     text

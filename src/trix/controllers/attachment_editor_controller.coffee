@@ -33,7 +33,12 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     undo: => handler.destroy()
 
   addRemoveButton: undoable ->
-    removeButton = makeElement(tagName: "a", textContent: lang.remove, className: classNames.attachment.removeButton, attributes: { href: "#", title: lang.remove })
+    removeButton = makeElement
+      tagName: "a"
+      textContent: lang.remove
+      className: classNames.attachment.removeButton
+      attributes: href: "#", title: lang.remove
+      data: trixMutable: true
     handleEvent("click", onElement: removeButton, withCallback: @didClickRemoveButton)
     do: => @element.appendChild(removeButton)
     undo: => @element.removeChild(removeButton)
