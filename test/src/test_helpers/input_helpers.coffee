@@ -169,7 +169,8 @@ simulateKeypress = (keyName, callback) ->
 
 deleteInDirection = (direction, callback) ->
   if helpers.selectionIsCollapsed()
-    helpers.expandSelection direction, ->
+    getComposition().expandSelectionInDirection(if direction is "left" then "backward" else "forward")
+    helpers.defer ->
       helpers.deleteSelection()
       callback()
   else
