@@ -57,11 +57,11 @@ testGroup "HTML replacement", ->
         expectDocument("a\n\nc\n")
 
     test "a formatted word", (expectDocument) ->
-      getEditor().loadHTML("<div>a <strong>bc</strong></div>")
+      getEditor().loadHTML("<div>a<strong>bc</strong></div>")
       getSelectionManager().setLocationRange(index: 0, offset: 4)
       pressCommandBackspace replaceElementWithText: "bc", ->
-        assert.locationRange(index: 0, offset: 2)
-        expectDocument("a \n")
+        assert.locationRange(index: 0, offset: 1)
+        expectDocument("a\n")
 
 pressCommandBackspace = ({replaceText, replaceElementWithText}, callback) ->
   triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 8, which: 8, metaKey: true)
