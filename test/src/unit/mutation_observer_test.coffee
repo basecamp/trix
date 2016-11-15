@@ -68,3 +68,17 @@ testGroup "Trix.MutationObserver", ->
       assert.equal summaries.length, 1
       assert.deepEqual summaries[0], textDeleted: "\n"
       done()
+
+  observerTest "remove formatted element", html: "a<strong>b</strong>", (done) ->
+    element.removeChild(element.lastChild)
+    defer ->
+      assert.equal summaries.length, 1
+      assert.deepEqual summaries[0], textDeleted: "b"
+      done()
+
+  observerTest "remove nested formatted elements", html: "a<strong>b<em>c</em></strong>", (done) ->
+    element.removeChild(element.lastChild)
+    defer ->
+      assert.equal summaries.length, 1
+      assert.deepEqual summaries[0], textDeleted: "bc"
+      done()
