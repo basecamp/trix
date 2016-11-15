@@ -46,6 +46,18 @@ testGroup "Mutation input", template: "editor_empty", ->
         assert.locationRange index: 0, offset: 0
         expectDocument("\n")
 
+  test "backspacing a block comment node", (expectDocument) ->
+    element = getEditorElement()
+    element.editor.loadHTML("""<blockquote>a</blockquote><div>b</div>""")
+    defer ->
+      element.editor.setSelectedRange(2)
+      triggerEvent(element, "keydown", charCode: 0, keyCode: 8, which: 8)
+      commentNode = element.lastChild.firstChild
+      commentNode.parentNode.removeChild(commentNode)
+      defer ->
+        assert.locationRange index: 0, offset: 1
+        expectDocument("ab\n")
+
   test "typing formatted text with autocapitalization on", (expectDocument) ->
     element = getEditorElement()
 

@@ -1,7 +1,7 @@
 #= require trix/models/document
 #= require trix/models/line_break_insertion
 
-{normalizeRange, rangesAreEqual, objectsAreEqual, arrayStartsWith, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
+{normalizeRange, rangesAreEqual, rangeIsCollapsed, objectsAreEqual, arrayStartsWith, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
 
 class Trix.Composition extends Trix.BasicObject
   constructor: ->
@@ -118,23 +118,26 @@ class Trix.Composition extends Trix.BasicObject
     @insertText(text)
 
   deleteInDirection: (direction) ->
-    range = [startPosition, endPosition] = @getSelectedRange()
+    range = @getSelectedRange()
+    selectionIsCollapsed = rangeIsCollapsed(range)
     block = @getBlock()
 
-    if startPosition is endPosition
-      startLocation = @document.locationFromPosition(startPosition)
-      if direction is "backward" and startLocation.offset is 0
-        if @canDecreaseBlockAttributeLevel()
-          if block.isListItem()
-            @decreaseListLevel()
-          else
-            @decreaseBlockAttributeLevel()
+    if selectionIsCollapsed and direction is "backward"
+      {offset} = @document.locationFromPosition(range[0])
+      deletingIntoPreviousBlock = offset is 0
 
-          @setSelection(startPosition)
-          return if block.isEmpty()
+    if deletingIntoPreviousBlock
+      if @canDecreaseBlockAttributeLevel()
+        if block.isListItem()
+          @decreaseListLevel()
+        else
+          @decreaseBlockAttributeLevel()
 
+        @setSelection(range[0])
+        return false if block.isEmpty()
+
+    if selectionIsCollapsed
       range = @getExpandedRangeInDirection(direction)
-
       if direction is "backward"
         attachment = @getAttachmentAtRange(range)
 
@@ -144,7 +147,7 @@ class Trix.Composition extends Trix.BasicObject
     else
       @setDocument(@document.removeTextAtRange(range))
       @setSelection(range[0])
-      false if block.isListItem()
+      false if deletingIntoPreviousBlock
 
   moveTextFromRange: (range) ->
     [position] = @getSelectedRange()

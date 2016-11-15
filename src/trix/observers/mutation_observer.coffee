@@ -1,4 +1,4 @@
-{defer, findClosestElementFromNode, nodeIsEmptyTextNode, normalizeSpaces, summarizeStringChange, tagName} = Trix
+{defer, findClosestElementFromNode, nodeIsEmptyTextNode, nodeIsBlockStartComment, normalizeSpaces, summarizeStringChange, tagName} = Trix
 
 class Trix.MutationObserver extends Trix.BasicObject
   mutableAttributeName = "data-trix-mutable"
@@ -82,12 +82,24 @@ class Trix.MutationObserver extends Trix.BasicObject
     mutation for mutation in @mutations when mutation.type is type
 
   getTextChangesFromChildList: ->
-    textAdded = []
-    textRemoved = []
+    addedNodes = []
+    removedNodes = []
 
-    for {addedNodes, removedNodes} in @getMutationsByType("childList")
-      textAdded.push(getTextForNodes(addedNodes)...)
-      textRemoved.push(getTextForNodes(removedNodes)...)
+    for mutation in @getMutationsByType("childList")
+      addedNodes.push(mutation.addedNodes...)
+      removedNodes.push(mutation.removedNodes...)
+
+    singleBlockCommentRemoved =
+      addedNodes.length is 0 and
+        removedNodes.length is 1 and
+        nodeIsBlockStartComment(removedNodes[0])
+
+    if singleBlockCommentRemoved
+      textAdded = []
+      textRemoved = ["\n"]
+    else
+      textAdded = getTextForNodes(addedNodes)
+      textRemoved = getTextForNodes(removedNodes)
 
     additions: (normalizeSpaces(text) for text, index in textAdded when text isnt textRemoved[index])
     deletions: (normalizeSpaces(text) for text, index in textRemoved when text isnt textAdded[index])
