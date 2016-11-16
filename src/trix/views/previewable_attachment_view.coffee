@@ -25,10 +25,10 @@ class Trix.PreviewableAttachmentView extends Trix.AttachmentView
 
   updateAttributesForImage: (image) ->
     url = @attachment.getURL()
-    preloadedURL = @attachment.getPreloadedURL()
-    image.src = preloadedURL or url
+    previewURL = @attachment.getPreviewURL()
+    image.src = previewURL or url
 
-    if preloadedURL is url
+    if previewURL is url
       image.removeAttribute("data-trix-serialized-attributes")
     else
       serializedAttributes = JSON.stringify(src: url)
@@ -42,6 +42,6 @@ class Trix.PreviewableAttachmentView extends Trix.AttachmentView
 
   # Attachment delegate
 
-  attachmentDidPreload: ->
+  attachmentDidChangePreviewURL: ->
     @refresh(@image)
     @refresh()
