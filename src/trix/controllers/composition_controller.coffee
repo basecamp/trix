@@ -51,8 +51,11 @@ class Trix.CompositionController extends Trix.BasicObject
     @delegate?.compositionControllerDidRender?()
 
   rerenderViewForObject: (object) ->
-    @documentView.invalidateViewForObject(object)
+    @invalidateViewForObject(object)
     @render()
+
+  invalidateViewForObject: (object) ->
+    @documentView.invalidateViewForObject(object)
 
   isViewCachingEnabled: ->
     @documentView.isViewCachingEnabled()

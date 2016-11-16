@@ -69,6 +69,9 @@ class Trix.EditorController extends Trix.Controller
     @editorElement.notify("attachment-edit", attachment: managedAttachment)
     @editorElement.notify("change")
 
+  compositionDidChangeAttachmentPreviewURL: (attachment) ->
+    @compositionController.invalidateViewForObject(attachment)
+
   compositionDidRemoveAttachment: (attachment) ->
     managedAttachment = @attachmentManager.unmanageAttachment(attachment)
     @editorElement.notify("attachment-remove", attachment: managedAttachment)

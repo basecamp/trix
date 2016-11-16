@@ -120,14 +120,20 @@ class Trix.Attachment extends Trix.Object
     @getAttributes()
 
   getCacheKey: (prependWith) ->
-    parts = [super, @attributes.getCacheKey(), @getPreloadedURL()]
+    parts = [super, @attributes.getCacheKey(), @getPreviewURL()]
     parts.unshift(prependWith) if prependWith
     parts.join("/")
 
   # Previewable
 
-  getPreloadedURL: ->
-    @preloadedURL
+  getPreviewURL: ->
+    @preloadingURL or @previewURL
+
+  setPreviewURL: (url) ->
+    unless url is @getPreviewURL()
+      @previewURL = url
+      @previewDelegate?.attachmentDidChangePreviewURL?(this)
+      @delegate?.attachmentDidChangePreviewURL?(this)
 
   preloadURL: ->
     @preload(@getURL(), @releaseFile)
@@ -143,11 +149,11 @@ class Trix.Attachment extends Trix.Object
       @fileObjectURL = null
 
   preload: (url, callback) ->
-    if url and url isnt @preloadedURL
-      @preloadedURL ?= url
+    if url and url isnt @getPreviewURL()
+      @preloadingURL = url
       operation = new Trix.ImagePreloadOperation url
       operation.then ({width, height}) =>
-        @preloadedURL = url
         @setAttributes({width, height})
-        @previewDelegate?.attachmentDidPreload?()
+        @preloadingURL = null
+        @setPreviewURL(url)
         callback?()
