@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, defer, moveCursor, pressKey, test, testGroup, typeCharacters} = Trix.TestHelpers
+{assert, clickToolbarButton, defer, moveCursor, pressKey, test, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
 
 testGroup "List formatting", template: "editor_empty", ->
   test "creating a new list item", (done) ->
@@ -27,6 +27,14 @@ testGroup "List formatting", template: "editor_empty", ->
             assert.blockAttributes([2, 3], ["bulletList", "bullet"])
             assert.blockAttributes([3, 5], ["bulletList", "bullet"])
             expectDocument("a\n\nb\n")
+
+  test "pressing shift-return at the end of a list item", (expectDocument) ->
+    clickToolbarButton attribute: "bullet", ->
+      typeCharacters "a", ->
+        pressShiftReturn = triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 13, which: 13, shiftKey: true)
+        assert.notOk pressShiftReturn # Assert defaultPrevented
+        assert.blockAttributes([0, 2], ["bulletList", "bullet"])
+        expectDocument("a\n\n")
 
   test "pressing delete at the beginning of a non-empty nested list item", (expectDocument) ->
       clickToolbarButton attribute: "bullet", ->

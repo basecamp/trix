@@ -342,6 +342,8 @@ class Trix.InputController extends Trix.BasicObject
       return: (event) ->
         @delegate?.inputControllerWillPerformTyping()
         @responder?.insertString("\n")
+        @requestRender()
+        event.preventDefault()
 
       tab: (event) ->
         if @responder?.canDecreaseNestingLevel()
