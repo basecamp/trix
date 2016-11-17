@@ -127,7 +127,7 @@ class Trix.Attachment extends Trix.Object
   # Previewable
 
   getPreviewURL: ->
-    @preloadingURL or @previewURL
+    @previewURL or @preloadingURL
 
   setPreviewURL: (url) ->
     unless url is @getPreviewURL()
