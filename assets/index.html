@@ -31,12 +31,18 @@
 
           xhr.onload = function() {
             if (xhr.status === 201) {
-              var url = xhr.responseText;
-              attachment.setAttributes({ url: url, href: url });
+              setTimeout(function() {
+                var url = xhr.responseText;
+                attachment.setAttributes({ url: url, href: url });
+              }, 30)
             }
           };
 
-          xhr.send(attachment.file);
+          attachment.setUploadProgress(10);
+
+          setTimeout(function() {
+            xhr.send(attachment.file);
+          }, 30)
         }
       });
     </script>

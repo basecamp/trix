@@ -433,6 +433,7 @@ class Trix.Composition extends Trix.BasicObject
     @delegate?.compositionDidEditAttachment?(attachment)
 
   attachmentDidChangePreviewURL: (attachment) ->
+    @revision++
     @delegate?.compositionDidChangeAttachmentPreviewURL?(attachment)
 
   # Attachment editing
