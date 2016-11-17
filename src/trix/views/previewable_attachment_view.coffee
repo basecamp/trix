@@ -14,7 +14,6 @@ class Trix.PreviewableAttachmentView extends Trix.AttachmentView
         src: ""
       data:
         trixMutable: true
-        trixStoreKey: @attachment.getCacheKey("imageElement")
 
     @refresh(@image)
     [@image]
@@ -39,6 +38,9 @@ class Trix.PreviewableAttachmentView extends Trix.AttachmentView
 
     image.width = width if width?
     image.height = height if height?
+
+    storeKey = ["imageElement", @attachment.id, image.src, image.width, image.height].join("/")
+    image.dataset.trixStoreKey = storeKey
 
   # Attachment delegate
 

@@ -41,7 +41,7 @@ class Trix.AttachmentView extends Trix.ObjectView
           max: 100
         data:
           trixMutable: true
-          trixStoreKey: @attachment.getCacheKey("progressElement")
+          trixStoreKey: ["progressElement", @attachment.id].join("/")
 
       figure.appendChild(@progressElement)
       data.trixSerialize = false

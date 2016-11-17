@@ -171,8 +171,8 @@ removeWhitespace = (string) ->
     attachment = new Trix.Attachment attrs
     text = Trix.Text.textForAttachmentWithAttributes(attachment)
 
-    key = attachment.getCacheKey("imageElement")
-    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, "data-trix-store-key": key, width: 1, height: 1)
+    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
+    image.dataset.trixStoreKey = ["imageElement", attachment.id, image.src, image.width, image.height].join("/")
 
     caption = Trix.makeElement(tagName: "figcaption", className: classNames.attachment.caption)
     caption.innerHTML = """#{attrs.filename} <span class="#{classNames.attachment.size}">95.9 KB</span>"""
@@ -208,8 +208,8 @@ removeWhitespace = (string) ->
     attachment = new Trix.Attachment attrs
     attachmentText = Trix.Text.textForAttachmentWithAttributes(attachment)
 
-    key = attachment.getCacheKey("imageElement")
-    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, "data-trix-store-key": key, width: 1, height: 1)
+    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
+    image.dataset.trixStoreKey = ["imageElement", attachment.id, image.src, image.width, image.height].join("/")
 
     caption = Trix.makeElement(tagName: "figcaption", className: classNames.attachment.caption)
     caption.innerHTML = """#{attrs.filename} <span class="#{classNames.attachment.size}">95.9 KB</span>"""
@@ -246,8 +246,8 @@ removeWhitespace = (string) ->
     textAttrs = caption: "Example"
     text = Trix.Text.textForAttachmentWithAttributes(attachment, textAttrs)
 
-    key = attachment.getCacheKey("imageElement")
-    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, "data-trix-store-key": key, width: 1, height: 1)
+    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
+    image.dataset.trixStoreKey = ["imageElement", attachment.id, image.src, image.width, image.height].join("/")
 
     caption = Trix.makeElement(tagName: "figcaption", className: "#{classNames.attachment.caption} #{classNames.attachment.captionEdited}", textContent: "Example")
 
@@ -321,7 +321,7 @@ removeWhitespace = (string) ->
         max: 100
       data:
         trixMutable: true
-        trixStoreKey: attachment.getCacheKey("progressElement")
+        trixStoreKey: ["progressElement", attachment.id].join("/")
 
     caption = """<figcaption class="#{classNames.attachment.caption}">#{attrs.filename} <span class="#{classNames.attachment.size}">32.46 MB</span></figcaption>"""
     figure.innerHTML = caption + progress.outerHTML
