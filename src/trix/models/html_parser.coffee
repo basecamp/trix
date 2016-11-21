@@ -96,11 +96,11 @@ class Trix.HTMLParser extends Trix.BasicObject
         @processElement(node)
 
   appendBlockForElement: (element) ->
-    elementIsBlockElement = isBlockElement(element)
+    elementIsBlockElement = @isBlockElement(element)
     currentBlockContainsElement = elementContainsNode(@currentBlockElement, element)
 
-    if elementIsBlockElement and not isBlockElement(element.firstChild)
-      unless isInsignificantTextNode(element.firstChild) and isBlockElement(element.firstElementChild)
+    if elementIsBlockElement and not @isBlockElement(element.firstChild)
+      unless @isInsignificantTextNode(element.firstChild) and @isBlockElement(element.firstElementChild)
         attributes = @getBlockAttributes(element)
         unless currentBlockContainsElement and arraysAreEqual(attributes, @currentBlock.attributes)
           @currentBlock = @appendBlockForAttributesWithElement(attributes, element)
@@ -116,14 +116,14 @@ class Trix.HTMLParser extends Trix.BasicObject
   findParentBlockElement: (element) ->
     {parentElement} = element
     while parentElement and parentElement isnt @containerElement
-      if isBlockElement(parentElement) and parentElement in @blockElements
+      if @isBlockElement(parentElement) and parentElement in @blockElements
         return parentElement
       else
         {parentElement} = parentElement
     null
 
   processTextNode: (node) ->
-    unless isInsignificantTextNode(node)
+    unless @isInsignificantTextNode(node)
       string = node.data
       unless elementCanDisplayPreformattedText(node.parentNode)
         string = squishBreakableWhitespace(string)
@@ -143,7 +143,7 @@ class Trix.HTMLParser extends Trix.BasicObject
     else
       switch tagName(element)
         when "br"
-          unless isExtraBR(element) or isBlockElement(element.nextSibling)
+          unless @isExtraBR(element) or @isBlockElement(element.nextSibling)
             @appendStringWithAttributes("\n", @getTextAttributes(element))
           @processedElements.push(element)
         when "img"
@@ -216,7 +216,7 @@ class Trix.HTMLParser extends Trix.BasicObject
   getTextAttributes: (element) ->
     attributes = {}
     for attribute, config of Trix.config.textAttributes
-      if config.tagName and findClosestElementFromNode(element, matchingSelector: config.tagName)
+      if config.tagName and findClosestElementFromNode(element, matchingSelector: config.tagName, untilNode: @containerElement)
         attributes[attribute] = true
       else if config.parser
         if value = config.parser(element)
@@ -267,20 +267,20 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   # Element inspection
 
-  isBlockElement = (element) ->
+  isBlockElement: (element) ->
     return unless element?.nodeType is Node.ELEMENT_NODE
-    return if findClosestElementFromNode(element, matchingSelector: "td")
+    return if findClosestElementFromNode(element, matchingSelector: "td", untilNode: @containerElement)
     tagName(element) in getBlockTagNames() or window.getComputedStyle(element).display is "block"
 
-  isInsignificantTextNode = (node) ->
+  isInsignificantTextNode: (node) ->
     return unless node?.nodeType is Node.TEXT_NODE
     return unless stringIsAllBreakableWhitespace(node.data)
     return if elementCanDisplayPreformattedText(node.parentNode)
-    not node.previousSibling or isBlockElement(node.previousSibling) or not node.nextSibling or isBlockElement(node.nextSibling)
+    not node.previousSibling or @isBlockElement(node.previousSibling) or not node.nextSibling or @isBlockElement(node.nextSibling)
 
-  isExtraBR = (element) ->
+  isExtraBR: (element) ->
     tagName(element) is "br" and
-      isBlockElement(element.parentNode) and
+      @isBlockElement(element.parentNode) and
       element.parentNode.lastChild is element
 
   elementCanDisplayPreformattedText = (element) ->
