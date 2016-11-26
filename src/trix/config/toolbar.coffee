@@ -7,6 +7,7 @@ Trix.config.toolbar =
       <span class="button_group text_tools">
         <button type="button" class="bold" data-trix-attribute="bold" data-trix-key="b" title="#{lang.bold}">#{lang.bold}</button>
         <button type="button" class="italic" data-trix-attribute="italic" data-trix-key="i" title="#{lang.italic}">#{lang.italic}</button>
+        <button type="button" class="underline" data-trix-attribute="underline" data-trix-key="u" title="#{lang.underline}">#{lang.underline}</button>
         <button type="button" class="strike" data-trix-attribute="strike" title="#{lang.strike}">#{lang.strike}</button>
         <button type="button" class="link" data-trix-attribute="href" data-trix-action="link" data-trix-key="k" title="#{lang.link}">#{lang.link}</button>
       </span>
