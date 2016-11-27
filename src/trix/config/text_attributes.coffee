@@ -17,7 +17,9 @@ Trix.config.textAttributes =
       {attachmentSelector} = Trix.AttachmentView
       matchingSelector = "a:not(#{attachmentSelector})"
       if link = Trix.findClosestElementFromNode(element, {matchingSelector})
-        {href: link.getAttribute("href"), target: link.getAttribute("target")}
+        {href: link.getAttribute("href"),
+				 target: link.getAttribute("target"),
+				 'data-is-wrapping-image': [...link.children].find(e => e.tagName === 'IMG') ? true : false }
   strike:
     tagName: "del"
     inheritable: true
