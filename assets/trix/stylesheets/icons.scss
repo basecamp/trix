@@ -1,37 +1,14 @@
-trix-toolbar button.icon {
-  &::before {
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-  }
-
-  &.bold::before { background-image: svgo-data-uri('trix/images/bold.svg', $precision: 1); }
-  &.italic::before { background-image: svgo-data-uri('trix/images/italic.svg', $precision: 1); }
-  &.link::before { background-image: svgo-data-uri('trix/images/link.svg', $precision: 2); }
-  &.strike::before { background-image: svgo-data-uri('trix/images/strike.svg', $precision: 2); }
-  &.quote::before { background-image: svgo-data-uri('trix/images/quote.svg', $precision: 0); }
-  &.heading-1::before { background-image: svgo-data-uri('trix/images/heading_1.svg', $precision: 0); }
-  &.code::before { background-image: svgo-data-uri('trix/images/code.svg', $precision: 1); }
-  &.bullets::before { background-image: svgo-data-uri('trix/images/bullets.svg', $precision: 0); }
-  &.numbers::before { background-image: svgo-data-uri('trix/images/numbers.svg', $precision: 1); }
-  &.nesting-level, &.block-level {
-    &.decrease::before { background-image: svgo-data-uri('trix/images/block_level_decrease.svg', $precision: 1); }
-    &.increase::before { background-image: svgo-data-uri('trix/images/block_level_increase.svg', $precision: 1); }
-  }
-  &.undo::before { background-image: svgo-data-uri('trix/images/undo.svg', $precision: 1); }
-  &.redo::before { background-image: svgo-data-uri('trix/images/redo.svg', $precision: 1); }
-}
-
-trix-editor {
-  [data-trix-mutable=true] {
-    button.icon {
-      &::before {
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: contain;
-      }
-
-      &.remove::before { background-image: svgo-data-uri('trix/images/remove.svg', $precision: 1); }
-    }
-  }
-}
+$icon-block-level-decrease: svgo-data-uri('trix/images/block_level_decrease.svg', $precision: 1);
+$icon-block-level-increase: svgo-data-uri('trix/images/block_level_increase.svg', $precision: 1);
+$icon-bold: svgo-data-uri('trix/images/bold.svg', $precision: 1);
+$icon-bullets: svgo-data-uri('trix/images/bullets.svg', $precision: 0);
+$icon-code: svgo-data-uri('trix/images/code.svg', $precision: 1);
+$icon-heading-1: svgo-data-uri('trix/images/heading_1.svg', $precision: 0);
+$icon-italic: svgo-data-uri('trix/images/italic.svg', $precision: 1);
+$icon-link: svgo-data-uri('trix/images/link.svg', $precision: 2);
+$icon-numbers: svgo-data-uri('trix/images/numbers.svg', $precision: 1);
+$icon-quote: svgo-data-uri('trix/images/quote.svg', $precision: 0);
+$icon-redo: svgo-data-uri('trix/images/redo.svg', $precision: 1);
+$icon-remove: svgo-data-uri('trix/images/remove.svg', $precision: 1);
+$icon-strike: svgo-data-uri('trix/images/strike.svg', $precision: 2);
+$icon-undo: svgo-data-uri('trix/images/undo.svg', $precision: 1);

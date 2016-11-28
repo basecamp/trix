@@ -1,3 +1,5 @@
+@import "./icons";
+
 trix-editor {
   [data-trix-mutable=true] {
     -webkit-user-select: none;
@@ -57,6 +59,10 @@ trix-editor {
           left: 1px;
           opacity: 0.6;
           content: "";
+          background-image: $icon-remove;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: contain;
         }
       }
 
