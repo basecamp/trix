@@ -1,3 +1,4 @@
+@import "./media-queries";
 @import "./icons";
 
 $font-size-normal: 0.75rem;
@@ -52,8 +53,12 @@ trix-toolbar {
         width: 2.6em;
         height: 1.6em;
         max-width: calc(0.8em + 4vw);
-        max-height: calc(0.8em + 4vw);
         text-indent: -9999px;
+
+        @include phone {
+          height: 2em;
+          max-width: calc(0.8em + 3.5vw);
+        }
 
         &::before {
           display: inline-block;
@@ -67,6 +72,11 @@ trix-toolbar {
           background-position: center;
           background-repeat: no-repeat;
           background-size: contain;
+
+          @include phone {
+            right: 6%;
+            left: 6%;
+          }
         }
 
         &.bold::before { background-image: $icon-bold; }
@@ -101,7 +111,7 @@ trix-toolbar {
         padding: 0 0.5em;
         color: rgba(0,0,0, $opacity-normal);
 
-        @media(max-width: 767px) {
+        @include phone {
           letter-spacing: -0.01em;
           padding: 0 0.3em;
         }
