@@ -27,7 +27,7 @@ GEM
       thor (~> 0.19.1)
       useragent (~> 0.16.7)
     blade-qunit_adapter (2.0.1)
-    blade-sauce_labs_plugin (0.6.1)
+    blade-sauce_labs_plugin (0.6.2)
       childprocess
       faraday
       selenium-webdriver
@@ -104,7 +104,7 @@ GEM
     rake (10.0.4)
     rubyzip (1.2.0)
     sass (3.4.3)
-    selenium-webdriver (3.0.1)
+    selenium-webdriver (3.0.3)
       childprocess (~> 0.5)
       rubyzip (~> 1.0)
       websocket (~> 1.0)
