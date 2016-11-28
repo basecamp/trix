@@ -80,9 +80,9 @@ trix-toolbar {
         &.numbers::before { background-image: $icon-numbers; }
         &.undo::before { background-image: $icon-undo; }
         &.redo::before { background-image: $icon-redo; }
-        &.nesting-level, &.block-level {
-          &.decrease::before { background-image: $icon-block-level-decrease; }
-          &.increase::before { background-image: $icon-block-level-increase }
+        &.nesting-level {
+          &.decrease::before { background-image: $icon-nesting-level-decrease; }
+          &.increase::before { background-image: $icon-nesting-level-increase; }
         }
 
         &.active::before {
