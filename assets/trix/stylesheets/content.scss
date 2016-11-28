@@ -46,14 +46,15 @@
 
   .attachment {
     position: relative;
-    display: inline-block;
+    display: table;
     max-width: 100%;
     margin: 0;
     padding: 0;
     color: #666;
 
     .caption {
-      display: block;
+      display: table-caption;
+      caption-side: bottom;
       margin: 0.1rem auto 0 auto;
       padding: 0;
       text-align: center;
