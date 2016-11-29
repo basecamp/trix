@@ -3,7 +3,7 @@
 
 Trix.config.toolbar =
   content: makeFragment """
-    <div class="button_groups">
+    <div class="button_row">
       <span class="button_group text_tools">
         <button type="button" class="icon bold" data-trix-attribute="bold" data-trix-key="b" title="#{lang.bold}">#{lang.bold}</button>
         <button type="button" class="icon italic" data-trix-attribute="italic" data-trix-key="i" title="#{lang.italic}">#{lang.italic}</button>
