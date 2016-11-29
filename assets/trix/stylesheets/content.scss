@@ -46,15 +46,12 @@
 
   .attachment {
     position: relative;
-    display: table;
     max-width: 100%;
     margin: 0;
     padding: 0;
     color: #666;
 
     .caption {
-      display: table-caption;
-      caption-side: bottom;
       margin: 0.1rem auto 0 auto;
       padding: 0;
       text-align: center;
@@ -66,7 +63,17 @@
       }
     }
 
+    &.attachment-preview {
+      display: table;
+
+      .caption {
+        display: table-caption;
+        caption-side: bottom;
+      }
+    }
+
     &.attachment-file {
+      display: inline-block;
       color: #333;
       line-height: 1;
       padding: 0.4rem 1rem;
