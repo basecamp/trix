@@ -166,6 +166,7 @@ trix-toolbar {
 
       .button_group {
         input[type=button] {
+          font-size: inherit;
           padding: 0.5em;
           border-bottom: none;
         }
