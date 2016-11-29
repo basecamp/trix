@@ -52,10 +52,8 @@
     max-width: 100%;
     margin: 0;
     padding: 0;
-    color: #666;
 
     .caption {
-      margin: 0.1em auto 0 auto;
       padding: 0;
       text-align: center;
 
@@ -67,11 +65,15 @@
     }
 
     &.attachment-preview {
-      display: inline-table;
+      display: table;
+      margin: 0 auto;
 
       .caption {
         display: table-caption;
         caption-side: bottom;
+        color: #666;
+        font-size: 0.9em;
+        line-height: 1.1em;
       }
     }
 
@@ -79,13 +81,10 @@
       display: inline-block;
       color: #333;
       line-height: 1;
+      margin: 0 2px 2px 0;
       padding: 0.4em 1em;
       border: 1px solid #bbb;
       border-radius: 5px;
-
-      .caption {
-        margin-bottom: 0.1em;
-      }
     }
   }
 }
