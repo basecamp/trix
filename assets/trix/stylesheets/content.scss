@@ -5,16 +5,16 @@
   }
 
   blockquote {
-    margin: 0 0 0 0.3rem;
-    padding: 0 0 0 0.6rem;
-    border-left: 0.3rem solid #ccc;
+    margin: 0 0 0 0.3em;
+    padding: 0 0 0 0.6em;
+    border-left: 0.3em solid #ccc;
   }
 
   pre {
     font-family: monospace;
-    font-size: 0.8rem;
+    font-size: 0.9em;
     margin: 0;
-    padding: 0.5rem;
+    padding: 0.5em;
     white-space: pre;
     background-color: #eee;
     overflow-x: auto;
@@ -25,7 +25,7 @@
     padding: 0;
 
     li {
-      margin-left: 1rem;
+      margin-left: 1em;
     }
   }
 
@@ -52,7 +52,7 @@
     color: #666;
 
     .caption {
-      margin: 0.1rem auto 0 auto;
+      margin: 0.1em auto 0 auto;
       padding: 0;
       text-align: center;
 
@@ -76,12 +76,12 @@
       display: inline-block;
       color: #333;
       line-height: 1;
-      padding: 0.4rem 1rem;
+      padding: 0.4em 1em;
       border: 1px solid #bbb;
       border-radius: 5px;
 
       .caption {
-        margin-bottom: 0.1rem;
+        margin-bottom: 0.1em;
       }
     }
   }

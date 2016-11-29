@@ -1,7 +1,7 @@
 @import "./media-queries";
 @import "./icons";
 
-$font-size-normal: 0.75rem;
+$font-size-normal: 0.75em;
 $opacity-normal: 0.6;
 $opacity-disabled: 0.125;
 $opacity-active: 1;
@@ -138,7 +138,7 @@ trix-toolbar {
       font-size: $font-size-normal;
       padding: 15px 10px;
       background: #fff;
-      box-shadow: 0 0.3rem 1rem #ccc;
+      box-shadow: 0 0.3em 1em #ccc;
       border-top: 2px solid #888;
       border-radius: 5px;
       z-index: 5;

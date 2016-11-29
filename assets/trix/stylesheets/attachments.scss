@@ -39,12 +39,14 @@ trix-editor {
         text-indent: -9999px;
         display: block;
         position: absolute;
-        top: -0.8rem;
-        right: -0.8rem;
-        width: 1.2rem;
-        height: 1.2rem;
-        line-height: 1.2rem;
-        border-radius: 1.2rem;
+        padding: 0;
+        margin: 0;
+        top: -0.9em;
+        right: -0.9em;
+        width: 1.8em;
+        height: 1.8em;
+        line-height: 1.8em;
+        border-radius: 50%;
         text-indent: -9999px;
         background-color: #fff;
         border: 2px solid highlight;
@@ -53,10 +55,10 @@ trix-editor {
         &::before {
           display: inline-block;
           position: absolute;
-          top: 1px;
-          right: 1px;
-          bottom: 1px;
-          left: 1px;
+          top: 0.1em;
+          right: 0.1em;
+          bottom: 0.1em;
+          left: 0.1em;
           opacity: 0.6;
           content: "";
           background-image: $icon-remove;
