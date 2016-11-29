@@ -24,6 +24,7 @@ require:
 
 plugins:
   sauce_labs:
+    tunnel_timeout: 120
     browsers:
       Google Chrome:
         os: Mac, Windows
