@@ -18,6 +18,10 @@ build:
   path: dist
   js_compressor: uglifier
 
+require:
+  - sprockets/export
+  - sprockets/svgo
+
 plugins:
   sauce_labs:
     browsers:

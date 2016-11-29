@@ -1,22 +1,26 @@
 .trix-content {
+  line-height: 1.5;
+
   h1 {
-    font-size: 1.6em;
-    margin: 10px 0;
+    font-size: 1.2em;
+    line-height: 1.2;
+    margin: 0;
   }
 
   blockquote {
-    margin: 0 0 0 5px;
-    padding: 0 0 0 10px;
-    border-left: 5px solid #ccc;
+    margin: 0 0 0 0.3em;
+    padding: 0 0 0 0.6em;
+    border-left: 0.3em solid #ccc;
   }
 
   pre {
     font-family: monospace;
-    font-size: 12px;
+    font-size: 0.9em;
     margin: 0;
-    padding: 10px;
-    white-space: pre-wrap;
+    padding: 0.5em;
+    white-space: pre;
     background-color: #eee;
+    overflow-x: auto;
   }
 
   ul, ol, li {
@@ -24,7 +28,7 @@
     padding: 0;
 
     li {
-      margin-left: 20px;
+      margin-left: 1em;
     }
   }
 
@@ -45,24 +49,13 @@
 
   .attachment {
     position: relative;
-    display: inline-block;
     max-width: 100%;
     margin: 0;
     padding: 0;
     color: #666;
-    font-size: 13px;
-
-    &.attachment-file {
-      color: #333;
-      line-height: 30px;
-      padding: 0 16px;
-      border: 1px solid #bbb;
-      border-radius: 5px;
-    }
 
     .caption {
-      display: block;
-      margin: 4px auto 0 auto;
+      margin: 0.1em auto 0 auto;
       padding: 0;
       text-align: center;
 
@@ -70,6 +63,28 @@
         &:before {
           content: ' · ';
         }
+      }
+    }
+
+    &.attachment-preview {
+      display: inline-table;
+
+      .caption {
+        display: table-caption;
+        caption-side: bottom;
+      }
+    }
+
+    &.attachment-file {
+      display: inline-block;
+      color: #333;
+      line-height: 1;
+      padding: 0.4em 1em;
+      border: 1px solid #bbb;
+      border-radius: 5px;
+
+      .caption {
+        margin-bottom: 0.1em;
       }
     }
   }

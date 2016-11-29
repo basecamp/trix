@@ -1,3 +1,5 @@
+@import "./icons";
+
 trix-editor {
   [data-trix-mutable=true] {
     -webkit-user-select: none;
@@ -5,38 +7,71 @@ trix-editor {
     -ms-user-select: none;
     user-select: none;
 
+    ::-moz-selection {
+      background: none;
+    }
+
     img {
       box-shadow: 0 0 0 2px highlight;
+    }
+
+    &.attachment.attachment-file {
+      box-shadow: 0 0 0 2px highlight;
+      border-color: transparent;
     }
   }
 
   .attachment {
-    .remove {
-      display: block;
-      position: absolute;
-      top: -12px;
-      right: -12px;
-      width: 24px;
-      height: 24px;
-      border-radius: 24px;
-      line-height: 22px;
-      font-size: 0;
-      color: black;
-      text-align: center;
-      text-decoration: none;
-      background-color: #fff;
-      border: 1px solid #bbb;
-      box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+    &:hover {
+      cursor: default;
+    }
 
-      &:after {
-        content: '×';
-        font-size: 18px;
-        font-weight: bold;
-        opacity: 0.6;
+    &.attachment-preview {
+      .caption:hover {
+        cursor: text;
+      }
+    }
+
+    button.remove {
+      cursor: pointer;
+
+      &.icon {
+        text-indent: -9999px;
+        display: block;
+        position: absolute;
+        padding: 0;
+        margin: 0;
+        top: -0.9em;
+        right: -0.9em;
+        width: 1.8em;
+        height: 1.8em;
+        line-height: 1.8em;
+        border-radius: 50%;
+        text-indent: -9999px;
+        background-color: #fff;
+        border: 2px solid highlight;
+        box-shadow: -2px 2px 6px rgba(0, 0, 0, 0.12);
+
+        &::before {
+          display: inline-block;
+          position: absolute;
+          top: 0.1em;
+          right: 0.1em;
+          bottom: 0.1em;
+          left: 0.1em;
+          opacity: 0.6;
+          content: "";
+          background-image: $icon-remove;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: contain;
+        }
       }
 
       &:hover {
-        &:after {
+        border-color: #333;
+
+        &::before {
           opacity: 1;
         }
       }
@@ -45,11 +80,14 @@ trix-editor {
     .caption {
       &.caption-editing {
         textarea {
+          display: block;
           width: 100%;
           margin: 0;
           padding: 0;
-          font-size: 13px;
-          line-height: 13px;
+          font-size: inherit;
+          font-family: inherit;
+          line-height: inherit;
+          color: inherit;
           text-align: center;
           border: none;
           outline: none;
