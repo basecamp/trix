@@ -48,6 +48,7 @@
   }
 
   .attachment {
+    display: inline-block;
     position: relative;
     max-width: 100%;
     margin: 0;
@@ -65,12 +66,10 @@
     }
 
     &.attachment-preview {
-      display: table;
-      margin: 0 auto;
+      width: 100%;
+      text-align: center;
 
       .caption {
-        display: table-caption;
-        caption-side: bottom;
         color: #666;
         font-size: 0.9em;
         line-height: 1.1em;
@@ -78,7 +77,6 @@
     }
 
     &.attachment-file {
-      display: inline-block;
       color: #333;
       line-height: 1;
       margin: 0 2px 2px 0;
