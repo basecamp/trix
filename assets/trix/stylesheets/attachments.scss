@@ -81,7 +81,7 @@ trix-editor {
     .caption {
       &.caption-editing {
         textarea {
-          display: block;
+          display: inline-block;
           width: 100%;
           margin: 0;
           padding: 0;
@@ -90,6 +90,7 @@ trix-editor {
           line-height: inherit;
           color: inherit;
           text-align: center;
+          vertical-align: top;
           border: none;
           outline: none;
           -webkit-appearance: none;
