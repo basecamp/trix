@@ -98,5 +98,15 @@ trix-editor {
         }
       }
     }
+
+    progress {
+      position: absolute;
+      z-index: 1;
+      height: 20px;
+      top: calc(50% - 10px);
+      left: 5%;
+      width: 90%;
+      opacity: 0.9;
+    }
   }
 }
