@@ -245,7 +245,16 @@ class Trix.InputController extends Trix.BasicObject
           @delegate?.inputControllerDidPaste(pasteData)
         return
 
-      if dataTransferIsPlainText(paste)
+      if href = paste.getData("URL")
+        string = paste.getData("public.url-name") or href
+        pasteData.string = string
+        @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())
+        @delegate?.inputControllerWillPasteText(pasteData)
+        @responder?.insertText(Trix.Text.textForStringWithAttributes(string, {href}))
+        @requestRender()
+        @delegate?.inputControllerDidPaste(pasteData)
+
+      else if dataTransferIsPlainText(paste)
         string = paste.getData("text/plain")
         pasteData.string = string
         @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())
@@ -258,14 +267,6 @@ class Trix.InputController extends Trix.BasicObject
         pasteData.html = html
         @delegate?.inputControllerWillPasteText(pasteData)
         @responder?.insertHTML(html)
-        @requestRender()
-        @delegate?.inputControllerDidPaste(pasteData)
-
-      else if href = paste.getData("URL")
-        pasteData.string = href
-        @setInputSummary(textAdded: href, didDelete: @selectionIsExpanded())
-        @delegate?.inputControllerWillPasteText(pasteData)
-        @responder?.insertText(Trix.Text.textForStringWithAttributes(href, {href}))
         @requestRender()
         @delegate?.inputControllerDidPaste(pasteData)
 

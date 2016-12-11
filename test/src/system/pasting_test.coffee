@@ -41,6 +41,16 @@ testGroup "Pasting", template: "editor_empty", ->
         assert.textAttributes([1, 18], href: "http://example.com")
         expectDocument "ahttp://example.com\n"
 
+  test "paste URL with name", (expectDocument) ->
+    pasteData =
+      "URL": "http://example.com"
+      "public.url-name": "Example"
+      "text/plain": "http://example.com"
+
+    pasteContent pasteData, ->
+      assert.textAttributes([0, 7], href: "http://example.com")
+      expectDocument "Example\n"
+
   test "paste complex html into formatted block", (done) ->
     typeCharacters "abc", ->
       clickToolbarButton attribute: "quote", ->
