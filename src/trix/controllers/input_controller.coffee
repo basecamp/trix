@@ -119,7 +119,7 @@ class Trix.InputController extends Trix.BasicObject
     Promise.all(operations).then (files) =>
       @handleInput ->
         @delegate?.inputControllerWillAttachFiles()
-        @responder?.insertFile(file) for file in files
+        @responder?.insertFiles(files)
         @requestRender()
 
   # Input handlers
