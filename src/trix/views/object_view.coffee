@@ -36,7 +36,8 @@ class Trix.ObjectView extends Trix.BasicObject
   recordChildView: (view) ->
     view.parentView = this
     view.rootView = @rootView
-    @childViews.push(view)
+    unless view in @childViews
+      @childViews.push(view)
     view
 
   getAllChildViews: ->
