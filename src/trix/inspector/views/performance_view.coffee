@@ -11,6 +11,7 @@ Trix.Inspector.registerView class extends Trix.Inspector.View
     @data = {}
     @track("documentView.render")
     @track("documentView.sync")
+    @track("documentView.garbageCollectCachedViews")
     @track("composition.replaceHTML")
 
     @render()
