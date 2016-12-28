@@ -191,7 +191,8 @@ class Trix.Composition extends Trix.BasicObject
   # Current attributes
 
   hasCurrentAttribute: (attributeName) ->
-    @currentAttributes[attributeName]?
+    value = @currentAttributes[attributeName]
+    value? and value isnt false
 
   toggleCurrentAttribute: (attributeName) ->
     if value = not @currentAttributes[attributeName]

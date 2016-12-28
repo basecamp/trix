@@ -100,6 +100,13 @@ testGroup "Custom element API", template: "editor_empty", ->
               assert.notOk editor.attributeIsActive("bold")
               done()
 
+  test "disabled attributes aren't considered active", (done) ->
+    {editor} = getEditorElement()
+    editor.activateAttribute("heading1")
+    assert.notOk editor.attributeIsActive("code")
+    assert.notOk editor.attributeIsActive("quote")
+    done()
+
   test "element triggers trix-selection-change events when the location range changes", (done) ->
     element = getEditorElement()
     eventCount = 0
