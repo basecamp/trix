@@ -20,11 +20,13 @@ testGroup "Toolbar configuration", ->
     assert.equal button.textContent, "Bold!"
     done()
 
-  configTest "single toolbar button group and button", ->
-    Trix.config.toolbar.groups = [ ["bold"] ]
+  configTest "single toolbar row, group, and button", ->
+    Trix.config.toolbar.rows = [ [ ["bold"] ] ]
   , (done) ->
+    rows = findAll(".button-row")
     groups = findAll(".button-group")
     buttons = findAll(".button")
+    assert.equal rows.length, 1
     assert.equal groups.length, 1
     assert.equal buttons.length, 1
     assert.equal buttons[0].title, "Bold"
@@ -32,17 +34,36 @@ testGroup "Toolbar configuration", ->
     assert.ok buttons[0].classList.contains("button-bold")
     done()
 
-  configTest "multiple toolbar button groups and buttons", ->
-    Trix.config.toolbar.groups = [ ["italic", "bold"], ["quote"] ]
+  configTest "single toolbar row with multiple groups and buttons", ->
+    Trix.config.toolbar.rows = [ [ ["italic", "bold"], ["quote"] ] ]
   , (done) ->
+    rows = findAll(".button-row")
     groups = findAll(".button-group")
     buttons = findAll(".button")
+    assert.equal rows.length, 1
     assert.equal groups.length, 2
     assert.equal buttons.length, 3
     assert.ok groups[0].querySelector(".button-italic")
     assert.ok groups[0].querySelector(".button-bold")
     assert.ok groups[1].querySelector(".button-quote")
     done()
+
+    configTest "multiple toolbar rows", ->
+      Trix.config.toolbar.rows = [
+        [ ["italic", "bold"] ]
+        [ ["quote"] ]
+      ]
+    , (done) ->
+      rows = findAll(".button-row")
+      groups = findAll(".button-group")
+      buttons = findAll(".button")
+      assert.equal rows.length, 2
+      assert.equal groups.length, 2
+      assert.equal buttons.length, 3
+      assert.ok rows[0].querySelector(".button-italic")
+      assert.ok rows[0].querySelector(".button-bold")
+      assert.ok rows[1].querySelector(".button-quote")
+      done()
 
   configTest "toolbar dialog function", ->
     Trix.config.toolbar.buttons.link.dialog = -> "link!"

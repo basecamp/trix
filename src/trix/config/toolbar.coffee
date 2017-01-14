@@ -18,12 +18,14 @@ Trix.config.toolbar =
       dialog: -> """
         <input type="url" required name="href" placeholder="#{lang.urlPlaceholder}">
         <div class="button-group">
-          <input type="button" value="#{lang.link}" data-method="setAttribute">
-          <input type="button" value="#{lang.unlink}" data-method="removeAttribute">
+          <input type="button" class="button" value="#{lang.link}" data-trix-method="setAttribute">
+          <input type="button" class="button" value="#{lang.unlink}" data-trix-method="removeAttribute">
         </div>
       """
 
     # Block
+    heading1:
+      attribute: "heading1"
     quote:
       attribute: "quote"
     code:
@@ -33,9 +35,9 @@ Trix.config.toolbar =
     numbers:
       attribute: "number"
     outdent:
-      action: "decreaseBlockLevel"
+      action: "decreaseNestingLevel"
     indent:
-      action: "increaseBlockLevel"
+      action: "increaseNestingLevel"
 
     # History
     undo:
@@ -45,8 +47,10 @@ Trix.config.toolbar =
       action: "redo"
       key: "shift+z"
 
-  groups: [
-    ["bold", "italic", "strike", "link"]
-    ["quote", "code", "bullets", "numbers", "outdent", "indent"]
-    ["undo", "redo"]
+  rows: [
+    [
+      ["bold", "italic", "strike", "link"]
+      ["heading1", "quote", "code", "bullets", "numbers", "outdent", "indent"]
+      ["undo", "redo"]
+    ]
   ]
