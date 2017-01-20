@@ -42,4 +42,4 @@ plugins:
       iPhone:
         version: [9.2, 8.4]
       Motorola Droid 4 Emulator:
-        version: [5.1, 4.4]
+        version: [5.1]
