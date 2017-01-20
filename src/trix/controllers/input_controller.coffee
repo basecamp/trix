@@ -2,9 +2,7 @@
 #= require trix/operations/file_verification_operation
 #= require trix/controllers/input/composition_input
 
-{handleEvent, findClosestElementFromNode, findElementFromContainerAndOffset,
-  defer, makeElement, innerElementIsActive, summarizeStringChange, objectsAreEqual,
-  tagName} = Trix
+{handleEvent, makeElement, innerElementIsActive, objectsAreEqual, tagName} = Trix
 
 class Trix.InputController extends Trix.BasicObject
   pastedFileCount = 0

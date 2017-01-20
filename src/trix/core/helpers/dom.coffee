@@ -87,10 +87,6 @@ Trix.extend
     childIndex++ while node = node.previousSibling
     childIndex
 
-  measureElement: (element) ->
-    width:  element.offsetWidth
-    height: element.offsetHeight
-
   walkTree: (tree, {onlyNodesOfType, usingFilter, expandEntityReferences} = {}) ->
     whatToShow = switch onlyNodesOfType
       when "element" then NodeFilter.SHOW_ELEMENT
