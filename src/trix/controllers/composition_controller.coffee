@@ -1,7 +1,7 @@
 #= require trix/controllers/attachment_editor_controller
 #= require trix/views/document_view
 
-{handleEvent, tagName, findClosestElementFromNode, innerElementIsActive, defer}  = Trix
+{handleEvent, innerElementIsActive, defer}  = Trix
 
 {attachmentSelector} = Trix.AttachmentView
 

@@ -1,5 +1,5 @@
-{elementContainsNode, findChildIndexOfNode, findClosestElementFromNode, findNodeFromContainerAndOffset,
- nodeIsBlockStart, nodeIsBlockStartComment, nodeIsBlockContainer, nodeIsCursorTarget,
+{elementContainsNode, findChildIndexOfNode, nodeIsBlockStart,
+ nodeIsBlockStartComment, nodeIsBlockContainer, nodeIsCursorTarget,
  nodeIsEmptyTextNode, nodeIsTextNode, nodeIsAttachmentElement, tagName, walkTree} = Trix
 
 class Trix.LocationMapper

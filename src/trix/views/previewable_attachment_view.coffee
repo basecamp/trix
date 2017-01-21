@@ -1,6 +1,6 @@
 #= require trix/views/attachment_view
 
-{defer, makeElement, measureElement} = Trix
+{makeElement} = Trix
 
 class Trix.PreviewableAttachmentView extends Trix.AttachmentView
   constructor: ->

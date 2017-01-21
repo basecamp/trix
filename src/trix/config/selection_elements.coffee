@@ -1,4 +1,4 @@
-{makeElement, defer} = Trix
+{makeElement} = Trix
 
 prototypes =
   cursorTarget:

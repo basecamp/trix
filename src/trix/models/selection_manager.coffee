@@ -2,9 +2,9 @@
 #= require trix/models/point_mapper
 #= require trix/observers/selection_change_observer
 
-{getDOMSelection, getDOMRange, setDOMRange, defer, elementContainsNode,
- nodeIsCursorTarget, innerElementIsActive, handleEvent, handleEventOnce,
- normalizeRange, rangeIsCollapsed, rangesAreEqual} = Trix
+{getDOMSelection, getDOMRange, setDOMRange, elementContainsNode,
+ nodeIsCursorTarget, innerElementIsActive, handleEvent, normalizeRange,
+ rangeIsCollapsed, rangesAreEqual} = Trix
 
 class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
