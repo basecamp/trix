@@ -126,16 +126,19 @@ class Trix.Composition extends Trix.BasicObject
     @insertText(text)
 
   deleteInDirection: (direction) ->
+    locationRange = @getLocationRange()
     range = @getSelectedRange()
     selectionIsCollapsed = rangeIsCollapsed(range)
-    block = @getBlock()
 
-    if selectionIsCollapsed and direction is "backward"
-      {offset} = @document.locationFromPosition(range[0])
-      deletingIntoPreviousBlock = offset is 0
+    if selectionIsCollapsed
+      deletingIntoPreviousBlock = direction is "backward" and locationRange[0].offset is 0
+    else
+      selectionSpansBlocks = locationRange[0].index isnt locationRange[1].index
 
     if deletingIntoPreviousBlock
       if @canDecreaseBlockAttributeLevel()
+        block = @getBlock()
+
         if block.isListItem()
           @decreaseListLevel()
         else
@@ -155,7 +158,7 @@ class Trix.Composition extends Trix.BasicObject
     else
       @setDocument(@document.removeTextAtRange(range))
       @setSelection(range[0])
-      false if deletingIntoPreviousBlock
+      false if deletingIntoPreviousBlock or selectionSpansBlocks
 
   moveTextFromRange: (range) ->
     [position] = @getSelectedRange()
