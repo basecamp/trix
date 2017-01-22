@@ -427,6 +427,7 @@ class Trix.Composition extends Trix.BasicObject
   refreshAttachments: ->
     attachments = @document.getAttachments()
     {added, removed} = summarizeArrayChange(@attachments, attachments)
+    @attachments = attachments
 
     for attachment in removed
       attachment.delegate = null
@@ -435,8 +436,6 @@ class Trix.Composition extends Trix.BasicObject
     for attachment in added
       attachment.delegate = this
       @delegate?.compositionDidAddAttachment?(attachment)
-
-    @attachments = attachments
 
   # Attachment delegate
 

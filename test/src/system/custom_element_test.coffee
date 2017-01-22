@@ -56,6 +56,19 @@ testGroup "Custom element API", template: "editor_empty", ->
     attachment.setAttributes(width: 9876)
     assert.deepEqual events, ["trix-attachment-edit", "trix-change"]
 
+  test "editing the document in a trix-attachment-add handler doesn't trigger trix-attachment-add again", ->
+    element = getEditorElement()
+    composition = getComposition()
+    eventCount = 0
+
+    element.addEventListener "trix-attachment-add", ->
+      if eventCount++ is 0
+        element.editor.setSelectedRange([0,1])
+        element.editor.activateAttribute("bold")
+
+    composition.insertFile(createFile())
+    assert.equal eventCount, 1
+
   test "element triggers trix-change events when the document changes", (done) ->
     element = getEditorElement()
     eventCount = 0
