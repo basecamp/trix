@@ -11,13 +11,13 @@ trix-toolbar {
     box-sizing: border-box;
   }
 
-  .button_row {
+  .button-row {
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
   }
 
-  .button_group {
+  .button-group {
     display: flex;
     margin-bottom: 10px;
     border: 1px solid #bbb;
@@ -25,10 +25,11 @@ trix-toolbar {
     border-bottom-color: #888;
     border-radius: 3px;
 
-    button, input[type=button] {
+    .button {
       position: relative;
       float: left; // Collapse whitespace between elements
       font-size: inherit;
+      line-height: inherit;
       padding: 0;
       margin: 0;
       outline: none;
@@ -79,21 +80,19 @@ trix-toolbar {
           }
         }
 
-        &.bold::before { background-image: $icon-bold; }
-        &.italic::before { background-image: $icon-italic; }
-        &.link::before { background-image: $icon-link; }
-        &.strike::before { background-image: $icon-strike; }
-        &.quote::before { background-image: $icon-quote; }
-        &.heading-1::before { background-image: $icon-heading-1; }
-        &.code::before { background-image: $icon-code; }
-        &.bullets::before { background-image: $icon-bullets; }
-        &.numbers::before { background-image: $icon-numbers; }
-        &.undo::before { background-image: $icon-undo; }
-        &.redo::before { background-image: $icon-redo; }
-        &.nesting-level {
-          &.decrease::before { background-image: $icon-nesting-level-decrease; }
-          &.increase::before { background-image: $icon-nesting-level-increase; }
-        }
+        &.button-bold::before { background-image: $icon-bold; }
+        &.button-italic::before { background-image: $icon-italic; }
+        &.button-link::before { background-image: $icon-link; }
+        &.button-strike::before { background-image: $icon-strike; }
+        &.button-quote::before { background-image: $icon-quote; }
+        &.button-heading1::before { background-image: $icon-heading-1; }
+        &.button-code::before { background-image: $icon-code; }
+        &.button-bullets::before { background-image: $icon-bullets; }
+        &.button-numbers::before { background-image: $icon-numbers; }
+        &.button-undo::before { background-image: $icon-undo; }
+        &.button-redo::before { background-image: $icon-redo; }
+        &.button-outdent::before { background-image: $icon-nesting-level-decrease; }
+        &.button-indent::before { background-image: $icon-nesting-level-increase; }
 
         &.active::before {
           opacity: $opacity-active;
@@ -143,13 +142,10 @@ trix-toolbar {
       border-radius: 5px;
       z-index: 5;
 
-      input {
-        font-size: inherit;
-        font-weight: normal;
-      }
-
       input[type=url], input[type=text] {
-        padding: 0.5em 0.8em;
+        font-size: inherit;
+        line-height: inherit;
+        padding: 0 0.4em;
         margin: 0 10px 0 0;
         border-radius: 3px;
         border: 1px solid #bbb;
@@ -164,28 +160,27 @@ trix-toolbar {
         }
       }
 
-      .button_group {
-        input[type=button] {
-          font-size: inherit;
-          padding: 0.5em;
-          border-bottom: none;
-        }
-      }
-
-      &.link_dialog {
+      &.dialog-link {
+        min-width: 300px;
         max-width: 600px;
 
-        .link_url_fields {
+        .dialog-link-inner {
           display: flex;
           align-items: baseline;
+          line-height: 2.2;
 
           input[type=url] {
             flex: 1;
           }
 
-          .button_group {
+          .button-group {
             flex: 0 0 content;
             margin: 0;
+
+            .button {
+              font-size: inherit;
+              border-bottom: none;
+            }
           }
         }
       }

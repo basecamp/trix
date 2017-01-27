@@ -131,18 +131,26 @@ Trix.extend
     if options.textContent
       element.textContent = options.textContent
 
+    if options.html
+      element.innerHTML = options.html
+
     element
 
-  cloneFragment: (sourceFragment) ->
+  makeFragment: (contents...) ->
     fragment = document.createDocumentFragment()
-    fragment.appendChild(node.cloneNode(true)) for node in sourceFragment.childNodes
-    fragment
 
-  makeFragment: (html = "") ->
-    container = document.createElement("div")
-    container.innerHTML = html
-    fragment = document.createDocumentFragment()
-    fragment.appendChild(node) while node = container.firstChild
+    for content in contents
+      if typeof content is "function"
+        content = content()
+
+      switch
+        when typeof content is "string"
+          container = document.createElement("div")
+          container.innerHTML = content
+          fragment.appendChild(node) while node = container.firstChild
+        when content instanceof HTMLElement
+          fragment.appendChild(content.cloneNode(true))
+
     fragment
 
   getBlockTagNames: ->
