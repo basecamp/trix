@@ -91,11 +91,13 @@ If you don’t want to accept dropped or pasted files, call `preventDefault()` o
 
 # Editing Text Programmatically
 
-You can manipulate a Trix editor programmatically through the `Trix.Editor` interface, available on each `<trix-editor>` element through its `editor` property.
+You can manipulate a Trix editor programmatically through the `Trix.Editor` interface, available on each `<trix-editor>` element through its `editor` property. Note that you will need to wait for the browser to recognize the `<trix-editor>` custom element first before interacting with it. We will assume in examples below that you've already done this:
 
 ```js
-var element = document.querySelector("trix-editor")
-element.editor  // is a Trix.Editor instance
+window.addEventListener("WebComponentsReady", function() {
+  var element = document.querySelector("trix-editor")
+  element.editor  // is a Trix.Editor instance
+})
 ```
 
 ## Understanding the Document Model
