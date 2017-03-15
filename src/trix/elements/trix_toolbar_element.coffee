@@ -3,7 +3,7 @@
 Trix.registerElement "trix-toolbar",
   defaultCSS: """
     %t {
-      white-space: collapse;
+      white-space: nowrap;
     }
 
     %t .dialog {
