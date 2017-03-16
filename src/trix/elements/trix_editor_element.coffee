@@ -114,7 +114,7 @@ Trix.registerElement "trix-editor", do ->
       if newInputElement
         @setAttribute("input", newInputElement.id)
       else
-         @setAttribute("input", "id_" + inputElementName)}
+         @setAttribute("input", "id_" + inputElementName)
 
   value:
     get: ->
