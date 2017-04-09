@@ -468,6 +468,7 @@ testTransferData = "application/x-trix-feature-detection": "test"
 dataTransferIsWritable = (dataTransfer) ->
   return unless dataTransfer?.setData?
   for key, value of testTransferData
-    dataTransfer.setData(key, value)
-    return unless dataTransfer.getData(key) is value
+    return unless try
+      dataTransfer.setData(key, value)
+      dataTransfer.getData(key) is value
   true

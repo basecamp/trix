@@ -4,6 +4,8 @@ keyCodes = {}
 for code, name of Trix.InputController.keyNames
   keyCodes[name] = code
 
+isIE = /Windows.*Trident/.test(navigator.userAgent)
+
 helpers.extend
   createEvent: (type, properties = {}) ->
     event = document.createEvent("Events")
@@ -109,11 +111,30 @@ helpers.extend
   dragToCoordinates: (coordinates, callback) ->
     element = document.activeElement
 
-    dropData = dataTransfer: files: []
-    dropData[key] = value for key, value of coordinates
+    # IE only allows writing "text" to DataTransfer
+    # https://msdn.microsoft.com/en-us/library/ms536744(v=vs.85).aspx
+    dataTransfer =
+      files: []
+      data: {}
+      getData: (format) ->
+        if isIE and format.toLowerCase() isnt "text"
+          throw new Error "Invalid argument."
+        else
+          @data[format]
+          true
+      setData: (format, data) ->
+        if isIE and format.toLowerCase() isnt "text"
+          throw new Error "Unexpected call to method or property access."
+        else
+          @data[format] = data
 
     helpers.triggerEvent(element, "mousemove")
-    helpers.triggerEvent(element, "dragstart")
+
+    dragstartData = {dataTransfer}
+    helpers.triggerEvent(element, "dragstart", dragstartData)
+
+    dropData = {dataTransfer}
+    dropData[key] = value for key, value of coordinates
     helpers.triggerEvent(element, "drop", dropData)
 
     helpers.defer(callback)
