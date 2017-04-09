@@ -40,6 +40,6 @@ plugins:
       Internet Explorer:
         version: 11
       iPhone:
-        version: [9.2, 8.4]
-      Motorola Droid 4 Emulator:
-        version: [5.1]
+        version: [10.0, 9.3, 8.4]
+      Android:
+        version: [6.0, 5.1, 4.4]

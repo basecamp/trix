@@ -27,11 +27,11 @@ GEM
       thor (~> 0.19.1)
       useragent (~> 0.16.7)
     blade-qunit_adapter (2.0.1)
-    blade-sauce_labs_plugin (0.6.2)
+    blade-sauce_labs_plugin (0.7.0)
       childprocess
       faraday
       selenium-webdriver
-    childprocess (0.5.9)
+    childprocess (0.6.3)
       ffi (~> 1.0, >= 1.0.11)
     coffee-script (2.4.1)
       coffee-script-source
@@ -71,7 +71,7 @@ GEM
     faye-websocket (0.10.5)
       eventmachine (>= 0.12.0)
       websocket-driver (>= 0.5.1)
-    ffi (1.9.14)
+    ffi (1.9.18)
     github_api (0.13.0)
       addressable (~> 2.3)
       descendants_tracker (~> 0.0.4)
@@ -102,9 +102,9 @@ GEM
     public_suffix (2.0.4)
     rack (1.6.5)
     rake (10.0.4)
-    rubyzip (1.2.0)
+    rubyzip (1.2.1)
     sass (3.4.3)
-    selenium-webdriver (3.0.3)
+    selenium-webdriver (3.3.0)
       childprocess (~> 0.5)
       rubyzip (~> 1.0)
       websocket (~> 1.0)
@@ -125,7 +125,7 @@ GEM
       execjs (>= 0.3.0)
       json (>= 1.8.0)
     useragent (0.16.8)
-    websocket (1.2.3)
+    websocket (1.2.4)
     websocket-driver (0.6.4)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
@@ -136,7 +136,7 @@ PLATFORMS
 DEPENDENCIES
   aws-sdk
   blade (~> 0.7.0)
-  blade-sauce_labs_plugin
+  blade-sauce_labs_plugin (~> 0.7.0)
   coffee-script
   coffee-script-source (~> 1.9.1)
   eco
