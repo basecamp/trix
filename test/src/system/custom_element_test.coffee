@@ -35,7 +35,7 @@ testGroup "Custom element API", template: "editor_empty", ->
     attachment.remove()
     assert.deepEqual events, ["trix-file-accept", "trix-attachment-add", "trix-attachment-remove"]
 
-  test "element triggers trix-change when an attachment is edited", ->
+  test "element triggers trix-change when an attachment is edited", (done) ->
     file = createFile()
     element = getEditorElement()
     composition = getComposition()
@@ -53,8 +53,9 @@ testGroup "Custom element API", template: "editor_empty", ->
     element.addEventListener "trix-change", (event) ->
       events.push(event.type)
 
-    attachment.setAttributes(width: 9876)
-    assert.deepEqual events, ["trix-attachment-edit", "trix-change"]
+    attachment.setAttributes(width: 9876).then ->
+      assert.deepEqual events, ["trix-attachment-edit", "trix-change"]
+      done()
 
   test "editing the document in a trix-attachment-add handler doesn't trigger trix-attachment-add again", ->
     element = getEditorElement()
