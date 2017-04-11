@@ -34,10 +34,12 @@ class Trix.Attachment extends Trix.Object
 
   setAttributes: (attributes = {}) ->
     newAttributes = @attributes.merge(attributes)
-    unless @attributes.isEqualTo(newAttributes)
+    if @attributes.isEqualTo(newAttributes)
+      Promise.resolve()
+    else
       @attributes = newAttributes
-      @didChangeAttributes()
-      @delegate?.attachmentDidChangeAttributes?(this)
+      Promise.resolve(@didChangeAttributes()).then =>
+        @delegate?.attachmentDidChangeAttributes?(this)
 
   didChangeAttributes: ->
     if @isPreviewable()
