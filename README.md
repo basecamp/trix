@@ -19,6 +19,12 @@ Trix sidesteps these inconsistencies by treating `contenteditable` as an I/O dev
 
 Trix is built with emerging web standards, notably [Custom Elements](http://www.w3.org/TR/custom-elements/), [Mutation Observer](https://dom.spec.whatwg.org/#mutation-observers), and [Promises](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects). Eventually we expect all browsers to implement these standards. In the meantime, Trix includes [polyfills](https://en.wikipedia.org/wiki/Polyfill) for missing functionality.
 
+### Install
+Bower:
+```sh
+$ bower install trix
+```
+
 # Getting Started
 
 Include the bundled `trix.css` and `trix.js` files in the `<head>` of your page.
