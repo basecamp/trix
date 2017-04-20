@@ -285,6 +285,28 @@ testGroup "Custom element API", template: "editor_empty", ->
           assert.notEqual serializedHTML, element.value
           done()
 
+  test "element serializes HTML after attachment attribute changes", (done) ->
+    element = getEditorElement()
+    attributes = url: "test_helpers/fixtures/logo.png", contentType: "image/png"
+
+    element.addEventListener "trix-attachment-add", (event) ->
+      {attachment} = event
+      requestAnimationFrame ->
+        serializedHTML = element.value
+        attachment.setAttributes(attributes)
+        assert.notEqual serializedHTML, element.value
+
+        serializedHTML = element.value
+        assert.ok serializedHTML.indexOf(TEST_IMAGE_URL) < 0, "serialized HTML contains previous attachment attributes"
+        assert.ok serializedHTML.indexOf(attributes.url) > 0, "serialized HTML doesn't contain current attachment attributes"
+
+        attachment.remove()
+        requestAnimationFrame ->
+          done()
+
+    requestAnimationFrame ->
+      insertImageAttachment()
+
   test "editor resets to its original value on form reset", (expectDocument) ->
     element = getEditorElement()
     form = element.inputElement.form

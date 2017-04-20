@@ -37,6 +37,7 @@ class Trix.Attachment extends Trix.Object
     unless @attributes.isEqualTo(newAttributes)
       @attributes = newAttributes
       @didChangeAttributes()
+      @previewDelegate?.attachmentDidChangeAttributes?(this)
       @delegate?.attachmentDidChangeAttributes?(this)
 
   didChangeAttributes: ->
@@ -130,7 +131,7 @@ class Trix.Attachment extends Trix.Object
   setPreviewURL: (url) ->
     unless url is @getPreviewURL()
       @previewURL = url
-      @previewDelegate?.attachmentDidChangePreviewURL?(this)
+      @previewDelegate?.attachmentDidChangeAttributes?(this)
       @delegate?.attachmentDidChangePreviewURL?(this)
 
   preloadURL: ->

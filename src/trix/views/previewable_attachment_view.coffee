@@ -44,6 +44,6 @@ class Trix.PreviewableAttachmentView extends Trix.AttachmentView
 
   # Attachment delegate
 
-  attachmentDidChangePreviewURL: ->
+  attachmentDidChangeAttributes: ->
     @refresh(@image)
     @refresh()
