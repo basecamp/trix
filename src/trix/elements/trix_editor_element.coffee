@@ -84,22 +84,22 @@ Trix.registerElement "trix-editor", do ->
     get: ->
       if @hasAttribute("toolbar")
         @ownerDocument?.getElementById(@getAttribute("toolbar"))
-      else if @parentElement
+      else if @parentNode
         toolbarId = "trix-toolbar-#{@trixId}"
         @setAttribute("toolbar", toolbarId)
         element = makeElement("trix-toolbar", id: toolbarId)
-        @parentElement.insertBefore(element, this)
+        @parentNode.insertBefore(element, this)
         element
 
   inputElement:
     get: ->
       if @hasAttribute("input")
         @ownerDocument?.getElementById(@getAttribute("input"))
-      else if @parentElement
+      else if @parentNode
         inputId = "trix-input-#{@trixId}"
         @setAttribute("input", inputId)
         element = makeElement("input", type: "hidden", id: inputId)
-        @parentElement.insertBefore(element, @nextElementSibling)
+        @parentNode.insertBefore(element, @nextElementSibling)
         element
 
   editor:
