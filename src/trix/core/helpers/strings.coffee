@@ -4,6 +4,9 @@ Trix.extend
       .replace(///#{Trix.ZERO_WIDTH_SPACE}///g, "")
       .replace(///#{Trix.NON_BREAKING_SPACE}///g, " ")
 
+  normalizeNewlines: (string) ->
+    string.replace(/\r\n/g, "\n")
+
   summarizeStringChange: (oldString, newString) ->
     oldString = Trix.UTF16String.box(oldString)
     newString = Trix.UTF16String.box(newString)

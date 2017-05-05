@@ -19,6 +19,14 @@ testGroup "Pasting", template: "editor_empty", ->
         pasteContent "text/html", "<div>Hello world<br></div><div>This is a test</div>", ->
           expectDocument "abHello world\nThis is a test\nc\n"
 
+  test "paste plain text with CRLF ", (expectDocument) ->
+    pasteContent "text/plain", "a\r\nb\r\nc", ->
+      expectDocument "a\nb\nc\n"
+
+  test "paste html with CRLF ", (expectDocument) ->
+    pasteContent "text/html", "<div>a<br></div>\r\n<div>b<br></div>\r\n<div>c<br></div>", ->
+      expectDocument "a\nb\nc\n"
+
   test "prefers plain text when html lacks formatting", (expectDocument) ->
     pasteData =
       "text/html": "<meta charset='utf-8'>a\nb"
