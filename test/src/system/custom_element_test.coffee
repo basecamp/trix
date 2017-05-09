@@ -187,7 +187,7 @@ testGroup "Custom element API", template: "editor_empty", ->
     typeCharacters "", ->
       pasteContent "text/html", "<strong>hello</strong>", ->
         assert.equal eventCount, 1
-        assert.ok Trix.rangesAreEqual([5, 5], range)
+        assert.ok Trix.rangesAreEqual([0, 5], range)
         done()
 
   test "element triggers attribute change events", (done) ->

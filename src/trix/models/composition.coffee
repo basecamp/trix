@@ -99,7 +99,7 @@ class Trix.Composition extends Trix.BasicObject
     endPosition = startPosition + (endLength - startLength)
 
     @setSelection(endPosition)
-    @notifyDelegateOfInsertionAtRange([endPosition, endPosition])
+    @notifyDelegateOfInsertionAtRange([startPosition, endPosition])
 
   replaceHTML: (html) ->
     document = Trix.Document.fromHTML(html).copyUsingObjectsFromDocument(@document)
