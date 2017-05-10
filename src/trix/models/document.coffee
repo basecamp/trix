@@ -332,7 +332,9 @@ class Trix.Document extends Trix.Object
     new @constructor blocks
 
   getStringAtRange: (range) ->
-    @getDocumentAtRange(range).toString()
+    [..., endPosition] = range = normalizeRange(range)
+    endIndex = -1 unless endPosition is @getLength()
+    @getDocumentAtRange(range).toString().slice(0, endIndex)
 
   getBlockAtIndex: (index) ->
     @blockList.getObjectAtIndex(index)
