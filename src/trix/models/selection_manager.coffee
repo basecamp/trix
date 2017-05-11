@@ -4,7 +4,7 @@
 
 {getDOMSelection, getDOMRange, setDOMRange, elementContainsNode,
  nodeIsCursorTarget, innerElementIsActive, handleEvent, normalizeRange,
- rangeIsCollapsed, rangesAreEqual} = Trix
+ rangeIsCollapsed, rangesAreEqual, throttleAnimationFrame} = Trix
 
 class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
@@ -52,7 +52,9 @@ class Trix.SelectionManager extends Trix.BasicObject
     if --@lockCount is 0
       lockedLocationRange = @lockedLocationRange
       @lockedLocationRange = null
-      @setLocationRange(lockedLocationRange) if lockedLocationRange?
+      if lockedLocationRange?
+        @setLocationRange(lockedLocationRange)
+        @reinforceSelection()
 
   clearSelection: ->
     getDOMSelection()?.removeAllRanges()
@@ -127,3 +129,13 @@ class Trix.SelectionManager extends Trix.BasicObject
       elementContainsNode(@element, domRange.startContainer)
     else
       elementContainsNode(@element, domRange.startContainer) and elementContainsNode(@element, domRange.endContainer)
+
+  # Setting a selection immediately after rendering can leave some browsers in
+  # an odd state where pressing return does nothing until the cursor is moved
+  # manually. We work around that here by setting the same selection again in
+  # the next animation frame.
+  # Known affected browsers: Safari 10.1
+  reinforceSelection: throttleAnimationFrame ->
+    if domRange = getDOMRange()
+      if @domRangeWithinElement(domRange)
+        setDOMRange(domRange)
