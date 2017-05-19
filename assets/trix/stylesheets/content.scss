@@ -85,4 +85,9 @@
     border: 1px solid #bbb;
     border-radius: 5px;
   }
+
+  .attachment--inline {
+    display: inline;
+    max-width: none;
+  }
 }

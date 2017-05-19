@@ -16,12 +16,10 @@ class Trix.AttachmentView extends Trix.ObjectView
   createNodes: ->
     figure = makeElement({tagName: "figure", className: @getClassName()})
 
-    if @attachment.hasContent()
-      figure.innerHTML = @attachment.getContent()
+    if @attachment.hasHTMLRepresentation()
+      figure.innerHTML = @attachment.getHTMLRepresentation()
     else
       figure.appendChild(node) for node in @createContentNodes()
-
-    unless @attachment.hasContent()
       figure.appendChild(@createCaptionElement())
 
     data =

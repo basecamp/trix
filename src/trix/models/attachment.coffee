@@ -47,6 +47,9 @@ class Trix.Attachment extends Trix.Object
   isPending: ->
     @file? and not (@getURL() or @getHref())
 
+  isInline: ->
+    @getContentType() is "inline" and /^data:text\/html/.test(@getURL())
+
   isPreviewable: ->
     if @attributes.has("previewable")
       @attributes.get("previewable")
@@ -54,7 +57,9 @@ class Trix.Attachment extends Trix.Object
       @constructor.previewablePattern.test(@getContentType())
 
   getType: ->
-    if @hasContent()
+    if @isInline()
+      "inline"
+    else if @hasContent()
       "content"
     else if @isPreviewable()
       "preview"
@@ -63,6 +68,9 @@ class Trix.Attachment extends Trix.Object
 
   getURL: ->
     @attributes.get("url")
+
+  setURL: (url) ->
+    @setAttributes(url: url?.toString())
 
   getHref: ->
     @attributes.get("href")
@@ -85,6 +93,21 @@ class Trix.Attachment extends Trix.Object
 
   getContentType: ->
     @attributes.get("contentType")
+
+  hasHTMLRepresentation: ->
+    @isInline() or @hasContent()
+
+  getHTMLRepresentation: ->
+    if @isInline()
+      @getInlineHTML()
+    else
+      @getContent()
+
+  getInlineHTML: ->
+    Trix.DataUri.parse(@getURL())?.getData() ? ""
+
+  setInlineHTML: (html) ->
+    @setURL(new Trix.DataUri("text/html", btoa(html))) if @isInline()
 
   hasContent: ->
     @attributes.has("content")
