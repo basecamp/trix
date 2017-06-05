@@ -7,10 +7,6 @@ trix-editor {
     -ms-user-select: none;
     user-select: none;
 
-    ::-moz-selection {
-      background: none;
-    }
-
     img {
       box-shadow: 0 0 0 2px highlight;
     }
@@ -20,6 +16,13 @@ trix-editor {
       border-color: transparent;
     }
   }
+
+  [data-trix-mutable=true],
+  [data-trix-cursor-target=true] {
+    &::-moz-selection { background: none; }
+    &::selection { background: none; }
+  }
+
 
   .attachment {
     &:hover {

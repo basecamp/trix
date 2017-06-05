@@ -15,11 +15,11 @@ Trix.extend
     selector: "[data-trix-selection]"
 
     cssText: """
-      font-size: 0 !important;
+      display: inline-block !important;
       padding: 0 !important;
-      margin: 0 !important;
+      margin: 0 -1px 0 0 !important;
+      width: 1px !important;
       border: none !important;
-      line-height: 0 !important;
     """
 
     create: (name) ->
