@@ -1,6 +1,7 @@
 Trix.registerElement "trix-inspector",
   defaultCSS: """
     %t {
+      display: block;
       position: fixed;
       background: #fff;
       border: 1px solid #444;
@@ -54,7 +55,7 @@ Trix.registerElement "trix-inspector",
     }
   """
 
-  attachedCallback: ->
+  connectedCallback: ->
     @editorElement = document.querySelector("trix-editor[trix-id='#{@dataset.trixId}']")
     @views = @createViews()
 

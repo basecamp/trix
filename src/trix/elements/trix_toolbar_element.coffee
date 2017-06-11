@@ -1,6 +1,10 @@
 Trix.registerElement "trix-toolbar",
   defaultCSS: """
     %t {
+      display: block;
+    }
+
+    %t {
       white-space: nowrap;
     }
 
@@ -17,6 +21,6 @@ Trix.registerElement "trix-toolbar",
     }
   """
 
-  createdCallback: ->
+  connectedCallback: ->
     if @innerHTML is ""
       @innerHTML = Trix.config.toolbar.getDefaultHTML()

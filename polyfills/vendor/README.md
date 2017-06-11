@@ -1,2 +1,2 @@
-* [CustomElements.js](https://github.com/webcomponents/webcomponentsjs/releases)
+* [CustomElements.js](https://github.com/webcomponents/custom-elements)
 * [promise.js](https://github.com/taylorhakes/promise-polyfill)

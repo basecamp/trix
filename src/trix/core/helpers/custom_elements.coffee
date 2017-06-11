@@ -1,31 +1,13 @@
-defaults =
-  extendsTagName: "div"
-  css: "%t { display: block; }"
-
 Trix.registerElement = (tagName, definition = {}) ->
   tagName = tagName.toLowerCase()
   properties = rewriteFunctionsAsValues(definition)
 
-  extendsTagName = properties.extendsTagName ? defaults.extendsTagName
-  delete properties.extendsTagName
+  if defaultCSS = properties.defaultCSS
+    delete properties.defaultCSS
+    installDefaultCSSForTagName(defaultCSS , tagName)
 
-  defaultCSS = properties.defaultCSS
-  delete properties.defaultCSS
-
-  if defaultCSS? and extendsTagName is defaults.extendsTagName
-    defaultCSS += "\n#{defaults.css}"
-  else
-    defaultCSS = defaults.css
-
-  installDefaultCSSForTagName(defaultCSS, tagName)
-
-  extendedPrototype = Object.getPrototypeOf(document.createElement(extendsTagName))
-  extendedPrototype.__super__ = extendedPrototype
-
-  prototype = Object.create(extendedPrototype, properties)
-  constructor = document.registerElement(tagName, prototype: prototype)
-  Object.defineProperty(prototype, "constructor", value: constructor)
-  constructor
+  constructor = createCustomElementConstructor(properties)
+  window.customElements.define(tagName, constructor)
 
 installDefaultCSSForTagName = (defaultCSS, tagName) ->
   styleElement = insertStyleElementForTagName(tagName)
@@ -43,3 +25,16 @@ rewriteFunctionsAsValues = (definition) ->
   for key, value of definition
     object[key] = if typeof value is "function" then {value} else value
   object
+
+createCustomElementConstructor = (properties) ->
+  CustomElement = ->
+    if typeof Reflect is "object"
+      Reflect.construct(HTMLElement, [], CustomElement)
+    else
+      HTMLElement.apply(this)
+
+  Object.setPrototypeOf(CustomElement.prototype, HTMLElement.prototype)
+  Object.setPrototypeOf(CustomElement, HTMLElement)
+  Object.defineProperties(CustomElement.prototype, properties)
+
+  CustomElement
