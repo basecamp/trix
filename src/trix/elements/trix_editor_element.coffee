@@ -109,6 +109,12 @@ Trix.registerElement "trix-editor", do ->
   name:
     get: ->
       @inputElement?.name
+    set: (inputElementName) ->
+      newInputElement = document.getElementsByName(inputElementName)[0]
+      if newInputElement
+        @setAttribute("input", newInputElement.id)
+      else
+         @setAttribute("input", "id_" + inputElementName)
 
   value:
     get: ->
