@@ -22,9 +22,11 @@ testGroup "Attachments", template: "editor_with_image", ->
       clickElement findElement("figure"), ->
         clickElement findElement("figcaption"), ->
           defer ->
-            assert.ok findElement("textarea")
-            findElement("textarea").focus()
-            findElement("textarea").value = "my caption"
+            textarea = findElement("textarea")
+            assert.ok textarea
+            textarea.focus()
+            textarea.value = "my caption"
+            triggerEvent(textarea, "input")
             pressKey "return", ->
               assert.notOk findElement("textarea")
               assert.textAttributes [2, 3], caption: "my caption"
