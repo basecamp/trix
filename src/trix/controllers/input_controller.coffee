@@ -90,7 +90,7 @@ class Trix.InputController extends Trix.BasicObject
         not @inputSummary.didDelete
 
     unexpectedNewlineAddition =
-      textAdded is "\n" and not mutationAdditionMatchesSummary
+      textAdded in ["\n", " \n"] and not mutationAdditionMatchesSummary
     unexpectedNewlineDeletion =
       textDeleted is "\n" and not mutationDeletionMatchesSummary
     singleUnexpectedNewline =
@@ -99,7 +99,11 @@ class Trix.InputController extends Trix.BasicObject
 
     if singleUnexpectedNewline
       if range = @getSelectedRange()
-        offset = if unexpectedNewlineAddition then -1 else 1
+        offset =
+          if unexpectedNewlineAddition
+            textAdded.replace(/\n$/, "").length or -1
+          else
+            1
         if @responder?.positionIsBlockBreak(range[1] + offset)
           return true
 

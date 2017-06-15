@@ -11,6 +11,24 @@ testGroup "Mutation input", template: "editor_empty", ->
     requestAnimationFrame ->
       expectDocument("a\nb\n")
 
+  test "typing a space in formatted text at the end of a block", (expectDocument) ->
+    element = getEditorElement()
+
+    clickToolbarButton attribute: "bold", ->
+      typeCharacters "a", ->
+        # Press space key
+        triggerEvent(element, "keydown", charCode: 0, keyCode: 32, which: 32)
+        triggerEvent(element, "keypress", charCode: 32, keyCode: 32, which: 32)
+
+        boldElement = element.querySelector("strong")
+        boldElement.appendChild(document.createTextNode(" "))
+        boldElement.appendChild(document.createElement("br"))
+
+        requestAnimationFrame ->
+          assert.ok isToolbarButtonActive(attribute: "bold")
+          assert.textAttributes([0, 2], bold: true)
+          expectDocument("a \n")
+
   test "typing formatted text after a newline at the end of block", (expectDocument) ->
     element = getEditorElement()
     element.editor.insertHTML("<ul><li>a</li><li><br></li></ul>")
