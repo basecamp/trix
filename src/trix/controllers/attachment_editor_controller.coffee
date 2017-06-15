@@ -60,7 +60,10 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     handleEvent("input", onElement: textarea, withCallback: autoresize)
     handleEvent("keydown", onElement: textarea, withCallback: @didKeyDownCaption)
     handleEvent("change", onElement: textarea, withCallback: @didChangeCaption)
-    handleEvent("blur", onElement: textarea, withCallback: @uninstall)
+    handleEvent "blur", onElement: textarea, withCallback: (event) =>
+      @activeTextarea = null
+      @uninstall()
+    @activeTextarea = textarea
 
     figcaption = @element.querySelector("figcaption")
     editingFigcaption = figcaption.cloneNode()
@@ -100,5 +103,6 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       @delegate?.attachmentEditorDidRequestDeselectingAttachment?(@attachment)
 
   uninstall: =>
+    @didChangeCaption(target: @activeTextarea) if @activeTextarea
     undo() while undo = @undos.pop()
     @delegate?.didUninstallAttachmentEditor(this)
