@@ -11,7 +11,7 @@ gem 'sass'
 gem 'uglifier'
 
 gem 'blade', '~> 0.7.0'
-gem 'blade-sauce_labs_plugin', '~> 0.7.0'
+gem 'blade-sauce_labs_plugin', '~> 0.7.1'
 
 gem 'github_api'
 gem 'aws-sdk'
