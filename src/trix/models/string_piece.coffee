@@ -1,12 +1,14 @@
 #= require trix/models/piece
 
+{normalizeNewlines} = Trix
+
 Trix.Piece.registerType "string", class Trix.StringPiece extends Trix.Piece
   @fromJSON: (pieceJSON) ->
     new this pieceJSON.string, pieceJSON.attributes
 
   constructor: (string) ->
     super
-    @string = string
+    @string = normalizeNewlines(string)
     @length = @string.length
 
   getValue: ->

@@ -2,7 +2,7 @@
 #= require trix/operations/file_verification_operation
 #= require trix/controllers/input/composition_input
 
-{handleEvent, makeElement, innerElementIsActive, objectsAreEqual, tagName, normalizeNewlines} = Trix
+{handleEvent, makeElement, innerElementIsActive, objectsAreEqual, tagName} = Trix
 
 class Trix.InputController extends Trix.BasicObject
   pastedFileCount = 0
@@ -257,7 +257,7 @@ class Trix.InputController extends Trix.BasicObject
         @delegate?.inputControllerDidPaste(pasteData)
 
       else if dataTransferIsPlainText(paste)
-        string = normalizeNewlines(paste.getData("text/plain"))
+        string = paste.getData("text/plain")
         pasteData.string = string
         @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())
         @delegate?.inputControllerWillPasteText(pasteData)
