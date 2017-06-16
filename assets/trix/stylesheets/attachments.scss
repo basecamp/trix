@@ -18,7 +18,7 @@ trix-editor {
   }
 
   [data-trix-mutable=true],
-  [data-trix-cursor-target=true] {
+  [data-trix-cursor-target] {
     &::-moz-selection { background: none; }
     &::selection { background: none; }
   }

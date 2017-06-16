@@ -67,7 +67,23 @@ Trix.registerElement "trix-editor", do ->
       color: graytext;
     }
 
-    %t #{selectionElements.selector} { #{selectionElements.cssText} }
+    %t [data-trix-cursor-target] {
+      display: inline-block !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      width: 1px !important;
+      border: none !important;
+    }
+
+    %t [data-trix-cursor-target=left] {
+      vertical-align: top !important;
+      margin-left: -1px !important;
+    }
+
+    %t [data-trix-cursor-target=right] {
+      vertical-align: bottom !important;
+      margin-right: -1px !important;
+    }
   """
 
   # Properties

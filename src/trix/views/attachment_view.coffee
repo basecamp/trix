@@ -55,7 +55,10 @@ class Trix.AttachmentView extends Trix.ObjectView
     element.dataset[key] = value for key, value of data
     element.setAttribute("contenteditable", false)
 
-    [selectionElements.create("cursorTarget"), element, selectionElements.create("cursorTarget")]
+    cursorTargetLeft = selectionElements.create("cursorTarget", "left")
+    cursorTargetRight = selectionElements.create("cursorTarget", "right")
+
+    [cursorTargetLeft, element, cursorTargetRight]
 
   createCaptionElement: ->
     figcaption = makeElement(tagName: "figcaption", className: classNames.attachment.caption)
