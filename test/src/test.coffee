@@ -4,6 +4,7 @@
 #= require_tree ./unit
 
 Trix.config.undoInterval = 0
+QUnit.config.testTimeout = 10000
 
 document.head.insertAdjacentHTML "beforeend", """
   <style type="text/css">
