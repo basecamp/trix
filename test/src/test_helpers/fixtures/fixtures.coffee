@@ -9,19 +9,18 @@ createDocument = (parts...) ->
     new Trix.Block text, blockAttributes
   new Trix.Document blocks
 
+Trix.TestHelpers.createCursorTarget = createCursorTarget = (name) ->
+  Trix.makeElement
+    tagName: "span"
+    textContent: Trix.ZERO_WIDTH_SPACE
+    data:
+      trixCursorTarget: name
+      trixSerialize: false
+
+cursorTargetLeft = createCursorTarget("left").outerHTML
+cursorTargetRight = createCursorTarget("right").outerHTML
+
 blockComment = "<!--block-->"
-
-cursorTargetLeft = Trix.makeElement(
-  tagName: "span"
-  textContent: Trix.ZERO_WIDTH_SPACE
-  data: trixCursorTarget: "left", trixSerialize: false
-).outerHTML
-
-cursorTargetRight = Trix.makeElement(
-  tagName: "span"
-  textContent: Trix.ZERO_WIDTH_SPACE
-  data: trixCursorTarget: "right", trixSerialize: false
-).outerHTML
 
 removeWhitespace = (string) ->
   string.replace(/\s/g, "")
