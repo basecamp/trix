@@ -22,6 +22,24 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     @makeCaptionEditable() if @attachment.isPreviewable()
     @addRemoveButton()
 
+  uninstall: ->
+    @savePendingCaption()
+    undo() while undo = @undos.pop()
+    @delegate?.didUninstallAttachmentEditor(this)
+
+  # Private
+
+  savePendingCaption: ->
+    if @pendingCaption?
+      caption = @pendingCaption
+      @pendingCaption = null
+      if caption
+        @delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?({caption}, @attachment)
+      else
+        @delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?("caption", @attachment)
+
+  # Installing and uninstalling
+
   makeElementMutable: undoable ->
     do: => @element.dataset.trixMutable = true
     undo: => delete @element.dataset.trixMutable
@@ -57,10 +75,10 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       textareaClone.value = textarea.value
       textarea.style.height = textareaClone.scrollHeight + "px"
 
-    handleEvent("input", onElement: textarea, withCallback: autoresize)
     handleEvent("keydown", onElement: textarea, withCallback: @didKeyDownCaption)
+    handleEvent("input", onElement: textarea, withCallback: @didInputCaption)
     handleEvent("change", onElement: textarea, withCallback: @didChangeCaption)
-    handleEvent("blur", onElement: textarea, withCallback: @uninstall)
+    handleEvent("blur", onElement: textarea, withCallback: @didBlurCaption)
 
     figcaption = @element.querySelector("figcaption")
     editingFigcaption = figcaption.cloneNode()
@@ -77,6 +95,8 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       editingFigcaption.parentNode.removeChild(editingFigcaption)
       figcaption.style.display = null
 
+  # Event handlers
+
   didClickRemoveButton: (event) =>
     event.preventDefault()
     event.stopPropagation()
@@ -86,19 +106,18 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     event.preventDefault()
     @editCaption()
 
-  didChangeCaption: (event) =>
-    caption = event.target.value.replace(/\s/g, " ").trim()
-    if caption
-      @delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?({caption}, @attachment)
-    else
-      @delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?("caption", @attachment)
-
   didKeyDownCaption: (event) =>
     if keyNames[event.keyCode] is "return"
       event.preventDefault()
-      @didChangeCaption(event)
+      @savePendingCaption()
       @delegate?.attachmentEditorDidRequestDeselectingAttachment?(@attachment)
 
-  uninstall: =>
-    undo() while undo = @undos.pop()
-    @delegate?.didUninstallAttachmentEditor(this)
+  didInputCaption: (event) =>
+    @pendingCaption = event.target.value.replace(/\s/g, " ").trim()
+
+  didChangeCaption: (event) =>
+    @savePendingCaption()
+
+  didBlurCaption: (event) =>
+    @savePendingCaption()
+    @delegate?.attachmentEditorDidRequestDeselectingAttachment?(@attachment)
