@@ -120,4 +120,3 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
 
   didBlurCaption: (event) =>
     @savePendingCaption()
-    @delegate?.attachmentEditorDidRequestDeselectingAttachment?(@attachment)
