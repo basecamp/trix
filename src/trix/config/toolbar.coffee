@@ -27,8 +27,8 @@ Trix.config.toolbar =
       </span>
     </div>
 
-    <div class="dialogs">
-      <div class="dialog link_dialog" data-trix-attribute="href" data-trix-dialog="href">
+    <div class="trix-dialogs">
+      <div class="trix-dialog link_dialog" data-trix-attribute="href" data-trix-dialog="href">
         <div class="link_url_fields">
           <input type="url" required name="href" placeholder="#{lang.urlPlaceholder}">
           <div class="button_group">

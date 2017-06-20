@@ -15,7 +15,7 @@ helpers.extend
     helpers.defer(callback)
 
   clickToolbarDialogButton: ({method}, callback) ->
-    button = getToolbarElement().querySelector(".dialog input[type=button][data-trix-method='#{method}']")
+    button = getToolbarElement().querySelector(".trix-dialog input[type=button][data-trix-method='#{method}']")
     helpers.triggerEvent(button, "click")
     helpers.defer(callback)
 
@@ -42,4 +42,4 @@ getToolbarButton = ({attribute, action}) ->
   getToolbarElement().querySelector("button[data-trix-attribute='#{attribute}'], button[data-trix-action='#{action}']")
 
 getToolbarDialog = ({attribute, action}) ->
-  getToolbarElement().querySelector(".dialog[data-trix-attribute='#{attribute}'], .dialog[data-trix-action='#{action}']")
+  getToolbarElement().querySelector(".trix-dialog[data-trix-attribute='#{attribute}'], .trix-dialog[data-trix-action='#{action}']")
