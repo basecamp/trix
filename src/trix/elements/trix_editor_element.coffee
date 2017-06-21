@@ -37,6 +37,17 @@ Trix.registerElement "trix-editor", do ->
 
   # Style
 
+  # IE 11 activates resizing handles on editable elements that have "layout"
+  browserForcesObjectResizing = /Trident.*rv:11/.test(navigator.userAgent)
+
+  cursorTargetStyles = do ->
+    if browserForcesObjectResizing
+      display: "inline"
+      width: "auto"
+    else
+      display: "inline-block"
+      width: "1px"
+
   defaultCSS: """
     %t:empty:not(:focus)::before {
       content: attr(placeholder);
@@ -68,10 +79,10 @@ Trix.registerElement "trix-editor", do ->
     }
 
     %t [data-trix-cursor-target] {
-      display: inline-block !important;
+      display: #{cursorTargetStyles.display} !important;
+      width: #{cursorTargetStyles.width} !important;
       padding: 0 !important;
       margin: 0 !important;
-      width: 1px !important;
       border: none !important;
     }
 
