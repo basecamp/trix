@@ -55,6 +55,7 @@ echo "--- Installing npm modules"
 if [ -d "$HOME/.pow" ]; then
   echo "--- Setting up Pow"
   { ln -nfs "$app_root" "$HOME/.pow/trix"
+    mkdir -p tmp
     touch tmp/restart.txt
   } >&3 2>&1
 fi
