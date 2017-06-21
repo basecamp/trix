@@ -482,6 +482,28 @@ class Trix.Document extends Trix.Object
   getAttachmentPieceForAttachment: (attachment) ->
     return piece for piece in @getAttachmentPieces() when piece.attachment is attachment
 
+  findRangesForTextAttribute: (attributeName, {withValue} = {}) ->
+    position = 0
+    range = []
+    ranges = []
+
+    match = (piece) ->
+      if withValue?
+        piece.getAttribute(attributeName) is withValue
+      else
+        piece.hasAttribute(attributeName)
+
+    for piece in @getPieces()
+      length = piece.getLength()
+      if match(piece)
+        if range[1] is position
+          range[1] = position + length
+        else
+          ranges.push(range = [position, position + length])
+      position += length
+
+    ranges
+
   locationFromPosition: (position) ->
     location = @blockList.findIndexAndOffsetAtPosition(Math.max(0, position))
     if location.index?
