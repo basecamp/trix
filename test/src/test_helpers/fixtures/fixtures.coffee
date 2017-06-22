@@ -9,13 +9,18 @@ createDocument = (parts...) ->
     new Trix.Block text, blockAttributes
   new Trix.Document blocks
 
-blockComment = "<!--block-->"
+Trix.TestHelpers.createCursorTarget = createCursorTarget = (name) ->
+  Trix.makeElement
+    tagName: "span"
+    textContent: Trix.ZERO_WIDTH_SPACE
+    data:
+      trixCursorTarget: name
+      trixSerialize: false
 
-cursorTarget = Trix.makeElement(
-  tagName: "span"
-  textContent: Trix.ZERO_WIDTH_SPACE
-  data: trixSelection: true, trixCursorTarget: true, trixSerialize: false
-).outerHTML
+cursorTargetLeft = createCursorTarget("left").outerHTML
+cursorTargetRight = createCursorTarget("right").outerHTML
+
+blockComment = "<!--block-->"
 
 removeWhitespace = (string) ->
   string.replace(/\s/g, "")
@@ -197,7 +202,7 @@ removeWhitespace = (string) ->
       for element in serializedFigure.querySelectorAll("[#{attribute}]")
         element.removeAttribute(attribute)
 
-    html: "<div>#{blockComment}#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"
+    html: "<div>#{blockComment}#{cursorTargetLeft}#{figure.outerHTML}#{cursorTargetRight}</div>"
     serializedHTML: "<div>#{serializedFigure.outerHTML}</div>"
     document: new Trix.Document [new Trix.Block text]
 
@@ -236,7 +241,7 @@ removeWhitespace = (string) ->
 
     text = stringText.appendText(attachmentText)
 
-    html: "<div>#{blockComment}a<br>b#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"
+    html: "<div>#{blockComment}a<br>b#{cursorTargetLeft}#{figure.outerHTML}#{cursorTargetRight}</div>"
     serializedHTML: "<div>a<br>b#{serializedFigure.outerHTML}</div>"
     document: new Trix.Document [new Trix.Block text]
 
@@ -266,7 +271,7 @@ removeWhitespace = (string) ->
     figure.appendChild(image)
     figure.appendChild(caption)
 
-    html: "<div>#{blockComment}#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"
+    html: "<div>#{blockComment}#{cursorTargetLeft}#{figure.outerHTML}#{cursorTargetRight}</div>"
     document: new Trix.Document [new Trix.Block text]
 
   "file attachment": do ->
@@ -291,7 +296,7 @@ removeWhitespace = (string) ->
     caption = """<figcaption class="#{classNames.attachment.caption}">#{attrs.filename} <span class="#{classNames.attachment.size}">32.46 MB</span></figcaption>"""
     figure.innerHTML = caption
 
-    html: """<div>#{blockComment}#{cursorTarget}#{link.outerHTML}#{cursorTarget}</div>"""
+    html: """<div>#{blockComment}#{cursorTargetLeft}#{link.outerHTML}#{cursorTargetRight}</div>"""
     document: new Trix.Document [new Trix.Block text]
 
   "pending file attachment": do ->
@@ -326,7 +331,7 @@ removeWhitespace = (string) ->
     caption = """<figcaption class="#{classNames.attachment.caption}">#{attrs.filename} <span class="#{classNames.attachment.size}">32.46 MB</span></figcaption>"""
     figure.innerHTML = caption + progress.outerHTML
 
-    html: """<div>#{blockComment}#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"""
+    html: """<div>#{blockComment}#{cursorTargetLeft}#{figure.outerHTML}#{cursorTargetRight}</div>"""
     document: new Trix.Document [new Trix.Block text]
 
   "content attachment": do ->
@@ -354,7 +359,7 @@ removeWhitespace = (string) ->
     figure.dataset[key] = value for key, value of data
     figure.setAttribute("contenteditable", false)
 
-    html: """<div>#{blockComment}#{cursorTarget}#{figure.outerHTML}#{cursorTarget}</div>"""
+    html: """<div>#{blockComment}#{cursorTargetLeft}#{figure.outerHTML}#{cursorTargetRight}</div>"""
     document: new Trix.Document [new Trix.Block text]
 
   "nested quote and code formatted block":

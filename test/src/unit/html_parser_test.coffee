@@ -1,4 +1,7 @@
-{after, assert, getHTML, test, testGroup} = Trix.TestHelpers
+{after, assert, createCursorTarget, getHTML, test, testGroup} = Trix.TestHelpers
+
+cursorTargetLeft = createCursorTarget("left").outerHTML
+cursorTargetRight = createCursorTarget("right").outerHTML
 
 testGroup "Trix.HTMLParser", ->
   eachFixture (name, {html, serializedHTML, document}) ->
@@ -104,8 +107,7 @@ testGroup "Trix.HTMLParser", ->
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
   test "parses spaces around cursor targets", ->
-    cursorTarget = Trix.selectionElements.create("cursorTarget").outerHTML
-    html = """<div>a #{cursorTarget}<span>b</span>#{cursorTarget} c</div>"""
+    html = """<div>a #{cursorTargetLeft}<span>b</span>#{cursorTargetRight} c</div>"""
     expectedHTML = """<div><!--block-->a b c</div>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 

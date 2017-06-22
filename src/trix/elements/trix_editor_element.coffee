@@ -1,7 +1,7 @@
 #= require trix/elements/trix_toolbar_element
 #= require trix/controllers/editor_controller
 
-{makeElement, selectionElements, triggerEvent, handleEvent, handleEventOnce} = Trix
+{makeElement, triggerEvent, handleEvent, handleEventOnce} = Trix
 
 {attachmentSelector} = Trix.AttachmentView
 
@@ -37,6 +37,17 @@ Trix.registerElement "trix-editor", do ->
 
   # Style
 
+  # IE 11 activates resizing handles on editable elements that have "layout"
+  browserForcesObjectResizing = /Trident.*rv:11/.test(navigator.userAgent)
+
+  cursorTargetStyles = do ->
+    if browserForcesObjectResizing
+      display: "inline"
+      width: "auto"
+    else
+      display: "inline-block"
+      width: "1px"
+
   defaultCSS: """
     %t:empty:not(:focus)::before {
       content: attr(placeholder);
@@ -67,7 +78,23 @@ Trix.registerElement "trix-editor", do ->
       color: graytext;
     }
 
-    %t #{selectionElements.selector} { #{selectionElements.cssText} }
+    %t [data-trix-cursor-target] {
+      display: #{cursorTargetStyles.display} !important;
+      width: #{cursorTargetStyles.width} !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border: none !important;
+    }
+
+    %t [data-trix-cursor-target=left] {
+      vertical-align: top !important;
+      margin-left: -1px !important;
+    }
+
+    %t [data-trix-cursor-target=right] {
+      vertical-align: bottom !important;
+      margin-right: -1px !important;
+    }
   """
 
   # Properties
