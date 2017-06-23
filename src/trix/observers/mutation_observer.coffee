@@ -42,7 +42,7 @@ class Trix.MutationObserver extends Trix.BasicObject
     false
 
   nodeIsSignificant: (node) ->
-    node isnt @element and not @nodeIsMutable(node) and not nodeIsEmptyTextNode(node)
+    node isnt @element and not @nodeIsMutable(node)
 
   nodeIsMutable: (node) ->
     findClosestElementFromNode(node, matchingSelector: mutableSelector)
@@ -94,9 +94,17 @@ class Trix.MutationObserver extends Trix.BasicObject
         removedNodes.length is 1 and
         nodeIsBlockStartComment(removedNodes[0])
 
+    singleEmptyTextNodeRemoved =
+      addedNodes.length is 0 and
+        removedNodes.length is 1 and
+        nodeIsEmptyTextNode(removedNodes[0])
+
     if singleBlockCommentRemoved
       textAdded = []
       textRemoved = ["\n"]
+    else if singleEmptyTextNodeRemoved
+      textAdded = []
+      textRemoved = [" "]
     else
       textAdded = getTextForNodes(addedNodes)
       textRemoved = getTextForNodes(removedNodes)
