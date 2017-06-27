@@ -218,6 +218,7 @@ class Trix.HTMLParser extends Trix.BasicObject
     for attribute, config of Trix.config.textAttributes
       if config.tagName and findClosestElementFromNode(element, matchingSelector: config.tagName, untilNode: @containerElement)
         attributes[attribute] = true
+
       else if config.parser
         if value = config.parser(element)
           attributeInheritedFromBlock = false
@@ -227,6 +228,10 @@ class Trix.HTMLParser extends Trix.BasicObject
               break
           unless attributeInheritedFromBlock
             attributes[attribute] = value
+
+      else if config.styleProperty
+        if value = element.style[config.styleProperty]
+          attributes[attribute] = value
 
     if nodeIsAttachmentElement(element)
       if json = element.getAttribute("data-trix-attributes")

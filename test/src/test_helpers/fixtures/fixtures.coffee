@@ -56,6 +56,22 @@ removeWhitespace = (string) ->
       ]
     html: """<div>#{blockComment}<a href="http://example.com">ab<em>c</em></a></div>"""
 
+  "text with color":
+    document: createDocument(["green", color: "rgb(60, 179, 113)"])
+    html: """<div>#{blockComment}<span style="color: rgb(60, 179, 113);">green</span></div>"""
+
+  "text with background color":
+    document: createDocument(["on yellow", backgroundColor: "yellow"])
+    html: """<div>#{blockComment}<span style="background-color: yellow;">on yellow</span></div>"""
+
+  "text with background color and color":
+    document: createDocument(["green on yellow", backgroundColor: "yellow", color: "rgb(60, 179, 113)"])
+    html: """<div>#{blockComment}<span style="background-color: yellow; color: rgb(60, 179, 113);">green on yellow</span></div>"""
+
+  "bold text with color":
+    document: createDocument(["RED", color: "red", bold: true])
+    html: """<div>#{blockComment}<strong style="color: red;">RED</strong></div>"""
+
   "spaces 1":
     document: createDocument([" a"])
     html: """<div>#{blockComment}&nbsp;a</div>"""
