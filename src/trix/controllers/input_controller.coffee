@@ -223,16 +223,18 @@ class Trix.InputController extends Trix.BasicObject
       @draggingPoint = null
 
     cut: (event) ->
-      if @serializeSelectionToDataTransfer(event.clipboardData)
-        event.preventDefault()
+      if @responder?.selectionIsExpanded()
+        if @serializeSelectionToDataTransfer(event.clipboardData)
+          event.preventDefault()
 
-      @delegate?.inputControllerWillCutText()
-      @deleteInDirection("backward")
-      @requestRender() if event.defaultPrevented
+        @delegate?.inputControllerWillCutText()
+        @deleteInDirection("backward")
+        @requestRender() if event.defaultPrevented
 
     copy: (event) ->
-      if @serializeSelectionToDataTransfer(event.clipboardData)
-        event.preventDefault()
+      if @responder?.selectionIsExpanded()
+        if @serializeSelectionToDataTransfer(event.clipboardData)
+          event.preventDefault()
 
     paste: (event) ->
       paste = event.clipboardData ? event.testClipboardData
