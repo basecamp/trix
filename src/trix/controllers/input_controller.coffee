@@ -454,8 +454,18 @@ keyEventIsKeyboardCommand = (event) ->
   if /Mac|^iP/.test(navigator.platform) then event.metaKey else event.ctrlKey
 
 pasteEventIsCrippledSafariHTMLPaste = (event) ->
-  if types = event.clipboardData?.types
-    "text/html" not in types and ("com.apple.webarchive" in types or "com.apple.flat-rtfd" in types)
+  if paste = event.clipboardData
+    if "text/html" in paste.types
+      # Answer is yes if there's any possibility of Paste and Match Style in Safari,
+      # which is nearly impossible to detect confidently: https://bugs.webkit.org/show_bug.cgi?id=174165
+      mightBePasteAndMatchStyle = paste.types.some (type) ->
+        hasPasteboardFlavor = /^CorePasteboardFlavorType/.test(type)
+        hasReadableDynamicData = /^dyn\./.test(type) and paste.getData(type)
+        hasPasteboardFlavor or hasReadableDynamicData
+    else
+      isExternalHTMLPaste = "com.apple.webarchive" in paste.types
+      isExternalRichTextPaste = "com.apple.flat-rtfd" in paste.types
+      isExternalHTMLPaste or isExternalRichTextPaste
 
 dataTransferIsPlainText = (dataTransfer) ->
   text = dataTransfer.getData("text/plain")
