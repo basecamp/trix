@@ -465,7 +465,11 @@ pasteEventIsCrippledSafariHTMLPaste = (event) ->
     else
       isExternalHTMLPaste = "com.apple.webarchive" in paste.types
       isExternalRichTextPaste = "com.apple.flat-rtfd" in paste.types
-      isExternalHTMLPaste or isExternalRichTextPaste
+      # Safari pastes directly copied images such as Command+Control+Shift+4
+      # captured screenshots as inaccessble files which must be sniffed from
+      # the DOM
+      isImagePasteWithoutFile = paste.files.length is 0 and paste.types.some((type) -> type.indexOf("image/") is 0)
+      isExternalHTMLPaste or isExternalRichTextPaste or isImagePasteWithoutFile
 
 dataTransferIsPlainText = (dataTransfer) ->
   text = dataTransfer.getData("text/plain")
