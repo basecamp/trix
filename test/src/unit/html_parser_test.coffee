@@ -189,6 +189,20 @@ testGroup "Trix.HTMLParser", ->
       document = Trix.HTMLParser.parse(html).getDocument()
       assert.documentHTMLEqual document, expectedHTML
 
+  test "parses foreground color using configured parser function", ->
+    config =
+      foregroundColor:
+        styleProperty: "color"
+        parser: (element) ->
+          {color} = element.style
+          color if color is "rgb(60, 179, 113)"
+
+    withTextAttributeConfig config, ->
+      html = """<span style="color: rgb(60, 179, 113);">green</span><span style="color: yellow;">not yellow</span>"""
+      expectedHTML = """<div><!--block--><span style="color: rgb(60, 179, 113);">green</span>not yellow</div>"""
+      document = Trix.HTMLParser.parse(html).getDocument()
+      assert.documentHTMLEqual document, expectedHTML
+
 withTextAttributeConfig = (config = {}, fn) ->
   {textAttributes} = Trix.config
   originalConfig = {}
