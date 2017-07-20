@@ -39,6 +39,7 @@ class Trix.HTMLParser extends Trix.BasicObject
       @referenceElement.parentNode.insertBefore(@containerElement, @referenceElement.nextSibling)
     else
       @containerElement = makeElement(tagName: "div", style: { display: "none" })
+      @containerElement.setAttribute("data-trix-internal", "")
       document.body.appendChild(@containerElement)
 
   removeHiddenContainer: ->
