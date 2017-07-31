@@ -280,8 +280,10 @@ class Trix.HTMLParser extends Trix.BasicObject
   isInsignificantTextNode: (node) ->
     return unless node?.nodeType is Node.TEXT_NODE
     return unless stringIsAllBreakableWhitespace(node.data)
-    return if elementCanDisplayPreformattedText(node.parentNode)
-    not node.previousSibling or @isBlockElement(node.previousSibling) or not node.nextSibling or @isBlockElement(node.nextSibling)
+    {parentNode, previousSibling, nextSibling} = node
+    return if nodeEndsWithNonWhitespace(parentNode.previousSibling) and not @isBlockElement(parentNode.previousSibling)
+    return if elementCanDisplayPreformattedText(parentNode)
+    not previousSibling or @isBlockElement(previousSibling) or not nextSibling or @isBlockElement(nextSibling)
 
   isExtraBR: (element) ->
     tagName(element) is "br" and
@@ -291,6 +293,9 @@ class Trix.HTMLParser extends Trix.BasicObject
   elementCanDisplayPreformattedText = (element) ->
     {whiteSpace} = window.getComputedStyle(element)
     whiteSpace in ["pre", "pre-wrap", "pre-line"]
+
+  nodeEndsWithNonWhitespace = (node) ->
+    node and not stringEndsWithWhitespace(node.textContent)
 
   # Margin translation
 
