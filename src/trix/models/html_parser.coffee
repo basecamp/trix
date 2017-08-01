@@ -311,8 +311,9 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   getMarginOfBlockElementAtIndex: (index) ->
     if element = @blockElements[index]
-      unless tagName(element) in getBlockTagNames() or element in @processedElements
-        getBlockElementMargin(element)
+      if element.textContent
+        unless tagName(element) in getBlockTagNames() or element in @processedElements
+          getBlockElementMargin(element)
 
   getMarginOfDefaultBlockElement: ->
     element = makeElement(Trix.config.blockAttributes.default.tagName)

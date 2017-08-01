@@ -133,6 +133,12 @@ testGroup "Trix.HTMLParser", ->
     document = Trix.HTMLParser.parse(html).getDocument()
     assert.documentHTMLEqual document, expectedHTML
 
+  test "skips translating empty block element margins to newlines", ->
+    html = """<p style="margin: 0 0 1em 0">a</p><p style="margin: 0 0 1em 0"><span></span></p><p style="margin: 0">b</p>"""
+    expectedHTML = """<div><!--block-->a<br><br></div><div><!--block--><br></div><div><!--block-->b</div>"""
+    document = Trix.HTMLParser.parse(html).getDocument()
+    assert.documentHTMLEqual document, expectedHTML
+
   test "ignores text nodes in script elements", ->
     html = """<div>a<script>alert("b")</script></div>"""
     expectedHTML = """<div><!--block-->a</div>"""
