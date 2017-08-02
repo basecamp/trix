@@ -58,8 +58,8 @@
       padding: 0;
       text-align: center;
 
-      .size {
-        &:before {
+      .name + .size {
+        &::before {
           content: ' · ';
         }
       }

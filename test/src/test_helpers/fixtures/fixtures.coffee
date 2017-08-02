@@ -180,7 +180,7 @@ removeWhitespace = (string) ->
     image.dataset.trixStoreKey = ["imageElement", attachment.id, image.src, image.width, image.height].join("/")
 
     caption = Trix.makeElement(tagName: "figcaption", className: classNames.attachment.caption)
-    caption.innerHTML = """#{attrs.filename} <span class="#{classNames.attachment.size}">95.9 KB</span>"""
+    caption.innerHTML = """<span class="#{classNames.attachment.name}">#{attrs.filename}</span> <span class="#{classNames.attachment.size}">95.9 KB</span>"""
 
     figure = Trix.makeElement
       tagName: "figure"
@@ -217,7 +217,7 @@ removeWhitespace = (string) ->
     image.dataset.trixStoreKey = ["imageElement", attachment.id, image.src, image.width, image.height].join("/")
 
     caption = Trix.makeElement(tagName: "figcaption", className: classNames.attachment.caption)
-    caption.innerHTML = """#{attrs.filename} <span class="#{classNames.attachment.size}">95.9 KB</span>"""
+    caption.innerHTML = """<span class="#{classNames.attachment.name}">#{attrs.filename}</span> <span class="#{classNames.attachment.size}">95.9 KB</span>"""
 
     figure = Trix.makeElement
       tagName: "figure"
@@ -293,7 +293,7 @@ removeWhitespace = (string) ->
     link.setAttribute("contenteditable", false)
     link.appendChild(figure)
 
-    caption = """<figcaption class="#{classNames.attachment.caption}">#{attrs.filename} <span class="#{classNames.attachment.size}">32.46 MB</span></figcaption>"""
+    caption = """<figcaption class="#{classNames.attachment.caption}"><span class="#{classNames.attachment.name}">#{attrs.filename}</span> <span class="#{classNames.attachment.size}">32.46 MB</span></figcaption>"""
     figure.innerHTML = caption
 
     html: """<div>#{blockComment}#{cursorTargetLeft}#{link.outerHTML}#{cursorTargetRight}</div>"""
@@ -328,7 +328,7 @@ removeWhitespace = (string) ->
         trixMutable: true
         trixStoreKey: ["progressElement", attachment.id].join("/")
 
-    caption = """<figcaption class="#{classNames.attachment.caption}">#{attrs.filename} <span class="#{classNames.attachment.size}">32.46 MB</span></figcaption>"""
+    caption = """<figcaption class="#{classNames.attachment.caption}"><span class="#{classNames.attachment.name}">#{attrs.filename}</span> <span class="#{classNames.attachment.size}">32.46 MB</span></figcaption>"""
     figure.innerHTML = caption + progress.outerHTML
 
     html: """<div>#{blockComment}#{cursorTargetLeft}#{figure.outerHTML}#{cursorTargetRight}</div>"""

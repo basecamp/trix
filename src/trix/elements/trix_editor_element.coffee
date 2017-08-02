@@ -73,8 +73,8 @@ Trix.registerElement "trix-editor", do ->
       max-height: 0px;
     }
 
-    %t #{attachmentSelector}[data-trix-mutable] figcaption:empty::before {
-      content: "#{Trix.config.lang.captionPrompt}";
+    %t #{attachmentSelector} figcaption:empty::before {
+      content: "#{Trix.config.lang.captionPlaceholder}";
       color: graytext;
     }
 

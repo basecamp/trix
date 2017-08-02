@@ -35,16 +35,14 @@ testGroup "Attachments", template: "editor_with_image", ->
 
   test "editing an attachment caption with no filename", (done) ->
     after 20, ->
-      # Caption is initially empty
       captionElement = findElement("figcaption")
-      assert.equal captionElement.clientHeight, 0
-      assert.equal getCaptionContent(captionElement), ""
+      assert.ok captionElement.clientHeight > 0
+      assert.equal getCaptionContent(captionElement), Trix.config.lang.captionPlaceholder
 
       clickElement findElement("figure"), ->
-        # Caption prompt is displayed when editing attachment
         captionElement = findElement("figcaption")
         assert.ok captionElement.clientHeight > 0
-        assert.equal getCaptionContent(captionElement), Trix.config.lang.captionPrompt
+        assert.equal getCaptionContent(captionElement), Trix.config.lang.captionPlaceholder
         done()
 
 getFigure = ->
