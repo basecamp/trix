@@ -91,7 +91,7 @@ class Trix.AttachmentView extends Trix.ObjectView
 
   getCaptionConfig: ->
     type = @attachment.getType()
-    config = Trix.config.attachments[type]?.caption ? {}
+    config = Trix.copyObject(Trix.config.attachments[type]?.caption)
     config.name = true if type is "file"
     config
 
