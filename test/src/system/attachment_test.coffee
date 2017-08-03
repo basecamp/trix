@@ -37,12 +37,12 @@ testGroup "Attachments", template: "editor_with_image", ->
     after 20, ->
       captionElement = findElement("figcaption")
       assert.ok captionElement.clientHeight > 0
-      assert.equal getCaptionContent(captionElement), Trix.config.lang.captionPlaceholder
+      assert.equal captionElement.getAttribute("data-trix-placeholder"), Trix.config.lang.captionPlaceholder
 
       clickElement findElement("figure"), ->
         captionElement = findElement("figcaption")
         assert.ok captionElement.clientHeight > 0
-        assert.equal getCaptionContent(captionElement), Trix.config.lang.captionPlaceholder
+        assert.equal captionElement.getAttribute("data-trix-placeholder"), Trix.config.lang.captionPlaceholder
         done()
 
 getFigure = ->
@@ -50,21 +50,3 @@ getFigure = ->
 
 findElement = (selector) ->
   getEditorElement().querySelector(selector)
-
-getCaptionContent = (element) ->
-  element.textContent or getPseudoContent(element)
-
-
-getPseudoContent = (element) ->
-  before = getComputedStyle(element, "::before").content
-  after = getComputedStyle(element, "::after").content
-
-  content =
-    if before and before isnt "none"
-      before
-    else if after and after isnt "none"
-      after
-    else
-      ""
-
-  content.replace(/^['"]/, "").replace(/['"]$/, "")

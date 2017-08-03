@@ -18,6 +18,12 @@ class Trix.PreviewableAttachmentView extends Trix.AttachmentView
     @refresh(@image)
     [@image]
 
+  createCaptionElement: ->
+    figcaption = super
+    unless figcaption.textContent
+      figcaption.setAttribute("data-trix-placeholder", Trix.config.lang.captionPlaceholder)
+    figcaption
+
   refresh: (image) ->
     image ?= @findElement()?.querySelector("img")
     @updateAttributesForImage(image) if image
