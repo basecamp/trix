@@ -250,7 +250,10 @@ class Trix.InputController extends Trix.BasicObject
         return
 
       if href = paste.getData("URL")
-        string = paste.getData("public.url-name") or href
+        if name = paste.getData("public.url-name")
+          string = Trix.squishBreakableWhitespace(name).trim()
+        else
+          string = href
         pasteData.string = string
         @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())
         @delegate?.inputControllerWillPasteText(pasteData)

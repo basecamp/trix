@@ -59,6 +59,16 @@ testGroup "Pasting", template: "editor_empty", ->
       assert.textAttributes([0, 7], href: "http://example.com")
       expectDocument "Example\n"
 
+  test "paste URL with name containing extraneous whitespace", (expectDocument) ->
+    pasteData =
+      "URL": "http://example.com"
+      "public.url-name": "   Example from \n link  around\n\nnested \nelements "
+      "text/plain": "http://example.com"
+
+    pasteContent pasteData, ->
+      assert.textAttributes([0, 40], href: "http://example.com")
+      expectDocument "Example from link around nested elements\n"
+
   test "paste complex html into formatted block", (done) ->
     typeCharacters "abc", ->
       clickToolbarButton attribute: "quote", ->

@@ -1,5 +1,6 @@
-{arraysAreEqual, normalizeSpaces, makeElement, tagName, getBlockTagNames, walkTree,
- findClosestElementFromNode, elementContainsNode, nodeIsAttachmentElement} = Trix
+{arraysAreEqual, makeElement, tagName, getBlockTagNames, walkTree,
+ findClosestElementFromNode, elementContainsNode, nodeIsAttachmentElement,
+ normalizeSpaces, breakableWhitespacePattern, squishBreakableWhitespace} = Trix
 
 class Trix.HTMLParser extends Trix.BasicObject
   allowedAttributes = "style href src width height class".split(" ")
@@ -326,15 +327,6 @@ class Trix.HTMLParser extends Trix.BasicObject
       top: parseInt(style.marginTop), bottom: parseInt(style.marginBottom)
 
   # Whitespace
-
-  breakableWhitespacePattern = ///[^\S#{Trix.NON_BREAKING_SPACE}]///
-
-  squishBreakableWhitespace = (string) ->
-    string
-      # Replace all breakable whitespace characters with a space
-      .replace(///#{breakableWhitespacePattern.source}///g, " ")
-      # Replace two or more spaces with a single space
-      .replace(/\ {2,}/g, " ")
 
   leftTrimBreakableWhitespace = (string) ->
     string.replace(///^#{breakableWhitespacePattern.source}+///, "")

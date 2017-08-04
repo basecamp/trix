@@ -7,6 +7,15 @@ Trix.extend
   normalizeNewlines: (string) ->
     string.replace(/\r\n/g, "\n")
 
+  breakableWhitespacePattern: ///[^\S#{Trix.NON_BREAKING_SPACE}]///
+
+  squishBreakableWhitespace: (string) ->
+    string
+      # Replace all breakable whitespace characters with a space
+      .replace(///#{Trix.breakableWhitespacePattern.source}///g, " ")
+      # Replace two or more spaces with a single space
+      .replace(/\ {2,}/g, " ")
+
   summarizeStringChange: (oldString, newString) ->
     oldString = Trix.UTF16String.box(oldString)
     newString = Trix.UTF16String.box(newString)
