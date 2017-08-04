@@ -64,13 +64,18 @@ class Trix.AttachmentView extends Trix.ObjectView
       figcaption.classList.add(classNames.attachment.captionEdited)
       figcaption.textContent = caption
     else
-      if filename = @attachment.getFilename()
-        figcaption.textContent = filename
+      config = @getCaptionConfig()
+      name = @attachment.getFilename() if config.name
+      size = @attachment.getFormattedFilesize() if config.size
 
-        if filesize = @attachment.getFormattedFilesize()
-          figcaption.appendChild(document.createTextNode(" "))
-          span = makeElement(tagName: "span", className: classNames.attachment.size, textContent: filesize)
-          figcaption.appendChild(span)
+      if name
+        nameElement = makeElement(tagName: "span", className: classNames.attachment.name, textContent: name)
+        figcaption.appendChild(nameElement)
+
+      if size
+        figcaption.appendChild(document.createTextNode(" ")) if name
+        sizeElement = makeElement(tagName: "span", className: classNames.attachment.size, textContent: size)
+        figcaption.appendChild(sizeElement)
 
     figcaption
 
@@ -83,6 +88,12 @@ class Trix.AttachmentView extends Trix.ObjectView
   getHref: ->
     unless htmlContainsTagName(@attachment.getContent(), "a")
       @attachment.getHref()
+
+  getCaptionConfig: ->
+    type = @attachment.getType()
+    config = Trix.copyObject(Trix.config.attachments[type]?.caption)
+    config.name = true if type is "file"
+    config
 
   findProgressElement: ->
     @findElement()?.querySelector("progress")
