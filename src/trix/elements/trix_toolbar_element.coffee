@@ -6,15 +6,15 @@ Trix.registerElement "trix-toolbar",
       white-space: nowrap;
     }
 
-    %t .dialog {
+    %t .trix-dialog {
       display: none;
     }
 
-    %t .dialog.active {
+    %t .trix-dialog.active {
       display: block;
     }
 
-    %t .dialog input.validate:invalid {
+    %t .trix-dialog input.validate:invalid {
       background-color: #ffdddd;
     }
 

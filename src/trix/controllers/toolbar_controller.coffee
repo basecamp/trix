@@ -4,7 +4,7 @@ class Trix.ToolbarController extends Trix.BasicObject
   actionButtonSelector = "button[data-trix-action]"
   attributeButtonSelector = "button[data-trix-attribute]"
   toolbarButtonSelector = [actionButtonSelector, attributeButtonSelector].join(", ")
-  dialogSelector = ".dialog[data-trix-dialog]"
+  dialogSelector = ".trix-dialog[data-trix-dialog]"
   activeDialogSelector = "#{dialogSelector}.active"
   dialogButtonSelector = "#{dialogSelector} input[data-trix-method]"
   dialogInputSelector = "#{dialogSelector} input[type=text], #{dialogSelector} input[type=url]"
@@ -155,7 +155,7 @@ class Trix.ToolbarController extends Trix.BasicObject
       input.classList.remove("validate")
 
   getDialog: (dialogName) ->
-    @element.querySelector(".dialog[data-trix-dialog=#{dialogName}]")
+    @element.querySelector(".trix-dialog[data-trix-dialog=#{dialogName}]")
 
   getInputForDialog = (element, attributeName) ->
     attributeName ?= getAttributeName(element)
