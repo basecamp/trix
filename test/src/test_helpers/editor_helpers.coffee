@@ -23,6 +23,7 @@ helpers.extend
       width: 10
       height: 10
       filename: "image.gif"
+      filesize: 35
       contentType: "image/gif"
 
     attachment = new Trix.Attachment attributes
