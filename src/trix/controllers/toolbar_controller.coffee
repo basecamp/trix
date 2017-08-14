@@ -1,13 +1,14 @@
 {handleEvent, triggerEvent, findClosestElementFromNode} = Trix
 
 class Trix.ToolbarController extends Trix.BasicObject
-  actionButtonSelector = "button[data-trix-action]"
-  attributeButtonSelector = "button[data-trix-attribute]"
-  toolbarButtonSelector = [actionButtonSelector, attributeButtonSelector].join(", ")
-  dialogSelector = ".dialog[data-trix-dialog]"
-  activeDialogSelector = "#{dialogSelector}.active"
-  dialogButtonSelector = "#{dialogSelector} input[data-trix-method]"
-  dialogInputSelector = "#{dialogSelector} input[type=text], #{dialogSelector} input[type=url]"
+  attributeButtonSelector = "[data-trix-attribute]"
+  actionButtonSelector = "[data-trix-action]"
+  toolbarButtonSelector = "#{attributeButtonSelector}, #{actionButtonSelector}"
+
+  dialogSelector = "[data-trix-dialog]"
+  activeDialogSelector = "#{dialogSelector}[data-trix-active]"
+  dialogButtonSelector = "#{dialogSelector} [data-trix-method]"
+  dialogInputSelector = "#{dialogSelector} [data-trix-input]"
 
   constructor: (@element) ->
     @attributes = {}
@@ -81,9 +82,11 @@ class Trix.ToolbarController extends Trix.BasicObject
     @eachAttributeButton (element, attributeName) =>
       element.disabled = @attributes[attributeName] is false
       if @attributes[attributeName] or @dialogIsVisible(attributeName)
-        element.classList.add("active")
+        element.setAttribute("data-trix-active", "")
+        element.classList.add("trix-active")
       else
-        element.classList.remove("active")
+        element.removeAttribute("data-trix-active")
+        element.classList.remove("trix-active")
 
   eachAttributeButton: (callback) ->
     for element in @element.querySelectorAll(attributeButtonSelector)
@@ -103,7 +106,7 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   dialogIsVisible: (dialogName) ->
     if element = @getDialog(dialogName)
-      element.classList.contains("active")
+      element.hasAttribute("data-trix-active")
 
   toggleDialog: (dialogName) ->
     if @dialogIsVisible(dialogName)
@@ -116,7 +119,8 @@ class Trix.ToolbarController extends Trix.BasicObject
     @delegate?.toolbarWillShowDialog()
 
     element = @getDialog(dialogName)
-    element.classList.add("active")
+    element.setAttribute("data-trix-active", "")
+    element.classList.add("trix-active")
 
     for disabledInput in element.querySelectorAll("input[disabled]")
       disabledInput.removeAttribute("disabled")
@@ -132,7 +136,7 @@ class Trix.ToolbarController extends Trix.BasicObject
     attributeName = getAttributeName(dialogElement)
     input = getInputForDialog(dialogElement, attributeName)
     if input.willValidate and not input.checkValidity()
-      input.classList.add("validate")
+      input.setAttribute("data-trix-validate", "")
       input.focus()
     else
       @delegate?.toolbarDidUpdateAttribute(attributeName, input.value)
@@ -145,21 +149,22 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   hideDialog: ->
     if element = @element.querySelector(activeDialogSelector)
-      element.classList.remove("active")
+      element.removeAttribute("data-trix-active")
+      element.classList.remove("trix-active")
       @resetDialogInputs()
       @delegate?.toolbarDidHideDialog(getDialogName(element))
 
   resetDialogInputs: ->
     for input in @element.querySelectorAll(dialogInputSelector)
       input.setAttribute("disabled", "disabled")
-      input.classList.remove("validate")
+      input.removeAttribute("data-trix-validate")
 
   getDialog: (dialogName) ->
-    @element.querySelector(".dialog[data-trix-dialog=#{dialogName}]")
+    @element.querySelector("[data-trix-dialog=#{dialogName}]")
 
   getInputForDialog = (element, attributeName) ->
     attributeName ?= getAttributeName(element)
-    element.querySelector("input[name='#{attributeName}']")
+    element.querySelector("[data-trix-input][name='#{attributeName}']")
 
   # General helpers
 
@@ -167,7 +172,7 @@ class Trix.ToolbarController extends Trix.BasicObject
     element.getAttribute("data-trix-action")
 
   getAttributeName = (element) ->
-    element.getAttribute("data-trix-attribute")
+    element.getAttribute("data-trix-attribute") ? element.getAttribute("data-trix-dialog-attribute")
 
   getDialogName = (element) ->
     element.getAttribute("data-trix-dialog")

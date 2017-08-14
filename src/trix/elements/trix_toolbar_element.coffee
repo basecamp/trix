@@ -6,20 +6,16 @@ Trix.registerElement "trix-toolbar",
       white-space: nowrap;
     }
 
-    %t .dialog {
+    %t [data-trix-dialog] {
       display: none;
     }
 
-    %t .dialog.active {
+    %t [data-trix-dialog][data-trix-active] {
       display: block;
     }
 
-    %t .dialog input.validate:invalid {
+    %t [data-trix-dialog] [data-trix-input][data-trix-validate]:invalid {
       background-color: #ffdddd;
-    }
-
-    %t[native] {
-      display: none;
     }
   """
 
