@@ -1,28 +1,22 @@
-{cloneFragment} = Trix
-
 Trix.registerElement "trix-toolbar",
   defaultCSS: """
     %t {
       white-space: nowrap;
     }
 
-    %t .dialog {
+    %t [data-trix-dialog] {
       display: none;
     }
 
-    %t .dialog.active {
+    %t [data-trix-dialog][data-trix-active] {
       display: block;
     }
 
-    %t .dialog input.validate:invalid {
+    %t [data-trix-dialog] [data-trix-validate]:invalid {
       background-color: #ffdddd;
-    }
-
-    %t[native] {
-      display: none;
     }
   """
 
   createdCallback: ->
     if @innerHTML is ""
-      @appendChild(cloneFragment(Trix.config.toolbar.content))
+      @innerHTML = Trix.config.toolbar.getDefaultHTML()

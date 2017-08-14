@@ -15,31 +15,31 @@ helpers.extend
     helpers.defer(callback)
 
   clickToolbarDialogButton: ({method}, callback) ->
-    button = getToolbarElement().querySelector(".dialog input[type=button][data-trix-method='#{method}']")
+    button = getToolbarElement().querySelector("[data-trix-dialog] [data-trix-method='#{method}']")
     helpers.triggerEvent(button, "click")
     helpers.defer(callback)
 
   isToolbarButtonActive: (selector) ->
     button = getToolbarButton(selector)
-    button.classList.contains("active")
+    button.hasAttribute("data-trix-active") and button.classList.contains("trix-active")
 
   isToolbarButtonDisabled: (selector) ->
     getToolbarButton(selector).disabled
 
   typeInToolbarDialog: (string, {attribute}, callback) ->
     dialog = getToolbarDialog({attribute})
-    input = dialog.querySelector("input[name='#{attribute}']")
-    button = dialog.querySelector("input[data-trix-method='setAttribute']")
+    input = dialog.querySelector("[data-trix-input][name='#{attribute}']")
+    button = dialog.querySelector("[data-trix-method='setAttribute']")
     input.value = string
     helpers.triggerEvent(button, "click")
     helpers.defer(callback)
 
   isToolbarDialogActive: (selector) ->
     dialog = getToolbarDialog(selector)
-    dialog.classList.contains("active")
+    dialog.hasAttribute("data-trix-active") and dialog.classList.contains("trix-active")
 
 getToolbarButton = ({attribute, action}) ->
-  getToolbarElement().querySelector("button[data-trix-attribute='#{attribute}'], button[data-trix-action='#{action}']")
+  getToolbarElement().querySelector("[data-trix-attribute='#{attribute}'], [data-trix-action='#{action}']")
 
 getToolbarDialog = ({attribute, action}) ->
-  getToolbarElement().querySelector(".dialog[data-trix-attribute='#{attribute}'], .dialog[data-trix-action='#{action}']")
+  getToolbarElement().querySelector("[data-trix-dialog='#{attribute}']")

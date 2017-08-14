@@ -1,5 +1,5 @@
 {makeElement} = Trix
-{classNames} = Trix.config.css
+{css} = Trix.config
 
 class Trix.AttachmentView extends Trix.ObjectView
   @attachmentSelector: "[data-trix-attachment]"
@@ -36,7 +36,7 @@ class Trix.AttachmentView extends Trix.ObjectView
       @progressElement = makeElement
         tagName: "progress"
         attributes:
-          class: classNames.attachment.progressBar
+          class: css.attachmentProgress
           value: @attachment.getUploadProgress()
           max: 100
         data:
@@ -58,10 +58,10 @@ class Trix.AttachmentView extends Trix.ObjectView
     [createCursorTarget("left"), element, createCursorTarget("right")]
 
   createCaptionElement: ->
-    figcaption = makeElement(tagName: "figcaption", className: classNames.attachment.caption)
+    figcaption = makeElement(tagName: "figcaption", className: css.attachmentCaption)
 
     if caption = @attachmentPiece.getCaption()
-      figcaption.classList.add(classNames.attachment.captionEdited)
+      figcaption.classList.add("#{css.attachmentCaption}--edited")
       figcaption.textContent = caption
     else
       config = @getCaptionConfig()
@@ -69,20 +69,20 @@ class Trix.AttachmentView extends Trix.ObjectView
       size = @attachment.getFormattedFilesize() if config.size
 
       if name
-        nameElement = makeElement(tagName: "span", className: classNames.attachment.name, textContent: name)
+        nameElement = makeElement(tagName: "span", className: css.attachmentName, textContent: name)
         figcaption.appendChild(nameElement)
 
       if size
         figcaption.appendChild(document.createTextNode(" ")) if name
-        sizeElement = makeElement(tagName: "span", className: classNames.attachment.size, textContent: size)
+        sizeElement = makeElement(tagName: "span", className: css.attachmentSize, textContent: size)
         figcaption.appendChild(sizeElement)
 
     figcaption
 
   getClassName: ->
-    names = [classNames.attachment.container, "#{classNames.attachment.typePrefix}#{@attachment.getType()}"]
+    names = [css.attachment, "#{css.attachment}--#{@attachment.getType()}"]
     if extension = @attachment.getExtension()
-      names.push(extension)
+      names.push("#{css.attachment}--#{extension}")
     names.join(" ")
 
   getHref: ->

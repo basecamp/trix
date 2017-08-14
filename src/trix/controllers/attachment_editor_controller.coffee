@@ -2,8 +2,7 @@
 
 {handleEvent, makeElement, tagName} = Trix
 {keyNames} = Trix.InputController
-{lang} = Trix.config
-{classNames} = Trix.config.css
+{lang, css} = Trix.config
 
 class Trix.AttachmentEditorController extends Trix.BasicObject
   constructor: (@attachmentPiece, @element, @container) ->
@@ -54,7 +53,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     removeButton = makeElement
       tagName: "button"
       textContent: lang.remove
-      className: classNames.attachment.removeButton
+      className: "#{css.attachmentRemove} #{css.attachmentRemove}--icon"
       attributes: type: "button", title: lang.remove
       data: trixMutable: true
     handleEvent("click", onElement: removeButton, withCallback: @didClickRemoveButton)
@@ -64,7 +63,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
   editCaption: undoable ->
     textarea = makeElement
       tagName: "textarea"
-      className: classNames.attachment.captionEditor
+      className: css.attachmentCaptionEditor
       attributes: placeholder: lang.captionPlaceholder
     textarea.value = @attachmentPiece.getCaption()
 
@@ -87,7 +86,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       figcaption.style.display = "none"
       editingFigcaption.appendChild(textarea)
       editingFigcaption.appendChild(textareaClone)
-      editingFigcaption.classList.add(classNames.attachment.editingCaption)
+      editingFigcaption.classList.add("#{css.attachmentCaption}--editing")
       figcaption.parentElement.insertBefore(editingFigcaption, figcaption)
       autoresize()
       textarea.focus()
