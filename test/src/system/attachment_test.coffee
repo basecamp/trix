@@ -13,7 +13,7 @@ testGroup "Attachments", template: "editor_with_image", ->
   test "removing an image", (expectDocument) ->
     after 20, ->
       clickElement getFigure(), ->
-        closeButton = getFigure().querySelector(".#{Trix.config.css.classNames.attachment.removeButton.split(" ").join(".")}")
+        closeButton = getFigure().querySelector(".#{Trix.config.css.attachmentRemove.split(" ").join(".")}")
         clickElement closeButton, ->
           expectDocument "ab\n"
 

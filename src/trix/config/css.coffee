@@ -1,13 +1,10 @@
 Trix.config.css =
-  classNames:
-    attachment:
-      container: "attachment"
-      typePrefix: "attachment-"
-      caption: "caption"
-      captionEdited: "caption-edited"
-      captionEditor: "caption-editor"
-      editingCaption: "caption-editing"
-      progressBar: "progress"
-      name: "name"
-      removeButton: "remove icon"
-      size: "size"
+  attachment: "attachment"
+  attachmentProgress: "attachment__progress"
+  attachmentName: "attachment__name"
+  attachmentSize: "attachment__size"
+  attachmentRemove: "attachment__remove attachment__remove-icon"
+  attachmentCaption: "attachment__caption"
+  attachmentCaptionEdited: "attachment__caption-edited"
+  attachmentCaptionEditing: "attachment__caption-editing"
+  attachmentCaptionEditor: "attachment__caption-editor"

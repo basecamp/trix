@@ -53,36 +53,36 @@
     max-width: 100%;
     margin: 0;
     padding: 0;
+  }
 
-    .caption {
-      padding: 0;
-      text-align: center;
+  .attachment__caption {
+    padding: 0;
+    text-align: center;
 
-      .name + .size {
-        &::before {
-          content: ' · ';
-        }
+    .attachment__name + .attachment__size {
+      &::before {
+        content: ' · ';
       }
     }
+  }
 
-    &.attachment-preview {
-      width: 100%;
-      text-align: center;
+  .attachment-preview {
+    width: 100%;
+    text-align: center;
 
-      .caption {
-        color: #666;
-        font-size: 0.9em;
-        line-height: 1.2;
-      }
+    .attachment__caption {
+      color: #666;
+      font-size: 0.9em;
+      line-height: 1.2;
     }
+  }
 
-    &.attachment-file {
-      color: #333;
-      line-height: 1;
-      margin: 0 2px 2px 0;
-      padding: 0.4em 1em;
-      border: 1px solid #bbb;
-      border-radius: 5px;
-    }
+  .attachment-file {
+    color: #333;
+    line-height: 1;
+    margin: 0 2px 2px 0;
+    padding: 0.4em 1em;
+    border: 1px solid #bbb;
+    border-radius: 5px;
   }
 }

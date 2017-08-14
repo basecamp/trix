@@ -23,93 +23,90 @@ trix-editor {
     &::selection { background: none; }
   }
 
-
   .attachment {
     &:hover {
       cursor: default;
     }
+  }
 
-    &.attachment-preview {
-      .caption:hover {
-        cursor: text;
-      }
+  .attachment-preview {
+    .attachment__caption:hover {
+      cursor: text;
     }
+  }
 
-    button.remove {
-      cursor: pointer;
+  .attachment_progress {
+    position: absolute;
+    z-index: 1;
+    height: 20px;
+    top: calc(50% - 10px);
+    left: 5%;
+    width: 90%;
+    opacity: 0.9;
+  }
 
-      &.icon {
-        text-indent: -9999px;
-        display: block;
-        position: absolute;
-        z-index: 1;
-        padding: 0;
-        margin: 0;
-        top: -1.1em;
-        left: calc(50% - 0.8em);
-        width: 1.8em;
-        height: 1.8em;
-        line-height: 1.8em;
-        border-radius: 50%;
-        text-indent: -9999px;
-        background-color: #fff;
-        border: 2px solid highlight;
-        box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.25);
-
-        &::before {
-          display: inline-block;
-          position: absolute;
-          top: 0.1em;
-          right: 0.1em;
-          bottom: 0.1em;
-          left: 0.1em;
-          opacity: 0.75;
-          content: "";
-          background-image: $icon-remove;
-          background-position: center;
-          background-repeat: no-repeat;
-          background-size: contain;
-        }
-      }
-
-      &:hover {
-        border-color: #333;
-
-        &::before {
-          opacity: 1;
-        }
-      }
+  .attachment__caption-editing {
+    textarea {
+      display: inline-block;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      font-size: inherit;
+      font-family: inherit;
+      line-height: inherit;
+      color: inherit;
+      text-align: center;
+      vertical-align: top;
+      border: none;
+      outline: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
     }
+  }
 
-    .caption {
-      &.caption-editing {
-        textarea {
-          display: inline-block;
-          width: 100%;
-          margin: 0;
-          padding: 0;
-          font-size: inherit;
-          font-family: inherit;
-          line-height: inherit;
-          color: inherit;
-          text-align: center;
-          vertical-align: top;
-          border: none;
-          outline: none;
-          -webkit-appearance: none;
-          -moz-appearance: none;
-        }
-      }
-    }
+  .attachment__remove {
+    cursor: pointer;
+  }
 
-    progress {
+  .attachment__remove-icon {
+    text-indent: -9999px;
+    display: block;
+    position: absolute;
+    z-index: 1;
+    padding: 0;
+    margin: 0;
+    top: -1.1em;
+    left: calc(50% - 0.8em);
+    width: 1.8em;
+    height: 1.8em;
+    line-height: 1.8em;
+    border-radius: 50%;
+    text-indent: -9999px;
+    background-color: #fff;
+    border: 2px solid highlight;
+    box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.25);
+
+    &::before {
+      display: inline-block;
       position: absolute;
-      z-index: 1;
-      height: 20px;
-      top: calc(50% - 10px);
-      left: 5%;
-      width: 90%;
-      opacity: 0.9;
+      top: 0.1em;
+      right: 0.1em;
+      bottom: 0.1em;
+      left: 0.1em;
+      opacity: 0.75;
+      content: "";
+      background-image: $icon-remove;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+
+    &:hover {
+      border-color: #333;
+
+      &::before {
+        opacity: 1;
+      }
     }
   }
 }
