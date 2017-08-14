@@ -45,23 +45,21 @@ trix-editor {
     opacity: 0.9;
   }
 
-  .attachment__caption--editing {
-    textarea {
-      display: inline-block;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-      font-size: inherit;
-      font-family: inherit;
-      line-height: inherit;
-      color: inherit;
-      text-align: center;
-      vertical-align: top;
-      border: none;
-      outline: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-    }
+  .attachment__caption-editor {
+    display: inline-block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: inherit;
+    font-family: inherit;
+    line-height: inherit;
+    color: inherit;
+    text-align: center;
+    vertical-align: top;
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
   }
 
   .attachment__remove {
