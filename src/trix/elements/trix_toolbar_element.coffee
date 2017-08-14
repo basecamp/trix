@@ -12,7 +12,7 @@ Trix.registerElement "trix-toolbar",
       display: block;
     }
 
-    %t [data-trix-dialog] [data-trix-input][data-trix-validate]:invalid {
+    %t [data-trix-dialog] [data-trix-validate]:invalid {
       background-color: #ffdddd;
     }
   """
