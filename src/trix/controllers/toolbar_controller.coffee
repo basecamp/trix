@@ -137,6 +137,7 @@ class Trix.ToolbarController extends Trix.BasicObject
     input = getInputForDialog(dialogElement, attributeName)
     if input.willValidate and not input.checkValidity()
       input.setAttribute("data-trix-validate", "")
+      input.classList.add("trix-validate")
       input.focus()
     else
       @delegate?.toolbarDidUpdateAttribute(attributeName, input.value)
@@ -158,6 +159,7 @@ class Trix.ToolbarController extends Trix.BasicObject
     for input in @element.querySelectorAll(dialogInputSelector)
       input.setAttribute("disabled", "disabled")
       input.removeAttribute("data-trix-validate")
+      input.classList.remove("trix-validate")
 
   getDialog: (dialogName) ->
     @element.querySelector("[data-trix-dialog=#{dialogName}]")
