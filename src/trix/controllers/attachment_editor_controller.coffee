@@ -53,7 +53,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     removeButton = makeElement
       tagName: "button"
       textContent: lang.remove
-      className: css.attachmentRemove
+      className: "#{css.attachmentRemove} #{css.attachmentRemove}--icon"
       attributes: type: "button", title: lang.remove
       data: trixMutable: true
     handleEvent("click", onElement: removeButton, withCallback: @didClickRemoveButton)
@@ -86,7 +86,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       figcaption.style.display = "none"
       editingFigcaption.appendChild(textarea)
       editingFigcaption.appendChild(textareaClone)
-      editingFigcaption.classList.add(css.attachmentCaptionEditing)
+      editingFigcaption.classList.add("#{css.attachmentCaption}--editing")
       figcaption.parentElement.insertBefore(editingFigcaption, figcaption)
       autoresize()
       textarea.focus()

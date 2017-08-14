@@ -254,7 +254,7 @@ removeWhitespace = (string) ->
     image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
     image.dataset.trixStoreKey = ["imageElement", attachment.id, image.src, image.width, image.height].join("/")
 
-    caption = Trix.makeElement(tagName: "figcaption", className: "#{css.attachmentCaption} #{css.attachmentCaptionEdited}", textContent: "Example")
+    caption = Trix.makeElement(tagName: "figcaption", className: "#{css.attachmentCaption} #{css.attachmentCaption}--edited", textContent: "Example")
 
     figure = Trix.makeElement
       tagName: "figure"
