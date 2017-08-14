@@ -11,7 +11,7 @@ trix-editor {
       box-shadow: 0 0 0 2px highlight;
     }
 
-    &.attachment.attachment-file {
+    &.attachment.attachment--file {
       box-shadow: 0 0 0 2px highlight;
       border-color: transparent;
     }
@@ -29,13 +29,13 @@ trix-editor {
     }
   }
 
-  .attachment-preview {
+  .attachment--preview {
     .attachment__caption:hover {
       cursor: text;
     }
   }
 
-  .attachment_progress {
+  .attachment__progress {
     position: absolute;
     z-index: 1;
     height: 20px;
@@ -45,7 +45,7 @@ trix-editor {
     opacity: 0.9;
   }
 
-  .attachment__caption-editing {
+  .attachment__caption--editing {
     textarea {
       display: inline-block;
       width: 100%;
@@ -68,7 +68,7 @@ trix-editor {
     cursor: pointer;
   }
 
-  .attachment__remove-icon {
+  .attachment__remove--icon {
     text-indent: -9999px;
     display: block;
     position: absolute;

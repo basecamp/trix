@@ -184,7 +184,7 @@ removeWhitespace = (string) ->
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment attachment-preview attachment-png"
+      className: "attachment attachment--preview attachment--png"
 
     data =
       trixAttachment: JSON.stringify(attachment)
@@ -221,7 +221,7 @@ removeWhitespace = (string) ->
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment attachment-preview attachment-png"
+      className: "attachment attachment--preview attachment--png"
 
     data =
       trixAttachment: JSON.stringify(attachment)
@@ -258,7 +258,7 @@ removeWhitespace = (string) ->
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment attachment-preview attachment-png"
+      className: "attachment attachment--preview attachment--png"
 
     data =
       trixAttachment: JSON.stringify(attachment)
@@ -281,7 +281,7 @@ removeWhitespace = (string) ->
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment attachment-file attachment-pdf"
+      className: "attachment attachment--file attachment--pdf"
 
     data =
       trixAttachment: JSON.stringify(attachment)
@@ -307,7 +307,7 @@ removeWhitespace = (string) ->
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment attachment-file attachment-pdf"
+      className: "attachment attachment--file attachment--pdf"
 
     data =
       trixAttachment: JSON.stringify(attachment)
@@ -344,7 +344,7 @@ removeWhitespace = (string) ->
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment attachment-content"
+      className: "attachment attachment--content"
 
     figure.innerHTML = content
 
