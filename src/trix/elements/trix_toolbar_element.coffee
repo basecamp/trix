@@ -1,5 +1,3 @@
-{cloneFragment} = Trix
-
 Trix.registerElement "trix-toolbar",
   defaultCSS: """
     %t {
@@ -21,4 +19,4 @@ Trix.registerElement "trix-toolbar",
 
   createdCallback: ->
     if @innerHTML is ""
-      @appendChild(cloneFragment(Trix.config.toolbar.content))
+      @innerHTML = Trix.config.toolbar.getDefaultHTML()

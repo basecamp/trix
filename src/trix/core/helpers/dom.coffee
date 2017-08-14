@@ -133,18 +133,6 @@ Trix.extend
 
     element
 
-  cloneFragment: (sourceFragment) ->
-    fragment = document.createDocumentFragment()
-    fragment.appendChild(node.cloneNode(true)) for node in sourceFragment.childNodes
-    fragment
-
-  makeFragment: (html = "") ->
-    container = document.createElement("div")
-    container.innerHTML = html
-    fragment = document.createDocumentFragment()
-    fragment.appendChild(node) while node = container.firstChild
-    fragment
-
   getBlockTagNames: ->
     Trix.blockTagNames ?= (value.tagName for key, value of Trix.config.blockAttributes)
 
