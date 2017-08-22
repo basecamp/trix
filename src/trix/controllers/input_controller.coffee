@@ -244,7 +244,7 @@ class Trix.InputController extends Trix.BasicObject
         @getPastedHTMLUsingHiddenElement (html) =>
           paste.type = "text/html"
           paste.html = html
-          @delegate?.inputControllerWillPasteText(paste)
+          @delegate?.inputControllerWillPaste(paste)
           @responder?.insertHTML(paste.html)
           @requestRender()
           @delegate?.inputControllerDidPaste(paste)
@@ -257,7 +257,7 @@ class Trix.InputController extends Trix.BasicObject
           paste.string = Trix.squishBreakableWhitespace(name).trim()
         else
           paste.string = href
-        @delegate?.inputControllerWillPasteText(paste)
+        @delegate?.inputControllerWillPaste(paste)
         @setInputSummary(textAdded: paste.string, didDelete: @selectionIsExpanded())
         @responder?.insertText(Trix.Text.textForStringWithAttributes(paste.string, href: paste.href))
         @requestRender()
@@ -266,7 +266,7 @@ class Trix.InputController extends Trix.BasicObject
       else if dataTransferIsPlainText(clipboard)
         paste.type = "text/plain"
         paste.string = clipboard.getData("text/plain")
-        @delegate?.inputControllerWillPasteText(paste)
+        @delegate?.inputControllerWillPaste(paste)
         @setInputSummary(textAdded: paste.string, didDelete: @selectionIsExpanded())
         @responder?.insertString(paste.string)
         @requestRender()
@@ -275,7 +275,7 @@ class Trix.InputController extends Trix.BasicObject
       else if html = clipboard.getData("text/html")
         paste.type = "text/html"
         paste.html = html
-        @delegate?.inputControllerWillPasteText(paste)
+        @delegate?.inputControllerWillPaste(paste)
         @responder?.insertHTML(paste.html)
         @requestRender()
         @delegate?.inputControllerDidPaste(paste)

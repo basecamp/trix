@@ -184,7 +184,7 @@ class Trix.EditorController extends Trix.Controller
   inputControllerWillCutText: ->
     @editor.recordUndoEntry("Cut")
 
-  inputControllerWillPasteText: (paste) ->
+  inputControllerWillPaste: (paste) ->
     @editor.recordUndoEntry("Paste")
     @pasting = true
     @editorElement.notify("before-paste", {paste})
