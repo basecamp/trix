@@ -1,10 +1,10 @@
+#= require trix/models/html_sanitizer
+
 {arraysAreEqual, makeElement, tagName, getBlockTagNames, walkTree,
  findClosestElementFromNode, elementContainsNode, nodeIsAttachmentElement,
  normalizeSpaces, breakableWhitespacePattern, squishBreakableWhitespace} = Trix
 
 class Trix.HTMLParser extends Trix.BasicObject
-  allowedAttributes = "style href src width height class".split(" ")
-
   @parse: (html, options) ->
     parser = new this html, options
     parser.parse()
@@ -23,7 +23,7 @@ class Trix.HTMLParser extends Trix.BasicObject
   parse: ->
     try
       @createHiddenContainer()
-      html = sanitizeHTML(@html)
+      html = Trix.HTMLSanitizer.sanitize(@html).getHTML()
       @containerElement.innerHTML = html
       walker = walkTree(@containerElement, usingFilter: nodeFilter)
       @processNode(walker.currentNode) while walker.nextNode()
@@ -44,43 +44,6 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   removeHiddenContainer: ->
     @containerElement.parentNode.removeChild(@containerElement)
-
-  sanitizeHTML = (html) ->
-    # Remove everything after </html>
-    html = html.replace(/<\/html[^>]*>[^]*$/i, "</html>")
-
-    doc = document.implementation.createHTMLDocument("")
-    doc.documentElement.innerHTML = html
-    {body, head} = doc
-
-    for style in head.querySelectorAll("style")
-      body.appendChild(style)
-
-    nodesToRemove = []
-    walker = walkTree(body)
-
-    while walker.nextNode()
-      node = walker.currentNode
-      switch node.nodeType
-        when Node.ELEMENT_NODE
-          if elementIsRemovable(node)
-            nodesToRemove.push(node)
-          else
-            for {name} in [node.attributes...]
-              unless name in allowedAttributes or name.indexOf("data-trix") is 0
-                node.removeAttribute(name)
-        when Node.COMMENT_NODE
-          nodesToRemove.push(node)
-
-    for node in nodesToRemove
-      node.parentNode.removeChild(node)
-
-    body.innerHTML
-
-  elementIsRemovable = (element) ->
-    return unless element?.nodeType is Node.ELEMENT_NODE
-    return if nodeIsAttachmentElement(element)
-    tagName(element) is "script" or element.getAttribute("data-trix-serialize") is "false"
 
   nodeFilter = (node) ->
     if tagName(node) is "style"
