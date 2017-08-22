@@ -10,9 +10,7 @@ class Trix.HTMLSanitizer extends Trix.BasicObject
 
   constructor: (html, {@allowedAttributes} = {}) ->
     @allowedAttributes ?= DEFAULT_ALLOWED_ATTRIBUTES
-    {@body, head} = createHTMLDocument(html)
-    for element in head.querySelectorAll("style")
-      @body.appendChild(element)
+    @body = createBodyElementForHTML(html)
 
   sanitize: ->
     @sanitizeElements()
@@ -55,9 +53,11 @@ class Trix.HTMLSanitizer extends Trix.BasicObject
     return if nodeIsAttachmentElement(element)
     tagName(element) is "script" or element.getAttribute("data-trix-serialize") is "false"
 
-  createHTMLDocument = (html = "") ->
+  createBodyElementForHTML = (html = "") ->
     # Remove everything after </html>
     html = html.replace(/<\/html[^>]*>[^]*$/i, "</html>")
     doc = document.implementation.createHTMLDocument("")
     doc.documentElement.innerHTML = html
-    doc
+    for element in doc.head.querySelectorAll("style")
+      doc.body.appendChild(element)
+    doc.body
