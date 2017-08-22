@@ -187,6 +187,7 @@ class Trix.EditorController extends Trix.Controller
   inputControllerWillPasteText: (pasteData) ->
     @editor.recordUndoEntry("Paste")
     @pasting = true
+    @editorElement.notify("before-paste", {pasteData})
 
   inputControllerDidPaste: (pasteData) ->
     range = @pastedRange
