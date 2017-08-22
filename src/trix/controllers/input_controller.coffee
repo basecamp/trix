@@ -237,55 +237,59 @@ class Trix.InputController extends Trix.BasicObject
           event.preventDefault()
 
     paste: (event) ->
-      paste = event.clipboardData ? event.testClipboardData
-      pasteData = {paste}
+      clipboard = event.clipboardData ? event.testClipboardData
+      paste = {clipboard}
 
-      if not paste? or pasteEventIsCrippledSafariHTMLPaste(event)
+      if not clipboard? or pasteEventIsCrippledSafariHTMLPaste(event)
         @getPastedHTMLUsingHiddenElement (html) =>
-          pasteData.html = html
-          @delegate?.inputControllerWillPasteText(pasteData)
-          @responder?.insertHTML(html)
+          paste.type = "text/html"
+          paste.html = html
+          @delegate?.inputControllerWillPaste(paste)
+          @responder?.insertHTML(paste.html)
           @requestRender()
-          @delegate?.inputControllerDidPaste(pasteData)
+          @delegate?.inputControllerDidPaste(paste)
         return
 
-      if href = paste.getData("URL")
-        if name = paste.getData("public.url-name")
-          string = Trix.squishBreakableWhitespace(name).trim()
+      if href = clipboard.getData("URL")
+        paste.type = "URL"
+        paste.href = href
+        if name = clipboard.getData("public.url-name")
+          paste.string = Trix.squishBreakableWhitespace(name).trim()
         else
-          string = href
-        pasteData.string = string
-        @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())
-        @delegate?.inputControllerWillPasteText(pasteData)
-        @responder?.insertText(Trix.Text.textForStringWithAttributes(string, {href}))
+          paste.string = href
+        @delegate?.inputControllerWillPaste(paste)
+        @setInputSummary(textAdded: paste.string, didDelete: @selectionIsExpanded())
+        @responder?.insertText(Trix.Text.textForStringWithAttributes(paste.string, href: paste.href))
         @requestRender()
-        @delegate?.inputControllerDidPaste(pasteData)
+        @delegate?.inputControllerDidPaste(paste)
 
-      else if dataTransferIsPlainText(paste)
-        string = paste.getData("text/plain")
-        pasteData.string = string
-        @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())
-        @delegate?.inputControllerWillPasteText(pasteData)
-        @responder?.insertString(string)
+      else if dataTransferIsPlainText(clipboard)
+        paste.type = "text/plain"
+        paste.string = clipboard.getData("text/plain")
+        @delegate?.inputControllerWillPaste(paste)
+        @setInputSummary(textAdded: paste.string, didDelete: @selectionIsExpanded())
+        @responder?.insertString(paste.string)
         @requestRender()
-        @delegate?.inputControllerDidPaste(pasteData)
+        @delegate?.inputControllerDidPaste(paste)
 
-      else if html = paste.getData("text/html")
-        pasteData.html = html
-        @delegate?.inputControllerWillPasteText(pasteData)
-        @responder?.insertHTML(html)
+      else if html = clipboard.getData("text/html")
+        paste.type = "text/html"
+        paste.html = html
+        @delegate?.inputControllerWillPaste(paste)
+        @responder?.insertHTML(paste.html)
         @requestRender()
-        @delegate?.inputControllerDidPaste(pasteData)
+        @delegate?.inputControllerDidPaste(paste)
 
-      else if "Files" in paste.types
-        if file = paste.items?[0]?.getAsFile?()
+      else if "Files" in clipboard.types
+        if file = clipboard.items?[0]?.getAsFile?()
           if not file.name and extension = extensionForFile(file)
             file.name = "pasted-file-#{++pastedFileCount}.#{extension}"
-          pasteData.file = file
+          paste.type = "File"
+          paste.file = file
           @delegate?.inputControllerWillAttachFiles()
-          @responder?.insertFile(file)
+          @responder?.insertFile(paste.file)
           @requestRender()
-          @delegate?.inputControllerDidPaste(pasteData)
+          @delegate?.inputControllerDidPaste(paste)
 
       event.preventDefault()
 
