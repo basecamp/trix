@@ -175,19 +175,52 @@ testGroup "Custom element API", template: "editor_empty", ->
           assert.deepEqual events, ["trix-toolbar-dialog-show", "trix-toolbar-dialog-hide"]
           done()
 
-  test "element triggers paste event with position range", (done) ->
+  test "element triggers before-paste event with paste data", (expectDocument) ->
     element = getEditorElement()
     eventCount = 0
-    range = null
+    paste = null
 
-    element.addEventListener "trix-paste", (event) ->
+    element.addEventListener "trix-before-paste", (event) ->
       eventCount++
-      {range} = event
+      {paste} = event
 
     typeCharacters "", ->
       pasteContent "text/html", "<strong>hello</strong>", ->
         assert.equal eventCount, 1
-        assert.ok Trix.rangesAreEqual([0, 5], range)
+        assert.equal paste.type, "text/html"
+        assert.equal paste.html, "<strong>hello</strong>"
+        expectDocument("hello\n")
+
+  test "element triggers before-paste event with mutable paste data", (expectDocument) ->
+    element = getEditorElement()
+    eventCount = 0
+    paste = null
+
+    element.addEventListener "trix-before-paste", (event) ->
+      eventCount++
+      {paste} = event
+      paste.html = "<strong>greetings</strong>"
+
+    typeCharacters "", ->
+      pasteContent "text/html", "<strong>hello</strong>", ->
+        assert.equal eventCount, 1
+        assert.equal paste.type, "text/html"
+        expectDocument("greetings\n")
+
+  test "element triggers paste event with position range", (done) ->
+    element = getEditorElement()
+    eventCount = 0
+    paste = null
+
+    element.addEventListener "trix-paste", (event) ->
+      eventCount++
+      {paste} = event
+
+    typeCharacters "", ->
+      pasteContent "text/html", "<strong>hello</strong>", ->
+        assert.equal eventCount, 1
+        assert.equal paste.type, "text/html"
+        assert.ok Trix.rangesAreEqual([0, 5], paste.range)
         done()
 
   test "element triggers attribute change events", (done) ->
