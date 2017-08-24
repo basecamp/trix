@@ -107,22 +107,26 @@ class Trix.LocationMapper
     nodes = []
     walker = walkTree(@element, usingFilter: acceptSignificantNodes)
     recordingNodes = false
-
+    
     while walker.nextNode()
       node = walker.currentNode
       if nodeIsBlockStartComment(node)
-        if blockIndex?
+        if typeof blockIndex != 'undefined' and blockIndex != null
           blockIndex++
         else
           blockIndex = 0
-
-        if blockIndex is index
+        if blockIndex == index
           recordingNodes = true
         else if recordingNodes
           break
       else if recordingNodes
-        nodes.push(node)
-
+          nodes.push node
+      else
+        if !node.nextSibling and !node.hasChildNodes()
+          div = document.createElement('div')
+          div.appendChild document.createComment('block')
+          div.appendChild node
+          nodes.push div
     nodes
 
   nodeLength = (node) ->
