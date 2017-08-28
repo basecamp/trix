@@ -103,7 +103,7 @@ class Trix.InputController extends Trix.BasicObject
           if unexpectedNewlineAddition
             textAdded.replace(/\n$/, "").length or -1
           else
-            1
+            textAdded?.length or 1
         if @responder?.positionIsBlockBreak(range[1] + offset)
           return true
 
