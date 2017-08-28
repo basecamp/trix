@@ -155,15 +155,10 @@ class Trix.InputController extends Trix.BasicObject
       return if keyEventIsWebInspectorShortcut(event)
       return if keyEventIsPasteAndMatchStyleShortcut(event)
 
-      if event.which is null
-        character = String.fromCharCode event.keyCode
-      else if event.which isnt 0 and event.charCode isnt 0
-        character = String.fromCharCode event.charCode
-
-      if character?
+      if string = stringFromKeyEvent(event)
         @delegate?.inputControllerWillPerformTyping()
-        @responder?.insertString(character)
-        @setInputSummary(textAdded: character, didDelete: @selectionIsExpanded())
+        @responder?.insertString(string)
+        @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())
 
     textInput: (event) ->
       # Handle autocapitalization
@@ -450,6 +445,20 @@ class Trix.InputController extends Trix.BasicObject
 
 extensionForFile = (file) ->
   file.type?.match(/\/(\w+)$/)?[1]
+
+hasStringCodePointAt = " ".codePointAt?(0)?
+
+stringFromKeyEvent = (event) ->
+  if event.key and hasStringCodePointAt and event.key.codePointAt(0) is event.keyCode
+    event.key
+  else
+    if event.which is null
+      code = event.keyCode
+    else if event.which isnt 0 and event.charCode isnt 0
+      code = event.charCode
+
+    if code?
+      Trix.UTF16String.fromCodepoints([code]).toString()
 
 keyEventIsWebInspectorShortcut = (event) ->
   event.metaKey and event.altKey and not event.shiftKey and event.keyCode is 94

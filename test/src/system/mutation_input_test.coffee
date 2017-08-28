@@ -50,6 +50,22 @@ testGroup "Mutation input", template: "editor_empty", ->
         assert.textAttributes([3, 4], bold: true)
         expectDocument("a\n\nb\n")
 
+  test "typing an emoji after a newline at the end of block", (expectDocument) ->
+    element = getEditorElement()
+
+    typeCharacters "\n", ->
+      # Tap 👏🏻 on iOS
+      triggerEvent(element, "keydown", charCode: 0, keyCode: 0, which: 0, key: "👏🏻")
+      triggerEvent(element, "keypress", charCode: 128079, keyCode: 128079, which: 128079, key: "👏🏻")
+
+      node = document.createTextNode("👏🏻")
+      extraBR = element.querySelectorAll("br")[1]
+      extraBR.parentNode.insertBefore(node, extraBR)
+      extraBR.parentNode.removeChild(extraBR)
+
+      requestAnimationFrame ->
+        expectDocument("\n👏🏻\n")
+
   test "backspacing an attachment at the beginning of an otherwise empty document", (expectDocument) ->
     element = getEditorElement()
     element.editor.loadHTML("""<img src="#{TEST_IMAGE_URL}" width="10" height="10">""")
