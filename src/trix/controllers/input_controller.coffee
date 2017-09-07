@@ -249,6 +249,15 @@ class Trix.InputController extends Trix.BasicObject
           @delegate?.inputControllerDidPaste(pasteData)
         return
 
+      if pasteEventIsCrippledSafariImagePaste(event)
+        @getPastedImageUsingHiddenElement (file) =>
+          pasteData.file = file
+          @delegate?.inputControllerWillAttachFiles()
+          @responder?.insertFile(file)
+          @requestRender()
+          @delegate?.inputControllerDidPaste(pasteData)
+        return
+
       if href = paste.getData("URL")
         string = paste.getData("public.url-name") or href
         pasteData.string = string
@@ -435,6 +444,31 @@ class Trix.InputController extends Trix.BasicObject
       @setSelectedRange(selectedRange)
       callback(html)
 
+  # Safari 10.1 inserts an img element with a blob URI into the content
+  # editable. Sniff it back out and fetch the blob uri as an actual blob
+  # object. Presume it's image/png.
+  getPastedImageUsingHiddenElement: (callback) ->
+    selectedRange = @getSelectedRange()
+
+    style =
+      position: "absolute"
+      left: "#{window.pageXOffset}px"
+      top: "#{window.pageYOffset}px"
+      opacity: 0
+
+    element = makeElement({style, tagName: "div", editable: true})
+    document.body.appendChild(element)
+    element.focus()
+
+    requestAnimationFrame =>
+      blobUri = element.querySelector("img").src
+      document.body.removeChild(element)
+      fetch(blobUri).then (response) =>
+        response.arrayBuffer().then (buffer) =>
+          file = new File([buffer], "pasted-file-#{++pastedFileCount}.png", type: "image/png")
+          @setSelectedRange(selectedRange)
+          callback(file)
+
   @proxyMethod "responder?.getSelectedRange"
   @proxyMethod "responder?.setSelectedRange"
   @proxyMethod "responder?.expandSelectionInDirection"
@@ -465,11 +499,14 @@ pasteEventIsCrippledSafariHTMLPaste = (event) ->
     else
       isExternalHTMLPaste = "com.apple.webarchive" in paste.types
       isExternalRichTextPaste = "com.apple.flat-rtfd" in paste.types
-      # Safari pastes directly copied images such as Command+Control+Shift+4
-      # captured screenshots as inaccessble files which must be sniffed from
-      # the DOM
-      isImagePasteWithoutFile = paste.files.length is 0 and paste.types.some((type) -> type.indexOf("image/") is 0)
-      isExternalHTMLPaste or isExternalRichTextPaste or isImagePasteWithoutFile
+      isExternalHTMLPaste or isExternalRichTextPaste
+
+pasteEventIsCrippledSafariImagePaste = (event) ->
+  # Safari 10.1 image paste doesn't expose the image as a file object directly
+  # or with getType, it must be inserted into a contenteditable which creates a
+  # blob URI which can be sniffed back out.
+  if paste = event.clipboardData
+    paste.files.length is 0 and paste.types.some((type) -> type.indexOf("image/") is 0)
 
 dataTransferIsPlainText = (dataTransfer) ->
   text = dataTransfer.getData("text/plain")
