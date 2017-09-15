@@ -89,14 +89,13 @@ class Trix.Composition extends Trix.BasicObject
       @insertString("\n")
 
   insertHTML: (html) ->
-    startPosition = @getPosition()
-    startLength = @document.getLength()
-
     document = Trix.Document.fromHTML(html)
-    @setDocument(@document.mergeDocumentAtRange(document, @getSelectedRange()))
+    selectedRange = @getSelectedRange()
 
-    endLength = @document.getLength()
-    endPosition = startPosition + (endLength - startLength)
+    @setDocument(@document.mergeDocumentAtRange(document, selectedRange))
+
+    startPosition = selectedRange[0]
+    endPosition = startPosition + document.getLength() - 1
 
     @setSelection(endPosition)
     @notifyDelegateOfInsertionAtRange([startPosition, endPosition])

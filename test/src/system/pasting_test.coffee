@@ -19,6 +19,14 @@ testGroup "Pasting", template: "editor_empty", ->
         pasteContent "text/html", "<div>Hello world<br></div><div>This is a test</div>", ->
           expectDocument "abHello world\nThis is a test\nc\n"
 
+  test "paste html in expanded selection", (expectDocument) ->
+    typeCharacters "abc", ->
+      moveCursor "left", ->
+        expandSelection direction: "left", times: 2, ->
+          pasteContent "text/html", "<strong>x</strong>", ->
+            assert.deepEqual [1,1], getEditor().getSelectedRange()
+            expectDocument "xc\n"
+
   test "paste plain text with CRLF ", (expectDocument) ->
     pasteContent "text/plain", "a\r\nb\r\nc", ->
       expectDocument "a\nb\nc\n"
