@@ -8,6 +8,11 @@ helpers.assert.locationRange = (start, end) ->
   actualLocationRange = getEditorController().getLocationRange()
   @deepEqual(actualLocationRange, expectedLocationRange)
 
+helpers.assert.selectedRange = (range) ->
+  expectedRange = normalizeRange(range)
+  actualRange = getEditor().getSelectedRange()
+  @deepEqual(actualRange, expectedRange)
+
 helpers.assert.textAttributes = (range, attributes) ->
   document = getDocument().getDocumentAtRange(range)
   blocks = document.getBlocks()

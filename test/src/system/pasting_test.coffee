@@ -24,7 +24,7 @@ testGroup "Pasting", template: "editor_empty", ->
       moveCursor "left", ->
         expandSelection direction: "left", times: 2, ->
           pasteContent "text/html", "<strong>x</strong>", ->
-            assert.deepEqual [1,1], getEditor().getSelectedRange()
+            assert.selectedRange(1)
             expectDocument "xc\n"
 
   test "paste plain text with CRLF ", (expectDocument) ->
