@@ -23,7 +23,7 @@ class Trix.DocumentView extends Trix.ObjectView
   render: ->
     @childViews = []
 
-    @shadowElement = makeElement("div")
+    @element.shadowElement = @shadowElement = makeElement("div")
 
     unless @document.isEmpty()
       objects = Trix.ObjectGroup.groupObjects(@document.getBlocks(), asTree: true)

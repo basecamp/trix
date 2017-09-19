@@ -42,11 +42,13 @@ class Trix.CompositionController extends Trix.BasicObject
       @documentView.render()
       @revision = @composition.revision
 
-    unless @documentView.isSynced()
-      @delegate?.compositionControllerWillSyncDocumentView?()
-      @documentView.sync()
-      @reinstallAttachmentEditor()
-      @delegate?.compositionControllerDidSyncDocumentView?()
+    @element.shadowing = @attachmentEditor?
+
+    unless @element.shadowing
+      unless @documentView.isSynced()
+        @delegate?.compositionControllerWillSyncDocumentView?()
+        @documentView.sync()
+        @delegate?.compositionControllerDidSyncDocumentView?()
 
     @delegate?.compositionControllerDidRender?()
 
@@ -81,12 +83,6 @@ class Trix.CompositionController extends Trix.BasicObject
 
   uninstallAttachmentEditor: ->
     @attachmentEditor?.uninstall()
-
-  reinstallAttachmentEditor: ->
-    if @attachmentEditor
-      attachment = @attachmentEditor.attachment
-      @uninstallAttachmentEditor()
-      @installAttachmentEditorForAttachment(attachment)
 
   editAttachmentCaption: ->
     @attachmentEditor?.editCaption()

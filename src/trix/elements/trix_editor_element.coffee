@@ -129,6 +129,13 @@ Trix.registerElement "trix-editor", do ->
         @parentNode.insertBefore(element, @nextElementSibling)
         element
 
+  serializableElement:
+    get: ->
+      if @shadowing
+        @shadowElement
+      else
+        this
+
   editor:
     get: ->
       @editorController?.editor
@@ -154,7 +161,7 @@ Trix.registerElement "trix-editor", do ->
           @documentChangedSinceLastRender = false
           @notify("change")
       when "change", "attachment-add", "attachment-edit", "attachment-remove"
-        @inputElement?.value = Trix.serializeToContentType(this, "text/html")
+        @inputElement?.value = Trix.serializeToContentType(@serializableElement, "text/html")
 
     if @editorController
       triggerEvent("trix-#{message}", onElement: this, attributes: data)
