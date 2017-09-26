@@ -288,7 +288,7 @@ removeWhitespace = (string) ->
       trixContentType: "application/pdf"
       trixId: attachment.id
 
-    link = Trix.makeElement("a", href: attrs.href)
+    link = Trix.makeElement("a", href: attrs.href, tabindex: -1)
     link.dataset[key] = value for key, value of data
     link.setAttribute("contenteditable", false)
     link.appendChild(figure)
