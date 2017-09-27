@@ -1,6 +1,10 @@
 .trix-content {
   line-height: 1.5;
 
+  * {
+    box-sizing: border-box;
+  }
+
   h1 {
     font-size: 1.2em;
     line-height: 1.2;
@@ -14,6 +18,9 @@
   }
 
   pre {
+    display: inline-block;
+    width: 100%;
+    vertical-align: top;
     font-family: monospace;
     font-size: 0.9em;
     margin: 0;
