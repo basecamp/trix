@@ -45,37 +45,37 @@ class Trix.EditorController extends Trix.Controller
   # Composition delegate
 
   compositionDidChangeDocument: (document) ->
-    @editorElement.notify("document-change")
+    @notifyEditorElement("document-change")
     @render() unless @handlingInput
 
   compositionDidChangeCurrentAttributes: (@currentAttributes) ->
     @toolbarController.updateAttributes(@currentAttributes)
     @updateCurrentActions()
-    @editorElement.notify("attributes-change", attributes: @currentAttributes)
+    @notifyEditorElement("attributes-change", attributes: @currentAttributes)
 
   compositionDidPerformInsertionAtRange: (range) ->
     @pastedRange = range if @pasting
 
   compositionShouldAcceptFile: (file) ->
-    @editorElement.notify("file-accept", {file})
+    @notifyEditorElement("file-accept", {file})
 
   compositionDidAddAttachment: (attachment) ->
     managedAttachment = @attachmentManager.manageAttachment(attachment)
-    @editorElement.notify("attachment-add", attachment: managedAttachment)
+    @notifyEditorElement("attachment-add", attachment: managedAttachment)
 
   compositionDidEditAttachment: (attachment) ->
     @compositionController.rerenderViewForObject(attachment)
     managedAttachment = @attachmentManager.manageAttachment(attachment)
-    @editorElement.notify("attachment-edit", attachment: managedAttachment)
-    @editorElement.notify("change")
+    @notifyEditorElement("attachment-edit", attachment: managedAttachment)
+    @notifyEditorElement("change")
 
   compositionDidChangeAttachmentPreviewURL: (attachment) ->
     @compositionController.invalidateViewForObject(attachment)
-    @editorElement.notify("change")
+    @notifyEditorElement("change")
 
   compositionDidRemoveAttachment: (attachment) ->
     managedAttachment = @attachmentManager.unmanageAttachment(attachment)
-    @editorElement.notify("attachment-remove", attachment: managedAttachment)
+    @notifyEditorElement("attachment-remove", attachment: managedAttachment)
 
   compositionDidStartEditingAttachment: (attachment) ->
     @attachmentLocationRange = @composition.document.getLocationRangeOfAttachment(attachment)
@@ -122,7 +122,7 @@ class Trix.EditorController extends Trix.Controller
     @inputController.editorDidSyncDocumentView()
     @selectionManager.unlock()
     @updateCurrentActions()
-    @editorElement.notify("sync")
+    @notifyEditorElement("sync")
 
   compositionControllerDidRender: ->
     if @requestedLocationRange?
@@ -133,16 +133,16 @@ class Trix.EditorController extends Trix.Controller
 
     unless @renderedCompositionRevision is @composition.revision
       @composition.updateCurrentAttributes()
-      @editorElement.notify("render")
+      @notifyEditorElement("render")
 
     @renderedCompositionRevision = @composition.revision
 
   compositionControllerDidFocus: ->
     @toolbarController.hideDialog()
-    @editorElement.notify("focus")
+    @notifyEditorElement("focus")
 
   compositionControllerDidBlur: ->
-    @editorElement.notify("blur")
+    @notifyEditorElement("blur")
 
   compositionControllerDidSelectAttachment: (attachment) ->
     @composition.editAttachment(attachment)
@@ -173,7 +173,7 @@ class Trix.EditorController extends Trix.Controller
       @render()
 
   inputControllerDidAllowUnhandledInput: ->
-    @editorElement.notify("change")
+    @notifyEditorElement("change")
 
   inputControllerDidRequestReparse: ->
     @reparse()
@@ -187,13 +187,13 @@ class Trix.EditorController extends Trix.Controller
   inputControllerWillPaste: (paste) ->
     @editor.recordUndoEntry("Paste")
     @pasting = true
-    @editorElement.notify("before-paste", {paste})
+    @notifyEditorElement("before-paste", {paste})
 
   inputControllerDidPaste: (paste) ->
     paste.range = @pastedRange
     @pastedRange = null
     @pasting = null
-    @editorElement.notify("paste", {paste})
+    @notifyEditorElement("paste", {paste})
 
   inputControllerWillMoveText: ->
     @editor.recordUndoEntry("Move")
@@ -221,7 +221,7 @@ class Trix.EditorController extends Trix.Controller
     @updateCurrentActions()
     if @attachmentLocationRange and not rangesAreEqual(@attachmentLocationRange, locationRange)
       @composition.stopEditingAttachment()
-    @editorElement.notify("selection-change")
+    @notifyEditorElement("selection-change")
 
   # Toolbar controller delegate
 
@@ -254,12 +254,12 @@ class Trix.EditorController extends Trix.Controller
     @freezeSelection()
 
   toolbarDidShowDialog: (dialogName) ->
-    @editorElement.notify("toolbar-dialog-show", {dialogName})
+    @notifyEditorElement("toolbar-dialog-show", {dialogName})
 
   toolbarDidHideDialog: (dialogName) ->
     @thawSelection()
     @editorElement.focus()
-    @editorElement.notify("toolbar-dialog-hide", {dialogName})
+    @notifyEditorElement("toolbar-dialog-hide", {dialogName})
 
   # Selection
 
@@ -309,7 +309,7 @@ class Trix.EditorController extends Trix.Controller
 
   invokeAction: (actionName) ->
     if @actionIsExternal(actionName)
-      @editorElement.notify("action-invoke", {actionName})
+      @notifyEditorElement("action-invoke", {actionName})
     else
       @actions[actionName]?.perform?.call(this)
 
@@ -327,7 +327,7 @@ class Trix.EditorController extends Trix.Controller
     unless objectsAreEqual(currentActions, @currentActions)
       @currentActions = currentActions
       @toolbarController.updateActions(@currentActions)
-      @editorElement.notify("actions-change", actions: @currentActions)
+      @notifyEditorElement("actions-change", actions: @currentActions)
 
   # Private
 
@@ -336,6 +336,24 @@ class Trix.EditorController extends Trix.Controller
 
   render: ->
     @compositionController.render()
+
+  updateInputElement: ->
+    element = @editorElement
+    value = Trix.serializeToContentType(element, "text/html")
+    @editorElement.setInputElementValue(value)
+
+  notifyEditorElement: (message, data) ->
+    switch message
+      when "document-change"
+        @documentChangedSinceLastRender = true
+      when "render"
+        if @documentChangedSinceLastRender
+          @documentChangedSinceLastRender = false
+          @notifyEditorElement("change")
+      when "change", "attachment-add", "attachment-edit", "attachment-remove"
+        @updateInputElement()
+
+    @editorElement.notify(message, data)
 
   removeAttachment: (attachment) ->
     @editor.recordUndoEntry("Delete Attachment")
