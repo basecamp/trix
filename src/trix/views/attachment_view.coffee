@@ -47,7 +47,7 @@ class Trix.AttachmentView extends Trix.ObjectView
       data.trixSerialize = false
 
     if href = @getHref()
-      element = makeElement("a", {href})
+      element = makeElement("a", {href, tabindex: -1})
       element.appendChild(figure)
     else
       element = figure
