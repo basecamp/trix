@@ -338,7 +338,7 @@ class Trix.EditorController extends Trix.Controller
     @compositionController.render()
 
   updateInputElement: ->
-    element = @editorElement
+    element = @compositionController.getSerializableElement()
     value = Trix.serializeToContentType(element, "text/html")
     @editorElement.setInputElementValue(value)
 

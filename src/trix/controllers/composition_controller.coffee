@@ -36,19 +36,22 @@ class Trix.CompositionController extends Trix.BasicObject
     attachment = @findAttachmentForElement(target)
     @delegate?.compositionControllerDidSelectAttachment?(attachment)
 
+  getSerializableElement: ->
+    if @isEditingAttachment()
+      @documentView.shadowElement
+    else
+      @element
+
   render: ->
     unless @revision is @composition.revision
       @documentView.setDocument(@composition.document)
       @documentView.render()
       @revision = @composition.revision
 
-    @element.shadowing = @attachmentEditor?
-
-    unless @element.shadowing
-      unless @documentView.isSynced()
-        @delegate?.compositionControllerWillSyncDocumentView?()
-        @documentView.sync()
-        @delegate?.compositionControllerDidSyncDocumentView?()
+    if @canSyncDocumentView() and not @documentView.isSynced()
+      @delegate?.compositionControllerWillSyncDocumentView?()
+      @documentView.sync()
+      @delegate?.compositionControllerDidSyncDocumentView?()
 
     @delegate?.compositionControllerDidRender?()
 
@@ -72,6 +75,9 @@ class Trix.CompositionController extends Trix.BasicObject
     @documentView.garbageCollectCachedViews()
 
   # Attachment editor management
+
+  isEditingAttachment: ->
+    @attachmentEditor?
 
   installAttachmentEditorForAttachment: (attachment) ->
     return if @attachmentEditor?.attachment is attachment
@@ -108,6 +114,9 @@ class Trix.CompositionController extends Trix.BasicObject
     @delegate?.compositionControllerDidRequestDeselectingAttachment?(attachment)
 
   # Private
+
+  canSyncDocumentView: ->
+    not @isEditingAttachment()
 
   findAttachmentForElement: (element) ->
     @composition.document.getAttachmentById(parseInt(element.dataset.trixId, 10))

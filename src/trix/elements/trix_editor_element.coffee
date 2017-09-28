@@ -129,13 +129,6 @@ Trix.registerElement "trix-editor", do ->
         @parentNode.insertBefore(element, @nextElementSibling)
         element
 
-  serializableElement:
-    get: ->
-      if @shadowing
-        @shadowElement
-      else
-        this
-
   editor:
     get: ->
       @editorController?.editor
