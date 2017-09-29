@@ -45,6 +45,28 @@ testGroup "Attachments", template: "editor_with_image", ->
         assert.equal captionElement.getAttribute("data-trix-placeholder"), Trix.config.lang.captionPlaceholder
         done()
 
+  test "updating an attachment's href attribute while editing its caption", (expectDocument) ->
+    attachment = getEditorController().attachmentManager.getAttachments()[0]
+    after 20, ->
+      clickElement findElement("figure"), ->
+        clickElement findElement("figcaption"), ->
+          defer ->
+            textarea = findElement("textarea")
+            assert.ok textarea
+            textarea.focus()
+            textarea.value = "my caption"
+            triggerEvent(textarea, "input")
+            attachment.setAttributes(href: "https://example.com")
+            defer ->
+              textarea = findElement("textarea")
+              assert.ok document.activeElement is textarea
+              assert.equal textarea.value, "my caption"
+              pressKey "return", ->
+                assert.notOk findElement("textarea")
+                assert.textAttributes [2, 3], caption: "my caption"
+                assert.locationRange index: 0, offset: 3
+                expectDocument "ab#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+
 getFigure = ->
   findElement("figure")
 

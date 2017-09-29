@@ -43,6 +43,11 @@ trix-editor {
     left: 5%;
     width: 90%;
     opacity: 0.9;
+    transition: opacity 200ms ease-in;
+
+    &[value="100"] {
+      opacity: 0;
+    }
   }
 
   .attachment__caption-editor {

@@ -36,16 +36,21 @@ class Trix.CompositionController extends Trix.BasicObject
     attachment = @findAttachmentForElement(target)
     @delegate?.compositionControllerDidSelectAttachment?(attachment)
 
+  getSerializableElement: ->
+    if @isEditingAttachment()
+      @documentView.shadowElement
+    else
+      @element
+
   render: ->
     unless @revision is @composition.revision
       @documentView.setDocument(@composition.document)
       @documentView.render()
       @revision = @composition.revision
 
-    unless @documentView.isSynced()
+    if @canSyncDocumentView() and not @documentView.isSynced()
       @delegate?.compositionControllerWillSyncDocumentView?()
       @documentView.sync()
-      @reinstallAttachmentEditor()
       @delegate?.compositionControllerDidSyncDocumentView?()
 
     @delegate?.compositionControllerDidRender?()
@@ -71,6 +76,9 @@ class Trix.CompositionController extends Trix.BasicObject
 
   # Attachment editor management
 
+  isEditingAttachment: ->
+    @attachmentEditor?
+
   installAttachmentEditorForAttachment: (attachment) ->
     return if @attachmentEditor?.attachment is attachment
     return unless element = @documentView.findElementForObject(attachment)
@@ -81,12 +89,6 @@ class Trix.CompositionController extends Trix.BasicObject
 
   uninstallAttachmentEditor: ->
     @attachmentEditor?.uninstall()
-
-  reinstallAttachmentEditor: ->
-    if @attachmentEditor
-      attachment = @attachmentEditor.attachment
-      @uninstallAttachmentEditor()
-      @installAttachmentEditorForAttachment(attachment)
 
   editAttachmentCaption: ->
     @attachmentEditor?.editCaption()
@@ -112,6 +114,9 @@ class Trix.CompositionController extends Trix.BasicObject
     @delegate?.compositionControllerDidRequestDeselectingAttachment?(attachment)
 
   # Private
+
+  canSyncDocumentView: ->
+    not @isEditingAttachment()
 
   findAttachmentForElement: (element) ->
     @composition.document.getAttachmentById(parseInt(element.dataset.trixId, 10))
