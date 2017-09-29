@@ -109,12 +109,8 @@ class Trix.AttachmentView extends Trix.ObjectView
   # Attachment delegate
 
   attachmentDidChangeUploadProgress: ->
-    if element = @findProgressElement()
-      value = @attachment.getUploadProgress()
-      if value < 100
-        element.value = value
-      else
-        element.style.display = "none"
+    value = @attachment.getUploadProgress()
+    @findProgressElement()?.value = value
 
 htmlContainsTagName = (html, tagName) ->
   div = makeElement("div")
