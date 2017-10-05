@@ -474,10 +474,12 @@ pasteEventIsCrippledSafariHTMLPaste = (event) ->
     if "text/html" in paste.types
       # Answer is yes if there's any possibility of Paste and Match Style in Safari,
       # which is nearly impossible to detect confidently: https://bugs.webkit.org/show_bug.cgi?id=174165
-      mightBePasteAndMatchStyle = paste.types.some (type) ->
+      for type in paste.types
         hasPasteboardFlavor = /^CorePasteboardFlavorType/.test(type)
         hasReadableDynamicData = /^dyn\./.test(type) and paste.getData(type)
-        hasPasteboardFlavor or hasReadableDynamicData
+        mightBePasteAndMatchStyle = hasPasteboardFlavor or hasReadableDynamicData
+        return true if mightBePasteAndMatchStyle
+      false
     else
       isExternalHTMLPaste = "com.apple.webarchive" in paste.types
       isExternalRichTextPaste = "com.apple.flat-rtfd" in paste.types
