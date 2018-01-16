@@ -248,7 +248,7 @@ element.editor.deleteInDirection("forward")
 
 Trix represents formatting as sets of _attributes_ applied across ranges of a document.
 
-By default, Trix supports the inline attributes `bold`, `italic`, `href`, and `strike`, and the block-level attributes `heading1`, `quote`, `code`, `bullet`, and `number`.
+By default, Trix supports the inline attributes `bold`, `italic`, `href`, `underline` and `strike`, and the block-level attributes `heading1`, `quote`, `code`, `bullet`, and `number`.
 
 ### Applying Formatting
 
