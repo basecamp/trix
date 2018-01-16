@@ -106,6 +106,7 @@ trix-toolbar {
 
   .trix-button--icon-bold::before { background-image: $icon-bold; }
   .trix-button--icon-italic::before { background-image: $icon-italic; }
+  .trix-button--icon-underline::before { background-image: $icon-underline; }
   .trix-button--icon-link::before { background-image: $icon-link; }
   .trix-button--icon-strike::before { background-image: $icon-strike; }
   .trix-button--icon-quote::before { background-image: $icon-quote; }
