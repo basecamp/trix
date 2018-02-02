@@ -28,14 +28,15 @@ class Trix.InputController extends Trix.BasicObject
     @mutationObserver.delegate = this
 
     for eventName of @events
-      handleEvent eventName, onElement: @element, withCallback: @handlerFor(eventName), inPhase: "capturing"
+      handleEvent eventName, onElement: @element, withCallback: @handlerFor(eventName)
 
   handlerFor: (eventName) ->
     (event) =>
-      @handleInput ->
-        unless innerElementIsActive(@element)
-          @eventName = eventName
-          @events[eventName].call(this, event)
+      unless event.defaultPrevented
+        @handleInput ->
+          unless innerElementIsActive(@element)
+            @eventName = eventName
+            @events[eventName].call(this, event)
 
   setInputSummary: (summary = {}) ->
     @inputSummary.eventName = @eventName
