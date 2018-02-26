@@ -1,5 +1,4 @@
 # Trix
-
 ### A Rich Text Editor for Everyday Writing
 
 **Compose beautifully formatted text in your web application.** Trix is a WYSIWYG editor for writing messages, comments, articles, and lists—the simple documents most web apps are made of. It features a sophisticated document model, support for embedded attachments, and outputs terse and consistent HTML.
@@ -18,7 +17,7 @@ Trix sidesteps these inconsistencies by treating `contenteditable` as an I/O dev
 
 <details><summary>Trix supports all evergreen, self-updating desktop and mobile browsers.</summary><img src="https://s3.amazonaws.com/trix-depot/test-status-images/trix.svg"></details>
 
-Trix is built with emerging web standards, notably [Custom Elements](http://www.w3.org/TR/custom-elements/), [Mutation Observer](https://dom.spec.whatwg.org/#mutation-observers), and [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Eventually we expect all browsers to implement these standards. In the meantime, Trix includes [polyfills](https://en.wikipedia.org/wiki/Polyfill) for missing functionality.
+Trix is built with emerging web standards, notably [Custom Elements](http://www.w3.org/TR/custom-elements/), [Mutation Observer](https://dom.spec.whatwg.org/#mutation-observers), and [Promises](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects). Eventually we expect all browsers to implement these standards. In the meantime, Trix includes [polyfills](https://en.wikipedia.org/wiki/Polyfill) for missing functionality.
 
 # Getting Started
 
@@ -95,8 +94,8 @@ If you don’t want to accept dropped or pasted files, call `preventDefault()` o
 You can manipulate a Trix editor programmatically through the `Trix.Editor` interface, available on each `<trix-editor>` element through its `editor` property.
 
 ```js
-var element = document.querySelector('trix-editor')
-element.editor // is a Trix.Editor instance
+var element = document.querySelector("trix-editor")
+element.editor  // is a Trix.Editor instance
 ```
 
 ## Understanding the Document Model
@@ -104,14 +103,14 @@ element.editor // is a Trix.Editor instance
 The formatted content of a Trix editor is known as a _document_, and is represented as an instance of the `Trix.Document` class. To get the editor’s current document, use the `editor.getDocument` method.
 
 ```js
-element.editor.getDocument() // is a Trix.Document instance
+element.editor.getDocument()  // is a Trix.Document instance
 ```
 
 You can convert a document to an unformatted JavaScript string with the `document.toString` method.
 
 ```js
 var document = element.editor.getDocument()
-document.toString() // is a JavaScript string
+document.toString()  // is a JavaScript string
 ```
 
 ### Immutability and Equality
@@ -122,7 +121,7 @@ To compare two documents for equality, use the `document.isEqualTo` method.
 
 ```js
 var document = element.editor.getDocument()
-document.isEqualTo(element.editor.getDocument()) // true
+document.isEqualTo(element.editor.getDocument())  // true
 ```
 
 ## Getting and Setting the Selection
@@ -132,7 +131,7 @@ Trix documents are structured as sequences of individually addressable character
 To get the editor’s current selection, use the `editor.getSelectedRange` method, which returns a two-element array containing the start and end positions.
 
 ```js
-element.editor.getSelectedRange() // [0, 0]
+element.editor.getSelectedRange()  // [0, 0]
 ```
 
 You can set the editor’s current selection by passing a range array to the `editor.setSelectedRange` method.
@@ -160,10 +159,10 @@ To programmatically move the cursor or selection through the document, call the 
 
 ```js
 // Move the cursor backward one character
-element.editor.moveCursorInDirection('backward')
+element.editor.moveCursorInDirection("backward")
 
 // Expand the end of the selection forward by one character
-element.editor.expandSelectionInDirection('forward')
+element.editor.expandSelectionInDirection("forward")
 ```
 
 ### Converting Positions to Pixel Offsets
@@ -173,7 +172,8 @@ Sometimes you need to know the _x_ and _y_ coordinates of a character at a given
 Call the `editor.getClientRectAtPosition` method with a position argument to get a [`DOMRect`](https://drafts.fxtf.org/geometry/#DOMRect) instance representing the left and top offsets, width, and height of the character at the given position.
 
 ```js
-var rect = element.editor.getClientRectAtPosition(0)[(rect.left, rect.top)] // [17, 49]
+var rect = element.editor.getClientRectAtPosition(0)
+[rect.left, rect.top]  // [17, 49]
 ```
 
 ## Inserting and Deleting Text
@@ -189,7 +189,7 @@ To insert unformatted text into the document, call the `editor.insertString` met
 ```js
 // Insert “Hello” at the beginning of the document
 element.editor.setSelectedRange([0, 0])
-element.editor.insertString('Hello')
+element.editor.insertString("Hello")
 ```
 
 ### Inserting HTML
@@ -199,7 +199,7 @@ To insert HTML into the document, call the `editor.insertHTML` method. Trix will
 ```js
 // Insert a bold “Hello” at the beginning of the document
 element.editor.setSelectedRange([0, 0])
-element.editor.insertHTML('<strong>Hello</strong>')
+element.editor.insertHTML("<strong>Hello</strong>")
 ```
 
 ### Inserting a File
@@ -208,7 +208,7 @@ To insert a DOM [`File`](http://www.w3.org/TR/FileAPI/#file) object into the doc
 
 ```js
 // Insert the selected file from the first file input element
-var file = document.querySelector('input[type=file]').file
+var file = document.querySelector("input[type=file]").file
 element.editor.insertFile(file)
 ```
 
@@ -218,7 +218,7 @@ To insert a line break, call the `editor.insertLineBreak` method, which is funct
 
 ```js
 // Insert “Hello\n”
-element.editor.insertString('Hello')
+element.editor.insertString("Hello")
 element.editor.insertLineBreak()
 ```
 
@@ -229,11 +229,11 @@ If the current selection is collapsed, you can simulate deleting text before or 
 ```js
 // “Backspace” the first character in the document
 element.editor.setSelectedRange([1, 1])
-element.editor.deleteInDirection('backward')
+element.editor.deleteInDirection("backward")
 
 // Delete the second character in the document
 element.editor.setSelectedRange([1, 1])
-element.editor.deleteInDirection('forward')
+element.editor.deleteInDirection("forward")
 ```
 
 To delete a range of text, first set the selected range, then call `editor.deleteInDirection` with either direction as the argument.
@@ -241,7 +241,7 @@ To delete a range of text, first set the selected range, then call `editor.delet
 ```js
 // Delete the first five characters
 element.editor.setSelectedRange([0, 4])
-element.editor.deleteInDirection('forward')
+element.editor.deleteInDirection("forward")
 ```
 
 ## Working With Attributes and Nesting
@@ -255,17 +255,17 @@ By default, Trix supports the inline attributes `bold`, `italic`, `href`, and `s
 To apply formatting to the current selection, use the `editor.activateAttribute` method.
 
 ```js
-element.editor.insertString('Hello')
+element.editor.insertString("Hello")
 element.editor.setSelectedRange([0, 5])
-element.editor.activateAttribute('bold')
+element.editor.activateAttribute("bold")
 ```
 
 To set the `href` attribute, pass a URL as the second argument to `editor.activateAttribute`.
 
 ```js
-element.editor.insertString('Trix')
+element.editor.insertString("Trix")
 element.editor.setSelectedRange([0, 4])
-element.editor.activateAttribute('href', 'https://trix-editor.org/')
+element.editor.activateAttribute("href", "https://trix-editor.org/")
 ```
 
 ### Removing Formatting
@@ -274,7 +274,7 @@ Use the `editor.deactivateAttribute` method to remove formatting from a selectio
 
 ```js
 element.editor.setSelectedRange([2, 4])
-element.editor.deactivateAttribute('bold')
+element.editor.deactivateAttribute("bold")
 ```
 
 ### Formatting With a Collapsed Selection
@@ -282,8 +282,8 @@ element.editor.deactivateAttribute('bold')
 If you activate or deactivate attributes when the selection is collapsed, your formatting changes will apply to the text inserted by any subsequent calls to `editor.insertString`.
 
 ```js
-element.editor.activateAttribute('italic')
-element.editor.insertString('This is italic')
+element.editor.activateAttribute("italic")
+element.editor.insertString("This is italic")
 ```
 
 ### Adjusting the Nesting Level
@@ -291,7 +291,7 @@ element.editor.insertString('This is italic')
 To adjust the nesting level of quotes, bulleted lists, or numbered lists, call the `editor.increaseNestingLevel` and `editor.decreaseNestingLevel` methods.
 
 ```js
-element.editor.activateAttribute('quote')
+element.editor.activateAttribute("quote")
 element.editor.increaseNestingLevel()
 element.editor.decreaseNestingLevel()
 ```
@@ -310,8 +310,8 @@ element.editor.redo()
 Changes you make through the editor interface will not automatically record undo entries. You can save your own undo entries by calling the `editor.recordUndoEntry` method with a description argument.
 
 ```js
-element.editor.insertString('Hello')
-element.editor.recordUndoEntry('Insert Text')
+element.editor.insertString("Hello")
+element.editor.recordUndoEntry("Insert Text")
 ```
 
 ## Loading and Saving Editor State
@@ -320,10 +320,10 @@ Serialize an editor’s state with `JSON.stringify` and restore saved state with
 
 ```js
 // Save editor state to local storage
-localStorage['editorState'] = JSON.stringify(element.editor)
+localStorage["editorState"] = JSON.stringify(element.editor)
 
 // Restore editor state from local storage
-element.editor.loadJSON(JSON.parse(localStorage['editorState']))
+element.editor.loadJSON(JSON.parse(localStorage["editorState"]))
 ```
 
 ## Observing Editor Changes
