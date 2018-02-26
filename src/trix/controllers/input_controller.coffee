@@ -129,6 +129,7 @@ class Trix.InputController extends Trix.BasicObject
   events:
     keydown: (event) ->
       @resetInputSummary() unless @isComposing()
+      @inputSummary.didInput = true
 
       if keyName = @constructor.keyNames[event.keyCode]
         context = @keys
@@ -297,7 +298,11 @@ class Trix.InputController extends Trix.BasicObject
     compositionend: (event) ->
       @getCompositionInput().end(event.data)
 
+    beforeinput: (event) ->
+      @inputSummary.didInput = true
+
     input: (event) ->
+      @inputSummary.didInput = true
       event.stopPropagation()
 
   keys:

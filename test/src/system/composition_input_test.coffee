@@ -66,9 +66,11 @@ testGroup "Composition input", template: "editor_empty", ->
 
     triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
     triggerEvent(element, "compositionupdate", data: "ca")
+    triggerEvent(element, "input")
     removeCharacters -1, ->
       triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
       triggerEvent(element, "compositionupdate", data: "c")
+      triggerEvent(element, "input")
       triggerEvent(element, "compositionend", data: "c")
       removeCharacters -1, ->
         pressKey "backspace", ->
@@ -83,9 +85,11 @@ testGroup "Composition input", template: "editor_empty", ->
     triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
     triggerEvent(element, "compositionstart", data: "cat")
     triggerEvent(element, "compositionupdate", data: "cat")
+    triggerEvent(element, "input")
     removeCharacters -1, ->
       triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
       triggerEvent(element, "compositionupdate", data: "car")
+      triggerEvent(element, "input")
       triggerEvent(element, "compositionend", data: "car")
       insertNode document.createTextNode("r"), ->
         expectDocument("car\n")
@@ -97,32 +101,62 @@ testGroup "Composition input", template: "editor_empty", ->
     triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
     triggerEvent(element, "compositionstart", data: "")
     triggerEvent(element, "compositionupdate", data: "c")
+    triggerEvent(element, "input")
     node = document.createTextNode("c")
     insertNode(node)
     defer ->
       triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
       triggerEvent(element, "compositionupdate", data: "ca")
+      triggerEvent(element, "input")
       node.data = "ca"
       defer ->
         triggerEvent(element, "compositionend", data: "")
         defer ->
           expectDocument("ca\n")
 
+  # Simulates the sequence of events when moving the cursor through a word on Android
+  # Introduced in Chrome 65:
+  # - https://bugs.chromium.org/p/chromium/issues/detail?id=812674
+  # - https://bugs.chromium.org/p/chromium/issues/detail?id=764439#c9
+  test "composition events from cursor movement are ignored", (expectDocument) ->
+    element = getEditorElement()
+    element.editor.insertString("ab ")
+
+    element.editor.setSelectedRange(0)
+    triggerEvent(element, "compositionstart", data: "")
+    triggerEvent(element, "compositionupdate", data: "ab")
+    defer ->
+      element.editor.setSelectedRange(1)
+      triggerEvent(element, "compositionupdate", data: "ab")
+      defer ->
+        element.editor.setSelectedRange(2)
+        triggerEvent(element, "compositionupdate", data: "ab")
+        defer ->
+          element.editor.setSelectedRange(3)
+          triggerEvent(element, "compositionend", data: "ab")
+          defer ->
+            expectDocument("ab \n")
+
   # Simulates compositions in Firefox where the final composition data is
   # dispatched as both compositionupdate and compositionend.
   test "composition ending with same data as last update", (expectDocument) ->
     element = getEditorElement()
 
+    triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
     triggerEvent(element, "compositionstart", data: "")
     triggerEvent(element, "compositionupdate", data: "´")
     node = document.createTextNode("´")
     insertNode(node)
     selectNode(node)
     defer ->
+      triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
       triggerEvent(element, "compositionupdate", data: "é")
+      triggerEvent(element, "input")
       node.data = "é"
       defer ->
+        triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
         triggerEvent(element, "compositionupdate", data: "éé")
+        triggerEvent(element, "input")
         node.data = "éé"
         defer ->
           triggerEvent(element, "compositionend", data: "éé")
