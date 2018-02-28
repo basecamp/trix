@@ -77,6 +77,16 @@
     width: 100%;
     text-align: center;
 
+    &.attachment--size-medium {
+      width: 50%;
+      padding: 0 0.5em;
+    }
+
+    &.attachment--size-small {
+      width: 33%;
+      padding: 0 0.5em;
+    }
+
     .attachment__caption {
       color: #666;
       font-size: 0.9em;
