@@ -23,6 +23,9 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   getCaption: ->
     @attributes.get("caption") ? ""
 
+  getSize: ->
+    @attributes.get("size")
+
   getAttributesForAttachment: ->
     @attributes.slice(["caption"])
 

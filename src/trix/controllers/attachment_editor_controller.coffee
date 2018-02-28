@@ -19,7 +19,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
   install: ->
     @makeElementMutable()
     @makeCaptionEditable() if @attachment.isPreviewable()
-    @addRemoveButton()
+    @addToolbar()
 
   uninstall: ->
     @savePendingCaption()
@@ -49,16 +49,23 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     do: => handler = handleEvent("click", onElement: figcaption, withCallback: @didClickCaption, inPhase: "capturing")
     undo: => handler.destroy()
 
-  addRemoveButton: undoable ->
-    removeButton = makeElement
-      tagName: "button"
-      textContent: lang.remove
-      className: "#{css.attachmentRemove} #{css.attachmentRemove}--icon"
-      attributes: type: "button", title: lang.remove
+  addToolbar: undoable ->
+    toolbarElement = makeElement
+      tagName: "div"
+      className: "attachment__toolbar"
       data: trixMutable: true
-    handleEvent("click", onElement: removeButton, withCallback: @didClickRemoveButton)
-    do: => @element.appendChild(removeButton)
-    undo: => @element.removeChild(removeButton)
+
+    toolbarElement.innerHTML = """
+      <button type="button" data-size="small">small</button>
+      <button type="button" data-size="medium">medium</button>
+      <button type="button" data-size="large">large</button>
+      <button type="button" data-remove="true" class="#{css.attachmentRemove} #{css.attachmentRemove}--icon">#{lang.remove}</button>
+    """
+
+    handleEvent("click", onElement: toolbarElement, withCallback: @didClickToolbar)
+
+    do: => @element.appendChild(toolbarElement)
+    undo: => @element.removeChild(toolbarElement)
 
   editCaption: undoable ->
     textarea = makeElement
@@ -96,10 +103,19 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
 
   # Event handlers
 
-  didClickRemoveButton: (event) =>
+  didClickToolbar: (event) =>
     event.preventDefault()
     event.stopPropagation()
-    @delegate?.attachmentEditorDidRequestRemovalOfAttachment(@attachment)
+    {size, remove} = event.target.dataset
+
+    if size
+      if size is "large"
+        @delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?("size", @attachment)
+      else
+        @delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?({size}, @attachment)
+      @delegate?.attachmentEditorDidRequestDeselectingAttachment?(@attachment)
+    else if remove
+      @delegate?.attachmentEditorDidRequestRemovalOfAttachment(@attachment)
 
   didClickCaption: (event) =>
     event.preventDefault()
