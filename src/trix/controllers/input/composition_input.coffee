@@ -1,3 +1,5 @@
+{browser} = Trix
+
 class Trix.CompositionInput extends Trix.BasicObject
   constructor: (@inputController) ->
     {@responder, @delegate, @inputSummary} = @inputController
@@ -50,7 +52,10 @@ class Trix.CompositionInput extends Trix.BasicObject
     @getEndData()?
 
   isSignificant: ->
-    @inputSummary.didInput
+    if browser.composesExistingText
+      @inputSummary.didInput
+    else
+      true
 
   # Private
 

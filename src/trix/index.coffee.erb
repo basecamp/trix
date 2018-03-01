@@ -11,4 +11,9 @@
   NON_BREAKING_SPACE: "\u00A0"
   OBJECT_REPLACEMENT_CHARACTER: "\uFFFC"
 
+  browser:
+    # Android emits composition events when moving the cursor through existing text
+    # Introduced in Chrome 65: https://bugs.chromium.org/p/chromium/issues/detail?id=764439#c9
+    composesExistingText: /Android.*Chrome/.test(navigator.userAgent)
+
   config: {}

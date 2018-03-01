@@ -1,4 +1,5 @@
-{assert, clickToolbarButton, defer, endComposition, insertNode, pressKey, selectNode, startComposition, test, testGroup, triggerEvent, typeCharacters, updateComposition} = Trix.TestHelpers
+{assert, clickToolbarButton, defer, endComposition, insertNode, pressKey, selectNode, startComposition, test, testIf, testGroup, triggerEvent, typeCharacters, updateComposition} = Trix.TestHelpers
+{browser} = Trix
 
 testGroup "Composition input", template: "editor_empty", ->
   test "composing", (expectDocument) ->
@@ -114,11 +115,7 @@ testGroup "Composition input", template: "editor_empty", ->
         defer ->
           expectDocument("ca\n")
 
-  # Simulates the sequence of events when moving the cursor through a word on Android
-  # Introduced in Chrome 65:
-  # - https://bugs.chromium.org/p/chromium/issues/detail?id=812674
-  # - https://bugs.chromium.org/p/chromium/issues/detail?id=764439#c9
-  test "composition events from cursor movement are ignored", (expectDocument) ->
+  testIf browser.composesExistingText, "composition events from cursor movement are ignored", (expectDocument) ->
     element = getEditorElement()
     element.editor.insertString("ab ")
 
