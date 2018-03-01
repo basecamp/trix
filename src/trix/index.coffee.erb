@@ -15,5 +15,7 @@
     # Android emits composition events when moving the cursor through existing text
     # Introduced in Chrome 65: https://bugs.chromium.org/p/chromium/issues/detail?id=764439#c9
     composesExistingText: /Android.*Chrome/.test(navigator.userAgent)
+    # IE 11 activates resizing handles on editable elements that have "layout"
+    forcesObjectResizing: /Trident.*rv:11/.test(navigator.userAgent)
 
   config: {}
