@@ -161,9 +161,6 @@ class Trix.InputController extends Trix.BasicObject
         @responder?.insertString(string)
         @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())
 
-    keyup: (event) ->
-      @inputSummary.didInput = true
-
     textInput: (event) ->
       # Handle autocapitalization
       {data} = event

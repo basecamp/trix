@@ -164,26 +164,6 @@ testGroup "Composition input", template: "editor_empty", ->
             assert.locationRange(index: 0, offset: 2)
             expectDocument("éé\n")
 
-  # Simulates compositions in Firefox on Linux, which aren't preceded by
-  # keydown and don't dispatch input after compositionupdate.
-  test "composition with limited contextual keyboard and input events", (expectDocument) ->
-    element = getEditorElement()
-    element.editor.insertString("i")
-    element.editor.setSelectedRange(1)
-    defer ->
-      triggerEvent(element, "keyup", charCode: 0, keyCode: 0, which: 0)
-      triggerEvent(element, "compositionstart", data: "")
-      triggerEvent(element, "compositionupdate", data: "ó")
-      node = document.createTextNode("ó")
-      insertNode(node)
-      selectNode(node)
-      defer ->
-        triggerEvent(element, "compositionend", data: "ó")
-        triggerEvent(element, "input")
-        typeCharacters "n", ->
-          assert.locationRange(index: 0, offset: 3)
-          expectDocument("ión\n")
-
 removeCharacters = (direction, callback) ->
   selection = rangy.getSelection()
   range = selection.getRangeAt(0)
