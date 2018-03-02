@@ -1,7 +1,7 @@
 #= require trix/elements/trix_toolbar_element
 #= require trix/controllers/editor_controller
 
-{makeElement, triggerEvent, handleEvent, handleEventOnce} = Trix
+{browser, makeElement, triggerEvent, handleEvent, handleEventOnce} = Trix
 
 {attachmentSelector} = Trix.AttachmentView
 
@@ -37,11 +37,8 @@ Trix.registerElement "trix-editor", do ->
 
   # Style
 
-  # IE 11 activates resizing handles on editable elements that have "layout"
-  browserForcesObjectResizing = /Trident.*rv:11/.test(navigator.userAgent)
-
   cursorTargetStyles = do ->
-    if browserForcesObjectResizing
+    if browser.forcesObjectResizing
       display: "inline"
       width: "auto"
     else
