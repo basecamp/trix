@@ -55,10 +55,14 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       className: "attachment__toolbar"
       data: trixMutable: true
 
-    toolbarElement.innerHTML = """
-      <button type="button" data-size="small">small</button>
-      <button type="button" data-size="medium">medium</button>
-      <button type="button" data-size="large">large</button>
+    if @attachment.isPreviewable()
+      toolbarElement.innerHTML += """
+        <button type="button" data-size="small">small</button>
+        <button type="button" data-size="medium">medium</button>
+        <button type="button" data-size="large">large</button>
+      """
+
+    toolbarElement.innerHTML += """
       <button type="button" data-remove="true" class="#{css.attachmentRemove} #{css.attachmentRemove}--icon">#{lang.remove}</button>
     """
 
