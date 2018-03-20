@@ -126,12 +126,12 @@ class Trix.Composition extends Trix.BasicObject
 
     if length = headText.getLength()
       if length > 2
-        size = "small"
+        cols = 3
       else if length > 1
-        size = "medium"
+        cols = 2
 
-      if size
-        headText = headText.addAttributesAtRange({size}, [0, length])
+      if cols
+        headText = headText.addAttributesAtRange({cols}, [0, length])
 
     @insertText(headText.appendText(tailText))
 
