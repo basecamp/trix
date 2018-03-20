@@ -83,8 +83,8 @@ class Trix.AttachmentView extends Trix.ObjectView
     names = [css.attachment, "#{css.attachment}--#{@attachment.getType()}"]
     if extension = @attachment.getExtension()
       names.push("#{css.attachment}--#{extension}")
-    if size = @attachmentPiece.getSize()
-      names.push("#{css.attachment}--size-#{size}")
+    if cols = @attachmentPiece.getCols()
+      names.push("#{css.attachment}--cols-#{cols}")
     names.join(" ")
 
   getHref: ->

@@ -57,13 +57,13 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
 
     if @attachment.isPreviewable()
       toolbarElement.innerHTML += """
-        <button type="button" data-size="small">small</button>
-        <button type="button" data-size="medium">medium</button>
-        <button type="button" data-size="large">large</button>
+        <button type="button" data-trix-cols="3" title="3-up">❙ ❙ ❙</button>
+        <button type="button" data-trix-cols="2" title="2-up">❚ ❚</button>
+        <button type="button" data-trix-cols="" title="1-up">■</button>
       """
 
     toolbarElement.innerHTML += """
-      <button type="button" data-remove="true" class="#{css.attachmentRemove} #{css.attachmentRemove}--icon">#{lang.remove}</button>
+      <button type="button" data-trix-remove="true" class="#{css.attachmentRemove} #{css.attachmentRemove}--icon">#{lang.remove}</button>
     """
 
     handleEvent("click", onElement: toolbarElement, withCallback: @didClickToolbar)
@@ -110,15 +110,16 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
   didClickToolbar: (event) =>
     event.preventDefault()
     event.stopPropagation()
-    {size, remove} = event.target.dataset
+    {target} = event
 
-    if size
-      if size is "large"
-        @delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?("size", @attachment)
+    if target.hasAttribute("data-trix-cols")
+      if cols = parseInt(target.getAttribute("data-trix-cols"))
+        @delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?({cols}, @attachment)
       else
-        @delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?({size}, @attachment)
+        @delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?("cols", @attachment)
       @delegate?.attachmentEditorDidRequestDeselectingAttachment?(@attachment)
-    else if remove
+
+    else if target.hasAttribute("data-trix-remove")
       @delegate?.attachmentEditorDidRequestRemovalOfAttachment(@attachment)
 
   didClickCaption: (event) =>
