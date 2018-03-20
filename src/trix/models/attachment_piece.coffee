@@ -27,7 +27,7 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
     @attributes.get("size")
 
   getAttributesForAttachment: ->
-    @attributes.slice(["caption"])
+    @attributes.slice(["caption", "size"])
 
   canBeGrouped: ->
     super and not @attachment.hasAttribute("href")
