@@ -52,26 +52,36 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     undo: => handler.destroy()
 
   addToolbar: undoable ->
-    toolbarElement = makeElement
+    element = makeElement
       tagName: "div"
       className: "attachment__toolbar"
       data: trixMutable: true
 
     if @attachment.isPreviewable()
-      toolbarElement.innerHTML += """
-        <button type="button" data-trix-cols="3" title="3-up">❙ ❙ ❙</button>
-        <button type="button" data-trix-cols="2" title="2-up">❚ ❚</button>
-        <button type="button" data-trix-cols="" title="1-up">■</button>
+      element.innerHTML += """
+        <span class="trix-button-group trix-button-group--cols">
+          <button type="button" data-trix-cols="3" class="trix-button trix-button--cols trix-button--cols-3" title="#{lang.cols3}">❙❙❙</button>
+          <button type="button" data-trix-cols="2" class="trix-button trix-button--cols trix-button--cols-2" title="#{lang.cols2}">❚❚</button>
+          <button type="button" data-trix-cols="1" class="trix-button trix-button--cols trix-button--cols-1" title="#{lang.cols1}">■</button>
+        </span>
       """
 
-    toolbarElement.innerHTML += """
-      <button type="button" data-trix-remove="true" class="#{css.attachmentRemove} #{css.attachmentRemove}--icon">#{lang.remove}</button>
+      cols = @attachmentPiece.getCols() || 1
+      button = element.querySelector("[data-trix-cols='#{cols}']")
+      button.classList.add("trix-active")
+
+    element.innerHTML += """
+      <span class="trix-button-group trix-button-group--actions">
+        <button type="button" data-trix-action="remove" class="trix-button trix-button--remove" title="#{lang.remove}">#{lang.remove}</button>
+      </span>
     """
 
-    handleEvent("click", onElement: toolbarElement, withCallback: @didClickToolbar)
+    handleEvent("click", onElement: element, withCallback: @didClickToolbar)
+    handleEvent("click", onElement: element, matchingSelector: "[data-trix-cols]", withCallback: @didClickColButton)
+    handleEvent("click", onElement: element, matchingSelector: "[data-trix-action]", withCallback: @didClickActionButton)
 
-    do: => @element.appendChild(toolbarElement)
-    undo: => @element.removeChild(toolbarElement)
+    do: => @element.appendChild(element)
+    undo: => @element.removeChild(element)
 
   addMetadata: undoable ->
     element = makeElement(tagName: "span", className: "attachment__metadata")
@@ -132,16 +142,18 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
   didClickToolbar: (event) =>
     event.preventDefault()
     event.stopPropagation()
-    {target} = event
 
-    if target.hasAttribute("data-trix-cols")
-      if cols = parseInt(target.getAttribute("data-trix-cols"))
-        @delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?({cols}, @attachment)
-      else
-        @delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?("cols", @attachment)
-      @delegate?.attachmentEditorDidRequestDeselectingAttachment?(@attachment)
+  didClickColButton: (event) =>
+    cols = parseInt(event.target.getAttribute("data-trix-cols"))
+    if cols > 1
+      @delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?({cols}, @attachment)
+    else
+      @delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?("cols", @attachment)
+    @delegate?.attachmentEditorDidRequestDeselectingAttachment?(@attachment)
 
-    else if target.hasAttribute("data-trix-remove")
+  didClickActionButton: (event) =>
+    action = event.target.getAttribute("data-trix-action")
+    if action is "remove"
       @delegate?.attachmentEditorDidRequestRemovalOfAttachment(@attachment)
 
   didClickCaption: (event) =>
