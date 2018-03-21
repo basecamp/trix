@@ -18,8 +18,10 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
 
   install: ->
     @makeElementMutable()
-    @makeCaptionEditable() if @attachment.isPreviewable()
     @addToolbar()
+    if @attachment.isPreviewable()
+      @makeCaptionEditable()
+      @addMetadata()
 
   uninstall: ->
     @savePendingCaption()
@@ -70,6 +72,26 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
 
     do: => @element.appendChild(toolbarElement)
     undo: => @element.removeChild(toolbarElement)
+
+  addMetadata: undoable ->
+    element = makeElement(tagName: "span", className: "attachment__metadata")
+    name = @attachment.getFilename()
+    size = @attachment.getFormattedFilesize()
+
+    if name
+      nameElement = makeElement(tagName: "span", className: css.attachmentName, textContent: name, attributes: { title: name })
+      element.appendChild(nameElement)
+
+    if size
+      element.appendChild(document.createTextNode(" ")) if name
+      sizeElement = makeElement(tagName: "span", className: css.attachmentSize, textContent: size)
+      element.appendChild(sizeElement)
+
+    container = makeElement(tagName: "div", className: "attachment__metadata-container")
+    container.appendChild(element)
+
+    do: => @element.insertBefore(container, @element.querySelector("figcaption"))
+    undo: => @element.removeChild(container)
 
   editCaption: undoable ->
     textarea = makeElement

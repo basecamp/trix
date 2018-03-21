@@ -117,4 +117,35 @@ trix-editor {
       }
     }
   }
+
+  .attachment__metadata-container {
+    position: relative;
+  }
+
+  .attachment__metadata {
+    position: absolute;
+    left: 50%;
+    top: -4.2em;
+    transform: translate(-50%, 0);
+    max-width: 90%;
+    padding: 0.1em 0.6em;
+    font-size: 0.8em;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 3px;
+
+    .attachment__name {
+      display: inline-block;
+      max-width: 100%;
+      vertical-align: bottom;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .attachment__size {
+      margin-left: 0.2em;
+      white-space: nowrap;
+    }
+  }
 }
