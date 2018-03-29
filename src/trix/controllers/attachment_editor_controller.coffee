@@ -21,7 +21,6 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     @addToolbar()
     if @attachment.isPreviewable()
       @makeCaptionEditable()
-      @addMetadata()
 
   uninstall: ->
     @savePendingCaption()
@@ -39,23 +38,8 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       else
         @delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?("caption", @attachment)
 
-  # Installing and uninstalling
-
-  makeElementMutable: undoable ->
-    do: => @element.dataset.trixMutable = true
-    undo: => delete @element.dataset.trixMutable
-
-  makeCaptionEditable: undoable ->
-    figcaption = @element.querySelector("figcaption")
-    handler = null
-    do: => handler = handleEvent("click", onElement: figcaption, withCallback: @didClickCaption, inPhase: "capturing")
-    undo: => handler.destroy()
-
-  addToolbar: undoable ->
-    element = makeElement
-      tagName: "div"
-      className: "attachment__toolbar"
-      data: trixMutable: true
+  createToolbarButtonsElement: ->
+    element = makeElement(tagName: "div", className: "trix-button-row")
 
     if @attachment.isPreviewable()
       element.innerHTML += """
@@ -76,14 +60,12 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       </span>
     """
 
-    handleEvent("click", onElement: element, withCallback: @didClickToolbar)
+    handleEvent("click", onElement: element, withCallback: @didClickToolbarButton)
     handleEvent("click", onElement: element, matchingSelector: "[data-trix-cols]", withCallback: @didClickColButton)
     handleEvent("click", onElement: element, matchingSelector: "[data-trix-action]", withCallback: @didClickActionButton)
+    element
 
-    do: => @element.appendChild(element)
-    undo: => @element.removeChild(element)
-
-  addMetadata: undoable ->
+  createMetadataElement: ->
     element = makeElement(tagName: "span", className: "attachment__metadata")
     name = @attachment.getFilename()
     size = @attachment.getFormattedFilesize()
@@ -99,9 +81,31 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
 
     container = makeElement(tagName: "div", className: "attachment__metadata-container")
     container.appendChild(element)
+    container
 
-    do: => @element.insertBefore(container, @element.querySelector("figcaption"))
-    undo: => @element.removeChild(container)
+  # Installing and uninstalling
+
+  makeElementMutable: undoable ->
+    do: => @element.dataset.trixMutable = true
+    undo: => delete @element.dataset.trixMutable
+
+  makeCaptionEditable: undoable ->
+    figcaption = @element.querySelector("figcaption")
+    handler = null
+    do: => handler = handleEvent("click", onElement: figcaption, withCallback: @didClickCaption, inPhase: "capturing")
+    undo: => handler.destroy()
+
+  addToolbar: undoable ->
+    element = makeElement
+      tagName: "div"
+      className: "attachment__toolbar"
+      data: trixMutable: true
+
+    element.appendChild(@createToolbarButtonsElement())
+    element.appendChild(@createMetadataElement()) if @attachment.isPreviewable()
+
+    do: => @element.appendChild(element)
+    undo: => @element.removeChild(element)
 
   editCaption: undoable ->
     textarea = makeElement
@@ -139,7 +143,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
 
   # Event handlers
 
-  didClickToolbar: (event) =>
+  didClickToolbarButton: (event) =>
     event.preventDefault()
     event.stopPropagation()
 
