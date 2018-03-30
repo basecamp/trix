@@ -124,20 +124,39 @@ class Trix.Composition extends Trix.BasicObject
       else
         tailText = tailText.appendText(attachmentText)
 
-    if length = headText.getLength()
-      if length > 2
-        cols = 3
-      else if length > 1
-        cols = 2
-
-      if cols
-        headText = headText.addAttributesAtRange({cols}, [0, length])
-
-    @insertText(headText.appendText(tailText))
+    @insertTextAndFormatAttachmentCols(headText.appendText(tailText))
 
   insertAttachment: (attachment) ->
     text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
-    @insertText(text)
+    @insertTextAndFormatAttachmentCols(text)
+
+  insertTextAndFormatAttachmentCols: (text) ->
+    selectedRange = @getSelectedRange()
+    document = @document.insertTextAtRange(text, selectedRange)
+
+    startPosition = selectedRange[0]
+    endPosition = startPosition + text.getLength()
+
+    # TODO: Move to new Document method
+    expandedStartPosition = Math.max(startPosition - 2, 0)
+    expandedEndPosition = endPosition + 2
+    for position in [expandedStartPosition..expandedEndPosition]
+      if document.getPieceAtPosition(position)?.attachment?.isPreviewable()
+        if colsRange?
+          colsRange[1]++
+        else
+          colsRange = [position, position + 1]
+      else
+        break if colsRange?
+    if colsRange?
+      cols = colsRange[1] - colsRange[0]
+      if cols > 1
+        cols = Math.min(cols, 3)
+        document = document.addAttributeAtRange("cols", cols, colsRange)
+
+    @setDocument(document)
+    @setSelection(endPosition)
+    @notifyDelegateOfInsertionAtRange([startPosition, endPosition])
 
   deleteInDirection: (direction) ->
     locationRange = @getLocationRange()
