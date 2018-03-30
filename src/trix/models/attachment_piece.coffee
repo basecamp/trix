@@ -11,7 +11,9 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
     @ensureAttachmentExclusivelyHasAttribute("href")
 
   ensureAttachmentExclusivelyHasAttribute: (attribute) ->
-    if @hasAttribute(attribute) and @attachment.hasAttribute(attribute)
+    if @hasAttribute(attribute)
+      unless @attachment.hasAttribute(attribute)
+        @attachment.setAttributes(@attributes.slice(attribute))
       @attributes = @attributes.remove(attribute)
 
   getValue: ->
@@ -30,7 +32,10 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
     @attributes.slice(["caption", "cols"])
 
   canBeGrouped: ->
-    super and not @attachment.hasAttribute("href")
+    @attachment.isPreviewable()
+
+  canBeGroupedWith: (piece) ->
+    @getAttribute("cols") is piece.getAttribute("cols")
 
   isEqualTo: (piece) ->
     super and @attachment.id is piece?.attachment?.id

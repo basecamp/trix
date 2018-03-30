@@ -2,6 +2,7 @@
 #= require trix/views/previewable_attachment_view
 
 {makeElement, findInnerElement, getTextConfig} = Trix
+{css} = Trix.config
 
 class Trix.PieceView extends Trix.ObjectView
   constructor: ->
@@ -76,6 +77,9 @@ class Trix.PieceView extends Trix.ObjectView
     element
 
   createContainerElement: ->
+    if @attachment
+      return makeElement("figure", role: "group", class: css.attachments)
+
     for key, value of @attributes when config = getTextConfig(key)
       if config.groupTagName
         attributes = {}
