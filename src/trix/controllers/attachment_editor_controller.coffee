@@ -1,6 +1,6 @@
 #= require trix/controllers/attachment_editor_controller
 
-{handleEvent, makeElement, tagName} = Trix
+{defer, handleEvent, makeElement, tagName} = Trix
 {keyNames} = Trix.InputController
 {lang, css} = Trix.config
 
@@ -20,7 +20,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     @makeElementMutable()
     @addToolbar()
     if @attachment.isPreviewable()
-      @makeCaptionEditable()
+      @editCaption()
 
   uninstall: ->
     @savePendingCaption()
@@ -89,12 +89,6 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     do: => @element.dataset.trixMutable = true
     undo: => delete @element.dataset.trixMutable
 
-  makeCaptionEditable: undoable ->
-    figcaption = @element.querySelector("figcaption")
-    handler = null
-    do: => handler = handleEvent("click", onElement: figcaption, withCallback: @didClickCaption, inPhase: "capturing")
-    undo: => handler.destroy()
-
   addToolbar: undoable ->
     element = makeElement
       tagName: "div"
@@ -136,7 +130,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       editingFigcaption.classList.add("#{css.attachmentCaption}--editing")
       figcaption.parentElement.insertBefore(editingFigcaption, figcaption)
       autoresize()
-      textarea.focus()
+      defer -> textarea.focus()
     undo: ->
       editingFigcaption.parentNode.removeChild(editingFigcaption)
       figcaption.style.display = null
@@ -159,10 +153,6 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     action = event.target.getAttribute("data-trix-action")
     if action is "remove"
       @delegate?.attachmentEditorDidRequestRemovalOfAttachment(@attachment)
-
-  didClickCaption: (event) =>
-    event.preventDefault()
-    @editCaption()
 
   didKeyDownCaption: (event) =>
     if keyNames[event.keyCode] is "return"
