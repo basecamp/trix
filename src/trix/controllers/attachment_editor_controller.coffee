@@ -38,51 +38,6 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       else
         @delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?("caption", @attachment)
 
-  createToolbarButtonsElement: ->
-    element = makeElement(tagName: "div", className: "trix-button-row")
-
-    if @attachment.isPreviewable()
-      element.innerHTML += """
-        <span class="trix-button-group trix-button-group--cols">
-          <button type="button" data-trix-cols="3" class="trix-button trix-button--cols trix-button--cols-3" title="#{lang.cols3}">❙❙❙</button>
-          <button type="button" data-trix-cols="2" class="trix-button trix-button--cols trix-button--cols-2" title="#{lang.cols2}">❚❚</button>
-          <button type="button" data-trix-cols="1" class="trix-button trix-button--cols trix-button--cols-1" title="#{lang.cols1}">■</button>
-        </span>
-      """
-
-      cols = @attachmentPiece.getCols() || 1
-      button = element.querySelector("[data-trix-cols='#{cols}']")
-      button.classList.add("trix-active")
-
-    element.innerHTML += """
-      <span class="trix-button-group trix-button-group--actions">
-        <button type="button" data-trix-action="remove" class="trix-button trix-button--remove" title="#{lang.remove}">#{lang.remove}</button>
-      </span>
-    """
-
-    handleEvent("click", onElement: element, withCallback: @didClickToolbarButton)
-    handleEvent("click", onElement: element, matchingSelector: "[data-trix-cols]", withCallback: @didClickColButton)
-    handleEvent("click", onElement: element, matchingSelector: "[data-trix-action]", withCallback: @didClickActionButton)
-    element
-
-  createMetadataElement: ->
-    element = makeElement(tagName: "span", className: "attachment__metadata")
-    name = @attachment.getFilename()
-    size = @attachment.getFormattedFilesize()
-
-    if name
-      nameElement = makeElement(tagName: "span", className: css.attachmentName, textContent: name, attributes: { title: name })
-      element.appendChild(nameElement)
-
-    if size
-      element.appendChild(document.createTextNode(" ")) if name
-      sizeElement = makeElement(tagName: "span", className: css.attachmentSize, textContent: size)
-      element.appendChild(sizeElement)
-
-    container = makeElement(tagName: "div", className: "attachment__metadata-container")
-    container.appendChild(element)
-    container
-
   # Installing and uninstalling
 
   makeElementMutable: undoable ->
@@ -90,13 +45,49 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     undo: => delete @element.dataset.trixMutable
 
   addToolbar: undoable ->
-    element = makeElement
-      tagName: "div"
-      className: "attachment__toolbar"
-      data: trixMutable: true
+    element = makeElement(tagName: "div", className: "attachment__toolbar", data: trixMutable: true)
+    element.innerHTML = """
+      <div class="trix-button-row">
+        <span class="trix-button-group trix-button-group--cols" data-trix-type-only="preview">
+          <button type="button" data-trix-cols="1" class="trix-button trix-button--cols trix-button--cols-1" title="#{lang.cols1}">#{lang.cols1}</button>
+          <button type="button" data-trix-cols="2" class="trix-button trix-button--cols trix-button--cols-2" title="#{lang.cols2}">#{lang.cols2}</button>
+          <button type="button" data-trix-cols="3" class="trix-button trix-button--cols trix-button--cols-3" title="#{lang.cols3}">#{lang.cols3}</button>
+        </span>
 
-    element.appendChild(@createToolbarButtonsElement())
-    element.appendChild(@createMetadataElement()) if @attachment.isPreviewable()
+        <span class="trix-button-group trix-button-group--actions">
+          <button type="button" data-trix-action="remove" class="trix-button trix-button--remove" title="#{lang.remove}">#{lang.remove}</button>
+        </span>
+      </div>
+
+      <div class="attachment__metadata-container" data-trix-type-only="preview">
+        <span class="attachment__metadata">
+          <span class="attachment__name" title="" data-trix-attachment-name></span>
+          <span class="attachment__size" data-trix-attachment-size></span>
+        </span>
+      </div>
+    """
+
+    if @attachment.isPreviewable()
+      cols = @attachmentPiece.getCols() || 1
+      activeButton = element.querySelector("[data-trix-cols='#{cols}']")
+      activeButton.classList.add("trix-active")
+
+    if name = @attachment.getFilename()
+      nameElement = element.querySelector("[data-trix-attachment-name]")
+      nameElement.textContent = name
+      nameElement.title = name
+
+    if size = @attachment.getFormattedFilesize()
+      sizeElement = element.querySelector("[data-trix-attachment-size]")
+      sizeElement.textContent = size
+
+    type = @attachment.getType()
+    for child in element.querySelectorAll("[data-trix-type-only]:not([data-trix-type-only='#{type}'])")
+      child.parentNode.removeChild(child)
+
+    handleEvent("click", onElement: element, withCallback: @didClickToolbar)
+    handleEvent("click", onElement: element, matchingSelector: "[data-trix-cols]", withCallback: @didClickColButton)
+    handleEvent("click", onElement: element, matchingSelector: "[data-trix-action]", withCallback: @didClickActionButton)
 
     do: => @element.appendChild(element)
     undo: => @element.removeChild(element)
@@ -137,7 +128,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
 
   # Event handlers
 
-  didClickToolbarButton: (event) =>
+  didClickToolbar: (event) =>
     event.preventDefault()
     event.stopPropagation()
 
