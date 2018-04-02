@@ -77,9 +77,9 @@ class Trix.EditorController extends Trix.Controller
     managedAttachment = @attachmentManager.unmanageAttachment(attachment)
     @notifyEditorElement("attachment-remove", attachment: managedAttachment)
 
-  compositionDidStartEditingAttachment: (attachment) ->
+  compositionDidStartEditingAttachment: (attachment, options) ->
     @attachmentLocationRange = @composition.document.getLocationRangeOfAttachment(attachment)
-    @compositionController.installAttachmentEditorForAttachment(attachment)
+    @compositionController.installAttachmentEditorForAttachment(attachment, options)
     @selectionManager.setLocationRange(@attachmentLocationRange)
 
   compositionDidStopEditingAttachment: (attachment) ->
@@ -144,8 +144,8 @@ class Trix.EditorController extends Trix.Controller
   compositionControllerDidBlur: ->
     @notifyEditorElement("blur")
 
-  compositionControllerDidSelectAttachment: (attachment) ->
-    @composition.editAttachment(attachment)
+  compositionControllerDidSelectAttachment: (attachment, options) ->
+    @composition.editAttachment(attachment, options)
 
   compositionControllerDidRequestDeselectingAttachment: (attachment) ->
     locationRange = @attachmentLocationRange ? @composition.document.getLocationRangeOfAttachment(attachment)

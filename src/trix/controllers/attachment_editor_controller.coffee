@@ -5,7 +5,7 @@
 {lang, css} = Trix.config
 
 class Trix.AttachmentEditorController extends Trix.BasicObject
-  constructor: (@attachmentPiece, @element, @container) ->
+  constructor: (@attachmentPiece, @element, @container, @options = {}) ->
     {@attachment} = @attachmentPiece
     @element = @element.firstChild if tagName(@element) is "a"
     @install()
@@ -20,7 +20,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     @makeElementMutable()
     @addToolbar()
     if @attachment.isPreviewable()
-      @editCaption()
+      @installCaptionEditor()
 
   uninstall: ->
     @savePendingCaption()
@@ -92,7 +92,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     do: => @element.appendChild(element)
     undo: => @element.removeChild(element)
 
-  editCaption: undoable ->
+  installCaptionEditor: undoable ->
     textarea = makeElement
       tagName: "textarea"
       className: css.attachmentCaptionEditor
@@ -114,14 +114,15 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     figcaption = @element.querySelector("figcaption")
     editingFigcaption = figcaption.cloneNode()
 
-    do: ->
+    do: =>
       figcaption.style.display = "none"
       editingFigcaption.appendChild(textarea)
       editingFigcaption.appendChild(textareaClone)
       editingFigcaption.classList.add("#{css.attachmentCaption}--editing")
       figcaption.parentElement.insertBefore(editingFigcaption, figcaption)
       autoresize()
-      defer -> textarea.focus()
+      if @options.editCaption
+        defer -> textarea.focus()
     undo: ->
       editingFigcaption.parentNode.removeChild(editingFigcaption)
       figcaption.style.display = null
