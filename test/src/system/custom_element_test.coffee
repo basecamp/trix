@@ -277,12 +277,13 @@ testGroup "Custom element API", template: "editor_empty", ->
         insertImageAttachment()
         after 20, ->
           clickElement element.querySelector("figure"), ->
-            clickElement element.querySelector("figcaption"), ->
-              defer ->
-                assert.equal document.activeElement, element.querySelector("textarea")
-                assert.equal blurEventCount, 1
-                assert.equal focusEventCount, 1
-                done()
+            textarea = element.querySelector("textarea")
+            textarea.focus()
+            defer ->
+              assert.equal document.activeElement, textarea
+              assert.equal blurEventCount, 1
+              assert.equal focusEventCount, 1
+              done()
 
   # Selenium doesn't seem to focus windows properly in some browsers (FF 47 on OS X)
   # so skip this test when unfocused pending a better solution.
