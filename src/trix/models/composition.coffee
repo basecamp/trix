@@ -482,11 +482,11 @@ class Trix.Composition extends Trix.BasicObject
 
   # Attachment editing
 
-  editAttachment: (attachment) ->
+  editAttachment: (attachment, options) ->
     return if attachment is @editingAttachment
     @stopEditingAttachment()
     @editingAttachment = attachment
-    @delegate?.compositionDidStartEditingAttachment?(@editingAttachment)
+    @delegate?.compositionDidStartEditingAttachment?(@editingAttachment, options)
 
   stopEditingAttachment: ->
     return unless @editingAttachment
