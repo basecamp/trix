@@ -106,8 +106,9 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       textareaClone.value = textarea.value
       textarea.style.height = textareaClone.scrollHeight + "px"
 
-    handleEvent("keydown", onElement: textarea, withCallback: @didKeyDownCaption)
+    handleEvent("input", onElement: textarea, withCallback: autoresize)
     handleEvent("input", onElement: textarea, withCallback: @didInputCaption)
+    handleEvent("keydown", onElement: textarea, withCallback: @didKeyDownCaption)
     handleEvent("change", onElement: textarea, withCallback: @didChangeCaption)
     handleEvent("blur", onElement: textarea, withCallback: @didBlurCaption)
 
