@@ -91,9 +91,6 @@ class Trix.CompositionController extends Trix.BasicObject
   uninstallAttachmentEditor: ->
     @attachmentEditor?.uninstall()
 
-  editAttachmentCaption: ->
-    @attachmentEditor?.editCaption()
-
   # Attachment controller delegate
 
   didUninstallAttachmentEditor: ->
