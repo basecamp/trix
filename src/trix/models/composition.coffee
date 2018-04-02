@@ -493,9 +493,6 @@ class Trix.Composition extends Trix.BasicObject
     @delegate?.compositionDidStopEditingAttachment?(@editingAttachment)
     @editingAttachment = null
 
-  canEditAttachmentCaption: ->
-    @editingAttachment?.isPreviewable()
-
   updateAttributesForAttachment: (attributes, attachment) ->
     @setDocument(@document.updateAttributesForAttachment(attributes, attachment))
 
