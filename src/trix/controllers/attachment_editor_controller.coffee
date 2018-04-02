@@ -97,6 +97,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       tagName: "textarea"
       className: css.attachmentCaptionEditor
       attributes: placeholder: lang.captionPlaceholder
+      data: trixMutable: true
     textarea.value = @attachmentPiece.getCaption()
 
     textareaClone = textarea.cloneNode()
