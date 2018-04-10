@@ -150,7 +150,10 @@ class Trix.LocationMapper
       NodeFilter.FILTER_ACCEPT
 
   rejectAttachmentContents = (node) ->
-    if nodeIsAttachmentElement(node.parentNode)
+    if nodeIsAttachmentElement(node.parentNode) or nodeIsAttachmentGroupEditor(node.parentNode)
       NodeFilter.FILTER_REJECT
     else
       NodeFilter.FILTER_ACCEPT
+
+  nodeIsAttachmentGroupEditor = (node) ->
+    Trix.elementMatchesSelector(node, "[data-trix-attachment-group-editor]")

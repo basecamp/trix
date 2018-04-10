@@ -78,7 +78,9 @@ class Trix.PieceView extends Trix.ObjectView
 
   createContainerElement: ->
     if @attachment
-      return makeElement("figure", role: "group", class: css.attachments)
+      element = makeElement("figure", role: "group", class: css.attachments)
+      element.innerHTML = getAttachmentGroupEditorHTML()
+      return element
 
     for key, value of @attributes when config = getTextConfig(key)
       if config.groupTagName
@@ -101,3 +103,15 @@ class Trix.PieceView extends Trix.ObjectView
       string = string.replace(/^\ /, nbsp)
 
     string
+
+  getAttachmentGroupEditorHTML = ->
+    """
+    <div class="#{css.attachments}__toolbar" data-trix-attachment-group-editor data-trix-serialize="false" data-trix-mutable="true" contenteditable="false">
+      <div class="trix-button-row">
+        <span class="trix-button-group">
+          <button type="button" class="trix-button trix-button trix-button--group trix-active" data-trix-action="group" disabled>Side by side</button>
+          <button type="button" class="trix-button trix-button trix-button--ungroup" data-trix-action="ungroup">Stacked up and down</button>
+        </span>
+      </div>
+    </div>
+    """

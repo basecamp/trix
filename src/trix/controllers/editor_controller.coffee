@@ -154,6 +154,9 @@ class Trix.EditorController extends Trix.Controller
   compositionControllerWillUpdateAttachment: (attachment) ->
     @editor.recordUndoEntry("Edit Attachment", context: attachment.id, consolidatable: true)
 
+  compositionControllerWillUpdateAttachments: (attachments) ->
+    @editor.recordUndoEntry("Edit Attachments", context: attachments.map((a) -> a.id), consolidatable: true)
+
   compositionControllerDidRequestRemovalOfAttachment: (attachment) ->
     @removeAttachment(attachment)
 
