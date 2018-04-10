@@ -49,6 +49,7 @@ Trix.registerElement "trix-editor", do ->
     %t:empty:not(:focus)::before {
       content: attr(placeholder);
       color: graytext;
+      cursor: text;
     }
 
     %t a[contenteditable=false] {
