@@ -4,7 +4,6 @@
 {findClosestElementFromNode, handleEvent, innerElementIsActive, defer}  = Trix
 
 {attachmentSelector} = Trix.AttachmentView
-attachmentGroupEditorButtonSelector = "[data-trix-attachment-group-editor] [data-trix-action]"
 
 class Trix.CompositionController extends Trix.BasicObject
   constructor: (@element, @composition) ->
@@ -14,7 +13,6 @@ class Trix.CompositionController extends Trix.BasicObject
     handleEvent "blur", onElement: @element, withCallback: @didBlur
     handleEvent "click", onElement: @element, matchingSelector: "a[contenteditable=false]", preventDefault: true
     handleEvent "mousedown", onElement: @element, matchingSelector: attachmentSelector, withCallback: @didClickAttachment
-    handleEvent "mousedown", onElement: @element, matchingSelector: attachmentGroupEditorButtonSelector, withCallback: @didClickAttachmentGroupEditorButton
     handleEvent "click", onElement: @element, matchingSelector: "a#{attachmentSelector}", preventDefault: true
 
   didFocus: (event) =>
@@ -38,15 +36,6 @@ class Trix.CompositionController extends Trix.BasicObject
     attachment = @findAttachmentForElement(target)
     editCaption = findClosestElementFromNode(event.target, matchingSelector: "figcaption")?
     @delegate?.compositionControllerDidSelectAttachment?(attachment, {editCaption})
-
-  didClickAttachmentGroupEditorButton: (event, target) =>
-    event.preventDefault()
-    switch target.dataset.trixAction
-      when "ungroup"
-        groupElement = findClosestElementFromNode(target, matchingSelector: "figure")
-        attachments = @findAttachmentsForElement(groupElement)
-        @delegate?.compositionControllerWillUpdateAttachments?(attachments)
-        @composition.removeAttributeForAttachments("cols", attachments)
 
   getSerializableElement: ->
     if @isEditingAttachment()
@@ -115,6 +104,14 @@ class Trix.CompositionController extends Trix.BasicObject
   attachmentEditorDidRequestRemovingAttributeForAttachment: (attribute, attachment) ->
     @delegate?.compositionControllerWillUpdateAttachment?(attachment)
     @composition.removeAttributeForAttachment(attribute, attachment)
+
+  attachmentEditorDidRequestUngroupingAttachment: (attachment) ->
+    attachmentElement = @documentView.findElementForObject(attachment)
+    groupElement = findClosestElementFromNode(attachmentElement, matchingSelector: "figure")
+    attachments = @findAttachmentsForElement(groupElement)
+    @delegate?.compositionControllerWillUpdateAttachments?(attachments)
+    @delegate?.compositionControllerDidRequestDeselectingAttachment?(attachment)
+    @composition.removeAttributeForAttachments("cols", attachments)
 
   attachmentEditorDidRequestRemovalOfAttachment: (attachment) ->
     @delegate?.compositionControllerDidRequestRemovalOfAttachment?(attachment)
