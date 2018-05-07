@@ -48,12 +48,6 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     element = makeElement(tagName: "div", className: "attachment__toolbar", data: trixMutable: true)
     element.innerHTML = """
       <div class="trix-button-row">
-        <span class="trix-button-group trix-button-group--cols" data-trix-type-only="preview">
-          <button type="button" data-trix-cols="1" class="trix-button trix-button--cols trix-button--cols-1" title="#{lang.cols1}">#{lang.cols1}</button>
-          <button type="button" data-trix-cols="2" class="trix-button trix-button--cols trix-button--cols-2" title="#{lang.cols2}">#{lang.cols2}</button>
-          <button type="button" data-trix-cols="3" class="trix-button trix-button--cols trix-button--cols-3" title="#{lang.cols3}">#{lang.cols3}</button>
-        </span>
-
         <span class="trix-button-group trix-button-group--actions">
           <button type="button" data-trix-action="ungroup" class="trix-button trix-button--ungroup" title="Ungroup">Ungroup</button>
           <button type="button" data-trix-action="remove" class="trix-button trix-button--remove" title="#{lang.remove}">#{lang.remove}</button>
@@ -68,12 +62,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       </div>
     """
 
-    if @attachment.isPreviewable()
-      cols = @attachmentPiece.getCols() || 1
-      activeButton = element.querySelector("[data-trix-cols='#{cols}']")
-      activeButton.classList.add("trix-active")
-
-    unless @attachmentPiece.getCols()
+    unless @attachmentPiece.canBeGrouped()
       ungroupButton = element.querySelector("[data-trix-action='ungroup']")
       ungroupButton.parentNode.removeChild(ungroupButton)
 
@@ -91,7 +80,6 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       child.parentNode.removeChild(child)
 
     handleEvent("click", onElement: element, withCallback: @didClickToolbar)
-    handleEvent("click", onElement: element, matchingSelector: "[data-trix-cols]", withCallback: @didClickColButton)
     handleEvent("click", onElement: element, matchingSelector: "[data-trix-action]", withCallback: @didClickActionButton)
 
     do: => @element.appendChild(element)
@@ -139,14 +127,6 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
   didClickToolbar: (event) =>
     event.preventDefault()
     event.stopPropagation()
-
-  didClickColButton: (event) =>
-    cols = parseInt(event.target.getAttribute("data-trix-cols"))
-    if cols > 1
-      @delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?({cols}, @attachment)
-    else
-      @delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?("cols", @attachment)
-    @delegate?.attachmentEditorDidRequestDeselectingAttachment?(@attachment)
 
   didClickActionButton: (event) =>
     action = event.target.getAttribute("data-trix-action")

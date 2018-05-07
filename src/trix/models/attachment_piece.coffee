@@ -25,17 +25,14 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   getCaption: ->
     @attributes.get("caption") ? ""
 
-  getCols: ->
-    @attributes.get("cols")
-
   getAttributesForAttachment: ->
-    @attributes.slice(["caption", "cols"])
+    @attributes.slice(["caption", "group"])
 
   canBeGrouped: ->
-    @hasAttribute("cols") and @attachment.isPreviewable()
+    @hasAttribute("group") and @attachment.isPreviewable()
 
   canBeGroupedWith: (piece) ->
-    @getAttribute("cols") is piece.getAttribute("cols")
+    @getAttribute("group") is piece.getAttribute("group")
 
   isEqualTo: (piece) ->
     super and @attachment.id is piece?.attachment?.id

@@ -111,7 +111,7 @@ class Trix.CompositionController extends Trix.BasicObject
     attachments = @findAttachmentsForElement(groupElement)
     @delegate?.compositionControllerWillUpdateAttachments?(attachments)
     @delegate?.compositionControllerDidRequestDeselectingAttachment?(attachment)
-    @composition.removeAttributeForAttachments("cols", attachments)
+    @composition.removeAttributeForAttachments("group", attachments)
 
   attachmentEditorDidRequestRemovalOfAttachment: (attachment) ->
     @delegate?.compositionControllerDidRequestRemovalOfAttachment?(attachment)

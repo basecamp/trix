@@ -124,13 +124,13 @@ class Trix.Composition extends Trix.BasicObject
       else
         tailText = tailText.appendText(attachmentText)
 
-    @insertTextAndFormatAttachmentCols(headText.appendText(tailText))
+    @insertTextAndGroupAttachments(headText.appendText(tailText))
 
   insertAttachment: (attachment) ->
     text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
-    @insertTextAndFormatAttachmentCols(text)
+    @insertTextAndGroupAttachments(text)
 
-  insertTextAndFormatAttachmentCols: (text) ->
+  insertTextAndGroupAttachments: (text) ->
     selectedRange = @getSelectedRange()
     document = @document.insertTextAtRange(text, selectedRange)
 
@@ -142,17 +142,14 @@ class Trix.Composition extends Trix.BasicObject
     expandedEndPosition = endPosition + 2
     for position in [expandedStartPosition..expandedEndPosition]
       if document.getPieceAtPosition(position)?.attachment?.isPreviewable()
-        if colsRange?
-          colsRange[1]++
+        if groupRange?
+          groupRange[1]++
         else
-          colsRange = [position, position + 1]
+          groupRange = [position, position + 1]
       else
-        break if colsRange?
-    if colsRange?
-      cols = colsRange[1] - colsRange[0]
-      if cols > 1
-        cols = Math.min(cols, 3)
-        document = document.addAttributeAtRange("cols", cols, colsRange)
+        break if groupRange?
+    if groupRange?
+      document = document.addAttributeAtRange("group", true, groupRange)
 
     @setDocument(document)
     @setSelection(endPosition)
