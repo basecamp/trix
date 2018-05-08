@@ -49,7 +49,6 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     element.innerHTML = """
       <div class="trix-button-row">
         <span class="trix-button-group trix-button-group--actions">
-          <button type="button" data-trix-action="ungroup" class="trix-button trix-button--ungroup" title="Ungroup">Ungroup</button>
           <button type="button" data-trix-action="remove" class="trix-button trix-button--remove" title="#{lang.remove}">#{lang.remove}</button>
         </span>
       </div>
@@ -61,10 +60,6 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
         </span>
       </div>
     """
-
-    unless @attachmentPiece.canBeGrouped()
-      ungroupButton = element.querySelector("[data-trix-action='ungroup']")
-      ungroupButton.parentNode.removeChild(ungroupButton)
 
     if name = @attachment.getFilename()
       nameElement = element.querySelector("[data-trix-attachment-name]")
@@ -133,8 +128,6 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     switch action
       when "remove"
         @delegate?.attachmentEditorDidRequestRemovalOfAttachment(@attachment)
-      when "ungroup"
-        @delegate?.attachmentEditorDidRequestUngroupingAttachment(@attachment)
 
   didKeyDownCaption: (event) =>
     if keyNames[event.keyCode] is "return"

@@ -496,12 +496,6 @@ class Trix.Composition extends Trix.BasicObject
   removeAttributeForAttachment: (attribute, attachment) ->
     @setDocument(@document.removeAttributeForAttachment(attribute, attachment))
 
-  removeAttributeForAttachments: (attribute, attachments) ->
-    document = @document
-    for attachment in attachments
-      document = document.removeAttributeForAttachment(attribute, attachment)
-    @setDocument(document)
-
   # Private
 
   breakFormattedBlock: (insertion) ->

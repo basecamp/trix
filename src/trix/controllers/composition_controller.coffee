@@ -105,14 +105,6 @@ class Trix.CompositionController extends Trix.BasicObject
     @delegate?.compositionControllerWillUpdateAttachment?(attachment)
     @composition.removeAttributeForAttachment(attribute, attachment)
 
-  attachmentEditorDidRequestUngroupingAttachment: (attachment) ->
-    attachmentElement = @documentView.findElementForObject(attachment)
-    groupElement = findClosestElementFromNode(attachmentElement, matchingSelector: "figure")
-    attachments = @findAttachmentsForElement(groupElement)
-    @delegate?.compositionControllerWillUpdateAttachments?(attachments)
-    @delegate?.compositionControllerDidRequestDeselectingAttachment?(attachment)
-    @composition.removeAttributeForAttachments("group", attachments)
-
   attachmentEditorDidRequestRemovalOfAttachment: (attachment) ->
     @delegate?.compositionControllerDidRequestRemovalOfAttachment?(attachment)
 
@@ -126,7 +118,3 @@ class Trix.CompositionController extends Trix.BasicObject
 
   findAttachmentForElement: (element) ->
     @composition.document.getAttachmentById(parseInt(element.dataset.trixId, 10))
-
-  findAttachmentsForElement: (element) ->
-    for attachmentElement in element.querySelectorAll(attachmentSelector)
-      @findAttachmentForElement(attachmentElement)
