@@ -22,6 +22,26 @@ testGroup "Basic input", template: "editor_empty", ->
         typeCharacters "c", ->
           expectDocument "ab\nc\n"
 
+  test "pressing escape in Safari", (expectDocument) ->
+    typeCharacters "a", ->
+      if triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 27, which: 27, key: "Escape", code: "Escape")
+        triggerEvent(document.activeElement, "keypress", charCode: 27, keyCode: 27, which: 27, key: "Escape", code: "Escape")
+      defer ->
+        expectDocument "a\n"
+
+  test "pressing escape in Safari", (expectDocument) ->
+    typeCharacters "a", ->
+      if triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 27, which: 27, key: "Escape", code: "Escape")
+        triggerEvent(document.activeElement, "keypress", charCode: 0, keyCode: 27, which: 0, key: "Escape", code: "Escape")
+      defer ->
+        expectDocument "a\n"
+
+  test "pressing escape in Chrome", (expectDocument) ->
+    typeCharacters "a", ->
+      triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 27, which: 27, key: "Escape", code: "Escape")
+      defer ->
+        expectDocument "a\n"
+
   test "cursor left", (expectDocument) ->
     typeCharacters "ac", ->
       moveCursor "left", ->
