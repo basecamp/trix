@@ -29,7 +29,7 @@ testGroup "Basic input", template: "editor_empty", ->
       defer ->
         expectDocument "a\n"
 
-  test "pressing escape in Safari", (expectDocument) ->
+  test "pressing escape in Firefox", (expectDocument) ->
     typeCharacters "a", ->
       if triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 27, which: 27, key: "Escape", code: "Escape")
         triggerEvent(document.activeElement, "keypress", charCode: 0, keyCode: 27, which: 0, key: "Escape", code: "Escape")
