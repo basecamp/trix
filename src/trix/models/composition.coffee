@@ -124,36 +124,13 @@ class Trix.Composition extends Trix.BasicObject
       else
         tailText = tailText.appendText(attachmentText)
 
-    @insertTextAndGroupAttachments(headText.appendText(tailText))
+    @insertText(headText.appendText(tailText))
+    @groupAdjacentAttachments()
 
   insertAttachment: (attachment) ->
     text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
-    @insertTextAndGroupAttachments(text)
-
-  insertTextAndGroupAttachments: (text) ->
-    selectedRange = @getSelectedRange()
-    document = @document.insertTextAtRange(text, selectedRange)
-
-    startPosition = selectedRange[0]
-    endPosition = startPosition + text.getLength()
-
-    # TODO: Move to new Document method
-    expandedStartPosition = Math.max(startPosition - 2, 0)
-    expandedEndPosition = endPosition + 2
-    for position in [expandedStartPosition..expandedEndPosition]
-      if document.getPieceAtPosition(position)?.attachment?.isPreviewable()
-        if groupRange?
-          groupRange[1]++
-        else
-          groupRange = [position, position + 1]
-      else
-        break if groupRange?
-    if groupRange?
-      document = document.addAttributeAtRange("group", true, groupRange)
-
-    @setDocument(document)
-    @setSelection(endPosition)
-    @notifyDelegateOfInsertionAtRange([startPosition, endPosition])
+    @insertText(text)
+    @groupAdjacentAttachments()
 
   deleteInDirection: (direction) ->
     locationRange = @getLocationRange()
@@ -466,6 +443,15 @@ class Trix.Composition extends Trix.BasicObject
     for attachment in added
       attachment.delegate = this
       @delegate?.compositionDidAddAttachment?(attachment)
+
+  groupAdjacentAttachments: ->
+    position = @getPosition()
+    range = @document.getRangeOfPreviewableAttachmentsAtPosition(position)
+    length = range[1] - range[0]
+    if length > 1
+      @setDocument(@document.addAttributeAtRange("group", true, range))
+    else if length > 0
+      @setDocument(@document.removeAttributeAtRange("group", range))
 
   # Attachment delegate
 

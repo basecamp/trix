@@ -86,6 +86,15 @@ class Trix.Text extends Trix.Object
 
     [left, right]
 
+  getExpandedRangeOfPreviewableAttachmentsAtOffset: (offset) ->
+    left = right = offset
+    length = @getLength()
+
+    left-- while left > 0 and @getPieceAtPosition(left - 1)?.attachment?.isPreviewable()
+    right++ while right < length and @getPieceAtPosition(right)?.attachment?.isPreviewable()
+
+    [left, right]
+
   getTextAtRange: (range) ->
     @copyWithPieceList @pieceList.getSplittableListInRange(range)
 
