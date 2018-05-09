@@ -20,6 +20,10 @@ Trix.registerElement "trix-editor", do ->
     element.setAttribute("contenteditable", "")
     handleEventOnce("focus", onElement: element, withCallback: -> configureContentEditable(element))
 
+  addAccessibilityRole = (element) ->
+    return if element.hasAttribute("role")
+    element.setAttribute("role", "textbox")
+
   configureContentEditable = (element) ->
     disableObjectResizing(element)
     setDefaultParagraphSeparator(element)
@@ -154,6 +158,7 @@ Trix.registerElement "trix-editor", do ->
 
   createdCallback: ->
     makeEditable(this)
+    addAccessibilityRole(this)
 
   attachedCallback: ->
     unless @hasAttribute("data-trix-internal")
