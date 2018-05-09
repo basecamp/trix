@@ -113,6 +113,8 @@ class Trix.Composition extends Trix.BasicObject
       @insertAttachment(attachment)
 
   insertFiles: (files) ->
+    position = @getPosition()
+
     headText = new Trix.Text
     tailText = new Trix.Text
 
@@ -125,12 +127,13 @@ class Trix.Composition extends Trix.BasicObject
         tailText = tailText.appendText(attachmentText)
 
     @insertText(headText.appendText(tailText))
-    @groupAdjacentAttachments()
+    @groupAdjacentAttachmentsAtPosition(position)
 
   insertAttachment: (attachment) ->
+    position = @getPosition()
     text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
     @insertText(text)
-    @groupAdjacentAttachments()
+    @groupAdjacentAttachmentsAtPosition(position)
 
   deleteInDirection: (direction) ->
     locationRange = @getLocationRange()
@@ -171,6 +174,7 @@ class Trix.Composition extends Trix.BasicObject
     [position] = @getSelectedRange()
     @setDocument(@document.moveTextFromRangeToPosition(range, position))
     @setSelection(position)
+    @groupAdjacentAttachmentsAtPosition(position)
 
   removeAttachment: (attachment) ->
     if range = @document.getRangeOfAttachment(attachment)
@@ -444,8 +448,7 @@ class Trix.Composition extends Trix.BasicObject
       attachment.delegate = this
       @delegate?.compositionDidAddAttachment?(attachment)
 
-  groupAdjacentAttachments: ->
-    position = @getPosition()
+  groupAdjacentAttachmentsAtPosition: (position) ->
     range = @document.getRangeOfPreviewableAttachmentsAtPosition(position)
     length = range[1] - range[0]
     if length > 1
