@@ -44,6 +44,9 @@ class Trix.Editor
   insertFile: (file) ->
     @composition.insertFile(file)
 
+  insertFiles: (files) ->
+    @composition.insertFiles(files)
+
   insertHTML: (html) ->
     @composition.insertHTML(html)
 

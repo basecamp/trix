@@ -14,6 +14,9 @@
     <script type="text/javascript" src="trix.js"></script>
     <script type="text/javascript" src="trix/inspector.js"></script>
     <script type="text/javascript">
+      Trix.config.attachments.preview.caption.name = true
+      Trix.config.attachments.preview.caption.size = false
+
       document.addEventListener("trix-initialize", function(event) {
         Trix.Inspector.install(event.target);
       });

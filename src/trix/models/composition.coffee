@@ -113,16 +113,50 @@ class Trix.Composition extends Trix.BasicObject
       @insertAttachment(attachment)
 
   insertFiles: (files) ->
-    text = new Trix.Text
+    headText = new Trix.Text
+    tailText = new Trix.Text
+
     for file in files when @delegate?.compositionShouldAcceptFile(file)
       attachment = Trix.Attachment.attachmentForFile(file)
       attachmentText = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
-      text = text.appendText(attachmentText)
-    @insertText(text)
+      if attachment.isPreviewable()
+        headText = headText.appendText(attachmentText)
+      else
+        tailText = tailText.appendText(attachmentText)
+
+    @insertTextAndFormatAttachmentCols(headText.appendText(tailText))
 
   insertAttachment: (attachment) ->
     text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
-    @insertText(text)
+    @insertTextAndFormatAttachmentCols(text)
+
+  insertTextAndFormatAttachmentCols: (text) ->
+    selectedRange = @getSelectedRange()
+    document = @document.insertTextAtRange(text, selectedRange)
+
+    startPosition = selectedRange[0]
+    endPosition = startPosition + text.getLength()
+
+    # TODO: Move to new Document method
+    expandedStartPosition = Math.max(startPosition - 2, 0)
+    expandedEndPosition = endPosition + 2
+    for position in [expandedStartPosition..expandedEndPosition]
+      if document.getPieceAtPosition(position)?.attachment?.isPreviewable()
+        if colsRange?
+          colsRange[1]++
+        else
+          colsRange = [position, position + 1]
+      else
+        break if colsRange?
+    if colsRange?
+      cols = colsRange[1] - colsRange[0]
+      if cols > 1
+        cols = Math.min(cols, 3)
+        document = document.addAttributeAtRange("cols", cols, colsRange)
+
+    @setDocument(document)
+    @setSelection(endPosition)
+    @notifyDelegateOfInsertionAtRange([startPosition, endPosition])
 
   deleteInDirection: (direction) ->
     locationRange = @getLocationRange()
@@ -448,19 +482,16 @@ class Trix.Composition extends Trix.BasicObject
 
   # Attachment editing
 
-  editAttachment: (attachment) ->
+  editAttachment: (attachment, options) ->
     return if attachment is @editingAttachment
     @stopEditingAttachment()
     @editingAttachment = attachment
-    @delegate?.compositionDidStartEditingAttachment?(@editingAttachment)
+    @delegate?.compositionDidStartEditingAttachment?(@editingAttachment, options)
 
   stopEditingAttachment: ->
     return unless @editingAttachment
     @delegate?.compositionDidStopEditingAttachment?(@editingAttachment)
     @editingAttachment = null
-
-  canEditAttachmentCaption: ->
-    @editingAttachment?.isPreviewable()
 
   updateAttributesForAttachment: (attributes, attachment) ->
     @setDocument(@document.updateAttributesForAttachment(attributes, attachment))

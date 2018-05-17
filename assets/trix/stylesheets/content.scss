@@ -54,6 +54,11 @@
     }
   }
 
+  .attachments {
+    text-align: center;
+  }
+
+  .attachments,
   .attachment {
     display: inline-block;
     position: relative;
@@ -76,6 +81,16 @@
   .attachment--preview {
     width: 100%;
     text-align: center;
+
+    &.attachment--cols-2 {
+      width: 50%;
+      padding: 0 0.5em;
+    }
+
+    &.attachment--cols-3 {
+      width: 33%;
+      padding: 0 0.5em;
+    }
 
     .attachment__caption {
       color: #666;
