@@ -1,7 +1,7 @@
 {tagName, walkTree, nodeIsAttachmentElement} = Trix
 
 class Trix.HTMLSanitizer extends Trix.BasicObject
-  DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height class role".split(" ")
+  DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height class".split(" ")
 
   @sanitize: (html, options) ->
     sanitizer = new this html, options
