@@ -93,7 +93,7 @@
     border-radius: 5px;
   }
 
-  .attachments {
+  figure[role=group] {
     display: flex;
     flex-wrap: wrap;
     position: relative;

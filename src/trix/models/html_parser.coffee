@@ -209,9 +209,10 @@ class Trix.HTMLParser extends Trix.BasicObject
     while element and element isnt @containerElement
       for attribute, config of Trix.config.blockAttributes when config.parse isnt false
         if tagName(element) is config.tagName
-          if config.test?(element) or not config.test
-            attributes.push(attribute)
-            attributes.push(config.listAttribute) if config.listAttribute
+          if not config.role or config.role is element.getAttribute("role")
+            if not config.test or config.test?(element)
+              attributes.push(attribute)
+              attributes.push(config.listAttribute) if config.listAttribute
       element = element.parentNode
     attributes.reverse()
 

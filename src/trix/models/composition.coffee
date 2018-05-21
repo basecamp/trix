@@ -449,12 +449,19 @@ class Trix.Composition extends Trix.BasicObject
       @delegate?.compositionDidAddAttachment?(attachment)
 
   groupAdjacentAttachmentsAtPosition: (position) ->
-    range = @document.getRangeOfPreviewableAttachmentsAtPosition(position)
-    length = range[1] - range[0]
-    if length > 1
-      @setDocument(@document.addAttributeAtRange("group", true, range))
-    else if length > 0
-      @setDocument(@document.removeAttributeAtRange("group", range))
+    [startPosition, endPosition] = @document.getRangeOfPreviewableAttachmentsAtPosition(position)
+    if endPosition - startPosition > 1
+      document = @document
+
+      unless document.getCharacterAtPosition(endPosition) is "\n"
+        document = document.insertTextAtRange(Trix.Text.textForStringWithAttributes("\n"), endPosition)
+
+      if startPosition > 0
+        unless document.getCharacterAtPosition(startPosition) is "\n"
+          document = document.insertTextAtRange(Trix.Text.textForStringWithAttributes("\n"), startPosition++)
+
+      document = document.applyBlockAttributeAtRange("attachmentGroup", true, [startPosition, endPosition])
+      @setDocument(document)
 
   # Attachment delegate
 
