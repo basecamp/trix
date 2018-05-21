@@ -130,7 +130,6 @@ class Trix.Composition extends Trix.BasicObject
     @insertText(headText.appendText(tailText))
 
   insertAttachment: (attachment) ->
-    position = @getPosition()
     text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
     @insertText(text)
 

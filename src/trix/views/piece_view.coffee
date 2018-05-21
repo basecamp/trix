@@ -2,7 +2,6 @@
 #= require trix/views/previewable_attachment_view
 
 {makeElement, findInnerElement, getTextConfig} = Trix
-{css} = Trix.config
 
 class Trix.PieceView extends Trix.ObjectView
   constructor: ->
