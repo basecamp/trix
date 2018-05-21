@@ -12,7 +12,7 @@ class Trix.Composition extends Trix.BasicObject
 
   setDocument: (document) ->
     unless document.isEqualTo(@document)
-      @document = document
+      @document = applyAttachmentGroupsToDocument(document)
       @refreshAttachments()
       @revision++
       @delegate?.compositionDidChangeDocument?(document)
@@ -122,18 +122,17 @@ class Trix.Composition extends Trix.BasicObject
       attachment = Trix.Attachment.attachmentForFile(file)
       attachmentText = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
       if attachment.isPreviewable()
+        attachment.setAttributes(groupable: true)
         headText = headText.appendText(attachmentText)
       else
         tailText = tailText.appendText(attachmentText)
 
     @insertText(headText.appendText(tailText))
-    @groupAdjacentAttachmentsAtPosition(position)
 
   insertAttachment: (attachment) ->
     position = @getPosition()
     text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
     @insertText(text)
-    @groupAdjacentAttachmentsAtPosition(position)
 
   deleteInDirection: (direction) ->
     locationRange = @getLocationRange()
@@ -174,7 +173,6 @@ class Trix.Composition extends Trix.BasicObject
     [position] = @getSelectedRange()
     @setDocument(@document.moveTextFromRangeToPosition(range, position))
     @setSelection(position)
-    @groupAdjacentAttachmentsAtPosition(position)
 
   removeAttachment: (attachment) ->
     if range = @document.getRangeOfAttachment(attachment)
@@ -448,20 +446,44 @@ class Trix.Composition extends Trix.BasicObject
       attachment.delegate = this
       @delegate?.compositionDidAddAttachment?(attachment)
 
-  groupAdjacentAttachmentsAtPosition: (position) ->
-    [startPosition, endPosition] = @document.getRangeOfPreviewableAttachmentsAtPosition(position)
-    if endPosition - startPosition > 1
-      document = @document
+  applyAttachmentGroupsToDocument = (document) ->
+    for block, index in document.getBlocks()
+      offset = 0
+      textRange = null
 
-      unless document.getCharacterAtPosition(endPosition) is "\n"
-        document = document.insertTextAtRange(Trix.Text.textForStringWithAttributes("\n"), endPosition)
+      if block.getLastAttribute() is "attachmentGroup"
+        range = document.rangeFromLocationRange({index, offset})
+        document = document.removeAttributeAtRange("attachmentGroup", range)
 
-      if startPosition > 0
-        unless document.getCharacterAtPosition(startPosition) is "\n"
-          document = document.insertTextAtRange(Trix.Text.textForStringWithAttributes("\n"), startPosition++)
+      for piece in block.text.getPieces()
+        length = piece.getLength()
 
-      document = document.applyBlockAttributeAtRange("attachmentGroup", true, [startPosition, endPosition])
-      @setDocument(document)
+        if piece.attachment?.isGroupable()
+          if textRange?
+            textRange[1] += length
+          else
+            textRange = [offset, offset + length]
+
+        else if textRange?
+          [startOffset, endOffset] = textRange
+          textRange = null
+          if endOffset - startOffset > 1
+            locationRange = [{index, offset: startOffset}, {index, offset: endOffset}]
+            range = document.rangeFromLocationRange(locationRange)
+
+            unless document.getCharacterAtPosition(range[1]) is "\n"
+              document = document.insertBlockBreakAtRange(range[1])
+              offset++
+
+            unless startOffset is 0
+              unless document.getCharacterAtPosition(range[0]) is "\n"
+                document = document.insertBlockBreakAtRange(range[0])
+                range[0]++
+                offset++
+            document = document.applyBlockAttributeAtRange("attachmentGroup", true, range)
+
+        offset += length
+    document
 
   # Attachment delegate
 

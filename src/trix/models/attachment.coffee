@@ -53,6 +53,9 @@ class Trix.Attachment extends Trix.Object
     else
       @constructor.previewablePattern.test(@getContentType())
 
+  isGroupable: ->
+    @attributes.get("groupable") is true
+
   getType: ->
     if @hasContent()
       "content"

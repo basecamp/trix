@@ -436,15 +436,6 @@ class Trix.Document extends Trix.Object
     end = @positionFromLocation {index, offset: endOffset}
     normalizeRange([start, end])
 
-  getRangeOfPreviewableAttachmentsAtPosition: (position) ->
-    {index, offset} = @locationFromPosition(position)
-    text = @getTextAtIndex(index)
-    [startOffset, endOffset] = text.getExpandedRangeOfPreviewableAttachmentsAtOffset(offset)
-
-    start = @positionFromLocation {index, offset: startOffset}
-    end = @positionFromLocation {index, offset: endOffset}
-    normalizeRange([start, end])
-
   getBaseBlockAttributes: ->
     baseBlockAttributes = @getBlockAtIndex(0).getAttributes()
 
