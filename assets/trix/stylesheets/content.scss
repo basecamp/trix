@@ -95,11 +95,13 @@
 
   .attachments {
     display: flex;
+    flex-wrap: wrap;
     position: relative;
     margin: 0;
     padding: 0;
 
-    .attachment--preview {
+    > .attachment,
+    > [data-trix-attachment] {
       flex: 1 0 33%;
       padding: 0 0.5em;
     }
