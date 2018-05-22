@@ -1,6 +1,7 @@
 #= require trix/views/text_view
 
 {makeElement, getBlockConfig} = Trix
+{css} = Trix.config
 
 class Trix.BlockView extends Trix.ObjectView
   constructor: ->
@@ -29,8 +30,11 @@ class Trix.BlockView extends Trix.ObjectView
   createContainerElement: (depth) ->
     attribute = @attributes[depth]
     config = getBlockConfig(attribute)
-    attributes = role: config.role if config.role
-    makeElement(config.tagName, attributes)
+    element = makeElement(config.tagName)
+    if attribute is "attachmentGroup"
+      element.classList.add(css.attachmentGroup)
+      element.setAttribute("role", "group")
+    element
 
   # A single <br> at the end of a block element has no visual representation
   # so add an extra one.
