@@ -113,14 +113,14 @@ class Trix.Composition extends Trix.BasicObject
       @insertAttachment(attachment)
 
   insertFiles: (files) ->
-    position = @getPosition()
+    attributes = @getCurrentTextAttributes()
 
     headText = new Trix.Text
     tailText = new Trix.Text
 
     for file in files when @delegate?.compositionShouldAcceptFile(file)
       attachment = Trix.Attachment.attachmentForFile(file)
-      attachmentText = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
+      attachmentText = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
       if attachment.isPreviewable()
         attachment.setAttributes(groupable: true)
         headText = headText.appendText(attachmentText)
@@ -130,7 +130,8 @@ class Trix.Composition extends Trix.BasicObject
     @insertText(headText.appendText(tailText))
 
   insertAttachment: (attachment) ->
-    text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
+    attributes = @getCurrentTextAttributes()
+    text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
     @insertText(text)
 
   deleteInDirection: (direction) ->
