@@ -121,7 +121,7 @@ class Trix.Composition extends Trix.BasicObject
     for file in files when @delegate?.compositionShouldAcceptFile(file)
       attachment = Trix.Attachment.attachmentForFile(file)
       attachmentText = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
-      if attachment.isPreviewable()
+      if attachment.isGroupableType()
         attachment.setAttributes(groupable: true)
         headText = headText.appendText(attachmentText)
       else
