@@ -57,7 +57,10 @@ class Trix.Attachment extends Trix.Object
     @isGroupableType() and @attributes.get("groupable")
 
   isGroupableType: ->
-    Trix.config.attachments[@getType()]?.group
+    @getConfig().group
+
+  getConfig: ->
+    Trix.config.attachments[@getType()] ? {}
 
   getType: ->
     if @hasContent()
