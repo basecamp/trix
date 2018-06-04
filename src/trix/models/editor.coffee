@@ -1,8 +1,11 @@
 #= require trix/models/undo_manager
 
 class Trix.Editor
+  DEFAULT_FILTERS = []
+
   constructor: (@composition, @selectionManager, @element) ->
     @undoManager = new Trix.UndoManager @composition
+    @filters = DEFAULT_FILTERS.slice(0)
 
   loadDocument: (document) ->
     @loadSnapshot({document, selectedRange: [0, 0]})

@@ -132,6 +132,7 @@ class Trix.EditorController extends Trix.Controller
       @compositionRevisionWhenLocationRangeRequested = null
 
     unless @renderedCompositionRevision is @composition.revision
+      @runEditorFilters()
       @composition.updateCurrentAttributes()
       @notifyEditorElement("render")
 
@@ -331,6 +332,24 @@ class Trix.EditorController extends Trix.Controller
       @currentActions = currentActions
       @toolbarController.updateActions(@currentActions)
       @notifyEditorElement("actions-change", actions: @currentActions)
+
+  # Editor filters
+
+  runEditorFilters: ->
+    snapshot = @composition.getSnapshot()
+
+    for { name, callback } in @editor.filters
+      {document, selectedRange} = snapshot
+      snapshot = callback.call(@editor, snapshot) ? {}
+      snapshot.document ?= document
+      snapshot.selectedRange ?= selectedRange
+
+    unless snapshotsAreEqual(snapshot, @composition.getSnapshot())
+      @composition.loadSnapshot(snapshot)
+
+  snapshotsAreEqual = (a, b) ->
+    rangesAreEqual(a.selectedRange, b.selectedRange) and
+      a.document.isEqualTo(b.document)
 
   # Private
 
