@@ -22,11 +22,14 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   isSerializable: ->
     not @attachment.isPending()
 
+  isGroupable: ->
+    @attachment.isGroupable() and @attributes.get("groupable")
+
   getCaption: ->
     @attributes.get("caption") ? ""
 
   getAttributesForAttachment: ->
-    @attributes.slice(["caption"])
+    @attributes.slice(["caption", "groupable"])
 
   isEqualTo: (piece) ->
     super and @attachment.id is piece?.attachment?.id
