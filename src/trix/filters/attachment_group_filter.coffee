@@ -1,43 +1,46 @@
 Trix.attachmentGroupFilter = (snapshot) ->
-  {document, selectedRange} = snapshot
-  document = applyAttachmentGroupsToDocument(document)
-  {document, selectedRange}
+  filter = new Filter snapshot
+  filter.perform()
+  filter.getSnapshot()
 
-applyAttachmentGroupsToDocument = (document) ->
-  for block, index in document.getBlocks()
+class Filter
+  constructor: (snapshot) ->
+    {@document, @selectedRange} = snapshot
+
+  perform: ->
+    @removeAttachmentGroupAttribute()
+    @applyAttachmentGroupAttribute()
+
+  getSnapshot: ->
+    {@document, @selectedRange}
+
+  # Private
+
+  removeAttachmentGroupAttribute: ->
+    for range in @findRangesOfAttachmentGroupBlocks()
+      @document = @document.removeAttributeAtRange("attachmentGroup", range)
+
+  applyAttachmentGroupAttribute: ->
     offset = 0
-    textRange = null
+    for range in @findRangesOfGroupableAttachments()
+      range[0] += offset
+      range[1] += offset
 
-    if block.getLastAttribute() is "attachmentGroup"
-      range = document.rangeFromLocationRange({index, offset})
-      document = document.removeAttributeAtRange("attachmentGroup", range)
+      unless @document.getCharacterAtPosition(range[1]) is "\n"
+        @document = @document.insertBlockBreakAtRange(range[1])
+        offset++
 
-    for piece in block.text.getPieces()
-      length = piece.getLength()
+      unless range[0] is 0
+        unless @document.getCharacterAtPosition(range[0] - 1) is "\n"
+          @document = @document.insertBlockBreakAtRange(range[0])
+          offset++
 
-      if piece.attachment and piece.isGroupable()
-        if textRange?
-          textRange[1] += length
-        else
-          textRange = [offset, offset + length]
+      @document = @document.applyBlockAttributeAtRange("attachmentGroup", true, range)
 
-      else if textRange?
-        [startOffset, endOffset] = textRange
-        textRange = null
-        if endOffset - startOffset > 1
-          locationRange = [{index, offset: startOffset}, {index, offset: endOffset}]
-          range = document.rangeFromLocationRange(locationRange)
+  findRangesOfAttachmentGroupBlocks: ->
+    for block, index in @document.getBlocks() when "attachmentGroup" in block.getAttributes()
+      locationRange = [{index, offset: 0}, {index, offset: block.getBlockBreakPosition()}]
+      @document.rangeFromLocationRange(locationRange)
 
-          unless document.getCharacterAtPosition(range[1]) is "\n"
-            document = document.insertBlockBreakAtRange(range[1])
-            offset++
-
-          unless startOffset is 0
-            unless document.getCharacterAtPosition(range[0]) is "\n"
-              document = document.insertBlockBreakAtRange(range[0])
-              range[0]++
-              offset++
-          document = document.applyBlockAttributeAtRange("attachmentGroup", true, range)
-
-      offset += length
-  document
+  findRangesOfGroupableAttachments: ->
+    range for range in @document.findRangesForTextAttribute("groupable") when range[1] - range[0] > 1
