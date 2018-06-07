@@ -104,6 +104,16 @@
     > [data-trix-attachment] {
       flex: 1 0 33%;
       padding: 0 0.5em;
+      max-width: 33%;
+    }
+
+    &[data-trix-attachment-count="2"],
+    &[data-trix-attachment-count="4"] {
+      > .attachment,
+      > [data-trix-attachment] {
+        flex-basis: 50%;
+        max-width: 50%;
+      }
     }
   }
 }

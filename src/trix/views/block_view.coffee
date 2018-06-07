@@ -34,6 +34,7 @@ class Trix.BlockView extends Trix.ObjectView
     if attribute is "attachmentGroup"
       element.classList.add(css.attachmentGroup)
       element.setAttribute("role", "group")
+      element.setAttribute("data-trix-attachment-count", @block.getBlockBreakPosition())
     element
 
   # A single <br> at the end of a block element has no visual representation
