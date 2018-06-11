@@ -71,7 +71,7 @@ trix-editor {
   .attachment__toolbar {
     position: absolute;
     z-index: 1;
-    top: -0.8em;
+    top: -0.9em;
     left: 0;
     width: 100%;
     text-align: center;
@@ -79,16 +79,6 @@ trix-editor {
 
   .trix-button-group {
     display: inline-flex;
-    background-color: white;
-    border: 1px solid #bbb;
-    border-top-color: #ccc;
-    border-bottom-color: #888;
-    border-radius: 3px;
-    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
-
-    &:not(:last-child) {
-      margin-right: 0.5em
-    }
   }
 
   .trix-button {
@@ -120,22 +110,37 @@ trix-editor {
   .trix-button--remove {
     text-indent: -9999px;
     display: inline-block;
-    width: 2em;
     padding: 0;
+    outline: none;
+    width: 1.8em;
+    height: 1.8em;
+    line-height: 1.8em;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 2px solid highlight;
+    box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.25);
 
     &::before {
       display: inline-block;
       position: absolute;
-      top: 0.1em;
-      right: 0.1em;
-      bottom: 0.1em;
-      left: 0.1em;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
       opacity: 0.7;
       content: "";
       background-image: $icon-remove;
       background-position: center;
       background-repeat: no-repeat;
-      background-size: contain;
+      background-size: 90%;
+    }
+
+    &:hover {
+      border-color: #333;
+
+      &::before {
+        opacity: 1;
+      }
     }
   }
 
