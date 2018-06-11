@@ -44,7 +44,7 @@
     height: auto;
   }
 
-  a[data-trix-attachment] {
+  a.attachment-container {
     color: inherit;
     text-decoration: none;
 
@@ -100,8 +100,7 @@
     margin: 0;
     padding: 0;
 
-    > .attachment,
-    > [data-trix-attachment] {
+    .attachment-container {
       flex: 1 0 33%;
       padding: 0 0.5em;
       max-width: 33%;
@@ -109,8 +108,7 @@
 
     &[data-trix-attachment-count="2"],
     &[data-trix-attachment-count="4"] {
-      > .attachment,
-      > [data-trix-attachment] {
+      .attachment-container {
         flex-basis: 50%;
         max-width: 50%;
       }

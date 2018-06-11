@@ -52,6 +52,7 @@ class Trix.AttachmentView extends Trix.ObjectView
     else
       element = figure
 
+    element.classList.add(css.attachmentContainer)
     element.dataset[key] = value for key, value of data
     element.setAttribute("contenteditable", false)
 
