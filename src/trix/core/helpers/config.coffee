@@ -21,3 +21,7 @@ Trix.extend
 
   getListAttributeNames: ->
     listAttributeNames ?= (listAttribute for key, {listAttribute} of Trix.config.blockAttributes when listAttribute?)
+
+  getAttachmentGroupTypes: ->
+    for type, config of Trix.config.attachments when config.group
+      "attachment:#{type}"

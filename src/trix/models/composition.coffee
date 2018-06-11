@@ -113,23 +113,19 @@ class Trix.Composition extends Trix.BasicObject
       @insertAttachment(attachment)
 
   insertFiles: (files) ->
-    headText = new Trix.Text
-    tailText = new Trix.Text
+    text = new Trix.Text
 
     for file in files when @delegate?.compositionShouldAcceptFile(file)
       attachment = Trix.Attachment.attachmentForFile(file)
+      groupType = attachment.getGroupType()
 
       attributes = @getCurrentTextAttributes()
-      attributes.groupable = true if attachment.isGroupable()
+      attributes.groupType = groupType if groupType
 
-      text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
+      attachmentText = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
+      text = text.appendText(attachmentText)
 
-      if attributes.groupable
-        headText = headText.appendText(text)
-      else
-        tailText = tailText.appendText(text)
-
-    @insertText(headText.appendText(tailText))
+    @insertText(text)
 
   insertAttachment: (attachment) ->
     attributes = @getCurrentTextAttributes()

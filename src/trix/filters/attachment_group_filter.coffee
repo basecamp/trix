@@ -43,4 +43,8 @@ class Filter
       @document.rangeFromLocationRange(locationRange)
 
   findRangesOfGroupableAttachments: ->
-    range for range in @document.findRangesForTextAttribute("groupable") when range[1] - range[0] > 1
+    ranges = []
+    for groupType in Trix.getAttachmentGroupTypes()
+      for range in @document.findRangesForTextAttribute("groupType", withValue: groupType)
+        ranges.push(range) if range[1] - range[0] > 1
+    ranges

@@ -29,7 +29,7 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
     @attributes.get("caption") ? ""
 
   getAttributesForAttachment: ->
-    @attributes.slice(["caption", "groupable"])
+    @attributes.slice(["caption", "groupType"])
 
   isEqualTo: (piece) ->
     super and @attachment.id is piece?.attachment?.id

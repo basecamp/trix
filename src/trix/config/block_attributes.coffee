@@ -38,3 +38,4 @@ Trix.config.blockAttributes = attributes =
   attachmentGroup:
     tagName: "figure"
     parse: false
+    group: false
