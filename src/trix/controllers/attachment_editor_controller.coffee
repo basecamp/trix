@@ -1,6 +1,6 @@
 #= require trix/controllers/attachment_editor_controller
 
-{defer, handleEvent, makeElement, tagName} = Trix
+{defer, escapeHTML, handleEvent, makeElement, tagName} = Trix
 {keyNames} = Trix.InputController
 {lang, css} = Trix.config
 
@@ -52,27 +52,20 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
           <button type="button" data-trix-action="remove" class="trix-button trix-button--remove" title="#{lang.remove}">#{lang.remove}</button>
         </span>
       </div>
-
-      <div class="attachment__metadata-container" data-trix-type-only="preview">
-        <span class="attachment__metadata">
-          <span class="attachment__name" title="" data-trix-attachment-name></span>
-          <span class="attachment__size" data-trix-attachment-size></span>
-        </span>
-      </div>
     """
 
-    if name = @attachment.getFilename()
-      nameElement = element.querySelector("[data-trix-attachment-name]")
-      nameElement.textContent = name
-      nameElement.title = name
+    if @attachment.isPreviewable()
+      name = escapeHTML(@attachment.getFilename())
+      size = escapeHTML(@attachment.getFormattedFilesize())
 
-    if size = @attachment.getFormattedFilesize()
-      sizeElement = element.querySelector("[data-trix-attachment-size]")
-      sizeElement.textContent = size
-
-    type = @attachment.getType()
-    for child in element.querySelectorAll("[data-trix-type-only]:not([data-trix-type-only='#{type}'])")
-      child.parentNode.removeChild(child)
+      element.innerHTML += """
+        <div class="attachment__metadata-container">
+          <span class="attachment__metadata">
+            <span class="attachment__name" title="#{name}">#{name}</span>
+            <span class="attachment__size">#{size}</span>
+          </span>
+        </div>
+      """
 
     handleEvent("click", onElement: element, withCallback: @didClickToolbar)
     handleEvent("click", onElement: element, matchingSelector: "[data-trix-action]", withCallback: @didClickActionButton)
