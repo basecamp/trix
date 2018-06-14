@@ -134,7 +134,7 @@ Trix.extend
     element
 
   getBlockTagNames: ->
-    Trix.blockTagNames ?= (value.tagName for key, value of Trix.config.blockAttributes)
+    Trix.blockTagNames ?= (tagName for key, {tagName} of Trix.config.blockAttributes when tagName)
 
   nodeIsBlockContainer: (node) ->
     Trix.nodeIsBlockStartComment(node?.firstChild)

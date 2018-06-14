@@ -29,13 +29,16 @@ class Trix.BlockView extends Trix.ObjectView
 
   createContainerElement: (depth) ->
     attribute = @attributes[depth]
-    config = getBlockConfig(attribute)
-    element = makeElement(config.tagName)
-    if attribute is "attachmentGroup"
-      element.classList.add(css.attachmentGroup)
-      element.setAttribute("role", "group")
-      element.setAttribute("data-trix-attachment-count", @block.getBlockBreakPosition())
-    element
+
+    makeElement do =>
+      if attribute is "attachmentGroup"
+        tagName: "div"
+        className: css.attachmentGroup
+        attributes: role: "group"
+        data: trixAttachmentCount: @block.getBlockBreakPosition()
+      else
+        {tagName} = getBlockConfig(attribute)
+        {tagName}
 
   # A single <br> at the end of a block element has no visual representation
   # so add an extra one.
