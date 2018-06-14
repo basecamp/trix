@@ -25,3 +25,8 @@ Trix.extend
   getAttachmentGroupTypes: ->
     for type, config of Trix.config.attachments when config.group
       "attachment:#{type}"
+
+  getGroupTypeForAttachment: (attachment) ->
+    type = attachment.getType()
+    if Trix.config.attachments[type]?.group
+      "attachment:#{type}"

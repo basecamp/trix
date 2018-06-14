@@ -53,9 +53,6 @@ class Trix.Attachment extends Trix.Object
     else
       @constructor.previewablePattern.test(@getContentType())
 
-  getConfig: ->
-    Trix.config.attachments[@getType()] ? {}
-
   getType: ->
     if @hasContent()
       "content"
@@ -63,9 +60,6 @@ class Trix.Attachment extends Trix.Object
       "preview"
     else
       "file"
-
-  getGroupType: ->
-    "attachment:#{@getType()}" if @getConfig().group
 
   getURL: ->
     @attributes.get("url")

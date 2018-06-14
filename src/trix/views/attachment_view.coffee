@@ -91,8 +91,9 @@ class Trix.AttachmentView extends Trix.ObjectView
       @attachment.getHref()
 
   getCaptionConfig: ->
-    config = Trix.copyObject(@attachment.getConfig().caption)
-    config.name = true if @attachment.getType() is "file"
+    type = @attachment.getType()
+    config = Trix.copyObject(Trix.config.attachments[type]?.caption)
+    config.name = true if type is "file"
     config
 
   findProgressElement: ->

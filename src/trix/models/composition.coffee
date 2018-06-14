@@ -1,7 +1,9 @@
 #= require trix/models/document
 #= require trix/models/line_break_insertion
 
-{normalizeRange, rangesAreEqual, rangeIsCollapsed, objectsAreEqual, arrayStartsWith, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
+{extend, arrayStartsWith, summarizeArrayChange,
+ getAllAttributeNames, getGroupTypeForAttachment, getBlockConfig, getTextConfig,
+ normalizeRange, rangesAreEqual, rangeIsCollapsed, objectsAreEqual} = Trix
 
 class Trix.Composition extends Trix.BasicObject
   constructor: ->
@@ -117,7 +119,7 @@ class Trix.Composition extends Trix.BasicObject
 
     for file in files when @delegate?.compositionShouldAcceptFile(file)
       attachment = Trix.Attachment.attachmentForFile(file)
-      groupType = attachment.getGroupType()
+      groupType = getGroupTypeForAttachment(attachment)
 
       attributes = @getCurrentTextAttributes()
       attributes.groupType = groupType if groupType
