@@ -110,9 +110,7 @@ class Trix.Composition extends Trix.BasicObject
     @setSelection(selectedRange)
 
   insertFile: (file) ->
-    if @delegate?.compositionShouldAcceptFile(file)
-      attachment = Trix.Attachment.attachmentForFile(file)
-      @insertAttachment(attachment)
+    @insertFiles([file])
 
   insertFiles: (files) ->
     text = new Trix.Text
