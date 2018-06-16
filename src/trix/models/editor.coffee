@@ -2,7 +2,7 @@
 #= require trix/filters/attachment_group_filter
 
 class Trix.Editor
-  DEFAULT_FILTERS = [{ name: "attachmentGroup", callback: Trix.attachmentGroupFilter }]
+  DEFAULT_FILTERS = [ Trix.attachmentGroupFilter ]
 
   constructor: (@composition, @selectionManager, @element) ->
     @undoManager = new Trix.UndoManager @composition

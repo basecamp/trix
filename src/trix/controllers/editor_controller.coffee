@@ -335,9 +335,9 @@ class Trix.EditorController extends Trix.Controller
   runEditorFilters: ->
     snapshot = @composition.getSnapshot()
 
-    for { name, callback } in @editor.filters
+    for filter in @editor.filters
       {document, selectedRange} = snapshot
-      snapshot = callback.call(@editor, snapshot) ? {}
+      snapshot = filter.call(@editor, snapshot) ? {}
       snapshot.document ?= document
       snapshot.selectedRange ?= selectedRange
 
