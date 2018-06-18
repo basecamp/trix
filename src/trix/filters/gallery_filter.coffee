@@ -38,9 +38,7 @@ class Filter
       @document = @document.applyBlockAttributeAtRange("gallery", true, range)
 
   findRangesOfGalleryBlocks: ->
-    for block, index in @document.getBlocks() when "gallery" in block.getAttributes()
-      locationRange = [{index, offset: 0}, {index, offset: block.getBlockBreakPosition()}]
-      @document.rangeFromLocationRange(locationRange)
+    @document.findRangesForBlockAttribute("gallery")
 
   findRangesOfGalleryPieces: ->
     @document.findRangesForTextAttribute("presentation", withValue: "gallery")

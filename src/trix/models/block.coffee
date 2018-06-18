@@ -60,6 +60,9 @@ class Trix.Block extends Trix.Object
   getAttributeAtLevel: (level) ->
     @attributes[level - 1]
 
+  hasAttribute: (attributeName) ->
+    attributeName in @attributes
+
   hasAttributes: ->
     @getAttributeLevel() > 0
 

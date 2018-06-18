@@ -482,6 +482,18 @@ class Trix.Document extends Trix.Object
   getAttachmentPieceForAttachment: (attachment) ->
     return piece for piece in @getAttachmentPieces() when piece.attachment is attachment
 
+  findRangesForBlockAttribute: (attributeName) ->
+    position = 0
+    ranges = []
+
+    for block in @getBlocks()
+      length = block.getLength()
+      if block.hasAttribute(attributeName)
+        ranges.push([position, position + length])
+      position += length
+
+    ranges
+
   findRangesForTextAttribute: (attributeName, {withValue} = {}) ->
     position = 0
     range = []
