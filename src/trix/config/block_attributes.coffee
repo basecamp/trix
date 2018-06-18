@@ -36,5 +36,6 @@ Trix.config.blockAttributes = attributes =
     test: (element) ->
       Trix.tagName(element.parentNode) is attributes[@listAttribute].tagName
   gallery:
+    tagName: "div"
     parse: false
     group: false

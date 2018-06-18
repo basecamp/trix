@@ -29,16 +29,15 @@ class Trix.BlockView extends Trix.ObjectView
 
   createContainerElement: (depth) ->
     attribute = @attributes[depth]
+    {tagName} = getBlockConfig(attribute)
+    options = {tagName}
 
-    makeElement do =>
-      if attribute is "gallery"
-        tagName: "div"
-        className: css.gallery
-        attributes: role: "group"
-        data: trixGallerySize: @block.getBlockBreakPosition()
-      else
-        {tagName} = getBlockConfig(attribute)
-        {tagName}
+    if attribute is "gallery"
+      options.className = css.gallery
+      options.attributes = role: "group"
+      options.data = trixGallerySize: @block.getBlockBreakPosition()
+
+    makeElement(options)
 
   # A single <br> at the end of a block element has no visual representation
   # so add an extra one.
