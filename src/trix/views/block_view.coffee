@@ -31,9 +31,9 @@ class Trix.BlockView extends Trix.ObjectView
     attribute = @attributes[depth]
 
     makeElement do =>
-      if attribute is "attachmentGroup"
+      if attribute is "gallery"
         tagName: "div"
-        className: css.attachmentGroup
+        className: css.attachmentGallery
         attributes: role: "group"
         data: trixAttachmentCount: @block.getBlockBreakPosition()
       else

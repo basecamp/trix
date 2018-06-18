@@ -35,6 +35,6 @@ Trix.config.blockAttributes = attributes =
     nestable: true
     test: (element) ->
       Trix.tagName(element.parentNode) is attributes[@listAttribute].tagName
-  attachmentGroup:
+  gallery:
     parse: false
     group: false

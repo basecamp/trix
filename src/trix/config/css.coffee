@@ -6,4 +6,4 @@ Trix.config.css =
   attachmentCaption: "attachment__caption"
   attachmentCaptionEditor: "attachment__caption-editor"
   attachmentContainer: "attachment-container"
-  attachmentGroup: "attachment-group"
+  attachmentGallery: "attachment-gallery"

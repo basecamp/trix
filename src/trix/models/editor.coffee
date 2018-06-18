@@ -1,8 +1,8 @@
 #= require trix/models/undo_manager
-#= require trix/filters/attachment_group_filter
+#= require trix/filters/gallery_filter
 
 class Trix.Editor
-  DEFAULT_FILTERS = [ Trix.attachmentGroupFilter ]
+  DEFAULT_FILTERS = [ Trix.galleryFilter ]
 
   constructor: (@composition, @selectionManager, @element) ->
     @undoManager = new Trix.UndoManager @composition

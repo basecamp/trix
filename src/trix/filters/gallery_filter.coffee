@@ -1,4 +1,4 @@
-Trix.attachmentGroupFilter = (snapshot) ->
+Trix.galleryFilter = (snapshot) ->
   filter = new Filter snapshot
   filter.perform()
   filter.getSnapshot()
@@ -8,21 +8,21 @@ class Filter
     {@document, @selectedRange} = snapshot
 
   perform: ->
-    @removeAttachmentGroupAttribute()
-    @applyAttachmentGroupAttribute()
+    @removeGalleryAttribute()
+    @applyGalleryAttribute()
 
   getSnapshot: ->
     {@document, @selectedRange}
 
   # Private
 
-  removeAttachmentGroupAttribute: ->
-    for range in @findRangesOfAttachmentGroupBlocks()
-      @document = @document.removeAttributeAtRange("attachmentGroup", range)
+  removeGalleryAttribute: ->
+    for range in @findRangesOfGalleryBlocks()
+      @document = @document.removeAttributeAtRange("gallery", range)
 
-  applyAttachmentGroupAttribute: ->
+  applyGalleryAttribute: ->
     offset = 0
-    for range in @findRangesOfGroupableAttachments()
+    for range in @findRangesOfGalleryPieces()
       range[0] += offset
       range[1] += offset
 
@@ -35,12 +35,12 @@ class Filter
           @document = @document.insertBlockBreakAtRange(range[0])
           offset++
 
-      @document = @document.applyBlockAttributeAtRange("attachmentGroup", true, range)
+      @document = @document.applyBlockAttributeAtRange("gallery", true, range)
 
-  findRangesOfAttachmentGroupBlocks: ->
-    for block, index in @document.getBlocks() when "attachmentGroup" in block.getAttributes()
+  findRangesOfGalleryBlocks: ->
+    for block, index in @document.getBlocks() when "gallery" in block.getAttributes()
       locationRange = [{index, offset: 0}, {index, offset: block.getBlockBreakPosition()}]
       @document.rangeFromLocationRange(locationRange)
 
-  findRangesOfGroupableAttachments: ->
+  findRangesOfGalleryPieces: ->
     range for range in @document.findRangesForTextAttribute("presentation", withValue: "gallery") when range[1] - range[0] > 1
