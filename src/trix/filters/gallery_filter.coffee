@@ -22,7 +22,7 @@ class Filter
 
   applyGalleryAttribute: ->
     offset = 0
-    for range in @findRangesOfGalleryPieces()
+    for range in @findRangesOfGalleryPieces() when range[1] - range[0] > 1
       range[0] += offset
       range[1] += offset
 
@@ -43,4 +43,4 @@ class Filter
       @document.rangeFromLocationRange(locationRange)
 
   findRangesOfGalleryPieces: ->
-    range for range in @document.findRangesForTextAttribute("presentation", withValue: "gallery") when range[1] - range[0] > 1
+    @document.findRangesForTextAttribute("presentation", withValue: "gallery")
