@@ -106,8 +106,8 @@
       max-width: 33%;
     }
 
-    &[data-trix-attachment-count="2"],
-    &[data-trix-attachment-count="4"] {
+    &[data-trix-gallery-size="2"],
+    &[data-trix-gallery-size="4"] {
       .attachment-container {
         flex-basis: 50%;
         max-width: 50%;
