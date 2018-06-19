@@ -45,7 +45,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     undo: => delete @element.dataset.trixMutable
 
   addToolbar: undoable ->
-    element = makeElement(tagName: "div", className: "attachment__toolbar", data: trixMutable: true)
+    element = makeElement(tagName: "div", className: css.attachmentToolbar, data: trixMutable: true)
     element.innerHTML = """
       <div class="trix-button-row">
         <span class="trix-button-group trix-button-group--actions">
@@ -59,10 +59,10 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       size = escapeHTML(@attachment.getFormattedFilesize())
 
       element.innerHTML += """
-        <div class="attachment__metadata-container">
-          <span class="attachment__metadata">
-            <span class="attachment__name" title="#{name}">#{name}</span>
-            <span class="attachment__size">#{size}</span>
+        <div class="#{css.attachmentMetadataContainer}">
+          <span class="#{css.attachmentMetadata}">
+            <span class="#{css.attachmentName}" title="#{name}">#{name}</span>
+            <span class="#{css.attachmentSize}">#{size}</span>
           </span>
         </div>
       """
