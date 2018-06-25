@@ -162,19 +162,18 @@ class Trix.Document extends Trix.Object
     movingRightward = startPosition < position
     position -= document.getLength() if movingRightward
 
-    unless result.firstBlockInRangeIsEntirelySelected(range)
-      [firstBlock, blocks...] = document.getBlocks()
-      if blocks.length is 0
-        text = firstBlock.getTextWithoutBlockBreak()
-        position += 1 if movingRightward
-      else
-        text = firstBlock.text
+    [firstBlock, blocks...] = document.getBlocks()
+    if blocks.length is 0
+      text = firstBlock.getTextWithoutBlockBreak()
+      position += 1 if movingRightward
+    else
+      text = firstBlock.text
 
-      result = result.insertTextAtRange(text, position)
-      return result if blocks.length is 0
+    result = result.insertTextAtRange(text, position)
+    return result if blocks.length is 0
 
-      document = new @constructor blocks
-      position += text.getLength()
+    document = new @constructor blocks
+    position += text.getLength()
 
     result.insertDocumentAtRange(document, position)
 
@@ -261,19 +260,6 @@ class Trix.Document extends Trix.Object
       blockList = blockList.editObjectAtIndex index, ->
         block.removeAttribute(lastAttributeName)
     new @constructor blockList
-
-  firstBlockInRangeIsEntirelySelected: (range) ->
-    [startPosition, endPosition] = range = normalizeRange(range)
-    leftLocation = @locationFromPosition(startPosition)
-    rightLocation = @locationFromPosition(endPosition)
-
-    if leftLocation.offset is 0 and leftLocation.index < rightLocation.index
-      true
-    else if leftLocation.index is rightLocation.index
-      length = @getBlockAtIndex(leftLocation.index).getLength()
-      leftLocation.offset is 0 and rightLocation.offset is length
-    else
-      false
 
   expandRangeToLineBreaksAndSplitBlocks: (range) ->
     [startPosition, endPosition] = range = normalizeRange(range)
