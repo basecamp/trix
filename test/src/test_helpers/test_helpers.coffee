@@ -8,9 +8,7 @@ findOrCreateTrixContainer = ->
   if container = document.getElementById("trix-container")
     container
   else
-    container = document.createElement("form")
-    container.id = "trix-container"
-    document.body.insertBefore(container, document.body.firstChild)
+    document.body.insertAdjacentHTML("afterbegin", """<form id="trix-container"></form>""")
     document.getElementById("trix-container")
 
 ready = null
