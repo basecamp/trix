@@ -17,6 +17,19 @@ Trix.registerElement "trix-toolbar",
     }
   """
 
+  # Element lifecycle
+
+  # `attachedCallback` (defined as `connect` here) doesn't run in Firefox when
+  # an element is dynamically inserted while the document is still loading. Most
+  # likely due to a bug in the v0 polyfill. For this element, the result is a
+  # blank toolbar. Workaround: Render when created too in `createdCallback`.
+  createdCallback: ->
+    @render()
+
   connect: ->
-    if @innerHTML is ""
-      @innerHTML = Trix.config.toolbar.getDefaultHTML()
+    @render()
+
+  # Private
+
+  render: ->
+    @innerHTML ||= Trix.config.toolbar.getDefaultHTML()
