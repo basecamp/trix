@@ -156,11 +156,10 @@ Trix.registerElement "trix-editor", do ->
 
   # Element lifecycle
 
-  createdCallback: ->
+  connect: ->
     makeEditable(this)
     addAccessibilityRole(this)
 
-  attachedCallback: ->
     unless @hasAttribute("data-trix-internal")
       @editorController ?= new Trix.EditorController(editorElement: this, html: @defaultValue = @value)
       @editorController.registerSelectionManager()
@@ -168,7 +167,7 @@ Trix.registerElement "trix-editor", do ->
       autofocus(this)
       requestAnimationFrame => @notify("initialize")
 
-  detachedCallback: ->
+  disconnect: ->
     @editorController?.unregisterSelectionManager()
     @unregisterResetListener()
 

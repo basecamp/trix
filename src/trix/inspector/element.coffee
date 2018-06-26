@@ -54,7 +54,7 @@ Trix.registerElement "trix-inspector",
     }
   """
 
-  attachedCallback: ->
+  connect: ->
     @editorElement = document.querySelector("trix-editor[trix-id='#{@dataset.trixId}']")
     @views = @createViews()
 
@@ -67,7 +67,7 @@ Trix.registerElement "trix-inspector",
     @resizeHandler = @reposition.bind(this)
     addEventListener("resize", @resizeHandler)
 
-  detachedCallback: ->
+  disconnect: ->
     removeEventListener("resize", @resizeHandler)
 
   createViews: ->

@@ -4,6 +4,8 @@ defaults =
 
 Trix.registerElement = (tagName, definition = {}) ->
   tagName = tagName.toLowerCase()
+
+  definition = rewriteLifecycleCallbacks(definition)
   properties = rewriteFunctionsAsValues(definition)
 
   extendsTagName = properties.extendsTagName ? defaults.extendsTagName
@@ -19,13 +21,27 @@ Trix.registerElement = (tagName, definition = {}) ->
 
   installDefaultCSSForTagName(defaultCSS, tagName)
 
-  extendedPrototype = Object.getPrototypeOf(document.createElement(extendsTagName))
-  extendedPrototype.__super__ = extendedPrototype
+  if window.customElements
+    constructor = ->
+      if typeof Reflect is "object"
+        Reflect.construct(HTMLElement, [], constructor)
+      else
+        HTMLElement.apply(this)
 
-  prototype = Object.create(extendedPrototype, properties)
-  constructor = document.registerElement(tagName, prototype: prototype)
-  Object.defineProperty(prototype, "constructor", value: constructor)
-  constructor
+    Object.setPrototypeOf(constructor.prototype, HTMLElement.prototype)
+    Object.setPrototypeOf(constructor, HTMLElement)
+    Object.defineProperties(constructor.prototype, properties)
+
+    window.customElements.define(tagName, constructor)
+    constructor
+  else
+    extendedPrototype = Object.getPrototypeOf(document.createElement(extendsTagName))
+    extendedPrototype.__super__ = extendedPrototype
+
+    prototype = Object.create(extendedPrototype, properties)
+    constructor = document.registerElement(tagName, prototype: prototype)
+    Object.defineProperty(prototype, "constructor", value: constructor)
+    constructor
 
 installDefaultCSSForTagName = (defaultCSS, tagName) ->
   styleElement = insertStyleElementForTagName(tagName)
@@ -37,6 +53,22 @@ insertStyleElementForTagName = (tagName) ->
   element.setAttribute("data-tag-name", tagName.toLowerCase())
   document.head.insertBefore(element, document.head.firstChild)
   element
+
+lifecycleMap = do ->
+  if window.customElements
+    connect: "connectedCallback"
+    disconnect: "disconnectedCallback"
+  else
+    connect: "attachedCallback"
+    disconnect: "detachedCallback"
+
+rewriteLifecycleCallbacks = (definition) ->
+  result = Trix.copyObject(definition)
+  for key, value of lifecycleMap
+    if callback = result[key]
+      result[value] = callback
+      delete result[key]
+  result
 
 rewriteFunctionsAsValues = (definition) ->
   object = {}

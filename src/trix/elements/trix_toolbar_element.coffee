@@ -17,6 +17,6 @@ Trix.registerElement "trix-toolbar",
     }
   """
 
-  createdCallback: ->
+  connect: ->
     if @innerHTML is ""
       @innerHTML = Trix.config.toolbar.getDefaultHTML()
