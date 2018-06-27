@@ -1,6 +1,10 @@
 Trix.registerElement "trix-inspector",
   defaultCSS: """
     %t {
+      display: block;
+    }
+
+    %t {
       position: fixed;
       background: #fff;
       border: 1px solid #444;

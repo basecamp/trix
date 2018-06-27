@@ -50,6 +50,10 @@ Trix.registerElement "trix-editor", do ->
       width: "1px"
 
   defaultCSS: """
+    %t {
+      display: block;
+    }
+
     %t:empty:not(:focus)::before {
       content: attr(placeholder);
       color: graytext;

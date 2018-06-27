@@ -1,6 +1,10 @@
 Trix.registerElement "trix-toolbar",
   defaultCSS: """
     %t {
+      display: block;
+    }
+
+    %t {
       white-space: nowrap;
     }
 
