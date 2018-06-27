@@ -156,10 +156,11 @@ Trix.registerElement "trix-editor", do ->
 
   # Element lifecycle
 
-  connect: ->
+  initialize: ->
     makeEditable(this)
     addAccessibilityRole(this)
 
+  connect: ->
     unless @hasAttribute("data-trix-internal")
       @editorController ?= new Trix.EditorController(editorElement: this, html: @defaultValue = @value)
       @editorController.registerSelectionManager()

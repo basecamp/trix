@@ -59,19 +59,30 @@ lifecycleMap = do ->
     connect: "connectedCallback"
     disconnect: "disconnectedCallback"
   else
+    initialize: "createdCallback"
     connect: "attachedCallback"
     disconnect: "detachedCallback"
 
 rewriteLifecycleCallbacks = (definition) ->
   result = Trix.copyObject(definition)
+
   for key, value of lifecycleMap
     if callback = result[key]
       result[value] = callback
       delete result[key]
+
+  # Call `initialize` once in `connectedCallback` if defined
+  if result.initialize
+    {connectedCallback} = result
+    result.connectedCallback = ->
+      @initialize?()
+      @initialize = null
+      connectedCallback?.call(this)
+
   result
 
 rewriteFunctionsAsValues = (definition) ->
   object = {}
   for key, value of definition
-    object[key] = if typeof value is "function" then {value} else value
+    object[key] = if typeof value is "function" then {value, writable: true} else value
   object
