@@ -21,38 +21,43 @@ insertStyleElementForTagName = (tagName) ->
   document.head.insertBefore(element, document.head.firstChild)
   element
 
-rewriteLifecycleCallbacks = (definition) ->
-  result = Trix.copyObject(definition)
-
-  for key, value of lifecycleMap
-    if callback = result[key]
-      result[value] = callback
-      delete result[key]
-
-  # Call `initialize` once in `connectedCallback` if defined
-  if result.initialize
-    {connectedCallback} = result
-    result.connectedCallback = ->
-      @initialize?()
-      @initialize = null
-      connectedCallback?.call(this)
-
-  result
-
 rewriteFunctionsAsValues = (definition) ->
   object = {}
   for key, value of definition
     object[key] = if typeof value is "function" then {value, writable: true} else value
   object
 
-lifecycleMap = do ->
+rewriteLifecycleCallbacks = do ->
+  extract = (definition) ->
+    callbacks = {}
+    for key in ["initialize", "connect", "disconnect"]
+      callbacks[key] = definition[key]
+      delete definition[key]
+    callbacks
+
   if window.customElements
-    connect: "connectedCallback"
-    disconnect: "disconnectedCallback"
+    (definition) ->
+      {initialize, connect, disconnect} = extract(definition)
+
+      # Call `initialize` once in `connectedCallback` if defined
+      if initialize or connect
+        original = connect
+        connect = ->
+          @initialize?()
+          @initialize = null
+          original?.call(this)
+
+      definition.initialize = initialize if initialize
+      definition.connectedCallback = connect if connect
+      definition.disconnectedCallback = disconnect if disconnect
+      definition
   else
-    initialize: "createdCallback"
-    connect: "attachedCallback"
-    disconnect: "detachedCallback"
+    (definition) ->
+      {initialize, connect, disconnect} = extract(definition)
+      definition.createdCallback = initialize if initialize
+      definition.attachedCallback = connect if connect
+      definition.detachedCallback = disconnect if disconnect
+      definition
 
 registerElement = do ->
   if window.customElements
