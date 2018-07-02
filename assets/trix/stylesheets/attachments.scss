@@ -24,6 +24,8 @@ trix-editor {
   }
 
   .attachment {
+    position: relative;
+
     &:hover {
       cursor: default;
     }
