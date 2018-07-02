@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*
-Trix 0.11.3
+Trix 0.11.4
 Copyright © 2018 Basecamp, LLC
 http://trix-editor.org/*/
 trix-editor {
@@ -164,8 +164,10 @@ trix-editor [data-trix-cursor-target]::-moz-selection {
 trix-editor [data-trix-mutable=true]::selection,
 trix-editor [data-trix-cursor-target]::selection {
   background: none; }
-trix-editor .attachment:hover {
-  cursor: default; }
+trix-editor .attachment {
+  position: relative; }
+  trix-editor .attachment:hover {
+    cursor: default; }
 trix-editor .attachment--preview .attachment__caption:hover {
   cursor: text; }
 trix-editor .attachment__progress {
