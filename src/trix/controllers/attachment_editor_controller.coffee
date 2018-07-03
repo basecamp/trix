@@ -83,6 +83,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
 
     textareaClone = textarea.cloneNode()
     textareaClone.classList.add("trix-autoresize-clone")
+    textareaClone.tabIndex = -1
 
     autoresize = ->
       textareaClone.value = textarea.value
