@@ -1,6 +1,6 @@
 language: ruby
 cache: bundler
-script: bin/ci
+script: travis_wait bin/ci
 branches:
   only:
     - master

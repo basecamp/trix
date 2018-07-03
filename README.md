@@ -348,7 +348,7 @@ The `<trix-editor>` element emits several events which you can use to observe an
 
 Trix is open-source software, freely distributable under the terms of an [MIT-style license](LICENSE). The [source code is hosted on GitHub](https://github.com/basecamp/trix).
 
-We welcome contributions in the form of bug reports, pull requests, or thoughtful discussions in the [GitHub issue tracker](https://github.com/basecamp/trix/issues). Please see the [Code of Conduct](CONDUCT.md) for our pledge to contributors.
+We welcome contributions in the form of bug reports, pull requests, or thoughtful discussions in the [GitHub issue tracker](https://github.com/basecamp/trix/issues). Please see the [Code of Conduct](CODE_OF_CONDUCT.md) for our pledge to contributors.
 
 Trix was created by [Javan Makhmali](https://twitter.com/javan) and [Sam Stephenson](https://twitter.com/sstephenson), with development sponsored by [Basecamp](https://basecamp.com/).
 
@@ -379,4 +379,4 @@ Only commit changes to Trix’s source (everything except the compiled files in 
 
 ---
 
-© 2017 Basecamp, LLC.
+© 2018 Basecamp, LLC.
