@@ -34,7 +34,6 @@ class Trix.BlockView extends Trix.ObjectView
 
     if attribute is "gallery"
       options.className = css.gallery
-      options.attributes = role: "group"
       options.data = trixGallerySize: @block.getBlockBreakPosition()
 
     makeElement(options)
