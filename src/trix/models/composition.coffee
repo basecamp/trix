@@ -220,11 +220,10 @@ class Trix.Composition extends Trix.BasicObject
       @canSetCurrentTextAttribute(attributeName)
 
   canSetCurrentTextAttribute: (attributeName) ->
-    switch attributeName
-      when "href"
-        not @selectionContainsAttachmentWithAttribute(attributeName)
-      else
-        true
+    return unless document = @getSelectedDocument()
+    for attachment in document.getAttachments()
+      return false unless attachment.hasContent()
+    true
 
   canSetCurrentBlockAttribute: (attributeName) ->
     return unless block = @getBlock()
@@ -408,12 +407,6 @@ class Trix.Composition extends Trix.BasicObject
     position = @getPosition()
     range = @document.getRangeOfCommonAttributeAtPosition(attributeName, position)
     @setSelectedRange(range)
-
-  selectionContainsAttachmentWithAttribute: (attributeName) ->
-    if selectedRange = @getSelectedRange()
-      for attachment in @document.getDocumentAtRange(selectedRange).getAttachments()
-        return true if attachment.hasAttribute(attributeName)
-      false
 
   selectionIsInCursorTarget: ->
     @editingAttachment or @positionIsCursorTarget(@getPosition())

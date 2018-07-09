@@ -28,7 +28,7 @@ class Trix.AttachmentView extends Trix.ObjectView
       trixContentType: @attachment.getContentType()
       trixId: @attachment.id
 
-    attributes = @attachmentPiece.getAttributesForAttachment()
+    {attributes} = @attachmentPiece
     unless attributes.isEmpty()
       data.trixAttributes = JSON.stringify(attributes)
 
