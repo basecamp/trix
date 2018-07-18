@@ -9,4 +9,4 @@ Trix.config.css =
   attachmentProgress: "attachment__progress"
   attachmentSize: "attachment__size"
   attachmentToolbar: "attachment__toolbar"
-  gallery: "attachment-gallery"
+  attachmentGallery: "attachment-gallery"

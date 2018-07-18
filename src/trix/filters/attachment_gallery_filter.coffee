@@ -1,28 +1,32 @@
-Trix.galleryFilter = (snapshot) ->
+Trix.attachmentGalleryFilter = (snapshot) ->
   filter = new Filter snapshot
   filter.perform()
   filter.getSnapshot()
 
 class Filter
+  BLOCK_ATTRIBUTE_NAME = "attachmentGallery"
+  TEXT_ATTRIBUTE_NAME  = "presentation"
+  TEXT_ATTRIBUTE_VALUE = "gallery"
+
   constructor: (snapshot) ->
     {@document, @selectedRange} = snapshot
 
   perform: ->
-    @removeGalleryAttribute()
-    @applyGalleryAttribute()
+    @removeBlockAttribute()
+    @applyBlockAttribute()
 
   getSnapshot: ->
     {@document, @selectedRange}
 
   # Private
 
-  removeGalleryAttribute: ->
-    for range in @findRangesOfGalleryBlocks()
-      @document = @document.removeAttributeAtRange("gallery", range)
+  removeBlockAttribute: ->
+    for range in @findRangesOfBlocks()
+      @document = @document.removeAttributeAtRange(BLOCK_ATTRIBUTE_NAME, range)
 
-  applyGalleryAttribute: ->
+  applyBlockAttribute: ->
     offset = 0
-    for range in @findRangesOfGalleryPieces() when range[1] - range[0] > 1
+    for range in @findRangesOfPieces() when range[1] - range[0] > 1
       range[0] += offset
       range[1] += offset
 
@@ -37,13 +41,13 @@ class Filter
           @moveSelectedRangeForward() if range[0] < @selectedRange[0]
           offset++
 
-      @document = @document.applyBlockAttributeAtRange("gallery", true, range)
+      @document = @document.applyBlockAttributeAtRange(BLOCK_ATTRIBUTE_NAME, true, range)
 
-  findRangesOfGalleryBlocks: ->
-    @document.findRangesForBlockAttribute("gallery")
+  findRangesOfBlocks: ->
+    @document.findRangesForBlockAttribute(BLOCK_ATTRIBUTE_NAME)
 
-  findRangesOfGalleryPieces: ->
-    @document.findRangesForTextAttribute("presentation", withValue: "gallery")
+  findRangesOfPieces: ->
+    @document.findRangesForTextAttribute(TEXT_ATTRIBUTE_NAME, withValue: TEXT_ATTRIBUTE_VALUE)
 
   moveSelectedRangeForward: ->
     @selectedRange[0] += 1
