@@ -17,7 +17,19 @@ helpers.extend
     getComposition().insertFile(file)
     render()
 
+  insertAttachment: (attachment) ->
+    getComposition().insertAttachment(attachment)
+    render()
+
+  insertAttachments: (attachments) ->
+    getComposition().insertAttachments(attachments)
+    render()
+
   insertImageAttachment: (attributes) ->
+    attachment = helpers.createImageAttachment(attributes)
+    helpers.insertAttachment(attachment)
+
+  createImageAttachment: (attributes) ->
     attributes ?=
       url: TEST_IMAGE_URL
       width: 10
@@ -26,9 +38,7 @@ helpers.extend
       filesize: 35
       contentType: "image/gif"
 
-    attachment = new Trix.Attachment attributes
-    text = Trix.Text.textForAttachmentWithAttributes(attachment)
-    helpers.insertText(text)
+    new Trix.Attachment attributes
 
   replaceDocument: (document) ->
     getComposition().setDocument(document)
