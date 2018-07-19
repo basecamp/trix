@@ -14,23 +14,22 @@ class Trix.AttachmentView extends Trix.ObjectView
     []
 
   createNodes: ->
-    figure = makeElement({tagName: "figure", className: @getClassName()})
+    figure = innerElement = makeElement
+      tagName: "figure"
+      className: @getClassName()
+      data: @getData()
+      editable: false
+
+    if href = @getHref()
+      innerElement = makeElement(tagName: "a", editable: false, attributes: {href, tabindex: -1})
+      figure.appendChild(innerElement)
 
     if @attachment.hasContent()
-      figure.innerHTML = @attachment.getContent()
+      innerElement.innerHTML = @attachment.getContent()
     else
-      figure.appendChild(node) for node in @createContentNodes()
+      innerElement.appendChild(node) for node in @createContentNodes()
 
-    figure.appendChild(@createCaptionElement())
-
-    data =
-      trixAttachment: JSON.stringify(@attachment)
-      trixContentType: @attachment.getContentType()
-      trixId: @attachment.id
-
-    {attributes} = @attachmentPiece
-    unless attributes.isEmpty()
-      data.trixAttributes = JSON.stringify(attributes)
+    innerElement.appendChild(@createCaptionElement())
 
     if @attachment.isPending()
       @progressElement = makeElement
@@ -44,19 +43,8 @@ class Trix.AttachmentView extends Trix.ObjectView
           trixStoreKey: ["progressElement", @attachment.id].join("/")
 
       figure.appendChild(@progressElement)
-      data.trixSerialize = false
 
-    if href = @getHref()
-      element = makeElement("a", {href, tabindex: -1})
-      element.appendChild(figure)
-    else
-      element = figure
-
-    element.classList.add(css.attachmentContainer)
-    element.dataset[key] = value for key, value of data
-    element.setAttribute("contenteditable", false)
-
-    [createCursorTarget("left"), element, createCursorTarget("right")]
+    [createCursorTarget("left"), figure, createCursorTarget("right")]
 
   createCaptionElement: ->
     figcaption = makeElement(tagName: "figcaption", className: css.attachmentCaption)
@@ -85,6 +73,21 @@ class Trix.AttachmentView extends Trix.ObjectView
     if extension = @attachment.getExtension()
       names.push("#{css.attachment}--#{extension}")
     names.join(" ")
+
+  getData: ->
+    data =
+      trixAttachment: JSON.stringify(@attachment)
+      trixContentType: @attachment.getContentType()
+      trixId: @attachment.id
+
+    {attributes} = @attachmentPiece
+    unless attributes.isEmpty()
+      data.trixAttributes = JSON.stringify(attributes)
+
+    if @attachment.isPending()
+      data.trixSerialize = false
+
+    data
 
   getHref: ->
     unless htmlContainsTagName(@attachment.getContent(), "a")

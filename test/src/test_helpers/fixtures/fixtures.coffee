@@ -184,14 +184,13 @@ removeWhitespace = (string) ->
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment attachment--preview attachment--png attachment-container"
+      className: "attachment attachment--preview attachment--png"
+      editable: false
+      data:
+        trixAttachment: JSON.stringify(attachment)
+        trixContentType: "image/png"
+        trixId: attachment.id
 
-    data =
-      trixAttachment: JSON.stringify(attachment)
-      trixContentType: "image/png"
-      trixId: attachment.id
-
-    figure.dataset[key] = value for key, value of data
     figure.setAttribute("contenteditable", false)
     figure.appendChild(image)
     figure.appendChild(caption)
@@ -221,15 +220,13 @@ removeWhitespace = (string) ->
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment attachment--preview attachment--png attachment-container"
+      className: "attachment attachment--preview attachment--png"
+      editable: false
+      data:
+        trixAttachment: JSON.stringify(attachment)
+        trixContentType: "image/png"
+        trixId: attachment.id
 
-    data =
-      trixAttachment: JSON.stringify(attachment)
-      trixContentType: "image/png"
-      trixId: attachment.id
-
-    figure.dataset[key] = value for key, value of data
-    figure.setAttribute("contenteditable", false)
     figure.appendChild(image)
     figure.appendChild(caption)
 
@@ -258,16 +255,14 @@ removeWhitespace = (string) ->
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment attachment--preview attachment--png attachment-container"
+      className: "attachment attachment--preview attachment--png"
+      editable: false
+      data:
+        trixAttachment: JSON.stringify(attachment)
+        trixContentType: "image/png"
+        trixId: attachment.id
+        trixAttributes: JSON.stringify(textAttrs)
 
-    data =
-      trixAttachment: JSON.stringify(attachment)
-      trixContentType: "image/png"
-      trixId: attachment.id
-      trixAttributes: JSON.stringify(textAttrs)
-
-    figure.dataset[key] = value for key, value of data
-    figure.setAttribute("contenteditable", false)
     figure.appendChild(image)
     figure.appendChild(caption)
 
@@ -282,21 +277,20 @@ removeWhitespace = (string) ->
     figure = Trix.makeElement
       tagName: "figure"
       className: "attachment attachment--file attachment--pdf"
-
-    data =
-      trixAttachment: JSON.stringify(attachment)
-      trixContentType: "application/pdf"
-      trixId: attachment.id
-
-    link = Trix.makeElement("a", href: attrs.href, tabindex: -1, class: "attachment-container")
-    link.dataset[key] = value for key, value of data
-    link.setAttribute("contenteditable", false)
-    link.appendChild(figure)
+      editable: false
+      data:
+        trixAttachment: JSON.stringify(attachment)
+        trixContentType: "application/pdf"
+        trixId: attachment.id
 
     caption = """<figcaption class="#{css.attachmentCaption}"><span class="#{css.attachmentName}">#{attrs.filename}</span> <span class="#{css.attachmentSize}">32.46 MB</span></figcaption>"""
     figure.innerHTML = caption
 
-    html: """<div>#{blockComment}#{cursorTargetLeft}#{link.outerHTML}#{cursorTargetRight}</div>"""
+    link = Trix.makeElement(tagName: "a", editable: false, attributes: href: attrs.href, tabindex: -1)
+    link.appendChild(node) for node in [figure.childNodes...]
+    figure.appendChild(link)
+
+    html: """<div>#{blockComment}#{cursorTargetLeft}#{figure.outerHTML}#{cursorTargetRight}</div>"""
     document: new Trix.Document [new Trix.Block text]
 
   "pending file attachment": do ->
@@ -307,16 +301,13 @@ removeWhitespace = (string) ->
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment attachment--file attachment--pdf attachment-container"
-
-    data =
-      trixAttachment: JSON.stringify(attachment)
-      trixContentType: "application/pdf"
-      trixId: attachment.id
-      trixSerialize: false
-
-    figure.dataset[key] = value for key, value of data
-    figure.setAttribute("contenteditable", false)
+      className: "attachment attachment--file attachment--pdf"
+      editable: false
+      data:
+        trixAttachment: JSON.stringify(attachment)
+        trixContentType: "application/pdf"
+        trixId: attachment.id
+        trixSerialize: false
 
     progress = Trix.makeElement
       tagName: "progress"
@@ -344,20 +335,17 @@ removeWhitespace = (string) ->
 
     figure = Trix.makeElement
       tagName: "figure"
-      className: "attachment attachment--content attachment-container"
+      className: "attachment attachment--content"
+      editable: false
+      data:
+        trixAttachment: JSON.stringify(attachment)
+        trixContentType: contentType
+        trixId: attachment.id
 
     figure.innerHTML = content
 
     caption = Trix.makeElement(tagName: "figcaption", className: css.attachmentCaption)
     figure.appendChild(caption)
-
-    data =
-      trixAttachment: JSON.stringify(attachment)
-      trixContentType: contentType
-      trixId: attachment.id
-
-    figure.dataset[key] = value for key, value of data
-    figure.setAttribute("contenteditable", false)
 
     html: """<div>#{blockComment}#{cursorTargetLeft}#{figure.outerHTML}#{cursorTargetRight}</div>"""
     document: new Trix.Document [new Trix.Block text]
