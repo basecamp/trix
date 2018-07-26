@@ -1,6 +1,10 @@
 Trix.registerElement "trix-inspector",
   defaultCSS: """
     %t {
+      display: block;
+    }
+
+    %t {
       position: fixed;
       background: #fff;
       border: 1px solid #444;
@@ -54,7 +58,7 @@ Trix.registerElement "trix-inspector",
     }
   """
 
-  attachedCallback: ->
+  connect: ->
     @editorElement = document.querySelector("trix-editor[trix-id='#{@dataset.trixId}']")
     @views = @createViews()
 
@@ -67,7 +71,7 @@ Trix.registerElement "trix-inspector",
     @resizeHandler = @reposition.bind(this)
     addEventListener("resize", @resizeHandler)
 
-  detachedCallback: ->
+  disconnect: ->
     removeEventListener("resize", @resizeHandler)
 
   createViews: ->
