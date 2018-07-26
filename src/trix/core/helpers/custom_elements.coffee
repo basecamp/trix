@@ -24,7 +24,7 @@ insertStyleElementForTagName = (tagName) ->
 rewriteFunctionsAsValues = (definition) ->
   object = {}
   for key, value of definition
-    object[key] = if typeof value is "function" then {value, writable: true} else value
+    object[key] = if typeof value is "function" then {value} else value
   object
 
 rewriteLifecycleCallbacks = do ->
@@ -40,14 +40,14 @@ rewriteLifecycleCallbacks = do ->
       {initialize, connect, disconnect} = extract(definition)
 
       # Call `initialize` once in `connectedCallback` if defined
-      if initialize or connect
+      if initialize
         original = connect
         connect = ->
-          @initialize?()
-          @initialize = null
+          unless @initialized
+            @initialized = true
+            initialize.call(this)
           original?.call(this)
 
-      definition.initialize = initialize if initialize
       definition.connectedCallback = connect if connect
       definition.disconnectedCallback = disconnect if disconnect
       definition
