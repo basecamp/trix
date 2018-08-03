@@ -135,6 +135,7 @@ class Trix.ToolbarController extends Trix.BasicObject
   setAttribute: (dialogElement) ->
     attributeName = getAttributeName(dialogElement)
     input = getInputForDialog(dialogElement, attributeName)
+    @cleanInputValue(input)
     if input.willValidate and not input.checkValidity()
       input.setAttribute("data-trix-validate", "")
       input.classList.add("trix-validate")
@@ -142,6 +143,17 @@ class Trix.ToolbarController extends Trix.BasicObject
     else
       @delegate?.toolbarDidUpdateAttribute(attributeName, input.value)
       @hideDialog()
+
+  cleanInputValue: (input) ->
+    if input.hasAttribute('data-trix-url-input')
+      input.value = input.value?.replace(/\s*(https?:\/\/)?(www\.)?/, (_, protocol, www) ->
+        if protocol # valid start of URL => just drop any leading whitespace
+          protocol + (www or '')
+        else if www # starts with www, must surely be a URL => prepend protocol
+          'https://www.'
+        else        # not sure if this is a URL => don't prepend protocol
+          ''
+      )
 
   removeAttribute: (dialogElement) ->
     attributeName = getAttributeName(dialogElement)
