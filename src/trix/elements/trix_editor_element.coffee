@@ -1,7 +1,7 @@
 #= require trix/elements/trix_toolbar_element
 #= require trix/controllers/editor_controller
 
-{makeElement, triggerEvent, handleEvent, handleEventOnce} = Trix
+{browser, makeElement, triggerEvent, handleEvent, handleEventOnce} = Trix
 
 {attachmentSelector} = Trix.AttachmentView
 
@@ -20,6 +20,10 @@ Trix.registerElement "trix-editor", do ->
     element.setAttribute("contenteditable", "")
     handleEventOnce("focus", onElement: element, withCallback: -> configureContentEditable(element))
 
+  addAccessibilityRole = (element) ->
+    return if element.hasAttribute("role")
+    element.setAttribute("role", "textbox")
+
   configureContentEditable = (element) ->
     disableObjectResizing(element)
     setDefaultParagraphSeparator(element)
@@ -37,11 +41,8 @@ Trix.registerElement "trix-editor", do ->
 
   # Style
 
-  # IE 11 activates resizing handles on editable elements that have "layout"
-  browserForcesObjectResizing = /Trident.*rv:11/.test(navigator.userAgent)
-
   cursorTargetStyles = do ->
-    if browserForcesObjectResizing
+    if browser.forcesObjectResizing
       display: "inline"
       width: "auto"
     else
@@ -49,9 +50,14 @@ Trix.registerElement "trix-editor", do ->
       width: "1px"
 
   defaultCSS: """
+    %t {
+      display: block;
+    }
+
     %t:empty:not(:focus)::before {
       content: attr(placeholder);
       color: graytext;
+      cursor: text;
     }
 
     %t a[contenteditable=false] {
@@ -154,10 +160,11 @@ Trix.registerElement "trix-editor", do ->
 
   # Element lifecycle
 
-  createdCallback: ->
+  initialize: ->
     makeEditable(this)
+    addAccessibilityRole(this)
 
-  attachedCallback: ->
+  connect: ->
     unless @hasAttribute("data-trix-internal")
       @editorController ?= new Trix.EditorController(editorElement: this, html: @defaultValue = @value)
       @editorController.registerSelectionManager()
@@ -165,7 +172,7 @@ Trix.registerElement "trix-editor", do ->
       autofocus(this)
       requestAnimationFrame => @notify("initialize")
 
-  detachedCallback: ->
+  disconnect: ->
     @editorController?.unregisterSelectionManager()
     @unregisterResetListener()
 

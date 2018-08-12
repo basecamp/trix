@@ -1,7 +1,7 @@
 @charset "UTF-8";
 /*
-Trix 0.11.1
-Copyright © 2017 Basecamp, LLC
+Trix 0.12.0
+Copyright © 2018 Basecamp, LLC
 http://trix-editor.org/*/
 trix-editor {
   border: 1px solid #bbb;
@@ -164,8 +164,10 @@ trix-editor [data-trix-cursor-target]::-moz-selection {
 trix-editor [data-trix-mutable=true]::selection,
 trix-editor [data-trix-cursor-target]::selection {
   background: none; }
-trix-editor .attachment:hover {
-  cursor: default; }
+trix-editor .attachment {
+  position: relative; }
+  trix-editor .attachment:hover {
+    cursor: default; }
 trix-editor .attachment--preview .attachment__caption:hover {
   cursor: text; }
 trix-editor .attachment__progress {
@@ -209,7 +211,6 @@ trix-editor .attachment__remove--icon {
   height: 1.8em;
   line-height: 1.8em;
   border-radius: 50%;
-  text-indent: -9999px;
   background-color: #fff;
   border: 2px solid highlight;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.25); }

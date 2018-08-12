@@ -1,4 +1,4 @@
-{after, assert, clickElement, defer, dragToCoordinates, moveCursor, pressKey, test, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
+{after, assert, clickElement, clickToolbarButton, createFile, defer, dragToCoordinates, moveCursor, pressKey, test, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
 
 testGroup "Attachments", template: "editor_with_image", ->
   test "moving an image by drag and drop", (expectDocument) ->
@@ -66,6 +66,24 @@ testGroup "Attachments", template: "editor_with_image", ->
                 assert.textAttributes [2, 3], caption: "my caption"
                 assert.locationRange index: 0, offset: 3
                 expectDocument "ab#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+
+  testGroup "File insertion", template: "editor_empty", ->
+    test "inserting a file in a formatted block", (expectDocument) ->
+      clickToolbarButton attribute: "bullet", ->
+        clickToolbarButton attribute: "bold", ->
+          getComposition().insertFile(createFile())
+          assert.blockAttributes([0, 1], ["bulletList", "bullet"])
+          assert.textAttributes([0, 1], bold: true)
+          expectDocument("#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n")
+
+    test "inserting a files in a formatted block", (expectDocument) ->
+      clickToolbarButton attribute: "quote", ->
+        clickToolbarButton attribute: "italic", ->
+          getComposition().insertFiles([createFile(), createFile()])
+          assert.blockAttributes([0, 2], ["quote"])
+          assert.textAttributes([0, 1], italic: true)
+          assert.textAttributes([1, 2], italic: true)
+          expectDocument("#{Trix.OBJECT_REPLACEMENT_CHARACTER}#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n")
 
 getFigure = ->
   findElement("figure")

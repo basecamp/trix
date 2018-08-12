@@ -4,19 +4,22 @@
 
 {handleEvent, makeElement, innerElementIsActive, objectsAreEqual, tagName} = Trix
 
+keyNames =
+  "8":  "backspace"
+  "9":  "tab"
+  "13": "return"
+  "27": "escape"
+  "37": "left"
+  "39": "right"
+  "46": "delete"
+  "68": "d"
+  "72": "h"
+  "79": "o"
+
 class Trix.InputController extends Trix.BasicObject
   pastedFileCount = 0
 
-  @keyNames:
-    "8":  "backspace"
-    "9":  "tab"
-    "13": "return"
-    "37": "left"
-    "39": "right"
-    "46": "delete"
-    "68": "d"
-    "72": "h"
-    "79": "o"
+  @keyNames: keyNames
 
   constructor: (@element) ->
     @resetInputSummary()
@@ -129,6 +132,7 @@ class Trix.InputController extends Trix.BasicObject
   events:
     keydown: (event) ->
       @resetInputSummary() unless @isComposing()
+      @inputSummary.didInput = true
 
       if keyName = @constructor.keyNames[event.keyCode]
         context = @keys
@@ -297,7 +301,11 @@ class Trix.InputController extends Trix.BasicObject
     compositionend: (event) ->
       @getCompositionInput().end(event.data)
 
+    beforeinput: (event) ->
+      @inputSummary.didInput = true
+
     input: (event) ->
+      @inputSummary.didInput = true
       event.stopPropagation()
 
   keys:
@@ -457,7 +465,7 @@ stringFromKeyEvent = (event) ->
     else if event.which isnt 0 and event.charCode isnt 0
       code = event.charCode
 
-    if code?
+    if code? and keyNames[code] isnt "escape"
       Trix.UTF16String.fromCodepoints([code]).toString()
 
 keyEventIsWebInspectorShortcut = (event) ->

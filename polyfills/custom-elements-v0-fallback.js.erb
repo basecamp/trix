@@ -1,0 +1,9 @@
+(function() {
+  var v1support = typeof window.customElements == "object"
+  var v0support = typeof document.registerElement == "function"
+  var supported = v1support || v0support
+
+  if (!supported) {
+    <%= depend_on_asset("./vendor/CustomElements").to_s.strip %>
+  }
+}).call(this);

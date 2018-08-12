@@ -25,6 +25,9 @@ require:
 plugins:
   sauce_labs:
     tunnel_timeout: 120
+    test_config:
+      idle_timeout: 900
+      max_duration: 900
     browsers:
       Google Chrome:
         os: Mac, Windows
@@ -36,10 +39,10 @@ plugins:
         platform: Mac
         version: -3
       Microsoft Edge:
-        version: -2
+        version: 16
       Internet Explorer:
         version: 11
       iPhone:
-        version: [10.0, 9.3, 8.4]
+        version: [11.2, 10.3, 9.3]
       Android:
         version: [6.0, 5.1, 4.4]

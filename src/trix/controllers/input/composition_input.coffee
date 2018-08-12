@@ -1,3 +1,5 @@
+{browser} = Trix
+
 class Trix.CompositionInput extends Trix.BasicObject
   constructor: (@inputController) ->
     {@responder, @delegate, @inputSummary} = @inputController
@@ -6,35 +8,41 @@ class Trix.CompositionInput extends Trix.BasicObject
   start: (data) ->
     @data.start = data
 
-    if @inputSummary.eventName is "keypress" and @inputSummary.textAdded
-      @responder?.deleteInDirection("left")
+    if @isSignificant()
+      if @inputSummary.eventName is "keypress" and @inputSummary.textAdded
+        @responder?.deleteInDirection("left")
 
-    unless @selectionIsExpanded()
-      @insertPlaceholder()
-      @requestRender()
+      unless @selectionIsExpanded()
+        @insertPlaceholder()
+        @requestRender()
 
-    @range = @responder?.getSelectedRange()
+      @range = @responder?.getSelectedRange()
 
   update: (data) ->
     @data.update = data
 
-    if range = @selectPlaceholder()
-      @forgetPlaceholder()
-      @range = range
+    if @isSignificant()
+      if range = @selectPlaceholder()
+        @forgetPlaceholder()
+        @range = range
 
   end: (data) ->
     @data.end = data
-    @forgetPlaceholder()
 
-    if @canApplyToDocument()
-      @setInputSummary(preferDocument: true)
-      @delegate?.inputControllerWillPerformTyping()
-      @responder?.setSelectedRange(@range)
-      @responder?.insertString(@data.end)
-      @responder?.setSelectedRange(@range[0] + @data.end.length)
+    if @isSignificant()
+      @forgetPlaceholder()
 
-    else if @data.start? or @data.update?
-      @requestReparse()
+      if @canApplyToDocument()
+        @setInputSummary(preferDocument: true, didInput: false)
+        @delegate?.inputControllerWillPerformTyping()
+        @responder?.setSelectedRange(@range)
+        @responder?.insertString(@data.end)
+        @responder?.setSelectedRange(@range[0] + @data.end.length)
+
+      else if @data.start? or @data.update?
+        @requestReparse()
+        @inputController.reset()
+    else
       @inputController.reset()
 
   getEndData: ->
@@ -42,6 +50,12 @@ class Trix.CompositionInput extends Trix.BasicObject
 
   isEnded: ->
     @getEndData()?
+
+  isSignificant: ->
+    if browser.composesExistingText
+      @inputSummary.didInput
+    else
+      true
 
   # Private
 

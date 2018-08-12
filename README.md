@@ -17,7 +17,7 @@ Trix sidesteps these inconsistencies by treating `contenteditable` as an I/O dev
 
 <details><summary>Trix supports all evergreen, self-updating desktop and mobile browsers.</summary><img src="https://s3.amazonaws.com/trix-depot/test-status-images/trix.svg"></details>
 
-Trix is built with emerging web standards, notably [Custom Elements](http://www.w3.org/TR/custom-elements/), [Mutation Observer](https://dom.spec.whatwg.org/#mutation-observers), and [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Eventually we expect all browsers to implement these standards. In the meantime, Trix includes [polyfills](https://en.wikipedia.org/wiki/Polyfill) for missing functionality.
+Trix is built with emerging web standards, notably [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements), [Mutation Observer](https://dom.spec.whatwg.org/#mutation-observers), and [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Eventually we expect all browsers to implement these standards. In the meantime, Trix includes [polyfills](https://en.wikipedia.org/wiki/Polyfill) for missing functionality.
 
 # Getting Started
 
@@ -348,7 +348,7 @@ The `<trix-editor>` element emits several events which you can use to observe an
 
 Trix is open-source software, freely distributable under the terms of an [MIT-style license](LICENSE). The [source code is hosted on GitHub](https://github.com/basecamp/trix).
 
-We welcome contributions in the form of bug reports, pull requests, or thoughtful discussions in the [GitHub issue tracker](https://github.com/basecamp/trix/issues). Please see the [Code of Conduct](CONDUCT.md) for our pledge to contributors.
+We welcome contributions in the form of bug reports, pull requests, or thoughtful discussions in the [GitHub issue tracker](https://github.com/basecamp/trix/issues). Please see the [Code of Conduct](CODE_OF_CONDUCT.md) for our pledge to contributors.
 
 Trix was created by [Javan Makhmali](https://twitter.com/javan) and [Sam Stephenson](https://twitter.com/sstephenson), with development sponsored by [Basecamp](https://basecamp.com/).
 
@@ -379,4 +379,4 @@ Only commit changes to Trix’s source (everything except the compiled files in 
 
 ---
 
-© 2017 Basecamp, LLC.
+© 2018 Basecamp, LLC.

@@ -69,4 +69,10 @@ helpers.extend
         else
           callback(done)
 
+  testIf: (condition, args...) ->
+    if condition
+      helpers.test(args...)
+    else
+      helpers.skip(args...)
+
   skip: QUnit.skip

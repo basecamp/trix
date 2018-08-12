@@ -238,6 +238,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   isBlockElement: (element) ->
     return unless element?.nodeType is Node.ELEMENT_NODE
+    return if nodeIsAttachmentElement(element)
     return if findClosestElementFromNode(element, matchingSelector: "td", untilNode: @containerElement)
     tagName(element) in getBlockTagNames() or window.getComputedStyle(element).display is "block"
 

@@ -113,15 +113,17 @@ class Trix.Composition extends Trix.BasicObject
       @insertAttachment(attachment)
 
   insertFiles: (files) ->
+    attributes = @getCurrentTextAttributes()
     text = new Trix.Text
     for file in files when @delegate?.compositionShouldAcceptFile(file)
       attachment = Trix.Attachment.attachmentForFile(file)
-      attachmentText = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
+      attachmentText = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
       text = text.appendText(attachmentText)
     @insertText(text)
 
   insertAttachment: (attachment) ->
-    text = Trix.Text.textForAttachmentWithAttributes(attachment, @currentAttributes)
+    attributes = @getCurrentTextAttributes()
+    text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
     @insertText(text)
 
   deleteInDirection: (direction) ->
