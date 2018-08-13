@@ -50,6 +50,10 @@ Trix.registerElement "trix-editor", do ->
       width: "1px"
 
   defaultCSS: """
+    %t {
+      display: block;
+    }
+
     %t:empty:not(:focus)::before {
       content: attr(placeholder);
       color: graytext;
@@ -156,11 +160,11 @@ Trix.registerElement "trix-editor", do ->
 
   # Element lifecycle
 
-  createdCallback: ->
+  initialize: ->
     makeEditable(this)
     addAccessibilityRole(this)
 
-  attachedCallback: ->
+  connect: ->
     unless @hasAttribute("data-trix-internal")
       @editorController ?= new Trix.EditorController(editorElement: this, html: @defaultValue = @value)
       @editorController.registerSelectionManager()
@@ -168,7 +172,7 @@ Trix.registerElement "trix-editor", do ->
       autofocus(this)
       requestAnimationFrame => @notify("initialize")
 
-  detachedCallback: ->
+  disconnect: ->
     @editorController?.unregisterSelectionManager()
     @unregisterResetListener()
 
