@@ -25,13 +25,18 @@ testGroup "Attachments", template: "editor_with_image", ->
             textarea = findElement("textarea")
             assert.ok textarea
             textarea.focus()
-            textarea.value = "my caption"
+            textarea.value = "my"
             triggerEvent(textarea, "input")
-            pressKey "return", ->
-              assert.notOk findElement("textarea")
-              assert.textAttributes [2, 3], caption: "my caption"
-              assert.locationRange index: 0, offset: 3
-              expectDocument "ab#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+            defer ->
+              textarea.value = ""
+              defer ->
+                textarea.value = "my caption"
+                triggerEvent(textarea, "input")
+                pressKey "return", ->
+                  assert.notOk findElement("textarea")
+                  assert.textAttributes [2, 3], caption: "my caption"
+                  assert.locationRange index: 0, offset: 3
+                  expectDocument "ab#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
 
   test "editing an attachment caption with no filename", (done) ->
     after 20, ->
