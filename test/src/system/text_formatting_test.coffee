@@ -40,22 +40,23 @@ testGroup "Text formatting", template: "editor_empty", ->
           assert.textAttributes([1, 19], href: "http://example.com")
           expectDocument("ahttp://example.com\n")
 
-  test "inserting a www link without protocol", (expectDocument) ->
-    typeCharacters "a", ->
-      clickToolbarButton attribute: "href", ->
-        assert.ok isToolbarDialogActive(attribute: "href")
-        typeInToolbarDialog "www.example.com", attribute: "href", ->
-          assert.textAttributes([0, 1], {})
-          assert.textAttributes([1, 20], {href: "https://www.example.com"})
-          expectDocument("ahttps://www.example.com\n")
-
-  test "inserting a non-www link without protocol", (expectDocument) ->
+  test "inserting a link without protocol", (expectDocument) ->
     typeCharacters "a", ->
       clickToolbarButton attribute: "href", ->
         assert.ok isToolbarDialogActive(attribute: "href")
         typeInToolbarDialog "example.com", attribute: "href", ->
           assert.textAttributes([0, 1], {})
-          expectDocument("a\n")
+          assert.textAttributes([1, 20], {href: "https://example.com"})
+          expectDocument("ahttps://example.com\n")
+
+  test "inserting a link with non-http protocol", (expectDocument) ->
+    typeCharacters "a", ->
+      clickToolbarButton attribute: "href", ->
+        assert.ok isToolbarDialogActive(attribute: "href")
+        typeInToolbarDialog "ftp://example.com", attribute: "href", ->
+          assert.textAttributes([0, 1], {})
+          assert.textAttributes([1, 18], {href: "ftp://example.com"})
+          expectDocument("aftp://example.com\n")
 
   test "editing a link", (done) ->
     insertString("a")

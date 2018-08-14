@@ -146,13 +146,11 @@ class Trix.ToolbarController extends Trix.BasicObject
 
   cleanInputValue: (input) ->
     if input.hasAttribute('data-trix-url-input')
-      input.value = input.value?.replace(/\s*(https?:\/\/)?(www\.)?/, (_, protocol, www) ->
+      input.value = input.value?.replace(/\s*(\S+:\/\/)?/, (_, protocol) ->
         if protocol # valid start of URL => just drop any leading whitespace
-          protocol + (www or '')
-        else if www # starts with www, must surely be a URL => prepend protocol
-          'https://www.'
-        else        # not sure if this is a URL => don't prepend protocol
-          ''
+          protocol
+        else        # no protocol found => prepend 'https://'
+          'https://'
       )
 
   removeAttribute: (dialogElement) ->
