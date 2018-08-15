@@ -17,7 +17,7 @@ Trix.config.lang =
   strike: "Strikethrough"
   undo: "Undo"
   unlink: "Unlink"
-  urlAccessibility: "URL"
+  url: "URL"
   urlPlaceholder: "Enter a URL…"
   GB: "GB"
   KB: "KB"
