@@ -61,6 +61,11 @@ testGroup "Trix.HTMLParser", ->
     expectedHTML = """<div><!--block-->abc</div>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
+  test "parses incorrectly nested list html", ->
+    html = """<ul><li>a</li><ul><li>b</li><ol><li>1</li><li>2</li><ol></ul></ul>"""
+    expectedHTML = """<ul><li><!--block-->a<ul><li><!--block-->b<ol><li><!--block-->1</li><li><!--block-->2</li></ol></li></ul></li></ul>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
   test "ignores whitespace between block elements", ->
     html = """<div>a</div> \n <div>b</div>     <article>c</article>  \n\n <section>d</section> """
     expectedHTML = """<div><!--block-->a</div><div><!--block-->b</div><div><!--block-->c</div><div><!--block-->d</div>"""
