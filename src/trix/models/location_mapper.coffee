@@ -61,7 +61,6 @@ class Trix.LocationMapper
         offset = findChildIndexOfNode(node.parentNode)
       else
         container = node
-        string = node.textContent
         offset = location.offset - nodeOffset
     else
       container = node.parentNode
