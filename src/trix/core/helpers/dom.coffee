@@ -156,10 +156,14 @@ Trix.extend
   nodeIsCommentNode: (node) ->
     node?.nodeType is Node.COMMENT_NODE
 
-  nodeIsCursorTarget: (node) ->
+  nodeIsCursorTarget: (node, {name} = {}) ->
     return unless node
     if Trix.nodeIsTextNode(node)
-      node.data is Trix.ZERO_WIDTH_SPACE
+      if node.data is Trix.ZERO_WIDTH_SPACE
+        if name
+          node.parentNode.dataset.trixCursorTarget is name
+        else
+          true
     else
       Trix.nodeIsCursorTarget(node.firstChild)
 

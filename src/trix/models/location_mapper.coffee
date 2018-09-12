@@ -59,6 +59,7 @@ class Trix.LocationMapper
       if nodeLength(node) is 0
         container = node.parentNode.parentNode
         offset = findChildIndexOfNode(node.parentNode)
+        offset++ if nodeIsCursorTarget(node, name: "right")
       else
         container = node
         offset = location.offset - nodeOffset
