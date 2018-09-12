@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, createImageAttachment, insertAttachments, moveCursor, pressKey, test, testGroup, typeCharacters} = Trix.TestHelpers
+{assert, clickToolbarButton, createImageAttachment, defer, insertAttachments, moveCursor, pressKey, test, testGroup, typeCharacters} = Trix.TestHelpers
 
 ORC = Trix.OBJECT_REPLACEMENT_CHARACTER
 
@@ -29,9 +29,10 @@ testGroup "Attachment galleries", template: "editor_empty", ->
     clickToolbarButton attribute: "quote", ->
       typeCharacters "abc", ->
         insertAttachments(createImageAttachments(2))
-        assert.blockAttributes([0, 3], ["quote"])
-        assert.blockAttributes([4, 6], ["attachmentGallery"])
-        expectDocument "abc\n#{ORC}#{ORC}\n"
+        defer ->
+          assert.blockAttributes([0, 3], ["quote"])
+          assert.blockAttributes([4, 6], ["attachmentGallery"])
+          expectDocument "abc\n#{ORC}#{ORC}\n"
 
 createImageAttachments = (num = 1) ->
   attachments = []
