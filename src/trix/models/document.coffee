@@ -235,6 +235,8 @@ class Trix.Document extends Trix.Object
     if config.listAttribute
       document = document.removeLastListAttributeAtRange(range, exceptAttributeName: attributeName)
       {document, range} = document.convertLineBreaksToBlockBreaksInRange(range)
+    else if config.exclusive
+      document = document.removeBlockAttributesAtRange(range)
     else if config.terminal
       document = document.removeLastTerminalAttributeAtRange(range)
     else
@@ -259,6 +261,14 @@ class Trix.Document extends Trix.Object
       return unless getBlockConfig(lastAttributeName).terminal
       blockList = blockList.editObjectAtIndex index, ->
         block.removeAttribute(lastAttributeName)
+    new @constructor blockList
+
+  removeBlockAttributesAtRange: (range) ->
+    blockList = @blockList
+    @eachBlockAtRange range, (block, textRange, index) ->
+      if block.hasAttributes()
+        blockList = blockList.editObjectAtIndex index, ->
+          block.copyWithoutAttributes()
     new @constructor blockList
 
   expandRangeToLineBreaksAndSplitBlocks: (range) ->

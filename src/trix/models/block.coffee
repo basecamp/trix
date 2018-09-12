@@ -30,6 +30,9 @@ class Trix.Block extends Trix.Object
   copyWithAttributes: (attributes) ->
     new @constructor @text, attributes
 
+  copyWithoutAttributes: ->
+    @copyWithAttributes(null)
+
   copyUsingObjectMap: (objectMap) ->
     if mappedText = objectMap.find(@text)
       @copyWithText(mappedText)

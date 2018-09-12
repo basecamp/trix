@@ -33,12 +33,14 @@ class Filter
       unless @document.getCharacterAtPosition(range[1]) is "\n"
         @document = @document.insertBlockBreakAtRange(range[1])
         @moveSelectedRangeForward() if range[1] < @selectedRange[1]
+        range[1]++
         offset++
 
       unless range[0] is 0
         unless @document.getCharacterAtPosition(range[0] - 1) is "\n"
           @document = @document.insertBlockBreakAtRange(range[0])
           @moveSelectedRangeForward() if range[0] < @selectedRange[0]
+          range[0]++
           offset++
 
       @document = @document.applyBlockAttributeAtRange(BLOCK_ATTRIBUTE_NAME, true, range)
