@@ -3,8 +3,8 @@
 #= require trix/observers/selection_change_observer
 
 {getDOMSelection, getDOMRange, setDOMRange, elementContainsNode,
- nodeIsCursorTarget, nodeIsTextNode, innerElementIsActive, handleEvent,
- normalizeRange, rangeIsCollapsed, rangesAreEqual} = Trix
+ nodeIsCursorTarget, innerElementIsActive, handleEvent, normalizeRange,
+ rangeIsCollapsed, rangesAreEqual} = Trix
 
 class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
@@ -107,21 +107,9 @@ class Trix.SelectionManager extends Trix.BasicObject
       @findContainerAndOffsetFromLocation(locationRange[1]) ? rangeStart
 
     if rangeStart? and rangeEnd?
-      [startContainer, startOffset] = rangeStart
-      [endContainer, endOffset] = rangeEnd
-
       domRange = document.createRange()
-
-      if nodeIsCursorTarget(startContainer) and nodeIsTextNode(startContainer)
-        domRange.setStartBefore(startContainer.parentNode)
-      else
-        domRange.setStart(startContainer, startOffset)
-
-      if nodeIsCursorTarget(endContainer) and nodeIsTextNode(endContainer)
-        domRange.setEndBefore(endContainer.parentNode)
-      else
-        domRange.setEnd(endContainer, endOffset)
-
+      domRange.setStart(rangeStart...)
+      domRange.setEnd(rangeEnd...)
       domRange
 
   createLocationRangeFromDOMRange: (domRange, options) ->
