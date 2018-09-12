@@ -56,10 +56,12 @@ class Trix.LocationMapper
     return unless node
 
     if nodeIsTextNode(node)
-      container = node
-      string = node.textContent
-      offset = location.offset - nodeOffset
-
+      if nodeLength(node) is 0
+        container = node.parentNode.parentNode
+        offset = findChildIndexOfNode(node.parentNode)
+      else
+        container = node
+        offset = location.offset - nodeOffset
     else
       container = node.parentNode
 

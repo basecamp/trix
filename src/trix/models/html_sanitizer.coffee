@@ -14,6 +14,7 @@ class Trix.HTMLSanitizer extends Trix.BasicObject
 
   sanitize: ->
     @sanitizeElements()
+    @normalizeListElementNesting()
 
   getHTML: ->
     @body.innerHTML
@@ -47,6 +48,13 @@ class Trix.HTMLSanitizer extends Trix.BasicObject
       unless name in @allowedAttributes or name.indexOf("data-trix") is 0
         element.removeAttribute(name)
     element
+
+  normalizeListElementNesting: ->
+    for listElement in [@body.querySelectorAll("ul,ol")...]
+      if previousElement = listElement.previousElementSibling
+        if tagName(previousElement) is "li"
+          previousElement.appendChild(listElement)
+    @body
 
   elementIsRemovable = (element) ->
     return unless element?.nodeType is Node.ELEMENT_NODE
