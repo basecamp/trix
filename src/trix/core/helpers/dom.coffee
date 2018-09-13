@@ -134,7 +134,7 @@ Trix.extend
     element
 
   getBlockTagNames: ->
-    Trix.blockTagNames ?= (value.tagName for key, value of Trix.config.blockAttributes)
+    Trix.blockTagNames ?= (tagName for key, {tagName} of Trix.config.blockAttributes when tagName)
 
   nodeIsBlockContainer: (node) ->
     Trix.nodeIsBlockStartComment(node?.firstChild)
@@ -156,10 +156,14 @@ Trix.extend
   nodeIsCommentNode: (node) ->
     node?.nodeType is Node.COMMENT_NODE
 
-  nodeIsCursorTarget: (node) ->
+  nodeIsCursorTarget: (node, {name} = {}) ->
     return unless node
     if Trix.nodeIsTextNode(node)
-      node.data is Trix.ZERO_WIDTH_SPACE
+      if node.data is Trix.ZERO_WIDTH_SPACE
+        if name
+          node.parentNode.dataset.trixCursorTarget is name
+        else
+          true
     else
       Trix.nodeIsCursorTarget(node.firstChild)
 

@@ -5,14 +5,24 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   @fromJSON: (pieceJSON) ->
     new this Trix.Attachment.fromJSON(pieceJSON.attachment), pieceJSON.attributes
 
+  @permittedAttributes: ["caption", "presentation"]
+
   constructor: (@attachment) ->
     super
     @length = 1
     @ensureAttachmentExclusivelyHasAttribute("href")
+    @removeProhibitedAttributes() unless @attachment.hasContent()
 
   ensureAttachmentExclusivelyHasAttribute: (attribute) ->
-    if @hasAttribute(attribute) and @attachment.hasAttribute(attribute)
+    if @hasAttribute(attribute)
+      unless @attachment.hasAttribute(attribute)
+        @attachment.setAttributes(@attributes.slice(attribute))
       @attributes = @attributes.remove(attribute)
+
+  removeProhibitedAttributes: ->
+    attributes = @attributes.slice(@constructor.permittedAttributes)
+    unless attributes.isEqualTo(@attributes)
+      @attributes = attributes
 
   getValue: ->
     @attachment
@@ -22,12 +32,6 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
 
   getCaption: ->
     @attributes.get("caption") ? ""
-
-  getAttributesForAttachment: ->
-    @attributes.slice(["caption"])
-
-  canBeGrouped: ->
-    super and not @attachment.hasAttribute("href")
 
   isEqualTo: (piece) ->
     super and @attachment.id is piece?.attachment?.id

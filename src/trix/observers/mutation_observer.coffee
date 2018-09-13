@@ -38,6 +38,7 @@ class Trix.MutationObserver extends Trix.BasicObject
     mutation for mutation in mutations when @mutationIsSignificant(mutation)
 
   mutationIsSignificant: (mutation) ->
+    return false if @nodeIsMutable(mutation.target)
     return true for node in @nodesModifiedByMutation(mutation) when @nodeIsSignificant(node)
     false
 

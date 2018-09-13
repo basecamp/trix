@@ -77,9 +77,9 @@ class Trix.EditorController extends Trix.Controller
     managedAttachment = @attachmentManager.unmanageAttachment(attachment)
     @notifyEditorElement("attachment-remove", attachment: managedAttachment)
 
-  compositionDidStartEditingAttachment: (attachment) ->
+  compositionDidStartEditingAttachment: (attachment, options) ->
     @attachmentLocationRange = @composition.document.getLocationRangeOfAttachment(attachment)
-    @compositionController.installAttachmentEditorForAttachment(attachment)
+    @compositionController.installAttachmentEditorForAttachment(attachment, options)
     @selectionManager.setLocationRange(@attachmentLocationRange)
 
   compositionDidStopEditingAttachment: (attachment) ->
@@ -132,6 +132,7 @@ class Trix.EditorController extends Trix.Controller
       @compositionRevisionWhenLocationRangeRequested = null
 
     unless @renderedCompositionRevision is @composition.revision
+      @runEditorFilters()
       @composition.updateCurrentAttributes()
       @notifyEditorElement("render")
 
@@ -144,8 +145,8 @@ class Trix.EditorController extends Trix.Controller
   compositionControllerDidBlur: ->
     @notifyEditorElement("blur")
 
-  compositionControllerDidSelectAttachment: (attachment) ->
-    @composition.editAttachment(attachment)
+  compositionControllerDidSelectAttachment: (attachment, options) ->
+    @composition.editAttachment(attachment, options)
 
   compositionControllerDidRequestDeselectingAttachment: (attachment) ->
     locationRange = @attachmentLocationRange ? @composition.document.getLocationRangeOfAttachment(attachment)
@@ -328,6 +329,24 @@ class Trix.EditorController extends Trix.Controller
       @currentActions = currentActions
       @toolbarController.updateActions(@currentActions)
       @notifyEditorElement("actions-change", actions: @currentActions)
+
+  # Editor filters
+
+  runEditorFilters: ->
+    snapshot = @composition.getSnapshot()
+
+    for filter in @editor.filters
+      {document, selectedRange} = snapshot
+      snapshot = filter.call(@editor, snapshot) ? {}
+      snapshot.document ?= document
+      snapshot.selectedRange ?= selectedRange
+
+    unless snapshotsAreEqual(snapshot, @composition.getSnapshot())
+      @composition.loadSnapshot(snapshot)
+
+  snapshotsAreEqual = (a, b) ->
+    rangesAreEqual(a.selectedRange, b.selectedRange) and
+      a.document.isEqualTo(b.document)
 
   # Private
 

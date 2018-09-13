@@ -1,11 +1,11 @@
 #= require trix/controllers/attachment_editor_controller
 
-{handleEvent, makeElement, tagName} = Trix
+{defer, escapeHTML, handleEvent, makeElement, tagName} = Trix
 {keyNames} = Trix.InputController
 {lang, css} = Trix.config
 
 class Trix.AttachmentEditorController extends Trix.BasicObject
-  constructor: (@attachmentPiece, @element, @container) ->
+  constructor: (@attachmentPiece, @element, @container, @options = {}) ->
     {@attachment} = @attachmentPiece
     @element = @element.firstChild if tagName(@element) is "a"
     @install()
@@ -18,8 +18,9 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
 
   install: ->
     @makeElementMutable()
-    @makeCaptionEditable() if @attachment.isPreviewable()
-    @addRemoveButton()
+    @addToolbar()
+    if @attachment.isPreviewable()
+      @installCaptionEditor()
 
   uninstall: ->
     @savePendingCaption()
@@ -43,67 +44,84 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     do: => @element.dataset.trixMutable = true
     undo: => delete @element.dataset.trixMutable
 
-  makeCaptionEditable: undoable ->
-    figcaption = @element.querySelector("figcaption")
-    handler = null
-    do: => handler = handleEvent("click", onElement: figcaption, withCallback: @didClickCaption, inPhase: "capturing")
-    undo: => handler.destroy()
+  addToolbar: undoable ->
+    element = makeElement(tagName: "div", className: css.attachmentToolbar, data: trixMutable: true)
+    element.innerHTML = """
+      <div class="trix-button-row">
+        <span class="trix-button-group trix-button-group--actions">
+          <button type="button" data-trix-action="remove" class="trix-button trix-button--remove" title="#{lang.remove}">#{lang.remove}</button>
+        </span>
+      </div>
+    """
 
-  addRemoveButton: undoable ->
-    removeButton = makeElement
-      tagName: "button"
-      textContent: lang.remove
-      className: "#{css.attachmentRemove} #{css.attachmentRemove}--icon"
-      attributes: type: "button", title: lang.remove
-      data: trixMutable: true
-    handleEvent("click", onElement: removeButton, withCallback: @didClickRemoveButton)
-    do: => @element.appendChild(removeButton)
-    undo: => @element.removeChild(removeButton)
+    if @attachment.isPreviewable()
+      name = escapeHTML(@attachment.getFilename())
+      size = escapeHTML(@attachment.getFormattedFilesize())
 
-  editCaption: undoable ->
+      element.innerHTML += """
+        <div class="#{css.attachmentMetadataContainer}">
+          <span class="#{css.attachmentMetadata}">
+            <span class="#{css.attachmentName}" title="#{name}">#{name}</span>
+            <span class="#{css.attachmentSize}">#{size}</span>
+          </span>
+        </div>
+      """
+
+    handleEvent("click", onElement: element, withCallback: @didClickToolbar)
+    handleEvent("click", onElement: element, matchingSelector: "[data-trix-action]", withCallback: @didClickActionButton)
+
+    do: => @element.appendChild(element)
+    undo: => @element.removeChild(element)
+
+  installCaptionEditor: undoable ->
     textarea = makeElement
       tagName: "textarea"
       className: css.attachmentCaptionEditor
       attributes: placeholder: lang.captionPlaceholder
+      data: trixMutable: true
     textarea.value = @attachmentPiece.getCaption()
 
     textareaClone = textarea.cloneNode()
     textareaClone.classList.add("trix-autoresize-clone")
+    textareaClone.tabIndex = -1
 
     autoresize = ->
       textareaClone.value = textarea.value
       textarea.style.height = textareaClone.scrollHeight + "px"
 
-    handleEvent("keydown", onElement: textarea, withCallback: @didKeyDownCaption)
+    handleEvent("input", onElement: textarea, withCallback: autoresize)
     handleEvent("input", onElement: textarea, withCallback: @didInputCaption)
+    handleEvent("keydown", onElement: textarea, withCallback: @didKeyDownCaption)
     handleEvent("change", onElement: textarea, withCallback: @didChangeCaption)
     handleEvent("blur", onElement: textarea, withCallback: @didBlurCaption)
 
     figcaption = @element.querySelector("figcaption")
     editingFigcaption = figcaption.cloneNode()
 
-    do: ->
+    do: =>
       figcaption.style.display = "none"
       editingFigcaption.appendChild(textarea)
       editingFigcaption.appendChild(textareaClone)
       editingFigcaption.classList.add("#{css.attachmentCaption}--editing")
       figcaption.parentElement.insertBefore(editingFigcaption, figcaption)
       autoresize()
-      textarea.focus()
+      if @options.editCaption
+        defer -> textarea.focus()
     undo: ->
       editingFigcaption.parentNode.removeChild(editingFigcaption)
       figcaption.style.display = null
 
   # Event handlers
 
-  didClickRemoveButton: (event) =>
+  didClickToolbar: (event) =>
     event.preventDefault()
     event.stopPropagation()
-    @delegate?.attachmentEditorDidRequestRemovalOfAttachment(@attachment)
 
-  didClickCaption: (event) =>
-    event.preventDefault()
-    @editCaption()
+  didClickActionButton: (event) =>
+    action = event.target.getAttribute("data-trix-action")
+    switch action
+      when "remove"
+        @delegate?.attachmentEditorDidRequestRemovalOfAttachment(@attachment)
 
   didKeyDownCaption: (event) =>
     if keyNames[event.keyCode] is "return"

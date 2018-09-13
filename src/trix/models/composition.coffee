@@ -108,22 +108,31 @@ class Trix.Composition extends Trix.BasicObject
     @setSelection(selectedRange)
 
   insertFile: (file) ->
-    if @delegate?.compositionShouldAcceptFile(file)
-      attachment = Trix.Attachment.attachmentForFile(file)
-      @insertAttachment(attachment)
+    @insertFiles([file])
 
   insertFiles: (files) ->
-    attributes = @getCurrentTextAttributes()
-    text = new Trix.Text
+    attachments = []
     for file in files when @delegate?.compositionShouldAcceptFile(file)
       attachment = Trix.Attachment.attachmentForFile(file)
-      attachmentText = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
-      text = text.appendText(attachmentText)
-    @insertText(text)
+      attachments.push(attachment)
+    @insertAttachments(attachments)
 
   insertAttachment: (attachment) ->
-    attributes = @getCurrentTextAttributes()
-    text = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
+    @insertAttachments([attachment])
+
+  insertAttachments: (attachments) ->
+    text = new Trix.Text
+
+    for attachment in attachments
+      type = attachment.getType()
+      presentation = Trix.config.attachments[type]?.presentation
+
+      attributes = @getCurrentTextAttributes()
+      attributes.presentation = presentation if presentation
+
+      attachmentText = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
+      text = text.appendText(attachmentText)
+
     @insertText(text)
 
   deleteInDirection: (direction) ->
@@ -211,11 +220,10 @@ class Trix.Composition extends Trix.BasicObject
       @canSetCurrentTextAttribute(attributeName)
 
   canSetCurrentTextAttribute: (attributeName) ->
-    switch attributeName
-      when "href"
-        not @selectionContainsAttachmentWithAttribute(attributeName)
-      else
-        true
+    return unless document = @getSelectedDocument()
+    for attachment in document.getAttachments()
+      return false unless attachment.hasContent()
+    true
 
   canSetCurrentBlockAttribute: (attributeName) ->
     return unless block = @getBlock()
@@ -400,12 +408,6 @@ class Trix.Composition extends Trix.BasicObject
     range = @document.getRangeOfCommonAttributeAtPosition(attributeName, position)
     @setSelectedRange(range)
 
-  selectionContainsAttachmentWithAttribute: (attributeName) ->
-    if selectedRange = @getSelectedRange()
-      for attachment in @document.getDocumentAtRange(selectedRange).getAttachments()
-        return true if attachment.hasAttribute(attributeName)
-      false
-
   selectionIsInCursorTarget: ->
     @editingAttachment or @positionIsCursorTarget(@getPosition())
 
@@ -450,19 +452,16 @@ class Trix.Composition extends Trix.BasicObject
 
   # Attachment editing
 
-  editAttachment: (attachment) ->
+  editAttachment: (attachment, options) ->
     return if attachment is @editingAttachment
     @stopEditingAttachment()
     @editingAttachment = attachment
-    @delegate?.compositionDidStartEditingAttachment?(@editingAttachment)
+    @delegate?.compositionDidStartEditingAttachment?(@editingAttachment, options)
 
   stopEditingAttachment: ->
     return unless @editingAttachment
     @delegate?.compositionDidStopEditingAttachment?(@editingAttachment)
     @editingAttachment = null
-
-  canEditAttachmentCaption: ->
-    @editingAttachment?.isPreviewable()
 
   updateAttributesForAttachment: (attributes, attachment) ->
     @setDocument(@document.updateAttributesForAttachment(attributes, attachment))

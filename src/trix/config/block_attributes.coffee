@@ -35,3 +35,9 @@ Trix.config.blockAttributes = attributes =
     nestable: true
     test: (element) ->
       Trix.tagName(element.parentNode) is attributes[@listAttribute].tagName
+  attachmentGallery:
+    tagName: "div"
+    exclusive: true
+    terminal: true
+    parse: false
+    group: false

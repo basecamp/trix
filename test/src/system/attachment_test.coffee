@@ -13,7 +13,7 @@ testGroup "Attachments", template: "editor_with_image", ->
   test "removing an image", (expectDocument) ->
     after 20, ->
       clickElement getFigure(), ->
-        closeButton = getFigure().querySelector(".#{Trix.config.css.attachmentRemove}")
+        closeButton = getFigure().querySelector("[data-trix-action=remove]")
         clickElement closeButton, ->
           expectDocument "ab\n"
 
@@ -25,13 +25,18 @@ testGroup "Attachments", template: "editor_with_image", ->
             textarea = findElement("textarea")
             assert.ok textarea
             textarea.focus()
-            textarea.value = "my caption"
+            textarea.value = "my"
             triggerEvent(textarea, "input")
-            pressKey "return", ->
-              assert.notOk findElement("textarea")
-              assert.textAttributes [2, 3], caption: "my caption"
-              assert.locationRange index: 0, offset: 3
-              expectDocument "ab#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+            defer ->
+              textarea.value = ""
+              defer ->
+                textarea.value = "my caption"
+                triggerEvent(textarea, "input")
+                pressKey "return", ->
+                  assert.notOk findElement("textarea")
+                  assert.textAttributes [2, 3], caption: "my caption"
+                  assert.locationRange index: 0, offset: 3
+                  expectDocument "ab#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
 
   test "editing an attachment caption with no filename", (done) ->
     after 20, ->
@@ -73,7 +78,7 @@ testGroup "Attachments", template: "editor_with_image", ->
         clickToolbarButton attribute: "bold", ->
           getComposition().insertFile(createFile())
           assert.blockAttributes([0, 1], ["bulletList", "bullet"])
-          assert.textAttributes([0, 1], bold: true)
+          assert.textAttributes([0, 1], {})
           expectDocument("#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n")
 
     test "inserting a files in a formatted block", (expectDocument) ->
@@ -81,8 +86,8 @@ testGroup "Attachments", template: "editor_with_image", ->
         clickToolbarButton attribute: "italic", ->
           getComposition().insertFiles([createFile(), createFile()])
           assert.blockAttributes([0, 2], ["quote"])
-          assert.textAttributes([0, 1], italic: true)
-          assert.textAttributes([1, 2], italic: true)
+          assert.textAttributes([0, 1], {})
+          assert.textAttributes([1, 2], {})
           expectDocument("#{Trix.OBJECT_REPLACEMENT_CHARACTER}#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n")
 
 getFigure = ->

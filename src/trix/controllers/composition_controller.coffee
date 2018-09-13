@@ -1,7 +1,7 @@
 #= require trix/controllers/attachment_editor_controller
 #= require trix/views/document_view
 
-{handleEvent, innerElementIsActive, defer}  = Trix
+{findClosestElementFromNode, handleEvent, innerElementIsActive, defer}  = Trix
 
 {attachmentSelector} = Trix.AttachmentView
 
@@ -34,7 +34,8 @@ class Trix.CompositionController extends Trix.BasicObject
 
   didClickAttachment: (event, target) =>
     attachment = @findAttachmentForElement(target)
-    @delegate?.compositionControllerDidSelectAttachment?(attachment)
+    editCaption = findClosestElementFromNode(event.target, matchingSelector: "figcaption")?
+    @delegate?.compositionControllerDidSelectAttachment?(attachment, {editCaption})
 
   getSerializableElement: ->
     if @isEditingAttachment()
@@ -79,19 +80,16 @@ class Trix.CompositionController extends Trix.BasicObject
   isEditingAttachment: ->
     @attachmentEditor?
 
-  installAttachmentEditorForAttachment: (attachment) ->
+  installAttachmentEditorForAttachment: (attachment, options) ->
     return if @attachmentEditor?.attachment is attachment
     return unless element = @documentView.findElementForObject(attachment)
     @uninstallAttachmentEditor()
     attachmentPiece = @composition.document.getAttachmentPieceForAttachment(attachment)
-    @attachmentEditor = new Trix.AttachmentEditorController attachmentPiece, element, @element
+    @attachmentEditor = new Trix.AttachmentEditorController attachmentPiece, element, @element, options
     @attachmentEditor.delegate = this
 
   uninstallAttachmentEditor: ->
     @attachmentEditor?.uninstall()
-
-  editAttachmentCaption: ->
-    @attachmentEditor?.editCaption()
 
   # Attachment controller delegate
 

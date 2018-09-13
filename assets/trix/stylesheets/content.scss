@@ -44,22 +44,22 @@
     height: auto;
   }
 
-  a[data-trix-attachment] {
-    color: inherit;
-    text-decoration: none;
-
-    &:hover,
-    &:visited:hover {
-      color: inherit;
-    }
-  }
-
   .attachment {
     display: inline-block;
     position: relative;
     max-width: 100%;
     margin: 0;
     padding: 0;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover,
+      &:visited:hover {
+        color: inherit;
+      }
+    }
   }
 
   .attachment__caption {
@@ -91,5 +91,27 @@
     padding: 0.4em 1em;
     border: 1px solid #bbb;
     border-radius: 5px;
+  }
+
+  .attachment-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    margin: 0;
+    padding: 0;
+
+    .attachment {
+      flex: 1 0 33%;
+      padding: 0 0.5em;
+      max-width: 33%;
+    }
+
+    &.attachment-gallery--2,
+    &.attachment-gallery--4 {
+      .attachment {
+        flex-basis: 50%;
+        max-width: 50%;
+      }
+    }
   }
 }
