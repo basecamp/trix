@@ -1,26 +1,35 @@
 @import "./icons";
+@import "./selection";
 
 trix-editor {
-  [data-trix-mutable=true] {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-
-    img {
-      box-shadow: 0 0 0 2px highlight;
-    }
-
-    &.attachment.attachment--file {
-      box-shadow: 0 0 0 2px highlight;
-      border-color: transparent;
-    }
+  [data-trix-mutable],
+  [data-trix-cursor-target] {
+    @extend %invisible-selection;
   }
 
-  [data-trix-mutable=true],
-  [data-trix-cursor-target] {
-    &::-moz-selection { background: none; }
-    &::selection { background: none; }
+  [data-trix-mutable] {
+    * {
+      @extend %invisible-selection;
+    }
+
+    &:not(.attachment__caption-editor) {
+      @extend %disable-selection;
+    }
+
+    &.attachment__caption-editor:focus {
+      @extend %visible-selection;
+    }
+
+    &.attachment {
+      &.attachment--file {
+        box-shadow: 0 0 0 2px highlight;
+        border-color: transparent;
+      }
+
+      img {
+        box-shadow: 0 0 0 2px highlight;
+      }
+    }
   }
 
   .attachment {

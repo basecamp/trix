@@ -1,0 +1,16 @@
+%disable-selection {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+%invisible-selection {
+  &::-moz-selection { background: none; }
+  &::selection { background: none; }
+}
+
+%visible-selection {
+  &::-moz-selection { background: highlight; }
+  &::selection { background: highlight; }
+}
