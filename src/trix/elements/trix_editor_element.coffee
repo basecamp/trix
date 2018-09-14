@@ -167,8 +167,9 @@ Trix.registerElement "trix-editor", do ->
   connect: ->
     unless @hasAttribute("data-trix-internal")
       unless @editorController
+        triggerEvent("trix-before-initialize", onElement: this)
         @editorController = new Trix.EditorController(editorElement: this, html: @defaultValue = @value)
-        requestAnimationFrame => @notify("initialize")
+        requestAnimationFrame => triggerEvent("trix-initialize", onElement: this)
       @editorController.registerSelectionManager()
       @registerResetListener()
       autofocus(this)

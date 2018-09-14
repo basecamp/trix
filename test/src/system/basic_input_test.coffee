@@ -86,14 +86,3 @@ testGroup "Basic input", template: "editor_empty", ->
         defer ->
           assert.locationRange index: 0, offset: 2
           expectDocument "aób\n"
-
-  test "respecting canceled input events", (expectDocument) ->
-    cancel = (event) -> event.preventDefault()
-
-    typeCharacters "a", ->
-      document.addEventListener("keydown", cancel, true)
-      pressKey "backspace", ->
-        pressKey "return", ->
-          document.removeEventListener("keydown", cancel, true)
-          typeCharacters "b", ->
-            expectDocument "ab\n"
