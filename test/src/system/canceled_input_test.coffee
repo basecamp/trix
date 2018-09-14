@@ -15,9 +15,9 @@ cancelingAtTarget = false
 
 cancel = (event) ->
   switch event.eventPhase
-    when Event.CAPTURING_PHASE
+    when Event::CAPTURING_PHASE
       event.preventDefault() if cancelingInCapturingPhase
-    when Event.AT_TARGET
+    when Event::AT_TARGET
       event.preventDefault() if cancelingAtTarget
 
 testGroup "Canceled input", testOptions, ->
