@@ -1,6 +1,23 @@
 {after, assert, clickElement, clickToolbarButton, createFile, defer, insertImageAttachment, moveCursor, pasteContent, skip, test, testIf, testGroup, triggerEvent, typeCharacters, typeInToolbarDialog} = Trix.TestHelpers
 
 testGroup "Custom element API", template: "editor_empty", ->
+  test "element triggers trix-initialize on first connect", (done) ->
+    container = document.getElementById("trix-container")
+    container.innerHTML = ""
+
+    initializeEventCount = 0
+    element = document.createElement("trix-editor")
+    element.addEventListener "trix-initialize", -> initializeEventCount++
+
+    container.appendChild(element)
+    requestAnimationFrame ->
+      container.removeChild(element)
+      requestAnimationFrame ->
+        container.appendChild(element)
+        after 60, ->
+          assert.equal initializeEventCount, 1
+          done()
+
   test "files are accepted by default", ->
     getComposition().insertFile(createFile())
     assert.equal getComposition().getAttachments().length, 1

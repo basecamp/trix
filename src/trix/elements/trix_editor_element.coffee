@@ -166,11 +166,12 @@ Trix.registerElement "trix-editor", do ->
 
   connect: ->
     unless @hasAttribute("data-trix-internal")
-      @editorController ?= new Trix.EditorController(editorElement: this, html: @defaultValue = @value)
+      unless @editorController
+        @editorController = new Trix.EditorController(editorElement: this, html: @defaultValue = @value)
+        requestAnimationFrame => @notify("initialize")
       @editorController.registerSelectionManager()
       @registerResetListener()
       autofocus(this)
-      requestAnimationFrame => @notify("initialize")
 
   disconnect: ->
     @editorController?.unregisterSelectionManager()
