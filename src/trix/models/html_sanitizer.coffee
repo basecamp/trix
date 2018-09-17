@@ -40,7 +40,7 @@ class Trix.HTMLSanitizer extends Trix.BasicObject
           nodesToRemove.push(node)
 
     for node in nodesToRemove
-      node.parentNode.removeChild(node)
+      Trix.removeNode(node)
     @body
 
   sanitizeElement: (element) ->

@@ -442,7 +442,7 @@ class Trix.InputController extends Trix.BasicObject
 
     requestAnimationFrame =>
       html = element.innerHTML
-      document.body.removeChild(element)
+      Trix.removeNode(element)
       @setSelectedRange(selectedRange)
       callback(html)
 

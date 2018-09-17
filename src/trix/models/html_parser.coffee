@@ -43,7 +43,7 @@ class Trix.HTMLParser extends Trix.BasicObject
       document.body.appendChild(@containerElement)
 
   removeHiddenContainer: ->
-    @containerElement.parentNode.removeChild(@containerElement)
+    Trix.removeNode(@containerElement)
 
   nodeFilter = (node) ->
     if tagName(node) is "style"

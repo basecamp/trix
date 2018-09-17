@@ -27,7 +27,7 @@ Trix.extend
 
       # Remove unserializable elements
       for el in element.querySelectorAll(unserializableElementSelector)
-        el.parentNode.removeChild(el)
+        Trix.removeNode(el)
 
       # Remove unserializable attributes
       for attribute in unserializableAttributeNames

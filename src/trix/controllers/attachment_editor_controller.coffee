@@ -71,7 +71,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     handleEvent("click", onElement: element, matchingSelector: "[data-trix-action]", withCallback: @didClickActionButton)
 
     do: => @element.appendChild(element)
-    undo: => @element.removeChild(element)
+    undo: => Trix.removeNode(element)
 
   installCaptionEditor: undoable ->
     textarea = makeElement
@@ -108,7 +108,7 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
       if @options.editCaption
         defer -> textarea.focus()
     undo: ->
-      editingFigcaption.parentNode.removeChild(editingFigcaption)
+      Trix.removeNode(editingFigcaption)
       figcaption.style.display = null
 
   # Event handlers

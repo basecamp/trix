@@ -87,6 +87,9 @@ Trix.extend
     childIndex++ while node = node.previousSibling
     childIndex
 
+  removeNode: (node) ->
+    node?.parentNode?.removeChild(node)
+
   walkTree: (tree, {onlyNodesOfType, usingFilter, expandEntityReferences} = {}) ->
     whatToShow = switch onlyNodesOfType
       when "element" then NodeFilter.SHOW_ELEMENT
