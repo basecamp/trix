@@ -467,8 +467,11 @@ stringFromKeyEvent = (event) ->
     if code? and keyNames[code] isnt "escape"
       Trix.UTF16String.fromCodepoints([code]).toString()
 
-keyEventIsKeyboardCommand = (event) ->
-  if /Mac|^iP/.test(navigator.platform) then event.metaKey else event.ctrlKey
+keyEventIsKeyboardCommand = do ->
+  if /Mac|^iP/.test(navigator.platform)
+    (event) -> event.metaKey
+  else
+    (event) -> event.ctrlKey
 
 pasteEventIsCrippledSafariHTMLPaste = (event) ->
   if paste = event.clipboardData
