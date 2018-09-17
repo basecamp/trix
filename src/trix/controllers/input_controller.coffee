@@ -156,9 +156,7 @@ class Trix.InputController extends Trix.BasicObject
 
     keypress: (event) ->
       return if @inputSummary.eventName?
-      return if (event.metaKey or event.ctrlKey) and not event.altKey
-      return if keyEventIsWebInspectorShortcut(event)
-      return if keyEventIsPasteAndMatchStyleShortcut(event)
+      return if keyEventIsKeyboardCommand(event)
 
       if string = stringFromKeyEvent(event)
         @delegate?.inputControllerWillPerformTyping()
@@ -469,14 +467,11 @@ stringFromKeyEvent = (event) ->
     if code? and keyNames[code] isnt "escape"
       Trix.UTF16String.fromCodepoints([code]).toString()
 
-keyEventIsWebInspectorShortcut = (event) ->
-  event.metaKey and event.altKey and not event.shiftKey and event.keyCode is 94
-
-keyEventIsPasteAndMatchStyleShortcut = (event) ->
-  event.metaKey and event.altKey and event.shiftKey and event.keyCode is 9674
-
-keyEventIsKeyboardCommand = (event) ->
-  if /Mac|^iP/.test(navigator.platform) then event.metaKey else event.ctrlKey
+keyEventIsKeyboardCommand = do ->
+  if /Mac|^iP/.test(navigator.platform)
+    (event) -> event.metaKey
+  else
+    (event) -> event.ctrlKey
 
 pasteEventIsCrippledSafariHTMLPaste = (event) ->
   if paste = event.clipboardData
