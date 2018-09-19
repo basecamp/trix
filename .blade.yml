@@ -30,14 +30,12 @@ plugins:
       max_duration: 900
     browsers:
       Google Chrome:
-        os: Mac, Windows
         version: -2
       Firefox:
-        os: Mac, Windows
         version: -2
       Safari:
         platform: Mac
-        version: -3
+        version: -2
       Microsoft Edge:
         version: -2
       Internet Explorer:
