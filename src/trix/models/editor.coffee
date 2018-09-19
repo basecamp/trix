@@ -114,20 +114,6 @@ class Trix.Editor
     if @canIncreaseNestingLevel()
       @composition.increaseNestingLevel()
 
-  # Indentation level (deprecated aliases to be removed in v1.0)
-
-  canDecreaseIndentationLevel: ->
-    @canDecreaseNestingLevel()
-
-  canIncreaseIndentationLevel: ->
-    @canIncreaseNestingLevel()
-
-  decreaseIndentationLevel: ->
-    @decreaseNestingLevel()
-
-  increaseIndentationLevel: ->
-    @increaseNestingLevel()
-
   # Undo/redo
 
   canRedo: ->
