@@ -156,7 +156,8 @@ class Trix.InputController extends Trix.BasicObject
 
     keypress: (event) ->
       return if @inputSummary.eventName?
-      return if keyEventIsKeyboardCommand(event)
+      return if event.metaKey
+      return if event.ctrlKey and not event.altKey
 
       if string = stringFromKeyEvent(event)
         @delegate?.inputControllerWillPerformTyping()
