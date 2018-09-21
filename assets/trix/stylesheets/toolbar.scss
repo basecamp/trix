@@ -24,6 +24,22 @@ trix-toolbar {
     border-top-color: #ccc;
     border-bottom-color: #888;
     border-radius: 3px;
+
+    &:not(:first-child) {
+      margin-left: 1.5vw;
+
+      @include phone {
+        margin-left: 0;
+      }
+    }
+  }
+
+  .trix-button-group-spacer {
+    flex-grow: 1;
+
+    @include phone {
+      display: none;
+    }
   }
 
   .trix-button {
