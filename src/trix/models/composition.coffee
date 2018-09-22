@@ -86,7 +86,7 @@ class Trix.Composition extends Trix.BasicObject
     else if insertion.shouldBreakFormattedBlock()
       @breakFormattedBlock(insertion)
     else
-      @insertString("\n")
+      @insertBlockBreak()
 
   insertHTML: (html) ->
     document = Trix.Document.fromHTML(html)
