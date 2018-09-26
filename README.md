@@ -341,6 +341,8 @@ element.editor.loadJSON(JSON.parse(localStorage["editorState"]))
 
 The `<trix-editor>` element emits several events which you can use to observe and respond to changes in editor state.
 
+* `trix-before-initialize` fires when the `<trix-editor>` element is attached to the DOM just before Trix installs its `editor` object.
+
 * `trix-initialize` fires when the `<trix-editor>` element is attached to the DOM and its `editor` object is ready for use.
 
 * `trix-change` fires whenever the editor’s contents have changed.
