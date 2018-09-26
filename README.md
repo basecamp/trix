@@ -212,6 +212,17 @@ var file = document.querySelector("input[type=file]").file
 element.editor.insertFile(file)
 ```
 
+### Inserting a Content Attachment
+
+Content attachments are self-contained units of HTML that behave like files in the editor. They can be moved or removed, but not edited directly, and are represented by a single character position in the document model.
+
+To insert HTML as an attachment, create a `Trix.Attachment` with a `content` attribute and call the `editor.insertAttachment` method. The HTML inside a content attachment is not subject to Trix’s document conversion rules and will be rendered as-is.
+
+```js
+var attachment = new Trix.Attachment({ content: '<span class="mention">@trix</span>' })
+element.editor.insertAttachment(attachment)
+```
+
 ### Inserting a Line Break
 
 To insert a line break, call the `editor.insertLineBreak` method, which is functionally equivalent to pressing the return key.
