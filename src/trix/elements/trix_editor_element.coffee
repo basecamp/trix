@@ -1,5 +1,6 @@
 #= require trix/elements/trix_toolbar_element
 #= require trix/controllers/editor_controller
+#= require trix/toolbar
 
 {browser, makeElement, triggerEvent, handleEvent, handleEventOnce} = Trix
 
