@@ -85,7 +85,7 @@ The default `trix.css` file includes styles for basic formatted content—includ
 
 Trix automatically accepts files dragged or pasted into an editor and inserts them as attachments in the document. Each attachment is considered _pending_ until you store it remotely and provide Trix with a permanent URL.
 
-To store attachments, listen for the `trix-attachment-add` event. Upload the attached files with XMLHttpRequest yourself and set the attachment’s URL and HREF attributes upon completion. See the [attachment example](https://trix-editor.org/js/attachments.js) for detailed information.
+To store attachments, listen for the `trix-attachment-add` event. Upload the attached files with XMLHttpRequest yourself and set the attachment’s `url` and (optionally) `href` attributes upon completion. (Note: the `href` attribute will be needed if you want your attachment to be accessible by link.) See the [attachment example](https://trix-editor.org/js/attachments.js) for detailed information.
 
 If you don’t want to accept dropped or pasted files, call `preventDefault()` on the `trix-file-accept` event, which Trix dispatches just before the `trix-attachment-add` event.
 
