@@ -33,12 +33,7 @@ class Trix.CompositionInput extends Trix.BasicObject
       @forgetPlaceholder()
 
       if @canApplyToDocument()
-        @setInputSummary(preferDocument: true, didInput: false)
-        @delegate?.inputControllerWillPerformTyping()
-        @responder?.setSelectedRange(@range)
-        @responder?.insertString(@data.end)
-        @responder?.setSelectedRange(@range[0] + @data.end.length)
-
+        @applyToDocument()
       else if @data.start? or @data.update?
         @requestReparse()
         @inputController.reset()
@@ -61,6 +56,20 @@ class Trix.CompositionInput extends Trix.BasicObject
 
   canApplyToDocument: ->
     @data.start?.length is 0 and @data.end?.length > 0 and @range?
+
+  applyToDocument: ->
+    @setInputSummary(preferDocument: true, didInput: false)
+    @delegate?.inputControllerWillPerformTyping()
+
+    if browser.composesExistingText
+      @responder?.setSelectedRange(@range)
+      @responder?.insertString(@data.end)
+      @responder?.setSelectedRange(@range[0] + @data.end.length)
+    else
+      @responder?.setSelection(@range)
+      @requestRender()
+      Trix.defer =>
+        @responder?.insertString(@data.end)
 
   @proxyMethod "inputController.setInputSummary"
   @proxyMethod "inputController.requestRender"
