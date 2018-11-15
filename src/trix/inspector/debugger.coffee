@@ -18,6 +18,9 @@ DEBUG_METHODS =
 
   "Trix.InputController": "
     elementDidMutate
+  "
+
+  "Trix.Level1InputController": "
     events.keydown
     events.keypress
     events.dragstart

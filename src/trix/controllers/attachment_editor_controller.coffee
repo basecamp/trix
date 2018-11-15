@@ -1,8 +1,7 @@
 #= require trix/controllers/attachment_editor_controller
 
 {defer, escapeHTML, handleEvent, makeElement, tagName} = Trix
-{keyNames} = Trix.InputController
-{lang, css} = Trix.config
+{lang, css, keyNames} = Trix.config
 
 class Trix.AttachmentEditorController extends Trix.BasicObject
   constructor: (@attachmentPiece, @element, @container, @options = {}) ->

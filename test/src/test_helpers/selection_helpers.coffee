@@ -4,7 +4,7 @@
 helpers = Trix.TestHelpers
 
 keyCodes = {}
-for code, name of Trix.InputController.keyNames
+for code, name of Trix.config.keyNames
   keyCodes[name] = code
 
 helpers.extend
