@@ -19,17 +19,111 @@ class Trix.Level2InputController extends Trix.AbstractInputController
       console.log("[#{event.type}] #{JSON.stringify(event.data)}")
       Promise.resolve().then(console.groupEnd)
 
-  insertText: (event) ->
-    textAdded = event.data
-    @delegate?.inputControllerWillPerformTyping()
-    @responder?.insertString(textAdded)
-    {textAdded}
+  # https://www.w3.org/TR/input-events-2/#interface-InputEvent-Attributes
+
+  deleteByComposition: (event) ->
+
+  deleteByCut: (event) ->
+
+  deleteByDrag: (event) ->
+
+  deleteCompositionText: (event) ->
+
+  deleteContent: (event) ->
 
   deleteContentBackward: (event) ->
     textDeleted = [event.getTargetRanges()...].map(staticRangeToRange).join("")
     @delegate?.inputControllerWillPerformTyping()
     @responder?.deleteInDirection("backward")
     {textDeleted}
+
+  deleteContentForward: (event) ->
+
+  deleteEntireSoftLine: (event) ->
+
+  deleteHardLineBackward: (event) ->
+
+  deleteHardLineForward: (event) ->
+
+  deleteSoftLineBackward: (event) ->
+
+  deleteSoftLineForward: (event) ->
+
+  deleteWordBackward: (event) ->
+
+  deleteWordForward: (event) ->
+
+  formatBackColor: (event) ->
+
+  formatBold: (event) ->
+
+  formatFontColor: (event) ->
+
+  formatFontName: (event) ->
+
+  formatIndent: (event) ->
+
+  formatItalic: (event) ->
+
+  formatJustifyCenter: (event) ->
+
+  formatJustifyFull: (event) ->
+
+  formatJustifyLeft: (event) ->
+
+  formatJustifyRight: (event) ->
+
+  formatOutdent: (event) ->
+
+  formatRemove: (event) ->
+
+  formatSetBlockTextDirection: (event) ->
+
+  formatSetInlineTextDirection: (event) ->
+
+  formatStrikeThrough: (event) ->
+
+  formatSubscript: (event) ->
+
+  formatSuperscript: (event) ->
+
+  formatUnderline: (event) ->
+
+  historyRedo: (event) ->
+
+  historyUndo: (event) ->
+
+  insertCompositionText: (event) ->
+
+  insertFromComposition: (event) ->
+
+  insertFromDrop: (event) ->
+
+  insertFromPaste: (event) ->
+
+  insertFromYank: (event) ->
+
+  insertHorizontalRule: (event) ->
+
+  insertLineBreak: (event) ->
+
+  insertLink: (event) ->
+
+  insertOrderedList: (event) ->
+
+  insertParagraph: (event) ->
+
+  insertReplacementText: (event) ->
+
+  insertText: (event) ->
+    textAdded = event.data
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.insertString(textAdded)
+    {textAdded}
+
+  insertTranspose: (event) ->
+
+  insertUnorderedList: (event) ->
 
 staticRangeToRange = (staticRange) ->
   range = document.createRange()
