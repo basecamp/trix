@@ -109,12 +109,22 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   insertHorizontalRule: (event) ->
 
   insertLineBreak: (event) ->
+    textAdded = "\n"
+    textDeleted = getTargetText(event)
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.insertString(textAdded)
+    {textAdded, textDeleted}
 
   insertLink: (event) ->
 
   insertOrderedList: (event) ->
 
   insertParagraph: (event) ->
+    textAdded = "\n"
+    textDeleted = getTargetText(event)
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.insertLineBreak()
+    {textAdded, textDeleted}
 
   insertReplacementText: (event) ->
 
