@@ -56,6 +56,7 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   formatBackColor: (event) ->
 
   formatBold: (event) ->
+    @toggleAttribute("bold")
 
   formatFontColor: (event) ->
 
@@ -64,6 +65,7 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   formatIndent: (event) ->
 
   formatItalic: (event) ->
+    @toggleAttribute("italic")
 
   formatJustifyCenter: (event) ->
 
@@ -82,6 +84,7 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   formatSetInlineTextDirection: (event) ->
 
   formatStrikeThrough: (event) ->
+    @toggleAttribute("strike")
 
   formatSubscript: (event) ->
 
@@ -124,6 +127,14 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   insertTranspose: (event) ->
 
   insertUnorderedList: (event) ->
+
+  # Private
+
+  toggleAttribute: (attributeName) ->
+    @delegate?.inputControllerWillPerformFormatting()
+    @responder?.toggleCurrentAttribute(attributeName)
+    @requestRender()
+    {}
 
 staticRangeToRange = (staticRange) ->
   range = document.createRange()

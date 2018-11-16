@@ -182,6 +182,9 @@ class Trix.EditorController extends Trix.Controller
   inputControllerWillPerformTyping: ->
     @recordTypingUndoEntry()
 
+  inputControllerWillPerformFormatting: ->
+    @recordFormattingUndoEntry()
+
   inputControllerWillCutText: ->
     @editor.recordUndoEntry("Cut")
 
