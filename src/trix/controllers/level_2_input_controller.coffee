@@ -67,6 +67,7 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   formatBackColor: (event) ->
 
   formatBold: (event) ->
+    event.preventDefault()
     @toggleAttribute("bold")
 
   formatFontColor: (event) ->
@@ -76,6 +77,7 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   formatIndent: (event) ->
 
   formatItalic: (event) ->
+    event.preventDefault()
     @toggleAttribute("italic")
 
   formatJustifyCenter: (event) ->
@@ -95,6 +97,7 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   formatSetInlineTextDirection: (event) ->
 
   formatStrikeThrough: (event) ->
+    event.preventDefault()
     @toggleAttribute("strike")
 
   formatSubscript: (event) ->
