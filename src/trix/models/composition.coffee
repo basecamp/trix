@@ -135,7 +135,7 @@ class Trix.Composition extends Trix.BasicObject
 
     @insertText(text)
 
-  deleteInDirection: (direction) ->
+  deleteInDirection: (direction, {length} = {}) ->
     locationRange = @getLocationRange()
     range = @getSelectedRange()
     selectionIsCollapsed = rangeIsCollapsed(range)
@@ -158,7 +158,7 @@ class Trix.Composition extends Trix.BasicObject
         return false if block.isEmpty()
 
     if selectionIsCollapsed
-      range = @getExpandedRangeInDirection(direction)
+      range = @getExpandedRangeInDirection(direction, {length})
       if direction is "backward"
         attachment = @getAttachmentAtRange(range)
 
@@ -363,14 +363,6 @@ class Trix.Composition extends Trix.BasicObject
     locationRange = @document.locationRangeFromRange(selectedRange)
     @getSelectionManager().setLocationRange(locationRange)
 
-  offsetSelectedRange: (offset) ->
-    [startPosition, endPosition] = @getSelectedRange()
-    if offset < 0
-      startPosition += offset
-    else
-      endPosition += offset
-    @setSelectedRange(normalizeRange([startPosition, endPosition]))
-
   getPosition: ->
     if locationRange = @getLocationRange()
       @document.positionFromLocation(locationRange[0])
@@ -378,12 +370,18 @@ class Trix.Composition extends Trix.BasicObject
   getLocationRange: (options) ->
     @getSelectionManager().getLocationRange(options) ? normalizeRange(index: 0, offset: 0)
 
-  getExpandedRangeInDirection: (direction) ->
+  getExpandedRangeInDirection: (direction, {length} = {}) ->
     [startPosition, endPosition] = @getSelectedRange()
     if direction is "backward"
-      startPosition = @translateUTF16PositionFromOffset(startPosition, -1)
+      if length
+        startPosition -= length
+      else
+        startPosition = @translateUTF16PositionFromOffset(startPosition, -1)
     else
-      endPosition = @translateUTF16PositionFromOffset(endPosition, 1)
+      if length
+        endPosition += length
+      else
+        endPosition = @translateUTF16PositionFromOffset(endPosition, 1)
     normalizeRange([startPosition, endPosition])
 
   moveCursorInDirection: (direction) ->
@@ -403,8 +401,8 @@ class Trix.Composition extends Trix.BasicObject
       if attachment = @getAttachmentAtRange(range)
         @editAttachment(attachment)
 
-  expandSelectionInDirection: (direction) ->
-    range = @getExpandedRangeInDirection(direction)
+  expandSelectionInDirection: (direction, {length} = {}) ->
+    range = @getExpandedRangeInDirection(direction, {length})
     @setSelectedRange(range)
 
   expandSelectionForEditing: ->

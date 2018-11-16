@@ -35,8 +35,7 @@ class Trix.Level2InputController extends Trix.AbstractInputController
     textDeleted = getTargetText(event)
     {length} = textDeleted
     @delegate?.inputControllerWillPerformTyping()
-    @responder?.offsetSelectedRange(-length) if length > 1
-    @responder?.deleteInDirection("backward")
+    @responder?.deleteInDirection("backward", {length})
     {textDeleted}
 
   deleteContentForward: (event) ->
@@ -53,16 +52,16 @@ class Trix.Level2InputController extends Trix.AbstractInputController
 
   deleteWordBackward: (event) ->
     textDeleted = getTargetText(event)
+    {length} = textDeleted
     @delegate?.inputControllerWillPerformTyping()
-    @responder?.offsetSelectedRange(-textDeleted.length)
-    @responder?.deleteInDirection("backward")
+    @responder?.deleteInDirection("backward", {length})
     {textDeleted}
 
   deleteWordForward: (event) ->
     textDeleted = getTargetText(event)
+    {length} = textDeleted
     @delegate?.inputControllerWillPerformTyping()
-    @responder?.offsetSelectedRange(textDeleted.length)
-    @responder?.deleteInDirection("forward")
+    @responder?.deleteInDirection("forward", {length})
     {textDeleted}
 
   formatBackColor: (event) ->
@@ -139,10 +138,11 @@ class Trix.Level2InputController extends Trix.AbstractInputController
     {textAdded, textDeleted}
 
   insertReplacementText: (event) ->
-    oldText = getTargetText(event)
     newText = event.dataTransfer.getData("text/plain")
+    oldText = getTargetText(event)
+    {length} = oldText
     @delegate?.inputControllerWillPerformTyping()
-    @responder?.offsetSelectedRange(-oldText.length)
+    @responder?.expandSelectionInDirection("backward", {length})
     @responder?.insertString(newText)
     {added, removed} = summarizeStringChange(oldText, newText)
     {textAdded: added, textDeleted: removed}
