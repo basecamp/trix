@@ -33,7 +33,9 @@ class Trix.Level2InputController extends Trix.AbstractInputController
 
   deleteContentBackward: (event) ->
     textDeleted = getTargetText(event)
+    {length} = textDeleted
     @delegate?.inputControllerWillPerformTyping()
+    @responder?.offsetSelectedRange(-length) if length > 1
     @responder?.deleteInDirection("backward")
     {textDeleted}
 
