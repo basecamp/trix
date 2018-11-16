@@ -1,6 +1,6 @@
 #= require trix/controllers/abstract_input_controller
 
-{objectsAreEqual, compact} = Trix
+{objectsAreEqual, compact, summarizeStringChange} = Trix
 
 class Trix.Level2InputController extends Trix.AbstractInputController
   mutationIsExpected: (mutationSummary) ->
@@ -127,6 +127,13 @@ class Trix.Level2InputController extends Trix.AbstractInputController
     {textAdded, textDeleted}
 
   insertReplacementText: (event) ->
+    oldText = getTargetText(event)
+    newText = event.dataTransfer.getData("text/plain")
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.offsetSelectedRange(-oldText.length)
+    @responder?.insertString(newText)
+    {added, removed} = summarizeStringChange(oldText, newText)
+    {textAdded: added, textDeleted: removed}
 
   insertText: (event) ->
     textAdded = event.data

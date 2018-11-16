@@ -363,6 +363,14 @@ class Trix.Composition extends Trix.BasicObject
     locationRange = @document.locationRangeFromRange(selectedRange)
     @getSelectionManager().setLocationRange(locationRange)
 
+  offsetSelectedRange: (offset) ->
+    [startPosition, endPosition] = @getSelectedRange()
+    if offset < 0
+      startPosition += offset
+    else
+      endPosition += offset
+    @setSelectedRange(normalizeRange([startPosition, endPosition]))
+
   getPosition: ->
     if locationRange = @getLocationRange()
       @document.positionFromLocation(locationRange[0])
