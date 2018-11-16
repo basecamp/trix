@@ -50,8 +50,18 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   deleteSoftLineForward: (event) ->
 
   deleteWordBackward: (event) ->
+    textDeleted = getTargetText(event)
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.offsetSelectedRange(-textDeleted.length)
+    @responder?.deleteInDirection("backward")
+    {textDeleted}
 
   deleteWordForward: (event) ->
+    textDeleted = getTargetText(event)
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.offsetSelectedRange(textDeleted.length)
+    @responder?.deleteInDirection("forward")
+    {textDeleted}
 
   formatBackColor: (event) ->
 
