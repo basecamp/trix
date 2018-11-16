@@ -9,3 +9,8 @@ Trix.extend
     for key, value of a
       return false unless value is b[key]
     true
+
+  compact: (object = {}) ->
+    result = {}
+    result[key] = value for key, value of object when value
+    result

@@ -1,6 +1,6 @@
 #= require trix/controllers/abstract_input_controller
 
-{objectsAreEqual} = Trix
+{objectsAreEqual, compact} = Trix
 
 class Trix.Level2InputController extends Trix.AbstractInputController
   mutationIsExpected: (mutationSummary) ->
@@ -11,7 +11,7 @@ class Trix.Level2InputController extends Trix.AbstractInputController
 
   events:
     beforeinput: (event) ->
-      @inputSummary = @[event.inputType]?(event)
+      @inputSummary = compact(@[event.inputType]?(event))
       console.group(event.inputType)
       console.log("[#{event.type}] #{JSON.stringify(event.data)} #{JSON.stringify({@inputSummary})}")
 
@@ -32,7 +32,7 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   deleteContent: (event) ->
 
   deleteContentBackward: (event) ->
-    textDeleted = [event.getTargetRanges()...].map(staticRangeToRange).join("")
+    textDeleted = getTargetText(event)
     @delegate?.inputControllerWillPerformTyping()
     @responder?.deleteInDirection("backward")
     {textDeleted}
@@ -120,9 +120,10 @@ class Trix.Level2InputController extends Trix.AbstractInputController
 
   insertText: (event) ->
     textAdded = event.data
+    textDeleted = getTargetText(event)
     @delegate?.inputControllerWillPerformTyping()
     @responder?.insertString(textAdded)
-    {textAdded}
+    {textAdded, textDeleted}
 
   insertTranspose: (event) ->
 
@@ -136,8 +137,20 @@ class Trix.Level2InputController extends Trix.AbstractInputController
     @requestRender()
     {}
 
+getTargetText = (event) ->
+  [event.getTargetRanges()...]
+    .map(staticRangeToRange)
+    .map(rangeToText)
+    .join("")
+
 staticRangeToRange = (staticRange) ->
   range = document.createRange()
   range.setStart(staticRange.startContainer, staticRange.startOffset)
   range.setEnd(staticRange.endContainer, staticRange.endOffset)
   range
+
+rangeToText = (range) ->
+  return "" if range.collapsed
+  element = document.createElement("div")
+  element.appendChild(range.cloneContents())
+  element.innerText
