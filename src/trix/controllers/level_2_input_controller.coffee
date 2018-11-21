@@ -3,6 +3,12 @@
 {objectsAreEqual, compact, summarizeStringChange} = Trix
 
 class Trix.Level2InputController extends Trix.AbstractInputController
+  elementDidMutate: (mutationSummary) ->
+    if @composition?
+      @delegate?.inputControllerDidAllowUnhandledInput?()
+    else
+      super
+
   mutationIsExpected: (mutationSummary) ->
     result = objectsAreEqual(mutationSummary, @inputSummary)
     console.log("[mutation] [#{if result then "expected" else "unexpected"}] #{JSON.stringify({mutationSummary})}")
@@ -19,6 +25,15 @@ class Trix.Level2InputController extends Trix.AbstractInputController
       console.log("[#{event.type}] #{JSON.stringify(event.data)}")
       Promise.resolve().then(console.groupEnd)
 
+    compositionend: (event) ->
+      if @composition?
+        string = @composition
+        delete @composition
+        @delegate?.inputControllerWillPerformTyping()
+        @responder?.expandSelectionInDirection("backward", length: string.length)
+        @responder?.insertString(string)
+        @requestRender()
+
   # https://www.w3.org/TR/input-events-2/#interface-InputEvent-Attributes
 
   deleteByComposition: (event) ->
@@ -28,6 +43,7 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   deleteByDrag: (event) ->
 
   deleteCompositionText: (event) ->
+    @composition = ""
 
   deleteContent: (event) ->
 
@@ -111,8 +127,11 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   historyUndo: (event) ->
 
   insertCompositionText: (event) ->
+    @composition = event.data
 
   insertFromComposition: (event) ->
+    delete @composition
+    @insertReplacementText(event)
 
   insertFromDrop: (event) ->
 
@@ -141,7 +160,7 @@ class Trix.Level2InputController extends Trix.AbstractInputController
     {textAdded, textDeleted}
 
   insertReplacementText: (event) ->
-    newText = event.dataTransfer.getData("text/plain")
+    newText = event.data ? event.dataTransfer.getData("text/plain")
     oldText = getTargetText(event)
     {length} = oldText
     @delegate?.inputControllerWillPerformTyping()
