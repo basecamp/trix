@@ -3,27 +3,22 @@
 {objectsAreEqual, compact, summarizeStringChange} = Trix
 
 class Trix.Level2InputController extends Trix.AbstractInputController
-  elementDidMutate: (mutationSummary) ->
-    if @composition?
-      @delegate?.inputControllerDidAllowUnhandledInput?()
-    else
-      super
-
   mutationIsExpected: (mutationSummary) ->
-    result = objectsAreEqual(mutationSummary, @inputSummary)
-    console.log("[mutation] [#{if result then "expected" else "unexpected"}] #{JSON.stringify({mutationSummary})}")
-    delete @inputSummary
-    result
+    expected = @handledInput
+    @handledInput = false
+    console.log("unexpected mutation! #{JSON.stringify(mutationSummary)}") unless expected
+    expected
+
+  mutationIsSignificant: ->
+    not @composition?
 
   events:
     beforeinput: (event) ->
-      @inputSummary = compact(@[event.inputType]?(event))
-      console.group(event.inputType)
-      console.log("[#{event.type}] #{JSON.stringify(event.data)} #{JSON.stringify({@inputSummary})}")
-
-    input: (event) ->
-      console.log("[#{event.type}] #{JSON.stringify(event.data)}")
-      Promise.resolve().then(console.groupEnd)
+      @handledInput = false
+      if @[event.inputType]
+        @handledInput = true
+        @[event.inputType](event)
+        @requestRender() if event.defaultPrevented
 
     compositionend: (event) ->
       if @composition?
@@ -36,95 +31,92 @@ class Trix.Level2InputController extends Trix.AbstractInputController
 
   # https://www.w3.org/TR/input-events-2/#interface-InputEvent-Attributes
 
-  deleteByComposition: (event) ->
-
-  deleteByCut: (event) ->
-
-  deleteByDrag: (event) ->
+  # deleteByComposition: (event) ->
+  #
+  # deleteByCut: (event) ->
+  #
+  # deleteByDrag: (event) ->
 
   deleteCompositionText: (event) ->
     @composition = ""
 
-  deleteContent: (event) ->
+  # deleteContent: (event) ->
 
   deleteContentBackward: (event) ->
-    textDeleted = getTargetText(event)
-    {length} = textDeleted
+    {length} = getTargetText(event)
     @delegate?.inputControllerWillPerformTyping()
     @responder?.deleteInDirection("backward", {length})
-    {textDeleted}
 
-  deleteContentForward: (event) ->
-
-  deleteEntireSoftLine: (event) ->
-
-  deleteHardLineBackward: (event) ->
-
-  deleteHardLineForward: (event) ->
-
-  deleteSoftLineBackward: (event) ->
-
-  deleteSoftLineForward: (event) ->
+  # deleteContentForward: (event) ->
+  #
+  # deleteEntireSoftLine: (event) ->
+  #
+  # deleteHardLineBackward: (event) ->
+  #
+  # deleteHardLineForward: (event) ->
+  #
+  # deleteSoftLineBackward: (event) ->
+  #
+  # deleteSoftLineForward: (event) ->
 
   deleteWordBackward: (event) ->
-    textDeleted = getTargetText(event)
-    {length} = textDeleted
+    {length} = getTargetText(event)
     @delegate?.inputControllerWillPerformTyping()
     @responder?.deleteInDirection("backward", {length})
-    {textDeleted}
 
   deleteWordForward: (event) ->
-    textDeleted = getTargetText(event)
-    {length} = textDeleted
+    {length} = getTargetText(event)
     @delegate?.inputControllerWillPerformTyping()
     @responder?.deleteInDirection("forward", {length})
-    {textDeleted}
 
-  formatBackColor: (event) ->
+  # formatBackColor: (event) ->
 
   formatBold: (event) ->
     event.preventDefault()
-    @toggleAttribute("bold")
+    @delegate?.inputControllerWillPerformFormatting()
+    @responder?.toggleCurrentAttribute("bold")
 
-  formatFontColor: (event) ->
-
-  formatFontName: (event) ->
-
-  formatIndent: (event) ->
+  # formatFontColor: (event) ->
+  #
+  # formatFontName: (event) ->
+  #
+  # formatIndent: (event) ->
 
   formatItalic: (event) ->
     event.preventDefault()
-    @toggleAttribute("italic")
+    @delegate?.inputControllerWillPerformFormatting()
+    @responder?.toggleCurrentAttribute("italic")
 
-  formatJustifyCenter: (event) ->
-
-  formatJustifyFull: (event) ->
-
-  formatJustifyLeft: (event) ->
-
-  formatJustifyRight: (event) ->
-
-  formatOutdent: (event) ->
-
-  formatRemove: (event) ->
-
-  formatSetBlockTextDirection: (event) ->
-
-  formatSetInlineTextDirection: (event) ->
+  # formatJustifyCenter: (event) ->
+  #
+  # formatJustifyFull: (event) ->
+  #
+  # formatJustifyLeft: (event) ->
+  #
+  # formatJustifyRight: (event) ->
+  #
+  # formatOutdent: (event) ->
+  #
+  # formatRemove: (event) ->
+  #
+  # formatSetBlockTextDirection: (event) ->
+  #
+  # formatSetInlineTextDirection: (event) ->
 
   formatStrikeThrough: (event) ->
     event.preventDefault()
-    @toggleAttribute("strike")
+    @delegate?.inputControllerWillPerformFormatting()
+    @responder?.toggleCurrentAttribute("strike")
 
-  formatSubscript: (event) ->
-
-  formatSuperscript: (event) ->
-
-  formatUnderline: (event) ->
-
-  historyRedo: (event) ->
-
-  historyUndo: (event) ->
+  # formatSubscript: (event) ->
+  #
+  # formatSuperscript: (event) ->
+  #
+  # formatUnderline: (event) ->
+  #
+  # historyRedo: (event) ->
+  #
+  # historyUndo: (event) ->
 
   insertCompositionText: (event) ->
     @composition = event.data
@@ -133,60 +125,41 @@ class Trix.Level2InputController extends Trix.AbstractInputController
     delete @composition
     @insertReplacementText(event)
 
-  insertFromDrop: (event) ->
-
-  insertFromPaste: (event) ->
-
-  insertFromYank: (event) ->
-
-  insertHorizontalRule: (event) ->
+  # insertFromDrop: (event) ->
+  #
+  # insertFromPaste: (event) ->
+  #
+  # insertFromYank: (event) ->
+  #
+  # insertHorizontalRule: (event) ->
 
   insertLineBreak: (event) ->
-    textAdded = "\n"
-    textDeleted = getTargetText(event)
     @delegate?.inputControllerWillPerformTyping()
-    @responder?.insertString(textAdded)
-    {textAdded, textDeleted}
+    @responder?.insertString("\n")
 
-  insertLink: (event) ->
-
-  insertOrderedList: (event) ->
+  # insertLink: (event) ->
+  #
+  # insertOrderedList: (event) ->
 
   insertParagraph: (event) ->
-    textAdded = "\n"
-    textDeleted = getTargetText(event)
     @delegate?.inputControllerWillPerformTyping()
     @responder?.insertLineBreak()
-    {textAdded, textDeleted}
 
   insertReplacementText: (event) ->
-    newText = event.data ? event.dataTransfer.getData("text/plain")
-    oldText = getTargetText(event)
-    {length} = oldText
+    string = event.data ? event.dataTransfer.getData("text/plain")
+    {length} = getTargetText(event)
     @delegate?.inputControllerWillPerformTyping()
     @responder?.expandSelectionInDirection("backward", {length})
-    @responder?.insertString(newText)
-    {added, removed} = summarizeStringChange(oldText, newText)
-    {textAdded: added, textDeleted: removed}
+    @responder?.insertString(string)
 
   insertText: (event) ->
-    textAdded = event.data
-    textDeleted = getTargetText(event)
+    string = event.data
     @delegate?.inputControllerWillPerformTyping()
-    @responder?.insertString(textAdded)
-    {textAdded, textDeleted}
+    @responder?.insertString(string)
 
-  insertTranspose: (event) ->
-
-  insertUnorderedList: (event) ->
-
-  # Private
-
-  toggleAttribute: (attributeName) ->
-    @delegate?.inputControllerWillPerformFormatting()
-    @responder?.toggleCurrentAttribute(attributeName)
-    @requestRender()
-    {}
+  # insertTranspose: (event) ->
+  #
+  # insertUnorderedList: (event) ->
 
 getTargetText = (event) ->
   [event.getTargetRanges()...]
