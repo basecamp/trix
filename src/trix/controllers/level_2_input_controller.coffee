@@ -27,32 +27,49 @@ class Trix.Level2InputController extends Trix.AbstractInputController
 
   # https://www.w3.org/TR/input-events-2/#interface-InputEvent-Attributes
 
-  # deleteByComposition: (event) ->
-  #
-  # deleteByCut: (event) ->
-  #
+  deleteByComposition: (event) ->
+    @responder?.deleteInDirection("backward")
+
+  deleteByCut: (event) ->
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.deleteInDirection("backward")
+
   # deleteByDrag: (event) ->
 
   deleteCompositionText: (event) ->
     @responder?.deleteInDirection("backward")
 
-  # deleteContent: (event) ->
+  deleteContent: (event) ->
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.deleteInDirection("backward")
 
   deleteContentBackward: (event) ->
     @delegate?.inputControllerWillPerformTyping()
     @responder?.deleteInDirection("backward")
 
-  # deleteContentForward: (event) ->
-  #
-  # deleteEntireSoftLine: (event) ->
-  #
-  # deleteHardLineBackward: (event) ->
-  #
-  # deleteHardLineForward: (event) ->
-  #
-  # deleteSoftLineBackward: (event) ->
-  #
-  # deleteSoftLineForward: (event) ->
+  deleteContentForward: (event) ->
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.deleteInDirection("forward")
+
+  deleteEntireSoftLine: (event) ->
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.deleteInDirection("forward")
+
+  deleteHardLineBackward: (event) ->
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.deleteInDirection("backward")
+
+  deleteHardLineForward: (event) ->
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.deleteInDirection("forward")
+
+  deleteSoftLineBackward: (event) ->
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.deleteInDirection("backward")
+
+  deleteSoftLineForward: (event) ->
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.deleteInDirection("forward")
 
   deleteWordBackward: (event) ->
     @delegate?.inputControllerWillPerformTyping()
