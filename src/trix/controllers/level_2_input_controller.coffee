@@ -1,7 +1,5 @@
 #= require trix/controllers/abstract_input_controller
 
-{objectsAreEqual, compact, summarizeStringChange} = Trix
-
 class Trix.Level2InputController extends Trix.AbstractInputController
   mutationIsExpected: (mutationSummary) ->
     expected = @handledInput
@@ -10,24 +8,22 @@ class Trix.Level2InputController extends Trix.AbstractInputController
     expected
 
   mutationIsSignificant: ->
-    not @composition?
+    not @composing
 
   events:
     beforeinput: (event) ->
       @handledInput = false
       if @[event.inputType]
         @handledInput = true
+        updateSelectionForEvent(event)
         @[event.inputType](event)
         @requestRender() if event.defaultPrevented
 
+    input: (event) ->
+      updateSelectionForEvent(event)
+
     compositionend: (event) ->
-      if @composition?
-        string = @composition
-        delete @composition
-        @delegate?.inputControllerWillPerformTyping()
-        @responder?.expandSelectionInDirection("backward", length: string.length)
-        @responder?.insertString(string)
-        @requestRender()
+      @composing = false
 
   # https://www.w3.org/TR/input-events-2/#interface-InputEvent-Attributes
 
@@ -38,14 +34,13 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   # deleteByDrag: (event) ->
 
   deleteCompositionText: (event) ->
-    @composition = ""
+    @responder?.deleteInDirection("backward")
 
   # deleteContent: (event) ->
 
   deleteContentBackward: (event) ->
-    {length} = getTargetText(event)
     @delegate?.inputControllerWillPerformTyping()
-    @responder?.deleteInDirection("backward", {length})
+    @responder?.deleteInDirection("backward")
 
   # deleteContentForward: (event) ->
   #
@@ -60,14 +55,12 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   # deleteSoftLineForward: (event) ->
 
   deleteWordBackward: (event) ->
-    {length} = getTargetText(event)
     @delegate?.inputControllerWillPerformTyping()
-    @responder?.deleteInDirection("backward", {length})
+    @responder?.deleteInDirection("backward")
 
   deleteWordForward: (event) ->
-    {length} = getTargetText(event)
     @delegate?.inputControllerWillPerformTyping()
-    @responder?.deleteInDirection("forward", {length})
+    @responder?.deleteInDirection("forward")
 
   # formatBackColor: (event) ->
 
@@ -119,11 +112,14 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   # historyUndo: (event) ->
 
   insertCompositionText: (event) ->
-    @composition = event.data
+    @composing = true
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.insertString(event.data)
 
   insertFromComposition: (event) ->
-    delete @composition
-    @insertReplacementText(event)
+    @composing = false
+    @delegate?.inputControllerWillPerformTyping()
+    @responder?.insertString(event.data)
 
   # insertFromDrop: (event) ->
   #
@@ -146,35 +142,30 @@ class Trix.Level2InputController extends Trix.AbstractInputController
     @responder?.insertLineBreak()
 
   insertReplacementText: (event) ->
-    string = event.data ? event.dataTransfer.getData("text/plain")
-    {length} = getTargetText(event)
     @delegate?.inputControllerWillPerformTyping()
-    @responder?.expandSelectionInDirection("backward", {length})
-    @responder?.insertString(string)
+    @responder?.insertString(event.dataTransfer.getData("text/plain"))
 
   insertText: (event) ->
-    string = event.data
     @delegate?.inputControllerWillPerformTyping()
-    @responder?.insertString(string)
+    @responder?.insertString(event.data)
 
   # insertTranspose: (event) ->
   #
   # insertUnorderedList: (event) ->
 
-getTargetText = (event) ->
-  [event.getTargetRanges()...]
-    .map(staticRangeToRange)
-    .map(rangeToText)
-    .join("")
+updateSelectionForEvent = (event) ->
+  if domRange = getDOMRangeForEvent(event)
+    Trix.setDOMRange(domRange)
+  else
+    Trix.selectionChangeObserver.reset()
+
+getDOMRangeForEvent = (event) ->
+  if targetRanges = event.getTargetRanges?()
+    if targetRanges.length
+      staticRangeToRange(targetRanges[0])
 
 staticRangeToRange = (staticRange) ->
   range = document.createRange()
   range.setStart(staticRange.startContainer, staticRange.startOffset)
   range.setEnd(staticRange.endContainer, staticRange.endOffset)
   range
-
-rangeToText = (range) ->
-  return "" if range.collapsed
-  element = document.createElement("div")
-  element.appendChild(range.cloneContents())
-  element.innerText
