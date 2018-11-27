@@ -205,6 +205,12 @@ class Trix.EditorController extends Trix.Controller
   inputControllerWillAttachFiles: ->
     @editor.recordUndoEntry("Drop Files")
 
+  inputControllerWillPerformUndo: ->
+    @editor.undo()
+
+  inputControllerWillPerformRedo: ->
+    @editor.redo()
+
   inputControllerDidReceiveKeyboardCommand: (keys) ->
     @toolbarController.applyKeyboardCommand(keys)
 

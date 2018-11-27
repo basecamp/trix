@@ -123,10 +123,12 @@ class Trix.Level2InputController extends Trix.AbstractInputController
   # formatSuperscript: (event) ->
   #
   # formatUnderline: (event) ->
-  #
-  # historyRedo: (event) ->
-  #
-  # historyUndo: (event) ->
+
+  historyRedo: (event) ->
+    @delegate?.inputControllerWillPerformRedo()
+
+  historyUndo: (event) ->
+    @delegate?.inputControllerWillPerformUndo()
 
   insertCompositionText: (event) ->
     @composing = true
