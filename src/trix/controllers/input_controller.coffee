@@ -1,5 +1,7 @@
 #= require trix/controllers/abstract_input_controller
 
+{dataTransferIsPlainText} = Trix
+
 class Trix.InputController extends Trix.AbstractInputController
   mutationIsExpected: (mutationSummary) ->
     expected = @handledInput
@@ -172,9 +174,32 @@ class Trix.InputController extends Trix.AbstractInputController
       @responder?.insertString(event.data)
 
     # insertFromDrop: (event) ->
-    #
-    # insertFromPaste: (event) ->
-    #
+
+    insertFromPaste: (event) ->
+      {dataTransfer} = event
+      paste = {dataTransfer}
+
+      if dataTransferIsPlainText(dataTransfer)
+        paste.type = "text/plain"
+        paste.string = clipboard.getData("text/plain")
+        @delegate?.inputControllerWillPaste(paste)
+        @responder?.insertString(paste.string)
+        @delegate?.inputControllerDidPaste(paste)
+
+      else if html = dataTransfer.getData("text/html")
+        paste.type = "text/html"
+        paste.html = html
+        @delegate?.inputControllerWillPaste(paste)
+        @responder?.insertHTML(paste.html)
+        @delegate?.inputControllerDidPaste(paste)
+
+      else if dataTransfer.files?.length
+        paste.type = "File"
+        paste.file = dataTransfer.files[0]
+        @delegate?.inputControllerWillPaste(paste)
+        @responder?.insertFile(paste.file)
+        @delegate?.inputControllerDidPaste(paste)
+
     # insertFromYank: (event) ->
     #
     # insertHorizontalRule: (event) ->

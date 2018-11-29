@@ -1,7 +1,9 @@
 #= require trix/controllers/abstract_input_controller
 #= require trix/operations/file_verification_operation
 
-{makeElement, objectsAreEqual, tagName, browser} = Trix
+{makeElement, objectsAreEqual, tagName, browser,
+ dataTransferIsWritable, dataTransferIsPlainText} = Trix
+
 {keyNames} = Trix.config
 
 class Trix.LegacyInputController extends Trix.AbstractInputController
@@ -435,28 +437,6 @@ pasteEventIsCrippledSafariHTMLPaste = (event) ->
       isExternalHTMLPaste = "com.apple.webarchive" in paste.types
       isExternalRichTextPaste = "com.apple.flat-rtfd" in paste.types
       isExternalHTMLPaste or isExternalRichTextPaste
-
-dataTransferIsPlainText = (dataTransfer) ->
-  text = dataTransfer.getData("text/plain")
-  html = dataTransfer.getData("text/html")
-
-  if text and html
-    element = makeElement("div")
-    element.innerHTML = html
-    if element.textContent is text
-      not element.querySelector(":not(meta)")
-  else
-    text?.length
-
-testTransferData = "application/x-trix-feature-detection": "test"
-
-dataTransferIsWritable = (dataTransfer) ->
-  return unless dataTransfer?.setData?
-  for key, value of testTransferData
-    return unless try
-      dataTransfer.setData(key, value)
-      dataTransfer.getData(key) is value
-  true
 
 class CompositionInput extends Trix.BasicObject
   constructor: (@inputController) ->
