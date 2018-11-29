@@ -23,7 +23,9 @@ class Trix.InputController extends Trix.AbstractInputController
       updateSelectionForEvent(event)
 
     compositionend: (event) ->
-      @composing = false
+      if @composing
+        @composing = false
+        @requestRender()
 
   inputTypes:
     deleteByComposition: (event) ->
