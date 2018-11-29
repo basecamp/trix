@@ -18,9 +18,13 @@ DEBUG_METHODS =
 
   "Trix.InputController": "
     elementDidMutate
+    events.beforeinput
+    events.input
+    events.compositionend
   "
 
-  "Trix.Level1InputController": "
+  "Trix.LegacyInputController": "
+    elementDidMutate
     events.keydown
     events.keypress
     events.dragstart

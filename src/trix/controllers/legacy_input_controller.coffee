@@ -4,8 +4,7 @@
 {makeElement, objectsAreEqual, tagName, browser} = Trix
 {keyNames} = Trix.config
 
-
-class Trix.Level1InputController extends Trix.AbstractInputController
+class Trix.LegacyInputController extends Trix.AbstractInputController
   pastedFileCount = 0
 
   constructor: ->

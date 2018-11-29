@@ -1,5 +1,6 @@
 #= require trix/controllers/controller
 #= require trix/controllers/input_controller
+#= require trix/controllers/legacy_input_controller
 #= require trix/controllers/composition_controller
 #= require trix/controllers/toolbar_controller
 #= require trix/models/composition
@@ -20,7 +21,10 @@ class Trix.EditorController extends Trix.Controller
     @attachmentManager = new Trix.AttachmentManager @composition.getAttachments()
     @attachmentManager.delegate = this
 
-    @inputController = new Trix.InputController @editorElement
+    @inputController = if Trix.browser.supportsInputEvents
+      new Trix.InputController @editorElement
+    else
+      new Trix.LegacyInputController @editorElement
     @inputController.delegate = this
     @inputController.responder = @composition
 
