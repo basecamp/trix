@@ -200,8 +200,10 @@ class Trix.InputController extends Trix.AbstractInputController
         @responder?.insertFile(paste.file)
         @delegate?.inputControllerDidPaste(paste)
 
-    # insertFromYank: (event) ->
-    #
+    insertFromYank: (event) ->
+      @delegate?.inputControllerWillPerformTyping()
+      @responder?.insertString(event.data)
+
     # insertHorizontalRule: (event) ->
 
     insertLineBreak: (event) ->
@@ -226,7 +228,10 @@ class Trix.InputController extends Trix.AbstractInputController
       @delegate?.inputControllerWillPerformTyping()
       @responder?.insertString(event.data)
 
-    # insertTranspose: (event) ->
+    insertTranspose: (event) ->
+      event.preventDefault()
+      @delegate?.inputControllerWillPerformTyping()
+      @responder?.insertString(event.data)
 
     insertUnorderedList: (event) ->
       event.preventDefault()
