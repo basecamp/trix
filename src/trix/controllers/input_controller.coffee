@@ -2,7 +2,7 @@
 
 {handleEvent, innerElementIsActive} = Trix
 
-class Trix.AbstractInputController extends Trix.BasicObject
+class Trix.InputController extends Trix.BasicObject
   constructor: (@element) ->
     @mutationObserver = new Trix.MutationObserver @element
     @mutationObserver.delegate = this

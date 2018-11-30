@@ -1,4 +1,4 @@
-#= require trix/controllers/abstract_input_controller
+#= require trix/controllers/input_controller
 #= require trix/operations/file_verification_operation
 
 {makeElement, objectsAreEqual, tagName, browser,
@@ -6,7 +6,7 @@
 
 {keyNames} = Trix.config
 
-class Trix.Level0InputController extends Trix.AbstractInputController
+class Trix.Level0InputController extends Trix.InputController
   pastedFileCount = 0
 
   constructor: ->

@@ -1,8 +1,8 @@
-#= require trix/controllers/abstract_input_controller
+#= require trix/controllers/input_controller
 
 {dataTransferIsPlainText} = Trix
 
-class Trix.Level2InputController extends Trix.AbstractInputController
+class Trix.Level2InputController extends Trix.InputController
   mutationIsExpected: (mutationSummary) ->
     expected = @handledInput
     @handledInput = false
