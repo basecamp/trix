@@ -2,7 +2,7 @@
 
 {dataTransferIsPlainText} = Trix
 
-class Trix.InputController extends Trix.AbstractInputController
+class Trix.Level2InputController extends Trix.AbstractInputController
   mutationIsExpected: (mutationSummary) ->
     expected = @handledInput
     @handledInput = false

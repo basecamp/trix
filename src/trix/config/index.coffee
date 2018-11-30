@@ -8,3 +8,4 @@
 #= require trix/config/undo_interval
 #= require trix/config/attachments
 #= require trix/config/key_names
+#= require trix/config/input

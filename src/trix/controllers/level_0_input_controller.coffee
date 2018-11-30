@@ -6,7 +6,7 @@
 
 {keyNames} = Trix.config
 
-class Trix.LegacyInputController extends Trix.AbstractInputController
+class Trix.Level0InputController extends Trix.AbstractInputController
   pastedFileCount = 0
 
   constructor: ->
