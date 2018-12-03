@@ -234,19 +234,23 @@ class Trix.Level2InputController extends Trix.InputController
 
   deleteInDirection: (direction, {recordUndoEntry} = {recordUndoEntry: true}) ->
     @delegate?.inputControllerWillPerformTyping() if recordUndoEntry
-    @withTargetDOMRange ->
+    @withTargetDOMRange @getTargetDOMRange(minLength: 2), ->
       @responder?.deleteInDirection(direction)
 
   # Selection helpers
 
-  withTargetDOMRange: (fn) ->
-    Trix.withDOMRange(@getTargetDOMRange(), fn.bind(this))
+  withTargetDOMRange: (domRange, fn) ->
+    if typeof domRange is "function"
+      fn = domRange
+      domRange = @getTargetDOMRange()
+    Trix.withDOMRange(domRange, fn.bind(this))
 
-  getTargetDOMRange: ->
+  getTargetDOMRange: ({minLength} = {minLength: 0}) ->
     if targetRanges = @event.getTargetRanges?()
       if targetRanges.length
         domRange = staticRangeToRange(targetRanges[0])
-        domRange
+        if minLength is 0 or domRange.toString().length >= minLength
+          domRange
 
   staticRangeToRange = (staticRange) ->
     range = document.createRange()
