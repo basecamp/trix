@@ -19,7 +19,6 @@ class Trix.Level2InputController extends Trix.InputController
         @handledInput = true
         updateSelectionForEvent(event)
         handler.call(this, event)
-        @requestRender() if event.defaultPrevented
 
     input: (event) ->
       updateSelectionForEvent(event)
@@ -83,78 +82,60 @@ class Trix.Level2InputController extends Trix.InputController
       @responder?.deleteInDirection("forward")
 
     formatBackColor: (event) ->
-      event.preventDefault()
       @activateAttributeIfSupported("backgroundColor", event.data)
 
     formatBold: (event) ->
-      event.preventDefault()
       @toggleAttributeIfSupported("bold")
 
     formatFontColor: (event) ->
-      event.preventDefault()
       @activateAttributeIfSupported("color", event.data)
 
     formatFontName: (event) ->
-      event.preventDefault()
       @activateAttributeIfSupported("font", event.data)
 
     formatIndent: (event) ->
-      event.preventDefault()
       if @responder?.canIncreaseNestingLevel()
         @responder?.increaseNestingLevel()
 
     formatItalic: (event) ->
-      event.preventDefault()
       @toggleAttributeIfSupported("italic")
 
     formatJustifyCenter: (event) ->
-      event.preventDefault()
       @toggleAttributeIfSupported("justifyCenter")
 
     formatJustifyFull: (event) ->
-      event.preventDefault()
       @toggleAttributeIfSupported("justifyFull")
 
     formatJustifyLeft: (event) ->
-      event.preventDefault()
       @toggleAttributeIfSupported("justifyLeft")
 
     formatJustifyRight: (event) ->
-      event.preventDefault()
       @toggleAttributeIfSupported("justifyRight")
 
     formatOutdent: (event) ->
-      event.preventDefault()
       if @responder?.canDecreaseNestingLevel()
         @responder?.decreaseNestingLevel()
 
     formatRemove: (event) ->
-      event.preventDefault()
       for attributeName of @responder?.getCurrentAttributes()
         @responder?.removeCurrentAttribute(attributeName)
 
     formatSetBlockTextDirection: (event) ->
-      event.preventDefault()
       @activateAttributeIfSupported("blockDir", event.data)
 
     formatSetInlineTextDirection: (event) ->
-      event.preventDefault()
       @activateAttributeIfSupported("textDir", event.data)
 
     formatStrikeThrough: (event) ->
-      event.preventDefault()
       @toggleAttributeIfSupported("strike")
 
     formatSubscript: (event) ->
-      event.preventDefault()
       @toggleAttributeIfSupported("sub")
 
     formatSuperscript: (event) ->
-      event.preventDefault()
       @toggleAttributeIfSupported("sup")
 
     formatUnderline: (event) ->
-      event.preventDefault()
       @toggleAttributeIfSupported("underline")
 
     historyRedo: (event) ->
@@ -213,7 +194,6 @@ class Trix.Level2InputController extends Trix.InputController
     # insertLink: (event) ->
 
     insertOrderedList: (event) ->
-      event.preventDefault()
       @toggleAttributeIfSupported("number")
 
     insertParagraph: (event) ->
@@ -229,12 +209,10 @@ class Trix.Level2InputController extends Trix.InputController
       @responder?.insertString(event.data)
 
     insertTranspose: (event) ->
-      event.preventDefault()
       @delegate?.inputControllerWillPerformTyping()
       @responder?.insertString(event.data)
 
     insertUnorderedList: (event) ->
-      event.preventDefault()
       @toggleAttributeIfSupported("bullet")
 
   toggleAttributeIfSupported: (attributeName) ->
