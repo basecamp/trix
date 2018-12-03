@@ -4,8 +4,8 @@
 
 class Trix.Level2InputController extends Trix.InputController
   mutationIsExpected: (mutationSummary) ->
-    expected = @handledInput
-    @handledInput = false
+    expected = @event?
+    @event = null
     console.log("unexpected mutation! #{JSON.stringify(mutationSummary)}") unless expected
     expected
 
@@ -14,14 +14,14 @@ class Trix.Level2InputController extends Trix.InputController
 
   events:
     beforeinput: (event) ->
-      @handledInput = false
+      @event = null
       if handler = @inputTypes[event.inputType]
-        @handledInput = true
-        updateSelectionForEvent(event)
-        handler.call(this, event)
+        @event = event
+        @updateSelection()
+        handler.call(this)
 
     input: (event) ->
-      updateSelectionForEvent(event)
+      Trix.selectionChangeObserver.reset()
 
     compositionend: (event) ->
       if @composing
@@ -29,134 +29,134 @@ class Trix.Level2InputController extends Trix.InputController
         @requestRender()
 
   inputTypes:
-    deleteByComposition: (event) ->
+    deleteByComposition: ->
       @responder?.deleteInDirection("backward")
 
-    deleteByCut: (event) ->
+    deleteByCut: ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteInDirection("backward")
 
-    # deleteByDrag: (event) ->
+    # deleteByDrag: ->
 
-    deleteCompositionText: (event) ->
+    deleteCompositionText: ->
       @responder?.deleteInDirection("backward")
 
-    deleteContent: (event) ->
+    deleteContent: ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteInDirection("backward")
 
-    deleteContentBackward: (event) ->
+    deleteContentBackward: ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteInDirection("backward")
 
-    deleteContentForward: (event) ->
+    deleteContentForward: ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteInDirection("forward")
 
-    deleteEntireSoftLine: (event) ->
+    deleteEntireSoftLine: ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteInDirection("forward")
 
-    deleteHardLineBackward: (event) ->
+    deleteHardLineBackward: ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteInDirection("backward")
 
-    deleteHardLineForward: (event) ->
+    deleteHardLineForward: ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteInDirection("forward")
 
-    deleteSoftLineBackward: (event) ->
+    deleteSoftLineBackward: ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteInDirection("backward")
 
-    deleteSoftLineForward: (event) ->
+    deleteSoftLineForward: ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteInDirection("forward")
 
-    deleteWordBackward: (event) ->
+    deleteWordBackward: ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteInDirection("backward")
 
-    deleteWordForward: (event) ->
+    deleteWordForward: ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.deleteInDirection("forward")
 
-    formatBackColor: (event) ->
-      @activateAttributeIfSupported("backgroundColor", event.data)
+    formatBackColor: ->
+      @activateAttributeIfSupported("backgroundColor", @event.data)
 
-    formatBold: (event) ->
+    formatBold: ->
       @toggleAttributeIfSupported("bold")
 
-    formatFontColor: (event) ->
-      @activateAttributeIfSupported("color", event.data)
+    formatFontColor: ->
+      @activateAttributeIfSupported("color", @event.data)
 
-    formatFontName: (event) ->
-      @activateAttributeIfSupported("font", event.data)
+    formatFontName: ->
+      @activateAttributeIfSupported("font", @event.data)
 
-    formatIndent: (event) ->
+    formatIndent: ->
       if @responder?.canIncreaseNestingLevel()
         @responder?.increaseNestingLevel()
 
-    formatItalic: (event) ->
+    formatItalic: ->
       @toggleAttributeIfSupported("italic")
 
-    formatJustifyCenter: (event) ->
+    formatJustifyCenter: ->
       @toggleAttributeIfSupported("justifyCenter")
 
-    formatJustifyFull: (event) ->
+    formatJustifyFull: ->
       @toggleAttributeIfSupported("justifyFull")
 
-    formatJustifyLeft: (event) ->
+    formatJustifyLeft: ->
       @toggleAttributeIfSupported("justifyLeft")
 
-    formatJustifyRight: (event) ->
+    formatJustifyRight: ->
       @toggleAttributeIfSupported("justifyRight")
 
-    formatOutdent: (event) ->
+    formatOutdent: ->
       if @responder?.canDecreaseNestingLevel()
         @responder?.decreaseNestingLevel()
 
-    formatRemove: (event) ->
+    formatRemove: ->
       for attributeName of @responder?.getCurrentAttributes()
         @responder?.removeCurrentAttribute(attributeName)
 
-    formatSetBlockTextDirection: (event) ->
-      @activateAttributeIfSupported("blockDir", event.data)
+    formatSetBlockTextDirection: ->
+      @activateAttributeIfSupported("blockDir", @event.data)
 
-    formatSetInlineTextDirection: (event) ->
-      @activateAttributeIfSupported("textDir", event.data)
+    formatSetInlineTextDirection: ->
+      @activateAttributeIfSupported("textDir", @event.data)
 
-    formatStrikeThrough: (event) ->
+    formatStrikeThrough: ->
       @toggleAttributeIfSupported("strike")
 
-    formatSubscript: (event) ->
+    formatSubscript: ->
       @toggleAttributeIfSupported("sub")
 
-    formatSuperscript: (event) ->
+    formatSuperscript: ->
       @toggleAttributeIfSupported("sup")
 
-    formatUnderline: (event) ->
+    formatUnderline: ->
       @toggleAttributeIfSupported("underline")
 
-    historyRedo: (event) ->
+    historyRedo: ->
       @delegate?.inputControllerWillPerformRedo()
 
-    historyUndo: (event) ->
+    historyUndo: ->
       @delegate?.inputControllerWillPerformUndo()
 
-    insertCompositionText: (event) ->
+    insertCompositionText: ->
       @composing = true
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertString(event.data)
+      @responder?.insertString(@event.data)
 
-    insertFromComposition: (event) ->
+    insertFromComposition: ->
       @composing = false
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertString(event.data)
+      @responder?.insertString(@event.data)
 
-    # insertFromDrop: (event) ->
+    # insertFromDrop: ->
 
-    insertFromPaste: (event) ->
+    insertFromPaste: ->
       {dataTransfer} = event
       paste = {dataTransfer}
 
@@ -181,38 +181,38 @@ class Trix.Level2InputController extends Trix.InputController
         @responder?.insertFile(paste.file)
         @delegate?.inputControllerDidPaste(paste)
 
-    insertFromYank: (event) ->
+    insertFromYank: ->
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertString(event.data)
+      @responder?.insertString(@event.data)
 
-    # insertHorizontalRule: (event) ->
+    # insertHorizontalRule: ->
 
-    insertLineBreak: (event) ->
+    insertLineBreak: ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.insertString("\n")
 
-    # insertLink: (event) ->
+    # insertLink: ->
 
-    insertOrderedList: (event) ->
+    insertOrderedList: ->
       @toggleAttributeIfSupported("number")
 
-    insertParagraph: (event) ->
+    insertParagraph: ->
       @delegate?.inputControllerWillPerformTyping()
       @responder?.insertLineBreak()
 
-    insertReplacementText: (event) ->
+    insertReplacementText: ->
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertString(event.dataTransfer.getData("text/plain"))
+      @responder?.insertString(@event.dataTransfer.getData("text/plain"))
 
-    insertText: (event) ->
+    insertText: ->
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertString(event.data)
+      @responder?.insertString(@event.data)
 
-    insertTranspose: (event) ->
+    insertTranspose: ->
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertString(event.data)
+      @responder?.insertString(@event.data)
 
-    insertUnorderedList: (event) ->
+    insertUnorderedList: ->
       @toggleAttributeIfSupported("bullet")
 
   toggleAttributeIfSupported: (attributeName) ->
@@ -225,16 +225,16 @@ class Trix.Level2InputController extends Trix.InputController
       @delegate?.inputControllerWillPerformFormatting()
       @responder?.setCurrentAttribute(attributeName, value)
 
-updateSelectionForEvent = (event) ->
-  if domRange = getDOMRangeForEvent(event)
-    Trix.setDOMRange(domRange)
-  else
-    Trix.selectionChangeObserver.reset()
+  updateSelection: ->
+    if domRange = @getTargetDOMRange()
+      Trix.setDOMRange(domRange)
+    else
+      Trix.selectionChangeObserver.reset()
 
-getDOMRangeForEvent = (event) ->
-  if targetRanges = event.getTargetRanges?()
-    if targetRanges.length
-      staticRangeToRange(targetRanges[0])
+  getTargetDOMRange: ->
+    if targetRanges = @event.getTargetRanges?()
+      if targetRanges.length
+        staticRangeToRange(targetRanges[0])
 
 staticRangeToRange = (staticRange) ->
   range = document.createRange()
