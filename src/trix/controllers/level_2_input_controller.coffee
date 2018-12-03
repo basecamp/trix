@@ -17,7 +17,7 @@ class Trix.Level2InputController extends Trix.InputController
       @event = null
       if handler = @inputTypes[event.inputType]
         @event = event
-        @updateSelection()
+        Trix.selectionChangeObserver.reset()
         handler.call(this)
 
     input: (event) ->
@@ -30,56 +30,45 @@ class Trix.Level2InputController extends Trix.InputController
 
   inputTypes:
     deleteByComposition: ->
-      @responder?.deleteInDirection("backward")
+      @deleteInDirection("backward", recordUndoEntry: false)
 
     deleteByCut: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @responder?.deleteInDirection("backward")
+      @deleteInDirection("backward")
 
     # deleteByDrag: ->
 
     deleteCompositionText: ->
-      @responder?.deleteInDirection("backward")
+      @deleteInDirection("backward", recordUndoEntry: false)
 
     deleteContent: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @responder?.deleteInDirection("backward")
+      @deleteInDirection("backward")
 
     deleteContentBackward: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @responder?.deleteInDirection("backward")
+      @deleteInDirection("backward")
 
     deleteContentForward: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @responder?.deleteInDirection("forward")
+      @deleteInDirection("forward")
 
     deleteEntireSoftLine: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @responder?.deleteInDirection("forward")
+      @deleteInDirection("forward")
 
     deleteHardLineBackward: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @responder?.deleteInDirection("backward")
+      @deleteInDirection("backward")
 
     deleteHardLineForward: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @responder?.deleteInDirection("forward")
+      @deleteInDirection("forward")
 
     deleteSoftLineBackward: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @responder?.deleteInDirection("backward")
+      @deleteInDirection("backward")
 
     deleteSoftLineForward: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @responder?.deleteInDirection("forward")
+      @deleteInDirection("forward")
 
     deleteWordBackward: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @responder?.deleteInDirection("backward")
+      @deleteInDirection("backward")
 
     deleteWordForward: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @responder?.deleteInDirection("forward")
+      @deleteInDirection("forward")
 
     formatBackColor: ->
       @activateAttributeIfSupported("backgroundColor", @event.data)
@@ -95,7 +84,8 @@ class Trix.Level2InputController extends Trix.InputController
 
     formatIndent: ->
       if @responder?.canIncreaseNestingLevel()
-        @responder?.increaseNestingLevel()
+        @withTargetDOMRange ->
+          @responder?.increaseNestingLevel()
 
     formatItalic: ->
       @toggleAttributeIfSupported("italic")
@@ -114,11 +104,13 @@ class Trix.Level2InputController extends Trix.InputController
 
     formatOutdent: ->
       if @responder?.canDecreaseNestingLevel()
-        @responder?.decreaseNestingLevel()
+        @withTargetDOMRange ->
+          @responder?.decreaseNestingLevel()
 
     formatRemove: ->
-      for attributeName of @responder?.getCurrentAttributes()
-        @responder?.removeCurrentAttribute(attributeName)
+      @withTargetDOMRange ->
+        for attributeName of @responder?.getCurrentAttributes()
+          @responder?.removeCurrentAttribute(attributeName)
 
     formatSetBlockTextDirection: ->
       @activateAttributeIfSupported("blockDir", @event.data)
@@ -147,12 +139,14 @@ class Trix.Level2InputController extends Trix.InputController
     insertCompositionText: ->
       @composing = true
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertString(@event.data)
+      @withTargetDOMRange ->
+        @responder?.insertString(@event.data)
 
     insertFromComposition: ->
       @composing = false
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertString(@event.data)
+      @withTargetDOMRange ->
+        @responder?.insertString(@event.data)
 
     # insertFromDrop: ->
 
@@ -164,32 +158,37 @@ class Trix.Level2InputController extends Trix.InputController
         paste.type = "text/plain"
         paste.string = clipboard.getData("text/plain")
         @delegate?.inputControllerWillPaste(paste)
-        @responder?.insertString(paste.string)
+        @withTargetDOMRange ->
+          @responder?.insertString(paste.string)
         @delegate?.inputControllerDidPaste(paste)
 
       else if html = dataTransfer.getData("text/html")
         paste.type = "text/html"
         paste.html = html
         @delegate?.inputControllerWillPaste(paste)
-        @responder?.insertHTML(paste.html)
+        @withTargetDOMRange ->
+          @responder?.insertHTML(paste.html)
         @delegate?.inputControllerDidPaste(paste)
 
       else if dataTransfer.files?.length
         paste.type = "File"
         paste.file = dataTransfer.files[0]
         @delegate?.inputControllerWillPaste(paste)
-        @responder?.insertFile(paste.file)
+        @withTargetDOMRange ->
+          @responder?.insertFile(paste.file)
         @delegate?.inputControllerDidPaste(paste)
 
     insertFromYank: ->
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertString(@event.data)
+      @withTargetDOMRange ->
+        @responder?.insertString(@event.data)
 
     # insertHorizontalRule: ->
 
     insertLineBreak: ->
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertString("\n")
+      @withTargetDOMRange ->
+        @responder?.insertString("\n")
 
     # insertLink: ->
 
@@ -198,46 +197,59 @@ class Trix.Level2InputController extends Trix.InputController
 
     insertParagraph: ->
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertLineBreak()
+      @withTargetDOMRange ->
+        @responder?.insertLineBreak()
 
     insertReplacementText: ->
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertString(@event.dataTransfer.getData("text/plain"))
+      @withTargetDOMRange ->
+        @responder?.insertString(@event.dataTransfer.getData("text/plain"))
 
     insertText: ->
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertString(@event.data)
+      @withTargetDOMRange ->
+        @responder?.insertString(@event.data)
 
     insertTranspose: ->
       @delegate?.inputControllerWillPerformTyping()
-      @responder?.insertString(@event.data)
+      @withTargetDOMRange ->
+        @responder?.insertString(@event.data)
 
     insertUnorderedList: ->
       @toggleAttributeIfSupported("bullet")
 
+  # Responder helpers
+
   toggleAttributeIfSupported: (attributeName) ->
     if attributeName in Trix.getAllAttributeNames()
       @delegate?.inputControllerWillPerformFormatting()
-      @responder?.toggleCurrentAttribute(attributeName)
+      @withTargetDOMRange ->
+        @responder?.toggleCurrentAttribute(attributeName)
 
   activateAttributeIfSupported: (attributeName, value) ->
     if attributeName in Trix.getAllAttributeNames()
       @delegate?.inputControllerWillPerformFormatting()
-      @responder?.setCurrentAttribute(attributeName, value)
+      @withTargetDOMRange ->
+        @responder?.setCurrentAttribute(attributeName, value)
 
-  updateSelection: ->
-    if domRange = @getTargetDOMRange()
-      Trix.setDOMRange(domRange)
-    else
-      Trix.selectionChangeObserver.reset()
+  deleteInDirection: (direction, {recordUndoEntry} = {recordUndoEntry: true}) ->
+    @delegate?.inputControllerWillPerformTyping() if recordUndoEntry
+    @withTargetDOMRange ->
+      @responder?.deleteInDirection(direction)
+
+  # Selection helpers
+
+  withTargetDOMRange: (fn) ->
+    Trix.withDOMRange(@getTargetDOMRange(), fn.bind(this))
 
   getTargetDOMRange: ->
     if targetRanges = @event.getTargetRanges?()
       if targetRanges.length
-        staticRangeToRange(targetRanges[0])
+        domRange = staticRangeToRange(targetRanges[0])
+        domRange
 
-staticRangeToRange = (staticRange) ->
-  range = document.createRange()
-  range.setStart(staticRange.startContainer, staticRange.startOffset)
-  range.setEnd(staticRange.endContainer, staticRange.endOffset)
-  range
+  staticRangeToRange = (staticRange) ->
+    range = document.createRange()
+    range.setStart(staticRange.startContainer, staticRange.startOffset)
+    range.setEnd(staticRange.endContainer, staticRange.endOffset)
+    range

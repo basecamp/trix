@@ -9,10 +9,20 @@ Trix.extend
         domRange
 
   setDOMRange: (domRange) ->
-    selection = window.getSelection()
-    selection.removeAllRanges()
-    selection.addRange(domRange)
-    Trix.selectionChangeObserver.update()
+    if domRange
+      selection = window.getSelection()
+      selection.removeAllRanges()
+      selection.addRange(domRange)
+      Trix.selectionChangeObserver.update()
+
+  withDOMRange: (domRange, fn) ->
+    original = Trix.getDOMRange()
+    Trix.setDOMRange(domRange)
+    try
+      result = fn()
+    finally
+      Trix.setDOMRange(original)
+    result
 
 # In Firefox, clicking certain <input> elements changes the selection to a
 # private element used to draw its UI. Attempting to access properties of those
