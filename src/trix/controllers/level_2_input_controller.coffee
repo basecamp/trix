@@ -156,7 +156,7 @@ class Trix.Level2InputController extends Trix.InputController
 
       if dataTransferIsPlainText(dataTransfer)
         paste.type = "text/plain"
-        paste.string = clipboard.getData("text/plain")
+        paste.string = dataTransfer.getData("text/plain")
         @delegate?.inputControllerWillPaste(paste)
         @withTargetDOMRange ->
           @responder?.insertString(paste.string)
