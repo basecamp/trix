@@ -35,7 +35,10 @@ class Trix.Level2InputController extends Trix.InputController
     deleteByCut: ->
       @deleteInDirection("backward")
 
-    # deleteByDrag: ->
+    deleteByDrag: ->
+      @event.preventDefault()
+      @withTargetDOMRange ->
+        @draggedRange = @responder?.getSelectedRange()
 
     deleteCompositionText: ->
       @deleteInDirection("backward", recordUndoEntry: false)
@@ -148,7 +151,12 @@ class Trix.Level2InputController extends Trix.InputController
       @withTargetDOMRange ->
         @responder?.insertString(@event.data)
 
-    # insertFromDrop: ->
+    insertFromDrop: ->
+      if range = @draggedRange
+        @draggedRange = null
+        @delegate?.inputControllerWillMoveText()
+        @withTargetDOMRange ->
+          @responder?.moveTextFromRange(range)
 
     insertFromPaste: ->
       {dataTransfer} = event
