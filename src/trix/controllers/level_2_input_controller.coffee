@@ -198,7 +198,8 @@ class Trix.Level2InputController extends Trix.InputController
       @withTargetDOMRange ->
         @responder?.insertString("\n")
 
-    # insertLink: ->
+    insertLink: ->
+      @activateAttributeIfSupported("href", @event.data)
 
     insertOrderedList: ->
       @toggleAttributeIfSupported("number")
