@@ -9,11 +9,10 @@ Trix.extend
         domRange
 
   setDOMRange: (domRange) ->
-    if domRange
-      selection = window.getSelection()
-      selection.removeAllRanges()
-      selection.addRange(domRange)
-      Trix.selectionChangeObserver.update()
+    selection = window.getSelection()
+    selection.removeAllRanges()
+    selection.addRange(domRange)
+    Trix.selectionChangeObserver.reset()
 
   withDOMRange: (domRange, fn) ->
     original = Trix.getDOMRange()
@@ -21,7 +20,7 @@ Trix.extend
     try
       result = fn()
     finally
-      Trix.setDOMRange(original)
+      Trix.setDOMRange(original) if original
     result
 
 # In Firefox, clicking certain <input> elements changes the selection to a

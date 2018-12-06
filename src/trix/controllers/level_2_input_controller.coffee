@@ -3,25 +3,28 @@
 {dataTransferIsPlainText} = Trix
 
 class Trix.Level2InputController extends Trix.InputController
+  constructor: ->
+    super
+    @inputCount = 0
+
   mutationIsExpected: (mutationSummary) ->
-    expected = @event?
-    @event = null
-    console.log("unexpected mutation! #{JSON.stringify(mutationSummary)}") unless expected
-    expected
+    if @inputCount > 0
+      @inputCount--
+      true
+    else
+      @inputCount = 0
+      console.log("unexpected mutation! #{JSON.stringify(mutationSummary)}")
+      false
 
   mutationIsSignificant: ->
     not @composing
 
   events:
     beforeinput: (event) ->
-      @event = null
       if handler = @inputTypes[event.inputType]
+        @inputCount++
         @event = event
-        Trix.selectionChangeObserver.reset()
         handler.call(this)
-
-    input: (event) ->
-      Trix.selectionChangeObserver.reset()
 
     compositionend: (event) ->
       if @composing
@@ -243,8 +246,11 @@ class Trix.Level2InputController extends Trix.InputController
 
   deleteInDirection: (direction, {recordUndoEntry} = {recordUndoEntry: true}) ->
     @delegate?.inputControllerWillPerformTyping() if recordUndoEntry
-    @withTargetDOMRange @getTargetDOMRange(minLength: 2), ->
-      @responder?.deleteInDirection(direction)
+    perform = => @responder?.deleteInDirection(direction)
+    if domRange = @getTargetDOMRange(minLength: 2)
+      @withTargetDOMRange(domRange, perform)
+    else
+      perform()
 
   # Selection helpers
 
@@ -252,7 +258,11 @@ class Trix.Level2InputController extends Trix.InputController
     if typeof domRange is "function"
       fn = domRange
       domRange = @getTargetDOMRange()
-    Trix.withDOMRange(domRange, fn.bind(this))
+    if domRange
+      Trix.withDOMRange(domRange, fn.bind(this))
+    else
+      Trix.selectionChangeObserver.reset()
+      fn.call(this)
 
   getTargetDOMRange: ({minLength} = {minLength: 0}) ->
     if targetRanges = @event.getTargetRanges?()
