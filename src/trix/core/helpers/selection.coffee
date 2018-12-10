@@ -14,15 +14,6 @@ Trix.extend
     selection.addRange(domRange)
     Trix.selectionChangeObserver.reset()
 
-  withDOMRange: (domRange, fn) ->
-    original = Trix.getDOMRange()
-    Trix.setDOMRange(domRange)
-    try
-      result = fn()
-    finally
-      Trix.setDOMRange(original) if original
-    result
-
 # In Firefox, clicking certain <input> elements changes the selection to a
 # private element used to draw its UI. Attempting to access properties of those
 # elements throws an error.

@@ -63,6 +63,12 @@ class Trix.SelectionManager extends Trix.BasicObject
   selectionIsExpanded: ->
     not @selectionIsCollapsed()
 
+  createLocationRangeFromDOMRange: (domRange, options) ->
+    return unless domRange? and @domRangeWithinElement(domRange)
+    return unless start = @findLocationFromContainerAndOffset(domRange.startContainer, domRange.startOffset, options)
+    end = @findLocationFromContainerAndOffset(domRange.endContainer, domRange.endOffset, options) unless domRange.collapsed
+    normalizeRange([start, end])
+
   # Private
 
   @proxyMethod "locationMapper.findLocationFromContainerAndOffset"
@@ -111,12 +117,6 @@ class Trix.SelectionManager extends Trix.BasicObject
       domRange.setStart(rangeStart...)
       domRange.setEnd(rangeEnd...)
       domRange
-
-  createLocationRangeFromDOMRange: (domRange, options) ->
-    return unless domRange? and @domRangeWithinElement(domRange)
-    return unless start = @findLocationFromContainerAndOffset(domRange.startContainer, domRange.startOffset, options)
-    end = @findLocationFromContainerAndOffset(domRange.endContainer, domRange.endOffset, options) unless domRange.collapsed
-    normalizeRange([start, end])
 
   getLocationAtPoint: (point) ->
     if domRange = @createDOMRangeFromPoint(point)

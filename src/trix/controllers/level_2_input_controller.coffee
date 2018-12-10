@@ -259,7 +259,8 @@ class Trix.Level2InputController extends Trix.InputController
       fn = domRange
       domRange = @getTargetDOMRange()
     if domRange
-      Trix.withDOMRange(domRange, fn.bind(this))
+      locationRange = @delegate?.createLocationRangeFromDOMRange(domRange, strict: false)
+      @responder?.withLocationRange(locationRange, fn.bind(this))
     else
       Trix.selectionChangeObserver.reset()
       fn.call(this)

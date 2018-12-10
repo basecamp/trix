@@ -368,7 +368,17 @@ class Trix.Composition extends Trix.BasicObject
       @document.positionFromLocation(locationRange[0])
 
   getLocationRange: (options) ->
-    @getSelectionManager().getLocationRange(options) ? normalizeRange(index: 0, offset: 0)
+    @targetLocationRange ?
+      @getSelectionManager().getLocationRange(options) ?
+      normalizeRange(index: 0, offset: 0)
+
+  withLocationRange: (locationRange, fn) ->
+    @targetLocationRange = locationRange
+    try
+      result = fn()
+    finally
+      @targetLocationRange = null
+    result
 
   getExpandedRangeInDirection: (direction, {length} = {}) ->
     [startPosition, endPosition] = @getSelectedRange()

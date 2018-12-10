@@ -106,6 +106,7 @@ class Trix.EditorController extends Trix.Controller
 
   @proxyMethod "getSelectionManager().setLocationRange"
   @proxyMethod "getSelectionManager().getLocationRange"
+  @proxyMethod "getSelectionManager().createLocationRangeFromDOMRange"
 
   # Attachment manager delegate
 
