@@ -26,6 +26,17 @@ class Trix.Level2InputController extends Trix.InputController
         @event = event
         handler.call(this)
 
+    dragenter: (event) ->
+      if dragEventHasFiles(event)
+        event.preventDefault()
+
+    drop: (event) ->
+      if dragEventHasFiles(event)
+        event.preventDefault()
+        point = x: event.clientX, y: event.clientY
+        @responder?.setLocationRangeFromPointRange(point)
+        @attachFiles(event.dataTransfer.files)
+
     compositionend: (event) ->
       if @composing
         @composing = false
@@ -277,3 +288,6 @@ class Trix.Level2InputController extends Trix.InputController
     range.setStart(staticRange.startContainer, staticRange.startOffset)
     range.setEnd(staticRange.endContainer, staticRange.endOffset)
     range
+
+  dragEventHasFiles = (event) ->
+    "Files" in (event.dataTransfer?.types ? [])

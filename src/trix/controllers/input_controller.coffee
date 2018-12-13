@@ -1,4 +1,5 @@
 #= require trix/observers/mutation_observer
+#= require trix/operations/file_verification_operation
 
 {handleEvent, innerElementIsActive} = Trix
 
@@ -37,6 +38,14 @@ class Trix.InputController extends Trix.BasicObject
   requestReparse: ->
     @delegate?.inputControllerDidRequestReparse?()
     @requestRender()
+
+  attachFiles: (files) ->
+    operations = (new Trix.FileVerificationOperation(file) for file in files)
+    Promise.all(operations).then (files) =>
+      @handleInput ->
+        @delegate?.inputControllerWillAttachFiles()
+        @responder?.insertFiles(files)
+        @requestRender()
 
   # Private
 

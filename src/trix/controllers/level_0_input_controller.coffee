@@ -1,5 +1,4 @@
 #= require trix/controllers/input_controller
-#= require trix/operations/file_verification_operation
 
 {makeElement, objectsAreEqual, tagName, browser,
  dataTransferIsWritable, dataTransferIsPlainText} = Trix
@@ -72,16 +71,6 @@ class Trix.Level0InputController extends Trix.InputController
     textChanged = Object.keys(mutationSummary).length > 0
     composedEmptyString = @compositionInput?.getEndData() is ""
     textChanged or not composedEmptyString
-
-  # File verification
-
-  attachFiles: (files) ->
-    operations = (new Trix.FileVerificationOperation(file) for file in files)
-    Promise.all(operations).then (files) =>
-      @handleInput ->
-        @delegate?.inputControllerWillAttachFiles()
-        @responder?.insertFiles(files)
-        @requestRender()
 
   # Input handlers
 
