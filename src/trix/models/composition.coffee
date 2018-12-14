@@ -394,6 +394,11 @@ class Trix.Composition extends Trix.BasicObject
         endPosition = @translateUTF16PositionFromOffset(endPosition, 1)
     normalizeRange([startPosition, endPosition])
 
+  shouldManageMovingCursorInDirection: (direction) ->
+    return true if @editingAttachment
+    range = @getExpandedRangeInDirection(direction)
+    @getAttachmentAtRange(range)?
+
   moveCursorInDirection: (direction) ->
     if @editingAttachment
       range = @document.getRangeOfAttachment(@editingAttachment)

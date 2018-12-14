@@ -20,6 +20,11 @@ class Trix.Level2InputController extends Trix.InputController
     not @composing
 
   events:
+    keydown: (event) ->
+      if handler = @keys[event.key]
+        @event = event
+        handler.call(this)
+
     beforeinput: (event) ->
       if handler = @inputTypes[event.inputType]
         @inputCount++
@@ -40,6 +45,24 @@ class Trix.Level2InputController extends Trix.InputController
     compositionend: (event) ->
       if @composing
         @composing = false
+        @requestRender()
+
+  keys:
+    ArrowLeft: ->
+      if @responder?.shouldManageMovingCursorInDirection("backward")
+        @event.preventDefault()
+        @responder?.moveCursorInDirection("backward")
+
+    ArrowRight: ->
+      if @responder?.shouldManageMovingCursorInDirection("forward")
+        @event.preventDefault()
+        @responder?.moveCursorInDirection("forward")
+
+    Backspace: ->
+      if @responder?.shouldManageMovingCursorInDirection("backward")
+        @event.preventDefault()
+        @delegate?.inputControllerWillPerformTyping()
+        @responder?.deleteInDirection("backward")
         @requestRender()
 
   inputTypes:
