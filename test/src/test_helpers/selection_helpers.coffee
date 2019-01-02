@@ -85,6 +85,15 @@ helpers.extend
     Trix.selectionChangeObserver.update()
     callback?()
 
+  createDOMRangeFromPoint: (x, y) ->
+    if document.caretPositionFromPoint
+      {offsetNode, offset} = document.caretPositionFromPoint(x, y)
+      domRange = document.createRange()
+      domRange.setStart(offsetNode, offset)
+      domRange
+    else if document.caretRangeFromPoint
+      document.caretRangeFromPoint(x, y)
+
 getCursorCoordinates = ->
   if rect = window.getSelection().getRangeAt(0).getClientRects()[0]
     clientX: rect.left

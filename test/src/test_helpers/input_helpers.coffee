@@ -17,6 +17,19 @@ helpers.extend
   triggerEvent: (element, type, properties) ->
     element.dispatchEvent(helpers.createEvent(type, properties))
 
+  triggerInputEvent: (element, type, properties = {}) ->
+    if Trix.config.input.getLevel() is 2
+      if properties.ranges
+        ranges = properties.ranges
+        delete properties.ranges
+      else
+        ranges = []
+        selection = window.getSelection()
+        if selection.rangeCount > 0
+          ranges.push(selection.getRangeAt(0).cloneRange())
+      properties.getTargetRanges = -> ranges
+      helpers.triggerEvent(element, type, properties)
+
   pasteContent: (contentType, value, callback) ->
     if typeof contentType is "object"
       data = contentType
@@ -132,10 +145,15 @@ helpers.extend
 
     dragstartData = {dataTransfer}
     helpers.triggerEvent(element, "dragstart", dragstartData)
+    helpers.triggerInputEvent(element, "beforeinput", inputType: "deleteByDrag")
 
     dropData = {dataTransfer}
     dropData[key] = value for key, value of coordinates
     helpers.triggerEvent(element, "drop", dropData)
+
+    {clientX, clientY} = coordinates
+    domRange = helpers.createDOMRangeFromPoint(clientX, clientY)
+    helpers.triggerInputEvent(element, "beforeinput", inputType: "insertFromDrop", ranges: [domRange])
 
     helpers.defer(callback)
 
@@ -164,6 +182,7 @@ typeCharacterInElement = (character, element, callback) ->
   keyCode = character.toUpperCase().charCodeAt(0)
 
   return callback() unless helpers.triggerEvent(element, "keydown", keyCode: keyCode, charCode: 0)
+  helpers.triggerInputEvent(element, "beforeinput", inputType: "insertText", data: character)
 
   helpers.defer ->
     return callback() unless helpers.triggerEvent(element, "keypress", keyCode: charCode, charCode: charCode)
@@ -185,16 +204,22 @@ simulateKeypress = (keyName, callback) ->
     when "delete"
       deleteInDirection("right", callback)
     when "return"
-      node = document.createElement("br")
-      helpers.insertNode(node, callback)
+      helpers.triggerInputEvent(document.activeElement, "beforeinput", inputType: "insertParagraph")
+      helpers.defer ->
+        node = document.createElement("br")
+        helpers.insertNode(node, callback)
 
 deleteInDirection = (direction, callback) ->
   if helpers.selectionIsCollapsed()
     getComposition().expandSelectionInDirection(if direction is "left" then "backward" else "forward")
     helpers.defer ->
-      helpers.deleteSelection()
-      callback()
+      inputType = if direction is "left" then "deleteContentBackward" else "deleteContentForward"
+      helpers.triggerInputEvent(document.activeElement, "beforeinput", {inputType})
+      helpers.defer ->
+        helpers.deleteSelection()
+        callback()
   else
+    helpers.triggerInputEvent(document.activeElement, "beforeinput", inputType: "deleteContentBackward")
     helpers.deleteSelection()
     callback()
 
