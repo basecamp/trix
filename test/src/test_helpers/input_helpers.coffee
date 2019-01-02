@@ -85,6 +85,7 @@ helpers.extend
   startComposition: (data, callback) ->
     element = document.activeElement
     helpers.triggerEvent(element, "compositionstart", data: "")
+    helpers.triggerInputEvent(element, "beforeinput", inputType: "insertCompositionText", data: data)
     helpers.triggerEvent(element, "compositionupdate", data: data)
     helpers.triggerEvent(element, "input")
 
@@ -94,6 +95,7 @@ helpers.extend
 
   updateComposition: (data, callback) ->
     element = document.activeElement
+    helpers.triggerInputEvent(element, "beforeinput", inputType: "insertCompositionText", data: data)
     helpers.triggerEvent(element, "compositionupdate", data: data)
     helpers.triggerEvent(element, "input")
 
@@ -103,6 +105,7 @@ helpers.extend
 
   endComposition: (data, callback) ->
     element = document.activeElement
+    helpers.triggerInputEvent(element, "beforeinput", inputType: "insertCompositionText", data: data)
     helpers.triggerEvent(element, "compositionupdate", data: data)
 
     node = document.createTextNode(data)
