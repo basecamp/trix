@@ -7,17 +7,18 @@ class Trix.Level2InputController extends Trix.InputController
     super
     @inputCount = 0
 
-  mutationIsExpected: (mutationSummary) ->
-    if @inputCount > 0
-      @inputCount--
-      true
-    else
-      @inputCount = 0
-      console.log("unexpected mutation! #{JSON.stringify(mutationSummary)}")
-      false
-
-  mutationIsSignificant: ->
-    not @composing
+  elementDidMutate: (mutationSummary) ->
+    @handleInput ->
+      if @inputCount > 0
+        if --@inputCount is 0
+          if @composing
+            @delegate?.inputControllerDidAllowUnhandledInput?()
+          else
+            @requestRender()
+      else
+        console.log("unexpected mutation! #{JSON.stringify(mutationSummary)}")
+        @inputCount = 0
+        @requestReparse()
 
   events:
     keydown: (event) ->

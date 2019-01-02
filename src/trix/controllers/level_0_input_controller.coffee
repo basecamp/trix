@@ -30,8 +30,13 @@ class Trix.Level0InputController extends Trix.InputController
     if @isComposing()
       @delegate?.inputControllerDidAllowUnhandledInput?()
     else
-      super
-      @reset()
+      @handleInput ->
+        if @mutationIsSignificant(mutationSummary)
+          if @mutationIsExpected(mutationSummary)
+            @requestRender()
+          else
+            @requestReparse()
+        @reset()
 
   mutationIsExpected: ({textAdded, textDeleted}) ->
     return true if @inputSummary.preferDocument

@@ -359,9 +359,7 @@ class Trix.EditorController extends Trix.Controller
     @composition.replaceHTML(@editorElement.innerHTML)
 
   render: ->
-    @rendering ?= requestAnimationFrame =>
-      @rendering = null
-      @compositionController.render()
+    @compositionController.render()
 
   updateInputElement: ->
     element = @compositionController.getSerializableElement()

@@ -13,18 +13,6 @@ class Trix.InputController extends Trix.BasicObject
   events: {}
 
   elementDidMutate: (mutationSummary) ->
-    @handleInput ->
-      if @mutationIsSignificant(mutationSummary)
-        if @mutationIsExpected(mutationSummary)
-          @requestRender()
-        else
-          @requestReparse()
-
-  mutationIsSignificant: (mutationSummary) ->
-    true
-
-  mutationIsExpected: (mutationSummary) ->
-    false
 
   editorWillSyncDocumentView: ->
     @mutationObserver.stop()
