@@ -250,7 +250,7 @@ class Trix.Level2InputController extends Trix.InputController
     insertReplacementText: ->
       @delegate?.inputControllerWillPerformTyping()
       @withTargetDOMRange ->
-        @responder?.insertString(@event.dataTransfer.getData("text/plain"))
+        @responder?.insertString(@event.dataTransfer.getData("text/plain"), updatePosition: false)
 
     insertText: ->
       @delegate?.inputControllerWillPerformTyping()
