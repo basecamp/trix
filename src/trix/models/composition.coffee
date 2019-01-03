@@ -135,6 +135,15 @@ class Trix.Composition extends Trix.BasicObject
 
     @insertText(text)
 
+  shouldManageDeletingInDirection: (direction) ->
+    locationRange = @getLocationRange()
+    if rangeIsCollapsed(locationRange)
+      return true if direction is "backward" and locationRange[0].offset is 0
+      return true if @shouldManageMovingCursorInDirection(direction)
+    else
+      return true if locationRange[0].index isnt locationRange[1].index
+    false
+
   deleteInDirection: (direction, {length} = {}) ->
     locationRange = @getLocationRange()
     range = @getSelectedRange()

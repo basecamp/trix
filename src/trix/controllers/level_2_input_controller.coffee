@@ -60,7 +60,7 @@ class Trix.Level2InputController extends Trix.InputController
         @responder?.moveCursorInDirection("forward")
 
     Backspace: ->
-      if @responder?.shouldManageMovingCursorInDirection("backward")
+      if @responder?.shouldManageDeletingInDirection("backward")
         @event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
         @responder?.deleteInDirection("backward")
@@ -197,15 +197,29 @@ class Trix.Level2InputController extends Trix.InputController
           @responder?.moveTextFromRange(range)
 
     insertFromPaste: ->
-      {dataTransfer} = event
+      {dataTransfer} = @event
       paste = {dataTransfer}
 
-      if dataTransferIsPlainText(dataTransfer)
+      if href = dataTransfer.getData("URL")
+        paste.type = "URL"
+        paste.href = href
+        if name = dataTransfer.getData("public.url-name")
+          paste.string = Trix.squishBreakableWhitespace(name).trim()
+        else
+          paste.string = href
+        @delegate?.inputControllerWillPaste(paste)
+        @withTargetDOMRange ->
+          @responder?.insertText(Trix.Text.textForStringWithAttributes(paste.string, href: paste.href))
+        @requestRender()
+        @delegate?.inputControllerDidPaste(paste)
+
+      else if dataTransferIsPlainText(dataTransfer)
         paste.type = "text/plain"
         paste.string = dataTransfer.getData("text/plain")
         @delegate?.inputControllerWillPaste(paste)
         @withTargetDOMRange ->
           @responder?.insertString(paste.string)
+        @requestRender()
         @delegate?.inputControllerDidPaste(paste)
 
       else if html = dataTransfer.getData("text/html")
@@ -214,6 +228,7 @@ class Trix.Level2InputController extends Trix.InputController
         @delegate?.inputControllerWillPaste(paste)
         @withTargetDOMRange ->
           @responder?.insertHTML(paste.html)
+        @requestRender()
         @delegate?.inputControllerDidPaste(paste)
 
       else if dataTransfer.files?.length
@@ -222,6 +237,7 @@ class Trix.Level2InputController extends Trix.InputController
         @delegate?.inputControllerWillPaste(paste)
         @withTargetDOMRange ->
           @responder?.insertFile(paste.file)
+        @requestRender()
         @delegate?.inputControllerDidPaste(paste)
 
     insertFromYank: ->

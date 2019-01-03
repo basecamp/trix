@@ -43,6 +43,10 @@ helpers.extend
       types: (key for key of data)
       items: (value for key, value of data)
 
+    if "Files" in testClipboardData.types
+      testClipboardData.files = testClipboardData.items
+
+    helpers.triggerInputEvent(document.activeElement, "beforeinput", inputType: "insertFromPaste", dataTransfer: testClipboardData)
     helpers.triggerEvent(document.activeElement, "paste", {testClipboardData})
     helpers.defer callback
 
@@ -73,7 +77,7 @@ helpers.extend
   pressKey: (keyName, callback) ->
     element = document.activeElement
     code = keyCodes[keyName]
-    properties = which: code, keyCode: code, charCode: 0
+    properties = which: code, keyCode: code, charCode: 0, key: capitalize(keyName)
 
     return callback() unless helpers.triggerEvent(element, "keydown", properties)
 
@@ -230,3 +234,6 @@ getElementCoordinates = (element) ->
   rect = element.getBoundingClientRect()
   clientX: rect.left + rect.width / 2
   clientY: rect.top + rect.height / 2
+
+capitalize = (string) ->
+  string.charAt(0).toUpperCase() + string.slice(1)

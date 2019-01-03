@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, clickToolbarDialogButton, collapseSelection, expandSelection, insertString, insertText, isToolbarButtonActive, isToolbarButtonDisabled, isToolbarDialogActive, moveCursor, pressKey, test, testGroup, typeCharacters, typeInToolbarDialog, typeToolbarKeyCommand} = Trix.TestHelpers
+{assert, clickToolbarButton, clickToolbarDialogButton, collapseSelection, expandSelection, insertString, insertText, isToolbarButtonActive, isToolbarButtonDisabled, isToolbarDialogActive, moveCursor, pressKey, test, testIf, testGroup, typeCharacters, typeInToolbarDialog, typeToolbarKeyCommand} = Trix.TestHelpers
 
 testGroup "Text formatting", template: "editor_empty", ->
   test "applying attributes to text", (done) ->
@@ -151,7 +151,7 @@ testGroup "Text formatting", template: "editor_empty", ->
                       assert.notOk isToolbarButtonActive(attribute: "bold")
                       done()
 
-  test "key command activates toolbar button", (done) ->
+  testIf Trix.config.input.getLevel() is 0, "key command activates toolbar button", (done) ->
     typeToolbarKeyCommand attribute: "bold", ->
       assert.ok isToolbarButtonActive(attribute: "bold")
       done()

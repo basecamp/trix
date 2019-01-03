@@ -7,6 +7,10 @@ keyCodes = {}
 for code, name of Trix.config.keyNames
   keyCodes[name] = code
 
+keys =
+  left: "ArrowLeft"
+  right: "ArrowRight"
+
 helpers.extend
   moveCursor: (options, callback) ->
     if typeof options is "string"
@@ -18,7 +22,7 @@ helpers.extend
     times ?= 1
 
     do move = -> helpers.defer ->
-      if helpers.triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction])
+      if helpers.triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], key: keys[direction])
         selection = rangy.getSelection()
         selection.move("character", if direction is "right" then 1 else -1)
         Trix.selectionChangeObserver.update()
@@ -38,7 +42,7 @@ helpers.extend
     times ?= 1
 
     do expand = -> helpers.defer ->
-      if helpers.triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)
+      if helpers.triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], key: keys[direction], shiftKey: true)
         getComposition().expandSelectionInDirection(if direction is "left" then "backward" else "forward")
 
       if --times is 0
