@@ -24,34 +24,33 @@ recordInputEvent = (event) ->
     inputEvents.push({type, inputType, data})
 
 # Borrowed from https://github.com/web-platform-tests/wpt/blob/master/input-events/input-events-exec-command.html
-performInputTypeUsingExecCommand = (command, {inputType, data}) ->
+performInputTypeUsingExecCommand = (command, {inputType, data}, callback) ->
   inputEvents = []
-  triggerInputEvent(document.activeElement, "beforeinput", {inputType, data})
-  document.execCommand(command, false, data)
-  assert.equal(inputEvents.length, 2)
-  assert.equal(inputEvents[0].type, "beforeinput")
-  assert.equal(inputEvents[1].type, "input")
-  assert.equal(inputEvents[0].inputType, inputType)
-  assert.equal(inputEvents[0].data, data)
+  requestAnimationFrame ->
+    triggerInputEvent(document.activeElement, "beforeinput", {inputType, data})
+    document.execCommand(command, false, data)
+    assert.equal(inputEvents.length, 2)
+    assert.equal(inputEvents[0].type, "beforeinput")
+    assert.equal(inputEvents[1].type, "input")
+    assert.equal(inputEvents[0].inputType, inputType)
+    assert.equal(inputEvents[0].data, data)
+    requestAnimationFrame(callback)
 
 testGroup "Level 2 Input", testOptions, ->
   test "insertText", (expectDocument) ->
-    performInputTypeUsingExecCommand("insertText", inputType: "insertText", data: "abc")
-    defer ->
+    performInputTypeUsingExecCommand "insertText", inputType: "insertText", data: "abc", ->
       expectDocument("abc\n")
 
   test "insertOrderedList", (expectDocument) ->
     insertString("abc")
-    performInputTypeUsingExecCommand("insertOrderedList", inputType: "insertOrderedList")
-    defer ->
+    performInputTypeUsingExecCommand "insertOrderedList", inputType: "insertOrderedList", ->
       assert.blockAttributes([0, 4], ["numberList", "number"])
       assert.ok isToolbarButtonActive(attribute: "number")
       expectDocument("abc\n")
 
   test "insertUnorderedList", (expectDocument) ->
     insertString("abc")
-    performInputTypeUsingExecCommand("insertUnorderedList", inputType: "insertUnorderedList")
-    defer ->
+    performInputTypeUsingExecCommand "insertUnorderedList", inputType: "insertUnorderedList", ->
       assert.blockAttributes([0, 4], ["bulletList", "bullet"])
       assert.ok isToolbarButtonActive(attribute: "bullet")
       expectDocument("abc\n")
@@ -59,20 +58,16 @@ testGroup "Level 2 Input", testOptions, ->
   test "insertLineBreak", (expectDocument) ->
     clickToolbarButton attribute: "quote", ->
       insertString("abc")
-      performInputTypeUsingExecCommand("insertLineBreak", inputType: "insertLineBreak")
-      defer ->
-        performInputTypeUsingExecCommand("insertLineBreak", inputType: "insertLineBreak")
-        defer ->
+      performInputTypeUsingExecCommand "insertLineBreak", inputType: "insertLineBreak", ->
+        performInputTypeUsingExecCommand "insertLineBreak", inputType: "insertLineBreak", ->
           assert.blockAttributes([0, 6], ["quote"])
           expectDocument("abc\n\n\n")
 
   test "insertParagraph", (expectDocument) ->
     clickToolbarButton attribute: "quote", ->
       insertString("abc")
-      performInputTypeUsingExecCommand("insertParagraph", inputType: "insertParagraph")
-      defer ->
-        performInputTypeUsingExecCommand("insertParagraph", inputType: "insertParagraph")
-        defer ->
+      performInputTypeUsingExecCommand "insertParagraph", inputType: "insertParagraph", ->
+        performInputTypeUsingExecCommand "insertParagraph", inputType: "insertParagraph", ->
           assert.blockAttributes([0, 4], ["quote"])
           assert.blockAttributes([4, 5], [])
           expectDocument("abc\n\n")
@@ -80,8 +75,7 @@ testGroup "Level 2 Input", testOptions, ->
   test "formatBold", (expectDocument) ->
     insertString("abc")
     getComposition().setSelectedRange([1, 2])
-    performInputTypeUsingExecCommand("bold", inputType: "formatBold")
-    defer ->
+    performInputTypeUsingExecCommand "bold", inputType: "formatBold", ->
       assert.textAttributes([0, 1], {})
       assert.textAttributes([1, 2], bold: true)
       assert.textAttributes([2, 3], {})
@@ -90,8 +84,7 @@ testGroup "Level 2 Input", testOptions, ->
   test "formatItalic", (expectDocument) ->
     insertString("abc")
     getComposition().setSelectedRange([1, 2])
-    performInputTypeUsingExecCommand("italic", inputType: "formatItalic")
-    defer ->
+    performInputTypeUsingExecCommand "italic", inputType: "formatItalic", ->
       assert.textAttributes([0, 1], {})
       assert.textAttributes([1, 2], italic: true)
       assert.textAttributes([2, 3], {})
@@ -100,8 +93,7 @@ testGroup "Level 2 Input", testOptions, ->
   test "formatStrikeThrough", (expectDocument) ->
     insertString("abc")
     getComposition().setSelectedRange([1, 2])
-    performInputTypeUsingExecCommand("strikeThrough", inputType: "formatStrikeThrough")
-    defer ->
+    performInputTypeUsingExecCommand "strikeThrough", inputType: "formatStrikeThrough", ->
       assert.textAttributes([0, 1], {})
       assert.textAttributes([1, 2], strike: true)
       assert.textAttributes([2, 3], {})
