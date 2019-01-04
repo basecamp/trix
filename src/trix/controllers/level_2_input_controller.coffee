@@ -1,24 +1,19 @@
 #= require trix/controllers/input_controller
 
-{dataTransferIsPlainText} = Trix
+{dataTransferIsPlainText, defer} = Trix
 
 class Trix.Level2InputController extends Trix.InputController
-  constructor: ->
-    super
-    @inputCount = 0
-
   elementDidMutate: (mutationSummary) ->
-    @handleInput ->
-      if @inputCount > 0
-        if --@inputCount is 0
-          if @composing
-            @delegate?.inputControllerDidAllowUnhandledInput?()
-          else
-            @requestRender()
-      else
-        console.log("unexpected mutation! #{JSON.stringify(mutationSummary)}")
-        @inputCount = 0
-        @requestReparse()
+    if @composing
+      @delegate?.inputControllerDidAllowUnhandledInput?()
+    else if @inputRevision is @responder.revision
+      @rendering ?= defer =>
+        @rendering = null
+        @inputRevision = null
+        @handleInput(@requestRender)
+    else
+      console.log("unexpected mutation! #{JSON.stringify(mutationSummary)}")
+      @handleInput(@requestReparse)
 
   events:
     keydown: (event) ->
@@ -28,9 +23,9 @@ class Trix.Level2InputController extends Trix.InputController
 
     beforeinput: (event) ->
       if handler = @inputTypes[event.inputType]
-        @inputCount++
         @event = event
         handler.call(this)
+        @inputRevision = @responder.revision
 
     dragenter: (event) ->
       if dragEventHasFiles(event)
