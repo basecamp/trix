@@ -61,6 +61,12 @@ class Trix.Level2InputController extends Trix.InputController
         @responder?.deleteInDirection("backward")
         @requestRender()
 
+    Tab: ->
+      if @responder?.canIncreaseNestingLevel()
+        @event.preventDefault()
+        @responder?.increaseNestingLevel()
+        @requestRender()
+
   inputTypes:
     deleteByComposition: ->
       @deleteInDirection("backward", recordUndoEntry: false)

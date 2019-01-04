@@ -28,6 +28,16 @@ testGroup "List formatting", template: "editor_empty", ->
             assert.blockAttributes([3, 5], ["bulletList", "bullet"])
             expectDocument("a\n\nb\n")
 
+  test "pressing tab increases nesting level", (expectDocument) ->
+    clickToolbarButton attribute: "bullet", ->
+      typeCharacters "a", ->
+        pressKey "return", ->
+          pressKey "tab", ->
+            typeCharacters "b", ->
+              assert.blockAttributes([0, 1], ["bulletList", "bullet"])
+              assert.blockAttributes([2, 3], ["bulletList", "bullet", "bulletList", "bullet"])
+              expectDocument("a\nb\n")
+
   testIf Trix.config.input.getLevel() is 0, "pressing shift-return at the end of a list item", (expectDocument) ->
     clickToolbarButton attribute: "bullet", ->
       typeCharacters "a", ->
