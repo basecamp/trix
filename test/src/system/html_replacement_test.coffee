@@ -1,6 +1,9 @@
-{assert, clickToolbarButton, collapseSelection, defer, moveCursor, selectNode, typeCharacters, test, testGroup, triggerEvent} = Trix.TestHelpers
+{assert, clickToolbarButton, collapseSelection, defer, moveCursor, selectNode, typeCharacters, testIf, testGroup, triggerEvent} = Trix.TestHelpers
 
-testGroup "HTML replacement", ->
+test = ->
+  testIf(Trix.config.input.getLevel() is 0, arguments...)
+
+testGroup "Level 0 input: HTML replacement", ->
   testGroup "deleting with command+backspace", template: "editor_empty", ->
     test "from the end of a line", (expectDocument) ->
       getEditor().loadHTML("<div>a</div><blockquote>b</blockquote><div>c</div>")

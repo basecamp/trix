@@ -61,7 +61,7 @@ testGroup "Composition input", template: "editor_empty", ->
           expectDocument "喜\n"
 
   # Simulates the sequence of events when pressing backspace through a word on Android
-  test "backspacing through a composition", (expectDocument) ->
+  testIf Trix.config.input.getLevel() is 0, "backspacing through a composition", (expectDocument) ->
     element = getEditorElement()
     element.editor.insertString("a cat")
 
@@ -79,7 +79,7 @@ testGroup "Composition input", template: "editor_empty", ->
 
   # Simulates the sequence of events when pressing backspace at the end of a
   # word and updating it on Android (running older versions of System WebView)
-  test "updating a composition", (expectDocument) ->
+  testIf Trix.config.input.getLevel() is 0, "updating a composition", (expectDocument) ->
     element = getEditorElement()
     element.editor.insertString("cat")
 
@@ -96,7 +96,7 @@ testGroup "Composition input", template: "editor_empty", ->
         expectDocument("car\n")
 
   # Simulates the sequence of events when typing on Android and then tapping elsewhere
-  test "leaving a composition", (expectDocument) ->
+  testIf Trix.config.input.getLevel() is 0, "leaving a composition", (expectDocument) ->
     element = getEditorElement()
 
     triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
