@@ -35,7 +35,7 @@ plugins:
         version: -2
       Safari:
         platform: Mac
-        version: -2
+        version: 11
       Microsoft Edge:
         version: 17
       Internet Explorer:
