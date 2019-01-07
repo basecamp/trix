@@ -34,7 +34,8 @@ performInputTypeUsingExecCommand = (command, {inputType, data}, callback) ->
     assert.equal(inputEvents[1].type, "input")
     assert.equal(inputEvents[0].inputType, inputType)
     assert.equal(inputEvents[0].data, data)
-    requestAnimationFrame(callback)
+    requestAnimationFrame ->
+      requestAnimationFrame(callback)
 
 testGroup "Level 2 Input", testOptions, ->
   test "insertText", (expectDocument) ->
