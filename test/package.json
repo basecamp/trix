@@ -1,0 +1,16 @@
+{
+  "name": "trix-tests",
+  "version": "1.0.0",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "karma": "^3.1.4",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-qunit": "^2.1.0",
+    "karma-sauce-launcher": "^2.0.2",
+    "qunit": "2.4.1"
+  },
+  "scripts": {
+    "test": "bundle exec blade build && karma start"
+  }
+}

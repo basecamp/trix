@@ -1,0 +1,12 @@
+load_paths:
+  - src
+  - vendor
+  - ../assets
+  - ../polyfills
+  - ../src
+
+build:
+  logical_paths:
+    - trix.js
+    - test.js
+  path: dist

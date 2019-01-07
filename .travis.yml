@@ -1,6 +1,10 @@
-language: ruby
-cache: bundler
-script: travis_wait 25 bin/ci
-branches:
-  only:
-    - master
+dist: trusty
+sudo: false
+cache:
+  - bundler
+  - yarn
+install:
+  - bundle install
+  - cd test && yarn install && cd -
+script:
+  - bin/ci
