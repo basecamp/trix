@@ -23,8 +23,9 @@ class Trix.Level2InputController extends Trix.InputController
           event.preventDefault()
       else
         if handler = @keys[event.key]
-          @event = event
-          handler.call(this)
+          unless event.altKey or event.shiftKey
+            @event = event
+            handler.call(this)
 
     beforeinput: (event) ->
       if handler = @inputTypes[event.inputType]
