@@ -1,6 +1,6 @@
 #= require trix/controllers/input_controller
 
-{dataTransferIsPlainText, defer} = Trix
+{dataTransferIsPlainText, defer, keyEventIsKeyboardCommand} = Trix
 
 class Trix.Level2InputController extends Trix.InputController
   elementDidMutate: (mutationSummary) ->
@@ -17,9 +17,14 @@ class Trix.Level2InputController extends Trix.InputController
 
   events:
     keydown: (event) ->
-      if handler = @keys[event.key]
-        @event = event
-        handler.call(this)
+      if keyEventIsKeyboardCommand(event)
+        command = keyboardCommandFromKeyEvent(event)
+        if @delegate?.inputControllerDidReceiveKeyboardCommand(command)
+          event.preventDefault()
+      else
+        if handler = @keys[event.key]
+          @event = event
+          handler.call(this)
 
     beforeinput: (event) ->
       if handler = @inputTypes[event.inputType]
@@ -330,5 +335,14 @@ class Trix.Level2InputController extends Trix.InputController
     range.setEnd(staticRange.endContainer, staticRange.endOffset)
     range
 
+  # Event kelpers
+
   dragEventHasFiles = (event) ->
     "Files" in (event.dataTransfer?.types ? [])
+
+  keyboardCommandFromKeyEvent = (event) ->
+    command = []
+    command.push("alt") if event.altKey
+    command.push("shift") if event.shiftKey
+    command.push(event.key)
+    command

@@ -1,6 +1,6 @@
 #= require trix/controllers/input_controller
 
-{makeElement, objectsAreEqual, tagName, browser,
+{makeElement, objectsAreEqual, tagName, browser, keyEventIsKeyboardCommand,
  dataTransferIsWritable, dataTransferIsPlainText} = Trix
 
 {keyNames} = Trix.config
@@ -409,12 +409,6 @@ stringFromKeyEvent = (event) ->
 
     if code? and keyNames[code] isnt "escape"
       Trix.UTF16String.fromCodepoints([code]).toString()
-
-keyEventIsKeyboardCommand = do ->
-  if /Mac|^iP/.test(navigator.platform)
-    (event) -> event.metaKey
-  else
-    (event) -> event.ctrlKey
 
 pasteEventIsCrippledSafariHTMLPaste = (event) ->
   if paste = event.clipboardData

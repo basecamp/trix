@@ -20,3 +20,9 @@ Trix.extend
         dataTransfer.setData(key, value)
         dataTransfer.getData(key) is value
     true
+
+  keyEventIsKeyboardCommand: do ->
+    if /Mac|^iP/.test(navigator.platform)
+      (event) -> event.metaKey
+    else
+      (event) -> event.ctrlKey
