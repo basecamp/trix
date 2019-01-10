@@ -12,7 +12,7 @@ Trix.extend
     selection = window.getSelection()
     selection.removeAllRanges()
     selection.addRange(domRange)
-    Trix.selectionChangeObserver.reset()
+    Trix.selectionChangeObserver.update()
 
 # In Firefox, clicking certain <input> elements changes the selection to a
 # private element used to draw its UI. Attempting to access properties of those
