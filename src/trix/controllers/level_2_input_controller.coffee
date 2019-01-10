@@ -336,7 +336,7 @@ class Trix.Level2InputController extends Trix.InputController
     range.setEnd(staticRange.endContainer, staticRange.endOffset)
     range
 
-  # Event kelpers
+  # Event helpers
 
   dragEventHasFiles = (event) ->
     "Files" in (event.dataTransfer?.types ? [])
