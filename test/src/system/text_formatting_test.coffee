@@ -67,6 +67,15 @@ testGroup "Text formatting", template: "editor_empty", ->
           assert.ok isToolbarButtonDisabled(attribute: "bold")
           done()
 
+  test "typing over a selected attachment does not apply disabled formatting attributes", (expectDocument) ->
+    text = fixtures["file attachment"].document.getBlockAtIndex(0).getTextWithoutBlockBreak()
+    insertText(text)
+    expandSelection "left", ->
+      assert.ok isToolbarButtonDisabled(attribute: "bold")
+      typeCharacters "a", ->
+        assert.textAttributes([0, 1], {})
+        expectDocument("a\n")
+
   test "applying a link to an attachment with a host-provided href", (done) ->
     text = fixtures["file attachment"].document.getBlockAtIndex(0).getTextWithoutBlockBreak()
     insertText(text)

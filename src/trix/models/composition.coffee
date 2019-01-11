@@ -338,7 +338,8 @@ class Trix.Composition extends Trix.BasicObject
 
   getCurrentTextAttributes: ->
     attributes = {}
-    attributes[key] = value for key, value of @currentAttributes when getTextConfig(key)
+    for key, value of @currentAttributes when value isnt false
+      attributes[key] = value if getTextConfig(key)
     attributes
 
   # Selection freezing
