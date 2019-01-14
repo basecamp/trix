@@ -29,13 +29,11 @@ class Trix.Level2InputController extends Trix.InputController
       else
         if handler = @keys[event.key]
           unless event.altKey or event.shiftKey
-            @event = event
-            handler.call(this)
+            @withEvent(event, handler)
 
     beforeinput: (event) ->
       if handler = @inputTypes[event.inputType]
-        @event = event
-        handler.call(this)
+        @withEvent(event, handler)
         @scheduleRender()
 
     dragenter: (event) ->
@@ -341,6 +339,14 @@ class Trix.Level2InputController extends Trix.InputController
     range
 
   # Event helpers
+
+  withEvent: (event, fn) ->
+    @event = event
+    try
+      result = fn.call(this)
+    finally
+      @event = null
+    result
 
   dragEventHasFiles = (event) ->
     "Files" in (event.dataTransfer?.types ? [])
