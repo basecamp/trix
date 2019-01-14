@@ -357,6 +357,7 @@ class Trix.Composition extends Trix.BasicObject
 
   @proxyMethod "getSelectionManager().getPointRange"
   @proxyMethod "getSelectionManager().setLocationRangeFromPointRange"
+  @proxyMethod "getSelectionManager().createLocationRangeFromDOMRange"
   @proxyMethod "getSelectionManager().locationIsCursorTarget"
   @proxyMethod "getSelectionManager().selectionIsExpanded"
   @proxyMethod "delegate?.getSelectionManager"
@@ -382,13 +383,21 @@ class Trix.Composition extends Trix.BasicObject
       @getSelectionManager().getLocationRange(options) ?
       normalizeRange(index: 0, offset: 0)
 
-  withLocationRange: (locationRange, fn) ->
+  withTargetLocationRange: (locationRange, fn) ->
     @targetLocationRange = locationRange
     try
       result = fn()
     finally
       @targetLocationRange = null
     result
+
+  withTargetRange: (range, fn) ->
+    locationRange = @document.locationRangeFromRange(range)
+    @withTargetLocationRange(locationRange, fn)
+
+  withTargetDOMRange: (domRange, fn) ->
+    locationRange = @createLocationRangeFromDOMRange(domRange, strict: false)
+    @withTargetLocationRange(locationRange, fn)
 
   getExpandedRangeInDirection: (direction, {length} = {}) ->
     [startPosition, endPosition] = @getSelectedRange()
