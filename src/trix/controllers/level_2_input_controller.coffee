@@ -1,19 +1,24 @@
 #= require trix/controllers/input_controller
 
-{dataTransferIsPlainText, defer, keyEventIsKeyboardCommand} = Trix
+{dataTransferIsPlainText, keyEventIsKeyboardCommand} = Trix
 
 class Trix.Level2InputController extends Trix.InputController
   elementDidMutate: (mutationSummary) ->
-    if @composing
-      @delegate?.inputControllerDidAllowUnhandledInput?()
-    else if @inputRevision is @responder.revision
-      @rendering ?= defer =>
-        @rendering = null
-        @inputRevision = null
-        @handleInput(@requestRender)
+    if @scheduledRender
+      @delegate?.inputControllerDidAllowUnhandledInput?() if @composing
     else
       console.log("unexpected mutation! #{JSON.stringify(mutationSummary)}")
       @handleInput(@requestReparse)
+
+  scheduleRender: ->
+    @scheduledRender ?= requestAnimationFrame(@render)
+
+  render: =>
+    cancelAnimationFrame(@scheduledRender)
+    @scheduledRender = null
+    @handleInput(@requestRender) unless @composing
+    @afterRender?()
+    @afterRender = null
 
   events:
     keydown: (event) ->
@@ -31,7 +36,7 @@ class Trix.Level2InputController extends Trix.InputController
       if handler = @inputTypes[event.inputType]
         @event = event
         handler.call(this)
-        @inputRevision = @responder.revision
+        @scheduleRender()
 
     dragenter: (event) ->
       if dragEventHasFiles(event)
@@ -47,7 +52,7 @@ class Trix.Level2InputController extends Trix.InputController
     compositionend: (event) ->
       if @composing
         @composing = false
-        @requestRender()
+        @scheduleRender()
 
   keys:
     ArrowLeft: ->
@@ -65,13 +70,13 @@ class Trix.Level2InputController extends Trix.InputController
         @event.preventDefault()
         @delegate?.inputControllerWillPerformTyping()
         @responder?.deleteInDirection("backward")
-        @requestRender()
+        @render()
 
     Tab: ->
       if @responder?.canIncreaseNestingLevel()
         @event.preventDefault()
         @responder?.increaseNestingLevel()
-        @requestRender()
+        @render()
 
   inputTypes:
     deleteByComposition: ->
@@ -217,8 +222,8 @@ class Trix.Level2InputController extends Trix.InputController
         @delegate?.inputControllerWillPaste(paste)
         @withTargetDOMRange ->
           @responder?.insertText(Trix.Text.textForStringWithAttributes(paste.string, href: paste.href))
-        @requestRender()
-        @delegate?.inputControllerDidPaste(paste)
+        @afterRender = =>
+          @delegate?.inputControllerDidPaste(paste)
 
       else if dataTransferIsPlainText(dataTransfer)
         paste.type = "text/plain"
@@ -226,8 +231,8 @@ class Trix.Level2InputController extends Trix.InputController
         @delegate?.inputControllerWillPaste(paste)
         @withTargetDOMRange ->
           @responder?.insertString(paste.string)
-        @requestRender()
-        @delegate?.inputControllerDidPaste(paste)
+        @afterRender = =>
+          @delegate?.inputControllerDidPaste(paste)
 
       else if html = dataTransfer.getData("text/html")
         paste.type = "text/html"
@@ -235,8 +240,8 @@ class Trix.Level2InputController extends Trix.InputController
         @delegate?.inputControllerWillPaste(paste)
         @withTargetDOMRange ->
           @responder?.insertHTML(paste.html)
-        @requestRender()
-        @delegate?.inputControllerDidPaste(paste)
+        @afterRender = =>
+          @delegate?.inputControllerDidPaste(paste)
 
       else if dataTransfer.files?.length
         paste.type = "File"
@@ -244,8 +249,8 @@ class Trix.Level2InputController extends Trix.InputController
         @delegate?.inputControllerWillPaste(paste)
         @withTargetDOMRange ->
           @responder?.insertFile(paste.file)
-        @requestRender()
-        @delegate?.inputControllerDidPaste(paste)
+        @afterRender = =>
+          @delegate?.inputControllerDidPaste(paste)
 
     insertFromYank: ->
       @delegate?.inputControllerWillPerformTyping()

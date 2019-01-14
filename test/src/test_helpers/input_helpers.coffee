@@ -48,7 +48,7 @@ helpers.extend
 
     helpers.triggerInputEvent(document.activeElement, "beforeinput", inputType: "insertFromPaste", dataTransfer: testClipboardData)
     helpers.triggerEvent(document.activeElement, "paste", {testClipboardData})
-    helpers.defer callback
+    requestAnimationFrame(callback) if callback
 
   createFile: (properties = {}) ->
     file = getAsFile: -> {}
@@ -118,7 +118,7 @@ helpers.extend
     helpers.collapseSelection "right", ->
       helpers.triggerEvent(element, "input")
       helpers.triggerEvent(element, "compositionend", data: data)
-      helpers.defer(callback)
+      requestAnimationFrame(callback)
 
   clickElement: (element, callback) ->
     if helpers.triggerEvent(element, "mousedown")
@@ -189,10 +189,10 @@ typeCharacterInElement = (character, element, callback) ->
   keyCode = character.toUpperCase().charCodeAt(0)
 
   return callback() unless helpers.triggerEvent(element, "keydown", keyCode: keyCode, charCode: 0)
-  helpers.triggerInputEvent(element, "beforeinput", inputType: "insertText", data: character)
 
   helpers.defer ->
     return callback() unless helpers.triggerEvent(element, "keypress", keyCode: charCode, charCode: charCode)
+    helpers.triggerInputEvent(element, "beforeinput", inputType: "insertText", data: character)
     insertCharacter character, ->
       helpers.triggerEvent(element, "input")
 
@@ -211,8 +211,8 @@ simulateKeypress = (keyName, callback) ->
     when "delete"
       deleteInDirection("right", callback)
     when "return"
-      helpers.triggerInputEvent(document.activeElement, "beforeinput", inputType: "insertParagraph")
       helpers.defer ->
+        helpers.triggerInputEvent(document.activeElement, "beforeinput", inputType: "insertParagraph")
         node = document.createElement("br")
         helpers.insertNode(node, callback)
 

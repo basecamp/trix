@@ -81,7 +81,7 @@ helpers.extend
     range.deleteContents()
     selection.setSingleRange(range)
     Trix.selectionChangeObserver.update()
-    helpers.defer(callback)
+    requestAnimationFrame(callback) if callback
 
   selectNode: (node, callback) ->
     selection = rangy.getSelection()
