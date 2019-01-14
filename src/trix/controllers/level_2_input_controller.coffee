@@ -8,7 +8,7 @@ class Trix.Level2InputController extends Trix.InputController
       @delegate?.inputControllerDidAllowUnhandledInput?() if @composing
     else
       console.log("unexpected mutation! #{JSON.stringify(mutationSummary)}")
-      @handleInput(@requestReparse)
+      @reparse()
 
   scheduleRender: ->
     @scheduledRender ?= requestAnimationFrame(@render)
@@ -16,9 +16,12 @@ class Trix.Level2InputController extends Trix.InputController
   render: =>
     cancelAnimationFrame(@scheduledRender)
     @scheduledRender = null
-    @handleInput(@requestRender) unless @composing
+    @delegate?.render() unless @composing
     @afterRender?()
     @afterRender = null
+
+  reparse: ->
+    @delegate?.reparse()
 
   events:
     keydown: (event) ->

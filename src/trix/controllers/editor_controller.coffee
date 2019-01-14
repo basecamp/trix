@@ -43,6 +43,12 @@ class Trix.EditorController extends Trix.Controller
   unregisterSelectionManager: ->
     Trix.selectionChangeObserver.unregisterSelectionManager(@selectionManager)
 
+  render: ->
+    @compositionController.render()
+
+  reparse: ->
+    @composition.replaceHTML(@editorElement.innerHTML)
+
   # Composition delegate
 
   compositionDidChangeDocument: (document) ->
@@ -353,12 +359,6 @@ class Trix.EditorController extends Trix.Controller
       a.document.isEqualTo(b.document)
 
   # Private
-
-  reparse: ->
-    @composition.replaceHTML(@editorElement.innerHTML)
-
-  render: ->
-    @compositionController.render()
 
   updateInputElement: ->
     element = @compositionController.getSerializableElement()
