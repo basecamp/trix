@@ -1,6 +1,6 @@
 #= require trix/controllers/input_controller
 
-{dataTransferIsPlainText, keyEventIsKeyboardCommand} = Trix
+{dataTransferIsPlainText, keyEventIsKeyboardCommand, objectsAreEqual} = Trix
 
 class Trix.Level2InputController extends Trix.InputController
   elementDidMutate: (mutationSummary) ->
@@ -39,16 +39,42 @@ class Trix.Level2InputController extends Trix.InputController
         @withEvent(event, handler)
         @scheduleRender()
 
+    dragstart: (event) ->
+      if @responder?.selectionContainsAttachments()
+        @dragging =
+          range: @responder?.getSelectedRange()
+          point: pointFromEvent(event)
+
     dragenter: (event) ->
       if dragEventHasFiles(event)
         event.preventDefault()
 
-    drop: (event) ->
-      if dragEventHasFiles(event)
+    dragover: (event) ->
+      if @dragging
         event.preventDefault()
-        point = x: event.clientX, y: event.clientY
+        point = pointFromEvent(event)
+        unless objectsAreEqual(point, @dragging.point)
+          @dragging.point = point
+          @responder?.setLocationRangeFromPointRange(point)
+
+    drop: (event) ->
+      if @dragging
+        event.preventDefault()
+        @delegate?.inputControllerWillMoveText()
+        @responder?.moveTextFromRange(@dragging.range)
+        @dragging = null
+        @scheduleRender()
+
+      else if dragEventHasFiles(event)
+        event.preventDefault()
+        point = pointFromEvent(event)
         @responder?.setLocationRangeFromPointRange(point)
         @attachFiles(event.dataTransfer.files)
+
+    dragend: ->
+      if @dragging
+        @responder?.setSelectedRange(@dragging.range)
+        @dragging = null
 
     compositionend: (event) ->
       if @composing
@@ -89,7 +115,7 @@ class Trix.Level2InputController extends Trix.InputController
     deleteByDrag: ->
       @event.preventDefault()
       @withTargetDOMRange ->
-        @draggedRange = @responder?.getSelectedRange()
+        @deleteByDragRange = @responder?.getSelectedRange()
 
     deleteCompositionText: ->
       @deleteInDirection("backward", recordUndoEntry: false)
@@ -203,8 +229,8 @@ class Trix.Level2InputController extends Trix.InputController
         @responder?.insertString(@event.data)
 
     insertFromDrop: ->
-      if range = @draggedRange
-        @draggedRange = null
+      if range = @deleteByDragRange
+        @deleteByDragRange = null
         @delegate?.inputControllerWillMoveText()
         @withTargetDOMRange ->
           @responder?.moveTextFromRange(range)
@@ -360,3 +386,7 @@ class Trix.Level2InputController extends Trix.InputController
     command.push("shift") if event.shiftKey
     command.push(event.key)
     command
+
+  pointFromEvent = (event) ->
+    x: event.clientX
+    y: event.clientY

@@ -448,6 +448,9 @@ class Trix.Composition extends Trix.BasicObject
     range = @document.getRangeOfCommonAttributeAtPosition(attributeName, position)
     @setSelectedRange(range)
 
+  selectionContainsAttachments: ->
+    @getSelectedAttachments()?.length > 0
+
   selectionIsInCursorTarget: ->
     @editingAttachment or @positionIsCursorTarget(@getPosition())
 
@@ -461,6 +464,9 @@ class Trix.Composition extends Trix.BasicObject
   getSelectedDocument: ->
     if selectedRange = @getSelectedRange()
       @document.getDocumentAtRange(selectedRange)
+
+  getSelectedAttachments: ->
+    @getSelectedDocument()?.getAttachments()
 
   # Attachments
 
