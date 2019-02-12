@@ -231,6 +231,9 @@ class Trix.EditorController extends Trix.Controller
     @selectionManager.setLocationRange(@locationRangeBeforeDrag)
     @locationRangeBeforeDrag = null
 
+  inputControllerWillReparseForUnexpectedMutation: (mutationSummary) ->
+    @notifyEditorElement("before-reparse", {mutationSummary})
+
   # Selection manager delegate
 
   locationRangeDidChange: (locationRange) ->

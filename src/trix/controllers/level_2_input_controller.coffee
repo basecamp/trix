@@ -7,7 +7,7 @@ class Trix.Level2InputController extends Trix.InputController
     if @scheduledRender
       @delegate?.inputControllerDidAllowUnhandledInput?() if @composing
     else
-      console.log("unexpected mutation! #{JSON.stringify(mutationSummary)}")
+      @delegate?.inputControllerWillReparseForUnexpectedMutation?(mutationSummary)
       @reparse()
 
   scheduleRender: ->
