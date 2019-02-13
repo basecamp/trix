@@ -39,6 +39,9 @@ class Trix.Level2InputController extends Trix.InputController
         @withEvent(event, handler)
         @scheduleRender()
 
+    input: (event) ->
+      Trix.selectionChangeObserver.reset()
+
     dragstart: (event) ->
       if @responder?.selectionContainsAttachments()
         @dragging =
