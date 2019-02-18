@@ -44,6 +44,7 @@ class Trix.Level2InputController extends Trix.InputController
 
     dragstart: (event) ->
       if @responder?.selectionContainsAttachments()
+        event.dataTransfer.setData("application/x-trix-dragging", true)
         @dragging =
           range: @responder?.getSelectedRange()
           point: pointFromEvent(event)
