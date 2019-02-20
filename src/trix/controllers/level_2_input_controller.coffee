@@ -34,6 +34,11 @@ class Trix.Level2InputController extends Trix.InputController
           unless event.altKey or event.shiftKey
             @withEvent(event, handler)
 
+    paste: (event) ->
+      if event.clipboardData?.files?.length
+        event.preventDefault()
+        @attachFiles(event.clipboardData.files)
+
     beforeinput: (event) ->
       if handler = @inputTypes[event.inputType]
         @withEvent(event, handler)
