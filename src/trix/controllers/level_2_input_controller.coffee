@@ -227,15 +227,11 @@ class Trix.Level2InputController extends Trix.InputController
 
     insertCompositionText: ->
       @composing = true
-      @delegate?.inputControllerWillPerformTyping()
-      @withTargetDOMRange ->
-        @responder?.insertString(@event.data)
+      @insertString(@event.data)
 
     insertFromComposition: ->
       @composing = false
-      @delegate?.inputControllerWillPerformTyping()
-      @withTargetDOMRange ->
-        @responder?.insertString(@event.data)
+      @insertString(@event.data)
 
     insertFromDrop: ->
       if range = @deleteByDragRange
@@ -289,16 +285,12 @@ class Trix.Level2InputController extends Trix.InputController
           @delegate?.inputControllerDidPaste(paste)
 
     insertFromYank: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @withTargetDOMRange ->
-        @responder?.insertString(@event.data)
+      @insertString(@event.data)
 
     # insertHorizontalRule: ->
 
     insertLineBreak: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @withTargetDOMRange ->
-        @responder?.insertString("\n")
+      @insertString("\n")
 
     insertLink: ->
       @activateAttributeIfSupported("href", @event.data)
@@ -312,24 +304,24 @@ class Trix.Level2InputController extends Trix.InputController
         @responder?.insertLineBreak()
 
     insertReplacementText: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @withTargetDOMRange ->
-        @responder?.insertString(@event.dataTransfer.getData("text/plain"), updatePosition: false)
+      @insertString(@event.dataTransfer.getData("text/plain"), updatePosition: false)
 
     insertText: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @withTargetDOMRange ->
-        @responder?.insertString(@event.data)
+      @insertString(@event.data)
 
     insertTranspose: ->
-      @delegate?.inputControllerWillPerformTyping()
-      @withTargetDOMRange ->
-        @responder?.insertString(@event.data)
+      @insertString(@event.data)
 
     insertUnorderedList: ->
       @toggleAttributeIfSupported("bullet")
 
   # Responder helpers
+
+  insertString: (string, options) ->
+    if string
+      @delegate?.inputControllerWillPerformTyping()
+      @withTargetDOMRange ->
+        @responder?.insertString(string, options)
 
   toggleAttributeIfSupported: (attributeName) ->
     if attributeName in Trix.getAllAttributeNames()
