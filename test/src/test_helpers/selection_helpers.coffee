@@ -4,8 +4,12 @@
 helpers = Trix.TestHelpers
 
 keyCodes = {}
-for code, name of Trix.InputController.keyNames
+for code, name of Trix.config.keyNames
   keyCodes[name] = code
+
+keys =
+  left: "ArrowLeft"
+  right: "ArrowRight"
 
 helpers.extend
   moveCursor: (options, callback) ->
@@ -18,7 +22,7 @@ helpers.extend
     times ?= 1
 
     do move = -> helpers.defer ->
-      if helpers.triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction])
+      if helpers.triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], key: keys[direction])
         selection = rangy.getSelection()
         selection.move("character", if direction is "right" then 1 else -1)
         Trix.selectionChangeObserver.update()
@@ -38,7 +42,7 @@ helpers.extend
     times ?= 1
 
     do expand = -> helpers.defer ->
-      if helpers.triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], shiftKey: true)
+      if helpers.triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], key: keys[direction], shiftKey: true)
         getComposition().expandSelectionInDirection(if direction is "left" then "backward" else "forward")
 
       if --times is 0
@@ -77,13 +81,22 @@ helpers.extend
     range.deleteContents()
     selection.setSingleRange(range)
     Trix.selectionChangeObserver.update()
-    helpers.defer(callback)
+    requestAnimationFrame(callback) if callback
 
   selectNode: (node, callback) ->
     selection = rangy.getSelection()
     selection.selectAllChildren(node)
     Trix.selectionChangeObserver.update()
     callback?()
+
+  createDOMRangeFromPoint: (x, y) ->
+    if document.caretPositionFromPoint
+      {offsetNode, offset} = document.caretPositionFromPoint(x, y)
+      domRange = document.createRange()
+      domRange.setStart(offsetNode, offset)
+      domRange
+    else if document.caretRangeFromPoint
+      document.caretRangeFromPoint(x, y)
 
 getCursorCoordinates = ->
   if rect = window.getSelection().getRangeAt(0).getClientRects()[0]

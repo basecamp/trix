@@ -17,5 +17,10 @@
     composesExistingText: /Android.*Chrome/.test(navigator.userAgent)
     # IE 11 activates resizing handles on editable elements that have "layout"
     forcesObjectResizing: /Trident.*rv:11/.test(navigator.userAgent)
+    # https://www.w3.org/TR/input-events-1/ + https://www.w3.org/TR/input-events-2/
+    supportsInputEvents: do ->
+      typeof InputEvent isnt "undefined" and
+        "inputType" of InputEvent.prototype and
+        "data" of InputEvent.prototype
 
   config: {}

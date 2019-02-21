@@ -1,4 +1,7 @@
-{assert, defer, test, testGroup, triggerEvent, typeCharacters, clickToolbarButton, isToolbarButtonActive, insertNode} = Trix.TestHelpers
+{assert, defer, testIf, testGroup, triggerEvent, typeCharacters, clickToolbarButton, isToolbarButtonActive, insertNode} = Trix.TestHelpers
+
+test = ->
+  testIf(Trix.config.input.getLevel() is 0, arguments...)
 
 testGroup "Mutation input", template: "editor_empty", ->
   test "deleting a newline", (expectDocument) ->

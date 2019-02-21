@@ -16,7 +16,7 @@ DEBUG_METHODS =
     loadDocument
   "
 
-  "Trix.InputController": "
+  "Trix.Level0InputController": "
     elementDidMutate
     events.keydown
     events.keypress
@@ -27,6 +27,13 @@ DEBUG_METHODS =
     events.cut
     events.paste
     events.compositionstart
+    events.compositionend
+  "
+
+  "Trix.Level2InputController": "
+    elementDidMutate
+    events.beforeinput
+    events.input
     events.compositionend
   "
 

@@ -135,7 +135,16 @@ class Trix.Composition extends Trix.BasicObject
 
     @insertText(text)
 
-  deleteInDirection: (direction) ->
+  shouldManageDeletingInDirection: (direction) ->
+    locationRange = @getLocationRange()
+    if rangeIsCollapsed(locationRange)
+      return true if direction is "backward" and locationRange[0].offset is 0
+      return true if @shouldManageMovingCursorInDirection(direction)
+    else
+      return true if locationRange[0].index isnt locationRange[1].index
+    false
+
+  deleteInDirection: (direction, {length} = {}) ->
     locationRange = @getLocationRange()
     range = @getSelectedRange()
     selectionIsCollapsed = rangeIsCollapsed(range)
@@ -158,7 +167,7 @@ class Trix.Composition extends Trix.BasicObject
         return false if block.isEmpty()
 
     if selectionIsCollapsed
-      range = @getExpandedRangeInDirection(direction)
+      range = @getExpandedRangeInDirection(direction, {length})
       if direction is "backward"
         attachment = @getAttachmentAtRange(range)
 
@@ -329,7 +338,8 @@ class Trix.Composition extends Trix.BasicObject
 
   getCurrentTextAttributes: ->
     attributes = {}
-    attributes[key] = value for key, value of @currentAttributes when getTextConfig(key)
+    for key, value of @currentAttributes when value isnt false
+      attributes[key] = value if getTextConfig(key)
     attributes
 
   # Selection freezing
@@ -347,6 +357,7 @@ class Trix.Composition extends Trix.BasicObject
 
   @proxyMethod "getSelectionManager().getPointRange"
   @proxyMethod "getSelectionManager().setLocationRangeFromPointRange"
+  @proxyMethod "getSelectionManager().createLocationRangeFromDOMRange"
   @proxyMethod "getSelectionManager().locationIsCursorTarget"
   @proxyMethod "getSelectionManager().selectionIsExpanded"
   @proxyMethod "delegate?.getSelectionManager"
@@ -368,15 +379,44 @@ class Trix.Composition extends Trix.BasicObject
       @document.positionFromLocation(locationRange[0])
 
   getLocationRange: (options) ->
-    @getSelectionManager().getLocationRange(options) ? normalizeRange(index: 0, offset: 0)
+    @targetLocationRange ?
+      @getSelectionManager().getLocationRange(options) ?
+      normalizeRange(index: 0, offset: 0)
 
-  getExpandedRangeInDirection: (direction) ->
+  withTargetLocationRange: (locationRange, fn) ->
+    @targetLocationRange = locationRange
+    try
+      result = fn()
+    finally
+      @targetLocationRange = null
+    result
+
+  withTargetRange: (range, fn) ->
+    locationRange = @document.locationRangeFromRange(range)
+    @withTargetLocationRange(locationRange, fn)
+
+  withTargetDOMRange: (domRange, fn) ->
+    locationRange = @createLocationRangeFromDOMRange(domRange, strict: false)
+    @withTargetLocationRange(locationRange, fn)
+
+  getExpandedRangeInDirection: (direction, {length} = {}) ->
     [startPosition, endPosition] = @getSelectedRange()
     if direction is "backward"
-      startPosition = @translateUTF16PositionFromOffset(startPosition, -1)
+      if length
+        startPosition -= length
+      else
+        startPosition = @translateUTF16PositionFromOffset(startPosition, -1)
     else
-      endPosition = @translateUTF16PositionFromOffset(endPosition, 1)
+      if length
+        endPosition += length
+      else
+        endPosition = @translateUTF16PositionFromOffset(endPosition, 1)
     normalizeRange([startPosition, endPosition])
+
+  shouldManageMovingCursorInDirection: (direction) ->
+    return true if @editingAttachment
+    range = @getExpandedRangeInDirection(direction)
+    @getAttachmentAtRange(range)?
 
   moveCursorInDirection: (direction) ->
     if @editingAttachment
@@ -395,8 +435,8 @@ class Trix.Composition extends Trix.BasicObject
       if attachment = @getAttachmentAtRange(range)
         @editAttachment(attachment)
 
-  expandSelectionInDirection: (direction) ->
-    range = @getExpandedRangeInDirection(direction)
+  expandSelectionInDirection: (direction, {length} = {}) ->
+    range = @getExpandedRangeInDirection(direction, {length})
     @setSelectedRange(range)
 
   expandSelectionForEditing: ->
@@ -407,6 +447,9 @@ class Trix.Composition extends Trix.BasicObject
     position = @getPosition()
     range = @document.getRangeOfCommonAttributeAtPosition(attributeName, position)
     @setSelectedRange(range)
+
+  selectionContainsAttachments: ->
+    @getSelectedAttachments()?.length > 0
 
   selectionIsInCursorTarget: ->
     @editingAttachment or @positionIsCursorTarget(@getPosition())
@@ -421,6 +464,9 @@ class Trix.Composition extends Trix.BasicObject
   getSelectedDocument: ->
     if selectedRange = @getSelectedRange()
       @document.getDocumentAtRange(selectedRange)
+
+  getSelectedAttachments: ->
+    @getSelectedDocument()?.getAttachments()
 
   # Attachments
 

@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, clickToolbarDialogButton, collapseSelection, expandSelection, insertString, insertText, isToolbarButtonActive, isToolbarButtonDisabled, isToolbarDialogActive, moveCursor, pressKey, test, testGroup, typeCharacters, typeInToolbarDialog, typeToolbarKeyCommand} = Trix.TestHelpers
+{assert, clickToolbarButton, clickToolbarDialogButton, collapseSelection, expandSelection, insertString, insertText, isToolbarButtonActive, isToolbarButtonDisabled, isToolbarDialogActive, moveCursor, pressKey, test, testIf, testGroup, typeCharacters, typeInToolbarDialog, typeToolbarKeyCommand} = Trix.TestHelpers
 
 testGroup "Text formatting", template: "editor_empty", ->
   test "applying attributes to text", (done) ->
@@ -66,6 +66,15 @@ testGroup "Text formatting", template: "editor_empty", ->
         expandSelection "left", ->
           assert.ok isToolbarButtonDisabled(attribute: "bold")
           done()
+
+  test "typing over a selected attachment does not apply disabled formatting attributes", (expectDocument) ->
+    text = fixtures["file attachment"].document.getBlockAtIndex(0).getTextWithoutBlockBreak()
+    insertText(text)
+    expandSelection "left", ->
+      assert.ok isToolbarButtonDisabled(attribute: "bold")
+      typeCharacters "a", ->
+        assert.textAttributes([0, 1], {})
+        expectDocument("a\n")
 
   test "applying a link to an attachment with a host-provided href", (done) ->
     text = fixtures["file attachment"].document.getBlockAtIndex(0).getTextWithoutBlockBreak()
@@ -151,7 +160,7 @@ testGroup "Text formatting", template: "editor_empty", ->
                       assert.notOk isToolbarButtonActive(attribute: "bold")
                       done()
 
-  test "key command activates toolbar button", (done) ->
+  testIf Trix.config.input.getLevel() is 0, "key command activates toolbar button", (done) ->
     typeToolbarKeyCommand attribute: "bold", ->
       assert.ok isToolbarButtonActive(attribute: "bold")
       done()

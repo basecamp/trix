@@ -1,5 +1,6 @@
 #= require trix/controllers/controller
-#= require trix/controllers/input_controller
+#= require trix/controllers/level_0_input_controller
+#= require trix/controllers/level_2_input_controller
 #= require trix/controllers/composition_controller
 #= require trix/controllers/toolbar_controller
 #= require trix/models/composition
@@ -20,7 +21,7 @@ class Trix.EditorController extends Trix.Controller
     @attachmentManager = new Trix.AttachmentManager @composition.getAttachments()
     @attachmentManager.delegate = this
 
-    @inputController = new Trix.InputController @editorElement
+    @inputController = new Trix["Level#{Trix.config.input.getLevel()}InputController"](@editorElement)
     @inputController.delegate = this
     @inputController.responder = @composition
 
@@ -41,6 +42,12 @@ class Trix.EditorController extends Trix.Controller
 
   unregisterSelectionManager: ->
     Trix.selectionChangeObserver.unregisterSelectionManager(@selectionManager)
+
+  render: ->
+    @compositionController.render()
+
+  reparse: ->
+    @composition.replaceHTML(@editorElement.innerHTML)
 
   # Composition delegate
 
@@ -182,6 +189,9 @@ class Trix.EditorController extends Trix.Controller
   inputControllerWillPerformTyping: ->
     @recordTypingUndoEntry()
 
+  inputControllerWillPerformFormatting: ->
+    @recordFormattingUndoEntry()
+
   inputControllerWillCutText: ->
     @editor.recordUndoEntry("Cut")
 
@@ -202,6 +212,12 @@ class Trix.EditorController extends Trix.Controller
   inputControllerWillAttachFiles: ->
     @editor.recordUndoEntry("Drop Files")
 
+  inputControllerWillPerformUndo: ->
+    @editor.undo()
+
+  inputControllerWillPerformRedo: ->
+    @editor.redo()
+
   inputControllerDidReceiveKeyboardCommand: (keys) ->
     @toolbarController.applyKeyboardCommand(keys)
 
@@ -214,6 +230,9 @@ class Trix.EditorController extends Trix.Controller
   inputControllerDidCancelDrag: ->
     @selectionManager.setLocationRange(@locationRangeBeforeDrag)
     @locationRangeBeforeDrag = null
+
+  inputControllerWillReparseForUnexpectedMutation: (mutationSummary) ->
+    @notifyEditorElement("before-reparse", {mutationSummary})
 
   # Selection manager delegate
 
@@ -343,12 +362,6 @@ class Trix.EditorController extends Trix.Controller
       a.document.isEqualTo(b.document)
 
   # Private
-
-  reparse: ->
-    @composition.replaceHTML(@editorElement.innerHTML)
-
-  render: ->
-    @compositionController.render()
 
   updateInputElement: ->
     element = @compositionController.getSerializableElement()

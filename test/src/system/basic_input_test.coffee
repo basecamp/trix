@@ -1,4 +1,4 @@
-{assert, defer, dragToCoordinates, expandSelection, insertNode, moveCursor, pressKey, selectAll, test, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
+{assert, defer, dragToCoordinates, expandSelection, insertNode, moveCursor, pressKey, selectAll, test, testIf, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
 
 testGroup "Basic input", template: "editor_empty", ->
   test "typing", (expectDocument) ->
@@ -68,7 +68,7 @@ testGroup "Basic input", template: "editor_empty", ->
             dragToCoordinates coordinates, ->
               expectDocument "acb\n"
 
-  test "inserting newline after cursor (control + o)", (expectDocument) ->
+  testIf Trix.config.input.getLevel() is 0, "inserting newline after cursor (control + o)", (expectDocument) ->
     typeCharacters "ab", ->
       moveCursor "left", ->
         triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 79, which: 79, ctrlKey: true)
@@ -76,7 +76,7 @@ testGroup "Basic input", template: "editor_empty", ->
           assert.locationRange index: 0, offset: 1
           expectDocument "a\nb\n"
 
-  test "inserting ó with control + alt + o (AltGr)", (expectDocument) ->
+  testIf Trix.config.input.getLevel() is 0, "inserting ó with control + alt + o (AltGr)", (expectDocument) ->
     typeCharacters "ab", ->
       moveCursor "left", ->
         if triggerEvent(document.activeElement, "keydown", charCode: 0, keyCode: 79, which: 79, altKey: true, ctrlKey: true)

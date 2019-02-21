@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, defer, endComposition, insertNode, pressKey, selectNode, startComposition, test, testIf, testGroup, triggerEvent, typeCharacters, updateComposition} = Trix.TestHelpers
+{assert, clickToolbarButton, defer, endComposition, insertNode, pressKey, selectNode, startComposition, test, testIf, testGroup, triggerEvent, triggerInputEvent, typeCharacters, updateComposition} = Trix.TestHelpers
 {browser} = Trix
 
 testGroup "Composition input", template: "editor_empty", ->
@@ -61,7 +61,7 @@ testGroup "Composition input", template: "editor_empty", ->
           expectDocument "喜\n"
 
   # Simulates the sequence of events when pressing backspace through a word on Android
-  test "backspacing through a composition", (expectDocument) ->
+  testIf Trix.config.input.getLevel() is 0, "backspacing through a composition", (expectDocument) ->
     element = getEditorElement()
     element.editor.insertString("a cat")
 
@@ -79,7 +79,7 @@ testGroup "Composition input", template: "editor_empty", ->
 
   # Simulates the sequence of events when pressing backspace at the end of a
   # word and updating it on Android (running older versions of System WebView)
-  test "updating a composition", (expectDocument) ->
+  testIf Trix.config.input.getLevel() is 0, "updating a composition", (expectDocument) ->
     element = getEditorElement()
     element.editor.insertString("cat")
 
@@ -96,17 +96,20 @@ testGroup "Composition input", template: "editor_empty", ->
         expectDocument("car\n")
 
   # Simulates the sequence of events when typing on Android and then tapping elsewhere
-  test "leaving a composition", (expectDocument) ->
+  testIf Trix.config.input.getLevel() is 0, "leaving a composition", (expectDocument) ->
     element = getEditorElement()
 
     triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
     triggerEvent(element, "compositionstart", data: "")
+    triggerInputEvent(element, "beforeinput", inputType: "insertCompositionText", data: "c")
     triggerEvent(element, "compositionupdate", data: "c")
     triggerEvent(element, "input")
     node = document.createTextNode("c")
     insertNode(node)
+    selectNode(node)
     defer ->
       triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
+      triggerInputEvent(element, "beforeinput", inputType: "insertCompositionText", data: "ca")
       triggerEvent(element, "compositionupdate", data: "ca")
       triggerEvent(element, "input")
       node.data = "ca"
@@ -136,7 +139,7 @@ testGroup "Composition input", template: "editor_empty", ->
 
   # Simulates compositions in Firefox where the final composition data is
   # dispatched as both compositionupdate and compositionend.
-  test "composition ending with same data as last update", (expectDocument) ->
+  testIf Trix.config.input.getLevel() is 0, "composition ending with same data as last update", (expectDocument) ->
     element = getEditorElement()
 
     triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)

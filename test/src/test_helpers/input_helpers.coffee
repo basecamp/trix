@@ -1,7 +1,7 @@
 helpers = Trix.TestHelpers
 
 keyCodes = {}
-for code, name of Trix.InputController.keyNames
+for code, name of Trix.config.keyNames
   keyCodes[name] = code
 
 isIE = /Windows.*Trident/.test(navigator.userAgent)
@@ -17,6 +17,19 @@ helpers.extend
   triggerEvent: (element, type, properties) ->
     element.dispatchEvent(helpers.createEvent(type, properties))
 
+  triggerInputEvent: (element, type, properties = {}) ->
+    if Trix.config.input.getLevel() is 2
+      if properties.ranges
+        ranges = properties.ranges
+        delete properties.ranges
+      else
+        ranges = []
+        selection = window.getSelection()
+        if selection.rangeCount > 0
+          ranges.push(selection.getRangeAt(0).cloneRange())
+      properties.getTargetRanges = -> ranges
+      helpers.triggerEvent(element, type, properties)
+
   pasteContent: (contentType, value, callback) ->
     if typeof contentType is "object"
       data = contentType
@@ -30,8 +43,12 @@ helpers.extend
       types: (key for key of data)
       items: (value for key, value of data)
 
+    if "Files" in testClipboardData.types
+      testClipboardData.files = testClipboardData.items
+
+    helpers.triggerInputEvent(document.activeElement, "beforeinput", inputType: "insertFromPaste", dataTransfer: testClipboardData)
     helpers.triggerEvent(document.activeElement, "paste", {testClipboardData})
-    helpers.defer callback
+    requestAnimationFrame(callback) if callback
 
   createFile: (properties = {}) ->
     file = getAsFile: -> {}
@@ -60,7 +77,7 @@ helpers.extend
   pressKey: (keyName, callback) ->
     element = document.activeElement
     code = keyCodes[keyName]
-    properties = which: code, keyCode: code, charCode: 0
+    properties = which: code, keyCode: code, charCode: 0, key: capitalize(keyName)
 
     return callback() unless helpers.triggerEvent(element, "keydown", properties)
 
@@ -72,6 +89,7 @@ helpers.extend
   startComposition: (data, callback) ->
     element = document.activeElement
     helpers.triggerEvent(element, "compositionstart", data: "")
+    helpers.triggerInputEvent(element, "beforeinput", inputType: "insertCompositionText", data: data)
     helpers.triggerEvent(element, "compositionupdate", data: data)
     helpers.triggerEvent(element, "input")
 
@@ -81,6 +99,7 @@ helpers.extend
 
   updateComposition: (data, callback) ->
     element = document.activeElement
+    helpers.triggerInputEvent(element, "beforeinput", inputType: "insertCompositionText", data: data)
     helpers.triggerEvent(element, "compositionupdate", data: data)
     helpers.triggerEvent(element, "input")
 
@@ -90,6 +109,7 @@ helpers.extend
 
   endComposition: (data, callback) ->
     element = document.activeElement
+    helpers.triggerInputEvent(element, "beforeinput", inputType: "insertCompositionText", data: data)
     helpers.triggerEvent(element, "compositionupdate", data: data)
 
     node = document.createTextNode(data)
@@ -98,7 +118,7 @@ helpers.extend
     helpers.collapseSelection "right", ->
       helpers.triggerEvent(element, "input")
       helpers.triggerEvent(element, "compositionend", data: data)
-      helpers.defer(callback)
+      requestAnimationFrame(callback)
 
   clickElement: (element, callback) ->
     if helpers.triggerEvent(element, "mousedown")
@@ -132,10 +152,15 @@ helpers.extend
 
     dragstartData = {dataTransfer}
     helpers.triggerEvent(element, "dragstart", dragstartData)
+    helpers.triggerInputEvent(element, "beforeinput", inputType: "deleteByDrag")
 
     dropData = {dataTransfer}
     dropData[key] = value for key, value of coordinates
     helpers.triggerEvent(element, "drop", dropData)
+
+    {clientX, clientY} = coordinates
+    domRange = helpers.createDOMRangeFromPoint(clientX, clientY)
+    helpers.triggerInputEvent(element, "beforeinput", inputType: "insertFromDrop", ranges: [domRange])
 
     helpers.defer(callback)
 
@@ -167,6 +192,7 @@ typeCharacterInElement = (character, element, callback) ->
 
   helpers.defer ->
     return callback() unless helpers.triggerEvent(element, "keypress", keyCode: charCode, charCode: charCode)
+    helpers.triggerInputEvent(element, "beforeinput", inputType: "insertText", data: character)
     insertCharacter character, ->
       helpers.triggerEvent(element, "input")
 
@@ -185,16 +211,22 @@ simulateKeypress = (keyName, callback) ->
     when "delete"
       deleteInDirection("right", callback)
     when "return"
-      node = document.createElement("br")
-      helpers.insertNode(node, callback)
+      helpers.defer ->
+        helpers.triggerInputEvent(document.activeElement, "beforeinput", inputType: "insertParagraph")
+        node = document.createElement("br")
+        helpers.insertNode(node, callback)
 
 deleteInDirection = (direction, callback) ->
   if helpers.selectionIsCollapsed()
     getComposition().expandSelectionInDirection(if direction is "left" then "backward" else "forward")
     helpers.defer ->
-      helpers.deleteSelection()
-      callback()
+      inputType = if direction is "left" then "deleteContentBackward" else "deleteContentForward"
+      helpers.triggerInputEvent(document.activeElement, "beforeinput", {inputType})
+      helpers.defer ->
+        helpers.deleteSelection()
+        callback()
   else
+    helpers.triggerInputEvent(document.activeElement, "beforeinput", inputType: "deleteContentBackward")
     helpers.deleteSelection()
     callback()
 
@@ -202,3 +234,6 @@ getElementCoordinates = (element) ->
   rect = element.getBoundingClientRect()
   clientX: rect.left + rect.width / 2
   clientY: rect.top + rect.height / 2
+
+capitalize = (string) ->
+  string.charAt(0).toUpperCase() + string.slice(1)
