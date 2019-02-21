@@ -3,11 +3,10 @@
 {dataTransferIsPlainText, keyEventIsKeyboardCommand, objectsAreEqual} = Trix
 
 class Trix.Level2InputController extends Trix.InputController
-  elementDidMutate: (mutationSummary) ->
+  elementDidMutate: ->
     if @scheduledRender
       @delegate?.inputControllerDidAllowUnhandledInput?() if @composing
     else
-      @delegate?.inputControllerWillReparseForUnexpectedMutation?(mutationSummary)
       @reparse()
 
   scheduleRender: ->
@@ -286,8 +285,6 @@ class Trix.Level2InputController extends Trix.InputController
 
     insertFromYank: ->
       @insertString(@event.data)
-
-    # insertHorizontalRule: ->
 
     insertLineBreak: ->
       @insertString("\n")
