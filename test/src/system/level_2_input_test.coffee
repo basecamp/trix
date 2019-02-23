@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, defer, insertString, isToolbarButtonActive, selectAll, test, testIf, testGroup, triggerEvent, triggerInputEvent} = Trix.TestHelpers
+{assert, after, clickToolbarButton, defer, insertString, isToolbarButtonActive, selectAll, test, testIf, testGroup, triggerEvent, triggerInputEvent} = Trix.TestHelpers
 
 test = ->
   testIf(Trix.config.input.getLevel() is 2, arguments...)
@@ -160,4 +160,4 @@ paste = ({dataTransfer, clipboardData} = {}, callback) ->
   inputEvent = createEvent("beforeinput", inputType: "insertFromPaste", dataTransfer: dataTransfer)
   if document.activeElement.dispatchEvent(pasteEvent)
     document.activeElement.dispatchEvent(inputEvent)
-  requestAnimationFrame(callback)
+  after(60, callback)
