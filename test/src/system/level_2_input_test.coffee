@@ -122,6 +122,20 @@ testGroup "Level 2 Input", testOptions, ->
         assert.equal attachments[0].getFilename(), file.name
         expectDocument "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
 
+  # Pastes from MS Word include an image of the copied text 🙃
+  # https://input-inspector.now.sh/profiles/QWDITsV60dpEVl1SOZg8
+  test "pasting text from MS Word", (expectDocument) ->
+    createFile (file) ->
+      clipboardData = dataTransfer = createDataTransfer
+        "text/html": """<span class="MsoNormal">abc</span>"""
+        "text/plain": "abc"
+        "Files": [file]
+
+      paste {dataTransfer}, ->
+        attachments = getDocument().getAttachments()
+        assert.equal attachments.length, 0
+        expectDocument "abc\n"
+
 
 createFile = (callback) ->
   canvas = document.createElement("canvas")
