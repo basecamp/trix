@@ -99,3 +99,51 @@ testGroup "Level 2 Input", testOptions, ->
       assert.textAttributes([1, 2], strike: true)
       assert.textAttributes([2, 3], {})
       expectDocument("abc\n")
+
+  test "pasting a file", (expectDocument) ->
+    createFile (file) ->
+      clipboardData = createDataTransfer("Files": [file])
+      dataTransfer = createDataTransfer("Files": [file])
+      paste {clipboardData, dataTransfer}, ->
+        attachments = getDocument().getAttachments()
+        assert.equal attachments.length, 1
+        assert.equal attachments[0].getFilename(), file.name
+        expectDocument "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+
+  # "insertFromPaste InputEvent missing pasted files in dataTransfer"
+  # - https://bugs.webkit.org/show_bug.cgi?id=194921
+  test "pasting a file in Safari", (expectDocument) ->
+    createFile (file) ->
+      clipboardData = createDataTransfer("Files": [file])
+      dataTransfer = createDataTransfer("text/html": """<img src="blob:#{location.origin}/531de8">""")
+      paste {clipboardData, dataTransfer}, ->
+        attachments = getDocument().getAttachments()
+        assert.equal attachments.length, 1
+        assert.equal attachments[0].getFilename(), file.name
+        expectDocument "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+
+
+createFile = (callback) ->
+  canvas = document.createElement("canvas")
+  canvas.toBlob (file) ->
+    file.name = "image.png"
+    callback(file)
+
+createDataTransfer = (data = {}) ->
+  types: (key for key of data)
+  files: data.Files ? []
+  getData: (type) -> data[type]
+
+createEvent = (type, properties = {}) ->
+  event = document.createEvent("Events")
+  event.initEvent(type, true, true)
+  for key, value of properties
+    Object.defineProperty(event, key, {value})
+  event
+
+paste = ({dataTransfer, clipboardData} = {}, callback) ->
+  pasteEvent = createEvent("paste", clipboardData: clipboardData || dataTransfer)
+  inputEvent = createEvent("beforeinput", inputType: "insertFromPaste", dataTransfer: dataTransfer)
+  if document.activeElement.dispatchEvent(pasteEvent)
+    document.activeElement.dispatchEvent(inputEvent)
+  requestAnimationFrame(callback)
