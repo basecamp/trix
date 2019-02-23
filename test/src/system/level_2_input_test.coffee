@@ -100,6 +100,30 @@ testGroup "Level 2 Input", testOptions, ->
       assert.textAttributes([2, 3], {})
       expectDocument("abc\n")
 
+  # https://input-inspector.now.sh/profiles/hVXS1cHYFvc2EfdRyTWQ
+  test "correcting a misspelled word in Chrome", (expectDocument) ->
+    insertString("onr")
+    getComposition().setSelectedRange([0, 3])
+    requestAnimationFrame ->
+      inputType = "insertReplacementText"
+      dataTransfer = createDataTransfer("text/plain": "one")
+      event = createEvent("beforeinput", {inputType, dataTransfer})
+      document.activeElement.dispatchEvent(event)
+      requestAnimationFrame ->
+        expectDocument "one\n"
+
+  # https://input-inspector.now.sh/profiles/XsZVwKtFxakwnsNs0qnX
+  test "correcting a misspelled word in Safari", (expectDocument) ->
+    insertString("onr")
+    getComposition().setSelectedRange([0, 3])
+    requestAnimationFrame ->
+      inputType = "insertText"
+      dataTransfer = createDataTransfer("text/plain": "one", "text/html": "one")
+      event = createEvent("beforeinput", {inputType, dataTransfer})
+      document.activeElement.dispatchEvent(event)
+      requestAnimationFrame ->
+        expectDocument "one\n"
+
   test "pasting a file", (expectDocument) ->
     createFile (file) ->
       clipboardData = createDataTransfer("Files": [file])

@@ -304,7 +304,7 @@ class Trix.Level2InputController extends Trix.InputController
       @insertString(@event.dataTransfer.getData("text/plain"), updatePosition: false)
 
     insertText: ->
-      @insertString(@event.data)
+      @insertString(@event.data ? @event.dataTransfer?.getData("text/plain"))
 
     insertTranspose: ->
       @insertString(@event.data)
