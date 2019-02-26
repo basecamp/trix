@@ -29,9 +29,11 @@ class Trix.Level2InputController extends Trix.InputController
         if @delegate?.inputControllerDidReceiveKeyboardCommand(command)
           event.preventDefault()
       else
-        if handler = @keys[event.key]
-          unless event.altKey or event.shiftKey
-            @withEvent(event, handler)
+        name = event.key
+        name += "+Alt" if event.altKey
+        name += "+Shift" if event.shiftKey
+        if handler = @keys[name]
+          @withEvent(event, handler)
 
     paste: (event) ->
       if pasteEventHasFilesOnly(event)
@@ -111,6 +113,12 @@ class Trix.Level2InputController extends Trix.InputController
       if @responder?.canIncreaseNestingLevel()
         @event.preventDefault()
         @responder?.increaseNestingLevel()
+        @render()
+
+    "Tab+Shift": ->
+      if @responder?.canDecreaseNestingLevel()
+        @event.preventDefault()
+        @responder?.decreaseNestingLevel()
         @render()
 
   inputTypes:
