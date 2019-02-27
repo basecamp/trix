@@ -1,4 +1,4 @@
-{assert, after, clickToolbarButton, defer, insertString, isToolbarButtonActive, selectAll, test, testIf, testGroup, triggerEvent, triggerInputEvent} = Trix.TestHelpers
+{assert, after, clickToolbarButton, defer, insertString, insertNode, isToolbarButtonActive, selectAll, test, testIf, testGroup, triggerEvent, triggerInputEvent, typeCharacters} = Trix.TestHelpers
 
 test = ->
   testIf(Trix.config.input.getLevel() is 2, arguments...)
@@ -159,6 +159,20 @@ testGroup "Level 2 Input", testOptions, ->
         attachments = getDocument().getAttachments()
         assert.equal attachments.length, 0
         expectDocument "abc\n"
+
+  # "beforeinput" event is not fired for Paste and Match Style operations
+  # - https://bugs.chromium.org/p/chromium/issues/detail?id=934448
+  test "Paste and Match Style in Chrome", (expectDocument) ->
+    done = -> expectDocument("a\n\nb\n\nc\n")
+    typeCharacters "a\n\n", ->
+      clipboardData = createDataTransfer("text/plain": "b\n\nc")
+      pasteEvent = createEvent("paste", {clipboardData})
+      if document.activeElement.dispatchEvent(pasteEvent)
+        node = document.createElement("div")
+        node.innerHTML = """<div>b</div><div><br></div><div>c</div>"""
+        insertNode(node, done)
+      else
+        requestAnimationFrame(done)
 
 
 createFile = (callback) ->

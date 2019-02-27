@@ -40,6 +40,16 @@ class Trix.Level2InputController extends Trix.InputController
         event.preventDefault()
         @attachFiles(event.clipboardData.files)
 
+      else if pasteEventHasPlainTextOnly(event)
+        event.preventDefault()
+        paste =
+          type: "text/plain"
+          string: event.clipboardData.getData("text/plain")
+        @delegate?.inputControllerWillPaste(paste)
+        @responder?.insertString(paste.string)
+        @render()
+        @delegate?.inputControllerDidPaste(paste)
+
     beforeinput: (event) ->
       if handler = @inputTypes[event.inputType]
         @withEvent(event, handler)
@@ -391,6 +401,11 @@ class Trix.Level2InputController extends Trix.InputController
       "Files" in clipboard.types and
         clipboard.types.length is 1 and
         clipboard.files.length >= 1
+
+  pasteEventHasPlainTextOnly = (event) ->
+    if clipboard = event.clipboardData
+      "text/plain" in clipboard.types and
+        clipboard.types.length is 1
 
   keyboardCommandFromKeyEvent = (event) ->
     command = []
