@@ -35,11 +35,15 @@ class Trix.Level2InputController extends Trix.InputController
         if handler = @keys[name]
           @withEvent(event, handler)
 
+    # Handle paste event to work around beforeinput.insertFromPaste browser bugs.
+    # Safe to remove each condition once fixed upstream.
     paste: (event) ->
+      # https://bugs.webkit.org/show_bug.cgi?id=194921
       if pasteEventHasFilesOnly(event)
         event.preventDefault()
         @attachFiles(event.clipboardData.files)
 
+      # https://bugs.chromium.org/p/chromium/issues/detail?id=934448
       else if pasteEventHasPlainTextOnly(event)
         event.preventDefault()
         paste =
