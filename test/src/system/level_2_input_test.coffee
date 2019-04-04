@@ -1,4 +1,4 @@
-{assert, after, clickToolbarButton, defer, insertString, insertNode, isToolbarButtonActive, selectAll, test, testIf, testGroup, triggerEvent, triggerInputEvent, typeCharacters} = Trix.TestHelpers
+{assert, after, clickToolbarButton, defer, insertString, insertNode, isToolbarButtonActive, selectAll, selectNode, test, testIf, testGroup, triggerEvent, triggerInputEvent, typeCharacters} = Trix.TestHelpers
 
 test = ->
   testIf(Trix.config.input.getLevel() is 2, arguments...)
@@ -123,6 +123,17 @@ testGroup "Level 2 Input", testOptions, ->
       document.activeElement.dispatchEvent(event)
       requestAnimationFrame ->
         expectDocument "one\n"
+
+  # https://input-inspector.now.sh/profiles/yZlsrfG93QMzp2oyr0BE
+  test "deleting the last character in a composed word on Android", (expectDocument) ->
+    insertString("c")
+    element = getEditorElement()
+    textNode = element.firstChild.lastChild
+    selectNode textNode, ->
+      triggerInputEvent(element, "beforeinput", inputType: "insertCompositionText", data: "")
+      triggerEvent(element, "compositionend", data: "")
+      requestAnimationFrame ->
+        expectDocument "\n"
 
   test "pasting a file", (expectDocument) ->
     createFile (file) ->

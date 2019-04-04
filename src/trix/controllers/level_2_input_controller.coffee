@@ -336,11 +336,10 @@ class Trix.Level2InputController extends Trix.InputController
 
   # Responder helpers
 
-  insertString: (string, options) ->
-    if string
-      @delegate?.inputControllerWillPerformTyping()
-      @withTargetDOMRange ->
-        @responder?.insertString(string, options)
+  insertString: (string = "", options) ->
+    @delegate?.inputControllerWillPerformTyping()
+    @withTargetDOMRange ->
+      @responder?.insertString(string, options)
 
   toggleAttributeIfSupported: (attributeName) ->
     if attributeName in Trix.getAllAttributeNames()
