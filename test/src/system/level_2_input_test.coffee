@@ -157,6 +157,18 @@ testGroup "Level 2 Input", testOptions, ->
         assert.equal attachments[0].getFilename(), file.name
         expectDocument "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
 
+  # "insertFromPaste InputEvent missing text/uri-list in dataTransfer for pasted links"
+  # - https://bugs.webkit.org/show_bug.cgi?id=196702
+  test "pasting a link in Safari", (expectDocument) ->
+    createFile (file) ->
+      url = "https://bugs.webkit.org"
+      text = "WebKit Bugzilla"
+      clipboardData = createDataTransfer("URL": url, "text/uri-list": url, "text/plain": text)
+      dataTransfer = createDataTransfer("text/html": """<a href="#{url}">#{text}</a>""", "text/plain": text)
+      paste {clipboardData, dataTransfer}, ->
+        assert.textAttributes([0, url.length], href: url)
+        expectDocument "#{url}\n"
+
   # Pastes from MS Word include an image of the copied text 🙃
   # https://input-inspector.now.sh/profiles/QWDITsV60dpEVl1SOZg8
   test "pasting text from MS Word", (expectDocument) ->
