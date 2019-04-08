@@ -120,6 +120,7 @@ trix-toolbar {
     }
   }
 
+  .trix-button--icon-attach::before { background-image: $icon-attach; }
   .trix-button--icon-bold::before { background-image: $icon-bold; }
   .trix-button--icon-italic::before { background-image: $icon-italic; }
   .trix-button--icon-link::before { background-image: $icon-link; }
@@ -176,11 +177,11 @@ trix-toolbar {
     border-bottom: none;
   }
 
-  .trix-dialog--link {
+  .trix-dialog--attach, .trix-dialog--link {
     max-width: 600px;
   }
 
-  .trix-dialog__link-fields {
+  .trix-dialog__attach-fields, .trix-dialog__link-fields {
     display: flex;
     align-items: baseline;
 
