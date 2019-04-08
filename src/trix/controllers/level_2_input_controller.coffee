@@ -55,7 +55,7 @@ class Trix.Level2InputController extends Trix.InputController
         @delegate?.inputControllerDidPaste(paste)
 
       # https://bugs.webkit.org/show_bug.cgi?id=196702
-      else if href = event.clipboardData.getData("URL")
+      else if href = event.clipboardData?.getData("URL")
         event.preventDefault()
         paste =
           type: "URL"
