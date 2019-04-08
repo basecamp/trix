@@ -65,4 +65,4 @@ class Trix.DocumentView extends Trix.ObjectView
     ignoreSpaces(element.innerHTML) is ignoreSpaces(otherElement.innerHTML)
 
   ignoreSpaces = (html) ->
-    html.replace(/&nbsp;(?!<)/g, " ")
+    html.replace(/&nbsp;/g, " ")
