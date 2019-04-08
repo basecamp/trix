@@ -4,8 +4,8 @@
 #= require trix/config/file_size_formatting
 #= require trix/config/text_attributes
 #= require trix/config/serialization
+#= require trix/config/attachments
 #= require trix/config/toolbar
 #= require trix/config/undo_interval
-#= require trix/config/attachments
 #= require trix/config/key_names
 #= require trix/config/input
