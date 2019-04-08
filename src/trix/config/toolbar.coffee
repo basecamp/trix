@@ -43,7 +43,7 @@ Trix.config.toolbar =
 
       <div class="trix-dialog trix-dialog--attach" data-trix-dialog="attach" data-trix-dialog-attribute="files">
         <div class="trix-dialog__attach-fields">
-          <input type="file" name="files" class="trix-input trix-input--dialog" multiple required data-trix-input>
+          <input type="file" name="files" class="trix-input trix-input--dialog" accept="#{attachments.toolbarButton.accept}" multiple required data-trix-input>
           <div class="trix-button-group">
             <input type="button" class="trix-button trix-button--dialog" value="#{lang.attach}" data-trix-method="attachFiles">
           </div>
