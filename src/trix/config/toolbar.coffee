@@ -1,4 +1,4 @@
-{lang} = Trix.config
+{attachments, lang} = Trix.config
 
 Trix.config.toolbar =
   getDefaultHTML: -> """
@@ -8,6 +8,8 @@ Trix.config.toolbar =
         <button type="button" class="trix-button trix-button--icon trix-button--icon-italic" data-trix-attribute="italic" data-trix-key="i" title="#{lang.italic}" tabindex="-1">#{lang.italic}</button>
         <button type="button" class="trix-button trix-button--icon trix-button--icon-strike" data-trix-attribute="strike" title="#{lang.strike}" tabindex="-1">#{lang.strike}</button>
         <button type="button" class="trix-button trix-button--icon trix-button--icon-link" data-trix-attribute="href" data-trix-action="link" data-trix-key="k" title="#{lang.link}" tabindex="-1">#{lang.link}</button>
+        <button type="button" class="trix-button trix-button--icon trix-button--icon-attach" data-trix-attribute="attach" data-trix-action="attach" data-trix-key="a" title="#{lang.attachFile}" tabindex="-1" style="display: #{attachments.toolbarButton.enabled ? 'block' : 'none'};">
+        </button>
       </span>
 
       <span class="trix-button-group trix-button-group--block-tools" data-trix-button-group="block-tools">
@@ -35,6 +37,15 @@ Trix.config.toolbar =
           <div class="trix-button-group">
             <input type="button" class="trix-button trix-button--dialog" value="#{lang.link}" data-trix-method="setAttribute">
             <input type="button" class="trix-button trix-button--dialog" value="#{lang.unlink}" data-trix-method="removeAttribute">
+          </div>
+        </div>
+      </div>
+
+      <div class="trix-dialog trix-dialog--attach" data-trix-dialog="attach" data-trix-dialog-attribute="files">
+        <div class="trix-dialog__attach-fields">
+          <input type="file" name="files" class="trix-input trix-input--dialog" multiple required data-trix-input>
+          <div class="trix-button-group">
+            <input type="button" class="trix-button trix-button--dialog" value="#{lang.attach}" data-trix-method="attachFiles">
           </div>
         </div>
       </div>

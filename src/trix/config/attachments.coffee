@@ -7,3 +7,6 @@ Trix.config.attachments =
   file:
     caption:
       size: true
+  toolbarButton:
+    # Provide a handler for `trix-attachment-add` before setting to `true`
+    enabled: false
