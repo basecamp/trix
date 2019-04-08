@@ -132,6 +132,17 @@ class Trix.ToolbarController extends Trix.BasicObject
 
     @delegate?.toolbarDidShowDialog(dialogName)
 
+  attachFiles: (dialogElement) ->
+    attributeName = getAttributeName(dialogElement)
+    input = getInputForDialog(dialogElement, attributeName)
+    if input.files.length == 0
+      input.setAttribute("data-trix-validate", "")
+      input.classList.add("trix-validate")
+      input.focus()
+    else
+      @delegate?.toolbarDidAttachFiles(input.files)
+      @hideDialog()
+
   setAttribute: (dialogElement) ->
     attributeName = getAttributeName(dialogElement)
     input = getInputForDialog(dialogElement, attributeName)

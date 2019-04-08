@@ -248,6 +248,11 @@ class Trix.EditorController extends Trix.Controller
   toolbarDidInvokeAction: (actionName) ->
     @invokeAction(actionName)
 
+  toolbarDidAttachFiles: (files) ->
+    @recordUndoEntry("Attach files")
+    @composition.insertFiles(files)
+    @render()
+
   toolbarDidToggleAttribute: (attributeName) ->
     @recordFormattingUndoEntry()
     @composition.toggleCurrentAttribute(attributeName)
