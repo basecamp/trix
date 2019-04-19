@@ -120,6 +120,7 @@ trix-toolbar {
     }
   }
 
+  .trix-button--icon-attach::before { background-image: $icon-attach; top: 8%; bottom: 4%; }
   .trix-button--icon-bold::before { background-image: $icon-bold; }
   .trix-button--icon-italic::before { background-image: $icon-italic; }
   .trix-button--icon-link::before { background-image: $icon-link; }

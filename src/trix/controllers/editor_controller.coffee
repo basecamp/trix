@@ -311,6 +311,9 @@ class Trix.EditorController extends Trix.Controller
     decreaseNestingLevel:
       test: -> @editor.canDecreaseNestingLevel()
       perform: -> @editor.decreaseNestingLevel() and @render()
+    attachFiles:
+      test: -> true
+      perform: -> Trix.config.input.pickFiles(@editor.insertFiles)
 
   canInvokeAction: (actionName) ->
     if @actionIsExternal(actionName)
