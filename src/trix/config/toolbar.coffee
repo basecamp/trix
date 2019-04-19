@@ -20,6 +20,10 @@ Trix.config.toolbar =
         <button type="button" class="trix-button trix-button--icon trix-button--icon-increase-nesting-level" data-trix-action="increaseNestingLevel" title="#{lang.indent}" tabindex="-1">#{lang.indent}</button>
       </span>
 
+      <span class="trix-button-group trix-button-group--file-tools" data-trix-button-group="file-tools">
+        <button type="button" class="trix-button trix-button--icon trix-button--icon-attach" data-trix-action="attachFiles" title="#{lang.attachFiles}" tabindex="-1">#{lang.attachFiles}</button>
+      </span>
+
       <span class="trix-button-group-spacer"></span>
 
       <span class="trix-button-group trix-button-group--history-tools" data-trix-button-group="history-tools">
