@@ -8,7 +8,7 @@
 #= require trix/models/attachment_manager
 #= require trix/models/selection_manager
 
-{rangeIsCollapsed, rangesAreEqual, objectsAreEqual} = Trix
+{rangeIsCollapsed, rangesAreEqual, objectsAreEqual, getBlockConfig} = Trix
 
 class Trix.EditorController extends Trix.Controller
   constructor: ({@editorElement, document, html}) ->
@@ -387,8 +387,9 @@ class Trix.EditorController extends Trix.Controller
     @render()
 
   recordFormattingUndoEntry: (attributeName) ->
+    blockConfig = getBlockConfig(attributeName)
     locationRange = @selectionManager.getLocationRange()
-    unless rangeIsCollapsed(locationRange)
+    if blockConfig or not rangeIsCollapsed(locationRange)
       @editor.recordUndoEntry("Formatting", context: @getUndoContext(), consolidatable: true)
 
   recordTypingUndoEntry: ->
