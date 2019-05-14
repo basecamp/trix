@@ -355,13 +355,13 @@ class Trix.Level2InputController extends Trix.InputController
 
   toggleAttributeIfSupported: (attributeName) ->
     if attributeName in Trix.getAllAttributeNames()
-      @delegate?.inputControllerWillPerformFormatting()
+      @delegate?.inputControllerWillPerformFormatting(attributeName)
       @withTargetDOMRange ->
         @responder?.toggleCurrentAttribute(attributeName)
 
   activateAttributeIfSupported: (attributeName, value) ->
     if attributeName in Trix.getAllAttributeNames()
-      @delegate?.inputControllerWillPerformFormatting()
+      @delegate?.inputControllerWillPerformFormatting(attributeName)
       @withTargetDOMRange ->
         @responder?.setCurrentAttribute(attributeName, value)
 
