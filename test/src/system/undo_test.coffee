@@ -46,3 +46,14 @@ testGroup "Undo/Redo", template: "editor_empty", ->
                         clickToolbarButton action: "redo", ->
                           assert.ok getDocument().isEqualTo(third)
                           done()
+
+  test "block formatting are undoable", (done) ->
+    typeCharacters "abc", ->
+      first = getDocument().copy()
+      clickToolbarButton attribute: "heading1", ->
+        second = getDocument().copy()
+        clickToolbarButton action: "undo", ->
+          assert.ok getDocument().isEqualTo(first)
+          clickToolbarButton action: "redo", ->
+            assert.ok getDocument().isEqualTo(second)
+            done()

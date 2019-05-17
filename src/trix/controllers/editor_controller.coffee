@@ -8,7 +8,7 @@
 #= require trix/models/attachment_manager
 #= require trix/models/selection_manager
 
-{rangeIsCollapsed, rangesAreEqual, objectsAreEqual} = Trix
+{rangeIsCollapsed, rangesAreEqual, objectsAreEqual, getBlockConfig} = Trix
 
 class Trix.EditorController extends Trix.Controller
   constructor: ({@editorElement, document, html}) ->
@@ -189,8 +189,8 @@ class Trix.EditorController extends Trix.Controller
   inputControllerWillPerformTyping: ->
     @recordTypingUndoEntry()
 
-  inputControllerWillPerformFormatting: ->
-    @recordFormattingUndoEntry()
+  inputControllerWillPerformFormatting: (attributeName) ->
+    @recordFormattingUndoEntry(attributeName)
 
   inputControllerWillCutText: ->
     @editor.recordUndoEntry("Cut")
@@ -249,19 +249,19 @@ class Trix.EditorController extends Trix.Controller
     @invokeAction(actionName)
 
   toolbarDidToggleAttribute: (attributeName) ->
-    @recordFormattingUndoEntry()
+    @recordFormattingUndoEntry(attributeName)
     @composition.toggleCurrentAttribute(attributeName)
     @render()
     @editorElement.focus() unless @selectionFrozen
 
   toolbarDidUpdateAttribute: (attributeName, value) ->
-    @recordFormattingUndoEntry()
+    @recordFormattingUndoEntry(attributeName)
     @composition.setCurrentAttribute(attributeName, value)
     @render()
     @editorElement.focus() unless @selectionFrozen
 
   toolbarDidRemoveAttribute: (attributeName) ->
-    @recordFormattingUndoEntry()
+    @recordFormattingUndoEntry(attributeName)
     @composition.removeCurrentAttribute(attributeName)
     @render()
     @editorElement.focus() unless @selectionFrozen
@@ -386,9 +386,10 @@ class Trix.EditorController extends Trix.Controller
     @composition.removeAttachment(attachment)
     @render()
 
-  recordFormattingUndoEntry: ->
+  recordFormattingUndoEntry: (attributeName) ->
+    blockConfig = getBlockConfig(attributeName)
     locationRange = @selectionManager.getLocationRange()
-    unless rangeIsCollapsed(locationRange)
+    if blockConfig or not rangeIsCollapsed(locationRange)
       @editor.recordUndoEntry("Formatting", context: @getUndoContext(), consolidatable: true)
 
   recordTypingUndoEntry: ->
