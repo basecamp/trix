@@ -30,12 +30,12 @@ if (process.env.CI) {
     sl_chrome_latest: {
       base: "SauceLabs",
       browserName: "chrome",
-      version: "71"
+      version: "75"
     },
     sl_firefox_latest: {
       base: "SauceLabs",
       browserName: "firefox",
-      version: "64"
+      version: "68"
     },
     sl_safari_previous: {
       base: "SauceLabs",
@@ -47,7 +47,7 @@ if (process.env.CI) {
       base: "SauceLabs",
       browserName: "safari",
       platform: "macOS 10.13",
-      version: "12.0"
+      version: "12.1"
     },
     sl_edge_previous: {
       base: "SauceLabs",
@@ -79,21 +79,21 @@ if (process.env.CI) {
       browserName: "safari",
       platform: "ios",
       device: "iPhone Simulator",
-      version: "12.0"
+      version: "12.2"
     },
     sl_android_previous: {
       base: "SauceLabs",
       browserName: "chrome",
       platform: "android",
-      device: "Android Emulator",
-      version: "6.0"
+      device: "Android GoogleAPI Emulator",
+      version: "7.1"
     },
     sl_android_latest: {
       base: "SauceLabs",
       browserName: "chrome",
       platform: "android",
       device: "Android GoogleAPI Emulator",
-      version: "7.1"
+      version: "8.1"
     }
   }
 
