@@ -8,12 +8,14 @@ Trix.config.input =
       0
 
   pickFiles: (callback) ->
-    input = Trix.makeElement("input", type: "file", multiple: true, hidden: true, id: "trix-file-input")
+    input = Trix.makeElement("input", type: "file", multiple: true, hidden: true, id: @fileInputId)
 
     input.addEventListener "change", ->
       callback(input.files)
       Trix.removeNode(input)
 
-    Trix.removeNode(document.getElementById(input.id))
+    Trix.removeNode(document.getElementById(@fileInputId))
     document.body.appendChild(input)
     input.click()
+
+  fileInputId: "trix-file-input-#{Date.now().toString(16)}"
