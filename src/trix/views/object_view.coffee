@@ -12,6 +12,7 @@ class Trix.ObjectView extends Trix.BasicObject
 
   invalidate: ->
     @nodes = null
+    @childViews = []
     @parentView?.invalidate()
 
   invalidateViewForObject: (object) ->
@@ -36,8 +37,7 @@ class Trix.ObjectView extends Trix.BasicObject
   recordChildView: (view) ->
     view.parentView = this
     view.rootView = @rootView
-    unless view in @childViews
-      @childViews.push(view)
+    @childViews.push(view)
     view
 
   getAllChildViews: ->
