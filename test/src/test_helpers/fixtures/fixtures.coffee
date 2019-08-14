@@ -472,6 +472,46 @@ removeWhitespace = (string) ->
       </blockquote>
     """
 
+  "nested quotes at different nesting levels":
+    document: createDocument(
+      ["a", {}, ["quote", "quote", "quote"]],
+      ["b", {}, ["quote", "quote"]],
+      ["c", {}, ["quote"]],
+      ["d", {}, ["quote", "quote"]]
+    )
+    html: removeWhitespace """
+      <blockquote>
+        <blockquote>
+          <blockquote>
+            #{blockComment}
+            a
+          </blockquote>
+          #{blockComment}
+          b
+        </blockquote>
+        #{blockComment}
+        c
+        <blockquote>
+          #{blockComment}
+          d
+        </blockquote>
+      </blockquote>
+    """
+    serializedHTML: removeWhitespace """
+      <blockquote>
+        <blockquote>
+          <blockquote>
+            a
+          </blockquote>
+          b
+        </blockquote>
+        c
+        <blockquote>
+          d
+        </blockquote>
+      </blockquote>
+    """
+
   "nested quote and list":
     document: createDocument(["ab3", {}, ["quote", "bulletList", "bullet"]])
     html: "<blockquote><ul><li>#{blockComment}ab3</li></ul></blockquote>"
