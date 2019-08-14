@@ -111,6 +111,11 @@ testGroup "Trix.HTMLParser", ->
     expectedHTML = """<blockquote><!--block-->abc</blockquote><div><!--block--><strong>123</strong></div>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
+  test "parses text nodes following block elements", ->
+    html = """<ul><li>a</li></ul>b<blockquote>c</blockquote>d"""
+    expectedHTML = """<ul><li><!--block-->a</li></ul><div><!--block-->b</div><blockquote><!--block-->c</blockquote><div><!--block-->d</div>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
   test "parses whitespace-only text nodes without a containing block element", ->
     html = """a <strong>b</strong> <em>c</em>"""
     expectedHTML = """<div><!--block-->a <strong>b</strong> <em>c</em></div>"""

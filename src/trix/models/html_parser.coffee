@@ -54,10 +54,17 @@ class Trix.HTMLParser extends Trix.BasicObject
   processNode: (node) ->
     switch node.nodeType
       when Node.TEXT_NODE
-        @processTextNode(node)
+        unless @isInsignificantTextNode(node)
+          @appendBlockForTextNode(node)
+          @processTextNode(node)
       when Node.ELEMENT_NODE
         @appendBlockForElement(node)
         @processElement(node)
+
+  appendBlockForTextNode: (node) ->
+    if @currentBlockElement and not elementContainsNode(@currentBlockElement, node)
+      @currentBlock = @appendEmptyBlock()
+      @currentBlockElement = null
 
   appendBlockForElement: (element) ->
     elementIsBlockElement = @isBlockElement(element)
@@ -87,13 +94,12 @@ class Trix.HTMLParser extends Trix.BasicObject
     null
 
   processTextNode: (node) ->
-    unless @isInsignificantTextNode(node)
-      string = node.data
-      unless elementCanDisplayPreformattedText(node.parentNode)
-        string = squishBreakableWhitespace(string)
-        if stringEndsWithWhitespace(node.previousSibling?.textContent)
-          string = leftTrimBreakableWhitespace(string)
-      @appendStringWithAttributes(string, @getTextAttributes(node.parentNode))
+    string = node.data
+    unless elementCanDisplayPreformattedText(node.parentNode)
+      string = squishBreakableWhitespace(string)
+      if stringEndsWithWhitespace(node.previousSibling?.textContent)
+        string = leftTrimBreakableWhitespace(string)
+    @appendStringWithAttributes(string, @getTextAttributes(node.parentNode))
 
   processElement: (element) ->
     if nodeIsAttachmentElement(element)
