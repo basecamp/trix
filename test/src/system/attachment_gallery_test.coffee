@@ -13,23 +13,25 @@ testGroup "Attachment galleries", template: "editor_empty", ->
     assert.blockAttributes([0, 2], ["attachmentGallery"])
     getEditor().setSelectedRange([1, 2])
     pressKey "backspace", ->
-      assert.blockAttributes([0, 2], [])
-      expectDocument "#{ORC}\n"
+      requestAnimationFrame ->
+        assert.blockAttributes([0, 2], [])
+        expectDocument "#{ORC}\n"
 
   test "typing in an attachment gallery block splits it", (expectDocument) ->
     insertAttachments(createImageAttachments(4))
     getEditor().setSelectedRange(2)
     typeCharacters "a", ->
-      assert.blockAttributes([0, 2], ["attachmentGallery"])
-      assert.blockAttributes([3, 4], [])
-      assert.blockAttributes([5, 7], ["attachmentGallery"])
-      expectDocument "#{ORC}#{ORC}\na\n#{ORC}#{ORC}\n"
+      requestAnimationFrame ->
+        assert.blockAttributes([0, 2], ["attachmentGallery"])
+        assert.blockAttributes([3, 4], [])
+        assert.blockAttributes([5, 7], ["attachmentGallery"])
+        expectDocument "#{ORC}#{ORC}\na\n#{ORC}#{ORC}\n"
 
   test "inserting a gallery in a formatted block", (expectDocument) ->
     clickToolbarButton attribute: "quote", ->
       typeCharacters "abc", ->
         insertAttachments(createImageAttachments(2))
-        defer ->
+        requestAnimationFrame ->
           assert.blockAttributes([0, 3], ["quote"])
           assert.blockAttributes([4, 6], ["attachmentGallery"])
           expectDocument "abc\n#{ORC}#{ORC}\n"
