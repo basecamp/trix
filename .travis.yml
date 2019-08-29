@@ -1,5 +1,7 @@
 dist: xenial
 sudo: false
+language: node_js
+node_js: 11
 cache:
   - bundler
   - yarn
