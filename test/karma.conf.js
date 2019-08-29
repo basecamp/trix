@@ -16,6 +16,8 @@ const config = {
     }
   },
 
+  hostname: "0.0.0.0",
+
   singleRun: true,
   autoWatch: false,
 
@@ -79,7 +81,7 @@ if (process.env.CI) {
       browserName: "safari",
       platform: "ios",
       device: "iPhone Simulator",
-      version: "12.2"
+      version: "12.0"
     },
     sl_android_previous: {
       base: "SauceLabs",
