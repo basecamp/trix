@@ -62,8 +62,14 @@ rewriteLifecycleCallbacks = do ->
 registerElement = do ->
   if window.customElements
     (tagName, properties) ->
-      constructor = -> Reflect.construct(HTMLElement, [], constructor)
-      constructor.prototype = Object.create(HTMLElement.prototype, properties)
+      constructor = ->
+        if typeof Reflect is "object"
+          Reflect.construct(HTMLElement, [], constructor)
+        else
+          HTMLElement.apply(this)
+      Object.setPrototypeOf(constructor.prototype, HTMLElement.prototype)
+      Object.setPrototypeOf(constructor, HTMLElement)
+      Object.defineProperties(constructor.prototype, properties)
       window.customElements.define(tagName, constructor)
       constructor
   else
