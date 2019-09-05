@@ -321,8 +321,8 @@ element.editor.redo()
 Changes you make through the editor interface will not automatically record undo entries. You can save your own undo entries by calling the `editor.recordUndoEntry` method with a description argument.
 
 ```js
-element.editor.insertString("Hello")
 element.editor.recordUndoEntry("Insert Text")
+element.editor.insertString("Hello")
 ```
 
 ## Loading and Saving Editor State
