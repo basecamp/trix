@@ -42,6 +42,9 @@ class Trix.Editor
   insertAttachment: (attachment) ->
     @composition.insertAttachment(attachment)
 
+  insertAttachments: (attachments) ->
+    @composition.insertAttachments(attachments)
+
   insertDocument: (document) ->
     @composition.insertDocument(document)
 
