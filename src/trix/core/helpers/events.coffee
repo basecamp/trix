@@ -6,10 +6,9 @@ Trix.extend
     html = dataTransfer.getData("text/html")
 
     if text and html
-      element = document.createElement("div")
-      element.innerHTML = html
-      if element.textContent is text
-        not element.querySelector(":not(meta)")
+      {body} = new DOMParser().parseFromString(html, "text/html")
+      if body.textContent is text
+        not body.querySelector("*")
     else
       text?.length
 
