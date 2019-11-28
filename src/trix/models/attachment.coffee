@@ -151,8 +151,12 @@ class Trix.Attachment extends Trix.Object
     if url and url isnt @getPreviewURL()
       @preloadingURL = url
       operation = new Trix.ImagePreloadOperation url
-      operation.then ({width, height}) =>
-        @setAttributes({width, height}) unless @getWidth() and @getHeight()
-        @preloadingURL = null
-        @setPreviewURL(url)
-        callback?()
+      operation
+        .then ({width, height}) =>
+          @setAttributes({width, height}) unless @getWidth() and @getHeight()
+          @preloadingURL = null
+          @setPreviewURL(url)
+          callback?()
+        .catch =>
+          @preloadingURL = null
+          callback?()
