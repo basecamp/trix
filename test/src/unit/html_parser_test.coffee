@@ -168,6 +168,21 @@ testGroup "Trix.HTMLParser", ->
       delete window.unsanitized
       done()
 
+  test "allows http URL in href", ->
+    html = """<a href="http://example.com/">foo</a>"""
+    expectedHTML = """<div><!--block--><a href=\"http://example.com/\">foo</a></div>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
+  test "allows https URL in href", ->
+    html = """<a href="https://example.com/">foo</a>"""
+    expectedHTML = """<div><!--block--><a href=\"https://example.com/\">foo</a></div>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
+  test "disallows javascript URL in href", ->
+    html = """<a href="javascript:alert(1)">foo</a>"""
+    expectedHTML = """<div><!--block-->foo</div>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
   test "parses attachment caption from large html string", (done) ->
     html = fixtures["image attachment with edited caption"].html
 

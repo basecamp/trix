@@ -44,9 +44,12 @@ class Trix.HTMLSanitizer extends Trix.BasicObject
     @body
 
   sanitizeElement: (element) ->
-    for {name} in [element.attributes...]
+    for {name, value} in [element.attributes...]
       unless name in @allowedAttributes or name.indexOf("data-trix") is 0
         element.removeAttribute(name)
+      if name == "href"
+        unless value.match(/^https?:\/\//)
+          element.removeAttribute(name)
     element
 
   normalizeListElementNesting: ->
