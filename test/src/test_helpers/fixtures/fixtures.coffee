@@ -120,11 +120,11 @@ removeWhitespace = (string) ->
 
   "code formatted block":
     document: createDocument(["123", {}, ["code"]])
-    html: "<pre>#{blockComment}123</pre>"
+    html: "<pre><code>#{blockComment}123</code></pre>"
 
   "code with newline":
     document: createDocument(["12\n3", {}, ["code"]])
-    html: "<pre>#{blockComment}12\n3</pre>"
+    html: "<pre><code>#{blockComment}12\n3</code></pre>"
 
   "multiple blocks with block comments in their text":
     document: createDocument(["a#{blockComment}b", {}, ["quote"]], ["#{blockComment}c", {}, ["code"]])
