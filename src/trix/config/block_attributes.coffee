@@ -10,8 +10,12 @@ Trix.config.blockAttributes = attributes =
     terminal: true
     breakOnReturn: true
     group: false
-  code:
+  pre:
     tagName: "pre"
+    parse: false
+  code:
+    tagName: "code"
+    listAttribute: "pre"
     terminal: true
     text:
       plaintext: true

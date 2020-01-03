@@ -7,7 +7,7 @@ testGroup "Block formatting", template: "editor_empty", ->
         assert.blockAttributes([0, 4], ["quote"])
         assert.ok isToolbarButtonActive(attribute: "quote")
         clickToolbarButton attribute: "code", ->
-          assert.blockAttributes([0, 4], ["quote", "code"])
+          assert.blockAttributes([0, 4], ["quote", "pre", "code"])
           assert.ok isToolbarButtonActive(attribute: "code")
           clickToolbarButton attribute: "code", ->
             assert.blockAttributes([0, 4], ["quote"])
@@ -275,9 +275,9 @@ testGroup "Block formatting", template: "editor_empty", ->
       typeCharacters "ab\n\n", ->
         clickToolbarButton attribute: "code", ->
           typeCharacters "cd", ->
-            getSelectionManager().setLocationRange([{index: 0, offset: 0}, {index: 1, offset: 1}])
+            getSelectionManager().setLocationRange([{index: 0, offset: 3}, {index: 6, offset: 1}])
             getComposition().deleteInDirection("backward")
-            assert.blockAttributes([0, 2], ["code"])
+            assert.blockAttributes([3, 4], ["pre", "code"])
             expectDocument("d\n")
 
   test "increasing list level", (done) ->
@@ -529,17 +529,17 @@ testGroup "Block formatting", template: "editor_empty", ->
     selectAll ->
       clickToolbarButton attribute: "code", ->
         assert.equal getDocument().getBlockCount(), 3
-        assert.blockAttributes([0, 1], ["code"])
-        assert.blockAttributes([2, 3], ["code"])
-        assert.blockAttributes([4, 5], ["code"])
+        assert.blockAttributes([0, 1], ["pre", "code"])
+        assert.blockAttributes([2, 3], ["pre", "code"])
+        assert.blockAttributes([4, 5], ["pre", "code"])
         expectDocument("a\nb\nc\n")
 
   test "code blocks preserve newlines", (expectDocument) ->
     typeCharacters "a\nb", ->
       selectAll ->
         clickToolbarButton attribute: "code", ->
-          assert.equal getDocument().getBlockCount(), 1
-          assert.blockAttributes([0, 3], ["code"])
+          assert.equal getDocument().getBlockCount(), 2
+          assert.blockAttributes([0, 2], ["pre", "code"])
           expectDocument("a\nb\n")
 
   test "code blocks are not indentable", (done) ->
@@ -565,7 +565,7 @@ testGroup "Block formatting", template: "editor_empty", ->
           clickToolbarButton action: "decreaseNestingLevel", ->
             document = getDocument()
             assert.equal document.getBlockCount(), 1
-            assert.blockAttributes([0, 1], ["code"])
+            assert.blockAttributes([0, 1], ["pre", "code"])
             expectDocument("a\n")
 
   test "indenting a heading inside a bullet", (expectDocument) ->

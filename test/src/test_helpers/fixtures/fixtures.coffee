@@ -120,16 +120,16 @@ removeWhitespace = (string) ->
 
   "code formatted block":
     document: createDocument(["123", {}, ["code"]])
-    html: "<pre>#{blockComment}123</pre>"
+    html: "<pre><code>#{blockComment}123</code></pre>"
 
   "code with newline":
     document: createDocument(["12\n3", {}, ["code"]])
-    html: "<pre>#{blockComment}12\n3</pre>"
+    html: "<pre><code>#{blockComment}12\n3</code></pre>"
 
   "multiple blocks with block comments in their text":
     document: createDocument(["a#{blockComment}b", {}, ["quote"]], ["#{blockComment}c", {}, ["code"]])
-    html: "<blockquote>#{blockComment}a&lt;!--block--&gt;b</blockquote><pre>#{blockComment}&lt;!--block--&gt;c</pre>"
-    serializedHTML: "<blockquote>a&lt;!--block--&gt;b</blockquote><pre>&lt;!--block--&gt;c</pre>"
+    html: "<blockquote>#{blockComment}a&lt;!--block--&gt;b</blockquote><pre><code>#{blockComment}&lt;!--block--&gt;c</code></pre>"
+    serializedHTML: "<blockquote>a&lt;!--block--&gt;b</blockquote><pre><code>&lt;!--block--&gt;c</code></pre>"
 
   "unordered list with one item":
     document: createDocument(["a", {}, ["bulletList", "bullet"]])
@@ -352,11 +352,11 @@ removeWhitespace = (string) ->
 
   "nested quote and code formatted block":
     document: createDocument(["ab3", {}, ["quote", "code"]])
-    html: "<blockquote><pre>#{blockComment}ab3</pre></blockquote>"
+    html: "<blockquote><pre><code>#{blockComment}ab3</code></pre></blockquote>"
 
   "nested code and quote formatted block":
     document: createDocument(["ab3", {}, ["code", "quote"]])
-    html: "<pre><blockquote>#{blockComment}ab3</blockquote></pre>"
+    html: "<pre><code><blockquote>#{blockComment}ab3</blockquote></code></pre>"
 
   "nested code blocks in quote":
     document: createDocument(
@@ -372,8 +372,10 @@ removeWhitespace = (string) ->
         <br>
         <br>
         <pre>
+        <code>
           #{blockComment}
           b
+        </code>
         </pre>
         #{blockComment}
         <br>
@@ -381,8 +383,10 @@ removeWhitespace = (string) ->
         <br>
         <br>
         <pre>
+        <code>
           #{blockComment}
           d
+        </code>
         </pre>
       </blockquote>
     """
@@ -392,14 +396,18 @@ removeWhitespace = (string) ->
         <br>
         <br>
         <pre>
+        <code>
           b
+        </code>
         </pre>
         <br>
         c
         <br>
         <br>
         <pre>
+        <code>
           d
+        </code>
         </pre>
       </blockquote>
     """
@@ -420,8 +428,10 @@ removeWhitespace = (string) ->
       <br>
       <br>
       <pre>
+      <code>
         #{blockComment}
         b
+      </code>
       </pre>
       #{blockComment}
       <br>
@@ -451,7 +461,9 @@ removeWhitespace = (string) ->
         <br>
         <br>
         <pre>
+        <code>
           b
+        </code>
         </pre>
         <br>
         c
