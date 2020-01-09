@@ -168,6 +168,11 @@ testGroup "Trix.HTMLParser", ->
       delete window.unsanitized
       done()
 
+  test "forbids href attributes with javascript: protocol", ->
+    html = """<a href="javascript:alert()">a</a> <a href=" javascript: alert()">b</a> <a href="JavaScript:alert()">c</a>"""
+    expectedHTML = """<div><!--block-->a b c</div>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
   test "parses attachment caption from large html string", (done) ->
     html = fixtures["image attachment with edited caption"].html
 

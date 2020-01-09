@@ -2,14 +2,16 @@
 
 class Trix.HTMLSanitizer extends Trix.BasicObject
   DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height class".split(" ")
+  DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
 
   @sanitize: (html, options) ->
     sanitizer = new this html, options
     sanitizer.sanitize()
     sanitizer
 
-  constructor: (html, {@allowedAttributes} = {}) ->
+  constructor: (html, {@allowedAttributes, @forbiddenProtocols} = {}) ->
     @allowedAttributes ?= DEFAULT_ALLOWED_ATTRIBUTES
+    @forbiddenProtocols ?= DEFAULT_FORBIDDEN_PROTOCOLS
     @body = createBodyElementForHTML(html)
 
   sanitize: ->
@@ -44,9 +46,14 @@ class Trix.HTMLSanitizer extends Trix.BasicObject
     @body
 
   sanitizeElement: (element) ->
+    if element.hasAttribute("href")
+      if element.protocol in @forbiddenProtocols
+        element.removeAttribute("href")
+
     for {name} in [element.attributes...]
       unless name in @allowedAttributes or name.indexOf("data-trix") is 0
         element.removeAttribute(name)
+
     element
 
   normalizeListElementNesting: ->
