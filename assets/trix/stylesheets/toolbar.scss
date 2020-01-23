@@ -15,6 +15,7 @@ trix-toolbar {
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
+    overflow-x: auto;
   }
 
   .trix-button-group {
