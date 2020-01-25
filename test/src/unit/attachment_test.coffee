@@ -21,3 +21,18 @@ testGroup "Trix.Attachment", ->
 
     attrs = previewable: false, contentType: previewableTypes[0]
     assert.notOk createAttachment(attrs).isPreviewable()
+
+  test "empty string content attribute is removed from hash", ->
+    attrs = content: ''
+    attachment = createAttachment()
+    attachment.setAttributes(attrs)
+    assert.strictEqual attachment.getContent undefined
+
+    attrs = content: ' '
+    attachment = createAttachment()
+    attachment.setAttributes(attrs)
+    assert.strictEqual attachment.getContent undefined
+
+    attrs = {}
+    attachment = createAttachment()
+    attachment.setAttributes(attrs)

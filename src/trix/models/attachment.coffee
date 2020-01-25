@@ -20,7 +20,8 @@ class Trix.Attachment extends Trix.Object
 
   constructor: (attributes = {}) ->
     super
-    @attributes = Trix.Hash.box(attributes)
+    @attributes = new Trix.Hash
+    @setAttributes(attributes)
     @didChangeAttributes()
 
   getAttribute: (attribute) ->
@@ -34,6 +35,10 @@ class Trix.Attachment extends Trix.Object
 
   setAttributes: (attributes = {}) ->
     newAttributes = @attributes.merge(attributes)
+
+    if newAttributes.has('content') and newAttributes.get('content').trim() is ''
+      newAttributes = newAttributes.remove('content')
+
     unless @attributes.isEqualTo(newAttributes)
       @attributes = newAttributes
       @didChangeAttributes()
