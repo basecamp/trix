@@ -9,7 +9,7 @@ testGroup "HTML Reparsing", template: "editor_empty", ->
       requestAnimationFrame ->
         assert.blockAttributes([0, 1], ["bulletList", "bullet"])
         assert.blockAttributes([2, 3], ["bulletList", "bullet"])
-        assert.equal(element.value, "<ul><li>b</li><li>b</li></ul>")
+        assert.equal(element.htmlValue, "<ul><li>b</li><li>b</li></ul>")
         expectDocument("b\nb\n")
 
   test "mutation resulting in identical pieces", (expectDocument) ->
@@ -20,5 +20,5 @@ testGroup "HTML Reparsing", template: "editor_empty", ->
       requestAnimationFrame ->
         assert.textAttributes([0, 1], bold: true)
         assert.textAttributes([2, 3], bold: true)
-        assert.equal(element.value, "<div><strong>b</strong> <strong>b</strong></div>")
+        assert.equal(element.htmlValue, "<div><strong>b</strong> <strong>b</strong></div>")
         expectDocument("b b\n")

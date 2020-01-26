@@ -19,7 +19,7 @@ testGroup "Composition input", template: "editor_empty", ->
   test "composition input is serialized", (expectDocument) ->
     startComposition "´", ->
       endComposition "é", ->
-        assert.equal getEditorElement().value, "<div>é</div>"
+        assert.equal getEditorElement().htmlValue, "<div>é</div>"
         expectDocument "é\n"
 
   test "pressing return after a canceled composition", (expectDocument) ->

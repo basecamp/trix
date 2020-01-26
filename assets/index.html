@@ -53,7 +53,11 @@
   </head>
   <body>
     <main>
-      <trix-editor autofocus class="trix-content"></trix-editor>
+      <!-- <input type="hidden" id="html" value="<div>Using <strong>HTML</strong> input</div>"/> -->
+      <!-- <trix-editor autofocus html-input="html" class="trix-content"></trix-editor> -->
+      <input type="hidden" id="md" value="`Using MD input`"/>
+      <trix-editor autofocus md-input="md" class="trix-content"></trix-editor>
+      <!-- <trix-editor autofocus md-input="md" html-input="html" class="trix-content"></trix-editor> -->
     </main>
   </body>
 </html>

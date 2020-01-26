@@ -12,7 +12,7 @@ testGroup "Installation process", template: "editor_html", ->
 
   test "sets value property", (done) ->
     defer ->
-      assert.equal getEditorElement().value, "<div>Hello world</div>"
+      assert.equal getEditorElement().htmlValue, "<div>Hello world</div>"
       done()
 
 
@@ -26,21 +26,26 @@ testGroup "Installation process without specified elements", template: "editor_e
     assert.ok toolbarElement, "toolbar element not assert.ok"
     assert.equal editorElement.toolbarElement, toolbarElement
 
-    inputId = editorElement.getAttribute("input")
-    assert.ok /trix-input-\d+/.test(inputId), "input id not assert.ok #{JSON.stringify(inputId)}"
-    inputElement = document.getElementById(inputId)
-    assert.ok inputElement, "input element not assert.ok"
-    assert.equal editorElement.inputElement, inputElement
+    htmlInputId = editorElement.getAttribute("html-input")
+    assert.ok /trix-html-input-\d+/.test(htmlInputId), "input id not assert.ok #{JSON.stringify(htmlInputId)}"
+    htmlInputElement = document.getElementById(htmlInputId)
+    assert.ok htmlInputElement, "input element not assert.ok"
+    assert.equal editorElement.htmlInputElement, htmlInputElement
+
+    mdInputId = editorElement.getAttribute("md-input")
+    assert.ok /trix-md-input-\d+/.test(mdInputId), "input id not assert.ok #{JSON.stringify(mdInputId)}"
+    mdInputElement = document.getElementById(mdInputId)
+    assert.ok mdInputElement, "input element not assert.ok"
+    assert.equal editorElement.mdInputElement, mdInputElement
 
     done()
-
 
 testGroup "Installation process with specified elements", template: "editor_with_toolbar_and_input", ->
   test "uses specified elements", (done) ->
     editorElement = getEditorElement()
     assert.equal editorElement.toolbarElement, document.getElementById("my_toolbar")
-    assert.equal editorElement.inputElement, document.getElementById("my_input")
-    assert.equal editorElement.value, "<div>Hello world</div>"
+    assert.equal editorElement.htmlInputElement, document.getElementById("my_input")
+    assert.equal editorElement.htmlValue, "<div>Hello world</div>"
     done()
 
   test "can be cloned", (done) ->
@@ -54,6 +59,13 @@ testGroup "Installation process with specified elements", template: "editor_with
     defer ->
       editorElement = getEditorElement()
       assert.equal editorElement.toolbarElement, document.getElementById("my_toolbar")
-      assert.equal editorElement.inputElement, document.getElementById("my_input")
-      assert.equal editorElement.value, "<div>Hello world</div>"
+      assert.equal editorElement.htmlInputElement, document.getElementById("my_input")
+      assert.equal editorElement.htmlValue, "<div>Hello world</div>"
       done()
+
+testGroup "Installation process with specified md input", template: "editor_with_md_input", ->
+  test "uses specified elements", (done) ->
+    editorElement = getEditorElement()
+    assert.equal editorElement.htmlInputElement, document.getElementById(editorElement.getAttribute("html-input"))
+    assert.equal editorElement.htmlInputElement.value, "<div><strong>Hello World</strong></div>"
+    done()

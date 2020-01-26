@@ -321,18 +321,18 @@ testGroup "Custom element API", template: "editor_empty", ->
 
   test "element serializes HTML after attribute changes", (done) ->
     element = getEditorElement()
-    serializedHTML = element.value
+    serializedHTML = element.htmlValue
 
     typeCharacters "a", ->
-      assert.notEqual serializedHTML, element.value
-      serializedHTML = element.value
+      assert.notEqual serializedHTML, element.htmlValue
+      serializedHTML = element.htmlValue
 
       clickToolbarButton attribute: "quote", ->
-        assert.notEqual serializedHTML, element.value
-        serializedHTML = element.value
+        assert.notEqual serializedHTML, element.htmlValue
+        serializedHTML = element.htmlValue
 
         clickToolbarButton attribute: "quote", ->
-          assert.notEqual serializedHTML, element.value
+          assert.notEqual serializedHTML, element.htmlValue
           done()
 
   test "element serializes HTML after attachment attribute changes", (done) ->
@@ -342,11 +342,11 @@ testGroup "Custom element API", template: "editor_empty", ->
     element.addEventListener "trix-attachment-add", (event) ->
       {attachment} = event
       requestAnimationFrame ->
-        serializedHTML = element.value
+        serializedHTML = element.htmlValue
         attachment.setAttributes(attributes)
-        assert.notEqual serializedHTML, element.value
+        assert.notEqual serializedHTML, element.htmlValue
 
-        serializedHTML = element.value
+        serializedHTML = element.htmlValue
         assert.ok serializedHTML.indexOf(TEST_IMAGE_URL) < 0, "serialized HTML contains previous attachment attributes"
         assert.ok serializedHTML.indexOf(attributes.url) > 0, "serialized HTML doesn't contain current attachment attributes"
 
@@ -359,7 +359,7 @@ testGroup "Custom element API", template: "editor_empty", ->
 
   test "editor resets to its original value on form reset", (expectDocument) ->
     element = getEditorElement()
-    form = element.inputElement.form
+    form = element.htmlInputElement.form
 
     typeCharacters "hello", ->
       form.reset()
@@ -367,16 +367,16 @@ testGroup "Custom element API", template: "editor_empty", ->
 
   test "editor resets to last-set value on form reset", (expectDocument) ->
     element = getEditorElement()
-    form = element.inputElement.form
+    form = element.htmlInputElement.form
 
-    element.value = "hi"
+    element.htmlValue = "hi"
     typeCharacters "hello", ->
       form.reset()
       expectDocument("hi\n")
 
   test "editor respects preventDefault on form reset", (expectDocument) ->
     element = getEditorElement()
-    form = element.inputElement.form
+    form = element.htmlInputElement.form
     preventDefault = (event) -> event.preventDefault()
 
     typeCharacters "hello", ->
@@ -384,3 +384,14 @@ testGroup "Custom element API", template: "editor_empty", ->
       form.reset()
       form.removeEventListener("reset", preventDefault, false)
       expectDocument("hello\n")
+
+  test "editor populates both the html and md input when document changes", (done) ->
+    editorElement = getEditorElement()
+    htmlInputElement = document.getElementById(editorElement.getAttribute("html-input"))
+    mdInputElement = document.getElementById(editorElement.getAttribute("md-input"))
+
+    typeCharacters "a", ->
+      clickToolbarButton attribute: "quote", ->
+        assert.equal htmlInputElement.value, '<blockquote>a</blockquote>'
+        assert.equal mdInputElement.value, '> a'
+        done()

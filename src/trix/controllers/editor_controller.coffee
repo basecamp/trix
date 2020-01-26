@@ -365,8 +365,10 @@ class Trix.EditorController extends Trix.Controller
 
   updateInputElement: ->
     element = @compositionController.getSerializableElement()
-    value = Trix.serializeToContentType(element, "text/html")
-    @editorElement.setInputElementValue(value)
+    html = Trix.serializeToContentType(element, "text/html")
+    md = Trix.markdown.htmlToMd(html)
+    @editorElement.setInputHtmlElementValue(html)
+    @editorElement.setInputMdElementValue(md)
 
   notifyEditorElement: (message, data) ->
     switch message

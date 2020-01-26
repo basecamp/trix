@@ -4,6 +4,8 @@ load_paths:
   - assets
   - polyfills
   - src
+  - node_modules/turndown/lib
+  - node_modules/markdown-it/dist
 
 logical_paths:
   - trix.js

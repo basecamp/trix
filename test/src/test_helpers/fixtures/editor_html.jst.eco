@@ -1,2 +1,2 @@
-<trix-editor input="my_input" autofocus placeholder="Say hello..."></trix-editor>
+<trix-editor html-input="my_input" autofocus placeholder="Say hello..."></trix-editor>
 <input id="my_input" type="hidden" value="&lt;div&gt;Hello world&lt;/div&gt;">

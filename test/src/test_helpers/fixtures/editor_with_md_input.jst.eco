@@ -1,0 +1,4 @@
+<ul id="my_editor">
+  <li><trix-editor md-input="my_input" autofocus placeholder="Say hello..."></trix-editor></li>
+  <li><input id="my_input" type="hidden" value="**Hello World**"></li>
+</ul>

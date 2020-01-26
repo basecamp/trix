@@ -124,16 +124,46 @@ Trix.registerElement "trix-editor", do ->
         @parentNode.insertBefore(element, this)
         element
 
-  inputElement:
+  htmlInputElement:
     get: ->
-      if @hasAttribute("input")
-        @ownerDocument?.getElementById(@getAttribute("input"))
-      else if @parentNode
-        inputId = "trix-input-#{@trixId}"
-        @setAttribute("input", inputId)
-        element = makeElement("input", type: "hidden", id: inputId)
-        @parentNode.insertBefore(element, @nextElementSibling)
-        element
+      @inputElements.find (el) => el.id is @getAttribute("html-input")
+
+  mdInputElement:
+    get: ->
+      @inputElements.find (el) => el.id is @getAttribute("md-input")
+
+  inputElements:
+    get: ->
+      htmlInput = @ownerDocument?.getElementById(@getAttribute("html-input"))
+      mdInput = @ownerDocument?.getElementById(@getAttribute("md-input"))
+      inputs = []
+      inputsToCreateTypes = []
+
+      unless htmlInput
+        inputsToCreateTypes.push('html')
+      else
+        inputs.push(htmlInput)
+
+      unless mdInput
+        inputsToCreateTypes.push('md')
+      else
+        inputs.push(mdInput)
+
+      for type in inputsToCreateTypes
+          inputId = "trix-#{type}-input-#{@trixId}"
+          @setAttribute("#{type}-input", inputId)
+          input = makeElement("input", type: "hidden", id: inputId)
+          @parentNode.insertBefore(input, @nextElementSibling)
+
+          if type is 'html' and mdInput
+            input.value = Trix.markdown.mdToHtml(mdInput.value)
+
+          if type is 'md' and htmlInput
+            input.value = Trix.markdown.htmlToMd(htmlInput.value)
+
+          inputs.push(input)
+
+      inputs
 
   editor:
     get: ->
@@ -141,13 +171,13 @@ Trix.registerElement "trix-editor", do ->
 
   name:
     get: ->
-      @inputElement?.name
+      @htmlInputElement?.name
 
-  value:
+  htmlValue:
     get: ->
-      @inputElement?.value
-    set: (@defaultValue) ->
-      @editor?.loadHTML(@defaultValue)
+      @htmlInputElement?.value
+    set: (@defaultHtmlValue) ->
+      @editor?.loadHTML(@defaultHtmlValue)
 
   # Controller delegate methods
 
@@ -155,8 +185,11 @@ Trix.registerElement "trix-editor", do ->
     if @editorController
       triggerEvent("trix-#{message}", onElement: this, attributes: data)
 
-  setInputElementValue: (value) ->
-    @inputElement?.value = value
+  setInputHtmlElementValue: (value) ->
+    @htmlInputElement?.value = value
+
+  setInputMdElementValue: (value) ->
+    @mdInputElement?.value = value
 
   # Element lifecycle
 
@@ -168,7 +201,7 @@ Trix.registerElement "trix-editor", do ->
     unless @hasAttribute("data-trix-internal")
       unless @editorController
         triggerEvent("trix-before-initialize", onElement: this)
-        @editorController = new Trix.EditorController(editorElement: this, html: @defaultValue = @value)
+        @editorController = new Trix.EditorController(editorElement: this, html: @defaultHtmlValue = @htmlValue)
         requestAnimationFrame => triggerEvent("trix-initialize", onElement: this)
       @editorController.registerSelectionManager()
       @registerResetListener()
@@ -188,8 +221,8 @@ Trix.registerElement "trix-editor", do ->
     window.removeEventListener("reset", @resetListener, false)
 
   resetBubbled: (event) ->
-    if event.target is @inputElement?.form
+    if event.target is @htmlInputElement?.form
       @reset() unless event.defaultPrevented
 
   reset: ->
-    @value = @defaultValue
+    @htmlValue = @defaultHtmlValue
