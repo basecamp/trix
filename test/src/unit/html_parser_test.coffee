@@ -173,6 +173,26 @@ testGroup "Trix.HTMLParser", ->
     expectedHTML = """<div><!--block-->a b c</div>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
+  test "forbids href attributes with an invalid protocol", ->
+    html = """<a href="foobar:baz">a</a> <a href=" foobar: baz">b</a> <a href="FooBar:baz">c</a>"""
+    expectedHTML = """<div><!--block-->a b c</div>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
+  test "allows attributes with safe protocols", ->
+    html = """
+    <a href="http://example.com">a</a>
+    <a href="https://example.com">b</a>
+    <a href="ftp://example.com">c</a>
+    <a href="ftps://example.com">d</a>
+    <a href="mailto:test@example.com">e</a>
+    <a href="tel:1234567890">f</a>
+    <a href="callto:1234567890">g</a>
+    <a href="cid:foobar">h</a>
+    <a href="xmpp:user@example.com">i</a>
+    """
+    expectedHTML = "<div><!--block-->" + html.replace(/\n/g, ' ') + "</div>"
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
   test "parses attachment caption from large html string", (done) ->
     html = fixtures["image attachment with edited caption"].html
 
