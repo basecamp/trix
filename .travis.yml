@@ -7,6 +7,7 @@ cache:
   - yarn
 install:
   - bundle install
+  - yarn install
   - cd test && yarn install && cd -
 script:
   - bin/ci
