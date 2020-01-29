@@ -126,11 +126,11 @@ Trix.registerElement "trix-editor", do ->
 
   htmlInputElement:
     get: ->
-      @inputElements.find (el) => el.id is @getAttribute("html-input")
+      (el for el in @inputElements when do (el) => el.id is @getAttribute("html-input"))[0]
 
   mdInputElement:
     get: ->
-      @inputElements.find (el) => el.id is @getAttribute("md-input")
+      (el for el in @inputElements when do (el) => el.id is @getAttribute("md-input"))[0]
 
   inputElements:
     get: ->
