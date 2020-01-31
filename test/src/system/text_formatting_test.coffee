@@ -1,4 +1,4 @@
-{assert, clickToolbarButton, clickToolbarDialogButton, collapseSelection, expandSelection, insertString, insertText, isToolbarButtonActive, isToolbarButtonDisabled, isToolbarDialogActive, moveCursor, pressKey, test, testIf, testGroup, typeCharacters, typeInToolbarDialog, typeToolbarKeyCommand} = Trix.TestHelpers
+{assert, clickElement, clickToolbarButton, clickToolbarDialogButton, collapseSelection, expandSelection, insertString, insertText, isToolbarButtonActive, isToolbarButtonDisabled, isToolbarDialogActive, moveCursor, pressKey, test, testIf, testGroup, typeCharacters, typeInToolbarDialog, typeToolbarKeyCommand} = Trix.TestHelpers
 
 testGroup "Text formatting", template: "editor_empty", ->
   test "applying attributes to text", (done) ->
@@ -66,6 +66,16 @@ testGroup "Text formatting", template: "editor_empty", ->
         expandSelection "left", ->
           assert.ok isToolbarButtonDisabled(attribute: "bold")
           done()
+
+  test "selecting an attachment deactivates toolbar dialog", (done) ->
+    text = fixtures["file attachment"].document.getBlockAtIndex(0).getTextWithoutBlockBreak()
+    insertText(text)
+    clickToolbarButton attribute: "href", ->
+      assert.ok isToolbarDialogActive(attribute: "href")
+      clickElement getEditorElement().querySelector("figure"), ->
+        assert.notOk isToolbarDialogActive(attribute: "href")
+        assert.ok isToolbarButtonDisabled(attribute: "href")
+        done()
 
   test "typing over a selected attachment does not apply disabled formatting attributes", (expectDocument) ->
     text = fixtures["file attachment"].document.getBlockAtIndex(0).getTextWithoutBlockBreak()
