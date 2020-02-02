@@ -122,7 +122,7 @@ class Trix.Block extends Trix.Object
     @text.toString()
 
   toJSON: ->
-    text: @text
+    text: @text.toJSON()
     attributes: @attributes
 
   # Splittable

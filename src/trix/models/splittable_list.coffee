@@ -147,7 +147,8 @@ class Trix.SplittableList extends Trix.Object
     @objects.slice(0)
 
   toJSON: ->
-    @toArray()
+    jsonObjects = for object in @toArray()
+      object.toJSON()
 
   isEqualTo: (splittableList) ->
     super or objectArraysAreEqual(@objects, splittableList?.objects)

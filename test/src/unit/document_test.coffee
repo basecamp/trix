@@ -34,3 +34,32 @@ testGroup "Trix.Document", ->
     assert.deepEqual document.findRangesForTextAttribute("href", withValue: "http://google.com/"),   [[6, 20]]
     assert.deepEqual document.findRangesForTextAttribute("href", withValue: "http://basecamp.com/"), [[23, 27]]
     assert.deepEqual document.findRangesForTextAttribute("href", withValue: "http://amazon.com/"),   []
+
+  test "toJSON should serialize the whole object tree correctly", ->
+    document = Trix.Document.fromHTML """
+      <div><strong>Hello world!</strong></div>
+    """
+
+    expectedSerializedDocument = [
+      {
+        "attributes": [],
+        "text": [
+          {
+            "attributes": {
+              "bold": true
+            },
+            "string": "Hello world!",
+            "type": "string"
+          },
+          {
+            "attributes": {
+              "blockBreak": true
+            },
+            "string": "\n",
+            "type": "string"
+          }
+        ]
+      }
+    ]
+
+    assert.deepEqual document.toJSON(),  expectedSerializedDocument
