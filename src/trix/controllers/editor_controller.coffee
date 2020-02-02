@@ -153,6 +153,7 @@ class Trix.EditorController extends Trix.Controller
     @notifyEditorElement("blur")
 
   compositionControllerDidSelectAttachment: (attachment, options) ->
+    @toolbarController.hideDialog()
     @composition.editAttachment(attachment, options)
 
   compositionControllerDidRequestDeselectingAttachment: (attachment) ->
