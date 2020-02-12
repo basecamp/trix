@@ -59,7 +59,7 @@ testGroup "Installation process with specified elements", template: "editor_with
       done()
 
   testGroup "Installation process with text after closing tag", template: "editor_empty", ->
-    test "parses text after closing tag as seperate block", (done) ->
+    test "parses text after closing tag as separate block", (done) ->
       input = document.createElement("input")
       input.setAttribute("id", "my_input")
       input.setAttribute("value", "<h1>Test</h1>abc")
