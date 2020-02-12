@@ -57,3 +57,21 @@ testGroup "Installation process with specified elements", template: "editor_with
       assert.equal editorElement.inputElement, document.getElementById("my_input")
       assert.equal editorElement.value, "<div>Hello world</div>"
       done()
+
+  testGroup "Installation process with text after closing tag", template: "editor_empty", ->
+    test "parses text after closing tag as seperate block", (done) ->
+      input = document.createElement("input")
+      input.setAttribute("id", "my_input")
+      input.setAttribute("value", "<h1>Test</h1>abc")
+
+      element = document.createElement("trix-editor")
+      element.setAttribute("input", "my_input")
+
+      container = document.getElementById("trix-container")
+      container.innerHTML = ""
+      container.appendChild(input)
+      container.appendChild(element)
+
+      element.addEventListener "trix-initialize", ->
+        assert.equal element.value, "<h1>Test</h1><div>abc</div>"
+        done()
