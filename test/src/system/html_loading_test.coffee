@@ -83,3 +83,10 @@ testGroup "HTML loading", ->
         assert.equal(image.getAttribute("width"),  "10")
         assert.equal(image.getAttribute("height"), "20")
         expectDocument("#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n")
+
+  testGroup "text after closing tag", template: "editor_empty", ->
+    test "parses text as separate block", (expectDocument) ->
+      getEditor().loadHTML("<h1>a</h1>b")
+      assert.blockAttributes([0, 2], ["heading1"])
+      assert.blockAttributes([2, 4], [])
+      expectDocument("a\nb\n")
