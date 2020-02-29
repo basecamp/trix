@@ -88,7 +88,7 @@ GEM
       multi_xml (~> 0.5)
       rack (>= 1.2, < 3)
     rack (2.0.8)
-    rake (10.0.4)
+    rake (12.3.3)
     sass (3.4.3)
     sprockets (3.6.0)
       concurrent-ruby (~> 1.0)
