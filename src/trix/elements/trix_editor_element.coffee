@@ -105,6 +105,10 @@ Trix.registerElement "trix-editor", do ->
 
   # Properties
 
+  rootNode:
+    get: ->
+      @getRootNode() ? @ownerDocument
+
   trixId:
     get: ->
       if @hasAttribute("trix-id")
@@ -121,7 +125,7 @@ Trix.registerElement "trix-editor", do ->
         return @toolbar
 
       if @hasAttribute("toolbar")
-        @ownerDocument?.getElementById(@getAttribute("toolbar"))
+        @rootNode?.querySelector("##{@getAttribute("toolbar")}")
       else if @parentNode
         toolbarId = "trix-toolbar-#{@trixId}"
         @setAttribute("toolbar", toolbarId)
@@ -132,7 +136,7 @@ Trix.registerElement "trix-editor", do ->
   inputElement:
     get: ->
       if @hasAttribute("input")
-        @ownerDocument?.getElementById(@getAttribute("input"))
+        @rootNode?.querySelector("##{@getAttribute("input")}")
       else if @parentNode
         inputId = "trix-input-#{@trixId}"
         @setAttribute("input", inputId)
