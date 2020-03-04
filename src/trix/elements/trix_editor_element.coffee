@@ -118,12 +118,7 @@ Trix.registerElement "trix-editor", do ->
         @trixId
 
   toolbarElement:
-    set: (value) ->
-      @toolbar = value
     get: ->
-      if @toolbar
-        return @toolbar
-
       if @hasAttribute("toolbar")
         @rootNode?.querySelector("##{@getAttribute("toolbar")}")
       else if @parentNode
