@@ -1,7 +1,7 @@
 @charset "UTF-8";
 /*
-Trix 1.2.2
-Copyright © 2019 Basecamp, LLC
+Trix 1.2.3
+Copyright © 2020 Basecamp, LLC
 http://trix-editor.org/*/
 trix-editor {
   border: 1px solid #bbb;
@@ -15,7 +15,8 @@ trix-toolbar * {
 trix-toolbar .trix-button-row {
   display: flex;
   flex-wrap: nowrap;
-  justify-content: space-between; }
+  justify-content: space-between;
+  overflow-x: auto; }
 trix-toolbar .trix-button-group {
   display: flex;
   margin-bottom: 10px;
