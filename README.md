@@ -15,7 +15,7 @@ Trix sidesteps these inconsistencies by treating `contenteditable` as an I/O dev
 
 ### Built for the Modern Web
 
-<details><summary>Trix supports all evergreen, self-updating desktop and mobile browsers.</summary><img src="https://s3.amazonaws.com/trix-depot/test-status-images/trix.svg"></details>
+<details><summary>Trix supports all evergreen, self-updating desktop and mobile browsers.</summary><img src="https://app.saucelabs.com/browser-matrix/basecamp_trix.svg"></details>
 
 Trix is built with emerging web standards, notably [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements), [Mutation Observer](https://dom.spec.whatwg.org/#mutation-observers), and [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Eventually we expect all browsers to implement these standards. In the meantime, Trix includes [polyfills](https://en.wikipedia.org/wiki/Polyfill_(programming)) for missing functionality.
 
