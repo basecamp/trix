@@ -69,7 +69,7 @@ class Trix.HTMLParser extends Trix.BasicObject
     unless arraysAreEqual(attributes, @currentBlock?.attributes)
       @currentBlock = @appendBlockForAttributesWithElement(attributes, element)
       @currentBlockElement = element
-    else if @isBlockElement(node.previousElementSibling)
+    else if @isBlockElement(node.previousSibling)
       @appendStringWithAttributes("\n")
 
   appendBlockForElement: (element) ->
