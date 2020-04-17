@@ -69,6 +69,8 @@ class Trix.HTMLParser extends Trix.BasicObject
     unless arraysAreEqual(attributes, @currentBlock?.attributes)
       @currentBlock = @appendBlockForAttributesWithElement(attributes, element)
       @currentBlockElement = element
+    else if @isBlockElement(node.previousElementSibling)
+      @appendNewlineToLastBlock()
 
   appendBlockForElement: (element) ->
     elementIsBlockElement = @isBlockElement(element)
@@ -77,7 +79,7 @@ class Trix.HTMLParser extends Trix.BasicObject
     if elementIsBlockElement and not @isBlockElement(element.firstChild)
       unless @isInsignificantTextNode(element.firstChild) and @isBlockElement(element.firstElementChild)
         attributes = @getBlockAttributes(element)
-        unless currentBlockContainsElement and arraysAreEqual(attributes, @currentBlock.attributes)
+        unless currentBlockContainsElement and arraysAreEqual(attributes, @currentBlock.attributes) and @isEmptyElement(element)
           @currentBlock = @appendBlockForAttributesWithElement(attributes, element)
           @currentBlockElement = element
 
@@ -153,6 +155,10 @@ class Trix.HTMLParser extends Trix.BasicObject
     if @blocks.length is 0
       @appendEmptyBlock()
     @blocks[@blocks.length - 1].text.push(piece)
+
+  appendNewlineToLastBlock: ->
+    if @blocks.length > 0
+      @blocks[@blocks.length - 1].text.push(pieceForString("\n"))
 
   appendStringToTextAtIndex: (string, index) ->
     {text} = @blocks[index]
@@ -251,6 +257,9 @@ class Trix.HTMLParser extends Trix.BasicObject
     return if nodeIsAttachmentElement(element)
     return if findClosestElementFromNode(element, matchingSelector: "td", untilNode: @containerElement)
     tagName(element) in getBlockTagNames() or window.getComputedStyle(element).display is "block"
+
+  isEmptyElement: (element) ->
+    return element.firstElementChild == null and (element.textContent == "" or element.textContent == null)
 
   isInsignificantTextNode: (node) ->
     return unless node?.nodeType is Node.TEXT_NODE
