@@ -113,7 +113,12 @@ testGroup "Trix.HTMLParser", ->
 
   test "parses block breaks in nested elements", ->
     html = """<div>a<div>b</div>c</div>"""
-    expectedHTML = """<div><!--block-->a</div><div><!--block-->b<br>c</div>"""
+    expectedHTML = """<div><!--block-->a<br>b<br>c</div>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
+  test "parses block breaks in nested elements 2 ", ->
+    html = """<blockquote>a<div>b</div>c</blockquote>"""
+    expectedHTML = """<blockquote><!--block-->a<br>b<br>c</blockquote>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
   test "parses text nodes following block elements", ->
