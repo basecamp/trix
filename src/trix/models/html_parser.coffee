@@ -70,7 +70,7 @@ class Trix.HTMLParser extends Trix.BasicObject
       @currentBlock = @appendBlockForAttributesWithElement(attributes, element)
       @currentBlockElement = element
     else if @isBlockElement(node.previousElementSibling)
-      @appendNewlineToLastBlock()
+      @appendStringWithAttributes("\n")
 
   appendBlockForElement: (element) ->
     elementIsBlockElement = @isBlockElement(element)
@@ -155,10 +155,6 @@ class Trix.HTMLParser extends Trix.BasicObject
     if @blocks.length is 0
       @appendEmptyBlock()
     @blocks[@blocks.length - 1].text.push(piece)
-
-  appendNewlineToLastBlock: ->
-    if @blocks.length > 0
-      @blocks[@blocks.length - 1].text.push(pieceForString("\n"))
 
   appendStringToTextAtIndex: (string, index) ->
     {text} = @blocks[index]
