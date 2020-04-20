@@ -116,6 +116,11 @@ testGroup "Trix.HTMLParser", ->
     expectedHTML = """<div><!--block-->a<br>b<br>c</div>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
+  test "creates only a single newline for a deeply nested div", ->
+    html = """<div>a<div><div><div>b</div></div></div>c</div>"""
+    expectedHTML = """<div><!--block-->a<br>b<br>c</div>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
   test "parses block breaks in nested elements of a block with grouping enabled", ->
     html = """<blockquote>a<div>b</div>c</blockquote>"""
     expectedHTML = """<blockquote><!--block-->a<br>b<br>c</blockquote>"""
