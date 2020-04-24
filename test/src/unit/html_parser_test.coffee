@@ -15,6 +15,16 @@ testGroup "Trix.HTMLParser", ->
         parsedDocument = Trix.HTMLParser.parse(serializedHTML).getDocument()
         assert.documentHTMLEqual parsedDocument.copyUsingObjectsFromDocument(document), html
 
+  testGroup "nested line breaks", ->
+    cases =
+      "<div>a<div>b</div>c</div>": "<div><!--block-->a<br>b<br>c</div>"
+      "<div>a<div><div><div>b</div></div></div>c</div>": "<div><!--block-->a<br>b<br>c</div>"
+      "<blockquote>a<div>b</div>c</blockquote>": "<blockquote><!--block-->a<br>b<br>c</blockquote>"
+
+    for html, expectedHTML of cases
+      do (html, expectedHTML) ->
+        test html, -> assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
   test "parses absolute image URLs", ->
     src = "#{getOrigin()}/test_helpers/fixtures/logo.png"
     pattern = ///src="#{src}"///
@@ -109,21 +119,6 @@ testGroup "Trix.HTMLParser", ->
   test "parses inline element following block element", ->
     html = """<blockquote>abc</blockquote><strong>123</strong>"""
     expectedHTML = """<blockquote><!--block-->abc</blockquote><div><!--block--><strong>123</strong></div>"""
-    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
-
-  test "parses block breaks in nested elements of a div", ->
-    html = """<div>a<div>b</div>c</div>"""
-    expectedHTML = """<div><!--block-->a<br>b<br>c</div>"""
-    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
-
-  test "creates only a single newline for a deeply nested div", ->
-    html = """<div>a<div><div><div>b</div></div></div>c</div>"""
-    expectedHTML = """<div><!--block-->a<br>b<br>c</div>"""
-    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
-
-  test "parses block breaks in nested elements of a block with grouping enabled", ->
-    html = """<blockquote>a<div>b</div>c</blockquote>"""
-    expectedHTML = """<blockquote><!--block-->a<br>b<br>c</blockquote>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
   test "parses text nodes following block elements", ->
