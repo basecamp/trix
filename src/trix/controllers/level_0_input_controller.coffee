@@ -199,15 +199,15 @@ class Trix.Level0InputController extends Trix.InputController
         return
 
       if href = clipboard.getData("URL")
-        paste.type = "URL"
-        paste.href = href
+        paste.type = "text/html"
         if name = clipboard.getData("public.url-name")
-          paste.string = Trix.squishBreakableWhitespace(name).trim()
+          string = Trix.squishBreakableWhitespace(name).trim()
         else
-          paste.string = href
+          string = href
+        paste.html = @createLinkHTML(href, string)
         @delegate?.inputControllerWillPaste(paste)
-        @setInputSummary(textAdded: paste.string, didDelete: @selectionIsExpanded())
-        @responder?.insertText(Trix.Text.textForStringWithAttributes(paste.string, href: paste.href))
+        @setInputSummary(textAdded: string, didDelete: @selectionIsExpanded())
+        @responder?.insertHTML(paste.html)
         @requestRender()
         @delegate?.inputControllerDidPaste(paste)
 

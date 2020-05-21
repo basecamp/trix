@@ -58,11 +58,10 @@ class Trix.Level2InputController extends Trix.InputController
       else if href = event.clipboardData?.getData("URL")
         event.preventDefault()
         paste =
-          type: "URL"
-          href: href
-          string: href
+          type: "text/html"
+          html: @createLinkHTML(href)
         @delegate?.inputControllerWillPaste(paste)
-        @responder?.insertText(Trix.Text.textForStringWithAttributes(paste.string, href: paste.href))
+        @responder?.insertHTML(paste.html)
         @render()
         @delegate?.inputControllerDidPaste(paste)
 
@@ -278,15 +277,15 @@ class Trix.Level2InputController extends Trix.InputController
       paste = {dataTransfer}
 
       if href = dataTransfer.getData("URL")
-        paste.type = "URL"
-        paste.href = href
+        paste.type = "text/html"
         if name = dataTransfer.getData("public.url-name")
-          paste.string = Trix.squishBreakableWhitespace(name).trim()
+          string = Trix.squishBreakableWhitespace(name).trim()
         else
-          paste.string = href
+          string = href
+        paste.html = @createLinkHTML(href, string)
         @delegate?.inputControllerWillPaste(paste)
         @withTargetDOMRange ->
-          @responder?.insertText(Trix.Text.textForStringWithAttributes(paste.string, href: paste.href))
+          @responder?.insertHTML(paste.html)
         @afterRender = =>
           @delegate?.inputControllerDidPaste(paste)
 
