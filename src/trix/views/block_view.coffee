@@ -23,14 +23,21 @@ class Trix.BlockView extends Trix.ObjectView
     if @attributes.length
       nodes
     else
-      element = makeElement(Trix.config.blockAttributes.default.tagName)
+      options = {
+        tagName: Trix.config.blockAttributes.default.tagName,
+        className: @block.className
+      }
+      element = makeElement(options)
       element.appendChild(node) for node in nodes
       [element]
 
   createContainerElement: (depth) ->
     attribute = @attributes[depth]
     {tagName} = getBlockConfig(attribute)
-    options = {tagName}
+    options = {
+      tagName: tagName,
+      className: @block.className
+    }
 
     if attribute is "attachmentGallery"
       size = @block.getBlockBreakPosition()

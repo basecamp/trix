@@ -564,6 +564,18 @@ removeWhitespace = (string) ->
     document: createDocument(["a", { bold: true }, ["heading1"]], ["b", { italic: true, bold: true }, ["heading1"]])
     html: "<h1>#{blockComment}<strong>a</strong></h1><h1>#{blockComment}<strong><em>b</em></strong></h1>"
 
+  "block with className":
+    document: new Trix.Document [
+      new Trix.Block(
+        new Trix.Text([
+          new Trix.StringPiece("a")
+        ]),
+        [],
+        'align-right'
+      )
+    ]
+    html: """<div class="align-right">#{blockComment}a</div>"""
+
 @eachFixture = (callback) ->
   for name, details of @fixtures
     callback(name, details)
