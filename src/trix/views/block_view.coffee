@@ -23,17 +23,17 @@ class Trix.BlockView extends Trix.ObjectView
     if @attributes.length
       nodes
     else
-      {tagName} = Trix.config.blockAttributes.default
+      {tagName, className} = Trix.config.blockAttributes.default
       attributes = dir: "rtl" if @block.isRTL()
 
-      element = makeElement({tagName, attributes})
+      element = makeElement({tagName, className, attributes})
       element.appendChild(node) for node in nodes
       [element]
 
   createContainerElement: (depth) ->
     attributeName = @attributes[depth]
 
-    {tagName} = getBlockConfig(attributeName)
+    {tagName, className} = getBlockConfig(attributeName)
     attributes = dir: "rtl" if depth is 0 and @block.isRTL()
 
     if attributeName is "attachmentGallery"
