@@ -51,3 +51,9 @@ class Trix.InputController extends Trix.BasicObject
       callback.call(this)
     finally
       @delegate?.inputControllerDidHandleInput()
+
+  createLinkHTML: (href, text) ->
+    link = document.createElement("a")
+    link.href = href
+    link.textContent = text ? href
+    link.outerHTML
