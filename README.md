@@ -279,6 +279,15 @@ element.editor.setSelectedRange([0, 4])
 element.editor.activateAttribute("href", "https://trix-editor.org/")
 ```
 
+### Detecting Formatting
+
+To detect if a formatting is applied to current selection, use the `editor.attributeIsActive` method.
+
+```js
+element.editor.setSelectedRange([0, 5])
+element.editor.attributeIsActive("bold")
+```
+
 ### Removing Formatting
 
 Use the `editor.deactivateAttribute` method to remove formatting from a selection.
