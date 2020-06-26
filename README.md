@@ -59,7 +59,7 @@ Trix will automatically update the value of the hidden input field with each cha
 Add `dir="rtl"` to `<trix-editor>` tag.
 
 ```html
-  <trix-editor dir="rtl"></trix-editor>
+<trix-editor dir="rtl"></trix-editor>
 ```
 
 ## Populating With Stored Content
