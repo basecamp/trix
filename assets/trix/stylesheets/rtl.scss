@@ -1,0 +1,16 @@
+
+  .trix-content[dir="rtl"] {
+    ul, ol, li {
+      li {
+        margin-left: 0;
+        margin-right: 1em;
+      }
+    }
+
+    blockquote {
+      margin: 0 0.3em 0 0;
+      padding: 0 0.6em 0 0;
+      border-left: 0;
+      border-right: 0.3em solid #ccc;
+    }
+  }

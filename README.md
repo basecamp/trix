@@ -39,7 +39,7 @@ To use your own polyfills, or to target only browsers that support all of the re
 
 Place an empty `<trix-editor></trix-editor>` tag on the page. Trix will automatically insert a separate `<trix-toolbar>` before the editor.
 
-Like an HTML `<textarea>`, `<trix-editor>` accepts `autofocus` and `placeholder` attributes. Unlike a `<textarea>`, `<trix-editor>` automatically expands vertically to fit its contents.
+Like an HTML `<textarea>`, `<trix-editor>` accepts `autofocus`, `placeholder` and `dir` attributes. Unlike a `<textarea>`, `<trix-editor>` automatically expands vertically to fit its contents.
 
 ## Integrating With Forms
 
@@ -53,6 +53,14 @@ To submit the contents of a `<trix-editor>` with a form, first define a hidden i
 ```
 
 Trix will automatically update the value of the hidden input field with each change to the editor.
+
+## RTL Support
+
+Add `dir="rtl"` to `<trix-editor>` tag.
+
+```html
+  <trix-editor dir="rtl"></trix-editor>
+```
 
 ## Populating With Stored Content
 
