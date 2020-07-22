@@ -17,6 +17,12 @@ class Trix.ObjectGroup
         objects.push(object)
 
     if group
+      for obj in group 
+        if obj.hasAttribute("quote")
+          attributes = obj.attributes
+          quoteIndex = attributes.indexOf("quote")
+          attributes.splice(quoteIndex, 1)
+          attributes.unshift("quote")
       objects.push(new this group, {depth, asTree})
     objects
 
