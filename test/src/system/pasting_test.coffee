@@ -85,6 +85,13 @@ testGroup "Pasting", template: "editor_empty", ->
       assert.textAttributes([0, 7], href: "http://example.com")
       expectDocument "Example\n"
 
+  test "paste JavaScript URL", (expectDocument) ->
+   pasteData =
+     "URL": "javascript:alert('XSS')"
+   pasteContent pasteData, ->
+     assert.textAttributes([0, 23], {})
+     expectDocument "javascript:alert('XSS')\n"
+
   test "paste URL with name containing extraneous whitespace", (expectDocument) ->
     pasteData =
       "URL": "http://example.com"
