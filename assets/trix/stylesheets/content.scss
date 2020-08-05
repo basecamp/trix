@@ -13,8 +13,17 @@
 
   blockquote {
     margin: 0 0 0 0.3em;
+    margin-block: 0;
+    margin-inline-start: 0.3em;
+    margin-inline-end: 0;
     padding: 0 0 0 0.6em;
+    padding-block: 0;
+    padding-inline-start: 0.6em;
+    padding-inline-end: 0;
     border-left: 0.3em solid #ccc;
+    border-right: 0;
+    border-inline-start: 0.3em solid #ccc;
+    border-inline-end: 0;
   }
 
   pre {
@@ -36,6 +45,9 @@
 
     li {
       margin-left: 1em;
+      margin-right: 0;
+      margin-inline-start: 1em;
+      margin-inline-end: 0;
     }
   }
 
@@ -88,6 +100,10 @@
     color: #333;
     line-height: 1;
     margin: 0 2px 2px 0;
+    margin-inline-start: 0;
+    margin-inline-end: 2px;
+    margin-block-start: 0;
+    margin-block-end: 2px;
     padding: 0.4em 1em;
     border: 1px solid #bbb;
     border-radius: 5px;
