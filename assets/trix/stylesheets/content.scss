@@ -12,9 +12,11 @@
   }
 
   blockquote {
-    margin: 0 0 0 0.3em;
-    padding: 0 0 0 0.6em;
-    border-left: 0.3em solid #ccc;
+    margin: 0;
+    margin-inline-start: 0.3em;
+    padding: 0;
+    padding-inline-start: 0.6em;
+    border-inline-start: 0.3em solid #ccc;
   }
 
   pre {
@@ -35,7 +37,7 @@
     padding: 0;
 
     li {
-      margin-left: 1em;
+      margin-inline-start: 1em;
     }
   }
 
@@ -87,7 +89,8 @@
   .attachment--file {
     color: #333;
     line-height: 1;
-    margin: 0 2px 2px 0;
+    margin-inline-end: 2px;
+    margin-block-end: 2px;
     padding: 0.4em 1em;
     border: 1px solid #bbb;
     border-radius: 5px;
