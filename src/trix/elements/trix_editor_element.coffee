@@ -1,7 +1,7 @@
 #= require trix/elements/trix_toolbar_element
 #= require trix/controllers/editor_controller
 
-{browser, makeElement, triggerEvent, handleEvent, handleEventOnce} = Trix
+{browser, config, makeElement, triggerEvent, handleEvent, handleEventOnce} = Trix
 
 {attachmentSelector} = Trix.AttachmentView
 
@@ -23,6 +23,10 @@ Trix.registerElement "trix-editor", do ->
   addAccessibilityRole = (element) ->
     return if element.hasAttribute("role")
     element.setAttribute("role", "textbox")
+
+  addTextDirection = (element) ->
+    return if element.hasAttribute("dir")
+    element.setAttribute("dir", config.input.textDirection)
 
   configureContentEditable = (element) ->
     disableObjectResizing(element)
@@ -163,6 +167,7 @@ Trix.registerElement "trix-editor", do ->
   initialize: ->
     makeEditable(this)
     addAccessibilityRole(this)
+    addTextDirection(this)
 
   connect: ->
     unless @hasAttribute("data-trix-internal")

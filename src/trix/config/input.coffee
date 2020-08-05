@@ -1,6 +1,8 @@
 Trix.config.input =
   level2Enabled: true
 
+  textDirection: "auto"
+
   getLevel: ->
     if @level2Enabled and Trix.browser.supportsInputEvents
       2
