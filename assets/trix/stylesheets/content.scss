@@ -91,7 +91,9 @@
   .attachment--file {
     color: #333;
     line-height: 1;
+    margin-inline-start: 0;
     margin-inline-end: 2px;
+    margin-block-start: 0;
     margin-block-end: 2px;
     padding: 0.4em 1em;
     border: 1px solid #bbb;
