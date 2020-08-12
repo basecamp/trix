@@ -9,3 +9,4 @@
 #= require trix/core/helpers/custom_elements
 #= require trix/core/helpers/selection
 #= require trix/core/helpers/events
+#= require trix/core/helpers/bidi

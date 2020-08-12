@@ -23,20 +23,24 @@ class Trix.BlockView extends Trix.ObjectView
     if @attributes.length
       nodes
     else
-      element = makeElement(Trix.config.blockAttributes.default.tagName)
+      {tagName} = Trix.config.blockAttributes.default
+      attributes = dir: "rtl" if @block.isRTL()
+
+      element = makeElement({tagName, attributes})
       element.appendChild(node) for node in nodes
       [element]
 
   createContainerElement: (depth) ->
-    attribute = @attributes[depth]
-    {tagName} = getBlockConfig(attribute)
-    options = {tagName}
+    attributeName = @attributes[depth]
 
-    if attribute is "attachmentGallery"
+    {tagName} = getBlockConfig(attributeName)
+    attributes = dir: "rtl" if depth is 0 and @block.isRTL()
+
+    if attributeName is "attachmentGallery"
       size = @block.getBlockBreakPosition()
-      options.className = "#{css.attachmentGallery} #{css.attachmentGallery}--#{size}"
+      className = "#{css.attachmentGallery} #{css.attachmentGallery}--#{size}"
 
-    makeElement(options)
+    makeElement({tagName, className, attributes})
 
   # A single <br> at the end of a block element has no visual representation
   # so add an extra one.
