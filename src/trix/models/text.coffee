@@ -170,7 +170,7 @@ class Trix.Text extends Trix.Object
   # BIDI
 
   getDirection: ->
-    if @isRTL() then "rtl" else "ltr"
+    Trix.getDirection(@toString())
 
   isRTL: ->
-    Trix.isRTL(@toString())
+    @getDirection() is "rtl"
