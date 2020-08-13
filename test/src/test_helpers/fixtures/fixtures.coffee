@@ -570,6 +570,7 @@ removeWhitespace = (string) ->
       ["ل", {}, ["quote"]],
       ["b", {}, ["bulletList", "bullet"]],
       ["ל", {}, ["bulletList", "bullet"]],
+      ["",  {}, ["bulletList", "bullet"]]
       ["cید"],
       ["\n گ"]
     )
@@ -577,7 +578,7 @@ removeWhitespace = (string) ->
       <div>#{blockComment}a</div>\
       <blockquote dir="rtl">#{blockComment}ل</blockquote>\
       <ul><li>#{blockComment}b</li></ul>\
-      <ul dir="rtl"><li>#{blockComment}ל</li></ul>\
+      <ul dir="rtl"><li>#{blockComment}ל</li><li>#{blockComment}<br></li></ul>\
       <div>#{blockComment}cید</div>\
       <div dir="rtl">#{blockComment}<br>&nbsp;گ</div>\
     """
@@ -585,7 +586,7 @@ removeWhitespace = (string) ->
       <div>a</div>\
       <blockquote dir="rtl">ل</blockquote>\
       <ul><li>b</li></ul>\
-      <ul dir="rtl"><li>ל</li></ul>\
+      <ul dir="rtl"><li>ל</li><li><br></li></ul>\
       <div>cید</div>\
       <div dir="rtl"><br>&nbsp;گ</div>\
     """
