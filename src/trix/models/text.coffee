@@ -166,3 +166,11 @@ class Trix.Text extends Trix.Object
 
   toConsole: ->
     JSON.stringify(JSON.parse(piece.toConsole()) for piece in @pieceList.toArray())
+
+  # BIDI
+
+  getDirection: ->
+    Trix.getDirection(@toString())
+
+  isRTL: ->
+    @getDirection() is "rtl"

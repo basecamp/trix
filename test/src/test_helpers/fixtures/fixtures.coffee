@@ -564,6 +564,33 @@ removeWhitespace = (string) ->
     document: createDocument(["a", { bold: true }, ["heading1"]], ["b", { italic: true, bold: true }, ["heading1"]])
     html: "<h1>#{blockComment}<strong>a</strong></h1><h1>#{blockComment}<strong><em>b</em></strong></h1>"
 
+  "bidrectional text":
+    document: createDocument(
+      ["a"],
+      ["ل", {}, ["quote"]],
+      ["b", {}, ["bulletList", "bullet"]],
+      ["ל", {}, ["bulletList", "bullet"]],
+      ["",  {}, ["bulletList", "bullet"]]
+      ["cید"],
+      ["\n گ"]
+    )
+    html: """
+      <div>#{blockComment}a</div>\
+      <blockquote dir="rtl">#{blockComment}ل</blockquote>\
+      <ul><li>#{blockComment}b</li></ul>\
+      <ul dir="rtl"><li>#{blockComment}ל</li><li>#{blockComment}<br></li></ul>\
+      <div>#{blockComment}cید</div>\
+      <div dir="rtl">#{blockComment}<br>&nbsp;گ</div>\
+    """
+    serializedHTML: """
+      <div>a</div>\
+      <blockquote dir="rtl">ل</blockquote>\
+      <ul><li>b</li></ul>\
+      <ul dir="rtl"><li>ל</li><li><br></li></ul>\
+      <div>cید</div>\
+      <div dir="rtl"><br>&nbsp;گ</div>\
+    """
+
 @eachFixture = (callback) ->
   for name, details of @fixtures
     callback(name, details)
