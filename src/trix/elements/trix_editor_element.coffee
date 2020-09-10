@@ -1,7 +1,7 @@
 #= require trix/elements/trix_toolbar_element
 #= require trix/controllers/editor_controller
 
-{browser, makeElement, triggerEvent, handleEvent, handleEventOnce} = Trix
+{browser, makeElement, triggerEvent, handleEvent, handleEventOnce, findClosestElementFromNode} = Trix
 
 {attachmentSelector} = Trix.AttachmentView
 
@@ -113,6 +113,23 @@ Trix.registerElement "trix-editor", do ->
         @setAttribute("trix-id", ++id)
         @trixId
 
+  labels:
+    get: ->
+      if @inputElement?.hasAttribute("id")
+        inputId = @inputElement.getAttribute("id")
+
+        inputLabels = @ownerDocument?.querySelectorAll("label[for=\"#{inputId}\"]")
+
+      if @hasAttribute("id")
+        trixEditorId = @getAttribute("id")
+
+        trixEditorLabels = @ownerDocument?.querySelectorAll("label[for=\"#{trixEditorId}\"]")
+
+      if findClosestElementFromNode(@parentElement, "label")
+        ancestorLabels = [ findClosestElementFromNode(@parentElement, "label") ]
+
+      [ inputLabels, trixEditorLabels, ancestorLabels ].find((labels) -> labels?.length) || []
+
   toolbarElement:
     get: ->
       if @hasAttribute("toolbar")
@@ -172,11 +189,13 @@ Trix.registerElement "trix-editor", do ->
         requestAnimationFrame => triggerEvent("trix-initialize", onElement: this)
       @editorController.registerSelectionManager()
       @registerResetListener()
+      @registerLabelClickListener()
       autofocus(this)
 
   disconnect: ->
     @editorController?.unregisterSelectionManager()
     @unregisterResetListener()
+    @unregisterLabelClickListener()
 
   # Form reset support
 
@@ -187,9 +206,20 @@ Trix.registerElement "trix-editor", do ->
   unregisterResetListener: ->
     window.removeEventListener("reset", @resetListener, false)
 
+  registerLabelClickListener: ->
+    @labelClickListener = @labelClickBubbled.bind(this)
+    window.addEventListener("click", @labelClickListener, false)
+
+  unregisterLabelClickListener: ->
+    window.removeEventListener("click", @labelClickListener, false)
+
   resetBubbled: (event) ->
     if event.target is @inputElement?.form
       @reset() unless event.defaultPrevented
+
+  labelClickBubbled: (event) ->
+    if Array.from(@labels).includes(event.target)
+      @focus()
 
   reset: ->
     @value = @defaultValue

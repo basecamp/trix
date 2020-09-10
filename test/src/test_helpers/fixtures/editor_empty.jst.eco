@@ -1,1 +1,2 @@
-<trix-editor autofocus placeholder="Say hello..."></trix-editor>
+<label id="trix-label" for="trix-editor">Trix Editor</label>
+<trix-editor autofocus id="trix-editor" placeholder="Say hello..."></trix-editor>

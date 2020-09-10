@@ -10,6 +10,16 @@ testGroup "Installation process", template: "editor_html", ->
   test "loads the initial document", ->
     assert.equal getEditorElement().textContent, "Hello world"
 
+  test "associates the label elements", (done) ->
+    assert.deepEqual Array.from(getEditorElement().labels), Array.from(document.querySelectorAll("#my_label"))
+    done()
+
+  test "attaches label click handler", (done) ->
+    document.querySelector("#my_label").click()
+
+    assert.equal getEditorElement(), document.activeElement
+    done()
+
   test "sets value property", (done) ->
     defer ->
       assert.equal getEditorElement().value, "<div>Hello world</div>"
@@ -34,6 +44,16 @@ testGroup "Installation process without specified elements", template: "editor_e
 
     done()
 
+  test "associates the label elements", (done) ->
+    assert.deepEqual Array.from(getEditorElement().labels), Array.from(document.querySelectorAll("#trix-label"))
+    done()
+
+  test "attaches label click handler", (done) ->
+    document.querySelector("#trix-label").click()
+
+    assert.equal getEditorElement(), document.activeElement
+    done()
+
 
 testGroup "Installation process with specified elements", template: "editor_with_toolbar_and_input", ->
   test "uses specified elements", (done) ->
@@ -41,6 +61,16 @@ testGroup "Installation process with specified elements", template: "editor_with
     assert.equal editorElement.toolbarElement, document.getElementById("my_toolbar")
     assert.equal editorElement.inputElement, document.getElementById("my_input")
     assert.equal editorElement.value, "<div>Hello world</div>"
+    done()
+
+  test "associates the label elements", (done) ->
+    assert.deepEqual Array.from(getEditorElement().labels), Array.from(document.querySelectorAll("#my_label"))
+    done()
+
+  test "attaches label click handler", (done) ->
+    document.querySelector("#my_label").click()
+
+    assert.equal getEditorElement(), document.activeElement
     done()
 
   test "can be cloned", (done) ->
