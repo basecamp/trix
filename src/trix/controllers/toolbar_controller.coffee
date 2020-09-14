@@ -24,31 +24,34 @@ class Trix.ToolbarController extends Trix.BasicObject
   # Event handlers
 
   didClickActionButton: (event, element) =>
-    @delegate?.toolbarDidClickButton()
-    event.preventDefault()
-    actionName = getActionName(element)
+    if event.button is 0
+      @delegate?.toolbarDidClickButton()
+      event.preventDefault()
+      actionName = getActionName(element)
 
-    if @getDialog(actionName)
-      @toggleDialog(actionName)
-    else
-      @delegate?.toolbarDidInvokeAction(actionName)
+      if @getDialog(actionName)
+        @toggleDialog(actionName)
+      else
+        @delegate?.toolbarDidInvokeAction(actionName)
 
   didClickAttributeButton: (event, element) =>
-    @delegate?.toolbarDidClickButton()
-    event.preventDefault()
-    attributeName = getAttributeName(element)
+    if event.button is 0
+      @delegate?.toolbarDidClickButton()
+      event.preventDefault()
+      attributeName = getAttributeName(element)
 
-    if @getDialog(attributeName)
-      @toggleDialog(attributeName)
-    else
-      @delegate?.toolbarDidToggleAttribute(attributeName)
+      if @getDialog(attributeName)
+        @toggleDialog(attributeName)
+      else
+        @delegate?.toolbarDidToggleAttribute(attributeName)
 
-    @refreshAttributeButtons()
+      @refreshAttributeButtons()
 
   didClickDialogButton: (event, element) =>
-    dialogElement = findClosestElementFromNode(element, matchingSelector: dialogSelector)
-    method = element.getAttribute("data-trix-method")
-    @[method].call(this, dialogElement)
+    if event.button is 0
+      dialogElement = findClosestElementFromNode(element, matchingSelector: dialogSelector)
+      method = element.getAttribute("data-trix-method")
+      @[method].call(this, dialogElement)
 
   didKeyDownDialogInput: (event, element) =>
     if event.keyCode is 13 # Enter key
@@ -98,7 +101,7 @@ class Trix.ToolbarController extends Trix.BasicObject
       buttonKeys = button.getAttribute("data-trix-key").split("+")
       buttonKeyString = JSON.stringify(buttonKeys.sort())
       if buttonKeyString is keyString
-        triggerEvent("mousedown", onElement: button)
+        triggerEvent("mousedown", onElement: button, attributes: {button: 0})
         return true
     false
 

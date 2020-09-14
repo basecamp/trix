@@ -4,7 +4,7 @@ helpers.extend
   clickToolbarButton: (selector, callback) ->
     Trix.selectionChangeObserver.update()
     button = getToolbarButton(selector)
-    helpers.triggerEvent(button, "mousedown")
+    helpers.triggerEvent(button, "mousedown", {button: 0})
     helpers.defer(callback)
 
   typeToolbarKeyCommand: (selector, callback) ->
@@ -16,7 +16,7 @@ helpers.extend
 
   clickToolbarDialogButton: ({method}, callback) ->
     button = getToolbarElement().querySelector("[data-trix-dialog] [data-trix-method='#{method}']")
-    helpers.triggerEvent(button, "click")
+    helpers.triggerEvent(button, "click", {button: 0})
     helpers.defer(callback)
 
   isToolbarButtonActive: (selector) ->
@@ -31,7 +31,7 @@ helpers.extend
     input = dialog.querySelector("[data-trix-input][name='#{attribute}']")
     button = dialog.querySelector("[data-trix-method='setAttribute']")
     input.value = string
-    helpers.triggerEvent(button, "click")
+    helpers.triggerEvent(button, "click", {button: 0})
     helpers.defer(callback)
 
   isToolbarDialogActive: (selector) ->
