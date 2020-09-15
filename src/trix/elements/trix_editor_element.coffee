@@ -120,10 +120,8 @@ Trix.registerElement "trix-editor", do ->
 
         inputLabels = @ownerDocument?.querySelectorAll("label[for=\"#{inputId}\"]")
 
-      if @hasAttribute("id")
-        trixEditorId = @getAttribute("id")
-
-        trixEditorLabels = @ownerDocument?.querySelectorAll("label[for=\"#{trixEditorId}\"]")
+      if @id and @ownerDocument
+        trixEditorLabels = @ownerDocument.querySelectorAll("label[for='#{@id}']")
 
       if findClosestElementFromNode(@parentElement, "label")
         ancestorLabels = [ findClosestElementFromNode(@parentElement, "label") ]
