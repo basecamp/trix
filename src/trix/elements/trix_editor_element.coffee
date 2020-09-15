@@ -115,18 +115,16 @@ Trix.registerElement "trix-editor", do ->
 
   labels:
     get: ->
-      if @inputElement?.hasAttribute("id")
-        inputId = @inputElement.getAttribute("id")
-
-        inputLabels = @ownerDocument?.querySelectorAll("label[for=\"#{inputId}\"]")
+      labels = []
 
       if @id and @ownerDocument
-        trixEditorLabels = @ownerDocument.querySelectorAll("label[for='#{@id}']")
+        for label in @ownerDocument.querySelectorAll("label[for='#{@id}']")
+          labels.push label
 
-      if findClosestElementFromNode(@parentElement, "label")
-        ancestorLabels = [ findClosestElementFromNode(@parentElement, "label") ]
+      if ancestorLabel = findClosestElementFromNode(this, matchingSelector: "label")
+        labels.push ancestorLabel
 
-      [ inputLabels, trixEditorLabels, ancestorLabels ].find((labels) -> labels?.length) || []
+      labels
 
   toolbarElement:
     get: ->
@@ -205,19 +203,20 @@ Trix.registerElement "trix-editor", do ->
     window.removeEventListener("reset", @resetListener, false)
 
   registerLabelClickListener: ->
-    @labelClickListener = @labelClickBubbled.bind(this)
-    window.addEventListener("click", @labelClickListener, false)
+    @clickListener = @clickBubbled.bind(this)
+    window.addEventListener("click", @clickListener, false)
 
   unregisterLabelClickListener: ->
-    window.removeEventListener("click", @labelClickListener, false)
+    window.removeEventListener("click", @clickListener, false)
 
   resetBubbled: (event) ->
     if event.target is @inputElement?.form
       @reset() unless event.defaultPrevented
 
-  labelClickBubbled: (event) ->
-    if Array.from(@labels).includes(event.target)
-      @focus()
+  clickBubbled: (event) ->
+    if label = findClosestElementFromNode(event.target, matchingSelector: "label")
+      if label in @labels
+        @focus()
 
   reset: ->
     @value = @defaultValue
