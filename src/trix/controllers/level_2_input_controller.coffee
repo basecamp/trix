@@ -92,6 +92,9 @@ class Trix.Level2InputController extends Trix.InputController
           @dragging.point = point
           @responder?.setLocationRangeFromPointRange(point)
 
+      else if dragEventHasFiles(event)
+        event.preventDefault()
+
     drop: (event) ->
       if @dragging
         event.preventDefault()
