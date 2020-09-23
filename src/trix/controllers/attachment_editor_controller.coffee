@@ -1,6 +1,6 @@
 #= require trix/controllers/attachment_editor_controller
 
-{defer, escapeHTML, handleEvent, makeElement, tagName} = Trix
+{defer, handleEvent, makeElement, tagName} = Trix
 {lang, css, keyNames} = Trix.config
 
 class Trix.AttachmentEditorController extends Trix.BasicObject
@@ -44,27 +44,54 @@ class Trix.AttachmentEditorController extends Trix.BasicObject
     undo: => delete @element.dataset.trixMutable
 
   addToolbar: undoable ->
-    element = makeElement(tagName: "div", className: css.attachmentToolbar, data: trixMutable: true)
-    element.innerHTML = """
-      <div class="trix-button-row">
-        <span class="trix-button-group trix-button-group--actions">
-          <button type="button" data-trix-action="remove" class="trix-button trix-button--remove" title="#{lang.remove}">#{lang.remove}</button>
-        </span>
-      </div>
-    """
+    # <div class="#{css.attachmentMetadataContainer}" data-trix-mutable="true">
+    #   <div class="trix-button-row">
+    #     <span class="trix-button-group trix-button-group--actions">
+    #       <button type="button" class="trix-button trix-button--remove" title="#{lang.remove}" data-trix-action="remove">#{lang.remove}</button>
+    #     </span>
+    #   </div>
+    # </div>
+    element = makeElement
+      tagName: "div"
+      className: css.attachmentToolbar
+      data: trixMutable: true
+      childNodes: makeElement
+        tagName: "div"
+        className: "trix-button-row"
+        childNodes: makeElement
+          tagName: "span"
+          className: "trix-button-group trix-button-group--actions"
+          childNodes: makeElement
+            tagName: "button"
+            className: "trix-button trix-button--remove"
+            textContent: lang.remove
+            attributes: title: lang.remove
+            data: trixAction: "remove"
 
     if @attachment.isPreviewable()
-      name = escapeHTML(@attachment.getFilename())
-      size = escapeHTML(@attachment.getFormattedFilesize())
-
-      element.innerHTML += """
-        <div class="#{css.attachmentMetadataContainer}">
-          <span class="#{css.attachmentMetadata}">
-            <span class="#{css.attachmentName}" title="#{name}">#{name}</span>
-            <span class="#{css.attachmentSize}">#{size}</span>
-          </span>
-        </div>
-      """
+      # <div class="#{css.attachmentMetadataContainer}">
+      #   <span class="#{css.attachmentMetadata}">
+      #     <span class="#{css.attachmentName}" title="#{name}">#{name}</span>
+      #     <span class="#{css.attachmentSize}">#{size}</span>
+      #   </span>
+      # </div>
+      element.appendChild makeElement
+        tagName: "div"
+        className: css.attachmentMetadataContainer
+        childNodes: makeElement
+          tagName: "span"
+          className: css.attachmentMetadata
+          childNodes: [
+            makeElement
+              tagName: "span"
+              className: css.attachmentName
+              textContent: @attachment.getFilename()
+              attributes: title: @attachment.getFilename()
+            makeElement
+              tagName: "span"
+              className: css.attachmentSize
+              textContent: @attachment.getFormattedFilesize()
+          ]
 
     handleEvent("click", onElement: element, withCallback: @didClickToolbar)
     handleEvent("click", onElement: element, matchingSelector: "[data-trix-action]", withCallback: @didClickActionButton)

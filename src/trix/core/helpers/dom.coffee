@@ -134,6 +134,10 @@ Trix.extend
     if options.textContent
       element.textContent = options.textContent
 
+    if options.childNodes
+      for childNode in [].concat(options.childNodes)
+        element.appendChild(childNode)
+
     element
 
   getBlockTagNames: ->

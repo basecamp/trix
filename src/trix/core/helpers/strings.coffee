@@ -16,11 +16,6 @@ Trix.extend
       # Replace two or more spaces with a single space
       .replace(/\ {2,}/g, " ")
 
-  escapeHTML: (html) ->
-    element = document.createElement("div")
-    element.textContent = html
-    element.innerHTML
-
   summarizeStringChange: (oldString, newString) ->
     oldString = Trix.UTF16String.box(oldString)
     newString = Trix.UTF16String.box(newString)
