@@ -179,15 +179,15 @@ Trix.registerElement "trix-editor", do ->
         requestAnimationFrame => triggerEvent("trix-initialize", onElement: this)
       @editorController.registerSelectionManager()
       @registerResetListener()
-      @registerLabelClickListener()
+      @registerClickListener()
       autofocus(this)
 
   disconnect: ->
     @editorController?.unregisterSelectionManager()
     @unregisterResetListener()
-    @unregisterLabelClickListener()
+    @unregisterClickListener()
 
-  # Form reset support
+  # Form support
 
   registerResetListener: ->
     @resetListener = @resetBubbled.bind(this)
@@ -196,21 +196,24 @@ Trix.registerElement "trix-editor", do ->
   unregisterResetListener: ->
     window.removeEventListener("reset", @resetListener, false)
 
-  registerLabelClickListener: ->
+  registerClickListener: ->
     @clickListener = @clickBubbled.bind(this)
     window.addEventListener("click", @clickListener, false)
 
-  unregisterLabelClickListener: ->
+  unregisterClickListener: ->
     window.removeEventListener("click", @clickListener, false)
 
   resetBubbled: (event) ->
-    if event.target is @inputElement?.form
-      @reset() unless event.defaultPrevented
+    return if event.defaultPrevented
+    return unless event.target is @inputElement?.form
+    @reset()
 
   clickBubbled: (event) ->
-    if label = findClosestElementFromNode(event.target, matchingSelector: "label")
-      if label in @labels
-        @focus()
+    return if event.defaultPrevented
+    return if @contains(event.target)
+    return unless label = findClosestElementFromNode(event.target, matchingSelector: "label")
+    return unless label in @labels
+    @focus()
 
   reset: ->
     @value = @defaultValue
