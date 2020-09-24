@@ -1,7 +1,7 @@
 #= require trix/elements/trix_toolbar_element
 #= require trix/controllers/editor_controller
 
-{browser, makeElement, triggerEvent, handleEvent, handleEventOnce} = Trix
+{browser, makeElement, triggerEvent, handleEvent, handleEventOnce, findClosestElementFromNode} = Trix
 
 {attachmentSelector} = Trix.AttachmentView
 
@@ -113,6 +113,19 @@ Trix.registerElement "trix-editor", do ->
         @setAttribute("trix-id", ++id)
         @trixId
 
+  labels:
+    get: ->
+      labels = []
+
+      if @id and @ownerDocument
+        for label in @ownerDocument.querySelectorAll("label[for='#{@id}']")
+          labels.push label
+
+      if ancestorLabel = findClosestElementFromNode(this, matchingSelector: "label")
+        labels.push ancestorLabel
+
+      labels
+
   toolbarElement:
     get: ->
       if @hasAttribute("toolbar")
@@ -172,11 +185,13 @@ Trix.registerElement "trix-editor", do ->
         requestAnimationFrame => triggerEvent("trix-initialize", onElement: this)
       @editorController.registerSelectionManager()
       @registerResetListener()
+      @registerLabelClickListener()
       autofocus(this)
 
   disconnect: ->
     @editorController?.unregisterSelectionManager()
     @unregisterResetListener()
+    @unregisterLabelClickListener()
 
   # Form reset support
 
@@ -187,9 +202,21 @@ Trix.registerElement "trix-editor", do ->
   unregisterResetListener: ->
     window.removeEventListener("reset", @resetListener, false)
 
+  registerLabelClickListener: ->
+    @clickListener = @clickBubbled.bind(this)
+    window.addEventListener("click", @clickListener, false)
+
+  unregisterLabelClickListener: ->
+    window.removeEventListener("click", @clickListener, false)
+
   resetBubbled: (event) ->
     if event.target is @inputElement?.form
       @reset() unless event.defaultPrevented
+
+  clickBubbled: (event) ->
+    if label = findClosestElementFromNode(event.target, matchingSelector: "label")
+      if label in @labels
+        @focus()
 
   reset: ->
     @value = @defaultValue

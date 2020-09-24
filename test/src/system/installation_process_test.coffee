@@ -10,6 +10,16 @@ testGroup "Installation process", template: "editor_html", ->
   test "loads the initial document", ->
     assert.equal getEditorElement().textContent, "Hello world"
 
+  test "associates the label elements", (done) ->
+    assert.deepEqual getEditorElement().labels, [document.getElementById("my_label")]
+    done()
+
+  test "attaches label click handler", (done) ->
+    document.querySelector("#my_label").click()
+
+    assert.equal getEditorElement(), document.activeElement
+    done()
+
   test "sets value property", (done) ->
     defer ->
       assert.equal getEditorElement().value, "<div>Hello world</div>"
@@ -32,6 +42,26 @@ testGroup "Installation process without specified elements", template: "editor_e
     assert.ok inputElement, "input element not assert.ok"
     assert.equal editorElement.inputElement, inputElement
 
+    done()
+
+  test "associates all label elements", (done) ->
+    labels = [
+      document.getElementById("first-label"),
+      document.getElementById("second-label"),
+    ]
+    assert.deepEqual getEditorElement().labels, labels
+    done()
+
+  test "focuses when <label> clicked", (done) ->
+    document.getElementById("first-label").click()
+
+    assert.equal getEditorElement(), document.activeElement
+    done()
+
+  test "focuses when <label> descendant clicked", (done) ->
+    document.getElementById("first-label").querySelector("span").click()
+
+    assert.equal getEditorElement(), document.activeElement
     done()
 
 
