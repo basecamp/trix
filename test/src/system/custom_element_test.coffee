@@ -400,3 +400,10 @@ testGroup "<label> support", template: "editor_with_labels", ->
     document.getElementById("label-1").querySelector("span").click()
     assert.equal getEditorElement(), document.activeElement
     done()
+
+  test "does not focus when <label> controls another element", (done) ->
+    label = document.getElementById("label-2")
+    assert.notEqual getEditorElement(), label.control
+    label.click()
+    assert.notEqual getEditorElement(), document.activeElement
+    done()

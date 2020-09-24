@@ -116,15 +116,9 @@ Trix.registerElement "trix-editor", do ->
   labels:
     get: ->
       labels = []
-
-      if @id and @ownerDocument
-        for label in @ownerDocument.querySelectorAll("label[for='#{@id}']")
-          labels.push label
-
-      if ancestorLabel = findClosestElementFromNode(this, matchingSelector: "label")
-        labels.push ancestorLabel
-
-      labels
+      labels.push(@ownerDocument.querySelectorAll("label[for='#{@id}']")...) if @id and @ownerDocument
+      labels.push(label) if label = findClosestElementFromNode(this, matchingSelector: "label")
+      labels.filter (label) => label.control in [this, null]
 
   toolbarElement:
     get: ->
