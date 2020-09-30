@@ -2,6 +2,11 @@ $quote-border-width: 0.3em;
 $quote-margin-start: 0.3em;
 $quote-padding-start: 0.6em;
 
+html,body{
+   background: lightblue;
+   width: 100%;
+}
+
 .trix-content {
   line-height: 1.5;
 
