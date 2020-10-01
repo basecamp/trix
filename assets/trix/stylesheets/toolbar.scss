@@ -138,10 +138,13 @@ trix-toolbar {
 
   .trix-dialogs {
     position: relative;
+    display: inline-block;
+   
   }
 
   .trix-dialog {
     position: absolute;
+    display: inline;
     top: 0;
     left: 0;
     right: 0;
@@ -166,6 +169,7 @@ trix-toolbar {
     outline: none;
     -webkit-appearance: none;
     -moz-appearance: none;
+    display: block;
 
     &.validate:invalid {
       box-shadow: #F00 0px 0px 1.5px 1px;
