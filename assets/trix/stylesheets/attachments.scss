@@ -24,10 +24,12 @@ trix-editor {
       &.attachment--file {
         box-shadow: 0 0 0 2px highlight;
         border-color: transparent;
+        display: flex;
       }
 
       img {
         box-shadow: 0 0 0 2px highlight;
+        display: flex;
       }
     }
   }
@@ -93,6 +95,7 @@ trix-editor {
 
   .trix-button {
     position: relative;
+    display:block;
     float: left; // Collapse whitespace between elements
     color: #666;
     white-space: nowrap;
@@ -160,6 +163,7 @@ trix-editor {
 
   .attachment__metadata {
     position: absolute;
+    display: absolute;
     left: 50%;
     top: 2em;
     transform: translate(-50%, 0);
