@@ -24,6 +24,22 @@ Trix.registerElement "trix-editor", do ->
     return if element.hasAttribute("role")
     element.setAttribute("role", "textbox")
 
+  ensureAriaLabel = (element) ->
+    return if element.hasAttribute("aria-label") or element.hasAttribute("aria-labelledby")
+
+    update = ->
+      texts = (label.textContent for label in element.labels when not label.contains(element))
+      text = texts.join(" ")
+
+      if text
+        element.setAttribute("aria-label", text)
+      else
+        element.removeAttribute("aria-label")
+
+    update()
+
+    handleEvent("focus", onElement: element, withCallback: update)
+
   configureContentEditable = (element) ->
     disableObjectResizing(element)
     setDefaultParagraphSeparator(element)
@@ -172,6 +188,7 @@ Trix.registerElement "trix-editor", do ->
   initialize: ->
     makeEditable(this)
     addAccessibilityRole(this)
+    ensureAriaLabel(this)
 
   connect: ->
     unless @hasAttribute("data-trix-internal")
