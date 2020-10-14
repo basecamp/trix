@@ -303,6 +303,8 @@ class Trix.HTMLParser extends Trix.BasicObject
     style = window.getComputedStyle(element)
     if style.display is "block"
       top: parseInt(style.marginTop), bottom: parseInt(style.marginBottom)
+    else
+      top: 0, bottom: 0
 
   # Whitespace
 
