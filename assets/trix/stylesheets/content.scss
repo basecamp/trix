@@ -1,20 +1,42 @@
+$quote-border-width: 0.3em;
+$quote-margin-start: 0.3em;
+$quote-padding-start: 0.6em;
+
 .trix-content {
   line-height: 1.5;
 
   * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
 
   h1 {
     font-size: 1.2em;
     line-height: 1.2;
-    margin: 0;
   }
 
   blockquote {
-    margin: 0 0 0 0.3em;
-    padding: 0 0 0 0.6em;
-    border-left: 0.3em solid #ccc;
+    border: 0 solid #ccc;
+    border-left-width: $quote-border-width;
+    margin-left: $quote-margin-start;
+    padding-left: $quote-padding-start;
+  }
+
+  [dir=rtl] blockquote,
+  blockquote[dir=rtl] {
+    border-width: 0;
+    border-right-width: $quote-border-width;
+    margin-right: $quote-margin-start;
+    padding-right: $quote-padding-start;
+  }
+
+  li {
+    margin-left: 1em;
+  }
+
+  [dir=rtl] li {
+    margin-right: 1em;
   }
 
   pre {
@@ -23,20 +45,10 @@
     vertical-align: top;
     font-family: monospace;
     font-size: 0.9em;
-    margin: 0;
     padding: 0.5em;
     white-space: pre;
     background-color: #eee;
     overflow-x: auto;
-  }
-
-  ul, ol, li {
-    margin: 0;
-    padding: 0;
-
-    li {
-      margin-left: 1em;
-    }
   }
 
   img {
@@ -48,8 +60,6 @@
     display: inline-block;
     position: relative;
     max-width: 100%;
-    margin: 0;
-    padding: 0;
 
     a {
       color: inherit;
@@ -63,7 +73,6 @@
   }
 
   .attachment__caption {
-    padding: 0;
     text-align: center;
 
     .attachment__name + .attachment__size {
@@ -87,7 +96,7 @@
   .attachment--file {
     color: #333;
     line-height: 1;
-    margin: 0 2px 2px 0;
+    margin: 0 2px 2px 2px;
     padding: 0.4em 1em;
     border: 1px solid #bbb;
     border-radius: 5px;
@@ -97,8 +106,6 @@
     display: flex;
     flex-wrap: wrap;
     position: relative;
-    margin: 0;
-    padding: 0;
 
     .attachment {
       flex: 1 0 33%;

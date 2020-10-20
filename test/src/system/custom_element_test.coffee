@@ -384,3 +384,26 @@ testGroup "Custom element API", template: "editor_empty", ->
       form.reset()
       form.removeEventListener("reset", preventDefault, false)
       expectDocument("hello\n")
+
+testGroup "<label> support", template: "editor_with_labels", ->
+  test "associates all label elements", (done) ->
+    labels = [document.getElementById("label-1"), document.getElementById("label-3")]
+    assert.deepEqual getEditorElement().labels, labels
+    done()
+
+  test "focuses when <label> clicked", (done) ->
+    document.getElementById("label-1").click()
+    assert.equal getEditorElement(), document.activeElement
+    done()
+
+  test "focuses when <label> descendant clicked", (done) ->
+    document.getElementById("label-1").querySelector("span").click()
+    assert.equal getEditorElement(), document.activeElement
+    done()
+
+  test "does not focus when <label> controls another element", (done) ->
+    label = document.getElementById("label-2")
+    assert.notEqual getEditorElement(), label.control
+    label.click()
+    assert.notEqual getEditorElement(), document.activeElement
+    done()

@@ -125,13 +125,23 @@ class Trix.Block extends Trix.Object
     text: @text
     attributes: @attributes
 
+  # BIDI
+
+  getDirection: ->
+    @text.getDirection()
+
+  isRTL: ->
+    @text.isRTL()
+
   # Splittable
 
   getLength: ->
     @text.getLength()
 
   canBeConsolidatedWith: (block) ->
-    not @hasAttributes() and not block.hasAttributes()
+    not @hasAttributes() and
+      not block.hasAttributes() and
+      @getDirection() is block.getDirection()
 
   consolidateWith: (block) ->
     newlineText = Trix.Text.textForStringWithAttributes("\n")
@@ -171,7 +181,8 @@ class Trix.Block extends Trix.Object
 
     attribute is otherAttribute and
       not (getBlockConfig(attribute).group is false and
-           otherAttributes[depth + 1] not in getListAttributeNames())
+      otherAttributes[depth + 1] not in getListAttributeNames()) and
+      (@getDirection() is otherBlock.getDirection() or otherBlock.isEmpty())
 
   # Block breaks
 

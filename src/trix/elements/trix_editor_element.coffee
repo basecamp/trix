@@ -1,7 +1,7 @@
 #= require trix/elements/trix_toolbar_element
 #= require trix/controllers/editor_controller
 
-{browser, makeElement, triggerEvent, handleEvent, handleEventOnce} = Trix
+{browser, makeElement, triggerEvent, handleEvent, handleEventOnce, findClosestElementFromNode} = Trix
 
 {attachmentSelector} = Trix.AttachmentView
 
@@ -113,6 +113,15 @@ Trix.registerElement "trix-editor", do ->
         @setAttribute("trix-id", ++id)
         @trixId
 
+  labels:
+    get: ->
+      labels = []
+      if @id and @ownerDocument
+        labels.push(@ownerDocument.querySelectorAll("label[for='#{@id}']")...)
+      if label = findClosestElementFromNode(this, matchingSelector: "label")
+        labels.push(label) if label.control in [this, null]
+      labels
+
   toolbarElement:
     get: ->
       if @hasAttribute("toolbar")
@@ -172,13 +181,15 @@ Trix.registerElement "trix-editor", do ->
         requestAnimationFrame => triggerEvent("trix-initialize", onElement: this)
       @editorController.registerSelectionManager()
       @registerResetListener()
+      @registerClickListener()
       autofocus(this)
 
   disconnect: ->
     @editorController?.unregisterSelectionManager()
     @unregisterResetListener()
+    @unregisterClickListener()
 
-  # Form reset support
+  # Form support
 
   registerResetListener: ->
     @resetListener = @resetBubbled.bind(this)
@@ -187,9 +198,24 @@ Trix.registerElement "trix-editor", do ->
   unregisterResetListener: ->
     window.removeEventListener("reset", @resetListener, false)
 
+  registerClickListener: ->
+    @clickListener = @clickBubbled.bind(this)
+    window.addEventListener("click", @clickListener, false)
+
+  unregisterClickListener: ->
+    window.removeEventListener("click", @clickListener, false)
+
   resetBubbled: (event) ->
-    if event.target is @inputElement?.form
-      @reset() unless event.defaultPrevented
+    return if event.defaultPrevented
+    return unless event.target is @inputElement?.form
+    @reset()
+
+  clickBubbled: (event) ->
+    return if event.defaultPrevented
+    return if @contains(event.target)
+    return unless label = findClosestElementFromNode(event.target, matchingSelector: "label")
+    return unless label in @labels
+    @focus()
 
   reset: ->
     @value = @defaultValue

@@ -34,7 +34,6 @@ testGroup "Installation process without specified elements", template: "editor_e
 
     done()
 
-
 testGroup "Installation process with specified elements", template: "editor_with_toolbar_and_input", ->
   test "uses specified elements", (done) ->
     editorElement = getEditorElement()
