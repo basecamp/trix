@@ -26,18 +26,12 @@ Trix.registerElement "trix-editor", do ->
 
   ensureAriaLabel = (element) ->
     return if element.hasAttribute("aria-label") or element.hasAttribute("aria-labelledby")
-
-    update = ->
+    do update = ->
       texts = (label.textContent for label in element.labels when not label.contains(element))
-      text = texts.join(" ")
-
-      if text
+      if text = texts.join(" ")
         element.setAttribute("aria-label", text)
       else
         element.removeAttribute("aria-label")
-
-    update()
-
     handleEvent("focus", onElement: element, withCallback: update)
 
   configureContentEditable = (element) ->
