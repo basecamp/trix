@@ -20,20 +20,6 @@ Trix.registerElement "trix-editor", do ->
     element.setAttribute("contenteditable", "")
     handleEventOnce("focus", onElement: element, withCallback: -> configureContentEditable(element))
 
-  addAccessibilityRole = (element) ->
-    return if element.hasAttribute("role")
-    element.setAttribute("role", "textbox")
-
-  ensureAriaLabel = (element) ->
-    return if element.hasAttribute("aria-label") or element.hasAttribute("aria-labelledby")
-    do update = ->
-      texts = (label.textContent for label in element.labels when not label.contains(element))
-      if text = texts.join(" ")
-        element.setAttribute("aria-label", text)
-      else
-        element.removeAttribute("aria-label")
-    handleEvent("focus", onElement: element, withCallback: update)
-
   configureContentEditable = (element) ->
     disableObjectResizing(element)
     setDefaultParagraphSeparator(element)
@@ -48,6 +34,22 @@ Trix.registerElement "trix-editor", do ->
       {tagName} = Trix.config.blockAttributes.default
       if tagName in ["div", "p"]
         document.execCommand("DefaultParagraphSeparator", false, tagName)
+
+  # Accessibility helpers
+
+  addAccessibilityRole = (element) ->
+    return if element.hasAttribute("role")
+    element.setAttribute("role", "textbox")
+
+  ensureAriaLabel = (element) ->
+    return if element.hasAttribute("aria-label") or element.hasAttribute("aria-labelledby")
+    do update = ->
+      texts = (label.textContent for label in element.labels when not label.contains(element))
+      if text = texts.join(" ")
+        element.setAttribute("aria-label", text)
+      else
+        element.removeAttribute("aria-label")
+    handleEvent("focus", onElement: element, withCallback: update)
 
   # Style
 
