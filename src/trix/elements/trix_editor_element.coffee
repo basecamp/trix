@@ -182,9 +182,10 @@ Trix.registerElement "trix-editor", do ->
   # Element lifecycle
 
   initialize: ->
-    makeEditable(this)
-    addAccessibilityRole(this)
-    ensureAriaLabel(this)
+    unless @hasAttribute("data-trix-internal")
+      makeEditable(this)
+      addAccessibilityRole(this)
+      ensureAriaLabel(this)
 
   connect: ->
     unless @hasAttribute("data-trix-internal")
