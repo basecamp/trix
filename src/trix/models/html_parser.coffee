@@ -111,7 +111,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   processElement: (element) ->
     if nodeIsAttachmentElement(element)
-      attributes = getAttachmentAttributes(element)
+      attributes = parseTrixDataAttribute(element, "attachment")
       if Object.keys(attributes).length
         textAttributes = @getTextAttributes(element)
         @appendAttachmentWithAttributes(attributes, textAttributes)
@@ -212,9 +212,8 @@ class Trix.HTMLParser extends Trix.BasicObject
           attributes[attribute] = value
 
     if nodeIsAttachmentElement(element)
-      if json = element.getAttribute("data-trix-attributes")
-        for key, value of JSON.parse(json)
-          attributes[key] = value
+      for key, value of parseTrixDataAttribute(element, "attributes")
+        attributes[key] = value
 
     attributes
 
@@ -237,8 +236,11 @@ class Trix.HTMLParser extends Trix.BasicObject
       element = element.parentNode
     ancestors
 
-  getAttachmentAttributes = (element) ->
-    JSON.parse(element.getAttribute("data-trix-attachment"))
+  parseTrixDataAttribute = (element, name) ->
+    try
+     JSON.parse(element.getAttribute("data-trix-#{name}"))
+    catch
+      {}
 
   getImageDimensions = (element) ->
     width = element.getAttribute("width")

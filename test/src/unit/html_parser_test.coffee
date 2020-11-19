@@ -192,6 +192,17 @@ testGroup "Trix.HTMLParser", ->
     expectedHTML = """<div><!--block-->a b c</div>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
+  test "ignores attachment elements with malformed JSON", ->
+    html = """
+    <div>a</div>\
+    <div data-trix-attachment data-trix-attributes></div>\
+    <div data-trix-attachment="" data-trix-attributes=""></div>\
+    <div data-trix-attachment="{&quot;x:}" data-trix-attributes="{&quot;x:}"></div>\
+    <div>b</div>
+    """
+    expectedHTML = """<div><!--block-->a</div><div><!--block--><br></div><div><!--block-->b</div>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
   test "parses attachment caption from large html string", (done) ->
     html = fixtures["image attachment with edited caption"].html
 
