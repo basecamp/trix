@@ -168,6 +168,11 @@ testGroup "Trix.HTMLParser", ->
     expectedHTML = """<div><!--block-->a</div>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
+  test "ignores iframe elements", ->
+    html = """<div>a<iframe src="data:text/html;base64,PHNjcmlwdD5hbGVydCgneHNzJyk7PC9zY3JpcHQ+">b</iframe></div>"""
+    expectedHTML = """<div><!--block-->a</div>"""
+    assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
+
   test "sanitizes unsafe html", (done) ->
     window.unsanitized = []
     Trix.HTMLParser.parse """
