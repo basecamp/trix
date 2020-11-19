@@ -114,9 +114,9 @@ if (process.env.CI) {
   }
 
   function buildId() {
-    const { TRAVIS_BUILD_NUMBER, TRAVIS_BUILD_ID } = process.env
-    return TRAVIS_BUILD_NUMBER && TRAVIS_BUILD_ID
-      ? `TRAVIS #${TRAVIS_BUILD_NUMBER} (${TRAVIS_BUILD_ID})`
+    const { GITHUB_WORKFLOW, GITHUB_RUN_NUMBER, GITHUB_RUN_ID } = process.env
+    return GITHUB_WORKFLOW && GITHUB_RUN_NUMBER && GITHUB_RUN_ID
+      ? `${GITHUB_WORKFLOW} #${GITHUB_RUN_NUMBER} (${GITHUB_RUN_ID})`
       : ""
   }
 }
