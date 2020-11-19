@@ -280,6 +280,7 @@ class Trix.Level2InputController extends Trix.InputController
       paste = {dataTransfer}
 
       if href = dataTransfer.getData("URL")
+        @event.preventDefault()
         paste.type = "text/html"
         if name = dataTransfer.getData("public.url-name")
           string = Trix.squishBreakableWhitespace(name).trim()
@@ -302,6 +303,7 @@ class Trix.Level2InputController extends Trix.InputController
           @delegate?.inputControllerDidPaste(paste)
 
       else if html = dataTransfer.getData("text/html")
+        @event.preventDefault()
         paste.type = "text/html"
         paste.html = html
         @delegate?.inputControllerWillPaste(paste)
