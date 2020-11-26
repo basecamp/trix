@@ -29,6 +29,8 @@ trix-toolbar .trix-button-group {
     @media (max-device-width: 768px) {
       trix-toolbar .trix-button-group:not(:first-child) {
         margin-left: 0; } }
+trix-toolbar .trix-button--heading {
+  width: 36.4px; }
 trix-toolbar .trix-button-group-spacer {
   flex-grow: 1; }
   @media (max-device-width: 768px) {
@@ -304,9 +306,21 @@ trix-editor .attachment__metadata {
     box-sizing: border-box;
     margin: 0;
     padding: 0; }
+  .trix-content h1, .trix-content h2, .trix-content h3, .trix-content h4, .trix-content h5, .trix-content h6 {
+    line-height: 1.2;
+    margin: 0; }
   .trix-content h1 {
-    font-size: 1.2em;
-    line-height: 1.2; }
+    font-size: 36px; }
+  .trix-content h2 {
+    font-size: 26px; }
+  .trix-content h3 {
+    font-size: 18px; }
+  .trix-content h4 {
+    font-size: 18px; }
+  .trix-content h5 {
+    font-size: 14px; }
+  .trix-content h6 {
+    font-size: 12px; }
   .trix-content blockquote {
     border: 0 solid #ccc;
     border-left-width: 0.3em;

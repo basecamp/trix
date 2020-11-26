@@ -11,10 +11,17 @@ $quote-padding-start: 0.6em;
     padding: 0;
   }
 
-  h1 {
-    font-size: 1.2em;
+  h1, h2, h3, h4, h5, h6 {
     line-height: 1.2;
+    margin: 0;
   }
+
+  h1 { font-size: 36px; }
+  h2 { font-size: 26px; }
+  h3 { font-size: 18px; }
+  h4 { font-size: 18px; }
+  h5 { font-size: 14px; }
+  h6 { font-size: 12px; }
 
   blockquote {
     border: 0 solid #ccc;
