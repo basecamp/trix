@@ -1,6 +1,11 @@
 {assert, test, testGroup, triggerEvent} = Trix.TestHelpers
 
 testGroup "Accessibility attributes", template: "editor_default_aria_label", ->
+  test "associates the editor with its label elements", ->
+    editor = document.getElementById("editor-with-labels")
+    for label in editor.labels
+      assert.equal label.control, editor
+
   test "sets the role to textbox", ->
     editor = document.getElementById("editor-without-labels")
     assert.equal editor.getAttribute("role"), "textbox"

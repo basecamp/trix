@@ -196,6 +196,7 @@ Trix.registerElement "trix-editor", do ->
       @editorController.registerSelectionManager()
       @registerResetListener()
       @registerClickListener()
+      @registerWithLabels()
       autofocus(this)
 
   disconnect: ->
@@ -218,6 +219,12 @@ Trix.registerElement "trix-editor", do ->
 
   unregisterClickListener: ->
     window.removeEventListener("click", @clickListener, false)
+
+  registerWithLabels: ->
+    element = this
+
+    for label in @labels
+      Object.defineProperty label, "control", get: -> element
 
   resetBubbled: (event) ->
     return if event.defaultPrevented
