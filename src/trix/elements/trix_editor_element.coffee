@@ -70,6 +70,7 @@ Trix.registerElement "trix-editor", do ->
       content: attr(placeholder);
       color: graytext;
       cursor: text;
+      pointer-events: none;
     }
 
     %t a[contenteditable=false] {
