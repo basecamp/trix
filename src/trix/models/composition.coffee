@@ -32,7 +32,7 @@ class Trix.Composition extends Trix.BasicObject
   # Responder protocol
 
   insertText: (text, {updatePosition} = updatePosition: true) ->
-    selectedRange = @getSelectedRange()
+    selectedRange = @getSelectedRange({ strict: false })
     @setDocument(@document.insertTextAtRange(text, selectedRange))
 
     startPosition = selectedRange[0]
@@ -366,8 +366,8 @@ class Trix.Composition extends Trix.BasicObject
     locationRange = @document.locationRangeFromRange(selectedRange)
     @delegate?.compositionDidRequestChangingSelectionToLocationRange(locationRange)
 
-  getSelectedRange: ->
-    if locationRange = @getLocationRange()
+  getSelectedRange: (options) ->
+    if locationRange = @getLocationRange(options)
       @document.rangeFromLocationRange(locationRange)
 
   setSelectedRange: (selectedRange) ->
