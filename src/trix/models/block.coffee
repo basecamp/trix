@@ -5,13 +5,12 @@
 class Trix.Block extends Trix.Object
   @fromJSON: (blockJSON) ->
     text = Trix.Text.fromJSON(blockJSON.text)
-    new this text, blockJSON.attributes, blockJSON.className
+    new this text, blockJSON.attributes
 
-  constructor: (text = new Trix.Text, attributes = [], className = '') ->
+  constructor: (text = new Trix.Text, attributes = []) ->
     super
     @text = applyBlockBreakToText(text)
     @attributes = attributes
-    @className = className
 
   isEmpty: ->
     @text.isBlockBreak()
@@ -23,7 +22,7 @@ class Trix.Block extends Trix.Object
     )
 
   copyWithText: (text) ->
-    new @constructor text, @attributes, @className
+    new @constructor text, @attributes
 
   copyWithoutText: ->
     @copyWithText(null)

@@ -140,7 +140,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   appendBlockForAttributesWithElement: (attributes, element) ->
     @blockElements.push(element)
-    block = blockForAttributes(attributes, element?.className)
+    block = blockForAttributes(attributes)
     @blocks.push(block)
     block
 
@@ -185,9 +185,9 @@ class Trix.HTMLParser extends Trix.BasicObject
     type = "attachment"
     {attachment, attributes, type}
 
-  blockForAttributes = (attributes = {}, className = '') ->
+  blockForAttributes = (attributes = {}) ->
     text = []
-    {text, attributes, className}
+    {text, attributes}
 
   # Attribute parsing
 
