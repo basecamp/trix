@@ -259,6 +259,18 @@ testGroup "Trix.HTMLParser", ->
       document = Trix.HTMLParser.parse(html).getDocument()
       assert.documentHTMLEqual document, expectedHTML
 
+  test "parses block with className", ->
+    config =
+      blockWithClassName:
+        tagName: "div"
+        className: "class-name-1 class-name-2"
+
+    withBlockAttributeConfig config, ->
+      html = """<div class="class-name-1 class-name-2">a</div>"""
+      expectedHTML = """<div class="class-name-1 class-name-2"><!--block-->a</div>"""
+      document = Trix.HTMLParser.parse(html).getDocument()
+      assert.documentHTMLEqual document, expectedHTML
+
 withTextAttributeConfig = (config = {}, fn) ->
   {textAttributes} = Trix.config
   originalConfig = {}
@@ -275,6 +287,23 @@ withTextAttributeConfig = (config = {}, fn) ->
         textAttributes[key] = value
       else
         delete textAttributes[key]
+
+withBlockAttributeConfig = (config = {}, fn) ->
+  {blockAttributes} = Trix.config
+  originalConfig = {}
+
+  for key, value of config
+    originalConfig[key] = blockAttributes[key]
+    blockAttributes[key] = value
+
+  try
+    fn()
+  finally
+    for key, value of originalConfig
+      if value
+        blockAttributes[key] = value
+      else
+        delete blockAttributes[key]
 
 getOrigin = ->
   {protocol, hostname, port} = window.location

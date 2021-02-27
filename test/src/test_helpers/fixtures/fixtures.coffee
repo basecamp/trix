@@ -591,11 +591,6 @@ removeWhitespace = (string) ->
       <div dir="rtl"><br>&nbsp;گ</div>\
     """
 
-  "block with className":
-    document: createDocument(["", {}, ["blockWithClassNameTest"]])
-    html: "<div class=\"class-name-test\">#{blockComment}<br></div>"
-
-
 @eachFixture = (callback) ->
   for name, details of @fixtures
     callback(name, details)

@@ -4,9 +4,6 @@
 #= require_tree ./unit
 
 Trix.config.undoInterval = 0
-Trix.config.blockAttributes.blockWithClassNameTest =
-  tagName: "div"
-  className: "class-name-test"
 
 QUnit.config.hidepassed = true
 QUnit.config.testTimeout = 20000
