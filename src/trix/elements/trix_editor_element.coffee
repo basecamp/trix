@@ -146,6 +146,10 @@ Trix.registerElement "trix-editor", do ->
         @parentNode.insertBefore(element, this)
         element
 
+  form:
+    get: ->
+      @inputElement?.form
+
   inputElement:
     get: ->
       if @hasAttribute("input")
@@ -222,7 +226,7 @@ Trix.registerElement "trix-editor", do ->
 
   resetBubbled: (event) ->
     return if event.defaultPrevented
-    return unless event.target is @inputElement?.form
+    return unless event.target is @form
     @reset()
 
   clickBubbled: (event) ->
