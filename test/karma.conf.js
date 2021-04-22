@@ -33,7 +33,9 @@ if (process.env.CI) {
       base: "SauceLabs",
       browserName: "chrome",
       platform: "Windows 10",
-      version: "latest"
+      // Pinned to v89 pending a solution for failing RTL detection tests on v90
+      // when controlled remotely (v90 works correctly when launched directly).
+      version: "89"
     },
     sl_firefox_latest: {
       base: "SauceLabs",
