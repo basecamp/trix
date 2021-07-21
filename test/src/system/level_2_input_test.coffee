@@ -43,18 +43,20 @@ testGroup "Level 2 Input", testOptions, ->
       expectDocument("abc\n")
 
   test "insertOrderedList", (expectDocument) ->
-    insertString("abc")
+    insertString("a\nb")
     performInputTypeUsingExecCommand "insertOrderedList", inputType: "insertOrderedList", ->
-      assert.blockAttributes([0, 4], ["numberList", "number"])
+      assert.blockAttributes([0, 2], [])
+      assert.blockAttributes([2, 4], ["numberList", "number"])
       assert.ok isToolbarButtonActive(attribute: "number")
-      expectDocument("abc\n")
+      expectDocument("a\nb\n")
 
   test "insertUnorderedList", (expectDocument) ->
-    insertString("abc")
+    insertString("a\nb")
     performInputTypeUsingExecCommand "insertUnorderedList", inputType: "insertUnorderedList", ->
-      assert.blockAttributes([0, 4], ["bulletList", "bullet"])
+      assert.blockAttributes([0, 2], [])
+      assert.blockAttributes([2, 4], ["bulletList", "bullet"])
       assert.ok isToolbarButtonActive(attribute: "bullet")
-      expectDocument("abc\n")
+      expectDocument("a\nb\n")
 
   test "insertLineBreak", (expectDocument) ->
     clickToolbarButton attribute: "quote", ->

@@ -1,22 +1,22 @@
 helpers = Trix.TestHelpers
+{removeNode} = Trix
 
-setFixtureHTML = (html) ->
-  element = findOrCreateTrixContainer()
+setFixtureHTML = (html, container = "form") ->
+  element = document.getElementById("trix-container")
+  removeNode(element) if element?
+
+  element = document.createElement(container)
+  element.id = "trix-container"
   element.innerHTML = html
 
-findOrCreateTrixContainer = ->
-  if container = document.getElementById("trix-container")
-    container
-  else
-    document.body.insertAdjacentHTML("afterbegin", """<form id="trix-container"></form>""")
-    document.getElementById("trix-container")
+  document.body.insertAdjacentElement("afterbegin", element)
 
 ready = null
 
 helpers.extend
   testGroup: (name, options, callback) ->
     if callback?
-      {template, setup, teardown} = options
+      {container,template, setup, teardown} = options
     else
       callback = options
 
@@ -32,7 +32,7 @@ helpers.extend
               target.editor.setSelectedRange(0)
             callback(target)
 
-          setFixtureHTML(JST["test_helpers/fixtures/#{template}"]())
+          setFixtureHTML(JST["test_helpers/fixtures/#{template}"](), container)
         else
           callback()
       setup?()

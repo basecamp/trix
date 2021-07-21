@@ -407,3 +407,21 @@ testGroup "<label> support", template: "editor_with_labels", ->
     label.click()
     assert.notEqual getEditorElement(), document.activeElement
     done()
+
+testGroup "form property references its <form>", template: "editors_with_forms", container: "div", ->
+  test "accesses its ancestor form", (done) ->
+    form = document.getElementById("ancestor-form")
+    editor = document.getElementById("editor-with-ancestor-form")
+    assert.equal editor.form, form
+    done()
+
+  test "transitively accesses its related <input> element's <form>", (done) ->
+    form = document.getElementById("input-form")
+    editor = document.getElementById("editor-with-input-form")
+    assert.equal editor.form, form
+    done()
+
+  test "returns null when there is no associated <form>", (done) ->
+    editor = document.getElementById("editor-with-no-form")
+    assert.equal editor.form, null
+    done()
