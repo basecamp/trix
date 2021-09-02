@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/joeldrapper/coffee-script-source.git
+  revision: ce56d93554c93bc120b34978d1535e8834f7b61e
+  specs:
+    coffee-script-source (2.1.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -24,11 +30,10 @@ GEM
     coffee-script (2.4.1)
       coffee-script-source
       execjs
-    coffee-script-source (1.9.3)
     concurrent-ruby (1.1.9)
     cookiejar (0.3.3)
     curses (1.4.2)
-    daemons (1.4.0)
+    daemons (1.4.1)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     eco (1.0.0)
@@ -59,7 +64,7 @@ GEM
     faye-websocket (0.11.1)
       eventmachine (>= 0.12.0)
       websocket-driver (>= 0.5.1)
-    ffi (1.15.3)
+    ffi (1.15.4)
     github_api (0.13.1)
       addressable (~> 2.4.0)
       descendants_tracker (~> 0.0.4)
@@ -68,7 +73,7 @@ GEM
       multi_json (>= 1.7.5, < 2.0)
       oauth2
     hashie (4.1.0)
-    http_parser.rb (0.7.0)
+    http_parser.rb (0.8.0)
     i18n (1.8.10)
       concurrent-ruby (~> 1.0)
     json (2.5.1)
@@ -120,7 +125,7 @@ PLATFORMS
 DEPENDENCIES
   blade (~> 0.7.0)
   coffee-script
-  coffee-script-source (~> 1.9.1)
+  coffee-script-source!
   eco
   github_api (~> 0.13.1)
   sass
