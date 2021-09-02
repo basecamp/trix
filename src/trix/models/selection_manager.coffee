@@ -8,6 +8,7 @@
 
 class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
+    super(arguments...)
     @locationMapper = new Trix.LocationMapper @element
     @pointMapper = new Trix.PointMapper
     @lockCount = 0

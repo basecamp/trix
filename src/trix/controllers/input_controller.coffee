@@ -5,6 +5,7 @@
 
 class Trix.InputController extends Trix.BasicObject
   constructor: (@element) ->
+    super(arguments...)
     @mutationObserver = new Trix.MutationObserver @element
     @mutationObserver.delegate = this
     for eventName of @events

@@ -3,6 +3,7 @@
 
 class Trix.ObjectView extends Trix.BasicObject
   constructor: (@object, @options = {}) ->
+    super(arguments...)
     @childViews = []
     @rootView = this
 

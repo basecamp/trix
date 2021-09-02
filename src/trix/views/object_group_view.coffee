@@ -1,6 +1,6 @@
 class Trix.ObjectGroupView extends Trix.ObjectView
   constructor: ->
-    super
+    super(arguments...)
     @objectGroup = @object
     {@viewClass} = @options
     delete @options.viewClass

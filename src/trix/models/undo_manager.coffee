@@ -1,5 +1,6 @@
 class Trix.UndoManager extends Trix.BasicObject
   constructor: (@composition) ->
+    super(arguments...)
     @undoEntries = []
     @redoEntries = []
 

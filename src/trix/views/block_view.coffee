@@ -5,7 +5,7 @@
 
 class Trix.BlockView extends Trix.ObjectView
   constructor: ->
-    super
+    super(arguments...)
     @block = @object
     @attributes = @block.getAttributes()
 

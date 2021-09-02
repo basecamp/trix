@@ -11,6 +11,7 @@ class Trix.HTMLSanitizer extends Trix.BasicObject
     sanitizer
 
   constructor: (html, {@allowedAttributes, @forbiddenProtocols, @forbiddenElements} = {}) ->
+    super(arguments...)
     @allowedAttributes ?= DEFAULT_ALLOWED_ATTRIBUTES
     @forbiddenProtocols ?= DEFAULT_FORBIDDEN_PROTOCOLS
     @forbiddenElements ?= DEFAULT_FORBIDDEN_ELEMENTS

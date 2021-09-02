@@ -5,7 +5,7 @@ class Trix.AttachmentView extends Trix.ObjectView
   @attachmentSelector: "[data-trix-attachment]"
 
   constructor: ->
-    super
+    super(arguments...)
     @attachment = @object
     @attachment.uploadProgressDelegate = this
     @attachmentPiece = @options.piece

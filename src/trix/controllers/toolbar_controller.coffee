@@ -11,6 +11,7 @@ class Trix.ToolbarController extends Trix.BasicObject
   dialogInputSelector = "#{dialogSelector} [data-trix-input]"
 
   constructor: (@element) ->
+    super(arguments...)
     @attributes = {}
     @actions = {}
     @resetDialogInputs()

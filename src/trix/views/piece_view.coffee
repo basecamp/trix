@@ -5,7 +5,7 @@
 
 class Trix.PieceView extends Trix.ObjectView
   constructor: ->
-    super
+    super(arguments...)
     @piece = @object
     @attributes = @piece.getAttributes()
     {@textConfig, @context} = @options

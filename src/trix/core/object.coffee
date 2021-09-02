@@ -7,6 +7,7 @@ class Trix.Object extends Trix.BasicObject
     @fromJSON JSON.parse(jsonString)
 
   constructor: ->
+    super(arguments...)
     @id = ++id
 
   hasSameConstructorAs: (object) ->

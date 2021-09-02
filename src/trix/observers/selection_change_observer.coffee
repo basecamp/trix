@@ -2,6 +2,7 @@
 
 class Trix.SelectionChangeObserver extends Trix.BasicObject
   constructor: ->
+    super(arguments...)
     @selectionManagers = []
 
   start: ->

@@ -9,7 +9,7 @@ class Trix.Level0InputController extends Trix.InputController
   pastedFileCount = 0
 
   constructor: ->
-    super
+    super(arguments...)
     @resetInputSummary()
 
   setInputSummary: (summary = {}) ->
@@ -428,6 +428,7 @@ pasteEventIsCrippledSafariHTMLPaste = (event) ->
 
 class CompositionInput extends Trix.BasicObject
   constructor: (@inputController) ->
+    super(arguments...)
     {@responder, @delegate, @inputSummary} = @inputController
     @data = {}
 

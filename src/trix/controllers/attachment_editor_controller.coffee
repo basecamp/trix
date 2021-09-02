@@ -5,6 +5,7 @@
 
 class Trix.AttachmentEditorController extends Trix.BasicObject
   constructor: (@attachmentPiece, @element, @container, @options = {}) ->
+    super(arguments...)
     {@attachment} = @attachmentPiece
     @element = @element.firstChild if tagName(@element) is "a"
     @install()

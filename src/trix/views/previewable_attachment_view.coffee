@@ -4,7 +4,7 @@
 
 class Trix.PreviewableAttachmentView extends Trix.AttachmentView
   constructor: ->
-    super
+    super(arguments...)
     @attachment.previewDelegate = this
 
   createContentNodes: ->
@@ -19,7 +19,7 @@ class Trix.PreviewableAttachmentView extends Trix.AttachmentView
     [@image]
 
   createCaptionElement: ->
-    figcaption = super
+    figcaption = super(arguments...)
     unless figcaption.textContent
       figcaption.setAttribute("data-trix-placeholder", Trix.config.lang.captionPlaceholder)
     figcaption

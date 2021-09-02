@@ -17,7 +17,7 @@ class Trix.Text extends Trix.Object
     new this pieces
 
   constructor: (pieces = []) ->
-    super
+    super(arguments...)
     @pieceList = new Trix.SplittableList (piece for piece in pieces when not piece.isEmpty())
 
   copy: ->
@@ -137,7 +137,7 @@ class Trix.Text extends Trix.Object
     @getLength() is 0
 
   isEqualTo: (text) ->
-    super or text?.pieceList?.isEqualTo(@pieceList)
+    super.isEqualTo(text) or text?.pieceList?.isEqualTo(@pieceList)
 
   isBlockBreak: ->
     @getLength() is 1 and @pieceList.getObjectAtIndex(0).isBlockBreak()

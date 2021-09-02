@@ -7,6 +7,7 @@
 
 class Trix.CompositionController extends Trix.BasicObject
   constructor: (@element, @composition) ->
+    super(arguments...)
     @documentView = new Trix.DocumentView @composition.document, {@element}
 
     handleEvent "focus", onElement: @element, withCallback: @didFocus

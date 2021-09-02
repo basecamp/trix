@@ -5,7 +5,7 @@ Trix.Inspector.registerView class extends Trix.Inspector.View
   template: "performance"
 
   constructor: ->
-    super
+    super(arguments...)
     {@documentView} = @compositionController
 
     @data = {}

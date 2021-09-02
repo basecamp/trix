@@ -19,7 +19,7 @@ class Trix.Attachment extends Trix.Object
     new this attachmentJSON
 
   constructor: (attributes = {}) ->
-    super
+    super(arguments...)
     @attributes = Trix.Hash.box(attributes)
     @didChangeAttributes()
 
@@ -121,7 +121,7 @@ class Trix.Attachment extends Trix.Object
     @getAttributes()
 
   getCacheKey: ->
-    [super, @attributes.getCacheKey(), @getPreviewURL()].join("/")
+    [super.getCacheKey(arguments...), @attributes.getCacheKey(), @getPreviewURL()].join("/")
 
   # Previewable
 

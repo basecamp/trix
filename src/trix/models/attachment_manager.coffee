@@ -2,6 +2,7 @@
 
 class Trix.AttachmentManager extends Trix.BasicObject
   constructor: (attachments = []) ->
+    super(arguments...)
     @managedAttachments = {}
     @manageAttachment(attachment) for attachment in attachments
 

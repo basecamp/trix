@@ -5,6 +5,7 @@
 
 class Trix.Composition extends Trix.BasicObject
   constructor: ->
+    super(arguments...)
     @document = new Trix.Document
     @attachments = []
     @currentAttributes = {}

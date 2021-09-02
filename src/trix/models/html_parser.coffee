@@ -11,6 +11,7 @@ class Trix.HTMLParser extends Trix.BasicObject
     parser
 
   constructor: (@html, {@referenceElement} = {}) ->
+    super(arguments...)
     @blocks = []
     @blockElements = []
     @processedElements = []

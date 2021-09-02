@@ -15,8 +15,8 @@ class Trix.Hash extends Trix.Object
     box(values)
 
   constructor: (values = {}) ->
+    super(arguments...)
     @values = copy(values)
-    super
 
   add: (key, value) ->
     @merge(object(key, value))

@@ -14,7 +14,7 @@ Trix.Inspector.registerView class extends Trix.Inspector.View
     @range = @editor.getSelectedRange()
     @locationRange = @composition.getLocationRange()
     @characters = @getCharacters()
-    super
+    super.render(arguments...)
 
   getCharacters: ->
     chars = []

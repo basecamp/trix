@@ -12,6 +12,7 @@ class Trix.MutationObserver extends Trix.BasicObject
     subtree: true
 
   constructor: (@element) ->
+    super(arguments...)
     @observer = new window.MutationObserver @didMutate
     @start()
 

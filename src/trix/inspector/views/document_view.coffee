@@ -9,4 +9,4 @@ Trix.Inspector.registerView class extends Trix.Inspector.View
 
   render: ->
     @document = @editor.getDocument()
-    super
+    super.render(arguments...)

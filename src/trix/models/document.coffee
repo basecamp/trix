@@ -19,7 +19,7 @@ class Trix.Document extends Trix.Object
 
 
   constructor: (blocks = []) ->
-    super
+    super(arguments...)
     blocks = [new Trix.Block] if blocks.length is 0
     @blockList = Trix.SplittableList.box(blocks)
 

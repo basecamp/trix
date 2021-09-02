@@ -2,7 +2,7 @@
 
 class Trix.TextView extends Trix.ObjectView
   constructor: ->
-    super
+    super(arguments...)
     @text = @object
     {@textConfig} = @options
 

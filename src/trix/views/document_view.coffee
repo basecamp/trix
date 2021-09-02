@@ -11,7 +11,7 @@ class Trix.DocumentView extends Trix.ObjectView
     element
 
   constructor: ->
-    super
+    super(arguments...)
     {@element} = @options
     @elementStore = new Trix.ElementStore
     @setDocument(@object)
