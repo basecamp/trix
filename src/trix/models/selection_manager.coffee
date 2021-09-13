@@ -2,7 +2,7 @@ import Trix from "trix/global"
 
 import "trix/models/location_mapper"
 import "trix/models/point_mapper"
-import "observers/selection_change_observer"
+import "trix/observers/selection_change_observer"
 
 {getDOMSelection, getDOMRange, setDOMRange, elementContainsNode,
  nodeIsCursorTarget, innerElementIsActive, handleEvent, normalizeRange,
