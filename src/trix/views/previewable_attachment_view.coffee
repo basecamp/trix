@@ -1,6 +1,6 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "views/attachment_view"
+import "trix/views/attachment_view"
 
 {makeElement} = Trix
 

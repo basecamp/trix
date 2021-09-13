@@ -1,4 +1,4 @@
-import Trix from "global"
+import Trix from "trix/global"
 
 Trix.config.keyNames =
   "8":  "backspace"

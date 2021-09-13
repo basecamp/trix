@@ -1,14 +1,14 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "controllers/controller"
-import "controllers/level_0_input_controller"
-import "controllers/level_2_input_controller"
-import "controllers/composition_controller"
-import "controllers/toolbar_controller"
-import "models/composition"
-import "models/editor"
-import "models/attachment_manager"
-import "models/selection_manager"
+import "trix/controllers/controller"
+import "trix/controllers/level_0_input_controller"
+import "trix/controllers/level_2_input_controller"
+import "trix/controllers/composition_controller"
+import "trix/controllers/toolbar_controller"
+import "trix/models/composition"
+import "trix/models/editor"
+import "trix/models/attachment_manager"
+import "trix/models/selection_manager"
 
 {rangeIsCollapsed, rangesAreEqual, objectsAreEqual, getBlockConfig} = Trix
 

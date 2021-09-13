@@ -1,7 +1,7 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "models/document"
-import "models/line_break_insertion"
+import "trix/models/document"
+import "trix/models/line_break_insertion"
 
 {normalizeRange, rangesAreEqual, rangeIsCollapsed, objectsAreEqual, arrayStartsWith, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
 

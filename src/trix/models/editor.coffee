@@ -1,7 +1,7 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "models/undo_manager"
-import "filters/attachment_gallery_filter"
+import "trix/models/undo_manager"
+import "trix/filters/attachment_gallery_filter"
 
 class Trix.Editor
   DEFAULT_FILTERS = [ Trix.attachmentGalleryFilter ]

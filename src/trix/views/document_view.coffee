@@ -1,6 +1,6 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "views/block_view"
+import "trix/views/block_view"
 
 {defer, makeElement} = Trix
 

@@ -1,6 +1,6 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "core/basic_object"
+import "trix/core/basic_object"
 
 class Trix.Object extends Trix.BasicObject
   id = 0

@@ -1,4 +1,4 @@
-import Trix from "global"
+import Trix from "trix/global"
 
 Trix.extend
   # https://github.com/mathiasbynens/unicode-2.1.8/blob/master/Bidi_Class/Right_To_Left/regex.js

@@ -1,6 +1,6 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "models/text"
+import "trix/models/text"
 
 {arraysAreEqual, spliceArray, getBlockConfig, getBlockAttributeNames, getListAttributeNames} = Trix
 

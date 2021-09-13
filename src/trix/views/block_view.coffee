@@ -1,6 +1,6 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "views/text_view"
+import "trix/views/text_view"
 
 {makeElement, getBlockConfig} = Trix
 {css} = Trix.config

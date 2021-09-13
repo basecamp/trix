@@ -1,4 +1,4 @@
-import Trix from "global"
+import Trix from "trix/global"
 
 {after, assert, createCursorTarget, getHTML, test, testGroup} = Trix.TestHelpers
 

@@ -1,8 +1,8 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "models/block"
-import "models/splittable_list"
-import "models/html_parser"
+import "trix/models/block"
+import "trix/models/splittable_list"
+import "trix/models/html_parser"
 
 {arraysAreEqual, normalizeRange, rangeIsCollapsed, getBlockConfig} = Trix
 

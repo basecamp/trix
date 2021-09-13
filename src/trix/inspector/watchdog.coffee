@@ -1,6 +1,6 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "watchdog/recorder"
-import "watchdog/player_element"
+import "trix/inspector/watchdog/recorder"
+import "trix/inspector/watchdog/player_element"
 
 Trix.Watchdog = {}

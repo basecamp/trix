@@ -1,4 +1,4 @@
-import "models/attachment"
+import "trix/models/attachment"
 
 class Trix.ManagedAttachment extends Trix.BasicObject
   constructor: (@attachmentManager, @attachment) ->

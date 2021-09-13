@@ -1,9 +1,9 @@
-import Trix from "trix"
-import "core/helpers/global"
-import "./test_helpers"
+import Trix from "trix/trix"
+import "trix/core/helpers/global"
+import "test/test_helpers"
 
-import "unit"
-# import "system"
+import "test/unit"
+import "test/system"
 
 Trix.config.undoInterval = 0
 

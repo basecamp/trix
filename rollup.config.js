@@ -26,7 +26,7 @@ export default [
       json(),
       nodeResolve({ extensions: ['.js', '.coffee'] }),
       includePaths({
-        paths: ["src/trix"],
+        paths: ["src"],
         extensions: [".js", ".coffee"]
       }),
       filesize()
@@ -52,7 +52,7 @@ export default [
       coffeescript(),
       json(),
       includePaths({
-        paths: ["src/trix", "src/test"],
+        paths: ["src"],
         extensions: [".js", ".coffee"]
       }),
       nodeResolve({ extensions: ['.js', '.coffee'] }),

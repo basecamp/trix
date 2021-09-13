@@ -1,7 +1,7 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "watchdog/recording"
-import "watchdog/serializer"
+import "trix/inspector/watchdog/recording"
+import "trix/inspector/watchdog/serializer"
 
 class Trix.Watchdog.Recorder
   constructor: (@element, {@snapshotLimit} = {}) ->

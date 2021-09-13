@@ -1,6 +1,6 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "core/helpers/objects"
+import "trix/core/helpers/objects"
 
 {copyObject, objectsAreEqual} = Trix
 

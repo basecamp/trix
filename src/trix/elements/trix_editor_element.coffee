@@ -1,7 +1,7 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "elements/trix_toolbar_element"
-import "controllers/editor_controller"
+import "trix/elements/trix_toolbar_element"
+import "trix/controllers/editor_controller"
 
 {browser, makeElement, triggerEvent, handleEvent, handleEventOnce, findClosestElementFromNode} = Trix
 

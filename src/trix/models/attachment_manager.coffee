@@ -1,5 +1,5 @@
-import Trix from "global"
-import "models/managed_attachment"
+import Trix from "trix/global"
+import "trix/models/managed_attachment"
 
 class Trix.AttachmentManager extends Trix.BasicObject
   constructor: (attachments = []) ->

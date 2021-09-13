@@ -1,6 +1,6 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "watchdog/deserializer"
+import "trix/inspector/watchdog/deserializer"
 
 class Trix.Watchdog.PlayerView
   @documentClassName: "trix-watchdog-player"

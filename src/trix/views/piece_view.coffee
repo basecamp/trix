@@ -1,7 +1,7 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "views/attachment_view"
-import "views/previewable_attachment_view"
+import "trix/views/attachment_view"
+import "trix/views/previewable_attachment_view"
 
 {makeElement, findInnerElement, getTextConfig} = Trix
 

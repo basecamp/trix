@@ -1,4 +1,4 @@
-import Trix from "global"
+import Trix from "trix/global"
 
 {elementContainsNode, findChildIndexOfNode, nodeIsBlockStart,
  nodeIsBlockStartComment, nodeIsBlockContainer, nodeIsCursorTarget,

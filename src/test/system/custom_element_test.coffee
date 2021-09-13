@@ -1,4 +1,4 @@
-import Trix from "global"
+import Trix from "trix/global"
 
 {after, assert, clickElement, clickToolbarButton, createFile, defer, insertImageAttachment, moveCursor, pasteContent, skip, test, testIf, testGroup, triggerEvent, typeCharacters, typeInToolbarDialog} = Trix.TestHelpers
 

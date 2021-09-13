@@ -1,6 +1,6 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "models/piece"
+import "trix/models/piece"
 
 {normalizeNewlines} = Trix
 

@@ -1,4 +1,4 @@
-import Trix from "global"
+import Trix from "trix/global"
 
 {defer, handleEvent, makeElement, tagName} = Trix
 {lang, css, keyNames} = Trix.config

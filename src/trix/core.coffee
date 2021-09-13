@@ -1,4 +1,4 @@
-import "core/object"
-import "core/helpers"
-import "core/collections"
-import "core/utilities"
+import "trix/core/object"
+import "trix/core/helpers"
+import "trix/core/collections"
+import "trix/core/utilities"

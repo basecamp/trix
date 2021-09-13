@@ -1,4 +1,4 @@
-import Trix from "global"
+import Trix from "trix/global"
 
 html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector

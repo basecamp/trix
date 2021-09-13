@@ -1,4 +1,4 @@
-import Trix from "global"
+import Trix from "trix/global"
 
 {findClosestElementFromNode, nodeIsEmptyTextNode, nodeIsBlockStartComment, normalizeSpaces, summarizeStringChange, tagName} = Trix
 

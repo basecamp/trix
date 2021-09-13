@@ -1,4 +1,4 @@
-import Trix from "global"
+import Trix from "trix/global"
 
 class Trix.FileVerificationOperation extends Trix.Operation
   constructor: (@file) ->

@@ -1,6 +1,6 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "models/html_sanitizer"
+import "trix/models/html_sanitizer"
 
 {arraysAreEqual, makeElement, tagName, getBlockTagNames, walkTree,
  findClosestElementFromNode, elementContainsNode, nodeIsAttachmentElement,

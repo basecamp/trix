@@ -1,4 +1,4 @@
-import Trix from "global"
+import Trix from "trix/global"
 
 class Trix.Operation extends Trix.BasicObject
   isPerforming: ->

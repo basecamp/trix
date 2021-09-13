@@ -1,7 +1,7 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "controllers/attachment_editor_controller"
-import "views/document_view"
+import "trix/controllers/attachment_editor_controller"
+import "trix/views/document_view"
 
 {findClosestElementFromNode, handleEvent, innerElementIsActive, defer}  = Trix
 

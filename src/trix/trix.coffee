@@ -1,9 +1,9 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "core"
-import "config"
-import "views"
-import "elements/trix_editor_element"
+import "trix/core"
+import "trix/config"
+import "trix/views"
+import "trix/elements/trix_editor_element"
 
 export default Trix
 

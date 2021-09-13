@@ -1,4 +1,4 @@
-import "core/collections/hash"
-import "core/collections/object_group"
-import "core/collections/object_map"
-import "core/collections/element_store"
+import "trix/core/collections/hash"
+import "trix/core/collections/object_group"
+import "trix/core/collections/object_map"
+import "trix/core/collections/element_store"

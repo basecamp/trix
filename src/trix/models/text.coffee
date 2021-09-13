@@ -1,8 +1,8 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "models/attachment_piece"
-import "models/string_piece"
-import "models/splittable_list"
+import "trix/models/attachment_piece"
+import "trix/models/string_piece"
+import "trix/models/splittable_list"
 
 class Trix.Text extends Trix.Object
   @textForAttachmentWithAttributes: (attachment, attributes) ->

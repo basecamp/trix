@@ -1,4 +1,4 @@
-import Trix from "global"
-import "views/object_view"
+import Trix from "trix/global"
+import "trix/views/object_view"
 
 class Trix.Controller extends Trix.BasicObject

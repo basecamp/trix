@@ -1,7 +1,7 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "models/location_mapper"
-import "models/point_mapper"
+import "trix/models/location_mapper"
+import "trix/models/point_mapper"
 import "observers/selection_change_observer"
 
 {getDOMSelection, getDOMRange, setDOMRange, elementContainsNode,

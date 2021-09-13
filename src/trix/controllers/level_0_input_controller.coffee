@@ -1,6 +1,6 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "controllers/input_controller"
+import "trix/controllers/input_controller"
 
 {makeElement, objectsAreEqual, tagName, browser, keyEventIsKeyboardCommand,
  dataTransferIsWritable, dataTransferIsPlainText} = Trix

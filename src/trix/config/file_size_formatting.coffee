@@ -1,6 +1,6 @@
-import Trix from "global"
+import Trix from "trix/global"
 
-import "config/lang"
+import "trix/config/lang"
 
 {lang} = Trix.config
 sizes = [lang.bytes, lang.KB, lang.MB, lang.GB, lang.TB, lang.PB]
