@@ -1,3 +1,6 @@
+window.JST ||= {}
+
+window.JST["trix/inspector/templates/performance"] = () => """
 <% for name, data of @data: %>
   <strong><%= name %></strong> (<%= data.calls %>)<br>
   <% if data.calls > 0: %>
@@ -8,3 +11,4 @@
     </div>
   <% end %>
 <% end %>
+"""

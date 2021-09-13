@@ -1,5 +1,9 @@
+window.JST ||= {}
+
+window.JST["trix/inspector/templates/selection"] = () => """
 Location range: [<%= @locationRange[0].index %>:<%= @locationRange[0].offset %>, <%= @locationRange[1].index %>:<%= @locationRange[1].offset %>]
 
 <div class="characters">
 <% for char in @characters: %><span class="character <%= "selected" if char.selected  %>"><%= char.string %></span><% end %>
 </div>
+"""

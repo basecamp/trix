@@ -1,3 +1,15 @@
+import "./editor_default_aria_label"
+import "./editor_empty"
+import "./editor_html"
+import "./editor_in_table"
+import "./editor_with_block_styles"
+import "./editor_with_bold_styles"
+import "./editor_with_image"
+import "./editor_with_labels"
+import "./editor_with_styled_content"
+import "./editor_with_toolbar_and_input"
+import "./editors_with_forms"
+
 {css} = Trix.config
 
 @TEST_IMAGE_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="

@@ -1,3 +1,6 @@
+window.JST ||= {}
+
+window.JST["trix/inspector/templates/debug"] = () => """
 <p>
   <label>
     <input type="checkbox" name="viewCaching" checked="<%= @compositionController.isViewCachingEnabled() %>">
@@ -15,3 +18,4 @@
     Show <code>contenteditable</code> control element
   </label>
 </p>
+"""

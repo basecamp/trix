@@ -45,7 +45,7 @@ helpers.extend
               target.editor.setSelectedRange(0)
             callback(target)
 
-          setFixtureHTML(JST["test_helpers/fixtures/#{template}"](), container)
+          setFixtureHTML(JST["test/test_helpers/fixtures/#{template}"](), container)
         else
           callback()
       setup?()

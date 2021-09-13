@@ -1,3 +1,6 @@
+window.JST ||= {}
+
+window.JST["trix/inspector/templates/undo"] = () => """
 <h4>Undo stack</h4>
 <ol class="undo-entries">
   <% for entry in @undoEntries: %>
@@ -11,3 +14,4 @@
     <li><%= entry.description %> <%= JSON.stringify(selectedRange: entry.snapshot.selectedRange, context: entry.context) %></li>
   <% end %>
 </ol>
+"""

@@ -1,3 +1,6 @@
+window.JST ||= {}
+
+window.JST["test/test_helpers/fixtures/editors_with_forms"] = () => """
 <form id="ancestor-form">
   <trix-editor id="editor-with-ancestor-form"></trix-editor>
 </form>
@@ -8,3 +11,4 @@
 <trix-editor id="editor-with-input-form" input="hidden-input"></trix-editor>
 
 <trix-editor id="editor-with-no-form"></trix-editor>
+"""

@@ -1,3 +1,6 @@
+window.JST ||= {}
+
+window.JST["trix/inspector/templates/document"] = () => """
 <% for block, index in @document.getBlocks(): %>
   <details class="block">
     <summary class="title">
@@ -31,3 +34,4 @@
     </div>
   </details>
 <% end %>
+"""
