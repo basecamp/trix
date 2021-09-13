@@ -1,7 +1,9 @@
-#= require trix/core/helpers/global
-#= require ./test_helpers/index
-#= require_tree ./system
-#= require_tree ./unit
+import Trix from "trix"
+import "core/helpers/global"
+import "./test_helpers"
+
+import "unit"
+# import "system"
 
 Trix.config.undoInterval = 0
 

@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {getDOMRange} = Trix
 
 class Trix.SelectionChangeObserver extends Trix.BasicObject

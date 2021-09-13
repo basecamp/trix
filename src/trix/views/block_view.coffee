@@ -1,4 +1,6 @@
-#= require trix/views/text_view
+import Trix from "global"
+
+import "views/text_view"
 
 {makeElement, getBlockConfig} = Trix
 {css} = Trix.config

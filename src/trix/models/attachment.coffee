@@ -1,4 +1,6 @@
-#= require trix/operations/image_preload_operation
+import Trix from "global"
+
+import "operations/image_preload_operation"
 
 class Trix.Attachment extends Trix.Object
   @previewablePattern: /^image(\/(gif|png|jpe?g)|$)/

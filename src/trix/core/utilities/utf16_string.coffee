@@ -1,3 +1,5 @@
+import Trix from "global"
+
 class Trix.UTF16String extends Trix.BasicObject
   @box: (value = "") ->
     if value instanceof this

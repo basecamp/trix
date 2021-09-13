@@ -1,3 +1,5 @@
+import Trix from "global"
+
 class Trix.FileVerificationOperation extends Trix.Operation
   constructor: (@file) ->
     super(arguments...)

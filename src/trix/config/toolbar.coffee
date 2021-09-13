@@ -1,3 +1,5 @@
+import Trix from "global"
+
 Trix.config.toolbar =
   getDefaultHTML: ->
     {lang} = Trix.config

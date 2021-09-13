@@ -1,4 +1,6 @@
-#= require trix/views/attachment_view
+import Trix from "global"
+
+import "views/attachment_view"
 
 {makeElement} = Trix
 

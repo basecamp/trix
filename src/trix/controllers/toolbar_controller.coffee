@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {handleEvent, triggerEvent, findClosestElementFromNode} = Trix
 
 class Trix.ToolbarController extends Trix.BasicObject

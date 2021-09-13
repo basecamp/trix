@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {assert, clickToolbarButton, defer, expandSelection, isToolbarButtonActive, isToolbarButtonDisabled, moveCursor, pressKey, replaceDocument, selectAll, test, testGroup, typeCharacters} = Trix.TestHelpers
 
 testGroup "Block formatting", template: "editor_empty", ->

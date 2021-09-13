@@ -1,6 +1,8 @@
-#= require trix/models/location_mapper
-#= require trix/models/point_mapper
-#= require trix/observers/selection_change_observer
+import Trix from "global"
+
+import "models/location_mapper"
+import "models/point_mapper"
+import "observers/selection_change_observer"
 
 {getDOMSelection, getDOMRange, setDOMRange, elementContainsNode,
  nodeIsCursorTarget, innerElementIsActive, handleEvent, normalizeRange,

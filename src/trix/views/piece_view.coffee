@@ -1,5 +1,7 @@
-#= require trix/views/attachment_view
-#= require trix/views/previewable_attachment_view
+import Trix from "global"
+
+import "views/attachment_view"
+import "views/previewable_attachment_view"
 
 {makeElement, findInnerElement, getTextConfig} = Trix
 

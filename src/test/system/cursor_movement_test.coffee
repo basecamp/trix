@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {assert, createFile, expandSelection, insertFile, insertString, moveCursor, test, testGroup} = Trix.TestHelpers
 
 testGroup "Cursor movement", template: "editor_empty", ->

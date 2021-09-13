@@ -1,3 +1,5 @@
+import Trix from "global"
+
 Trix.config.input =
   level2Enabled: true
 

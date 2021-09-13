@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {spliceArray} = Trix
 
 class Trix.SplittableList extends Trix.Object

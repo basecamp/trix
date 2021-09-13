@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {elementContainsNode, findChildIndexOfNode, nodeIsBlockStart,
  nodeIsBlockStartComment, nodeIsBlockContainer, nodeIsCursorTarget,
  nodeIsEmptyTextNode, nodeIsTextNode, nodeIsAttachmentElement, tagName, walkTree} = Trix

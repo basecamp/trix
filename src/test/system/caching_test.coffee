@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {assert, clickToolbarButton, moveCursor, test, testGroup, typeCharacters} = Trix.TestHelpers
 
 testGroup "View caching", template: "editor_empty", ->

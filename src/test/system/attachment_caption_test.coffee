@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {assert, insertImageAttachment, test, testGroup} = Trix.TestHelpers
 
 testGroup "Attachment captions", template: "editor_empty", ->

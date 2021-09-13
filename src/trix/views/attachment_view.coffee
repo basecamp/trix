@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {makeElement} = Trix
 {css} = Trix.config
 

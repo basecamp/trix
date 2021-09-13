@@ -1,5 +1,7 @@
-#= require trix/watchdog/recording
-#= require trix/watchdog/serializer
+import Trix from "global"
+
+import "watchdog/recording"
+import "watchdog/serializer"
 
 class Trix.Watchdog.Recorder
   constructor: (@element, {@snapshotLimit} = {}) ->

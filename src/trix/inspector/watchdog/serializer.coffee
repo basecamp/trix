@@ -1,3 +1,5 @@
+import Trix from "global"
+
 class Trix.Watchdog.Serializer
   constructor: (@element) ->
     @id = 0

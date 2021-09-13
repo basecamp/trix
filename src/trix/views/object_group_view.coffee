@@ -1,3 +1,7 @@
+import Trix from "global"
+
+import "views/object_view"
+
 class Trix.ObjectGroupView extends Trix.ObjectView
   constructor: ->
     super(arguments...)

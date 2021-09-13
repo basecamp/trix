@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {after, assert, clickElement, clickToolbarButton, createFile, defer, insertImageAttachment, moveCursor, pasteContent, skip, test, testIf, testGroup, triggerEvent, typeCharacters, typeInToolbarDialog} = Trix.TestHelpers
 
 testGroup "Custom element API", template: "editor_empty", ->

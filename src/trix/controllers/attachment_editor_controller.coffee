@@ -1,4 +1,4 @@
-#= require trix/controllers/attachment_editor_controller
+import Trix from "global"
 
 {defer, handleEvent, makeElement, tagName} = Trix
 {lang, css, keyNames} = Trix.config

@@ -1,4 +1,6 @@
-#= require trix/watchdog/recording
+import Trix from "global"
+
+import "watchdog/recording"
 
 class Trix.Watchdog.Player
   constructor: (@recording) ->

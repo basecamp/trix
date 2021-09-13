@@ -1,4 +1,6 @@
-#= require trix/models/piece
+import Trix from "global"
+
+import "models/piece"
 
 {normalizeNewlines} = Trix
 

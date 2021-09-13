@@ -1,3 +1,5 @@
+import Trix from "global"
+
 class Trix.ElementStore
   constructor: (elements) ->
     @reset(elements)

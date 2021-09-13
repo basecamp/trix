@@ -1,3 +1,5 @@
+import Trix from "global"
+
 class Trix.Operation extends Trix.BasicObject
   isPerforming: ->
     @performing is true

@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {assert, clickToolbarButton, createImageAttachment, defer, insertAttachments, moveCursor, pressKey, test, testGroup, typeCharacters} = Trix.TestHelpers
 
 ORC = Trix.OBJECT_REPLACEMENT_CHARACTER

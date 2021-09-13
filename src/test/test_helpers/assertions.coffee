@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {normalizeRange, rangesAreEqual} = Trix
 
 helpers = Trix.TestHelpers

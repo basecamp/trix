@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {normalizeRange, rangeIsCollapsed} = Trix
 
 class Trix.TestCompositionDelegate

@@ -1,5 +1,18 @@
-helpers = Trix.TestHelpers
+import Trix from "global"
+
 {removeNode} = Trix
+
+Trix.TestHelpers = helpers =
+  extend: (properties) ->
+    for key, value of properties
+      this[key] = value
+    this
+
+  after: (delay, callback) ->
+    setTimeout(callback, delay)
+
+  defer: (callback) ->
+    helpers.after(1, callback)
 
 setFixtureHTML = (html, container = "form") ->
   element = document.getElementById("trix-container")

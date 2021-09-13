@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {tagName, walkTree, nodeIsAttachmentElement} = Trix
 
 class Trix.HTMLSanitizer extends Trix.BasicObject

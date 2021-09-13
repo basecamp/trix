@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {arraysAreEqual} = Trix
 
 class Trix.Hash extends Trix.Object

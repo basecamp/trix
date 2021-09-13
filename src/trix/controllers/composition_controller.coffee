@@ -1,5 +1,7 @@
-#= require trix/controllers/attachment_editor_controller
-#= require trix/views/document_view
+import Trix from "global"
+
+import "controllers/attachment_editor_controller"
+import "views/document_view"
 
 {findClosestElementFromNode, handleEvent, innerElementIsActive, defer}  = Trix
 

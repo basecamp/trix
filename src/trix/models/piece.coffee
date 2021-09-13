@@ -1,3 +1,5 @@
+import Trix from "global"
+
 class Trix.Piece extends Trix.Object
   @types: {}
 

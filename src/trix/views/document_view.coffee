@@ -1,4 +1,6 @@
-#= require trix/views/block_view
+import Trix from "global"
+
+import "views/block_view"
 
 {defer, makeElement} = Trix
 

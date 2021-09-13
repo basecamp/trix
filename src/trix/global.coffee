@@ -1,11 +1,7 @@
-#= export Trix
-#= require_self
-#= require trix/core
-#= require trix/config
-#= require trix/elements/trix_editor_element
+import { version } from "../../package.json"
 
-@Trix =
-  VERSION: "<%= depend_on_asset("trix/VERSION").to_s.chomp %>"
+Trix =
+  VERSION: version
 
   ZERO_WIDTH_SPACE: "\uFEFF"
   NON_BREAKING_SPACE: "\u00A0"
@@ -25,3 +21,7 @@
       true
 
   config: {}
+
+window.Trix = Trix
+
+export default Trix

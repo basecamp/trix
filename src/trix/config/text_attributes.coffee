@@ -1,3 +1,5 @@
+import Trix from "global"
+
 Trix.config.textAttributes =
   bold:
     tagName: "strong"

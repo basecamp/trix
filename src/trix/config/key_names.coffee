@@ -1,3 +1,5 @@
+import Trix from "global"
+
 Trix.config.keyNames =
   "8":  "backspace"
   "9":  "tab"

@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {pressKey, test, testGroup, typeCharacters} = Trix.TestHelpers
 
 testOptions =

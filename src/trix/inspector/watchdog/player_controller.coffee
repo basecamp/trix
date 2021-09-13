@@ -1,5 +1,7 @@
-#= require trix/watchdog/player
-#= require trix/watchdog/player_view
+import Trix from "global"
+
+import "watchdog/player"
+import "watchdog/player_view"
 
 class Trix.Watchdog.PlayerController
   constructor: (@element, @recording) ->

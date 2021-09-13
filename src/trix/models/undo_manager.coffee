@@ -1,3 +1,5 @@
+import Trix from "global"
+
 class Trix.UndoManager extends Trix.BasicObject
   constructor: (@composition) ->
     super(arguments...)

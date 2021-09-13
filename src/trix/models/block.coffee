@@ -1,4 +1,6 @@
-#= require trix/models/text
+import Trix from "global"
+
+import "models/text"
 
 {arraysAreEqual, spliceArray, getBlockConfig, getBlockAttributeNames, getListAttributeNames} = Trix
 

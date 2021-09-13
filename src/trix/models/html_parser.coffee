@@ -1,4 +1,6 @@
-#= require trix/models/html_sanitizer
+import Trix from "global"
+
+import "models/html_sanitizer"
 
 {arraysAreEqual, makeElement, tagName, getBlockTagNames, walkTree,
  findClosestElementFromNode, elementContainsNode, nodeIsAttachmentElement,

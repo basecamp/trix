@@ -1,4 +1,6 @@
-#= require trix/watchdog/deserializer
+import Trix from "global"
+
+import "watchdog/deserializer"
 
 class Trix.Watchdog.PlayerView
   @documentClassName: "trix-watchdog-player"

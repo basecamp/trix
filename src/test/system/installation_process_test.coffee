@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {assert, defer, test, testGroup} = Trix.TestHelpers
 
 testGroup "Installation process", template: "editor_html", ->

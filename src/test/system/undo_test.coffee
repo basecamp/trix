@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {assert, clickToolbarButton, expandSelection, moveCursor, test, testGroup, typeCharacters} = Trix.TestHelpers
 
 testGroup "Undo/Redo", template: "editor_empty", ->

@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {after, assert, createCursorTarget, getHTML, test, testGroup} = Trix.TestHelpers
 
 cursorTargetLeft = createCursorTarget("left").outerHTML

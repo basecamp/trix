@@ -1,3 +1,5 @@
+import Trix from "global"
+
 Trix.config.lang =
   attachFiles: "Attach Files"
   bold: "Bold"

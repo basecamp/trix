@@ -1,5 +1,7 @@
-#= require trix/models/attachment
-#= require trix/models/piece
+import Trix from "global"
+
+import "models/attachment"
+import "models/piece"
 
 Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Piece
   @fromJSON: (pieceJSON) ->

@@ -1,3 +1,5 @@
+import Trix from "global"
+
 helpers = Trix.TestHelpers
 
 helpers.extend

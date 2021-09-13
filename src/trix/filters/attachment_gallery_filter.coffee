@@ -1,3 +1,5 @@
+import Trix from "global"
+
 Trix.attachmentGalleryFilter = (snapshot) ->
   filter = new Filter snapshot
   filter.perform()

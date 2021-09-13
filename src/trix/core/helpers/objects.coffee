@@ -1,3 +1,5 @@
+import Trix from "global"
+
 Trix.extend
   copyObject: (object = {}) ->
     result = {}

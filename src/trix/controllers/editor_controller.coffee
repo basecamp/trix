@@ -1,12 +1,14 @@
-#= require trix/controllers/controller
-#= require trix/controllers/level_0_input_controller
-#= require trix/controllers/level_2_input_controller
-#= require trix/controllers/composition_controller
-#= require trix/controllers/toolbar_controller
-#= require trix/models/composition
-#= require trix/models/editor
-#= require trix/models/attachment_manager
-#= require trix/models/selection_manager
+import Trix from "global"
+
+import "controllers/controller"
+import "controllers/level_0_input_controller"
+import "controllers/level_2_input_controller"
+import "controllers/composition_controller"
+import "controllers/toolbar_controller"
+import "models/composition"
+import "models/editor"
+import "models/attachment_manager"
+import "models/selection_manager"
 
 {rangeIsCollapsed, rangesAreEqual, objectsAreEqual, getBlockConfig} = Trix
 

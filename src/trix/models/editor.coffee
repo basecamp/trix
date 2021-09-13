@@ -1,5 +1,7 @@
-#= require trix/models/undo_manager
-#= require trix/filters/attachment_gallery_filter
+import Trix from "global"
+
+import "models/undo_manager"
+import "filters/attachment_gallery_filter"
 
 class Trix.Editor
   DEFAULT_FILTERS = [ Trix.attachmentGalleryFilter ]

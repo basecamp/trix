@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {assert, test, testGroup} = Trix.TestHelpers
 
 testGroup "HTML Reparsing", template: "editor_empty", ->

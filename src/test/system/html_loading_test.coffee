@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {after, assert, test, testGroup} = Trix.TestHelpers
 
 testGroup "HTML loading", ->

@@ -1,6 +1,8 @@
-#= require trix/models/block
-#= require trix/models/splittable_list
-#= require trix/models/html_parser
+import Trix from "global"
+
+import "models/block"
+import "models/splittable_list"
+import "models/html_parser"
 
 {arraysAreEqual, normalizeRange, rangeIsCollapsed, getBlockConfig} = Trix
 

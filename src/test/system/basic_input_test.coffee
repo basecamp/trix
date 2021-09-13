@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {assert, defer, dragToCoordinates, expandSelection, insertNode, moveCursor, pressKey, selectAll, test, testIf, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
 
 testGroup "Basic input", template: "editor_empty", ->

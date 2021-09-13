@@ -1,4 +1,6 @@
-#= require trix/views/piece_view
+import Trix from "global"
+
+import "views/piece_view"
 
 class Trix.TextView extends Trix.ObjectView
   constructor: ->

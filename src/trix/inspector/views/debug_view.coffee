@@ -1,4 +1,6 @@
-#= require trix/inspector/view
+import Trix from "global"
+
+import "inspector/view"
 
 {handleEvent} = Trix
 

@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {after, assert, clickElement, clickToolbarButton, createFile, defer, dragToCoordinates, moveCursor, pressKey, test, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
 
 testGroup "Attachments", template: "editor_with_image", ->

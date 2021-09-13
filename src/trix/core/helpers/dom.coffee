@@ -1,4 +1,4 @@
-#= require_self
+import Trix from "global"
 
 html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector

@@ -1,4 +1,6 @@
-#= require trix/config/lang
+import Trix from "global"
+
+import "config/lang"
 
 {lang} = Trix.config
 sizes = [lang.bytes, lang.KB, lang.MB, lang.GB, lang.TB, lang.PB]

@@ -1,5 +1,4 @@
-#= require_self
-#= require trix/views/object_group_view
+import Trix from "global"
 
 class Trix.ObjectView extends Trix.BasicObject
   constructor: (@object, @options = {}) ->

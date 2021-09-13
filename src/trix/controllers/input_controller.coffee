@@ -1,5 +1,7 @@
-#= require trix/observers/mutation_observer
-#= require trix/operations/file_verification_operation
+import Trix from "global"
+
+import "observers/mutation_observer"
+import "operations/file_verification_operation"
 
 {handleEvent, innerElementIsActive} = Trix
 

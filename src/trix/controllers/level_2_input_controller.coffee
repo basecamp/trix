@@ -1,4 +1,6 @@
-#= require trix/controllers/input_controller
+import Trix from "global"
+
+import "controllers/input_controller"
 
 {dataTransferIsPlainText, keyEventIsKeyboardCommand, objectsAreEqual} = Trix
 

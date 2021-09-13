@@ -1,4 +1,6 @@
-#= require trix/inspector/view
+import Trix from "global"
+
+import "inspector/view"
 
 Trix.Inspector.registerView class extends Trix.Inspector.View
   title: "Undo"

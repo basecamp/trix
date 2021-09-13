@@ -1,5 +1,7 @@
-#= require rangy-core
-#= require rangy-textrange
+import Trix from "global"
+
+import "vendor/rangy-core"
+import "vendor/rangy-textrange"
 
 helpers = Trix.TestHelpers
 

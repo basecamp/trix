@@ -1,3 +1,5 @@
+import Trix from "global"
+
 class Trix.Watchdog.Recording
   @fromJSON: ({snapshots, frames}) ->
     new this snapshots, frames

@@ -1,3 +1,5 @@
+import Trix from "global"
+
 Trix.config.css =
   attachment: "attachment"
   attachmentCaption: "attachment__caption"

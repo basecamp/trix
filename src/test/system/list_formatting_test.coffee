@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {assert, clickToolbarButton, defer, moveCursor, pressKey, test, testIf, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
 
 testGroup "List formatting", template: "editor_empty", ->

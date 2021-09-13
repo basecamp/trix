@@ -1,3 +1,5 @@
+import Trix from "global"
+
 {assert, test, testGroup, triggerEvent} = Trix.TestHelpers
 
 testGroup "Accessibility attributes", template: "editor_default_aria_label", ->
