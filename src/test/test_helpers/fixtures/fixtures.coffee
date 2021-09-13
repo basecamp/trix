@@ -591,6 +591,6 @@ removeWhitespace = (string) ->
       <div dir="rtl"><br>&nbsp;گ</div>\
     """
 
-@eachFixture = (callback) ->
+@eachFixture = (callback) =>
   for name, details of @fixtures
     callback(name, details)
