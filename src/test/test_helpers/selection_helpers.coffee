@@ -1,7 +1,9 @@
 import Trix from "trix/global"
 
-import "test/vendor/rangy-core"
-import "test/vendor/rangy-textrange"
+import rangy from "rangy"
+import "rangy/lib/rangy-textrange"
+
+window.rangy = rangy
 
 helpers = Trix.TestHelpers
 
