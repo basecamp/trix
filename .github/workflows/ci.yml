@@ -8,7 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: ruby/setup-ruby@v1
       with:
         bundler-cache: true
     - uses: actions/setup-node@v2-beta
@@ -19,5 +18,5 @@ jobs:
         path: test/node_modules
         key: ${{ runner.os }}-${{ hashFiles('test/yarn.lock') }}
 
-    - run: cd test && yarn install
+    - run: yarn install
     - run: bin/ci

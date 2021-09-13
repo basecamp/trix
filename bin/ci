@@ -21,4 +21,4 @@ else
   $(base64 --decode <<< ZXhwb3J0IFNBVUNFX0FDQ0VTU19LRVk9NTIzODNlNTItZTM4NC00MzZjLWFkMmUtMGZmNTcyNjIyNjc5Cg==)
 fi
 
-cd test && yarn test
+yarn test
