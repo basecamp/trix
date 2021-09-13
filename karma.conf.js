@@ -66,12 +66,6 @@ if (process.env.CI) {
       platform: "Windows 10",
       version: "18.17763"
     },
-    sl_ie_11: {
-      base: "SauceLabs",
-      browserName: "internet explorer",
-      platform: "Windows 8.1",
-      version: "11"
-    },
     sl_ios_previous: {
       base: "SauceLabs",
       browserName: "safari",
