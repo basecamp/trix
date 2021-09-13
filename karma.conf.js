@@ -2,7 +2,6 @@ const config = {
   browsers: ["ChromeHeadless"],
   frameworks: ["qunit"],
   files: [
-    { pattern: "dist/trix.js", watched: false },
     { pattern: "dist/test.js", watched: false },
     { pattern: "src/test_helpers/fixtures/*.png", watched: false, included: false, served: true }
   ],
