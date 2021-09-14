@@ -1,9 +1,9 @@
-import coffeescript from 'rollup-plugin-coffee-script'
-import json from '@rollup/plugin-json'
-import filesize from 'rollup-plugin-filesize'
-import includePaths from 'rollup-plugin-includepaths'
-import commonjs from 'rollup-plugin-commonjs'
-import nodeResolve from 'rollup-plugin-node-resolve'
+import coffeescript from "rollup-plugin-coffee-script"
+import json from "@rollup/plugin-json"
+import filesize from "rollup-plugin-filesize"
+import includePaths from "rollup-plugin-includepaths"
+import commonjs from "rollup-plugin-commonjs"
+import nodeResolve from "rollup-plugin-node-resolve"
 
 import { version } from "./package.json"
 const year = new Date().getFullYear()
@@ -24,7 +24,7 @@ export default [
     plugins: [
       coffeescript(),
       json(),
-      nodeResolve({ extensions: ['.js', '.coffee'] }),
+      nodeResolve({ extensions: [".js", ".coffee"] }),
       includePaths({
         paths: ["src"],
         extensions: [".js", ".coffee"]
@@ -55,9 +55,9 @@ export default [
         paths: ["src"],
         extensions: [".js", ".coffee"]
       }),
-      nodeResolve({ extensions: ['.js', '.coffee'] }),
+      nodeResolve({ extensions: [".js", ".coffee"] }),
       commonjs({
-        extensions: ['.js', '.coffee']
+        extensions: [".js", ".coffee"]
       }),
     ],
     context: "window",
@@ -84,9 +84,9 @@ export default [
         paths: ["src"],
         extensions: [".js", ".coffee"]
       }),
-      nodeResolve({ extensions: ['.js', '.coffee'] }),
+      nodeResolve({ extensions: [".js", ".coffee"] }),
       commonjs({
-        extensions: ['.js', '.coffee']
+        extensions: [".js", ".coffee"]
       }),
     ],
     context: "window",
