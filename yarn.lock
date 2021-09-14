@@ -2801,6 +2801,11 @@ node-gyp@^7.1.0:
     tar "^6.0.2"
     which "^2.0.2"
 
+node-sass-svg@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/node-sass-svg/-/node-sass-svg-2.0.0.tgz#34b8b456bc4a2c9499aa08f56b77a856111a723a"
+  integrity sha512-B4DXLOkpet7+L712A+RLXxf33QuAAxFNkhHJjniW7DKq6ny1byYMrkS2s4PdXXQRHJdlfI7iKCqTqdY1tShDZA==
+
 node-watch@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/node-watch/-/node-watch-0.6.1.tgz#b9874111ce9f5841b1c7596120206c7b825be0e9"
