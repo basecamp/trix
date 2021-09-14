@@ -46,7 +46,6 @@
   "scripts": {
     "build": "rollup -c",
     "build-css": "node-sass --functions=./assets/trix/stylesheets/functions assets/trix.scss dist/trix.css",
-    "optimize-icons": "svgo -f assets/trix/images/",
     "watch": "rollup -c -w",
     "test": "yarn run build && karma start"
   },
