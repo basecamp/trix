@@ -1,6 +1,6 @@
 import Trix from "trix/global"
 
-import "trix/inspector/view"
+import "inspector/view"
 
 {handleEvent} = Trix
 

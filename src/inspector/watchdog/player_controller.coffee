@@ -1,7 +1,7 @@
 import Trix from "trix/global"
 
-import "trix/inspector/watchdog/player"
-import "trix/inspector/watchdog/player_view"
+import "inspector/watchdog/player"
+import "inspector/watchdog/player_view"
 
 class Trix.Watchdog.PlayerController
   constructor: (@element, @recording) ->

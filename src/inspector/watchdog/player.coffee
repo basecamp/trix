@@ -1,6 +1,6 @@
 import Trix from "trix/global"
 
-import "trix/inspector/watchdog/recording"
+import "inspector/watchdog/recording"
 
 class Trix.Watchdog.Player
   constructor: (@recording) ->

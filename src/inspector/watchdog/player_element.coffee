@@ -1,7 +1,7 @@
 import Trix from "trix/global"
 
-import "trix/inspector/watchdog/recording"
-import "trix/inspector/watchdog/player_controller"
+import "inspector/watchdog/recording"
+import "inspector/watchdog/player_controller"
 
 Trix.registerElement "trix-watchdog-player",
   defaultCSS: """
