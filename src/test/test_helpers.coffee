@@ -11,5 +11,3 @@ import "test/test_helpers/toolbar_helpers"
 
 # Remove QUnit's globals
 delete window[key] for key, value of QUnit when window[key] is value
-
-

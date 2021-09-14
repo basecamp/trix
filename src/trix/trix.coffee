@@ -7,5 +7,3 @@ import "trix/observers"
 import "trix/elements/trix_editor_element"
 
 export default Trix
-
-
