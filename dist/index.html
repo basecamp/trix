@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Trix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="csp-nonce" content="topsecret">
+    <link rel="stylesheet" type="text/css" href="trix.css">
+    <style type="text/css">
+      main {
+        margin: 20px auto;
+        max-width: 700px;
+      }
+    </style>
+    <script type="text/javascript" src="trix.js"></script>
+    <script type="text/javascript" src="trix/inspector.js"></script>
+    <script type="text/javascript">
+      Trix.config.attachments.preview.caption.name = true
+      Trix.config.attachments.preview.caption.size = false
+
+      document.addEventListener("trix-initialize", function(event) {
+        Trix.Inspector.install(event.target);
+      });
+
+      document.addEventListener("trix-attachment-add", function(event) {
+        var attachment = event.attachment;
+        if (attachment.file) {
+          var xhr = new XMLHttpRequest;
+          xhr.open("POST", "/attachments", true);
+
+          xhr.upload.onprogress = function(event) {
+            var progress = event.loaded / event.total * 100;
+            attachment.setUploadProgress(progress);
+          };
+
+          xhr.onload = function() {
+            if (xhr.status === 201) {
+              setTimeout(function() {
+                var url = xhr.responseText;
+                attachment.setAttributes({ url: url, href: url });
+              }, 30)
+            }
+          };
+
+          attachment.setUploadProgress(10);
+
+          setTimeout(function() {
+            xhr.send(attachment.file);
+          }, 30)
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <main>
+      <trix-editor autofocus class="trix-content"></trix-editor>
+    </main>
+  </body>
+</html>
