@@ -39,10 +39,12 @@
     "rollup-plugin-filesize": "^9.1.1",
     "rollup-plugin-includepaths": "^0.2.4",
     "rollup-plugin-node-resolve": "^5.2.0",
+    "sass": "^1.40.1",
     "svgo": "^0.6.1"
   },
   "scripts": {
     "build": "rollup -c",
+    "build-css": "sass assets/trix.scss dist/trix.css",
     "watch": "rollup -c -w",
     "test": "yarn run build && karma start"
   },
