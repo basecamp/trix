@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import "inspector/watchdog/player"
 import "inspector/watchdog/player_view"
 

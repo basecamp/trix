@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import "inspector/view"
 
 Trix.Inspector.registerView class extends Trix.Inspector.View
@@ -15,9 +13,9 @@ Trix.Inspector.registerView class extends Trix.Inspector.View
       @render()
 
   constructor: ->
+    super(arguments...)
     @renderCount = 0
     @syncCount = 0
-    super(arguments...)
 
   getTitle: ->
     "#{@title} (#{@renderCount})"

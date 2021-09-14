@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 Trix.registerElement "trix-inspector",
   defaultCSS: """
     %t {

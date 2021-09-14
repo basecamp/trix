@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import "inspector/view"
 
 Trix.Inspector.registerView class extends Trix.Inspector.View

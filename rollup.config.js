@@ -65,5 +65,34 @@ export default [
     watch: {
       include: "src/**"
     }
+  },
+  {
+    input: "src/inspector/inspector.coffee",
+    output: [
+      {
+        name: "TrixInspector",
+        file: "dist/trix/inspector.js",
+        format: "umd",
+        sourcemap: false,
+        banner
+      }
+    ],
+    plugins: [
+      coffeescript(),
+      json(),
+      includePaths({
+        paths: ["src"],
+        extensions: [".js", ".coffee"]
+      }),
+      nodeResolve({ extensions: ['.js', '.coffee'] }),
+      commonjs({
+        extensions: ['.js', '.coffee']
+      }),
+    ],
+    context: "window",
+    treeshake: false,
+    watch: {
+      include: "src/**"
+    }
   }
 ]

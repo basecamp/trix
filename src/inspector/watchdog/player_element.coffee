@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import "inspector/watchdog/recording"
 import "inspector/watchdog/player_controller"
 

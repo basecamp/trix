@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import "inspector/view"
 
 {handleEvent} = Trix

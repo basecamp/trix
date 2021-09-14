@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import "inspector/watchdog/recording"
 
 class Trix.Watchdog.Player
