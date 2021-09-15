@@ -41,7 +41,7 @@ class Trix.Inspector.View
   render: ->
     @renderTitle()
     if @isOpen()
-      @panelElement.innerHTML = JST["trix/inspector/templates/#{@template}"](this)
+      @panelElement.innerHTML = JST["trix/inspector/templates/#{@template}"].apply(this)
 
   renderTitle: ->
     @titleElement.innerHTML = @getTitle()

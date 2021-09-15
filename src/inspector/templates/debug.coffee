@@ -1,9 +1,9 @@
 window.JST ||= {}
 
-window.JST["trix/inspector/templates/debug"] = () => """
+window.JST["trix/inspector/templates/debug"] = () -> """
 <p>
   <label>
-    <input type="checkbox" name="viewCaching" checked="<%= @compositionController.isViewCachingEnabled() %>">
+    <input type="checkbox" name="viewCaching" checked="#{@compositionController.isViewCachingEnabled()}">
     Cache views between renders
   </label>
 </p>
