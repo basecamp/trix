@@ -12,7 +12,7 @@ jobs:
         bundler-cache: true
     - uses: actions/setup-node@v2-beta
       with:
-        node-version: 15
+        node-version: 16
     - uses: actions/cache@v2
       with:
         path: test/node_modules
