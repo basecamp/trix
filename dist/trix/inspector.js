@@ -127,6 +127,165 @@ Copyright © 2021 Basecamp, LLC
     }
   };
 
+  window.JST || (window.JST = {});
+
+  window.JST["trix/inspector/templates/debug"] = function() {
+    return `<p>
+  <label>
+    <input type="checkbox" name="viewCaching" checked="${this.compositionController.isViewCachingEnabled()}">
+    Cache views between renders
+  </label>
+</p>
+
+<p>
+  <button data-action="render">Force Render</button> <button data-action="parse">Parse current HTML</button>
+</p>
+
+<p>
+  <label>
+    <input type="checkbox" name="controlElement">
+    Show <code>contenteditable</code> control element
+  </label>
+</p>`;
+  };
+
+  var pieces;
+
+  window.JST || (window.JST = {});
+
+  window.JST["trix/inspector/templates/document"] = function() {
+    var details;
+    details = this.document.getBlocks().map((block, index) => {
+      var text;
+      ({text} = block);
+      return `<details class="block">
+  <summary class="title">
+    Block ${block.id}, Index: ${index}
+  </summary>
+  <div class="attributes">
+    Attributes: ${JSON.stringify(block.attributes)}
+  </div>
+
+  <div class="text">
+    <div class="title">
+      Text: ${text.id}, Pieces: ${pieces.length}, Length: ${text.getLength()}
+    </div>
+    <div class="pieces">
+      ${pieces(text.pieceList.toArray()).join("\n")}
+    </div>
+  </div>
+</details>`;
+    });
+    return details.join("\n");
+  };
+
+  pieces = function() {
+    var i, index, len, piece, results;
+    results = [];
+    for (index = i = 0, len = pieces.length; i < len; index = ++i) {
+      piece = pieces[index];
+      results.push(`<div class="piece">
+  <div class="title">
+    Piece ${piece.id}, Index: ${index}
+  </div>
+  <div class="attributes">
+    Attributes: ${JSON.stringify(piece.attributes)}
+  </div>
+  <div class="content">
+    ${JSON.stringify(piece.toString())}
+  </div>
+</div>`);
+    }
+    return results;
+  };
+
+  var dataMetrics;
+
+  window.JST || (window.JST = {});
+
+  window.JST["trix/inspector/templates/performance"] = function() {
+    var data, metrics, name;
+    metrics = (function() {
+      var ref, results;
+      ref = this.data;
+      results = [];
+      for (name in ref) {
+        data = ref[name];
+        results.push(dataMetrics(name, data, this.round));
+      }
+      return results;
+    }).call(this);
+    return metrics.join("\n");
+  };
+
+  dataMetrics = function(name, data, round) {
+    var item;
+    item = `<strong>${name}</strong> (${data.calls})<br>`;
+    if (data.calls > 0) {
+      item += `<div class="metrics">
+  Mean: ${round(data.mean)}ms<br>
+  Max: ${round(data.max)}ms<br>
+  Last: ${round(data.last)}ms
+</div>`;
+      return item;
+    }
+  };
+
+  window.JST || (window.JST = {});
+
+  window.JST["trix/inspector/templates/render"] = function() {
+    return `Syncs: ${this.syncCount}`;
+  };
+
+  var charSpans;
+
+  window.JST || (window.JST = {});
+
+  window.JST["trix/inspector/templates/selection"] = function() {
+    return `Location range: [${this.locationRange[0].index}:${this.locationRange[0].offset}, ${this.locationRange[1].index}:${this.locationRange[1].offset}]
+
+${charSpans(this.characters).join("\n")}`;
+  };
+
+  charSpans = function(characters) {
+    var char, i, len, results;
+    results = [];
+    for (i = 0, len = characters.length; i < len; i++) {
+      char = characters[i];
+      results.push(`<span class=\"character ${char.selected ? "selected" : void 0}\">${char.string}</span>`);
+    }
+    return results;
+  };
+
+  var entryList;
+
+  window.JST || (window.JST = {});
+
+  window.JST["trix/inspector/templates/undo"] = function() {
+    return `<h4>Undo stack</h4>
+<ol class="undo-entries">
+   ${entryList(this.undoEntries)}
+</ol>
+
+<h4>Redo stack</h4>
+<ol class="redo-entries">
+  ${entryList(this.redoEntries)}
+</ol>`;
+  };
+
+  entryList = function(entries) {
+    var entry, i, len, results;
+    results = [];
+    for (i = 0, len = entries.length; i < len; i++) {
+      entry = entries[i];
+      results.push(`<li>${entry.description} ${JSON.stringify({
+      selectedRange: entry.snapshot.selectedRange,
+      context: entry.context
+    })}</li>`);
+    }
+    return results;
+  };
+
   Trix.Inspector.ControlElement = (function() {
     var compositionEvents, inspectNode, keyEvents, observerOptions;
 
@@ -307,7 +466,7 @@ Copyright © 2021 Basecamp, LLC
     render() {
       this.renderTitle();
       if (this.isOpen()) {
-        return this.panelElement.innerHTML = JST[`trix/inspector/templates/${this.template}`](this);
+        return this.panelElement.innerHTML = JST[`trix/inspector/templates/${this.template}`].apply(this);
       }
     }
 

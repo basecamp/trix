@@ -40,7 +40,6 @@ Copyright © 2021 Basecamp, LLC
   	"karma-qunit": "^4.1.2",
   	"karma-sauce-launcher": "^4.3.6",
   	"node-sass": "^6.0.1",
-  	"node-sass-svg": "^2.0.0",
   	qunit: "2.9.3",
   	rangy: "^1.3.0",
   	rollup: "^2.56.3",
@@ -54,7 +53,6 @@ Copyright © 2021 Basecamp, LLC
   var scripts = {
   	build: "rollup -c",
   	"build-css": "node-sass --functions=./assets/trix/stylesheets/functions assets/trix.scss dist/trix.css",
-  	"optimize-icons": "svgo -f assets/trix/images/",
   	watch: "rollup -c -w",
   	test: "yarn run build && karma start"
   };
