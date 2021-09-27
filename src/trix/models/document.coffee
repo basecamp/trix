@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import config from "trix/config"
 import TrixObject from "trix/core/object" # Don't override window.Object
 

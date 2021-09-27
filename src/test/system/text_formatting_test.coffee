@@ -1,7 +1,5 @@
-import { makeElement } from "trix/core/helpers"
-import Trix from "trix/global"
 import config from "trix/config"
-
+import { makeElement } from "trix/core/helpers"
 import Text from "trix/models/text"
 
 import { assert, clickElement, clickToolbarButton, clickToolbarDialogButton, collapseSelection, fixtures,

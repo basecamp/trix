@@ -1,6 +1,5 @@
 import { removeNode } from "trix/core/helpers"
 
-import Trix from "trix/global"
 import DocumentView from "trix/views/document_view"
 import Document from "trix/models/document"
 import HTMLParser from "trix/models/html_parser"

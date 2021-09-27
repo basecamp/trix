@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import MutationObserver from "trix/observers/mutation_observer"
 
 import { assert, defer, test, testGroup } from "test/test_helper"

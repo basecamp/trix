@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import ManagedAttachment from "trix/models/managed_attachment"
 import BasicObject from "trix/core/basic_object"
 

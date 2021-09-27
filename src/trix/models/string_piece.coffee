@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import Piece from "trix/models/piece"
 
 import { normalizeNewlines } from "trix/core/helpers"

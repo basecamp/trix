@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import config from "trix/config"
 import BasicObject from "trix/core/basic_object"
 import Document from "trix/models/document"

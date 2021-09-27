@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import config from "trix/config"
 
 import { assert, insertImageAttachment, test, testGroup } from "test/test_helper"

@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import BasicObject from "trix/core/basic_object"
 
 export default class UTF16String extends BasicObject

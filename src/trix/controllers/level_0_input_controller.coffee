@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import config from "trix/config"
 import UTF16String from "trix/core/utilities/utf16_string"
 import BasicObject from "trix/core/basic_object"
@@ -8,6 +7,8 @@ import Document from "trix/models/document"
 
 import { dataTransferIsPlainText, dataTransferIsWritable, keyEventIsKeyboardCommand, makeElement,
   objectsAreEqual, removeNode, squishBreakableWhitespace, tagName } from "trix/core/helpers"
+
+import { selectionChangeObserver } from "trix/observers/selection_change_observer"
 
 { browser, keyNames } = config
 
@@ -28,7 +29,7 @@ export default class Level0InputController extends InputController
 
   reset: ->
     @resetInputSummary()
-    Trix.selectionChangeObserver.reset()
+    selectionChangeObserver.reset()
 
   # Mutation observer delegate
 
@@ -99,7 +100,7 @@ export default class Level0InputController extends InputController
 
         if context?[keyName]?
           @setInputSummary({keyName})
-          Trix.selectionChangeObserver.reset()
+          selectionChangeObserver.reset()
           context[keyName].call(this, event)
 
       if keyEventIsKeyboardCommand(event)

@@ -1,5 +1,4 @@
 import { rangesAreEqual } from "trix/core/helpers"
-import Trix from "trix/global"
 
 import { after, assert, clickElement, clickToolbarButton, createFile, defer, insertImageAttachment, moveCursor, pasteContent, skip, test, testIf, testGroup, triggerEvent, typeCharacters, typeInToolbarDialog } from "test/test_helper"
 

@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import { elementContainsNode, findChildIndexOfNode, nodeIsBlockStart,
  nodeIsBlockStartComment, nodeIsBlockContainer, nodeIsCursorTarget,
  nodeIsEmptyTextNode, nodeIsTextNode, nodeIsAttachmentElement, tagName, walkTree } from "trix/core/helpers"

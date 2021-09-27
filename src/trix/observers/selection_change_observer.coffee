@@ -1,7 +1,4 @@
-import Trix from "trix/global"
 import BasicObject from "trix/core/basic_object"
-
-import { getDOMRange } from "trix/core/helpers"
 
 export default class SelectionChangeObserver extends BasicObject
   constructor: ->
@@ -57,4 +54,29 @@ export default class SelectionChangeObserver extends BasicObject
       left?.endContainer is right?.endContainer and
       left?.endOffset is right?.endOffset
 
-Trix.selectionChangeObserver ?= new SelectionChangeObserver
+export selectionChangeObserver = new SelectionChangeObserver
+
+export getDOMSelection = ->
+  selection = window.getSelection()
+  selection if selection.rangeCount > 0
+
+export getDOMRange = ->
+  if domRange = getDOMSelection()?.getRangeAt(0)
+    unless domRangeIsPrivate(domRange)
+      domRange
+
+export setDOMRange = (domRange) ->
+  selection = window.getSelection()
+  selection.removeAllRanges()
+  selection.addRange(domRange)
+  selectionChangeObserver.update()
+
+# In Firefox, clicking certain <input> elements changes the selection to a
+# private element used to draw its UI. Attempting to access properties of those
+# elements throws an error.
+# https://bugzilla.mozilla.org/show_bug.cgi?id=208427
+domRangeIsPrivate = (domRange) ->
+  nodeIsPrivate(domRange.startContainer) or nodeIsPrivate(domRange.endContainer)
+
+nodeIsPrivate = (node) ->
+  not Object.getPrototypeOf(node)

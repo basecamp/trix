@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import BasicObject from "trix/core/basic_object"
 
 import { tagName, removeNode, walkTree, nodeIsAttachmentElement } from "trix/core/helpers"

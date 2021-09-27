@@ -3,6 +3,8 @@ import InputController from "trix/controllers/input_controller"
 
 import { dataTransferIsPlainText, keyEventIsKeyboardCommand, objectsAreEqual } from "trix/core/helpers"
 
+import { selectionChangeObserver } from "trix/observers/selection_change_observer"
+
 export default class Level2InputController extends InputController
   elementDidMutate: ->
     if @scheduledRender
@@ -72,7 +74,7 @@ export default class Level2InputController extends InputController
         @scheduleRender()
 
     input: (event) ->
-      Trix.selectionChangeObserver.reset()
+      selectionChangeObserver.reset()
 
     dragstart: (event) ->
       if @responder?.selectionContainsAttachments()
@@ -387,7 +389,7 @@ export default class Level2InputController extends InputController
     if domRange
       @responder?.withTargetDOMRange(domRange, fn.bind(this))
     else
-      Trix.selectionChangeObserver.reset()
+      selectionChangeObserver.reset()
       fn.call(this)
 
   getTargetDOMRange: ({minLength} = {minLength: 0}) ->

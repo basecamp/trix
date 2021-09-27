@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import { fixtureTemplates } from "test/test_helpers/fixtures/fixtures"
 
 import { removeNode } from "trix/core/helpers"

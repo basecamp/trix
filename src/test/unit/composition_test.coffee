@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import Composition from "trix/models/composition"
 import { TestCompositionDelegate } from "test/test_helpers/test_stubs"
 import { assert, test, testGroup } from "test/test_helper"

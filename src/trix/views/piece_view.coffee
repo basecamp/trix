@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import ObjectView from "trix/views/object_view"
 import AttachmentView from "trix/views/attachment_view"
 import PreviewableAttachmentView from "trix/views/previewable_attachment_view"

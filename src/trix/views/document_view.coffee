@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import { makeElement } from "trix/core/helpers"
 
 import ElementStore from "trix/core/collections/element_store"

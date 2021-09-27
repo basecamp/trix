@@ -1,6 +1,5 @@
 import { removeNode } from "trix/core/helpers"
 
-import Trix from "trix/global"
 import config from "trix/config"
 import BasicObject from "trix/core/basic_object"
 

@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 testTransferData = "application/x-trix-feature-detection": "test"
 
 export dataTransferIsPlainText = (dataTransfer) ->

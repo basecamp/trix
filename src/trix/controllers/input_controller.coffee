@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import BasicObject from "trix/core/basic_object"
 import MutationObserver from "trix/observers/mutation_observer"
 import FileVerificationOperation from "trix/operations/file_verification_operation"

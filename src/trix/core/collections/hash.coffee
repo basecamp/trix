@@ -1,7 +1,5 @@
-import Trix from "trix/global"
 import TrixObject from "trix/core/object" # Don't override window.Object
 import { arraysAreEqual } from "trix/core/helpers"
-
 
 export default class Hash extends TrixObject
   @fromCommonAttributesOfObjects: (objects = []) ->

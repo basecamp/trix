@@ -1,7 +1,5 @@
-import { extend } from "./extend"
-
-import Trix from "trix/global"
 import config from "trix/config"
+import { extend } from "./extend"
 import { attachmentSelector } from "trix/config/attachments"
 
 html = document.documentElement

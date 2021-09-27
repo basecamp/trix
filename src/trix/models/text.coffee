@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import TrixObject from "trix/core/object" # Don't override window.Object
 
 import { getDirection } from "trix/core/helpers"

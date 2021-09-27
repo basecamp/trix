@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import { after, assert, test, testGroup } from "test/test_helper"
 
 testGroup "HTML loading", ->

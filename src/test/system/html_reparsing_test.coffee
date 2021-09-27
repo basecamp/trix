@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import { assert, test, testGroup } from "test/test_helper"
 
 testGroup "HTML Reparsing", template: "editor_empty", ->

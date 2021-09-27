@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import config from "trix/config"
 
 import { serializeToContentType } from "trix/core/serialization"
@@ -14,6 +13,7 @@ import AttachmentManager from "trix/models/attachment_manager"
 import SelectionManager from "trix/models/selection_manager"
 
 import { rangeIsCollapsed, rangesAreEqual, objectsAreEqual, getBlockConfig } from "trix/core/helpers"
+import { selectionChangeObserver } from "trix/observers/selection_change_observer"
 
 export default class EditorController extends Controller
   constructor: ({@editorElement, document, html}) ->
@@ -48,10 +48,10 @@ export default class EditorController extends Controller
       @editor.loadHTML(html)
 
   registerSelectionManager: ->
-    Trix.selectionChangeObserver.registerSelectionManager(@selectionManager)
+    selectionChangeObserver.registerSelectionManager(@selectionManager)
 
   unregisterSelectionManager: ->
-    Trix.selectionChangeObserver.unregisterSelectionManager(@selectionManager)
+    selectionChangeObserver.unregisterSelectionManager(@selectionManager)
 
   render: ->
     @compositionController.render()

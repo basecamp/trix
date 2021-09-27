@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import BasicObject from "trix/core/basic_object"
 import AttachmentView from "trix/views/attachment_view"
 import DocumentView from "trix/views/document_view"

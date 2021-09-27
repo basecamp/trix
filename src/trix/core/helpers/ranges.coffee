@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import { copyObject, objectsAreEqual } from "trix/core/helpers/objects"
 
 export normalizeRange = normalizeRange = (range) ->

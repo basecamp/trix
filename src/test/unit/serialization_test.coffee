@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import { serializeToContentType } from "trix/core/serialization"
 import { assert, eachFixture, test, testGroup } from "test/test_helper"
 

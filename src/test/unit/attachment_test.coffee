@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import Attachment from "trix/models/attachment"
 
 import { assert, test, testGroup } from "test/test_helper"

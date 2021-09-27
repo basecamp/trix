@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import config from "trix/config"
 
 import { after, assert, clickToolbarButton, createFile, defer, expandSelection, moveCursor, pasteContent, pressKey, test, testIf, testGroup, triggerEvent, typeCharacters } from "test/test_helper"

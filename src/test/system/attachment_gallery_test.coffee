@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import { assert, clickToolbarButton, createImageAttachment, defer, insertAttachments, moveCursor, pressKey, test, testGroup, typeCharacters } from "test/test_helper"
 
 ORC = Trix.OBJECT_REPLACEMENT_CHARACTER

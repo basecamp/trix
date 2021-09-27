@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import config from "trix/config"
 import { copyObject, makeElement } from "trix/core/helpers"
 import ObjectView from "trix/views/object_view"

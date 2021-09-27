@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import { assert, test, testGroup, triggerEvent } from "test/test_helper"
 
 testGroup "Accessibility attributes", template: "editor_default_aria_label", ->

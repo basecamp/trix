@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import BasicObject from "trix/core/basic_object"
 import UTF16String from "trix/core/utilities/utf16_string"
 

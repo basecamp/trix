@@ -1,12 +1,11 @@
-import Trix from "trix/global"
 import Document from "trix/models/document"
 import HTMLParser from "trix/models/html_parser"
 
 import UndoManager from "trix/models/undo_manager"
-import "trix/filters/attachment_gallery_filter"
+import { attachmentGalleryFilter } from "trix/filters/attachment_gallery_filter"
 
 export default class Editor
-  DEFAULT_FILTERS = [ Trix.attachmentGalleryFilter ]
+  DEFAULT_FILTERS = [ attachmentGalleryFilter ]
 
   constructor: (@composition, @selectionManager, @element) ->
     @undoManager = new UndoManager @composition

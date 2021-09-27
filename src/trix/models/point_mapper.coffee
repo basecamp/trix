@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import { getDOMRange, setDOMRange } from "trix/core/helpers"
 
 export default class PointMapper
