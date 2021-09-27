@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import DocumentView from "trix/views/document_view"
 
 {normalizeRange, rangesAreEqual} = Trix
 
@@ -42,4 +43,4 @@ helpers.assert.documentHTMLEqual = (trixDocument, html) ->
   @equal helpers.getHTML(trixDocument), html
 
 helpers.getHTML = (trixDocument) ->
-  Trix.DocumentView.render(trixDocument).innerHTML
+  DocumentView.render(trixDocument).innerHTML

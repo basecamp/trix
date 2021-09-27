@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 allAttributeNames = null
 blockAttributeNames = null
@@ -10,16 +11,16 @@ Trix.extend
     allAttributeNames ?= Trix.getTextAttributeNames().concat Trix.getBlockAttributeNames()
 
   getBlockConfig: (attributeName) ->
-    Trix.config.blockAttributes[attributeName]
+    config.blockAttributes[attributeName]
 
   getBlockAttributeNames: ->
-    blockAttributeNames ?= Object.keys(Trix.config.blockAttributes)
+    blockAttributeNames ?= Object.keys(config.blockAttributes)
 
   getTextConfig: (attributeName) ->
-    Trix.config.textAttributes[attributeName]
+    config.textAttributes[attributeName]
 
   getTextAttributeNames: ->
-    textAttributeNames ?= Object.keys(Trix.config.textAttributes)
+    textAttributeNames ?= Object.keys(config.textAttributes)
 
   getListAttributeNames: ->
-    listAttributeNames ?= (listAttribute for key, {listAttribute} of Trix.config.blockAttributes when listAttribute?)
+    listAttributeNames ?= (listAttribute for key, {listAttribute} of config.blockAttributes when listAttribute?)

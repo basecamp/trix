@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 {after, assert, clickElement, clickToolbarButton, createFile, defer, dragToCoordinates, moveCursor, pressKey, test, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
 
@@ -44,12 +45,12 @@ testGroup "Attachments", template: "editor_with_image", ->
     after 20, ->
       captionElement = findElement("figcaption")
       assert.ok captionElement.clientHeight > 0
-      assert.equal captionElement.getAttribute("data-trix-placeholder"), Trix.config.lang.captionPlaceholder
+      assert.equal captionElement.getAttribute("data-trix-placeholder"), config.lang.captionPlaceholder
 
       clickElement findElement("figure"), ->
         captionElement = findElement("figcaption")
         assert.ok captionElement.clientHeight > 0
-        assert.equal captionElement.getAttribute("data-trix-placeholder"), Trix.config.lang.captionPlaceholder
+        assert.equal captionElement.getAttribute("data-trix-placeholder"), config.lang.captionPlaceholder
         done()
 
   test "updating an attachment's href attribute while editing its caption", (expectDocument) ->

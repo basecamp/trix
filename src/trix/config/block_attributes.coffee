@@ -1,6 +1,4 @@
-import Trix from "trix/global"
-
-Trix.config.blockAttributes = attributes =
+attributes =
   default:
     tagName: "div"
     parse: false
@@ -26,7 +24,7 @@ Trix.config.blockAttributes = attributes =
     group: false
     nestable: true
     test: (element) ->
-      Trix.tagName(element.parentNode) is attributes[@listAttribute].tagName
+      tagName(element.parentNode) is attributes[@listAttribute].tagName
   numberList:
     tagName: "ol"
     parse: false
@@ -36,10 +34,15 @@ Trix.config.blockAttributes = attributes =
     group: false
     nestable: true
     test: (element) ->
-      Trix.tagName(element.parentNode) is attributes[@listAttribute].tagName
+      tagName(element.parentNode) is attributes[@listAttribute].tagName
   attachmentGallery:
     tagName: "div"
     exclusive: true
     terminal: true
     parse: false
     group: false
+
+tagName = (element) ->
+  element?.tagName?.toLowerCase()
+
+export default attributes

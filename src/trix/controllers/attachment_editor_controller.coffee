@@ -1,9 +1,11 @@
 import Trix from "trix/global"
+import config from "trix/config"
+import BasicObject from "trix/core/basic_object"
 
 {defer, handleEvent, makeElement, tagName} = Trix
-{lang, css, keyNames} = Trix.config
+{lang, css, keyNames} = config
 
-class Trix.AttachmentEditorController extends Trix.BasicObject
+export default class AttachmentEditorController extends BasicObject
   constructor: (@attachmentPiece, @element, @container, @options = {}) ->
     super(arguments...)
     {@attachment} = @attachmentPiece

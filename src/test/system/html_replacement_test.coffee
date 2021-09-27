@@ -1,9 +1,10 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 {assert, clickToolbarButton, collapseSelection, defer, moveCursor, selectNode, typeCharacters, testIf, testGroup, triggerEvent} = Trix.TestHelpers
 
 test = ->
-  testIf(Trix.config.input.getLevel() is 0, arguments...)
+  testIf(config.input.getLevel() is 0, arguments...)
 
 testGroup "Level 0 input: HTML replacement", ->
   testGroup "deleting with command+backspace", template: "editor_empty", ->

@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import MutationObserver from "trix/observers/mutation_observer"
 
 {assert, defer, test, testGroup} = Trix.TestHelpers
 
@@ -9,7 +10,7 @@ summaries = []
 install = (html) ->
   element = document.createElement("div")
   element.innerHTML = html if html
-  observer = new Trix.MutationObserver element
+  observer = new MutationObserver element
   observer.delegate =
     elementDidMutate: (summary) ->
       summaries.push(summary)
@@ -28,7 +29,7 @@ observerTest = (name, options = {}, callback) ->
       done()
 
 
-testGroup "Trix.MutationObserver", ->
+testGroup "MutationObserver", ->
   observerTest "add character", html: "a", (done) ->
     element.firstChild.data += "b"
     defer ->

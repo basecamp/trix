@@ -1,17 +1,17 @@
 import Trix from "trix/global"
-
-import "trix/models/text"
+import TrixObject from "trix/core/object" # Don't override window.Object
+import Text from "trix/models/text"
 
 {arraysAreEqual, spliceArray, getBlockConfig, getBlockAttributeNames, getListAttributeNames} = Trix
 
-class Trix.Block extends Trix.Object
+export default class Block extends TrixObject
   @fromJSON: (blockJSON) ->
-    text = Trix.Text.fromJSON(blockJSON.text)
+    text = Text.fromJSON(blockJSON.text)
     new this text, blockJSON.attributes
 
   constructor: (text, attributes) ->
     super(arguments...)
-    @text = applyBlockBreakToText(text || new Trix.Text)
+    @text = applyBlockBreakToText(text || new Text)
     @attributes = attributes || []
 
   isEmpty: ->
@@ -24,13 +24,13 @@ class Trix.Block extends Trix.Object
     )
 
   copyWithText: (text) ->
-    new Trix.Block text, @attributes
+    new Block text, @attributes
 
   copyWithoutText: ->
     @copyWithText(null)
 
   copyWithAttributes: (attributes) ->
-    new Trix.Block @text, attributes
+    new Block @text, attributes
 
   copyWithoutAttributes: ->
     @copyWithAttributes(null)
@@ -146,7 +146,7 @@ class Trix.Block extends Trix.Object
       @getDirection() is block.getDirection()
 
   consolidateWith: (block) ->
-    newlineText = Trix.Text.textForStringWithAttributes("\n")
+    newlineText = Text.textForStringWithAttributes("\n")
     text = @getTextWithoutBlockBreak().appendText(newlineText)
     @copyWithText(text.appendText(block.text))
 
@@ -206,11 +206,11 @@ class Trix.Block extends Trix.Object
         piece
 
     if modified
-      new Trix.Text [innerPieces..., lastPiece]
+      new Text [innerPieces..., lastPiece]
     else
       text
 
-  blockBreakText = Trix.Text.textForStringWithAttributes("\n", blockBreak: true)
+  blockBreakText = Text.textForStringWithAttributes("\n", blockBreak: true)
 
   addBlockBreakToText = (text) ->
     if textEndsInBlockBreak(text)

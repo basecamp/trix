@@ -1,9 +1,10 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 helpers = Trix.TestHelpers
 
 keyCodes = {}
-for code, name of Trix.config.keyNames
+for code, name of config.keyNames
   keyCodes[name] = code
 
 isIE = /Windows.*Trident/.test(navigator.userAgent)
@@ -20,7 +21,7 @@ helpers.extend
     element.dispatchEvent(helpers.createEvent(type, properties))
 
   triggerInputEvent: (element, type, properties = {}) ->
-    if Trix.config.input.getLevel() is 2
+    if config.input.getLevel() is 2
       if properties.ranges
         ranges = properties.ranges
         delete properties.ranges

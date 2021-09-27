@@ -1,4 +1,4 @@
-class Trix.Watchdog.Serializer
+export default class Serializer
   constructor: (@element) ->
     @id = 0
     @serializeTree()

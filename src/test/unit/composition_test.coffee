@@ -1,13 +1,15 @@
 import Trix from "trix/global"
+import Composition from "trix/models/composition"
+import { TestCompositionDelegate } from "test/test_helpers/test_stubs"
 
 {assert, test, testGroup} = Trix.TestHelpers
 
 composition = null
 setup = ->
-  composition = new Trix.Composition
-  composition.delegate = new Trix.TestCompositionDelegate
+  composition = new Composition
+  composition.delegate = new TestCompositionDelegate
 
-testGroup "Trix.Composition", {setup}, ->
+testGroup "Composition", {setup}, ->
   test "deleteInDirection respects UTF-16 character boundaries", ->
     composition.insertString("abc😭")
     composition.deleteInDirection("backward")

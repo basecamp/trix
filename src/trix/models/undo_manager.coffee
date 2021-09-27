@@ -1,6 +1,7 @@
 import Trix from "trix/global"
+import BasicObject from "trix/core/basic_object"
 
-class Trix.UndoManager extends Trix.BasicObject
+export default class UndoManager extends BasicObject
   constructor: (@composition) ->
     super(arguments...)
     @undoEntries = []

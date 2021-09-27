@@ -1,10 +1,9 @@
 import Trix from "trix/global"
-
-import "trix/controllers/input_controller"
+import InputController from "trix/controllers/input_controller"
 
 {dataTransferIsPlainText, keyEventIsKeyboardCommand, objectsAreEqual} = Trix
 
-class Trix.Level2InputController extends Trix.InputController
+export default class Level2InputController extends InputController
   elementDidMutate: ->
     if @scheduledRender
       @delegate?.inputControllerDidAllowUnhandledInput?() if @composing

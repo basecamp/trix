@@ -1,6 +1,6 @@
 {handleEvent} = Trix
 
-class Trix.Inspector.View
+export default class View
   constructor: (@editorElement) ->
     {@editorController, @editor} = @editorElement
     {@compositionController, @composition} = @editorController

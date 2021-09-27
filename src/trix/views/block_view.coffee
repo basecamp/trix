@@ -1,11 +1,12 @@
 import Trix from "trix/global"
-
-import "trix/views/text_view"
+import config from "trix/config"
+import ObjectView from "trix/views/object_view"
+import TextView from "trix/views/text_view"
 
 {makeElement, getBlockConfig} = Trix
-{css} = Trix.config
+{css} = config
 
-class Trix.BlockView extends Trix.ObjectView
+export default class BlockView extends ObjectView
   constructor: ->
     super(arguments...)
     @block = @object
@@ -18,14 +19,14 @@ class Trix.BlockView extends Trix.ObjectView
       nodes.push(makeElement("br"))
     else
       textConfig = getBlockConfig(@block.getLastAttribute())?.text
-      textView = @findOrCreateCachedChildView(Trix.TextView, @block.text, {textConfig})
+      textView = @findOrCreateCachedChildView(TextView, @block.text, {textConfig})
       nodes.push(textView.getNodes()...)
       nodes.push(makeElement("br")) if @shouldAddExtraNewlineElement()
 
     if @attributes.length
       nodes
     else
-      {tagName} = Trix.config.blockAttributes.default
+      {tagName} = config.blockAttributes.default
       attributes = dir: "rtl" if @block.isRTL()
 
       element = makeElement({tagName, attributes})

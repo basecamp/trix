@@ -1,40 +1,44 @@
 import Trix from "trix/global"
-
-import "trix/controllers/controller"
-import "trix/controllers/level_0_input_controller"
-import "trix/controllers/level_2_input_controller"
-import "trix/controllers/composition_controller"
-import "trix/controllers/toolbar_controller"
-import "trix/models/composition"
-import "trix/models/editor"
-import "trix/models/attachment_manager"
-import "trix/models/selection_manager"
+import config from "trix/config"
+import Controller from "trix/controllers/controller"
+import Level0InputController from "trix/controllers/level_0_input_controller"
+import Level2InputController from "trix/controllers/level_2_input_controller"
+import CompositionController from "trix/controllers/composition_controller"
+import ToolbarController from "trix/controllers/toolbar_controller"
+import Composition from "trix/models/composition"
+import Editor from "trix/models/editor"
+import AttachmentManager from "trix/models/attachment_manager"
+import SelectionManager from "trix/models/selection_manager"
 
 {rangeIsCollapsed, rangesAreEqual, objectsAreEqual, getBlockConfig} = Trix
 
-class Trix.EditorController extends Trix.Controller
+export default class EditorController extends Controller
   constructor: ({@editorElement, document, html}) ->
     super(arguments...)
-    @selectionManager = new Trix.SelectionManager @editorElement
+    @selectionManager = new SelectionManager @editorElement
     @selectionManager.delegate = this
 
-    @composition = new Trix.Composition
+    @composition = new Composition
     @composition.delegate = this
 
-    @attachmentManager = new Trix.AttachmentManager @composition.getAttachments()
+    @attachmentManager = new AttachmentManager @composition.getAttachments()
     @attachmentManager.delegate = this
 
-    @inputController = new Trix["Level#{Trix.config.input.getLevel()}InputController"](@editorElement)
+    @inputController = if config.input.getLevel() == 2
+      new Level2InputController(@editorElement)
+    else
+      new Level0InputController(@editorElement)
+
     @inputController.delegate = this
     @inputController.responder = @composition
 
-    @compositionController = new Trix.CompositionController @editorElement, @composition
+    @compositionController = new CompositionController @editorElement, @composition
     @compositionController.delegate = this
 
-    @toolbarController = new Trix.ToolbarController @editorElement.toolbarElement
+    @toolbarController = new ToolbarController @editorElement.toolbarElement
     @toolbarController.delegate = this
 
-    @editor = new Trix.Editor @composition, @selectionManager, @editorElement
+    @editor = new Editor @composition, @selectionManager, @editorElement
     if document?
       @editor.loadDocument(document)
     else
@@ -318,7 +322,7 @@ class Trix.EditorController extends Trix.Controller
       perform: -> @editor.decreaseNestingLevel() and @render()
     attachFiles:
       test: -> true
-      perform: -> Trix.config.input.pickFiles(@editor.insertFiles)
+      perform: -> config.input.pickFiles(@editor.insertFiles)
 
   canInvokeAction: (actionName) ->
     if @actionIsExternal(actionName)
@@ -411,8 +415,8 @@ class Trix.EditorController extends Trix.Controller
       locationRange
 
   getTimeContext: ->
-    if Trix.config.undoInterval > 0
-      Math.floor(new Date().getTime() / Trix.config.undoInterval)
+    if config.undoInterval > 0
+      Math.floor(new Date().getTime() / config.undoInterval)
     else
       0
 

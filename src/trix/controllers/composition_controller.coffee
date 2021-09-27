@@ -1,16 +1,17 @@
 import Trix from "trix/global"
-
-import "trix/controllers/attachment_editor_controller"
-import "trix/views/document_view"
+import BasicObject from "trix/core/basic_object"
+import AttachmentView from "trix/views/attachment_view"
+import DocumentView from "trix/views/document_view"
+import AttachmentEditorController from "trix/controllers/attachment_editor_controller"
 
 {findClosestElementFromNode, handleEvent, innerElementIsActive, defer}  = Trix
 
-{attachmentSelector} = Trix.AttachmentView
+{attachmentSelector} = AttachmentView
 
-class Trix.CompositionController extends Trix.BasicObject
+export default class CompositionController extends BasicObject
   constructor: (@element, @composition) ->
     super(arguments...)
-    @documentView = new Trix.DocumentView @composition.document, {@element}
+    @documentView = new DocumentView @composition.document, {@element}
 
     handleEvent "focus", onElement: @element, withCallback: @didFocus
     handleEvent "blur", onElement: @element, withCallback: @didBlur
@@ -88,7 +89,7 @@ class Trix.CompositionController extends Trix.BasicObject
     return unless element = @documentView.findElementForObject(attachment)
     @uninstallAttachmentEditor()
     attachmentPiece = @composition.document.getAttachmentPieceForAttachment(attachment)
-    @attachmentEditor = new Trix.AttachmentEditorController attachmentPiece, element, @element, options
+    @attachmentEditor = new AttachmentEditorController attachmentPiece, element, @element, options
     @attachmentEditor.delegate = this
 
   uninstallAttachmentEditor: ->

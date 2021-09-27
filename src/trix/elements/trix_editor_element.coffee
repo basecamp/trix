@@ -1,11 +1,13 @@
 import Trix from "trix/global"
+import config from "trix/config"
+import AttachmentView from "trix/views/attachment_view"
 
 import "trix/elements/trix_toolbar_element"
-import "trix/controllers/editor_controller"
+import EditorController from "trix/controllers/editor_controller"
 
 {browser, makeElement, triggerEvent, handleEvent, handleEventOnce, findClosestElementFromNode} = Trix
 
-{attachmentSelector} = Trix.AttachmentView
+{attachmentSelector} = AttachmentView
 
 Trix.registerElement "trix-editor", do ->
   id = 0
@@ -33,7 +35,7 @@ Trix.registerElement "trix-editor", do ->
 
   setDefaultParagraphSeparator = (element) ->
     if document.queryCommandSupported?("DefaultParagraphSeparator")
-      {tagName} = Trix.config.blockAttributes.default
+      {tagName} = config.blockAttributes.default
       if tagName in ["div", "p"]
         document.execCommand("DefaultParagraphSeparator", false, tagName)
 
@@ -198,7 +200,7 @@ Trix.registerElement "trix-editor", do ->
     unless @hasAttribute("data-trix-internal")
       unless @editorController
         triggerEvent("trix-before-initialize", onElement: this)
-        @editorController = new Trix.EditorController(editorElement: this, html: @defaultValue = @value)
+        @editorController = new EditorController(editorElement: this, html: @defaultValue = @value)
         requestAnimationFrame => triggerEvent("trix-initialize", onElement: this)
       @editorController.registerSelectionManager()
       @registerResetListener()

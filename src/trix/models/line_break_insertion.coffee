@@ -1,6 +1,6 @@
 import Trix from "trix/global"
 
-class Trix.LineBreakInsertion
+export default class LineBreakInsertion
   constructor: (@composition) ->
     {@document} = @composition
 

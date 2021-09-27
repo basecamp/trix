@@ -2,7 +2,7 @@ import Trix from "trix/global"
 
 {getDOMRange, setDOMRange} = Trix
 
-class Trix.PointMapper
+export default class PointMapper
   createDOMRangeFromPoint: ({x, y}) ->
     if document.caretPositionFromPoint
       {offsetNode, offset} = document.caretPositionFromPoint(x, y)

@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import UTF16String from "trix/core/utilities/utf16_string"
 
 Trix.extend
   normalizeSpaces: (string) ->
@@ -19,8 +20,8 @@ Trix.extend
       .replace(/\ {2,}/g, " ")
 
   summarizeStringChange: (oldString, newString) ->
-    oldString = Trix.UTF16String.box(oldString)
-    newString = Trix.UTF16String.box(newString)
+    oldString = UTF16String.box(oldString)
+    newString = UTF16String.box(newString)
 
     if newString.length < oldString.length
       [removed, added] = utf16StringDifferences(oldString, newString)
@@ -38,7 +39,7 @@ utf16StringDifferences = (a, b) ->
   diffB = if length
     {offset} = diffA
     codepoints = a.codepoints.slice(0, offset).concat(a.codepoints.slice(offset + length))
-    utf16StringDifference(b, Trix.UTF16String.fromCodepoints(codepoints))
+    utf16StringDifference(b, UTF16String.fromCodepoints(codepoints))
   else
     utf16StringDifference(b, a)
 

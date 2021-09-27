@@ -1,8 +1,10 @@
 import Trix from "trix/global"
+import config from "trix/config"
+import TrixObject from "trix/core/object" # Don't override window.Object
+import Hash from "trix/core/collections/hash"
+import ImagePreloadOperation from "trix/operations/image_preload_operation"
 
-import "trix/operations/image_preload_operation"
-
-class Trix.Attachment extends Trix.Object
+export default class Attachment extends TrixObject
   @previewablePattern: /^image(\/(gif|png|jpe?g)|$)/
 
   @attachmentForFile: (file) ->
@@ -12,7 +14,7 @@ class Trix.Attachment extends Trix.Object
     attachment
 
   @attributesForFile: (file) ->
-    new Trix.Hash
+    new Hash
       filename:    file.name
       filesize:    file.size
       contentType: file.type
@@ -22,7 +24,7 @@ class Trix.Attachment extends Trix.Object
 
   constructor: (attributes = {}) ->
     super(arguments...)
-    @attributes = Trix.Hash.box(attributes)
+    @attributes = Hash.box(attributes)
     @didChangeAttributes()
 
   getAttribute: (attribute) ->
@@ -78,7 +80,7 @@ class Trix.Attachment extends Trix.Object
   getFormattedFilesize: ->
     filesize = @attributes.get("filesize")
     if typeof filesize is "number"
-      Trix.config.fileSize.formatter(filesize)
+      config.fileSize.formatter(filesize)
     else
       ""
 
@@ -152,7 +154,7 @@ class Trix.Attachment extends Trix.Object
   preload: (url, callback) ->
     if url and url isnt @getPreviewURL()
       @preloadingURL = url
-      operation = new Trix.ImagePreloadOperation url
+      operation = new ImagePreloadOperation url
       operation
         .then ({width, height}) =>
           @setAttributes({width, height}) unless @getWidth() and @getHeight()

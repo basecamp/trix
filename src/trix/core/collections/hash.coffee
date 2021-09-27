@@ -1,8 +1,9 @@
 import Trix from "trix/global"
+import TrixObject from "trix/core/object" # Don't override window.Object
 
 {arraysAreEqual} = Trix
 
-class Trix.Hash extends Trix.Object
+export default class Hash extends TrixObject
   @fromCommonAttributesOfObjects: (objects = []) ->
     return new this unless objects.length
     hash = box(objects[0])
@@ -24,7 +25,7 @@ class Trix.Hash extends Trix.Object
     @merge(object(key, value))
 
   remove: (key) ->
-    new Trix.Hash copy(@values, key)
+    new Hash copy(@values, key)
 
   get: (key) ->
     @values[key]
@@ -33,12 +34,12 @@ class Trix.Hash extends Trix.Object
     key of @values
 
   merge: (values) ->
-    new Trix.Hash merge(@values, unbox(values))
+    new Hash merge(@values, unbox(values))
 
   slice: (keys) ->
     values = {}
     values[key] = @values[key] for key in keys when @has(key)
-    new Trix.Hash values
+    new Hash values
 
   getKeys: ->
     Object.keys(@values)
@@ -88,13 +89,13 @@ class Trix.Hash extends Trix.Object
     result
 
   box = (object) ->
-    if object instanceof Trix.Hash
+    if object instanceof Hash
       object
     else
-      new Trix.Hash object
+      new Hash object
 
   unbox = (object) ->
-    if object instanceof Trix.Hash
+    if object instanceof Hash
       object.values
     else
       object

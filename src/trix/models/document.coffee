@@ -1,29 +1,30 @@
 import Trix from "trix/global"
+import config from "trix/config"
+import TrixObject from "trix/core/object" # Don't override window.Object
 
-import "trix/models/block"
-import "trix/models/splittable_list"
-import "trix/models/html_parser"
+import Text from "trix/models/text"
+import Block  from "trix/models/block"
+import SplittableList from "trix/models/splittable_list"
+import Hash from "trix/core/collections/hash"
+import ObjectMap from "trix/core/collections/object_map"
 
 {arraysAreEqual, normalizeRange, rangeIsCollapsed, getBlockConfig} = Trix
 
-class Trix.Document extends Trix.Object
+export default class Document extends TrixObject
   @fromJSON: (documentJSON) ->
     blocks = for blockJSON in documentJSON
-      Trix.Block.fromJSON blockJSON
+      Block.fromJSON blockJSON
     new this blocks
 
-  @fromHTML: (html, options) ->
-    Trix.HTMLParser.parse(html, options).getDocument()
-
   @fromString: (string, textAttributes) ->
-    text = Trix.Text.textForStringWithAttributes(string, textAttributes)
-    new this [new Trix.Block text]
+    text = Text.textForStringWithAttributes(string, textAttributes)
+    new this [new Block text]
 
 
   constructor: (blocks = []) ->
     super(arguments...)
-    blocks = [new Trix.Block] if blocks.length is 0
-    @blockList = Trix.SplittableList.box(blocks)
+    blocks = [new Block] if blocks.length is 0
+    @blockList = SplittableList.box(blocks)
 
   isEmpty: ->
     @blockList.length is 1 and (
@@ -40,7 +41,7 @@ class Trix.Document extends Trix.Object
     new @constructor blocks
 
   copyUsingObjectsFromDocument: (sourceDocument) ->
-    objectMap = new Trix.ObjectMap sourceDocument.getObjects()
+    objectMap = new ObjectMap sourceDocument.getObjects()
     @copyUsingObjectMap(objectMap)
 
   copyUsingObjectMap: (objectMap) ->
@@ -227,19 +228,19 @@ class Trix.Document extends Trix.Object
     {offset} = @locationFromPosition(startPosition)
 
     document = @removeTextAtRange(range)
-    blocks = [new Trix.Block] if offset is 0
-    new @constructor document.blockList.insertSplittableListAtPosition(new Trix.SplittableList(blocks), startPosition)
+    blocks = [new Block] if offset is 0
+    new @constructor document.blockList.insertSplittableListAtPosition(new SplittableList(blocks), startPosition)
 
   applyBlockAttributeAtRange: (attributeName, value, range) ->
     {document, range} = @expandRangeToLineBreaksAndSplitBlocks(range)
-    config = getBlockConfig(attributeName)
+    blockConfig = getBlockConfig(attributeName)
 
-    if config.listAttribute
+    if blockConfig.listAttribute
       document = document.removeLastListAttributeAtRange(range, exceptAttributeName: attributeName)
       {document, range} = document.convertLineBreaksToBlockBreaksInRange(range)
-    else if config.exclusive
+    else if blockConfig.exclusive
       document = document.removeBlockAttributesAtRange(range)
-    else if config.terminal
+    else if blockConfig.terminal
       document = document.removeLastTerminalAttributeAtRange(range)
     else
       document = document.consolidateBlocksAtRange(range)
@@ -405,8 +406,8 @@ class Trix.Document extends Trix.Object
           textAttributes.push(block.text.getCommonAttributesAtRange(textRange))
           blockAttributes.push(attributesForBlock(block))
 
-      Trix.Hash.fromCommonAttributesOfObjects(textAttributes)
-        .merge(Trix.Hash.fromCommonAttributesOfObjects(blockAttributes))
+      Hash.fromCommonAttributesOfObjects(textAttributes)
+        .merge(Hash.fromCommonAttributesOfObjects(blockAttributes))
         .toObject()
 
   getCommonAttributesAtPosition: (position) ->
@@ -417,7 +418,7 @@ class Trix.Document extends Trix.Object
     commonAttributes = attributesForBlock(block)
     attributes = block.text.getAttributesAtPosition(offset)
     attributesLeft = block.text.getAttributesAtPosition(offset - 1)
-    inheritableAttributes = (key for key, value of Trix.config.textAttributes when value.inheritable)
+    inheritableAttributes = (key for key, value of config.textAttributes when value.inheritable)
 
     for key, value of attributesLeft
       if value is attributes[key] or key in inheritableAttributes

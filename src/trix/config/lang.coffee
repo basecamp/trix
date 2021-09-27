@@ -1,6 +1,4 @@
-import Trix from "trix/global"
-
-Trix.config.lang =
+export default lang =
   attachFiles: "Attach Files"
   bold: "Bold"
   bullets: "Bullets"

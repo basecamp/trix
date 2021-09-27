@@ -1,4 +1,4 @@
-class Trix.Watchdog.Recording
+export default class Recording
   @fromJSON: ({snapshots, frames}) ->
     new this snapshots, frames
 

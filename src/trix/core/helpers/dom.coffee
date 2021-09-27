@@ -1,4 +1,6 @@
 import Trix from "trix/global"
+import config from "trix/config"
+import AttachmentView from "trix/views/attachment_view"
 
 html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector
@@ -141,7 +143,7 @@ Trix.extend
     element
 
   getBlockTagNames: ->
-    Trix.blockTagNames ?= (tagName for key, {tagName} of Trix.config.blockAttributes when tagName)
+    Trix.blockTagNames ?= (tagName for key, {tagName} of config.blockAttributes when tagName)
 
   nodeIsBlockContainer: (node) ->
     Trix.nodeIsBlockStartComment(node?.firstChild)
@@ -175,7 +177,7 @@ Trix.extend
       Trix.nodeIsCursorTarget(node.firstChild)
 
   nodeIsAttachmentElement: (node) ->
-    Trix.elementMatchesSelector(node, Trix.AttachmentView.attachmentSelector)
+    Trix.elementMatchesSelector(node, AttachmentView.attachmentSelector)
 
   nodeIsEmptyTextNode: (node) ->
     Trix.nodeIsTextNode(node) and node?.data is ""

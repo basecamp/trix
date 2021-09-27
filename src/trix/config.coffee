@@ -1,11 +1,25 @@
-import "trix/config/lang"
-import "trix/config/css"
-import "trix/config/block_attributes"
-import "trix/config/file_size_formatting"
-import "trix/config/text_attributes"
-import "trix/config/serialization"
-import "trix/config/toolbar"
-import "trix/config/undo_interval"
-import "trix/config/attachments"
-import "trix/config/key_names"
-import "trix/config/input"
+import attachments from "trix/config/attachments"
+import blockAttributes from "trix/config/block_attributes"
+import css from "trix/config/css"
+import fileSize from "trix/config/file_size_formatting"
+import input from "trix/config/input"
+import keyNames from "trix/config/key_names"
+import lang from "trix/config/lang"
+import textAttributes from "trix/config/text_attributes"
+import toolbar from "trix/config/toolbar"
+import undoInterval from "trix/config/undo_interval"
+
+config = {
+  attachments,
+  blockAttributes,
+  css,
+  fileSize,
+  input,
+  keyNames,
+  lang,
+  textAttributes,
+  toolbar,
+  undoInterval,
+}
+
+export default config

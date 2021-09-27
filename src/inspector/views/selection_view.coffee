@@ -1,6 +1,7 @@
-import "inspector/view"
+import View from "inspector/view"
+import UTF16String from "trix/core/utilities/utf16_string"
 
-Trix.Inspector.registerView class extends Trix.Inspector.View
+Trix.Inspector.registerView class extends View
   title: "Selection"
   template: "selection"
   events:
@@ -18,7 +19,7 @@ Trix.Inspector.registerView class extends Trix.Inspector.View
 
   getCharacters: ->
     chars = []
-    utf16string = Trix.UTF16String.box(@document.toString())
+    utf16string = UTF16String.box(@document.toString())
     rangeIsExpanded = @range[0] isnt @range[1]
     position = 0
     while position < utf16string.length

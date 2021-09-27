@@ -1,16 +1,14 @@
 import Trix from "trix/global"
+import config from "trix/config"
+import AttachmentView from "trix/views/attachment_view"
 
-import "trix/views/attachment_view"
-
-{makeElement} = Trix
-
-class Trix.PreviewableAttachmentView extends Trix.AttachmentView
+export default class PreviewableAttachmentView extends AttachmentView
   constructor: ->
     super(arguments...)
     @attachment.previewDelegate = this
 
   createContentNodes: ->
-    @image = makeElement
+    @image = Trix.makeElement
       tagName: "img"
       attributes:
         src: ""
@@ -23,7 +21,7 @@ class Trix.PreviewableAttachmentView extends Trix.AttachmentView
   createCaptionElement: ->
     figcaption = super(arguments...)
     unless figcaption.textContent
-      figcaption.setAttribute("data-trix-placeholder", Trix.config.lang.captionPlaceholder)
+      figcaption.setAttribute("data-trix-placeholder", config.lang.captionPlaceholder)
     figcaption
 
   refresh: (image) ->

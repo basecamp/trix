@@ -1,8 +1,8 @@
-import "inspector/view"
+import View from "inspector/view"
 
 {handleEvent} = Trix
 
-Trix.Inspector.registerView class extends Trix.Inspector.View
+Trix.Inspector.registerView class extends View
   title: "Debug"
   template: "debug"
 

@@ -1,13 +1,17 @@
 import Trix from "trix/global"
-
-import "trix/controllers/input_controller"
+import config from "trix/config"
+import UTF16String from "trix/core/utilities/utf16_string"
+import BasicObject from "trix/core/basic_object"
+import InputController from "trix/controllers/input_controller"
+import DocumentView from "trix/views/document_view"
+import Document from "trix/models/document"
 
 {makeElement, objectsAreEqual, tagName, browser, keyEventIsKeyboardCommand,
  dataTransferIsWritable, dataTransferIsPlainText} = Trix
 
-{keyNames} = Trix.config
+{keyNames} = config
 
-class Trix.Level0InputController extends Trix.InputController
+export default class Level0InputController extends InputController
   pastedFileCount = 0
 
   constructor: ->
@@ -165,7 +169,7 @@ class Trix.Level0InputController extends Trix.InputController
         @requestRender()
 
       else if documentJSON = event.dataTransfer.getData("application/x-trix-document")
-        document = Trix.Document.fromJSONString(documentJSON)
+        document = Document.fromJSONString(documentJSON)
         @responder?.insertDocument(document)
         @requestRender()
 
@@ -361,7 +365,7 @@ class Trix.Level0InputController extends Trix.InputController
     document = @responder?.getSelectedDocument().toSerializableDocument()
 
     dataTransfer.setData("application/x-trix-document", JSON.stringify(document))
-    dataTransfer.setData("text/html", Trix.DocumentView.render(document).innerHTML)
+    dataTransfer.setData("text/html", DocumentView.render(document).innerHTML)
     dataTransfer.setData("text/plain", document.toString().replace(/\n$/, ""))
     true
 
@@ -410,7 +414,7 @@ stringFromKeyEvent = (event) ->
       code = event.charCode
 
     if code? and keyNames[code] isnt "escape"
-      Trix.UTF16String.fromCodepoints([code]).toString()
+      UTF16String.fromCodepoints([code]).toString()
 
 pasteEventIsCrippledSafariHTMLPaste = (event) ->
   if paste = event.clipboardData
@@ -428,7 +432,7 @@ pasteEventIsCrippledSafariHTMLPaste = (event) ->
       isExternalRichTextPaste = "com.apple.flat-rtfd" in paste.types
       isExternalHTMLPaste or isExternalRichTextPaste
 
-class CompositionInput extends Trix.BasicObject
+class CompositionInput extends BasicObject
   constructor: (@inputController) ->
     super(arguments...)
     {@responder, @delegate, @inputSummary} = @inputController

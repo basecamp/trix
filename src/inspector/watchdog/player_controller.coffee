@@ -1,12 +1,12 @@
-import "inspector/watchdog/player"
-import "inspector/watchdog/player_view"
+import Player from "inspector/watchdog/player"
+import PlayerView from "inspector/watchdog/player_view"
 
-class Trix.Watchdog.PlayerController
+export default class PlayerController
   constructor: (@element, @recording) ->
-    @player = new Trix.Watchdog.Player @recording
+    @player = new Player @recording
     @player.delegate = this
 
-    @view = new Trix.Watchdog.PlayerView @element
+    @view = new PlayerView @element
     @view.delegate = this
 
     @view.setLength(@player.length)

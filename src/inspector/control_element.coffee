@@ -1,4 +1,4 @@
-class Trix.Inspector.ControlElement
+export default class ControlElement
   keyEvents = "keydown keypress input".split(" ")
   compositionEvents = "compositionstart compositionupdate compositionend textInput".split(" ")
 

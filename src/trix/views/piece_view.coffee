@@ -1,11 +1,11 @@
 import Trix from "trix/global"
-
-import "trix/views/attachment_view"
-import "trix/views/previewable_attachment_view"
+import ObjectView from "trix/views/object_view"
+import AttachmentView from "trix/views/attachment_view"
+import PreviewableAttachmentView from "trix/views/previewable_attachment_view"
 
 {makeElement, findInnerElement, getTextConfig} = Trix
 
-class Trix.PieceView extends Trix.ObjectView
+export default class PieceView extends ObjectView
   constructor: ->
     super(arguments...)
     @piece = @object
@@ -31,9 +31,9 @@ class Trix.PieceView extends Trix.ObjectView
 
   createAttachmentNodes: ->
     constructor = if @attachment.isPreviewable()
-      Trix.PreviewableAttachmentView
+      PreviewableAttachmentView
     else
-      Trix.AttachmentView
+      AttachmentView
 
     view = @createChildView(constructor, @piece.attachment, {@piece})
     view.getNodes()

@@ -1,9 +1,9 @@
-import "inspector/watchdog/recording"
-import "inspector/watchdog/serializer"
+import Recording from "inspector/watchdog/recording"
+import Serializer from "inspector/watchdog/serializer"
 
-class Trix.Watchdog.Recorder
+export default class Recorder
   constructor: (@element, {@snapshotLimit} = {}) ->
-    @recording = new Trix.Watchdog.Recording
+    @recording = new Recording
 
   start: ->
     return if @started
@@ -72,7 +72,7 @@ class Trix.Watchdog.Recorder
     @recording.truncateToSnapshotCount(@snapshotLimit) if @snapshotLimit?
 
   getSnapshot: ->
-    serializer = new Trix.Watchdog.Serializer @element
+    serializer = new Serializer @element
     serializer.getSnapshot()
 
   characterFromKeyboardEvent = (event) ->
