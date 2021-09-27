@@ -1,7 +1,7 @@
 import Trix from "trix/global"
 import BasicObject from "trix/core/basic_object"
 
-{tagName, walkTree, nodeIsAttachmentElement} = Trix
+import { tagName, removeNode, walkTree, nodeIsAttachmentElement } from "trix/core/helpers"
 
 export default class HTMLSanitizer extends BasicObject
   DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height class".split(" ")
@@ -48,7 +48,7 @@ export default class HTMLSanitizer extends BasicObject
           nodesToRemove.push(node)
 
     for node in nodesToRemove
-      Trix.removeNode(node)
+      removeNode(node)
     @body
 
   sanitizeElement: (element) ->

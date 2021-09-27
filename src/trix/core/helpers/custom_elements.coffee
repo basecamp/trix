@@ -1,6 +1,4 @@
-import Trix from "trix/global"
-
-Trix.registerElement = (tagName, definition = {}) ->
+export registerElement = (tagName, definition = {}) ->
   tagName = tagName.toLowerCase()
 
   definition = rewriteLifecycleCallbacks(definition)
@@ -10,7 +8,7 @@ Trix.registerElement = (tagName, definition = {}) ->
     delete properties.defaultCSS
     installDefaultCSSForTagName(defaultCSS, tagName)
 
-  registerElement(tagName, properties)
+  doRegisterElement(tagName, properties)
 
 installDefaultCSSForTagName = (defaultCSS, tagName) ->
   styleElement = insertStyleElementForTagName(tagName)
@@ -69,7 +67,7 @@ rewriteLifecycleCallbacks = do ->
       definition.detachedCallback = disconnect if disconnect
       definition
 
-registerElement = do ->
+doRegisterElement = do ->
   if window.customElements
     (tagName, properties) ->
       constructor = ->

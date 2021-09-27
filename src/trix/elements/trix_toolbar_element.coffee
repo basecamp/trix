@@ -1,7 +1,9 @@
 import Trix from "trix/global"
 import config from "trix/config"
 
-Trix.registerElement "trix-toolbar",
+import { registerElement } from "trix/core/helpers"
+
+registerElement "trix-toolbar",
   defaultCSS: """
     %t {
       display: block;

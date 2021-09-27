@@ -3,7 +3,7 @@ import ObjectView from "trix/views/object_view"
 import AttachmentView from "trix/views/attachment_view"
 import PreviewableAttachmentView from "trix/views/previewable_attachment_view"
 
-{makeElement, findInnerElement, getTextConfig} = Trix
+import { makeElement, findInnerElement, getTextConfig } from "trix/core/helpers"
 
 export default class PieceView extends ObjectView
   constructor: ->

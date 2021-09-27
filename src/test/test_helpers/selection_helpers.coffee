@@ -2,7 +2,7 @@ import Trix from "trix/global"
 import config from "trix/config"
 
 import { triggerEvent } from "event_helpers"
-import { defer } from "./functions"
+import { defer } from "trix/core/helpers"
 
 import rangy from "rangy"
 import "rangy/lib/rangy-textrange"

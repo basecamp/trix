@@ -1,5 +1,7 @@
 import Trix from "trix/global"
 import config from "trix/config"
+import { makeElement } from "trix/core/helpers"
+
 import AttachmentView from "trix/views/attachment_view"
 
 export default class PreviewableAttachmentView extends AttachmentView
@@ -8,7 +10,7 @@ export default class PreviewableAttachmentView extends AttachmentView
     @attachment.previewDelegate = this
 
   createContentNodes: ->
-    @image = Trix.makeElement
+    @image = makeElement
       tagName: "img"
       attributes:
         src: ""

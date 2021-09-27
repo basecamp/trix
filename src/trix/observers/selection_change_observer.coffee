@@ -1,7 +1,7 @@
 import Trix from "trix/global"
 import BasicObject from "trix/core/basic_object"
 
-{getDOMRange} = Trix
+import { getDOMRange } from "trix/core/helpers"
 
 export default class SelectionChangeObserver extends BasicObject
   constructor: ->

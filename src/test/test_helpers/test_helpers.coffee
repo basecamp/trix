@@ -1,7 +1,7 @@
 import Trix from "trix/global"
 import { fixtureTemplates } from "test/test_helpers/fixtures/fixtures"
 
-{removeNode} = Trix
+import { removeNode } from "trix/core/helpers"
 
 setFixtureHTML = (html, container = "form") ->
   element = document.getElementById("trix-container")

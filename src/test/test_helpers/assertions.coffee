@@ -1,6 +1,6 @@
 import DocumentView from "trix/views/document_view"
 
-{normalizeRange, rangesAreEqual} = Trix
+import { normalizeRange, rangesAreEqual } from "trix/core/helpers"
 
 assert = QUnit.assert
 

@@ -1,8 +1,8 @@
 import Trix from "trix/global"
 
-{elementContainsNode, findChildIndexOfNode, nodeIsBlockStart,
+import { elementContainsNode, findChildIndexOfNode, nodeIsBlockStart,
  nodeIsBlockStartComment, nodeIsBlockContainer, nodeIsCursorTarget,
- nodeIsEmptyTextNode, nodeIsTextNode, nodeIsAttachmentElement, tagName, walkTree} = Trix
+ nodeIsEmptyTextNode, nodeIsTextNode, nodeIsAttachmentElement, tagName, walkTree } from "trix/core/helpers"
 
 export default class LocationMapper
   constructor: (@element) ->

@@ -3,7 +3,7 @@ import BasicObject from "trix/core/basic_object"
 import MutationObserver from "trix/observers/mutation_observer"
 import FileVerificationOperation from "trix/operations/file_verification_operation"
 
-{handleEvent, innerElementIsActive} = Trix
+import { handleEvent, innerElementIsActive } from "trix/core/helpers"
 
 export default class InputController extends BasicObject
   constructor: (@element) ->

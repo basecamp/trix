@@ -1,5 +1,6 @@
 import attachments from "trix/config/attachments"
 import blockAttributes from "trix/config/block_attributes"
+import browser from "trix/config/browser"
 import css from "trix/config/css"
 import fileSize from "trix/config/file_size_formatting"
 import input from "trix/config/input"
@@ -12,6 +13,7 @@ import undoInterval from "trix/config/undo_interval"
 config = {
   attachments,
   blockAttributes,
+  browser,
   css,
   fileSize,
   input,

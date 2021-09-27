@@ -1,5 +1,8 @@
 import Trix from "trix/global"
 import config from "trix/config"
+
+import { serializeToContentType } from "trix/core/serialization"
+
 import Controller from "trix/controllers/controller"
 import Level0InputController from "trix/controllers/level_0_input_controller"
 import Level2InputController from "trix/controllers/level_2_input_controller"
@@ -10,7 +13,7 @@ import Editor from "trix/models/editor"
 import AttachmentManager from "trix/models/attachment_manager"
 import SelectionManager from "trix/models/selection_manager"
 
-{rangeIsCollapsed, rangesAreEqual, objectsAreEqual, getBlockConfig} = Trix
+import { rangeIsCollapsed, rangesAreEqual, objectsAreEqual, getBlockConfig } from "trix/core/helpers"
 
 export default class EditorController extends Controller
   constructor: ({@editorElement, document, html}) ->
@@ -374,7 +377,7 @@ export default class EditorController extends Controller
 
   updateInputElement: ->
     element = @compositionController.getSerializableElement()
-    value = Trix.serializeToContentType(element, "text/html")
+    value = serializeToContentType(element, "text/html")
     @editorElement.setInputElementValue(value)
 
   notifyEditorElement: (message, data) ->

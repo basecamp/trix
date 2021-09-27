@@ -1,6 +1,6 @@
 import View from "inspector/view"
 
-{handleEvent} = Trix
+import { handleEvent } from "trix/core/helpers"
 
 Trix.Inspector.registerView class extends View
   title: "Debug"

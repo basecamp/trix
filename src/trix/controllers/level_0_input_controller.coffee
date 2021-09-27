@@ -6,10 +6,10 @@ import InputController from "trix/controllers/input_controller"
 import DocumentView from "trix/views/document_view"
 import Document from "trix/models/document"
 
-{makeElement, objectsAreEqual, tagName, browser, keyEventIsKeyboardCommand,
- dataTransferIsWritable, dataTransferIsPlainText} = Trix
+import { dataTransferIsPlainText, dataTransferIsWritable, keyEventIsKeyboardCommand, makeElement,
+  objectsAreEqual, removeNode, squishBreakableWhitespace, tagName } from "trix/core/helpers"
 
-{keyNames} = config
+{ browser, keyNames } = config
 
 export default class Level0InputController extends InputController
   pastedFileCount = 0
@@ -207,7 +207,7 @@ export default class Level0InputController extends InputController
       if href = clipboard.getData("URL")
         paste.type = "text/html"
         if name = clipboard.getData("public.url-name")
-          string = Trix.squishBreakableWhitespace(name).trim()
+          string = squishBreakableWhitespace(name).trim()
         else
           string = href
         paste.html = @createLinkHTML(href, string)
@@ -389,7 +389,7 @@ export default class Level0InputController extends InputController
 
     requestAnimationFrame =>
       html = element.innerHTML
-      Trix.removeNode(element)
+      removeNode(element)
       @setSelectedRange(selectedRange)
       callback(html)
 

@@ -1,3 +1,4 @@
+import { makeElement } from "trix/core/helpers"
 import Trix from "trix/global"
 import config from "trix/config"
 
@@ -145,7 +146,7 @@ testGroup "Text formatting", template: "editor_empty", ->
               done()
 
   test "applying formatting to an unfocused editor", (done) ->
-    input = Trix.makeElement("input", type: "text")
+    input = makeElement("input", type: "text")
     document.body.appendChild(input)
     input.focus()
 

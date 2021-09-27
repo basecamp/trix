@@ -1,7 +1,7 @@
 import Trix from "trix/global"
 import Piece from "trix/models/piece"
 
-{normalizeNewlines} = Trix
+import { normalizeNewlines } from "trix/core/helpers"
 
 export default class StringPiece extends Piece
   @fromJSON: (pieceJSON) ->

@@ -1,7 +1,7 @@
-import Trix from "trix/global"
+import { getAllAttributeNames, squishBreakableWhitespace } from "trix/core/helpers"
 import InputController from "trix/controllers/input_controller"
 
-{dataTransferIsPlainText, keyEventIsKeyboardCommand, objectsAreEqual} = Trix
+import { dataTransferIsPlainText, keyEventIsKeyboardCommand, objectsAreEqual } from "trix/core/helpers"
 
 export default class Level2InputController extends InputController
   elementDidMutate: ->
@@ -284,7 +284,7 @@ export default class Level2InputController extends InputController
         @event.preventDefault()
         paste.type = "text/html"
         if name = dataTransfer.getData("public.url-name")
-          string = Trix.squishBreakableWhitespace(name).trim()
+          string = squishBreakableWhitespace(name).trim()
         else
           string = href
         paste.html = @createLinkHTML(href, string)
@@ -359,13 +359,13 @@ export default class Level2InputController extends InputController
       @responder?.insertString(string, options)
 
   toggleAttributeIfSupported: (attributeName) ->
-    if attributeName in Trix.getAllAttributeNames()
+    if attributeName in getAllAttributeNames()
       @delegate?.inputControllerWillPerformFormatting(attributeName)
       @withTargetDOMRange ->
         @responder?.toggleCurrentAttribute(attributeName)
 
   activateAttributeIfSupported: (attributeName, value) ->
-    if attributeName in Trix.getAllAttributeNames()
+    if attributeName in getAllAttributeNames()
       @delegate?.inputControllerWillPerformFormatting(attributeName)
       @withTargetDOMRange ->
         @responder?.setCurrentAttribute(attributeName, value)

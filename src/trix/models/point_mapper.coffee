@@ -1,6 +1,6 @@
 import Trix from "trix/global"
 
-{getDOMRange, setDOMRange} = Trix
+import { getDOMRange, setDOMRange } from "trix/core/helpers"
 
 export default class PointMapper
   createDOMRangeFromPoint: ({x, y}) ->

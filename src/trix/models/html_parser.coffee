@@ -4,9 +4,9 @@ import BasicObject from "trix/core/basic_object"
 import Document from "trix/models/document"
 import HTMLSanitizer from "trix/models/html_sanitizer"
 
-{arraysAreEqual, makeElement, tagName, getBlockTagNames, walkTree,
+import {arraysAreEqual, makeElement, removeNode, tagName, getBlockTagNames, walkTree,
  findClosestElementFromNode, elementContainsNode, nodeIsAttachmentElement,
- normalizeSpaces, breakableWhitespacePattern, squishBreakableWhitespace} = Trix
+ normalizeSpaces, breakableWhitespacePattern, squishBreakableWhitespace} from "trix/core/helpers"
 
 export default class HTMLParser extends BasicObject
   @parse: (html, options) ->
@@ -48,7 +48,7 @@ export default class HTMLParser extends BasicObject
       document.body.appendChild(@containerElement)
 
   removeHiddenContainer: ->
-    Trix.removeNode(@containerElement)
+    removeNode(@containerElement)
 
   nodeFilter = (node) ->
     if tagName(node) is "style"

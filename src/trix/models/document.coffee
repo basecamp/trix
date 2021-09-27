@@ -8,7 +8,7 @@ import SplittableList from "trix/models/splittable_list"
 import Hash from "trix/core/collections/hash"
 import ObjectMap from "trix/core/collections/object_map"
 
-{arraysAreEqual, normalizeRange, rangeIsCollapsed, getBlockConfig} = Trix
+import { arraysAreEqual, normalizeRange, rangeIsCollapsed, getBlockConfig } from "trix/core/helpers"
 
 export default class Document extends TrixObject
   @fromJSON: (documentJSON) ->

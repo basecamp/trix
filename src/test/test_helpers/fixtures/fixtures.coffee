@@ -1,3 +1,4 @@
+import { makeElement } from "trix/core/helpers"
 import config from "trix/config"
 
 import Text from "trix/models/text"
@@ -44,7 +45,7 @@ createDocument = (parts...) ->
   new Document blocks
 
 export createCursorTarget = createCursorTarget = (name) ->
-  Trix.makeElement
+  makeElement
     tagName: "span"
     textContent: Trix.ZERO_WIDTH_SPACE
     data:
@@ -210,13 +211,13 @@ export fixtures =
     attachment = new Attachment attrs
     text = Text.textForAttachmentWithAttributes(attachment)
 
-    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
+    image = makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
     image.dataset.trixStoreKey = ["imageElement", attachment.id, image.src, image.width, image.height].join("/")
 
-    caption = Trix.makeElement(tagName: "figcaption", className: css.attachmentCaption)
+    caption = makeElement(tagName: "figcaption", className: css.attachmentCaption)
     caption.innerHTML = """<span class="#{css.attachmentName}">#{attrs.filename}</span> <span class="#{css.attachmentSize}">95.9 KB</span>"""
 
-    figure = Trix.makeElement
+    figure = makeElement
       tagName: "figure"
       className: "attachment attachment--preview attachment--png"
       editable: false
@@ -246,13 +247,13 @@ export fixtures =
     attachment = new Attachment attrs
     attachmentText = Text.textForAttachmentWithAttributes(attachment)
 
-    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
+    image = makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
     image.dataset.trixStoreKey = ["imageElement", attachment.id, image.src, image.width, image.height].join("/")
 
-    caption = Trix.makeElement(tagName: "figcaption", className: css.attachmentCaption)
+    caption = makeElement(tagName: "figcaption", className: css.attachmentCaption)
     caption.innerHTML = """<span class="#{css.attachmentName}">#{attrs.filename}</span> <span class="#{css.attachmentSize}">95.9 KB</span>"""
 
-    figure = Trix.makeElement
+    figure = makeElement
       tagName: "figure"
       className: "attachment attachment--preview attachment--png"
       editable: false
@@ -282,12 +283,12 @@ export fixtures =
     textAttrs = caption: "Example"
     text = Text.textForAttachmentWithAttributes(attachment, textAttrs)
 
-    image = Trix.makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
+    image = makeElement("img", src: attrs.url, "data-trix-mutable": true, width: 1, height: 1)
     image.dataset.trixStoreKey = ["imageElement", attachment.id, image.src, image.width, image.height].join("/")
 
-    caption = Trix.makeElement(tagName: "figcaption", className: "#{css.attachmentCaption} #{css.attachmentCaption}--edited", textContent: "Example")
+    caption = makeElement(tagName: "figcaption", className: "#{css.attachmentCaption} #{css.attachmentCaption}--edited", textContent: "Example")
 
-    figure = Trix.makeElement
+    figure = makeElement
       tagName: "figure"
       className: "attachment attachment--preview attachment--png"
       editable: false
@@ -308,7 +309,7 @@ export fixtures =
     attachment = new Attachment attrs
     text = Text.textForAttachmentWithAttributes(attachment)
 
-    figure = Trix.makeElement
+    figure = makeElement
       tagName: "figure"
       className: "attachment attachment--file attachment--pdf"
       editable: false
@@ -320,7 +321,7 @@ export fixtures =
     caption = """<figcaption class="#{css.attachmentCaption}"><span class="#{css.attachmentName}">#{attrs.filename}</span> <span class="#{css.attachmentSize}">32.46 MB</span></figcaption>"""
     figure.innerHTML = caption
 
-    link = Trix.makeElement(tagName: "a", editable: false, attributes: href: attrs.href, tabindex: -1)
+    link = makeElement(tagName: "a", editable: false, attributes: href: attrs.href, tabindex: -1)
     link.appendChild(node) for node in [figure.childNodes...]
     figure.appendChild(link)
 
@@ -333,7 +334,7 @@ export fixtures =
     attachment.file = {}
     text = Text.textForAttachmentWithAttributes(attachment)
 
-    figure = Trix.makeElement
+    figure = makeElement
       tagName: "figure"
       className: "attachment attachment--file attachment--pdf"
       editable: false
@@ -343,7 +344,7 @@ export fixtures =
         trixId: attachment.id
         trixSerialize: false
 
-    progress = Trix.makeElement
+    progress = makeElement
       tagName: "progress"
       attributes:
         class: "attachment__progress"
@@ -367,7 +368,7 @@ export fixtures =
     attachment = new Attachment {content, contentType, href}
     text = Text.textForAttachmentWithAttributes(attachment)
 
-    figure = Trix.makeElement
+    figure = makeElement
       tagName: "figure"
       className: "attachment attachment--content"
       editable: false
@@ -378,7 +379,7 @@ export fixtures =
 
     figure.innerHTML = content
 
-    caption = Trix.makeElement(tagName: "figcaption", className: css.attachmentCaption)
+    caption = makeElement(tagName: "figcaption", className: css.attachmentCaption)
     figure.appendChild(caption)
 
     html: """<div>#{blockComment}#{cursorTargetLeft}#{figure.outerHTML}#{cursorTargetRight}</div>"""

@@ -1,11 +1,11 @@
 import Trix from "trix/global"
 import config from "trix/config"
+import { copyObject, makeElement } from "trix/core/helpers"
 import ObjectView from "trix/views/object_view"
 
 {css} = config
 
 export default class AttachmentView extends ObjectView
-  @attachmentSelector: "[data-trix-attachment]"
 
   constructor: ->
     super(arguments...)
@@ -17,14 +17,14 @@ export default class AttachmentView extends ObjectView
     []
 
   createNodes: ->
-    figure = innerElement = Trix.makeElement
+    figure = innerElement = makeElement
       tagName: "figure"
       className: @getClassName()
       data: @getData()
       editable: false
 
     if href = @getHref()
-      innerElement = Trix.makeElement(tagName: "a", editable: false, attributes: {href, tabindex: -1})
+      innerElement = makeElement(tagName: "a", editable: false, attributes: {href, tabindex: -1})
       figure.appendChild(innerElement)
 
     if @attachment.hasContent()
@@ -35,7 +35,7 @@ export default class AttachmentView extends ObjectView
     innerElement.appendChild(@createCaptionElement())
 
     if @attachment.isPending()
-      @progressElement = Trix.makeElement
+      @progressElement = makeElement
         tagName: "progress"
         attributes:
           class: css.attachmentProgress
@@ -50,7 +50,7 @@ export default class AttachmentView extends ObjectView
     [createCursorTarget("left"), figure, createCursorTarget("right")]
 
   createCaptionElement: ->
-    figcaption = Trix.makeElement(tagName: "figcaption", className: css.attachmentCaption)
+    figcaption = makeElement(tagName: "figcaption", className: css.attachmentCaption)
 
     if caption = @attachmentPiece.getCaption()
       figcaption.classList.add("#{css.attachmentCaption}--edited")
@@ -61,12 +61,12 @@ export default class AttachmentView extends ObjectView
       size = @attachment.getFormattedFilesize() if captionConfig.size
 
       if name
-        nameElement = Trix.makeElement(tagName: "span", className: css.attachmentName, textContent: name)
+        nameElement = makeElement(tagName: "span", className: css.attachmentName, textContent: name)
         figcaption.appendChild(nameElement)
 
       if size
         figcaption.appendChild(document.createTextNode(" ")) if name
-        sizeElement = Trix.makeElement(tagName: "span", className: css.attachmentSize, textContent: size)
+        sizeElement = makeElement(tagName: "span", className: css.attachmentSize, textContent: size)
         figcaption.appendChild(sizeElement)
 
     figcaption
@@ -98,7 +98,7 @@ export default class AttachmentView extends ObjectView
 
   getCaptionConfig: ->
     type = @attachment.getType()
-    captionConfig = Trix.copyObject(config.attachments[type]?.caption)
+    captionConfig = copyObject(config.attachments[type]?.caption)
     captionConfig.name = true if type is "file"
     captionConfig
 
@@ -106,7 +106,7 @@ export default class AttachmentView extends ObjectView
     @findElement()?.querySelector("progress")
 
   createCursorTarget = (name) ->
-    Trix.makeElement
+    makeElement
       tagName: "span"
       textContent: Trix.ZERO_WIDTH_SPACE
       data:
@@ -120,6 +120,6 @@ export default class AttachmentView extends ObjectView
     @findProgressElement()?.value = value
 
 htmlContainsTagName = (html, tagName) ->
-  div = Trix.makeElement("div")
+  div = makeElement("div")
   div.innerHTML = html ? ""
   div.querySelector(tagName)

@@ -1,15 +1,16 @@
 import Trix from "trix/global"
+import { makeElement } from "trix/core/helpers"
 
 import ElementStore from "trix/core/collections/element_store"
 import ObjectGroup from "trix/core/collections/object_group"
 import ObjectView from "trix/views/object_view"
 import BlockView from "trix/views/block_view"
 
-{defer} = Trix
+import { defer } from "trix/core/helpers"
 
 export default class DocumentView extends ObjectView
   @render: (document) ->
-    element = Trix.makeElement("div")
+    element = makeElement("div")
     view = new this document, {element}
     view.render()
     view.sync()
@@ -28,7 +29,7 @@ export default class DocumentView extends ObjectView
   render: ->
     @childViews = []
 
-    @shadowElement = Trix.makeElement("div")
+    @shadowElement = makeElement("div")
 
     unless @document.isEmpty()
       objects = ObjectGroup.groupObjects(@document.getBlocks(), asTree: true)

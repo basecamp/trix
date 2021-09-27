@@ -8,7 +8,7 @@ import Document from "trix/models/document"
 import HTMLParser from "trix/models/html_parser"
 import LineBreakInsertion from "trix/models/line_break_insertion"
 
-{normalizeRange, rangesAreEqual, rangeIsCollapsed, objectsAreEqual, arrayStartsWith, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
+import { normalizeRange, rangesAreEqual, rangeIsCollapsed, objectsAreEqual, arrayStartsWith, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend } from "trix/core/helpers"
 
 export default class Composition extends BasicObject
   constructor: ->

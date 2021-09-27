@@ -1,5 +1,5 @@
 
-import { defer } from "./functions"
+import { defer } from "trix/core/helpers"
 import { createEvent, triggerEvent } from "./event_helpers"
 
 export clickToolbarButton = (selector, callback) ->

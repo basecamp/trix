@@ -1,36 +1,33 @@
-import Trix from "trix/global"
+export arraysAreEqual = (a = [], b = []) ->
+  return false unless a.length is b.length
+  for value, index in a
+    return false unless value is b[index]
+  true
 
-Trix.extend
-  arraysAreEqual: (a = [], b = []) ->
-    return false unless a.length is b.length
-    for value, index in a
-      return false unless value is b[index]
-    true
+export arrayStartsWith = (a = [], b = []) ->
+  arraysAreEqual(a.slice(0, b.length), b)
 
-  arrayStartsWith: (a = [], b = []) ->
-    Trix.arraysAreEqual(a.slice(0, b.length), b)
+export spliceArray = (array, args...) ->
+  result = array.slice(0)
+  result.splice(args...)
+  result
 
-  spliceArray: (array, args...) ->
-    result = array.slice(0)
-    result.splice(args...)
-    result
+export summarizeArrayChange = (oldArray = [], newArray = []) ->
+  added = []
+  removed = []
 
-  summarizeArrayChange: (oldArray = [], newArray = []) ->
-    added = []
-    removed = []
+  existingValues = new Set
+  for value in oldArray
+    existingValues.add(value)
 
-    existingValues = new Set
-    for value in oldArray
-      existingValues.add(value)
+  currentValues = new Set
+  for value in newArray
+    currentValues.add(value)
+    unless existingValues.has(value)
+      added.push(value)
 
-    currentValues = new Set
-    for value in newArray
-      currentValues.add(value)
-      unless existingValues.has(value)
-        added.push(value)
+  for value in oldArray
+    unless currentValues.has(value)
+      removed.push(value)
 
-    for value in oldArray
-      unless currentValues.has(value)
-        removed.push(value)
-
-    {added, removed}
+  {added, removed}
