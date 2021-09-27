@@ -1,6 +1,4 @@
-window.JST ||= {}
-
-window.JST["test/test_helpers/fixtures/editor_default_aria_label"] = () => """
+export default () => """
 <trix-editor id="editor-without-labels"></trix-editor>
 
 <label for="editor-with-aria-label"><span>Label text</span></label>
@@ -21,3 +19,4 @@ window.JST["test/test_helpers/fixtures/editor_default_aria_label"] = () => """
 <label id="modified-label" for="editor-with-modified-label">Original Value</label>
 <trix-editor id="editor-with-modified-label"></trix-editor>
 """
+

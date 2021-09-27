@@ -1,6 +1,4 @@
-window.JST ||= {}
-
-window.JST["test/test_helpers/fixtures/editor_with_toolbar_and_input"] = () => """
+export default () => """
 <ul id="my_editor">
   <li><trix-toolbar id="my_toolbar"></trix-toolbar></li>
   <li><trix-editor toolbar="my_toolbar" input="my_input" autofocus placeholder="Say hello..."></trix-editor></li>

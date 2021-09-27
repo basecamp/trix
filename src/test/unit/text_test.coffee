@@ -2,7 +2,7 @@ import Trix from "trix/global"
 import Text from "trix/models/text"
 import StringPiece from "trix/models/string_piece"
 
-{assert, test, testGroup} = Trix.TestHelpers
+import { assert, test, testGroup } from "test/test_helper"
 
 testGroup "Text", ->
   testGroup "#removeTextAtRange", ->

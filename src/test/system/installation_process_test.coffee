@@ -1,7 +1,7 @@
 import Trix from "trix/global"
 import EditorController from "trix/controllers/editor_controller"
 
-{assert, defer, test, testGroup} = Trix.TestHelpers
+import { assert, defer, test, testGroup } from "test/test_helper"
 
 testGroup "Installation process", template: "editor_html", ->
   test "element.editorController", ->

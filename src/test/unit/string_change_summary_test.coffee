@@ -1,6 +1,6 @@
 import Trix from "trix/global"
 
-{assert, test, testGroup} = Trix.TestHelpers
+import { assert, test, testGroup } from "test/test_helper"
 
 testGroup "Trix.summarizeStringChange", ->
   assertions =

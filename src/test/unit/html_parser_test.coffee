@@ -2,7 +2,7 @@ import Trix from "trix/global"
 import config from "trix/config"
 import HTMLParser from "trix/models/html_parser"
 
-{after, assert, createCursorTarget, getHTML, test, testGroup} = Trix.TestHelpers
+import { after, assert, createCursorTarget, eachFixture, fixtures, getHTML, test, testGroup } from "test/test_helper"
 
 cursorTargetLeft = createCursorTarget("left").outerHTML
 cursorTargetRight = createCursorTarget("right").outerHTML

@@ -1,6 +1,6 @@
 import Trix from "trix/global"
 
-{assert, test, testGroup} = Trix.TestHelpers
+import { assert, eachFixture, test, testGroup } from "test/test_helper"
 
 testGroup "Trix.serializeToContentType", ->
   eachFixture (name, details) ->

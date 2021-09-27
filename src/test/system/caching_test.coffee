@@ -1,6 +1,6 @@
 import Trix from "trix/global"
 
-{assert, clickToolbarButton, moveCursor, test, testGroup, typeCharacters} = Trix.TestHelpers
+import { assert, clickToolbarButton, moveCursor, test, testGroup, typeCharacters } from "test/test_helper"
 
 testGroup "View caching", template: "editor_empty", ->
   test "reparsing and rendering identical texts", (done) ->

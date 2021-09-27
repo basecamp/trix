@@ -1,7 +1,7 @@
 import Trix from "trix/global"
 import Attachment from "trix/models/attachment"
 
-{assert, test, testGroup} = Trix.TestHelpers
+import { assert, test, testGroup } from "test/test_helper"
 
 testGroup "Attachment", ->
   previewableTypes = "image image/gif image/png image/jpg".split(" ")
