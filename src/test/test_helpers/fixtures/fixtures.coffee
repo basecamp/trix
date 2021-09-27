@@ -1,5 +1,6 @@
-import { makeElement } from "trix/core/helpers"
 import config from "trix/config"
+import { ZERO_WIDTH_SPACE } from "trix/constants"
+import { makeElement } from "trix/core/helpers"
 
 import Text from "trix/models/text"
 import Block from "trix/models/block"
@@ -44,10 +45,10 @@ createDocument = (parts...) ->
     new Block text, blockAttributes
   new Document blocks
 
-export createCursorTarget = createCursorTarget = (name) ->
+export createCursorTarget = (name) ->
   makeElement
     tagName: "span"
-    textContent: Trix.ZERO_WIDTH_SPACE
+    textContent: ZERO_WIDTH_SPACE
     data:
       trixCursorTarget: name
       trixSerialize: false

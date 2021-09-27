@@ -1,3 +1,4 @@
+import { OBJECT_REPLACEMENT_CHARACTER } from "trix/constants"
 
 import Attachment from "trix/models/attachment"
 import Piece from "trix/models/piece"
@@ -38,7 +39,7 @@ export default class AttachmentPiece extends Piece
     super.isEqualTo(piece) and @attachment.id is piece?.attachment?.id
 
   toString: ->
-    Trix.OBJECT_REPLACEMENT_CHARACTER
+    OBJECT_REPLACEMENT_CHARACTER
 
   toJSON: ->
     json = super.toJSON(arguments...)

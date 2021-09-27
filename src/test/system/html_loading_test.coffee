@@ -1,15 +1,16 @@
 import { after, assert, test, testGroup } from "test/test_helper"
+import { OBJECT_REPLACEMENT_CHARACTER } from "trix/constants"
 
 testGroup "HTML loading", ->
   testGroup "inline elements", template: "editor_with_styled_content", ->
     cases =
       "BR before block element styled otherwise":
         html: """a<br><figure class="attachment"><img src="#{TEST_IMAGE_URL}"></figure>"""
-        expectedDocument: "a\n#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+        expectedDocument: "a\n#{OBJECT_REPLACEMENT_CHARACTER}\n"
 
       "BR in text before block element styled otherwise":
         html: """<div>a<br>b<figure class="attachment"><img src="#{TEST_IMAGE_URL}"></figure></div>"""
-        expectedDocument: "a\nb#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+        expectedDocument: "a\nb#{OBJECT_REPLACEMENT_CHARACTER}\n"
 
     for name, details of cases
       do (name, details) ->
@@ -71,7 +72,7 @@ testGroup "HTML loading", ->
         assert.equal(attachment.getHeight(), 1)
         assert.equal(image.getAttribute("width"), "1")
         assert.equal(image.getAttribute("height"), "1")
-        expectDocument("#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n")
+        expectDocument("#{OBJECT_REPLACEMENT_CHARACTER}\n")
 
     test "with dimensions", (expectDocument) ->
       getEditor().loadHTML("""<img src="#{TEST_IMAGE_URL}" width="10" height="20">""")
@@ -82,7 +83,7 @@ testGroup "HTML loading", ->
         assert.equal(attachment.getHeight(), 20)
         assert.equal(image.getAttribute("width"),  "10")
         assert.equal(image.getAttribute("height"), "20")
-        expectDocument("#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n")
+        expectDocument("#{OBJECT_REPLACEMENT_CHARACTER}\n")
 
   testGroup "text after closing tag", template: "editor_empty", ->
     test "parses text as separate block", (expectDocument) ->

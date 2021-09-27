@@ -1,15 +1,15 @@
-import Trix from "trix/global"
+import { NON_BREAKING_SPACE, ZERO_WIDTH_SPACE } from "trix/constants"
 import UTF16String from "trix/core/utilities/utf16_string"
 
 export normalizeSpaces = (string) ->
   string
-    .replace(///#{Trix.ZERO_WIDTH_SPACE}///g, "")
-    .replace(///#{Trix.NON_BREAKING_SPACE}///g, " ")
+    .replace(///#{ZERO_WIDTH_SPACE}///g, "")
+    .replace(///#{NON_BREAKING_SPACE}///g, " ")
 
 export normalizeNewlines = (string) ->
   string.replace(/\r\n/g, "\n")
 
-export breakableWhitespacePattern = ///[^\S#{Trix.NON_BREAKING_SPACE}]///
+export breakableWhitespacePattern = ///[^\S#{NON_BREAKING_SPACE}]///
 
 export squishBreakableWhitespace = (string) ->
   string

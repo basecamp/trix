@@ -1,4 +1,5 @@
 import config from "trix/config"
+import { ZERO_WIDTH_SPACE } from "trix/constants"
 import { copyObject, makeElement } from "trix/core/helpers"
 import ObjectView from "trix/views/object_view"
 
@@ -107,7 +108,7 @@ export default class AttachmentView extends ObjectView
   createCursorTarget = (name) ->
     makeElement
       tagName: "span"
-      textContent: Trix.ZERO_WIDTH_SPACE
+      textContent: ZERO_WIDTH_SPACE
       data:
         trixCursorTarget: name
         trixSerialize: false

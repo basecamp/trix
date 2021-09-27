@@ -1,4 +1,5 @@
 import config from "trix/config"
+import { ZERO_WIDTH_SPACE } from "trix/constants"
 import { extend } from "./extend"
 import { attachmentSelector } from "trix/config/attachments"
 
@@ -175,7 +176,7 @@ export nodeIsCommentNode = (node) ->
 export nodeIsCursorTarget = (node, {name} = {}) ->
   return unless node
   if nodeIsTextNode(node)
-    if node.data is Trix.ZERO_WIDTH_SPACE
+    if node.data is ZERO_WIDTH_SPACE
       if name
         node.parentNode.dataset.trixCursorTarget is name
       else

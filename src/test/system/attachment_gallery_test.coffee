@@ -1,6 +1,7 @@
 import { assert, clickToolbarButton, createImageAttachment, defer, insertAttachments, moveCursor, pressKey, test, testGroup, typeCharacters } from "test/test_helper"
+import { OBJECT_REPLACEMENT_CHARACTER } from "trix/constants"
 
-ORC = Trix.OBJECT_REPLACEMENT_CHARACTER
+ORC = OBJECT_REPLACEMENT_CHARACTER
 
 testGroup "Attachment galleries", template: "editor_empty", ->
   test "inserting more than one image attachment creates a gallery block", (expectDocument) ->
