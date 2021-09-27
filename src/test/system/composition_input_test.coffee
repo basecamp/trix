@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 {assert, clickToolbarButton, defer, endComposition, insertNode, pressKey, selectNode, startComposition, test, testIf, testGroup, triggerEvent, triggerInputEvent, typeCharacters, updateComposition} = Trix.TestHelpers
 {browser} = Trix
@@ -63,7 +64,7 @@ testGroup "Composition input", template: "editor_empty", ->
           expectDocument "喜\n"
 
   # Simulates the sequence of events when pressing backspace through a word on Android
-  testIf Trix.config.input.getLevel() is 0, "backspacing through a composition", (expectDocument) ->
+  testIf config.input.getLevel() is 0, "backspacing through a composition", (expectDocument) ->
     element = getEditorElement()
     element.editor.insertString("a cat")
 
@@ -81,7 +82,7 @@ testGroup "Composition input", template: "editor_empty", ->
 
   # Simulates the sequence of events when pressing backspace at the end of a
   # word and updating it on Android (running older versions of System WebView)
-  testIf Trix.config.input.getLevel() is 0, "updating a composition", (expectDocument) ->
+  testIf config.input.getLevel() is 0, "updating a composition", (expectDocument) ->
     element = getEditorElement()
     element.editor.insertString("cat")
 
@@ -98,7 +99,7 @@ testGroup "Composition input", template: "editor_empty", ->
         expectDocument("car\n")
 
   # Simulates the sequence of events when typing on Android and then tapping elsewhere
-  testIf Trix.config.input.getLevel() is 0, "leaving a composition", (expectDocument) ->
+  testIf config.input.getLevel() is 0, "leaving a composition", (expectDocument) ->
     element = getEditorElement()
 
     triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)
@@ -141,7 +142,7 @@ testGroup "Composition input", template: "editor_empty", ->
 
   # Simulates compositions in Firefox where the final composition data is
   # dispatched as both compositionupdate and compositionend.
-  testIf Trix.config.input.getLevel() is 0, "composition ending with same data as last update", (expectDocument) ->
+  testIf config.input.getLevel() is 0, "composition ending with same data as last update", (expectDocument) ->
     element = getEditorElement()
 
     triggerEvent(element, "keydown", charCode: 0, keyCode: 229, which: 229)

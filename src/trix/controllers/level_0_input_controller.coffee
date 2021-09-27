@@ -1,11 +1,12 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 import "trix/controllers/input_controller"
 
 {makeElement, objectsAreEqual, tagName, browser, keyEventIsKeyboardCommand,
  dataTransferIsWritable, dataTransferIsPlainText} = Trix
 
-{keyNames} = Trix.config
+{keyNames} = config
 
 class Trix.Level0InputController extends Trix.InputController
   pastedFileCount = 0

@@ -1,9 +1,10 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 {assert, defer, testIf, testGroup, triggerEvent, typeCharacters, clickToolbarButton, isToolbarButtonActive, insertNode} = Trix.TestHelpers
 
 test = ->
-  testIf(Trix.config.input.getLevel() is 0, arguments...)
+  testIf(config.input.getLevel() is 0, arguments...)
 
 testGroup "Mutation input", template: "editor_empty", ->
   test "deleting a newline", (expectDocument) ->

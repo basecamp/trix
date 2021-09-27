@@ -1,11 +1,8 @@
-import Trix from "trix/global"
+import lang from "trix/config/lang"
 
-import "trix/config/lang"
-
-{lang} = Trix.config
 sizes = [lang.bytes, lang.KB, lang.MB, lang.GB, lang.TB, lang.PB]
 
-Trix.config.fileSize =
+export default fileSize =
   prefix: "IEC"
   precision: 2
 

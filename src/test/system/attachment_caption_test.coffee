@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 {assert, insertImageAttachment, test, testGroup} = Trix.TestHelpers
 
@@ -28,16 +29,16 @@ testGroup "Attachment captions", template: "editor_empty", ->
       insertImageAttachment()
       element = getCaptionElement()
       assert.ok element.hasAttribute("data-trix-placeholder")
-      assert.equal element.getAttribute("data-trix-placeholder"), Trix.config.lang.captionPlaceholder
+      assert.equal element.getAttribute("data-trix-placeholder"), config.lang.captionPlaceholder
       assert.equal element.textContent, ""
 
-withPreviewCaptionConfig = (config = {}, fn) ->
-  {caption} = Trix.config.attachments.preview
-  Trix.config.attachments.preview.caption = config
+withPreviewCaptionConfig = (captionConfig = {}, fn) ->
+  {caption} = config.attachments.preview
+  config.attachments.preview.caption = captionConfig
   try
     fn()
   finally
-    Trix.config.attachments.preview.caption = caption
+    config.attachments.preview.caption = caption
 
 getCaptionElement = ->
   getEditorElement().querySelector("figcaption")

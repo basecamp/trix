@@ -1,9 +1,10 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 {assert, after, clickToolbarButton, defer, insertString, insertNode, isToolbarButtonActive, selectAll, selectNode, test, testIf, testGroup, triggerEvent, triggerInputEvent, typeCharacters} = Trix.TestHelpers
 
 test = ->
-  testIf(Trix.config.input.getLevel() is 2, arguments...)
+  testIf(config.input.getLevel() is 2, arguments...)
 
 testOptions =
   template: "editor_empty"

@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 import "trix/models/document"
 import "trix/models/line_break_insertion"
@@ -128,7 +129,7 @@ class Trix.Composition extends Trix.BasicObject
 
     for attachment in attachments
       type = attachment.getType()
-      presentation = Trix.config.attachments[type]?.presentation
+      presentation = config.attachments[type]?.presentation
 
       attributes = @getCurrentTextAttributes()
       attributes.presentation = presentation if presentation

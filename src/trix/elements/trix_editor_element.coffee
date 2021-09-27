@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 import "trix/elements/trix_toolbar_element"
 import "trix/controllers/editor_controller"
@@ -33,7 +34,7 @@ Trix.registerElement "trix-editor", do ->
 
   setDefaultParagraphSeparator = (element) ->
     if document.queryCommandSupported?("DefaultParagraphSeparator")
-      {tagName} = Trix.config.blockAttributes.default
+      {tagName} = config.blockAttributes.default
       if tagName in ["div", "p"]
         document.execCommand("DefaultParagraphSeparator", false, tagName)
 

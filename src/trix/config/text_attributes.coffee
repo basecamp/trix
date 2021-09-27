@@ -1,6 +1,6 @@
-import Trix from "trix/global"
+import { attachmentSelector } from "trix/config/attachments"
 
-Trix.config.textAttributes =
+export default textAttributes =
   bold:
     tagName: "strong"
     inheritable: true
@@ -16,9 +16,8 @@ Trix.config.textAttributes =
   href:
     groupTagName: "a"
     parser: (element) ->
-      {attachmentSelector} = Trix.AttachmentView
       matchingSelector = "a:not(#{attachmentSelector})"
-      if link = Trix.findClosestElementFromNode(element, {matchingSelector})
+      if link = element.closest(matchingSelector)
         link.getAttribute("href")
   strike:
     tagName: "del"

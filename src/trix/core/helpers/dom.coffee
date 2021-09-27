@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector
@@ -141,7 +142,7 @@ Trix.extend
     element
 
   getBlockTagNames: ->
-    Trix.blockTagNames ?= (tagName for key, {tagName} of Trix.config.blockAttributes when tagName)
+    Trix.blockTagNames ?= (tagName for key, {tagName} of config.blockAttributes when tagName)
 
   nodeIsBlockContainer: (node) ->
     Trix.nodeIsBlockStartComment(node?.firstChild)

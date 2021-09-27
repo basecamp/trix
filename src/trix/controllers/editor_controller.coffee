@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 import "trix/controllers/controller"
 import "trix/controllers/level_0_input_controller"
@@ -24,7 +25,7 @@ class Trix.EditorController extends Trix.Controller
     @attachmentManager = new Trix.AttachmentManager @composition.getAttachments()
     @attachmentManager.delegate = this
 
-    @inputController = new Trix["Level#{Trix.config.input.getLevel()}InputController"](@editorElement)
+    @inputController = new Trix["Level#{config.input.getLevel()}InputController"](@editorElement)
     @inputController.delegate = this
     @inputController.responder = @composition
 
@@ -318,7 +319,7 @@ class Trix.EditorController extends Trix.Controller
       perform: -> @editor.decreaseNestingLevel() and @render()
     attachFiles:
       test: -> true
-      perform: -> Trix.config.input.pickFiles(@editor.insertFiles)
+      perform: -> config.input.pickFiles(@editor.insertFiles)
 
   canInvokeAction: (actionName) ->
     if @actionIsExternal(actionName)
@@ -411,8 +412,8 @@ class Trix.EditorController extends Trix.Controller
       locationRange
 
   getTimeContext: ->
-    if Trix.config.undoInterval > 0
-      Math.floor(new Date().getTime() / Trix.config.undoInterval)
+    if config.undoInterval > 0
+      Math.floor(new Date().getTime() / config.undoInterval)
     else
       0
 

@@ -1,9 +1,10 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 import "trix/views/text_view"
 
 {makeElement, getBlockConfig} = Trix
-{css} = Trix.config
+{css} = config
 
 class Trix.BlockView extends Trix.ObjectView
   constructor: ->
@@ -25,7 +26,7 @@ class Trix.BlockView extends Trix.ObjectView
     if @attributes.length
       nodes
     else
-      {tagName} = Trix.config.blockAttributes.default
+      {tagName} = config.blockAttributes.default
       attributes = dir: "rtl" if @block.isRTL()
 
       element = makeElement({tagName, attributes})

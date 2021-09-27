@@ -1,3 +1,5 @@
+import config from "trix/config"
+
 import "./editor_default_aria_label"
 import "./editor_empty"
 import "./editor_html"
@@ -10,7 +12,7 @@ import "./editor_with_styled_content"
 import "./editor_with_toolbar_and_input"
 import "./editors_with_forms"
 
-{css} = Trix.config
+{css} = config
 
 @TEST_IMAGE_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
 

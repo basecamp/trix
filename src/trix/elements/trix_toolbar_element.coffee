@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 Trix.registerElement "trix-toolbar",
   defaultCSS: """
@@ -27,4 +28,4 @@ Trix.registerElement "trix-toolbar",
 
   initialize: ->
     if @innerHTML is ""
-      @innerHTML = Trix.config.toolbar.getDefaultHTML()
+      @innerHTML = config.toolbar.getDefaultHTML()

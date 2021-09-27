@@ -1,7 +1,8 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 {makeElement} = Trix
-{css} = Trix.config
+{css} = config
 
 class Trix.AttachmentView extends Trix.ObjectView
   @attachmentSelector: "[data-trix-attachment]"
@@ -55,9 +56,9 @@ class Trix.AttachmentView extends Trix.ObjectView
       figcaption.classList.add("#{css.attachmentCaption}--edited")
       figcaption.textContent = caption
     else
-      config = @getCaptionConfig()
-      name = @attachment.getFilename() if config.name
-      size = @attachment.getFormattedFilesize() if config.size
+      captionConfig = @getCaptionConfig()
+      name = @attachment.getFilename() if captionConfig.name
+      size = @attachment.getFormattedFilesize() if captionConfig.size
 
       if name
         nameElement = makeElement(tagName: "span", className: css.attachmentName, textContent: name)
@@ -97,9 +98,9 @@ class Trix.AttachmentView extends Trix.ObjectView
 
   getCaptionConfig: ->
     type = @attachment.getType()
-    config = Trix.copyObject(Trix.config.attachments[type]?.caption)
-    config.name = true if type is "file"
-    config
+    captionConfig = Trix.copyObject(config.attachments[type]?.caption)
+    captionConfig.name = true if type is "file"
+    captionConfig
 
   findProgressElement: ->
     @findElement()?.querySelector("progress")

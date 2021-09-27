@@ -1,6 +1,6 @@
-import Trix from "trix/global"
+export attachmentSelector = "[data-trix-attachment]"
 
-Trix.config.attachments =
+export default attachments =
   preview:
     presentation: "gallery"
     caption:

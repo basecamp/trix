@@ -1,4 +1,5 @@
 import { version } from "../../package.json"
+import config from "trix/config"
 
 Trix =
   VERSION: version
@@ -20,7 +21,7 @@ Trix =
         return false unless property of InputEvent.prototype
       true
 
-  config: {}
+  config: config
 
 window.Trix = Trix
 

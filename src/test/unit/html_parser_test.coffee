@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 {after, assert, createCursorTarget, getHTML, test, testGroup} = Trix.TestHelpers
 
@@ -143,7 +144,7 @@ testGroup "Trix.HTMLParser", ->
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
   test "parses spanned text elements that don't have a parser function", ->
-    assert.notOk Trix.config.textAttributes.strike.parser
+    assert.notOk config.textAttributes.strike.parser
     html = """<del>a <strong>b</strong></del>"""
     expectedHTML = """<div><!--block--><del>a </del><strong><del>b</del></strong></div>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
@@ -218,65 +219,64 @@ testGroup "Trix.HTMLParser", ->
     done()
 
   test "parses foreground color when configured", ->
-    config =
+    attrConfig =
       foregroundColor: styleProperty: "color"
 
-    withTextAttributeConfig config, ->
+    withTextAttributeConfig attrConfig, ->
       html = """<span style="color: rgb(60, 179, 113);">green</span>"""
       expectedHTML = """<div><!--block--><span style="color: rgb(60, 179, 113);">green</span></div>"""
       document = Trix.HTMLParser.parse(html).getDocument()
       assert.documentHTMLEqual document, expectedHTML
 
   test "parses background color when configured", ->
-    config =
+    attrConfig =
       backgroundColor: styleProperty: "backgroundColor"
 
-    withTextAttributeConfig config, ->
+    withTextAttributeConfig attrConfig, ->
       html = """<span style="background-color: yellow;">on yellow</span>"""
       expectedHTML = """<div><!--block--><span style="background-color: yellow;">on yellow</span></div>"""
       document = Trix.HTMLParser.parse(html).getDocument()
       assert.documentHTMLEqual document, expectedHTML
 
   test "parses configured foreground color on formatted text", ->
-    config =
+    attrConfig =
       foregroundColor: styleProperty: "color"
 
-    withTextAttributeConfig config, ->
+    withTextAttributeConfig attrConfig, ->
       html = """<strong style="color: rgb(60, 179, 113);">GREEN</strong>"""
       expectedHTML = """<div><!--block--><strong style="color: rgb(60, 179, 113);">GREEN</strong></div>"""
       document = Trix.HTMLParser.parse(html).getDocument()
       assert.documentHTMLEqual document, expectedHTML
 
   test "parses foreground color using configured parser function", ->
-    config =
+    attrConfig =
       foregroundColor:
         styleProperty: "color"
         parser: (element) ->
           {color} = element.style
           color if color is "rgb(60, 179, 113)"
 
-    withTextAttributeConfig config, ->
+    withTextAttributeConfig attrConfig, ->
       html = """<span style="color: rgb(60, 179, 113);">green</span><span style="color: yellow;">not yellow</span>"""
       expectedHTML = """<div><!--block--><span style="color: rgb(60, 179, 113);">green</span>not yellow</div>"""
       document = Trix.HTMLParser.parse(html).getDocument()
       assert.documentHTMLEqual document, expectedHTML
 
-withTextAttributeConfig = (config = {}, fn) ->
-  {textAttributes} = Trix.config
+withTextAttributeConfig = (attrConfig = {}, fn) ->
   originalConfig = {}
 
-  for key, value of config
-    originalConfig[key] = textAttributes[key]
-    textAttributes[key] = value
+  for key, value of attrConfig
+    originalConfig[key] = config.textAttributes[key]
+    config.textAttributes[key] = value
 
   try
     fn()
   finally
     for key, value of originalConfig
       if value
-        textAttributes[key] = value
+        config.textAttributes[key] = value
       else
-        delete textAttributes[key]
+        delete config.textAttributes[key]
 
 getOrigin = ->
   {protocol, hostname, port} = window.location

@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 import rangy from "rangy"
 import "rangy/lib/rangy-textrange"
@@ -8,7 +9,7 @@ window.rangy = rangy
 helpers = Trix.TestHelpers
 
 keyCodes = {}
-for code, name of Trix.config.keyNames
+for code, name of config.keyNames
   keyCodes[name] = code
 
 keys =

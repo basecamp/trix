@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 import "trix/models/block"
 import "trix/models/splittable_list"
@@ -232,14 +233,14 @@ class Trix.Document extends Trix.Object
 
   applyBlockAttributeAtRange: (attributeName, value, range) ->
     {document, range} = @expandRangeToLineBreaksAndSplitBlocks(range)
-    config = getBlockConfig(attributeName)
+    blockConfig = getBlockConfig(attributeName)
 
-    if config.listAttribute
+    if blockConfig.listAttribute
       document = document.removeLastListAttributeAtRange(range, exceptAttributeName: attributeName)
       {document, range} = document.convertLineBreaksToBlockBreaksInRange(range)
-    else if config.exclusive
+    else if blockConfig.exclusive
       document = document.removeBlockAttributesAtRange(range)
-    else if config.terminal
+    else if blockConfig.terminal
       document = document.removeLastTerminalAttributeAtRange(range)
     else
       document = document.consolidateBlocksAtRange(range)
@@ -417,7 +418,7 @@ class Trix.Document extends Trix.Object
     commonAttributes = attributesForBlock(block)
     attributes = block.text.getAttributesAtPosition(offset)
     attributesLeft = block.text.getAttributesAtPosition(offset - 1)
-    inheritableAttributes = (key for key, value of Trix.config.textAttributes when value.inheritable)
+    inheritableAttributes = (key for key, value of config.textAttributes when value.inheritable)
 
     for key, value of attributesLeft
       if value is attributes[key] or key in inheritableAttributes

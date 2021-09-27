@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 import "trix/operations/image_preload_operation"
 
@@ -78,7 +79,7 @@ class Trix.Attachment extends Trix.Object
   getFormattedFilesize: ->
     filesize = @attributes.get("filesize")
     if typeof filesize is "number"
-      Trix.config.fileSize.formatter(filesize)
+      config.fileSize.formatter(filesize)
     else
       ""
 

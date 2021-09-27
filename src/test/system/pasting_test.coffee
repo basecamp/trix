@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import config from "trix/config"
 
 {after, assert, clickToolbarButton, createFile, defer, expandSelection, moveCursor, pasteContent, pressKey, test, testIf, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
 
@@ -260,7 +261,7 @@ testGroup "Pasting", template: "editor_empty", ->
       pasteContent "Files", (createFile()), ->
         expectDocument "a#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
 
-  testIf Trix.config.input.getLevel() is 0, "paste event with no clipboardData", (expectDocument) ->
+  testIf config.input.getLevel() is 0, "paste event with no clipboardData", (expectDocument) ->
     typeCharacters "a", ->
       triggerEvent(document.activeElement, "paste")
       document.activeElement.insertAdjacentHTML("beforeend", "<span>bc</span>")
