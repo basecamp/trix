@@ -1,10 +1,13 @@
-#= require trix/models/document
-#= require trix/models/line_break_insertion
+import Trix from "trix/global"
+
+import "trix/models/document"
+import "trix/models/line_break_insertion"
 
 {normalizeRange, rangesAreEqual, rangeIsCollapsed, objectsAreEqual, arrayStartsWith, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
 
 class Trix.Composition extends Trix.BasicObject
   constructor: ->
+    super(arguments...)
     @document = new Trix.Document
     @attachments = []
     @currentAttributes = {}

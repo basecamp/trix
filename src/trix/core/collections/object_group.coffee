@@ -1,3 +1,5 @@
+import Trix from "trix/global"
+
 class Trix.ObjectGroup
   @groupObjects: (ungroupedObjects = [], {depth, asTree} = {}) ->
     depth ?= 0 if asTree

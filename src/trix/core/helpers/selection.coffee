@@ -1,3 +1,5 @@
+import Trix from "trix/global"
+
 Trix.extend
   getDOMSelection: ->
     selection = window.getSelection()

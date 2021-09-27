@@ -1,3 +1,5 @@
+import Trix from "trix/global"
+
 class Trix.UTF16String extends Trix.BasicObject
   @box: (value = "") ->
     if value instanceof this
@@ -12,6 +14,7 @@ class Trix.UTF16String extends Trix.BasicObject
     new this ucs2encode(codepoints), codepoints
 
   constructor: (@ucs2String, @codepoints) ->
+    super(arguments...)
     @length = @codepoints.length
     @ucs2Length = @ucs2String.length
 

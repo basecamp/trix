@@ -1,4 +1,6 @@
-#= require trix/operations/image_preload_operation
+import Trix from "trix/global"
+
+import "trix/operations/image_preload_operation"
 
 class Trix.Attachment extends Trix.Object
   @previewablePattern: /^image(\/(gif|png|jpe?g)|$)/
@@ -19,7 +21,7 @@ class Trix.Attachment extends Trix.Object
     new this attachmentJSON
 
   constructor: (attributes = {}) ->
-    super
+    super(arguments...)
     @attributes = Trix.Hash.box(attributes)
     @didChangeAttributes()
 
@@ -121,7 +123,7 @@ class Trix.Attachment extends Trix.Object
     @getAttributes()
 
   getCacheKey: ->
-    [super, @attributes.getCacheKey(), @getPreviewURL()].join("/")
+    [super.getCacheKey(arguments...), @attributes.getCacheKey(), @getPreviewURL()].join("/")
 
   # Previewable
 

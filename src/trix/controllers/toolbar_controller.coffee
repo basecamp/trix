@@ -1,3 +1,5 @@
+import Trix from "trix/global"
+
 {handleEvent, triggerEvent, findClosestElementFromNode} = Trix
 
 class Trix.ToolbarController extends Trix.BasicObject
@@ -11,6 +13,7 @@ class Trix.ToolbarController extends Trix.BasicObject
   dialogInputSelector = "#{dialogSelector} [data-trix-input]"
 
   constructor: (@element) ->
+    super(arguments...)
     @attributes = {}
     @actions = {}
     @resetDialogInputs()

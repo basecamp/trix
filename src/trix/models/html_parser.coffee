@@ -1,4 +1,6 @@
-#= require trix/models/html_sanitizer
+import Trix from "trix/global"
+
+import "trix/models/html_sanitizer"
 
 {arraysAreEqual, makeElement, tagName, getBlockTagNames, walkTree,
  findClosestElementFromNode, elementContainsNode, nodeIsAttachmentElement,
@@ -11,6 +13,7 @@ class Trix.HTMLParser extends Trix.BasicObject
     parser
 
   constructor: (@html, {@referenceElement} = {}) ->
+    super(arguments...)
     @blocks = []
     @blockElements = []
     @processedElements = []

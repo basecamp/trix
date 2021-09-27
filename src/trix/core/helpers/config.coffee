@@ -1,3 +1,5 @@
+import Trix from "trix/global"
+
 allAttributeNames = null
 blockAttributeNames = null
 textAttributeNames = null

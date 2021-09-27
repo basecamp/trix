@@ -1,6 +1,10 @@
+import Trix from "trix/global"
+
+import "trix/views/object_view"
+
 class Trix.ObjectGroupView extends Trix.ObjectView
   constructor: ->
-    super
+    super(arguments...)
     @objectGroup = @object
     {@viewClass} = @options
     delete @options.viewClass

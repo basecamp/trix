@@ -1,3 +1,5 @@
+import Trix from "trix/global"
+
 Trix.extend
   arraysAreEqual: (a = [], b = []) ->
     return false unless a.length is b.length

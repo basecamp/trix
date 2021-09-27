@@ -1,4 +1,6 @@
-#= require trix/core/basic_object
+import Trix from "trix/global"
+
+import "trix/core/basic_object"
 
 class Trix.Object extends Trix.BasicObject
   id = 0
@@ -7,6 +9,7 @@ class Trix.Object extends Trix.BasicObject
     @fromJSON JSON.parse(jsonString)
 
   constructor: ->
+    super(arguments...)
     @id = ++id
 
   hasSameConstructorAs: (object) ->

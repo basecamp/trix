@@ -1,4 +1,6 @@
-#= require trix/views/block_view
+import Trix from "trix/global"
+
+import "trix/views/block_view"
 
 {defer, makeElement} = Trix
 
@@ -11,7 +13,7 @@ class Trix.DocumentView extends Trix.ObjectView
     element
 
   constructor: ->
-    super
+    super(arguments...)
     {@element} = @options
     @elementStore = new Trix.ElementStore
     @setDocument(@object)

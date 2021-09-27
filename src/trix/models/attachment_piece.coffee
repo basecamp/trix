@@ -1,5 +1,7 @@
-#= require trix/models/attachment
-#= require trix/models/piece
+import Trix from "trix/global"
+
+import "trix/models/attachment"
+import "trix/models/piece"
 
 Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Piece
   @fromJSON: (pieceJSON) ->
@@ -8,7 +10,7 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
   @permittedAttributes: ["caption", "presentation"]
 
   constructor: (@attachment) ->
-    super
+    super(arguments...)
     @length = 1
     @ensureAttachmentExclusivelyHasAttribute("href")
     @removeProhibitedAttributes() unless @attachment.hasContent()
@@ -34,18 +36,18 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
     @attributes.get("caption") ? ""
 
   isEqualTo: (piece) ->
-    super and @attachment.id is piece?.attachment?.id
+    super.isEqualTo(piece) and @attachment.id is piece?.attachment?.id
 
   toString: ->
     Trix.OBJECT_REPLACEMENT_CHARACTER
 
   toJSON: ->
-    json = super
+    json = super.toJSON(arguments...)
     json.attachment = @attachment
     json
 
   getCacheKey: ->
-    [super, @attachment.getCacheKey()].join("/")
+    [super(arguments...), @attachment.getCacheKey()].join("/")
 
   toConsole: ->
     JSON.stringify(@toString())

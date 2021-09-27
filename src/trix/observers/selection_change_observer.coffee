@@ -1,7 +1,10 @@
+import Trix from "trix/global"
+
 {getDOMRange} = Trix
 
 class Trix.SelectionChangeObserver extends Trix.BasicObject
   constructor: ->
+    super(arguments...)
     @selectionManagers = []
 
   start: ->

@@ -1,3 +1,5 @@
+import Trix from "trix/global"
+
 class Trix.Piece extends Trix.Object
   @types: {}
 
@@ -10,7 +12,7 @@ class Trix.Piece extends Trix.Object
       constructor.fromJSON(pieceJSON)
 
   constructor: (value, attributes = {}) ->
-    super
+    super(arguments...)
     @attributes = Trix.Hash.box(attributes)
 
   copyWithAttributes: (attributes) ->
@@ -58,7 +60,7 @@ class Trix.Piece extends Trix.Object
     false
 
   isEqualTo: (piece) ->
-    super or (
+    super(arguments...) or (
       @hasSameConstructorAs(piece) and
       @hasSameStringValueAsPiece(piece) and
       @hasSameAttributesAsPiece(piece)

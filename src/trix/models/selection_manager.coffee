@@ -1,6 +1,8 @@
-#= require trix/models/location_mapper
-#= require trix/models/point_mapper
-#= require trix/observers/selection_change_observer
+import Trix from "trix/global"
+
+import "trix/models/location_mapper"
+import "trix/models/point_mapper"
+import "trix/observers/selection_change_observer"
 
 {getDOMSelection, getDOMRange, setDOMRange, elementContainsNode,
  nodeIsCursorTarget, innerElementIsActive, handleEvent, normalizeRange,
@@ -8,6 +10,7 @@
 
 class Trix.SelectionManager extends Trix.BasicObject
   constructor: (@element) ->
+    super(arguments...)
     @locationMapper = new Trix.LocationMapper @element
     @pointMapper = new Trix.PointMapper
     @lockCount = 0

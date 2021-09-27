@@ -1,3 +1,5 @@
+import Trix from "trix/global"
+
 Trix.registerElement "trix-toolbar",
   defaultCSS: """
     %t {

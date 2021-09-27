@@ -1,17 +1,20 @@
-#= require trix/controllers/controller
-#= require trix/controllers/level_0_input_controller
-#= require trix/controllers/level_2_input_controller
-#= require trix/controllers/composition_controller
-#= require trix/controllers/toolbar_controller
-#= require trix/models/composition
-#= require trix/models/editor
-#= require trix/models/attachment_manager
-#= require trix/models/selection_manager
+import Trix from "trix/global"
+
+import "trix/controllers/controller"
+import "trix/controllers/level_0_input_controller"
+import "trix/controllers/level_2_input_controller"
+import "trix/controllers/composition_controller"
+import "trix/controllers/toolbar_controller"
+import "trix/models/composition"
+import "trix/models/editor"
+import "trix/models/attachment_manager"
+import "trix/models/selection_manager"
 
 {rangeIsCollapsed, rangesAreEqual, objectsAreEqual, getBlockConfig} = Trix
 
 class Trix.EditorController extends Trix.Controller
   constructor: ({@editorElement, document, html}) ->
+    super(arguments...)
     @selectionManager = new Trix.SelectionManager @editorElement
     @selectionManager.delegate = this
 

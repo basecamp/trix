@@ -1,10 +1,13 @@
-#= require trix/observers/mutation_observer
-#= require trix/operations/file_verification_operation
+import Trix from "trix/global"
+
+import "trix/observers/mutation_observer"
+import "trix/operations/file_verification_operation"
 
 {handleEvent, innerElementIsActive} = Trix
 
 class Trix.InputController extends Trix.BasicObject
   constructor: (@element) ->
+    super(arguments...)
     @mutationObserver = new Trix.MutationObserver @element
     @mutationObserver.delegate = this
     for eventName of @events

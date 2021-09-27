@@ -1,3 +1,5 @@
+import Trix from "trix/global"
+
 Trix.config.attachments =
   preview:
     presentation: "gallery"

@@ -1,3 +1,5 @@
+import Trix from "trix/global"
+
 {findClosestElementFromNode, nodeIsEmptyTextNode, nodeIsBlockStartComment, normalizeSpaces, summarizeStringChange, tagName} = Trix
 
 class Trix.MutationObserver extends Trix.BasicObject
@@ -12,6 +14,7 @@ class Trix.MutationObserver extends Trix.BasicObject
     subtree: true
 
   constructor: (@element) ->
+    super(arguments...)
     @observer = new window.MutationObserver @didMutate
     @start()
 

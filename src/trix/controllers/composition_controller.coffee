@@ -1,5 +1,7 @@
-#= require trix/controllers/attachment_editor_controller
-#= require trix/views/document_view
+import Trix from "trix/global"
+
+import "trix/controllers/attachment_editor_controller"
+import "trix/views/document_view"
 
 {findClosestElementFromNode, handleEvent, innerElementIsActive, defer}  = Trix
 
@@ -7,6 +9,7 @@
 
 class Trix.CompositionController extends Trix.BasicObject
   constructor: (@element, @composition) ->
+    super(arguments...)
     @documentView = new Trix.DocumentView @composition.document, {@element}
 
     handleEvent "focus", onElement: @element, withCallback: @didFocus

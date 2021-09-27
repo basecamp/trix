@@ -1,4 +1,6 @@
-#= require trix/core/helpers/objects
+import Trix from "trix/global"
+
+import "trix/core/helpers/objects"
 
 {copyObject, objectsAreEqual} = Trix
 

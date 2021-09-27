@@ -1,5 +1,8 @@
+import Trix from "trix/global"
+
 class Trix.ImagePreloadOperation extends Trix.Operation
   constructor: (@url) ->
+    super(arguments...)
 
   perform: (callback) ->
     image = new Image

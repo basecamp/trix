@@ -1,5 +1,4 @@
-//= require trix/banner
-//= require trix/stylesheets/editor
-//= require trix/stylesheets/toolbar
-//= require trix/stylesheets/attachments
-//= require trix/stylesheets/content
+@import "trix/stylesheets/editor";
+@import "trix/stylesheets/toolbar";
+@import "trix/stylesheets/attachments";
+@import "trix/stylesheets/content";

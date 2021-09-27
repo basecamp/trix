@@ -1,11 +1,13 @@
-#= require trix/views/attachment_view
-#= require trix/views/previewable_attachment_view
+import Trix from "trix/global"
+
+import "trix/views/attachment_view"
+import "trix/views/previewable_attachment_view"
 
 {makeElement, findInnerElement, getTextConfig} = Trix
 
 class Trix.PieceView extends Trix.ObjectView
   constructor: ->
-    super
+    super(arguments...)
     @piece = @object
     @attributes = @piece.getAttributes()
     {@textConfig, @context} = @options

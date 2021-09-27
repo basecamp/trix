@@ -1,7 +1,9 @@
-#= require trix/models/managed_attachment
+import Trix from "trix/global"
+import "trix/models/managed_attachment"
 
 class Trix.AttachmentManager extends Trix.BasicObject
   constructor: (attachments = []) ->
+    super(arguments...)
     @managedAttachments = {}
     @manageAttachment(attachment) for attachment in attachments
 

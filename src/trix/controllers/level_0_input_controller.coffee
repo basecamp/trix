@@ -1,4 +1,6 @@
-#= require trix/controllers/input_controller
+import Trix from "trix/global"
+
+import "trix/controllers/input_controller"
 
 {makeElement, objectsAreEqual, tagName, browser, keyEventIsKeyboardCommand,
  dataTransferIsWritable, dataTransferIsPlainText} = Trix
@@ -9,7 +11,7 @@ class Trix.Level0InputController extends Trix.InputController
   pastedFileCount = 0
 
   constructor: ->
-    super
+    super(arguments...)
     @resetInputSummary()
 
   setInputSummary: (summary = {}) ->
@@ -428,6 +430,7 @@ pasteEventIsCrippledSafariHTMLPaste = (event) ->
 
 class CompositionInput extends Trix.BasicObject
   constructor: (@inputController) ->
+    super(arguments...)
     {@responder, @delegate, @inputSummary} = @inputController
     @data = {}
 

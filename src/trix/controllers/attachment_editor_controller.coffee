@@ -1,10 +1,11 @@
-#= require trix/controllers/attachment_editor_controller
+import Trix from "trix/global"
 
 {defer, handleEvent, makeElement, tagName} = Trix
 {lang, css, keyNames} = Trix.config
 
 class Trix.AttachmentEditorController extends Trix.BasicObject
   constructor: (@attachmentPiece, @element, @container, @options = {}) ->
+    super(arguments...)
     {@attachment} = @attachmentPiece
     @element = @element.firstChild if tagName(@element) is "a"
     @install()

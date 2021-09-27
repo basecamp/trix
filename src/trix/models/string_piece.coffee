@@ -1,4 +1,6 @@
-#= require trix/models/piece
+import Trix from "trix/global"
+
+import "trix/models/piece"
 
 {normalizeNewlines} = Trix
 
@@ -7,7 +9,7 @@ Trix.Piece.registerType "string", class Trix.StringPiece extends Trix.Piece
     new this pieceJSON.string, pieceJSON.attributes
 
   constructor: (string) ->
-    super
+    super(arguments...)
     @string = normalizeNewlines(string)
     @length = @string.length
 
@@ -21,7 +23,7 @@ Trix.Piece.registerType "string", class Trix.StringPiece extends Trix.Piece
     @toString() is "\n" and @getAttribute("blockBreak") is true
 
   toJSON: ->
-    result = super
+    result = super.toJSON(arguments...)
     result.string = @string
     result
 

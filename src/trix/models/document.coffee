@@ -1,6 +1,8 @@
-#= require trix/models/block
-#= require trix/models/splittable_list
-#= require trix/models/html_parser
+import Trix from "trix/global"
+
+import "trix/models/block"
+import "trix/models/splittable_list"
+import "trix/models/html_parser"
 
 {arraysAreEqual, normalizeRange, rangeIsCollapsed, getBlockConfig} = Trix
 
@@ -19,7 +21,7 @@ class Trix.Document extends Trix.Object
 
 
   constructor: (blocks = []) ->
-    super
+    super(arguments...)
     blocks = [new Trix.Block] if blocks.length is 0
     @blockList = Trix.SplittableList.box(blocks)
 

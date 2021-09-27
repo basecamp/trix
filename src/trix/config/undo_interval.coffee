@@ -1,3 +1,5 @@
+import Trix from "trix/global"
+
 # Not all changes to a Trix document result in an undo entry being added to
 # the stack. Trix aggregates successive changes into a single undo entry for
 # typing and for attribute changes to the same selected range. The "undo

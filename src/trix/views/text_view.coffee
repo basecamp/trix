@@ -1,8 +1,10 @@
-#= require trix/views/piece_view
+import Trix from "trix/global"
+
+import "trix/views/piece_view"
 
 class Trix.TextView extends Trix.ObjectView
   constructor: ->
-    super
+    super(arguments...)
     @text = @object
     {@textConfig} = @options
 

@@ -1,11 +1,13 @@
-#= require trix/views/text_view
+import Trix from "trix/global"
+
+import "trix/views/text_view"
 
 {makeElement, getBlockConfig} = Trix
 {css} = Trix.config
 
 class Trix.BlockView extends Trix.ObjectView
   constructor: ->
-    super
+    super(arguments...)
     @block = @object
     @attributes = @block.getAttributes()
 

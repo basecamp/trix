@@ -1,3 +1,5 @@
+import Trix from "trix/global"
+
 {getDOMRange, setDOMRange} = Trix
 
 class Trix.PointMapper

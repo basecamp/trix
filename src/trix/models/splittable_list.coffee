@@ -1,3 +1,5 @@
+import Trix from "trix/global"
+
 {spliceArray} = Trix
 
 class Trix.SplittableList extends Trix.Object
@@ -8,7 +10,7 @@ class Trix.SplittableList extends Trix.Object
       new this objects
 
   constructor: (objects = []) ->
-    super
+    super(arguments...)
     @objects = objects.slice(0)
     @length = @objects.length
 
@@ -150,7 +152,7 @@ class Trix.SplittableList extends Trix.Object
     @toArray()
 
   isEqualTo: (splittableList) ->
-    super or objectArraysAreEqual(@objects, splittableList?.objects)
+    super(arguments...) or objectArraysAreEqual(@objects, splittableList?.objects)
 
   objectArraysAreEqual = (left, right = []) ->
     return false unless left.length is right.length
