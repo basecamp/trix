@@ -1,5 +1,5 @@
-import "inspector/watchdog/recording"
-import "inspector/watchdog/player_controller"
+import Recording from "inspector/watchdog/recording"
+import PlayerController from "inspector/watchdog/player_controller"
 
 Trix.registerElement "trix-watchdog-player",
   defaultCSS: """
@@ -25,8 +25,8 @@ Trix.registerElement "trix-watchdog-player",
     @activeRequest.onload = =>
       json = @activeRequest.responseText
       @activeRequest = null
-      recording = Trix.Watchdog.Recording.fromJSON(JSON.parse(json))
+      recording = Recording.fromJSON(JSON.parse(json))
       @loadRecording(recording)
 
   loadRecording: (recording) ->
-    @controller = new Trix.Watchdog.PlayerController this, recording
+    @controller = new PlayerController this, recording

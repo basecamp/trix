@@ -1,6 +1,6 @@
 import Trix from "trix/global"
 
-class Trix.BasicObject
+export default class BasicObject
   @proxyMethod: (expression) ->
     {name, toMethod, toProperty, optional} = parseProxyMethodExpression(expression)
 

@@ -1,6 +1,8 @@
 import Trix from "trix/global"
+import TrixObject from "trix/core/object" # Don't override window.Object
+import Hash from "trix/core/collections/hash"
 
-class Trix.Piece extends Trix.Object
+export default class Piece extends TrixObject
   @types: {}
 
   @registerType: (type, constructor) ->
@@ -13,7 +15,7 @@ class Trix.Piece extends Trix.Object
 
   constructor: (value, attributes = {}) ->
     super(arguments...)
-    @attributes = Trix.Hash.box(attributes)
+    @attributes = Hash.box(attributes)
 
   copyWithAttributes: (attributes) ->
     new @constructor @getValue(), attributes

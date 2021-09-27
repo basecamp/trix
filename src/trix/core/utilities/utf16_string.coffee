@@ -1,6 +1,7 @@
 import Trix from "trix/global"
+import BasicObject from "trix/core/basic_object"
 
-class Trix.UTF16String extends Trix.BasicObject
+export default class UTF16String extends BasicObject
   @box: (value = "") ->
     if value instanceof this
       value

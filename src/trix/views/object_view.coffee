@@ -1,6 +1,8 @@
 import Trix from "trix/global"
+import BasicObject from "trix/core/basic_object"
+import ObjectGroup from "trix/core/collections/object_group"
 
-class Trix.ObjectView extends Trix.BasicObject
+export default class ObjectView extends BasicObject
   constructor: (@object, @options = {}) ->
     super(arguments...)
     @childViews = []
@@ -27,9 +29,9 @@ class Trix.ObjectView extends Trix.BasicObject
     view
 
   createChildView: (viewClass, object, options = {}) ->
-    if object instanceof Trix.ObjectGroup
+    if object instanceof ObjectGroup
       options.viewClass = viewClass
-      viewClass = Trix.ObjectGroupView
+      viewClass = ObjectGroupView
 
     view = new viewClass object, options
     @recordChildView(view)
@@ -84,3 +86,28 @@ class Trix.ObjectView extends Trix.BasicObject
       views = @getAllChildViews().concat(this)
       objectKeys = (view.object.getCacheKey() for view in views)
       delete cache[key] for key of cache when key not in objectKeys
+
+
+export class ObjectGroupView extends ObjectView
+  constructor: ->
+    super(arguments...)
+    @objectGroup = @object
+    {@viewClass} = @options
+    delete @options.viewClass
+
+  getChildViews: ->
+    unless @childViews.length
+      for object in @objectGroup.getObjects()
+        @findOrCreateCachedChildView(@viewClass, object, @options)
+    @childViews
+
+  createNodes: ->
+    element = @createContainerElement()
+
+    for view in @getChildViews()
+      element.appendChild(node) for node in view.getNodes()
+
+    [element]
+
+  createContainerElement: (depth = @objectGroup.getDepth()) ->
+    @getChildViews()[0].createContainerElement(depth)

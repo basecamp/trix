@@ -1,5 +1,6 @@
 import Trix from "trix/global"
 import config from "trix/config"
+import AttachmentView from "trix/views/attachment_view"
 
 html = document.documentElement
 match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector
@@ -176,7 +177,7 @@ Trix.extend
       Trix.nodeIsCursorTarget(node.firstChild)
 
   nodeIsAttachmentElement: (node) ->
-    Trix.elementMatchesSelector(node, Trix.AttachmentView.attachmentSelector)
+    Trix.elementMatchesSelector(node, AttachmentView.attachmentSelector)
 
   nodeIsEmptyTextNode: (node) ->
     Trix.nodeIsTextNode(node) and node?.data is ""

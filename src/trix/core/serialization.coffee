@@ -1,4 +1,7 @@
 import Trix from "trix/global"
+import DocumentView from "trix/views/document_view"
+import Document from "trix/models/document"
+import HTMLParser from "trix/models/html_parser"
 
 unserializableElementSelector = "[data-trix-serialize=false]"
 unserializableAttributeNames = ["contenteditable", "data-trix-id", "data-trix-store-key", "data-trix-mutable", "data-trix-placeholder", "tabindex"]
@@ -10,18 +13,18 @@ blockCommentPattern = new RegExp("<!--block-->", "g")
 Trix.extend
   serializers:
     "application/json": (serializable) ->
-      if serializable instanceof Trix.Document
+      if serializable instanceof Document
         document = serializable
       else if serializable instanceof HTMLElement
-        document = Trix.Document.fromHTML(serializable.innerHTML)
+        document = HTMLParser.parse(serializable.innerHTML).getDocument()
       else
         throw new Error "unserializable object"
 
       document.toSerializableDocument().toJSONString()
 
     "text/html": (serializable) ->
-      if serializable instanceof Trix.Document
-        element = Trix.DocumentView.render(serializable)
+      if serializable instanceof Document
+        element = DocumentView.render(serializable)
       else if serializable instanceof HTMLElement
         element = serializable.cloneNode(true)
       else
@@ -47,10 +50,10 @@ Trix.extend
 
   deserializers:
     "application/json": (string) ->
-      Trix.Document.fromJSONString(string)
+      Document.fromJSONString(string)
 
     "text/html": (string) ->
-      Trix.Document.fromHTML(string)
+      HTMLParser.parse(string).getDocument()
 
   serializeToContentType: (serializable, contentType) ->
     if serializer = Trix.serializers[contentType]

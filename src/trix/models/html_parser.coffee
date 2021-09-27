@@ -1,13 +1,14 @@
 import Trix from "trix/global"
 import config from "trix/config"
-
-import "trix/models/html_sanitizer"
+import BasicObject from "trix/core/basic_object"
+import Document from "trix/models/document"
+import HTMLSanitizer from "trix/models/html_sanitizer"
 
 {arraysAreEqual, makeElement, tagName, getBlockTagNames, walkTree,
  findClosestElementFromNode, elementContainsNode, nodeIsAttachmentElement,
  normalizeSpaces, breakableWhitespacePattern, squishBreakableWhitespace} = Trix
 
-class Trix.HTMLParser extends Trix.BasicObject
+export default class HTMLParser extends BasicObject
   @parse: (html, options) ->
     parser = new this html, options
     parser.parse()
@@ -20,14 +21,14 @@ class Trix.HTMLParser extends Trix.BasicObject
     @processedElements = []
 
   getDocument: ->
-    Trix.Document.fromJSON(@blocks)
+    Document.fromJSON(@blocks)
 
   # HTML parsing
 
   parse: ->
     try
       @createHiddenContainer()
-      html = Trix.HTMLSanitizer.sanitize(@html).getHTML()
+      html = HTMLSanitizer.sanitize(@html).getHTML()
       @containerElement.innerHTML = html
       walker = walkTree(@containerElement, usingFilter: nodeFilter)
       @processNode(walker.currentNode) while walker.nextNode()

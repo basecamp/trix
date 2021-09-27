@@ -1,10 +1,9 @@
 import Trix from "trix/global"
-
-import "trix/models/piece"
+import Piece from "trix/models/piece"
 
 {normalizeNewlines} = Trix
 
-Trix.Piece.registerType "string", class Trix.StringPiece extends Trix.Piece
+export default class StringPiece extends Piece
   @fromJSON: (pieceJSON) ->
     new this pieceJSON.string, pieceJSON.attributes
 
@@ -51,3 +50,5 @@ Trix.Piece.registerType "string", class Trix.StringPiece extends Trix.Piece
     string = @string
     string = string.slice(0, 14) + "…" if string.length > 15
     JSON.stringify(string.toString())
+
+Piece.registerType "string", StringPiece

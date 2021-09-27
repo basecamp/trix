@@ -1,6 +1,7 @@
 import Trix from "trix/global"
+import Operation from "trix/core/utilities/operation"
 
-class Trix.ImagePreloadOperation extends Trix.Operation
+export default class ImagePreloadOperation extends Operation
   constructor: (@url) ->
     super(arguments...)
 

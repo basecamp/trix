@@ -1,11 +1,11 @@
 import Trix from "trix/global"
 
-import "trix/models/attachment"
-import "trix/models/piece"
+import Attachment from "trix/models/attachment"
+import Piece from "trix/models/piece"
 
-Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Piece
+export default class AttachmentPiece extends Piece
   @fromJSON: (pieceJSON) ->
-    new this Trix.Attachment.fromJSON(pieceJSON.attachment), pieceJSON.attributes
+    new this Attachment.fromJSON(pieceJSON.attachment), pieceJSON.attributes
 
   @permittedAttributes: ["caption", "presentation"]
 
@@ -51,3 +51,5 @@ Trix.Piece.registerType "attachment", class Trix.AttachmentPiece extends Trix.Pi
 
   toConsole: ->
     JSON.stringify(@toString())
+
+Piece.registerType "attachment", AttachmentPiece

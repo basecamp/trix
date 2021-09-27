@@ -1,6 +1,7 @@
 import "trix/models/attachment"
+import BasicObject from "trix/core/basic_object"
 
-class Trix.ManagedAttachment extends Trix.BasicObject
+export default class ManagedAttachment extends BasicObject
   constructor: (@attachmentManager, @attachment) ->
     super(arguments...)
     {@id, @file} = @attachment

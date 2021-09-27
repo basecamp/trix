@@ -1,6 +1,6 @@
 import Trix from "trix/global"
 
-class Trix.ElementStore
+export default class ElementStore
   constructor: (elements) ->
     @reset(elements)
 

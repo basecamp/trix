@@ -1,6 +1,6 @@
-import "inspector/watchdog/deserializer"
+import Deserializer from "inspector/watchdog/deserializer"
 
-class Trix.Watchdog.PlayerView
+export default class PlayerView
   @documentClassName: "trix-watchdog-player"
   @playingClassName: "trix-watchdog-player-playing"
 
@@ -108,7 +108,7 @@ class Trix.Watchdog.PlayerView
     "[#{index}] #{description}"
 
   deserializeSnapshot: (snapshot) ->
-    deserializer = new Trix.Watchdog.Deserializer @document, snapshot
+    deserializer = new Deserializer @document, snapshot
     element: deserializer.getElement()
     range: deserializer.getRange()
 

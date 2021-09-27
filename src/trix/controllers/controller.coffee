@@ -1,4 +1,5 @@
 import Trix from "trix/global"
 import "trix/views/object_view"
+import BasicObject from "trix/core/basic_object"
 
-class Trix.Controller extends Trix.BasicObject
+export default class Controller extends BasicObject

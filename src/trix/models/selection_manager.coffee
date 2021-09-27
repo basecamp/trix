@@ -1,18 +1,19 @@
 import Trix from "trix/global"
+import BasicObject from "trix/core/basic_object"
 
-import "trix/models/location_mapper"
-import "trix/models/point_mapper"
-import "trix/observers/selection_change_observer"
+import LocationMapper from "trix/models/location_mapper"
+import PointMapper from "trix/models/point_mapper"
+import SelectionChangeObserver from "trix/observers/selection_change_observer"
 
 {getDOMSelection, getDOMRange, setDOMRange, elementContainsNode,
  nodeIsCursorTarget, innerElementIsActive, handleEvent, normalizeRange,
  rangeIsCollapsed, rangesAreEqual} = Trix
 
-class Trix.SelectionManager extends Trix.BasicObject
+export default class SelectionManager extends BasicObject
   constructor: (@element) ->
     super(arguments...)
-    @locationMapper = new Trix.LocationMapper @element
-    @pointMapper = new Trix.PointMapper
+    @locationMapper = new LocationMapper @element
+    @pointMapper = new PointMapper
     @lockCount = 0
     handleEvent("mousedown", onElement: @element, withCallback: @didMouseDown)
 

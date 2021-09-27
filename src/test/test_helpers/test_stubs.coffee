@@ -2,14 +2,14 @@ import Trix from "trix/global"
 
 {normalizeRange, rangeIsCollapsed} = Trix
 
-class Trix.TestCompositionDelegate
+export class TestCompositionDelegate
   compositionDidRequestChangingSelectionToLocationRange: ->
     @getSelectionManager().setLocationRange(arguments...)
 
   getSelectionManager: ->
-    @selectionManager ?= new Trix.TestSelectionManager
+    @selectionManager ?= new TestSelectionManager
 
-class Trix.TestSelectionManager
+export class TestSelectionManager
   constructor: ->
     @setLocationRange(index: 0, offset: 0)
 

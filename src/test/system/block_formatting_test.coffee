@@ -1,5 +1,9 @@
 import Trix from "trix/global"
 
+import Text from "trix/models/text"
+import Block from "trix/models/block"
+import Document from "trix/models/document"
+
 {assert, clickToolbarButton, defer, expandSelection, isToolbarButtonActive, isToolbarButtonDisabled, moveCursor, pressKey, replaceDocument, selectAll, test, testGroup, typeCharacters} = Trix.TestHelpers
 
 testGroup "Block formatting", template: "editor_empty", ->
@@ -58,13 +62,13 @@ testGroup "Block formatting", template: "editor_empty", ->
             done()
 
   test "applying block attributes to adjacent unformatted blocks consolidates them", (done) ->
-    document = new Trix.Document [
-        new Trix.Block(Trix.Text.textForStringWithAttributes("1"), ["bulletList", "bullet"])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("a"), [])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("b"), [])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("c"), [])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("2"), ["bulletList", "bullet"])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("3"), ["bulletList", "bullet"])
+    document = new Document [
+        new Block(Text.textForStringWithAttributes("1"), ["bulletList", "bullet"])
+        new Block(Text.textForStringWithAttributes("a"), [])
+        new Block(Text.textForStringWithAttributes("b"), [])
+        new Block(Text.textForStringWithAttributes("c"), [])
+        new Block(Text.textForStringWithAttributes("2"), ["bulletList", "bullet"])
+        new Block(Text.textForStringWithAttributes("3"), ["bulletList", "bullet"])
       ]
 
     replaceDocument(document)
@@ -160,10 +164,10 @@ testGroup "Block formatting", template: "editor_empty", ->
     # a
     # b*
     # c
-    document = new Trix.Document [
-        new Trix.Block(Trix.Text.textForStringWithAttributes("a"), [])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("b"), ["quote"])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("c"), [])
+    document = new Document [
+        new Block(Text.textForStringWithAttributes("a"), [])
+        new Block(Text.textForStringWithAttributes("b"), ["quote"])
+        new Block(Text.textForStringWithAttributes("c"), [])
       ]
 
     replaceDocument(document)
@@ -345,10 +349,10 @@ testGroup "Block formatting", template: "editor_empty", ->
             expectDocument("ab\nc\n")
 
   test "breaking out of middle of heading block with preceding blocks", (expectDocument) ->
-    document = new Trix.Document [
-        new Trix.Block(Trix.Text.textForStringWithAttributes("a"), ["heading1"])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("b"), [])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("cd"), ["heading1"])
+    document = new Document [
+        new Block(Text.textForStringWithAttributes("a"), ["heading1"])
+        new Block(Text.textForStringWithAttributes("b"), [])
+        new Block(Text.textForStringWithAttributes("cd"), ["heading1"])
       ]
 
     replaceDocument(document)
@@ -365,10 +369,10 @@ testGroup "Block formatting", template: "editor_empty", ->
       expectDocument("a\nb\nc\nd\n")
 
   test "breaking out of end of heading block with preceding blocks", (expectDocument) ->
-    document = new Trix.Document [
-        new Trix.Block(Trix.Text.textForStringWithAttributes("a"), ["heading1"])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("b"), [])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("cd"), ["heading1"])
+    document = new Document [
+        new Block(Text.textForStringWithAttributes("a"), ["heading1"])
+        new Block(Text.textForStringWithAttributes("b"), [])
+        new Block(Text.textForStringWithAttributes("cd"), ["heading1"])
       ]
 
     replaceDocument(document)
@@ -385,9 +389,9 @@ testGroup "Block formatting", template: "editor_empty", ->
       expectDocument("a\nb\ncd\n\n")
 
   test "inserting newline before heading", (done) ->
-    document = new Trix.Document [
-        new Trix.Block(Trix.Text.textForStringWithAttributes("\n"), [])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("abc"), ["heading1"])
+    document = new Document [
+        new Block(Text.textForStringWithAttributes("\n"), [])
+        new Block(Text.textForStringWithAttributes("abc"), ["heading1"])
       ]
 
     replaceDocument(document)
@@ -408,9 +412,9 @@ testGroup "Block formatting", template: "editor_empty", ->
       done()
 
   test "inserting multiple newlines before heading", (done) ->
-    document = new Trix.Document [
-        new Trix.Block(Trix.Text.textForStringWithAttributes("\n"), [])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("abc"), ["heading1"])
+    document = new Document [
+        new Block(Text.textForStringWithAttributes("\n"), [])
+        new Block(Text.textForStringWithAttributes("abc"), ["heading1"])
       ]
 
     replaceDocument(document)
@@ -430,9 +434,9 @@ testGroup "Block formatting", template: "editor_empty", ->
       done()
 
   test "inserting multiple newlines before formatted block", (expectDocument) ->
-    document = new Trix.Document [
-        new Trix.Block(Trix.Text.textForStringWithAttributes("\n"), [])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("abc"), ["quote"])
+    document = new Document [
+        new Block(Text.textForStringWithAttributes("\n"), [])
+        new Block(Text.textForStringWithAttributes("abc"), ["quote"])
       ]
 
     replaceDocument(document)
@@ -448,9 +452,9 @@ testGroup "Block formatting", template: "editor_empty", ->
       expectDocument("\n\n\n\nabc\n")
 
   test "inserting newline after heading with text in following block", (expectDocument) ->
-    document = new Trix.Document [
-        new Trix.Block(Trix.Text.textForStringWithAttributes("ab"), ["heading1"])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("cd"), [])
+    document = new Document [
+        new Block(Text.textForStringWithAttributes("ab"), ["heading1"])
+        new Block(Text.textForStringWithAttributes("cd"), [])
       ]
 
     replaceDocument(document)
@@ -465,10 +469,10 @@ testGroup "Block formatting", template: "editor_empty", ->
       expectDocument("ab\n\ncd\n")
 
   test "backspacing a newline in an empty block with adjacent formatted blocks", (expectDocument) ->
-    document = new Trix.Document [
-        new Trix.Block(Trix.Text.textForStringWithAttributes("abc"), ["heading1"])
-        new Trix.Block
-        new Trix.Block(Trix.Text.textForStringWithAttributes("d"), ["heading1"])
+    document = new Document [
+        new Block(Text.textForStringWithAttributes("abc"), ["heading1"])
+        new Block
+        new Block(Text.textForStringWithAttributes("d"), ["heading1"])
       ]
 
     replaceDocument(document)
@@ -482,9 +486,9 @@ testGroup "Block formatting", template: "editor_empty", ->
       expectDocument("abc\nd\n")
 
   test "backspacing a newline at beginning of non-formatted block", (expectDocument) ->
-     document = new Trix.Document [
-         new Trix.Block(Trix.Text.textForStringWithAttributes("ab"), ["heading1"])
-         new Trix.Block(Trix.Text.textForStringWithAttributes("\ncd"), [])
+     document = new Document [
+         new Block(Text.textForStringWithAttributes("ab"), ["heading1"])
+         new Block(Text.textForStringWithAttributes("\ncd"), [])
        ]
 
      replaceDocument(document)
@@ -507,10 +511,10 @@ testGroup "Block formatting", template: "editor_empty", ->
           expectDocument("a\n\n")
 
   test "terminal attributes are only added once", (expectDocument) ->
-    replaceDocument new Trix.Document [
-        new Trix.Block(Trix.Text.textForStringWithAttributes("a"), [])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("b"), ["heading1"])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("c"), [])
+    replaceDocument new Document [
+        new Block(Text.textForStringWithAttributes("a"), [])
+        new Block(Text.textForStringWithAttributes("b"), ["heading1"])
+        new Block(Text.textForStringWithAttributes("c"), [])
       ]
 
     selectAll ->
@@ -522,10 +526,10 @@ testGroup "Block formatting", template: "editor_empty", ->
         expectDocument("a\nb\nc\n")
 
   test "terminal attributes replace existing terminal attributes", (expectDocument) ->
-    replaceDocument new Trix.Document [
-        new Trix.Block(Trix.Text.textForStringWithAttributes("a"), [])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("b"), ["heading1"])
-        new Trix.Block(Trix.Text.textForStringWithAttributes("c"), [])
+    replaceDocument new Document [
+        new Block(Text.textForStringWithAttributes("a"), [])
+        new Block(Text.textForStringWithAttributes("b"), ["heading1"])
+        new Block(Text.textForStringWithAttributes("c"), [])
       ]
 
     selectAll ->

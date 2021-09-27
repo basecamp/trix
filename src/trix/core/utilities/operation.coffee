@@ -1,6 +1,7 @@
 import Trix from "trix/global"
+import BasicObject from "trix/core/basic_object"
 
-class Trix.Operation extends Trix.BasicObject
+export default class Operation extends BasicObject
   isPerforming: ->
     @performing is true
 

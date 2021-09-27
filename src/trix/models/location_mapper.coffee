@@ -4,7 +4,7 @@ import Trix from "trix/global"
  nodeIsBlockStartComment, nodeIsBlockContainer, nodeIsCursorTarget,
  nodeIsEmptyTextNode, nodeIsTextNode, nodeIsAttachmentElement, tagName, walkTree} = Trix
 
-class Trix.LocationMapper
+export default class LocationMapper
   constructor: (@element) ->
 
   findLocationFromContainerAndOffset: (container, offset, {strict} = strict: true) ->

@@ -1,15 +1,19 @@
 import Trix from "trix/global"
 import config from "trix/config"
-
-import "trix/models/document"
-import "trix/models/line_break_insertion"
+import BasicObject from "trix/core/basic_object"
+import Text from "trix/models/text"
+import Block from "trix/models/block"
+import Attachment from "trix/models/attachment"
+import Document from "trix/models/document"
+import HTMLParser from "trix/models/html_parser"
+import LineBreakInsertion from "trix/models/line_break_insertion"
 
 {normalizeRange, rangesAreEqual, rangeIsCollapsed, objectsAreEqual, arrayStartsWith, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
 
-class Trix.Composition extends Trix.BasicObject
+export default class Composition extends BasicObject
   constructor: ->
     super(arguments...)
-    @document = new Trix.Document
+    @document = new Document
     @attachments = []
     @currentAttributes = {}
     @revision = 0
@@ -29,7 +33,7 @@ class Trix.Composition extends Trix.BasicObject
 
   loadSnapshot: ({document, selectedRange}) ->
     @delegate?.compositionWillLoadSnapshot?()
-    @setDocument(document ? new Trix.Document)
+    @setDocument(document ? new Document)
     @setSelection(selectedRange ? [0, 0])
     @delegate?.compositionDidLoadSnapshot?()
 
@@ -45,11 +49,11 @@ class Trix.Composition extends Trix.BasicObject
     @setSelection(endPosition) if updatePosition
     @notifyDelegateOfInsertionAtRange([startPosition, endPosition])
 
-  insertBlock: (block = new Trix.Block) ->
-    document = new Trix.Document [block]
+  insertBlock: (block = new Block) ->
+    document = new Document [block]
     @insertDocument(document)
 
-  insertDocument: (document = new Trix.Document) ->
+  insertDocument: (document = new Document) ->
     selectedRange = @getSelectedRange()
     @setDocument(@document.insertDocumentAtRange(document, selectedRange))
 
@@ -61,7 +65,7 @@ class Trix.Composition extends Trix.BasicObject
 
   insertString: (string, options) ->
     attributes = @getCurrentTextAttributes()
-    text = Trix.Text.textForStringWithAttributes(string, attributes)
+    text = Text.textForStringWithAttributes(string, attributes)
     @insertText(text, options)
 
   insertBlockBreak: ->
@@ -75,13 +79,13 @@ class Trix.Composition extends Trix.BasicObject
     @notifyDelegateOfInsertionAtRange([startPosition, endPosition])
 
   insertLineBreak: ->
-    insertion = new Trix.LineBreakInsertion this
+    insertion = new LineBreakInsertion this
 
     if insertion.shouldDecreaseListLevel()
       @decreaseListLevel()
       @setSelection(insertion.startPosition)
     else if insertion.shouldPrependListItem()
-      document = new Trix.Document [insertion.block.copyWithoutText()]
+      document = new Document [insertion.block.copyWithoutText()]
       @insertDocument(document)
     else if insertion.shouldInsertBlockBreak()
       @insertBlockBreak()
@@ -93,7 +97,7 @@ class Trix.Composition extends Trix.BasicObject
       @insertString("\n")
 
   insertHTML: (html) ->
-    document = Trix.Document.fromHTML(html)
+    document = HTMLParser.parse(html).getDocument()
     selectedRange = @getSelectedRange()
 
     @setDocument(@document.mergeDocumentAtRange(document, selectedRange))
@@ -105,7 +109,7 @@ class Trix.Composition extends Trix.BasicObject
     @notifyDelegateOfInsertionAtRange([startPosition, endPosition])
 
   replaceHTML: (html) ->
-    document = Trix.Document.fromHTML(html).copyUsingObjectsFromDocument(@document)
+    document = HTMLParser.parse(html).getDocument().copyUsingObjectsFromDocument(@document)
     locationRange = @getLocationRange(strict: false)
     selectedRange = @document.rangeFromLocationRange(locationRange)
     @setDocument(document)
@@ -117,7 +121,7 @@ class Trix.Composition extends Trix.BasicObject
   insertFiles: (files) ->
     attachments = []
     for file in files when @delegate?.compositionShouldAcceptFile(file)
-      attachment = Trix.Attachment.attachmentForFile(file)
+      attachment = Attachment.attachmentForFile(file)
       attachments.push(attachment)
     @insertAttachments(attachments)
 
@@ -125,7 +129,7 @@ class Trix.Composition extends Trix.BasicObject
     @insertAttachments([attachment])
 
   insertAttachments: (attachments) ->
-    text = new Trix.Text
+    text = new Text
 
     for attachment in attachments
       type = attachment.getType()
@@ -134,7 +138,7 @@ class Trix.Composition extends Trix.BasicObject
       attributes = @getCurrentTextAttributes()
       attributes.presentation = presentation if presentation
 
-      attachmentText = Trix.Text.textForAttachmentWithAttributes(attachment, attributes)
+      attachmentText = Text.textForAttachmentWithAttributes(attachment, attributes)
       text = text.appendText(attachmentText)
 
     @insertText(text)
@@ -255,7 +259,7 @@ class Trix.Composition extends Trix.BasicObject
     [startPosition, endPosition] = selectedRange
     if startPosition is endPosition
       if attributeName is "href"
-        text = Trix.Text.textForStringWithAttributes(value, href: value)
+        text = Text.textForStringWithAttributes(value, href: value)
         @insertText(text)
     else
       @setDocument(@document.addAttributeAtRange(attributeName, value, selectedRange))
@@ -541,7 +545,7 @@ class Trix.Composition extends Trix.BasicObject
     else if insertion.startLocation.offset - 1 isnt 0
       position += 1
 
-    newDocument = new Trix.Document [block.removeLastAttribute().copyWithoutText()]
+    newDocument = new Document [block.removeLastAttribute().copyWithoutText()]
     @setDocument(document.insertDocumentAtRange(newDocument, range))
     @setSelection(position)
 

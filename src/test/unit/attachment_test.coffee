@@ -1,13 +1,14 @@
 import Trix from "trix/global"
+import Attachment from "trix/models/attachment"
 
 {assert, test, testGroup} = Trix.TestHelpers
 
-testGroup "Trix.Attachment", ->
+testGroup "Attachment", ->
   previewableTypes = "image image/gif image/png image/jpg".split(" ")
   nonPreviewableTypes = "image/tiff application/foo".split(" ")
 
   createAttachment = (attributes) ->
-    new Trix.Attachment attributes
+    new Attachment attributes
 
   for contentType in previewableTypes then do (contentType) ->
     test "#{contentType} content type is previewable", ->

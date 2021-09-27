@@ -1,4 +1,4 @@
-class Trix.Watchdog.Deserializer
+export default class Deserializer
   constructor: (@document, @snapshot) ->
     {@tree, @selection} = @snapshot
     @deserializeTree()

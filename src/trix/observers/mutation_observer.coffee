@@ -1,8 +1,9 @@
 import Trix from "trix/global"
+import BasicObject from "trix/core/basic_object"
 
 {findClosestElementFromNode, nodeIsEmptyTextNode, nodeIsBlockStartComment, normalizeSpaces, summarizeStringChange, tagName} = Trix
 
-class Trix.MutationObserver extends Trix.BasicObject
+export default class MutationObserver extends BasicObject
   mutableAttributeName = "data-trix-mutable"
   mutableSelector = "[#{mutableAttributeName}]"
 

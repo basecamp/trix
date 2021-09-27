@@ -1,4 +1,5 @@
 import Trix from "trix/global"
+import Attachment from "trix/models/attachment"
 
 helpers = Trix.TestHelpers
 
@@ -40,7 +41,7 @@ helpers.extend
       filesize: 35
       contentType: "image/gif"
 
-    new Trix.Attachment attributes
+    new Attachment attributes
 
   replaceDocument: (document) ->
     getComposition().setDocument(document)

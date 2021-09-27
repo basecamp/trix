@@ -1,18 +1,20 @@
 import Trix from "trix/global"
+import Text from "trix/models/text"
+import StringPiece from "trix/models/string_piece"
 
 {assert, test, testGroup} = Trix.TestHelpers
 
-testGroup "Trix.Text", ->
+testGroup "Text", ->
   testGroup "#removeTextAtRange", ->
     test "removes text with range in single piece", ->
-      text = new Trix.Text [new Trix.StringPiece("abc")]
+      text = new Text [new StringPiece("abc")]
       pieces = text.removeTextAtRange([0,1]).getPieces()
       assert.equal pieces.length, 1
       assert.equal pieces[0].toString(), "bc"
       assert.deepEqual pieces[0].getAttributes(), {}
 
     test "removes text with range spanning pieces", ->
-      text = new Trix.Text [new Trix.StringPiece("abc"), new Trix.StringPiece("123", bold: true)]
+      text = new Text [new StringPiece("abc"), new StringPiece("123", bold: true)]
       pieces = text.removeTextAtRange([2,4]).getPieces()
       assert.equal pieces.length, 2
       assert.equal pieces[0].toString(), "ab"

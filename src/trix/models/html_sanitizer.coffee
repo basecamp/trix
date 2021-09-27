@@ -1,8 +1,9 @@
 import Trix from "trix/global"
+import BasicObject from "trix/core/basic_object"
 
 {tagName, walkTree, nodeIsAttachmentElement} = Trix
 
-class Trix.HTMLSanitizer extends Trix.BasicObject
+export default class HTMLSanitizer extends BasicObject
   DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height class".split(" ")
   DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
   DEFAULT_FORBIDDEN_ELEMENTS = "script iframe".split(" ")

@@ -1,8 +1,9 @@
 import Trix from "trix/global"
+import BasicObject from "trix/core/basic_object"
 
 {handleEvent, triggerEvent, findClosestElementFromNode} = Trix
 
-class Trix.ToolbarController extends Trix.BasicObject
+export default class ToolbarController extends BasicObject
   attributeButtonSelector = "[data-trix-attribute]"
   actionButtonSelector = "[data-trix-action]"
   toolbarButtonSelector = "#{attributeButtonSelector}, #{actionButtonSelector}"

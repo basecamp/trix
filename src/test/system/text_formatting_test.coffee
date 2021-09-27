@@ -1,6 +1,8 @@
 import Trix from "trix/global"
 import config from "trix/config"
 
+import Text from "trix/models/text"
+
 {assert, clickElement, clickToolbarButton, clickToolbarDialogButton, collapseSelection, expandSelection, insertString, insertText, isToolbarButtonActive, isToolbarButtonDisabled, isToolbarDialogActive, moveCursor, pressKey, test, testIf, testGroup, typeCharacters, typeInToolbarDialog, typeToolbarKeyCommand} = Trix.TestHelpers
 
 testGroup "Text formatting", template: "editor_empty", ->
@@ -36,7 +38,7 @@ testGroup "Text formatting", template: "editor_empty", ->
 
   test "editing a link", (done) ->
     insertString("a")
-    text = Trix.Text.textForStringWithAttributes("bc", href: "http://example.com")
+    text = Text.textForStringWithAttributes("bc", href: "http://example.com")
     insertText(text)
     insertString("d")
     moveCursor direction: "left", times: 2, ->
@@ -50,7 +52,7 @@ testGroup "Text formatting", template: "editor_empty", ->
           done()
 
   test "removing a link", (done) ->
-    text = Trix.Text.textForStringWithAttributes("ab", href: "http://example.com")
+    text = Text.textForStringWithAttributes("ab", href: "http://example.com")
     insertText(text)
     assert.textAttributes([0, 2], href: "http://example.com")
     expandSelection direction: "left", times: 2, ->

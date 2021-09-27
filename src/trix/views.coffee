@@ -1,5 +1,4 @@
 import "trix/views/object_view"
-import "trix/views/object_group_view"
 import "trix/views/attachment_view"
 import "trix/views/block_view"
 import "trix/views/document_view"

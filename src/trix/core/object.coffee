@@ -1,8 +1,8 @@
 import Trix from "trix/global"
+import BasicObject from "trix/core/basic_object"
+import UTF16String from "trix/core/utilities/utf16_string"
 
-import "trix/core/basic_object"
-
-class Trix.Object extends Trix.BasicObject
+export default class TrixObject extends BasicObject
   id = 0
 
   @fromJSONString: (jsonString) ->
@@ -30,7 +30,7 @@ class Trix.Object extends Trix.BasicObject
     JSON.stringify(this)
 
   toUTF16String: ->
-    Trix.UTF16String.box(this)
+    UTF16String.box(this)
 
   getCacheKey: ->
     @id.toString()

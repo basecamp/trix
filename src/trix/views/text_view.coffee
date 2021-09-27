@@ -1,8 +1,9 @@
 import Trix from "trix/global"
+import ObjectView from "trix/views/object_view"
+import ObjectGroup from "trix/core/collections/object_group"
+import PieceView from "trix/views/piece_view"
 
-import "trix/views/piece_view"
-
-class Trix.TextView extends Trix.ObjectView
+export default class TextView extends ObjectView
   constructor: ->
     super(arguments...)
     @text = @object
@@ -10,7 +11,7 @@ class Trix.TextView extends Trix.ObjectView
 
   createNodes: ->
     nodes = []
-    pieces = Trix.ObjectGroup.groupObjects(@getPieces())
+    pieces = ObjectGroup.groupObjects(@getPieces())
     lastIndex = pieces.length - 1
 
     for piece, index in pieces
@@ -19,7 +20,7 @@ class Trix.TextView extends Trix.ObjectView
       context.isLast = true if index is lastIndex
       context.followsWhitespace = true if endsWithWhitespace(previousPiece)
 
-      view = @findOrCreateCachedChildView(Trix.PieceView, piece, {@textConfig, context})
+      view = @findOrCreateCachedChildView(PieceView, piece, {@textConfig, context})
       nodes.push(view.getNodes()...)
 
       previousPiece = piece

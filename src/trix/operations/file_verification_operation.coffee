@@ -1,6 +1,7 @@
 import Trix from "trix/global"
+import Operation from "trix/core/utilities/operation"
 
-class Trix.FileVerificationOperation extends Trix.Operation
+export default class FileVerificationOperation extends Operation
   constructor: (@file) ->
     super(arguments...)
 

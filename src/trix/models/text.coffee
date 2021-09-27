@@ -1,26 +1,30 @@
 import Trix from "trix/global"
+import TrixObject from "trix/core/object" # Don't override window.Object
 
-import "trix/models/attachment_piece"
-import "trix/models/string_piece"
-import "trix/models/splittable_list"
+import Piece from "trix/models/piece"
+import AttachmentPiece from "trix/models/attachment_piece"
+import StringPiece from "trix/models/string_piece"
+import SplittableList from "trix/models/splittable_list"
 
-class Trix.Text extends Trix.Object
+import Hash from "trix/core/collections/hash"
+
+export default class Text extends TrixObject
   @textForAttachmentWithAttributes: (attachment, attributes) ->
-    piece = new Trix.AttachmentPiece attachment, attributes
+    piece = new AttachmentPiece attachment, attributes
     new this [piece]
 
   @textForStringWithAttributes: (string, attributes) ->
-    piece = new Trix.StringPiece string, attributes
+    piece = new StringPiece string, attributes
     new this [piece]
 
   @fromJSON: (textJSON) ->
     pieces = for pieceJSON in textJSON
-      Trix.Piece.fromJSON pieceJSON
+      Piece.fromJSON pieceJSON
     new this pieces
 
   constructor: (pieces = []) ->
     super(arguments...)
-    @pieceList = new Trix.SplittableList (piece for piece in pieces when not piece.isEmpty())
+    @pieceList = new SplittableList (piece for piece in pieces when not piece.isEmpty())
 
   copy: ->
     @copyWithPieceList @pieceList
@@ -74,7 +78,7 @@ class Trix.Text extends Trix.Object
 
   getCommonAttributes: ->
     objects = (piece.getAttributes() for piece in @pieceList.toArray())
-    Trix.Hash.fromCommonAttributesOfObjects(objects).toObject()
+    Hash.fromCommonAttributesOfObjects(objects).toObject()
 
   getCommonAttributesAtRange: (range) ->
     @getTextAtRange(range).getCommonAttributes() ? {}
