@@ -1,7 +1,7 @@
 import Trix from "trix/global"
 import config from "trix/config"
 
-{assert, defer, dragToCoordinates, expandSelection, insertNode, moveCursor, pressKey, selectAll, test, testIf, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
+import { assert, defer, dragToCoordinates, expandSelection, insertNode, moveCursor, pressKey, selectAll, test, testIf, testGroup, triggerEvent, typeCharacters } from "test/test_helper"
 
 testGroup "Basic input", template: "editor_empty", ->
   test "typing", (expectDocument) ->

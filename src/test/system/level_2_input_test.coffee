@@ -1,7 +1,7 @@
 import Trix from "trix/global"
 import config from "trix/config"
 
-{assert, after, clickToolbarButton, defer, insertString, insertNode, isToolbarButtonActive, selectAll, selectNode, test, testIf, testGroup, triggerEvent, triggerInputEvent, typeCharacters} = Trix.TestHelpers
+import { assert, after, clickToolbarButton, defer, insertString, insertNode, isToolbarButtonActive, selectAll, selectNode, testIf, testGroup, triggerEvent, triggerInputEvent, typeCharacters } from "test/test_helper"
 
 test = ->
   testIf(config.input.getLevel() is 2, arguments...)

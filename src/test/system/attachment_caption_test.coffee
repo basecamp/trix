@@ -1,7 +1,7 @@
 import Trix from "trix/global"
 import config from "trix/config"
 
-{assert, insertImageAttachment, test, testGroup} = Trix.TestHelpers
+import { assert, insertImageAttachment, test, testGroup } from "test/test_helper"
 
 testGroup "Attachment captions", template: "editor_empty", ->
   test "default caption includes file name and size", ->

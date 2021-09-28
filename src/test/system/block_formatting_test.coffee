@@ -4,7 +4,7 @@ import Text from "trix/models/text"
 import Block from "trix/models/block"
 import Document from "trix/models/document"
 
-{assert, clickToolbarButton, defer, expandSelection, isToolbarButtonActive, isToolbarButtonDisabled, moveCursor, pressKey, replaceDocument, selectAll, test, testGroup, typeCharacters} = Trix.TestHelpers
+import { assert, clickToolbarButton, defer, expandSelection, isToolbarButtonActive, isToolbarButtonDisabled, moveCursor, pressKey, replaceDocument, selectAll, test, testGroup, typeCharacters } from "test/test_helper"
 
 testGroup "Block formatting", template: "editor_empty", ->
   test "applying block attributes", (done) ->

@@ -1,6 +1,4 @@
-window.JST ||= {}
-
-window.JST["test/test_helpers/fixtures/editor_in_table"] = () => """
+export default () => """
 <table>
   <tr>
     <td>

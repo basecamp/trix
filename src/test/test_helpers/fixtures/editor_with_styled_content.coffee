@@ -1,6 +1,4 @@
-window.JST ||= {}
-
-window.JST["test/test_helpers/fixtures/editor_with_styled_content"] = () => """
+export default () => """
 <style type="text/css">
   .trix-content figure.attachment {
     display: inline-block;

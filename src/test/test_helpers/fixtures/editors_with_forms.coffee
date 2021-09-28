@@ -1,6 +1,4 @@
-window.JST ||= {}
-
-window.JST["test/test_helpers/fixtures/editors_with_forms"] = () => """
+export default () => """
 <form id="ancestor-form">
   <trix-editor id="editor-with-ancestor-form"></trix-editor>
 </form>

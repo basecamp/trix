@@ -5,7 +5,7 @@ import Attachment from "trix/models/attachment"
 import Document from "trix/models/document"
 import HTMLParser from "trix/models/html_parser"
 
-{assert, test, testGroup} = Trix.TestHelpers
+import { assert, test, testGroup } from "test/test_helper"
 
 testGroup "Document", ->
   createDocumentWithAttachment = (attachment) ->

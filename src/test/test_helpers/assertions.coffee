@@ -1,22 +1,20 @@
-import Trix from "trix/global"
 import DocumentView from "trix/views/document_view"
 
 {normalizeRange, rangesAreEqual} = Trix
 
-helpers = Trix.TestHelpers
-helpers.assert = QUnit.assert
+assert = QUnit.assert
 
-helpers.assert.locationRange = (start, end) ->
+assert.locationRange = (start, end) ->
   expectedLocationRange = normalizeRange([start, end])
   actualLocationRange = getEditorController().getLocationRange()
   @deepEqual(actualLocationRange, expectedLocationRange)
 
-helpers.assert.selectedRange = (range) ->
+assert.selectedRange = (range) ->
   expectedRange = normalizeRange(range)
   actualRange = getEditor().getSelectedRange()
   @deepEqual(actualRange, expectedRange)
 
-helpers.assert.textAttributes = (range, attributes) ->
+assert.textAttributes = (range, attributes) ->
   document = getDocument().getDocumentAtRange(range)
   blocks = document.getBlocks()
   throw "range #{JSON.stringify(range)} spans more than one block" unless blocks.length is 1
@@ -31,7 +29,7 @@ helpers.assert.textAttributes = (range, attributes) ->
   piece = pieces[0]
   @deepEqual piece.getAttributes(), attributes
 
-helpers.assert.blockAttributes = (range, attributes) ->
+assert.blockAttributes = (range, attributes) ->
   document = getDocument().getDocumentAtRange(range)
   blocks = document.getBlocks()
   throw "range #{JSON.stringify(range)} spans more than one block" unless blocks.length is 1
@@ -39,8 +37,10 @@ helpers.assert.blockAttributes = (range, attributes) ->
   block = blocks[0]
   @deepEqual block.getAttributes(), attributes
 
-helpers.assert.documentHTMLEqual = (trixDocument, html) ->
-  @equal helpers.getHTML(trixDocument), html
+assert.documentHTMLEqual = (trixDocument, html) ->
+  @equal getHTML(trixDocument), html
 
-helpers.getHTML = (trixDocument) ->
+getHTML = (trixDocument) ->
   DocumentView.render(trixDocument).innerHTML
+
+export { assert, getHTML }

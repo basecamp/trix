@@ -1,7 +1,7 @@
 import Trix from "trix/global"
 import config from "trix/config"
 
-{after, assert, clickElement, clickToolbarButton, createFile, defer, dragToCoordinates, moveCursor, pressKey, test, testGroup, triggerEvent, typeCharacters} = Trix.TestHelpers
+import { after, assert, clickElement, clickToolbarButton, createFile, defer, dragToCoordinates, moveCursor, pressKey, test, testGroup, triggerEvent, typeCharacters } from "test/test_helper"
 
 testGroup "Attachments", template: "editor_with_image", ->
   test "moving an image by drag and drop", (expectDocument) ->

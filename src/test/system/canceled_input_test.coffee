@@ -1,6 +1,6 @@
 import Trix from "trix/global"
 
-{pressKey, test, testGroup, typeCharacters} = Trix.TestHelpers
+import { pressKey, test, testGroup, typeCharacters } from "test/test_helper"
 
 testOptions =
   template: "editor_empty"

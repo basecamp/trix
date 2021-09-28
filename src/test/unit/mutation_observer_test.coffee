@@ -1,7 +1,7 @@
 import Trix from "trix/global"
 import MutationObserver from "trix/observers/mutation_observer"
 
-{assert, defer, test, testGroup} = Trix.TestHelpers
+import { assert, defer, test, testGroup } from "test/test_helper"
 
 observer = null
 element = null

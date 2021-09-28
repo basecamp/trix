@@ -3,7 +3,7 @@ import DocumentView from "trix/views/document_view"
 import Document from "trix/models/document"
 import LocationMapper from "trix/models/location_mapper"
 
-{assert, test, testGroup} = Trix.TestHelpers
+import { assert, test, testGroup } from "test/test_helper"
 
 testGroup "LocationMapper", ->
   test "findLocationFromContainerAndOffset", ->
