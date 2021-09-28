@@ -1,5 +1,2 @@
-import Trix from "trix/global"
-
-Trix.extend
-  defer: (fn) ->
+export defer = (fn) ->
     setTimeout fn, 1

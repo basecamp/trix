@@ -1,15 +1,15 @@
-import Trix from "trix/global"
 import config from "trix/config"
+
+import { makeElement, triggerEvent, handleEvent, handleEventOnce,
+  findClosestElementFromNode, registerElement } from "trix/core/helpers"
+
+import { attachmentSelector } from "trix/config/attachments"
+
 import AttachmentView from "trix/views/attachment_view"
-
-import "trix/elements/trix_toolbar_element"
 import EditorController from "trix/controllers/editor_controller"
+import "trix/elements/trix_toolbar_element"
 
-{browser, makeElement, triggerEvent, handleEvent, handleEventOnce, findClosestElementFromNode} = Trix
-
-{attachmentSelector} = AttachmentView
-
-Trix.registerElement "trix-editor", do ->
+registerElement "trix-editor", do ->
   id = 0
 
   # Contenteditable support helpers
@@ -58,7 +58,7 @@ Trix.registerElement "trix-editor", do ->
   # Style
 
   cursorTargetStyles = do ->
-    if browser.forcesObjectResizing
+    if config.browser.forcesObjectResizing
       display: "inline"
       width: "auto"
     else

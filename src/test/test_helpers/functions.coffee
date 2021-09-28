@@ -5,6 +5,3 @@ export extend = (properties) ->
 
 export after = (delay, callback) ->
   setTimeout(callback, delay)
-
-export defer = (callback) ->
-  after(1, callback)

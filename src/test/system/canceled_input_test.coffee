@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import { pressKey, test, testGroup, typeCharacters } from "test/test_helper"
 
 testOptions =

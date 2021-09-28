@@ -1,8 +1,7 @@
-import Trix from "trix/global"
 import TrixObject from "trix/core/object" # Don't override window.Object
 import Text from "trix/models/text"
 
-{arraysAreEqual, spliceArray, getBlockConfig, getBlockAttributeNames, getListAttributeNames} = Trix
+import { arraysAreEqual, spliceArray, getBlockConfig, getBlockAttributeNames, getListAttributeNames } from "trix/core/helpers"
 
 export default class Block extends TrixObject
   @fromJSON: (blockJSON) ->

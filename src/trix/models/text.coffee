@@ -1,5 +1,6 @@
-import Trix from "trix/global"
 import TrixObject from "trix/core/object" # Don't override window.Object
+
+import { getDirection } from "trix/core/helpers"
 
 import Piece from "trix/models/piece"
 import AttachmentPiece from "trix/models/attachment_piece"
@@ -176,7 +177,7 @@ export default class Text extends TrixObject
   # BIDI
 
   getDirection: ->
-    Trix.getDirection(@toString())
+    getDirection(@toString())
 
   isRTL: ->
     @getDirection() is "rtl"

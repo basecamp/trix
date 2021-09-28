@@ -1,5 +1,5 @@
 import config from "trix/config"
-import { defer } from "./functions"
+import { defer } from "trix/core/helpers"
 import { createEvent, triggerEvent } from "./event_helpers"
 import { selectionIsCollapsed, deleteSelection, insertNode, createDOMRangeFromPoint,
   selectNode, collapseSelection } from "./selection_helpers"

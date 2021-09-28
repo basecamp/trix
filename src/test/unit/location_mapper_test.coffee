@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import DocumentView from "trix/views/document_view"
 import Document from "trix/models/document"
 import LocationMapper from "trix/models/location_mapper"

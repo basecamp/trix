@@ -44,7 +44,7 @@ DEBUG_METHODS =
     didKeyDownDialogInput
   "
 
-{findClosestElementFromNode} = Trix
+import { findClosestElementFromNode } from "trix/core/helpers"
 
 errorListeners = []
 

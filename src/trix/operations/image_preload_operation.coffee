@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import Operation from "trix/core/utilities/operation"
 
 export default class ImagePreloadOperation extends Operation

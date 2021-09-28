@@ -1,7 +1,6 @@
-import Trix from "trix/global"
 import TrixObject from "trix/core/object" # Don't override window.Object
 
-{spliceArray} = Trix
+import { spliceArray } from "trix/core/helpers"
 
 export default class SplittableList extends TrixObject
   @box: (objects) ->

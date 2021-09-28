@@ -1,5 +1,6 @@
-import Trix from "trix/global"
 import config from "trix/config"
+import { OBJECT_REPLACEMENT_CHARACTER } from "trix/constants"
+
 import BasicObject from "trix/core/basic_object"
 import Text from "trix/models/text"
 import Block from "trix/models/block"
@@ -8,7 +9,7 @@ import Document from "trix/models/document"
 import HTMLParser from "trix/models/html_parser"
 import LineBreakInsertion from "trix/models/line_break_insertion"
 
-{normalizeRange, rangesAreEqual, rangeIsCollapsed, objectsAreEqual, arrayStartsWith, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend} = Trix
+import { normalizeRange, rangesAreEqual, rangeIsCollapsed, objectsAreEqual, arrayStartsWith, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend } from "trix/core/helpers"
 
 export default class Composition extends BasicObject
   constructor: ->
@@ -560,7 +561,7 @@ export default class Composition extends BasicObject
 
   getAttachmentAtRange: (range) ->
     document = @document.getDocumentAtRange(range)
-    if document.toString() is "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+    if document.toString() is "#{OBJECT_REPLACEMENT_CHARACTER}\n"
       document.getAttachments()[0]
 
   notifyDelegateOfCurrentAttributesChange: ->

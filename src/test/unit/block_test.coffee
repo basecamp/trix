@@ -1,10 +1,7 @@
-import Trix from "trix/global"
-
 import Text from "trix/models/text"
 import Block from "trix/models/block"
 
 import { assert, test, testGroup } from "test/test_helper"
-
 
 testGroup "Block", ->
   test "consolidating blocks creates text with one blockBreak piece", ->

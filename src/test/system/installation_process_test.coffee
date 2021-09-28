@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import EditorController from "trix/controllers/editor_controller"
 
 import { assert, defer, test, testGroup } from "test/test_helper"

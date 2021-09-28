@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import BasicObject from "trix/core/basic_object"
 import ObjectGroup from "trix/core/collections/object_group"
 

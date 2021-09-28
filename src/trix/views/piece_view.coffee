@@ -1,9 +1,10 @@
-import Trix from "trix/global"
+import { NON_BREAKING_SPACE } from "trix/constants"
+
 import ObjectView from "trix/views/object_view"
 import AttachmentView from "trix/views/attachment_view"
 import PreviewableAttachmentView from "trix/views/previewable_attachment_view"
 
-{makeElement, findInnerElement, getTextConfig} = Trix
+import { makeElement, findInnerElement, getTextConfig } from "trix/core/helpers"
 
 export default class PieceView extends ObjectView
   constructor: ->
@@ -84,7 +85,7 @@ export default class PieceView extends ObjectView
         attributes[key] = value
         return makeElement(config.groupTagName, attributes)
 
-  nbsp = Trix.NON_BREAKING_SPACE
+  nbsp = NON_BREAKING_SPACE
 
   preserveSpaces: (string) ->
     if @context.isLast

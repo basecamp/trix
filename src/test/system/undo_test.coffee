@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import { assert, clickToolbarButton, expandSelection, moveCursor, test, testGroup, typeCharacters } from "test/test_helper"
 
 testGroup "Undo/Redo", template: "editor_empty", ->

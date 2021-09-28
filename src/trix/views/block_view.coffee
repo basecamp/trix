@@ -1,9 +1,8 @@
-import Trix from "trix/global"
 import config from "trix/config"
 import ObjectView from "trix/views/object_view"
 import TextView from "trix/views/text_view"
 
-{makeElement, getBlockConfig} = Trix
+import { makeElement, getBlockConfig } from "trix/core/helpers"
 {css} = config
 
 export default class BlockView extends ObjectView

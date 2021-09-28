@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import "trix/views/object_view"
 import BasicObject from "trix/core/basic_object"
 

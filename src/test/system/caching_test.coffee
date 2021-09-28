@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import { assert, clickToolbarButton, moveCursor, test, testGroup, typeCharacters } from "test/test_helper"
 
 testGroup "View caching", template: "editor_empty", ->

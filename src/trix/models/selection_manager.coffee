@@ -1,13 +1,12 @@
-import Trix from "trix/global"
 import BasicObject from "trix/core/basic_object"
 
 import LocationMapper from "trix/models/location_mapper"
 import PointMapper from "trix/models/point_mapper"
-import SelectionChangeObserver from "trix/observers/selection_change_observer"
+import SelectionChangeObserver, { selectionChangeObserver } from "trix/observers/selection_change_observer"
 
-{getDOMSelection, getDOMRange, setDOMRange, elementContainsNode,
+import {getDOMSelection, getDOMRange, setDOMRange, elementContainsNode,
  nodeIsCursorTarget, innerElementIsActive, handleEvent, normalizeRange,
- rangeIsCollapsed, rangesAreEqual} = Trix
+ rangeIsCollapsed, rangesAreEqual} from "trix/core/helpers"
 
 export default class SelectionManager extends BasicObject
   constructor: (@element) ->

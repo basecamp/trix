@@ -1,5 +1,5 @@
-import Trix from "trix/global"
 import config from "trix/config"
+import { OBJECT_REPLACEMENT_CHARACTER } from "trix/constants"
 
 import { assert, after, clickToolbarButton, defer, insertString, insertNode, isToolbarButtonActive, selectAll, selectNode, testIf, testGroup, triggerEvent, triggerInputEvent, typeCharacters } from "test/test_helper"
 
@@ -148,7 +148,7 @@ testGroup "Level 2 Input", testOptions, ->
         attachments = getDocument().getAttachments()
         assert.equal attachments.length, 1
         assert.equal attachments[0].getFilename(), file.name
-        expectDocument "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+        expectDocument "#{OBJECT_REPLACEMENT_CHARACTER}\n"
 
   # "insertFromPaste InputEvent missing pasted files in dataTransfer"
   # - https://bugs.webkit.org/show_bug.cgi?id=194921
@@ -160,7 +160,7 @@ testGroup "Level 2 Input", testOptions, ->
         attachments = getDocument().getAttachments()
         assert.equal attachments.length, 1
         assert.equal attachments[0].getFilename(), file.name
-        expectDocument "#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+        expectDocument "#{OBJECT_REPLACEMENT_CHARACTER}\n"
 
   # "insertFromPaste InputEvent missing text/uri-list in dataTransfer for pasted links"
   # - https://bugs.webkit.org/show_bug.cgi?id=196702

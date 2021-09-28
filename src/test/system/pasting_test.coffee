@@ -1,5 +1,5 @@
-import Trix from "trix/global"
 import config from "trix/config"
+import { OBJECT_REPLACEMENT_CHARACTER } from "trix/constants"
 
 import { after, assert, clickToolbarButton, createFile, defer, expandSelection, moveCursor, pasteContent, pressKey, test, testIf, testGroup, triggerEvent, typeCharacters } from "test/test_helper"
 
@@ -259,7 +259,7 @@ testGroup "Pasting", template: "editor_empty", ->
   test "paste file", (expectDocument) ->
     typeCharacters "a", ->
       pasteContent "Files", (createFile()), ->
-        expectDocument "a#{Trix.OBJECT_REPLACEMENT_CHARACTER}\n"
+        expectDocument "a#{OBJECT_REPLACEMENT_CHARACTER}\n"
 
   testIf config.input.getLevel() is 0, "paste event with no clipboardData", (expectDocument) ->
     typeCharacters "a", ->

@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import Text from "trix/models/text"
 import StringPiece from "trix/models/string_piece"
 

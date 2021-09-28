@@ -1,12 +1,10 @@
-import Trix from "trix/global"
 import BasicObject from "trix/core/basic_object"
 import AttachmentView from "trix/views/attachment_view"
 import DocumentView from "trix/views/document_view"
 import AttachmentEditorController from "trix/controllers/attachment_editor_controller"
 
-{findClosestElementFromNode, handleEvent, innerElementIsActive, defer}  = Trix
-
-{attachmentSelector} = AttachmentView
+import { findClosestElementFromNode, handleEvent, innerElementIsActive, defer } from "trix/core/helpers"
+import { attachmentSelector } from "trix/config/attachments"
 
 export default class CompositionController extends BasicObject
   constructor: (@element, @composition) ->

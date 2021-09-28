@@ -1,4 +1,6 @@
-Trix.registerElement "trix-inspector",
+import { registerElement } from "trix/core/helpers"
+
+registerElement "trix-inspector",
   defaultCSS: """
     %t {
       display: block;

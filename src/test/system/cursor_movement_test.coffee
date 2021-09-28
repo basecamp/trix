@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import { assert, createFile, expandSelection, insertFile, insertString, moveCursor, test, testGroup } from "test/test_helper"
 
 testGroup "Cursor movement", template: "editor_empty", ->

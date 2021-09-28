@@ -1,4 +1,3 @@
-import Trix from "trix/global"
 import ObjectView from "trix/views/object_view"
 import ObjectGroup from "trix/core/collections/object_group"
 import PieceView from "trix/views/piece_view"

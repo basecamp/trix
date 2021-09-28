@@ -1,9 +1,9 @@
-
-import { defer } from "./functions"
+import { defer } from "trix/core/helpers"
 import { createEvent, triggerEvent } from "./event_helpers"
+import { selectionChangeObserver } from "trix/observers/selection_change_observer"
 
 export clickToolbarButton = (selector, callback) ->
-  Trix.selectionChangeObserver.update()
+  selectionChangeObserver.update()
   button = getToolbarButton(selector)
   triggerEvent(button, "mousedown")
   defer(callback)

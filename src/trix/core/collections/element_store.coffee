@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 export default class ElementStore
   constructor: (elements) ->
     @reset(elements)

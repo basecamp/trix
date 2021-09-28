@@ -1,8 +1,8 @@
-import Trix from "trix/global"
 import config from "trix/config"
 
 import { triggerEvent } from "event_helpers"
-import { defer } from "./functions"
+import { defer } from "trix/core/helpers"
+import { selectionChangeObserver } from "trix/observers/selection_change_observer"
 
 import rangy from "rangy"
 import "rangy/lib/rangy-textrange"
@@ -31,7 +31,7 @@ export moveCursor = (options, callback) ->
     if triggerEvent(document.activeElement, "keydown", keyCode: keyCodes[direction], key: keys[direction])
       selection = rangy.getSelection()
       selection.move("character", if direction is "right" then 1 else -1)
-      Trix.selectionChangeObserver.update()
+      selectionChangeObserver.update()
 
     if --times is 0
       defer -> callback(getCursorCoordinates())
@@ -62,18 +62,18 @@ export collapseSelection = (direction, callback) ->
     selection.collapseToStart()
   else
     selection.collapseToEnd()
-  Trix.selectionChangeObserver.update()
+  selectionChangeObserver.update()
   defer(callback)
 
 export selectAll = (callback) ->
   rangy.getSelection().selectAllChildren(document.activeElement)
-  Trix.selectionChangeObserver.update()
+  selectionChangeObserver.update()
   defer(callback)
 
 export deleteSelection = ->
   selection = rangy.getSelection()
   selection.getRangeAt(0).deleteContents()
-  Trix.selectionChangeObserver.update()
+  selectionChangeObserver.update()
 
 export selectionIsCollapsed = ->
   rangy.getSelection().isCollapsed
@@ -86,13 +86,13 @@ export insertNode = (node, callback) ->
   range.setStartAfter(node)
   range.deleteContents()
   selection.setSingleRange(range)
-  Trix.selectionChangeObserver.update()
+  selectionChangeObserver.update()
   requestAnimationFrame(callback) if callback
 
 export selectNode = (node, callback) ->
   selection = rangy.getSelection()
   selection.selectAllChildren(node)
-  Trix.selectionChangeObserver.update()
+  selectionChangeObserver.update()
   callback?()
 
 export createDOMRangeFromPoint = (x, y) ->

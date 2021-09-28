@@ -1,5 +1,3 @@
-import Trix from "trix/global"
-
 import Text from "trix/models/text"
 import Block from "trix/models/block"
 import Document from "trix/models/document"

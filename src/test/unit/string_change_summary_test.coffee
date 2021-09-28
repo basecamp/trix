@@ -1,8 +1,7 @@
-import Trix from "trix/global"
-
+import { summarizeStringChange } from "trix/core/helpers"
 import { assert, test, testGroup } from "test/test_helper"
 
-testGroup "Trix.summarizeStringChange", ->
+testGroup "summarizeStringChange", ->
   assertions =
     "no change":
       oldString: "abc"
@@ -56,4 +55,4 @@ testGroup "Trix.summarizeStringChange", ->
   for name, details of assertions
     do ({oldString, newString, change} = details) ->
       test name, ->
-        assert.deepEqual Trix.summarizeStringChange(oldString, newString), change
+        assert.deepEqual summarizeStringChange(oldString, newString), change

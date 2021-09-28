@@ -1,8 +1,9 @@
-import Trix from "trix/global"
+import { removeNode } from "trix/core/helpers"
+
 import config from "trix/config"
 import BasicObject from "trix/core/basic_object"
 
-{defer, handleEvent, makeElement, tagName} = Trix
+import { defer, handleEvent, makeElement, tagName } from "trix/core/helpers"
 {lang, css, keyNames} = config
 
 export default class AttachmentEditorController extends BasicObject
@@ -100,7 +101,7 @@ export default class AttachmentEditorController extends BasicObject
     handleEvent("click", onElement: element, matchingSelector: "[data-trix-action]", withCallback: @didClickActionButton)
 
     do: => @element.appendChild(element)
-    undo: => Trix.removeNode(element)
+    undo: => removeNode(element)
 
   installCaptionEditor: undoable ->
     textarea = makeElement
@@ -137,7 +138,7 @@ export default class AttachmentEditorController extends BasicObject
       if @options.editCaption
         defer -> textarea.focus()
     undo: ->
-      Trix.removeNode(editingFigcaption)
+      removeNode(editingFigcaption)
       figcaption.style.display = null
 
   # Event handlers

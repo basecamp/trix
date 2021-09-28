@@ -1,4 +1,4 @@
-{handleEvent} = Trix
+import { handleEvent } from "trix/core/helpers"
 
 export default class View
   constructor: (@editorElement) ->

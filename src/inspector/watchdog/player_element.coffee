@@ -1,7 +1,9 @@
+import { registerElement } from "trix/core/helpers"
+
 import Recording from "inspector/watchdog/recording"
 import PlayerController from "inspector/watchdog/player_controller"
 
-Trix.registerElement "trix-watchdog-player",
+registerElement "trix-watchdog-player",
   defaultCSS: """
     %t > div { display: -webkit-flex; display: flex; font-size: 14px; margin: 10px 0 }
     %t > div > button { width: 65px }

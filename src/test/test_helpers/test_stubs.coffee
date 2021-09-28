@@ -1,6 +1,4 @@
-import Trix from "trix/global"
-
-{normalizeRange, rangeIsCollapsed} = Trix
+import { normalizeRange, rangeIsCollapsed } from "trix/core/helpers"
 
 export class TestCompositionDelegate
   compositionDidRequestChangingSelectionToLocationRange: ->

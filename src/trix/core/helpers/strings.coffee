@@ -1,34 +1,33 @@
-import Trix from "trix/global"
+import { NON_BREAKING_SPACE, ZERO_WIDTH_SPACE } from "trix/constants"
 import UTF16String from "trix/core/utilities/utf16_string"
 
-Trix.extend
-  normalizeSpaces: (string) ->
-    string
-      .replace(///#{Trix.ZERO_WIDTH_SPACE}///g, "")
-      .replace(///#{Trix.NON_BREAKING_SPACE}///g, " ")
+export normalizeSpaces = (string) ->
+  string
+    .replace(///#{ZERO_WIDTH_SPACE}///g, "")
+    .replace(///#{NON_BREAKING_SPACE}///g, " ")
 
-  normalizeNewlines: (string) ->
-    string.replace(/\r\n/g, "\n")
+export normalizeNewlines = (string) ->
+  string.replace(/\r\n/g, "\n")
 
-  breakableWhitespacePattern: ///[^\S#{Trix.NON_BREAKING_SPACE}]///
+export breakableWhitespacePattern = ///[^\S#{NON_BREAKING_SPACE}]///
 
-  squishBreakableWhitespace: (string) ->
-    string
-      # Replace all breakable whitespace characters with a space
-      .replace(///#{Trix.breakableWhitespacePattern.source}///g, " ")
-      # Replace two or more spaces with a single space
-      .replace(/\ {2,}/g, " ")
+export squishBreakableWhitespace = (string) ->
+  string
+    # Replace all breakable whitespace characters with a space
+    .replace(///#{breakableWhitespacePattern.source}///g, " ")
+    # Replace two or more spaces with a single space
+    .replace(/\ {2,}/g, " ")
 
-  summarizeStringChange: (oldString, newString) ->
-    oldString = UTF16String.box(oldString)
-    newString = UTF16String.box(newString)
+export summarizeStringChange = (oldString, newString) ->
+  oldString = UTF16String.box(oldString)
+  newString = UTF16String.box(newString)
 
-    if newString.length < oldString.length
-      [removed, added] = utf16StringDifferences(oldString, newString)
-    else
-      [added, removed] = utf16StringDifferences(newString, oldString)
+  if newString.length < oldString.length
+    [removed, added] = utf16StringDifferences(oldString, newString)
+  else
+    [added, removed] = utf16StringDifferences(newString, oldString)
 
-    {added, removed}
+  {added, removed}
 
 utf16StringDifferences = (a, b) ->
   return ["", ""] if a.isEqualTo(b)

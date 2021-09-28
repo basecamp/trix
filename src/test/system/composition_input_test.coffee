@@ -1,8 +1,8 @@
-import Trix from "trix/global"
 import config from "trix/config"
 
-import { assert, clickToolbarButton, defer, endComposition, insertNode, pressKey, selectNode, startComposition, test, testIf, testGroup, triggerEvent, triggerInputEvent, typeCharacters, updateComposition } from "test/test_helper"
-{browser} = Trix
+import { assert, clickToolbarButton, defer, endComposition, insertNode,
+  pressKey, selectNode, startComposition, test, testIf, testGroup,
+  triggerEvent, triggerInputEvent, typeCharacters, updateComposition } from "test/test_helper"
 
 testGroup "Composition input", template: "editor_empty", ->
   test "composing", (expectDocument) ->
@@ -121,7 +121,7 @@ testGroup "Composition input", template: "editor_empty", ->
         defer ->
           expectDocument("ca\n")
 
-  testIf browser.composesExistingText, "composition events from cursor movement are ignored", (expectDocument) ->
+  testIf config.browser.composesExistingText, "composition events from cursor movement are ignored", (expectDocument) ->
     element = getEditorElement()
     element.editor.insertString("ab ")
 
