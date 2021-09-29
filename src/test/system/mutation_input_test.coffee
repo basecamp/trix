@@ -1,6 +1,6 @@
 import config from "trix/config"
 
-import { assert, defer, testIf, testGroup, triggerEvent, typeCharacters, clickToolbarButton, isToolbarButtonActive, insertNode } from "test/test_helper"
+import { assert, defer, testIf, testGroup, triggerEvent, typeCharacters, clickToolbarButton, isToolbarButtonActive, insertNode, TEST_IMAGE_URL } from "test/test_helper"
 
 test = ->
   testIf(config.input.getLevel() is 0, arguments...)
