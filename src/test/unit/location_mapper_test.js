@@ -1,23 +1,11 @@
-/* eslint-disable
-    func-style,
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
+import { assert, test, testGroup, TEST_IMAGE_URL } from "test/test_helper"
+
 import DocumentView from "trix/views/document_view"
 import Document from "trix/models/document"
 import LocationMapper from "trix/models/location_mapper"
 
-import { assert, test, testGroup } from "test/test_helper"
-
-testGroup("LocationMapper", function() {
-  test("findLocationFromContainerAndOffset", function() {
+testGroup("LocationMapper", () => {
+  test("findLocationFromContainerAndOffset", () => {
     setDocument([
       // <trix-editor>
       // 0 <div>
@@ -90,27 +78,20 @@ testGroup("LocationMapper", function() {
       { location: [ 1, 7 ], container: [], offset: 2 }
     ]
 
-    return (() => {
-      const result = []
-      for (const assertion of assertions) {
-        const path = assertion.container
-        const container = findContainer(path)
-        const {
-          offset
-        } = assertion
+    for (const assertion of assertions) {
+      const path = assertion.container
+      const container = findContainer(path)
+      const { offset } = assertion
 
-        const expectedLocation = { index: assertion.location[0], offset: assertion.location[1] }
-        const actualLocation = mapper.findLocationFromContainerAndOffset(container, offset)
+      const expectedLocation = { index: assertion.location[0], offset: assertion.location[1] }
+      const actualLocation = mapper.findLocationFromContainerAndOffset(container, offset)
 
-        result.push(assert.equal(format(actualLocation), format(expectedLocation),
-          `${describe(container)} at [${path.join(", ")}], offset ${offset} = ${format(expectedLocation)}`))
-      }
-      return result
-    })()
+      assert.equal(format(actualLocation), format(expectedLocation),
+        `${describe(container)} at [${path.join(", ")}], offset ${offset} = ${format(expectedLocation)}`)
+    }
   })
 
-
-  test("findContainerAndOffsetFromLocation: (0/0)", function() {
+  test("findContainerAndOffsetFromLocation: (0/0)", () => {
     setDocument([
       // <trix-editor>
       // 0 <ul>
@@ -129,10 +110,10 @@ testGroup("LocationMapper", function() {
     const container = findContainer([ 0, 0 ])
     const offset = 1
 
-    return assert.deepEqual(mapper.findContainerAndOffsetFromLocation(location), [ container, offset ])
-})
+    assert.deepEqual(mapper.findContainerAndOffsetFromLocation(location), [ container, offset ])
+  })
 
-  test("findContainerAndOffsetFromLocation after newline in formatted text", function() {
+  test("findContainerAndOffsetFromLocation after newline in formatted text", () => {
     setDocument([
       // <trix-editor>
       // 0 <div>
@@ -153,10 +134,10 @@ testGroup("LocationMapper", function() {
     const container = findContainer([ 0 ])
     const offset = 2
 
-    return assert.deepEqual(mapper.findContainerAndOffsetFromLocation(location), [ container, offset ])
-})
+    assert.deepEqual(mapper.findContainerAndOffsetFromLocation(location), [ container, offset ])
+  })
 
-  return test("findContainerAndOffsetFromLocation after nested block", function() {
+  test("findContainerAndOffsetFromLocation after nested block", () => {
     setDocument([
       // <trix-editor>
       //   <blockquote>
@@ -184,8 +165,8 @@ testGroup("LocationMapper", function() {
     const container = findContainer([ 0 ])
     const offset = 2
 
-    return assert.deepEqual(mapper.findContainerAndOffsetFromLocation(location), [ container, offset ])
-})
+    assert.deepEqual(mapper.findContainerAndOffsetFromLocation(location), [ container, offset ])
+  })
 })
 
 // ---
@@ -193,13 +174,13 @@ let document = null
 let element = null
 let mapper = null
 
-const setDocument = function(json) {
+const setDocument = (json) => {
   document = Document.fromJSON(json)
   element = DocumentView.render(document)
   return mapper = new LocationMapper(element)
 }
 
-const findContainer = function(path) {
+const findContainer = (path) => {
   let el = element
   for (const index of path) { el = el.childNodes[index] }
   return el
@@ -207,7 +188,7 @@ const findContainer = function(path) {
 
 const format = ({ index, offset }) => `${index}/${offset}`
 
-const describe = function(node) {
+const describe = (node) => {
   if (node.nodeType === Node.TEXT_NODE) {
     return `text node ${JSON.stringify(node.textContent)}`
   } else {

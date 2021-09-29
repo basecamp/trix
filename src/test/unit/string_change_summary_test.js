@@ -1,18 +1,8 @@
-/* eslint-disable
-    no-var,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-import { summarizeStringChange } from "trix/core/helpers"
 import { assert, test, testGroup } from "test/test_helper"
 
-testGroup("summarizeStringChange", function() {
+import { summarizeStringChange } from "trix/core/helpers"
+
+testGroup("summarizeStringChange", () => {
   const assertions = {
     "no change": {
       oldString: "abc",
@@ -88,12 +78,11 @@ testGroup("summarizeStringChange", function() {
     }
   }
 
-  return (() => {
-    const result = []
-    for (var name in assertions) {
-      const details = assertions[name]
-      result.push((({ oldString, newString, change }) => test(name, () => assert.deepEqual(summarizeStringChange(oldString, newString), change)))(details))
+    for (const name in assertions) {
+      test(name, () => {
+        const details = assertions[name]
+        const { oldString, newString, change } = details
+        assert.deepEqual(summarizeStringChange(oldString, newString), change)
+      })
     }
-    return result
-  })()
 })

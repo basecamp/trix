@@ -1,16 +1,6 @@
-/* eslint-disable
-    func-style,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-import MutationObserver from "trix/observers/mutation_observer"
-
 import { assert, defer, test, testGroup } from "test/test_helper"
+
+import MutationObserver from "trix/observers/mutation_observer"
 
 let observer = null
 let element = null
@@ -20,99 +10,99 @@ const install = function(html) {
   element = document.createElement("div")
   if (html) { element.innerHTML = html }
   observer = new MutationObserver(element)
-  return observer.delegate = {
+  observer.delegate = {
     elementDidMutate(summary) {
-      return summaries.push(summary)
+      summaries.push(summary)
     }
   }
 }
 
-const uninstall = function() {
+const uninstall = () => {
   observer?.stop()
   observer = null
   element = null
-  return summaries = []
+  summaries = []
 }
 
-const observerTest = (name, options = {}, callback) => test(name, function(done) {
+const observerTest = (name, options = {}, callback) => test(name, (done) => {
   install(options.html)
-  return callback(function() {
+  callback(() => {
     uninstall()
-    return done()
+    done()
   })
 })
 
 
-testGroup("MutationObserver", function() {
-  observerTest("add character", { html: "a" }, function(done) {
+testGroup("MutationObserver", () => {
+  observerTest("add character", { html: "a" }, (done) => {
     element.firstChild.data += "b"
-    return defer(function() {
+    defer(() => {
       assert.equal(summaries.length, 1)
       assert.deepEqual(summaries[0], { textAdded: "b" })
-      return done()
+      done()
     })
   })
 
-  observerTest("remove character", { html: "ab" }, function(done) {
+  observerTest("remove character", { html: "ab" }, (done) => {
     element.firstChild.data = "a"
-    return defer(function() {
+    defer(() => {
       assert.equal(summaries.length, 1)
       assert.deepEqual(summaries[0], { textDeleted: "b" })
-      return done()
+      done()
     })
   })
 
-  observerTest("replace character", { html: "ab" }, function(done) {
+  observerTest("replace character", { html: "ab" }, (done) => {
     element.firstChild.data = "ac"
-    return defer(function() {
+    defer(() => {
       assert.equal(summaries.length, 1)
       assert.deepEqual(summaries[0], { textAdded: "c", textDeleted: "b" })
-      return done()
+      done()
     })
   })
 
-  observerTest("add <br>", { html: "a" }, function(done) {
+  observerTest("add <br>", { html: "a" }, (done) => {
     element.appendChild(document.createElement("br"))
-    return defer(function() {
+    defer(() => {
       assert.equal(summaries.length, 1)
       assert.deepEqual(summaries[0], { textAdded: "\n" })
-      return done()
+      done()
     })
   })
 
-  observerTest("remove <br>", { html: "a<br>" }, function(done) {
+  observerTest("remove <br>", { html: "a<br>" }, (done) => {
     element.removeChild(element.lastChild)
-    return defer(function() {
+    defer(() => {
       assert.equal(summaries.length, 1)
       assert.deepEqual(summaries[0], { textDeleted: "\n" })
-      return done()
+      done()
     })
   })
 
-  observerTest("remove block comment", { html: "<div><!--block-->a</div>" }, function(done) {
+  observerTest("remove block comment", { html: "<div><!--block-->a</div>" }, (done) => {
     element.firstChild.removeChild(element.firstChild.firstChild)
-    return defer(function() {
+    defer(() => {
       assert.equal(summaries.length, 1)
       assert.deepEqual(summaries[0], { textDeleted: "\n" })
-      return done()
+      done()
     })
   })
 
-  observerTest("remove formatted element", { html: "a<strong>b</strong>" }, function(done) {
+  observerTest("remove formatted element", { html: "a<strong>b</strong>" }, (done) => {
     element.removeChild(element.lastChild)
-    return defer(function() {
+    defer(() => {
       assert.equal(summaries.length, 1)
       assert.deepEqual(summaries[0], { textDeleted: "b" })
-      return done()
+      done()
     })
   })
 
-  return observerTest("remove nested formatted elements", { html: "a<strong>b<em>c</em></strong>" }, function(done) {
+  observerTest("remove nested formatted elements", { html: "a<strong>b<em>c</em></strong>" }, (done) => {
     element.removeChild(element.lastChild)
-    return defer(function() {
+    defer(() => {
       assert.equal(summaries.length, 1)
       assert.deepEqual(summaries[0], { textDeleted: "bc" })
-      return done()
+      done()
     })
   })
 })
