@@ -1,36 +1,42 @@
-import DocumentView from "trix/views/document_view"
-import Document from "trix/models/document"
-import LocationMapper from "trix/models/location_mapper"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import DocumentView from "trix/views/document_view";
+import Document from "trix/models/document";
+import LocationMapper from "trix/models/location_mapper";
 
-import { assert, test, testGroup } from "test/test_helper"
+import { assert, test, testGroup } from "test/test_helper";
 
-testGroup "LocationMapper", ->
-  test "findLocationFromContainerAndOffset", ->
-    setDocument [
-      # <trix-editor>
-      # 0 <div>
-      #     0 <!--block-->
-      #     1 <strong>
-      #         0 a
-      #         1 <br>
-      #       </strong>
-      #     2 <br>
-      #   </div>
-      # 1 <blockquote>
-      #     0 <!--block-->
-      #     1 b😭cd
-      #     2 <span data-trix-cursor-target>
-      #         0 (zero-width space)
-      #       </span>
-      #     3 <a href="data:image/png," data-trix-attachment="" ...>
-      #         0 <figure ...>...</figure>
-      #       </a>
-      #     4 <span data-trix-cursor-target>
-      #         0 (zero-width space)
-      #       </span>
-      #     5 e
-      #   </blockquote>
-      # </trix-editor>
+testGroup("LocationMapper", function() {
+  test("findLocationFromContainerAndOffset", function() {
+    setDocument([
+      // <trix-editor>
+      // 0 <div>
+      //     0 <!--block-->
+      //     1 <strong>
+      //         0 a
+      //         1 <br>
+      //       </strong>
+      //     2 <br>
+      //   </div>
+      // 1 <blockquote>
+      //     0 <!--block-->
+      //     1 b😭cd
+      //     2 <span data-trix-cursor-target>
+      //         0 (zero-width space)
+      //       </span>
+      //     3 <a href="data:image/png," data-trix-attachment="" ...>
+      //         0 <figure ...>...</figure>
+      //       </a>
+      //     4 <span data-trix-cursor-target>
+      //         0 (zero-width space)
+      //       </span>
+      //     5 e
+      //   </blockquote>
+      // </trix-editor>
       {"text":[
         {"type":"string","attributes":{"bold":true},"string":"a\n"},
         {"type":"string","attributes":{"blockBreak":true},"string":"\n"}
@@ -41,113 +47,123 @@ testGroup "LocationMapper", ->
         {"type":"string","attributes":{},"string":"e"},
         {"type":"string","attributes":{"blockBreak":true},"string":"\n"}
       ],"attributes":["quote"]}
-    ]
+    ]);
 
-    assertions = [
-      { location: [0, 0],  container: [],         offset: 0 }
-      { location: [0, 0],  container: [0],        offset: 0 }
-      { location: [0, 0],  container: [0],        offset: 1 }
-      { location: [0, 0],  container: [0, 1],     offset: 0 }
-      { location: [0, 0],  container: [0, 1, 0],  offset: 0 }
-      { location: [0, 1],  container: [0, 1, 0],  offset: 1 }
-      { location: [0, 1],  container: [0, 1],     offset: 1 }
-      { location: [0, 2],  container: [0, 1],     offset: 2 }
-      { location: [0, 2],  container: [0],        offset: 2 }
-      { location: [0, 3],  container: [],         offset: 1 }
-      { location: [0, 3],  container: [1],        offset: 0 }
-      { location: [1, 0],  container: [1],        offset: 1 }
-      { location: [1, 0],  container: [1, 1],     offset: 0 }
-      { location: [1, 1],  container: [1, 1],     offset: 1 }
-      { location: [1, 2],  container: [1, 1],     offset: 2 }
-      { location: [1, 3],  container: [1, 1],     offset: 3 }
-      { location: [1, 4],  container: [1, 1],     offset: 4 }
-      { location: [1, 5],  container: [1, 1],     offset: 5 }
-      { location: [1, 6],  container: [1, 1],     offset: 6 }
-      { location: [1, 5],  container: [1],        offset: 2 }
-      { location: [1, 5],  container: [1, 2],     offset: 0 }
-      { location: [1, 5],  container: [1, 2],     offset: 1 }
-      { location: [1, 5],  container: [1],        offset: 3 }
-      { location: [1, 5],  container: [1, 3],     offset: 0 }
-      { location: [1, 5],  container: [1, 3],     offset: 1 }
-      { location: [1, 6],  container: [1],        offset: 4 }
-      { location: [1, 6],  container: [1, 4],     offset: 0 }
-      { location: [1, 6],  container: [1, 4],     offset: 1 }
-      { location: [1, 6],  container: [1],        offset: 5 }
-      { location: [1, 6],  container: [1, 5],     offset: 0 }
-      { location: [1, 7],  container: [1, 5],     offset: 1 }
+    const assertions = [
+      { location: [0, 0],  container: [],         offset: 0 },
+      { location: [0, 0],  container: [0],        offset: 0 },
+      { location: [0, 0],  container: [0],        offset: 1 },
+      { location: [0, 0],  container: [0, 1],     offset: 0 },
+      { location: [0, 0],  container: [0, 1, 0],  offset: 0 },
+      { location: [0, 1],  container: [0, 1, 0],  offset: 1 },
+      { location: [0, 1],  container: [0, 1],     offset: 1 },
+      { location: [0, 2],  container: [0, 1],     offset: 2 },
+      { location: [0, 2],  container: [0],        offset: 2 },
+      { location: [0, 3],  container: [],         offset: 1 },
+      { location: [0, 3],  container: [1],        offset: 0 },
+      { location: [1, 0],  container: [1],        offset: 1 },
+      { location: [1, 0],  container: [1, 1],     offset: 0 },
+      { location: [1, 1],  container: [1, 1],     offset: 1 },
+      { location: [1, 2],  container: [1, 1],     offset: 2 },
+      { location: [1, 3],  container: [1, 1],     offset: 3 },
+      { location: [1, 4],  container: [1, 1],     offset: 4 },
+      { location: [1, 5],  container: [1, 1],     offset: 5 },
+      { location: [1, 6],  container: [1, 1],     offset: 6 },
+      { location: [1, 5],  container: [1],        offset: 2 },
+      { location: [1, 5],  container: [1, 2],     offset: 0 },
+      { location: [1, 5],  container: [1, 2],     offset: 1 },
+      { location: [1, 5],  container: [1],        offset: 3 },
+      { location: [1, 5],  container: [1, 3],     offset: 0 },
+      { location: [1, 5],  container: [1, 3],     offset: 1 },
+      { location: [1, 6],  container: [1],        offset: 4 },
+      { location: [1, 6],  container: [1, 4],     offset: 0 },
+      { location: [1, 6],  container: [1, 4],     offset: 1 },
+      { location: [1, 6],  container: [1],        offset: 5 },
+      { location: [1, 6],  container: [1, 5],     offset: 0 },
+      { location: [1, 7],  container: [1, 5],     offset: 1 },
       { location: [1, 7],  container: [],         offset: 2 }
-    ]
+    ];
 
-    for assertion in assertions
-      path = assertion.container
-      container = findContainer(path)
-      offset = assertion.offset
+    return (() => {
+      const result = [];
+      for (let assertion of assertions) {
+        const path = assertion.container;
+        const container = findContainer(path);
+        const {
+          offset
+        } = assertion;
 
-      expectedLocation = index: assertion.location[0], offset: assertion.location[1]
-      actualLocation = mapper.findLocationFromContainerAndOffset(container, offset)
+        const expectedLocation = {index: assertion.location[0], offset: assertion.location[1]};
+        const actualLocation = mapper.findLocationFromContainerAndOffset(container, offset);
 
-      assert.equal format(actualLocation), format(expectedLocation),
-        "#{describe(container)} at [#{path.join(", ")}], offset #{offset} = #{format(expectedLocation)}"
+        result.push(assert.equal(format(actualLocation), format(expectedLocation),
+          `${describe(container)} at [${path.join(", ")}], offset ${offset} = ${format(expectedLocation)}`));
+      }
+      return result;
+    })();
+  });
 
 
-  test "findContainerAndOffsetFromLocation: (0/0)", ->
-    setDocument [
-      # <trix-editor>
-      # 0 <ul>
-      #     0 <li>
-      #         0 <!--block-->
-      #         1 <br>
-      #       </li>
-      #   </ul>
-      # </trix-editor>
+  test("findContainerAndOffsetFromLocation: (0/0)", function() {
+    setDocument([
+      // <trix-editor>
+      // 0 <ul>
+      //     0 <li>
+      //         0 <!--block-->
+      //         1 <br>
+      //       </li>
+      //   </ul>
+      // </trix-editor>
       {"text":[
         {"type":"string","attributes":{"blockBreak":true},"string":"\n"}
       ],"attributes":["bulletList","bullet"]},
-    ]
+    ]);
 
-    location = index: 0, offset: 0
-    container = findContainer([0, 0])
-    offset = 1
+    const location = {index: 0, offset: 0};
+    const container = findContainer([0, 0]);
+    const offset = 1;
 
-    assert.deepEqual mapper.findContainerAndOffsetFromLocation(location), [container, offset]
+    return assert.deepEqual(mapper.findContainerAndOffsetFromLocation(location), [container, offset]);
+});
 
-  test "findContainerAndOffsetFromLocation after newline in formatted text", ->
-    setDocument [
-      # <trix-editor>
-      # 0 <div>
-      #     0 <!--block-->
-      #     0 <strong>
-      #         0 a
-      #         1 <br>
-      #       </strong>
-      #   </div>
-      # </trix-editor>
+  test("findContainerAndOffsetFromLocation after newline in formatted text", function() {
+    setDocument([
+      // <trix-editor>
+      // 0 <div>
+      //     0 <!--block-->
+      //     0 <strong>
+      //         0 a
+      //         1 <br>
+      //       </strong>
+      //   </div>
+      // </trix-editor>
       {"text":[
-        {"type":"string","attributes":{"bold":true},"string":"a\n"}
+        {"type":"string","attributes":{"bold":true},"string":"a\n"},
         {"type":"string","attributes":{"blockBreak":true},"string":"\n"}
       ],"attributes":[]},
-    ]
+    ]);
 
-    location = index: 0, offset: 2
-    container = findContainer([0])
-    offset = 2
+    const location = {index: 0, offset: 2};
+    const container = findContainer([0]);
+    const offset = 2;
 
-    assert.deepEqual mapper.findContainerAndOffsetFromLocation(location), [container, offset]
+    return assert.deepEqual(mapper.findContainerAndOffsetFromLocation(location), [container, offset]);
+});
 
-  test "findContainerAndOffsetFromLocation after nested block", ->
-    setDocument [
-      # <trix-editor>
-      #   <blockquote>
-      #     <ul>
-      #       <li>
-      #         <!--block-->
-      #         a
-      #       </li>
-      #     </ul>
-      #     <!--block-->
-      #     <br>
-      #   </blockquote>
-      # </trix-editor>
+  return test("findContainerAndOffsetFromLocation after nested block", function() {
+    setDocument([
+      // <trix-editor>
+      //   <blockquote>
+      //     <ul>
+      //       <li>
+      //         <!--block-->
+      //         a
+      //       </li>
+      //     </ul>
+      //     <!--block-->
+      //     <br>
+      //   </blockquote>
+      // </trix-editor>
       {
         "text":[{"type":"string","attributes":{},"string":"a"},{"type":"string","attributes":{"blockBreak":true},"string":"\n"}],
         "attributes":["quote","bulletList","bullet"]
@@ -156,34 +172,39 @@ testGroup "LocationMapper", ->
         "text":[{"type":"string","attributes":{"blockBreak":true},"string":"\n"}],
         "attributes":["quote"]
       }
-    ]
+    ]);
 
-    location = index: 1, offset: 0
-    container = findContainer([0])
-    offset = 2
+    const location = {index: 1, offset: 0};
+    const container = findContainer([0]);
+    const offset = 2;
 
-    assert.deepEqual mapper.findContainerAndOffsetFromLocation(location), [container, offset]
+    return assert.deepEqual(mapper.findContainerAndOffsetFromLocation(location), [container, offset]);
+});
+});
 
-# ---
-document = null
-element = null
-mapper = null
+// ---
+let document = null;
+let element = null;
+var mapper = null;
 
-setDocument = (json) ->
-  document = Document.fromJSON(json)
-  element = DocumentView.render(document)
-  mapper = new LocationMapper element
+var setDocument = function(json) {
+  document = Document.fromJSON(json);
+  element = DocumentView.render(document);
+  return mapper = new LocationMapper(element);
+};
 
-findContainer = (path) ->
-  el = element
-  el = el.childNodes[index] for index in path
-  el
+var findContainer = function(path) {
+  let el = element;
+  for (let index of path) { el = el.childNodes[index]; }
+  return el;
+};
 
-format = ({index, offset}) ->
-  "#{index}/#{offset}"
+var format = ({index, offset}) => `${index}/${offset}`;
 
-describe = (node) ->
-  if node.nodeType is Node.TEXT_NODE
-    "text node #{JSON.stringify(node.textContent)}"
-  else
-    "container <#{node.tagName.toLowerCase()}>"
+var describe = function(node) {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return `text node ${JSON.stringify(node.textContent)}`;
+  } else {
+    return `container <${node.tagName.toLowerCase()}>`;
+  }
+};

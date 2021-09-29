@@ -1,25 +1,28 @@
-import Attachment from "trix/models/attachment"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import Attachment from "trix/models/attachment";
 
-import { assert, test, testGroup } from "test/test_helper"
+import { assert, test, testGroup } from "test/test_helper";
 
-testGroup "Attachment", ->
-  previewableTypes = "image image/gif image/png image/jpg".split(" ")
-  nonPreviewableTypes = "image/tiff application/foo".split(" ")
+testGroup("Attachment", function() {
+  let contentType;
+  const previewableTypes = "image image/gif image/png image/jpg".split(" ");
+  const nonPreviewableTypes = "image/tiff application/foo".split(" ");
 
-  createAttachment = (attributes) ->
-    new Attachment attributes
+  const createAttachment = attributes => new Attachment(attributes);
 
-  for contentType in previewableTypes then do (contentType) ->
-    test "#{contentType} content type is previewable", ->
-      assert.ok createAttachment({contentType}).isPreviewable()
+  for (contentType of previewableTypes) { ((contentType => test(`${contentType} content type is previewable`, () => assert.ok(createAttachment({contentType}).isPreviewable()))))(contentType); }
 
-  for contentType in nonPreviewableTypes then do (contentType) ->
-    test "#{contentType} content type is NOT previewable", ->
-      assert.notOk createAttachment({contentType}).isPreviewable()
+  for (contentType of nonPreviewableTypes) { ((contentType => test(`${contentType} content type is NOT previewable`, () => assert.notOk(createAttachment({contentType}).isPreviewable()))))(contentType); }
 
-  test "'previewable' attribute determines previewability", ->
-    attrs = previewable: true, contentType: nonPreviewableTypes[0]
-    assert.ok createAttachment(attrs).isPreviewable()
+  return test("'previewable' attribute determines previewability", function() {
+    let attrs = {previewable: true, contentType: nonPreviewableTypes[0]};
+    assert.ok(createAttachment(attrs).isPreviewable());
 
-    attrs = previewable: false, contentType: previewableTypes[0]
-    assert.notOk createAttachment(attrs).isPreviewable()
+    attrs = {previewable: false, contentType: previewableTypes[0]};
+    return assert.notOk(createAttachment(attrs).isPreviewable());
+  });
+});
