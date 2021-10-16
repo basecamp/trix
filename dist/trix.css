@@ -1,7 +1,7 @@
 @charset "UTF-8";
 /*
 Trix 1.3.1
-Copyright © 2020 Basecamp, LLC
+Copyright © 2021 Basecamp, LLC
 http://trix-editor.org/*/
 trix-editor {
   border: 1px solid #bbb;
@@ -297,7 +297,6 @@ trix-editor .attachment__metadata {
   trix-editor .attachment__metadata .attachment__size {
     margin-left: 0.2em;
     white-space: nowrap; }
-@charset "UTF-8";
 .trix-content {
   line-height: 1.5; }
   .trix-content * {
@@ -347,7 +346,7 @@ trix-editor .attachment__metadata {
   .trix-content .attachment__caption {
     text-align: center; }
     .trix-content .attachment__caption .attachment__name + .attachment__size::before {
-      content: ' · '; }
+      content: ' \2022 '; }
   .trix-content .attachment--preview {
     width: 100%;
     text-align: center; }
