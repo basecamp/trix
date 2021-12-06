@@ -3,6 +3,7 @@ import json from "@rollup/plugin-json"
 import filesize from "rollup-plugin-filesize"
 import includePaths from "rollup-plugin-includepaths"
 import commonjs from "rollup-plugin-commonjs"
+import { babel } from '@rollup/plugin-babel'
 import nodeResolve from "rollup-plugin-node-resolve"
 
 import { version } from "./package.json"
@@ -59,6 +60,7 @@ export default [
       commonjs({
         extensions: [ ".js", ".coffee" ]
       }),
+      babel({ babelHelpers: "bundled" }),
     ],
     context: "window",
     treeshake: false,
@@ -88,6 +90,7 @@ export default [
       commonjs({
         extensions: [ ".js", ".coffee" ]
       }),
+      babel({ babelHelpers: "bundled" }),
     ],
     context: "window",
     treeshake: false,
