@@ -43,10 +43,10 @@ if (process.env.CI) {
         args: [ "--lang=tr" ]
       }
     },
-    sl_firefox_65: {
+    sl_firefox_72: {
       base: "SauceLabs",
       browserName: "firefox",
-      version: "65.0"
+      version: "72.0"
     },
     sl_firefox_latest: {
       base: "SauceLabs",
@@ -71,11 +71,11 @@ if (process.env.CI) {
       platform: "macOS 11",
       version: "latest"
     },
-    sl_edge_79: {
+    sl_edge_80: {
       base: "SauceLabs",
       browserName: "microsoftedge",
       platform: "Windows 10",
-      version: "79.0"
+      version: "80.0"
     },
     sl_edge_latest: {
       base: "SauceLabs",
