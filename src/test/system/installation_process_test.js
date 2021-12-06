@@ -1,60 +1,67 @@
-import EditorController from "trix/controllers/editor_controller"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import EditorController from "trix/controllers/editor_controller";
 
-import { assert, defer, test, testGroup } from "test/test_helper"
+import { assert, defer, test, testGroup } from "test/test_helper";
 
-testGroup "Installation process", template: "editor_html", ->
-  test "element.editorController", ->
-    assert.ok getEditorController() instanceof EditorController
+testGroup("Installation process", {template: "editor_html"}, function() {
+  test("element.editorController", () => assert.ok(getEditorController() instanceof EditorController));
 
-  test "creates a contenteditable element", ->
-    assert.ok getEditorElement()
+  test("creates a contenteditable element", () => assert.ok(getEditorElement()));
 
-  test "loads the initial document", ->
-    assert.equal getEditorElement().textContent, "Hello world"
+  test("loads the initial document", () => assert.equal(getEditorElement().textContent, "Hello world"));
 
-  test "sets value property", (done) ->
-    defer ->
-      assert.equal getEditorElement().value, "<div>Hello world</div>"
-      done()
+  return test("sets value property", done => defer(function() {
+    assert.equal(getEditorElement().value, "<div>Hello world</div>");
+    return done();
+  }));
+});
 
 
-testGroup "Installation process without specified elements", template: "editor_empty", ->
-  test "creates identified toolbar and input elements", (done) ->
-    editorElement = getEditorElement()
+testGroup("Installation process without specified elements", {template: "editor_empty"}, () => test("creates identified toolbar and input elements", function(done) {
+  const editorElement = getEditorElement();
 
-    toolbarId = editorElement.getAttribute("toolbar")
-    assert.ok /trix-toolbar-\d+/.test(toolbarId), "toolbar id not assert.ok #{JSON.stringify(toolbarId)}"
-    toolbarElement = document.getElementById(toolbarId)
-    assert.ok toolbarElement, "toolbar element not assert.ok"
-    assert.equal editorElement.toolbarElement, toolbarElement
+  const toolbarId = editorElement.getAttribute("toolbar");
+  assert.ok(/trix-toolbar-\d+/.test(toolbarId), `toolbar id not assert.ok ${JSON.stringify(toolbarId)}`);
+  const toolbarElement = document.getElementById(toolbarId);
+  assert.ok(toolbarElement, "toolbar element not assert.ok");
+  assert.equal(editorElement.toolbarElement, toolbarElement);
 
-    inputId = editorElement.getAttribute("input")
-    assert.ok /trix-input-\d+/.test(inputId), "input id not assert.ok #{JSON.stringify(inputId)}"
-    inputElement = document.getElementById(inputId)
-    assert.ok inputElement, "input element not assert.ok"
-    assert.equal editorElement.inputElement, inputElement
+  const inputId = editorElement.getAttribute("input");
+  assert.ok(/trix-input-\d+/.test(inputId), `input id not assert.ok ${JSON.stringify(inputId)}`);
+  const inputElement = document.getElementById(inputId);
+  assert.ok(inputElement, "input element not assert.ok");
+  assert.equal(editorElement.inputElement, inputElement);
 
-    done()
+  return done();
+}));
 
-testGroup "Installation process with specified elements", template: "editor_with_toolbar_and_input", ->
-  test "uses specified elements", (done) ->
-    editorElement = getEditorElement()
-    assert.equal editorElement.toolbarElement, document.getElementById("my_toolbar")
-    assert.equal editorElement.inputElement, document.getElementById("my_input")
-    assert.equal editorElement.value, "<div>Hello world</div>"
-    done()
+testGroup("Installation process with specified elements", {template: "editor_with_toolbar_and_input"}, function() {
+  test("uses specified elements", function(done) {
+    const editorElement = getEditorElement();
+    assert.equal(editorElement.toolbarElement, document.getElementById("my_toolbar"));
+    assert.equal(editorElement.inputElement, document.getElementById("my_input"));
+    assert.equal(editorElement.value, "<div>Hello world</div>");
+    return done();
+  });
 
-  test "can be cloned", (done) ->
-    originalElement = document.getElementById("my_editor")
-    clonedElement = originalElement.cloneNode(true)
+  return test("can be cloned", function(done) {
+    const originalElement = document.getElementById("my_editor");
+    const clonedElement = originalElement.cloneNode(true);
 
-    {parentElement} = originalElement
-    parentElement.removeChild(originalElement)
-    parentElement.appendChild(clonedElement)
+    const {parentElement} = originalElement;
+    parentElement.removeChild(originalElement);
+    parentElement.appendChild(clonedElement);
 
-    defer ->
-      editorElement = getEditorElement()
-      assert.equal editorElement.toolbarElement, document.getElementById("my_toolbar")
-      assert.equal editorElement.inputElement, document.getElementById("my_input")
-      assert.equal editorElement.value, "<div>Hello world</div>"
-      done()
+    return defer(function() {
+      const editorElement = getEditorElement();
+      assert.equal(editorElement.toolbarElement, document.getElementById("my_toolbar"));
+      assert.equal(editorElement.inputElement, document.getElementById("my_input"));
+      assert.equal(editorElement.value, "<div>Hello world</div>");
+      return done();
+    });
+  });
+});
