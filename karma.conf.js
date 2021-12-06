@@ -1,6 +1,6 @@
 const config = {
-  browsers: ["ChromeHeadless"],
-  frameworks: ["qunit"],
+  browsers: [ "ChromeHeadless" ],
+  frameworks: [ "qunit" ],
   files: [
     { pattern: "dist/test.js", watched: false },
     { pattern: "src/test_helpers/fixtures/*.png", watched: false, included: false, served: true }
@@ -26,6 +26,8 @@ const config = {
   browserNoActivityTimeout: 300000,
 }
 
+/* eslint camelcase: "off",  */
+
 if (process.env.CI) {
   config.customLaunchers = {
     sl_chrome_latest: {
@@ -38,13 +40,13 @@ if (process.env.CI) {
       browserName: "chrome",
       version: "latest",
       chromeOptions: {
-        args: ["--lang=tr"]
+        args: [ "--lang=tr" ]
       }
     },
-    sl_firefox_65: {
+    sl_firefox_72: {
       base: "SauceLabs",
       browserName: "firefox",
-      version: "65.0"
+      version: "72.0"
     },
     sl_firefox_latest: {
       base: "SauceLabs",
@@ -69,11 +71,11 @@ if (process.env.CI) {
       platform: "macOS 11",
       version: "latest"
     },
-    sl_edge_79: {
+    sl_edge_80: {
       base: "SauceLabs",
       browserName: "microsoftedge",
       platform: "Windows 10",
-      version: "79.0"
+      version: "80.0"
     },
     sl_edge_latest: {
       base: "SauceLabs",
@@ -98,7 +100,7 @@ if (process.env.CI) {
   }
 
   config.browsers = Object.keys(config.customLaunchers)
-  config.reporters = ["dots", "saucelabs"]
+  config.reporters = [ "dots", "saucelabs" ]
 
   config.sauceLabs = {
     testName: "Trix",
@@ -108,13 +110,13 @@ if (process.env.CI) {
     maxDuration: 900,
     build: buildId(),
   }
+}
 
-  function buildId() {
-    const { GITHUB_WORKFLOW, GITHUB_RUN_NUMBER, GITHUB_RUN_ID } = process.env
-    return GITHUB_WORKFLOW && GITHUB_RUN_NUMBER && GITHUB_RUN_ID
-      ? `${GITHUB_WORKFLOW} #${GITHUB_RUN_NUMBER} (${GITHUB_RUN_ID})`
-      : ""
-  }
+function buildId() {
+  const { GITHUB_WORKFLOW, GITHUB_RUN_NUMBER, GITHUB_RUN_ID } = process.env
+  return GITHUB_WORKFLOW && GITHUB_RUN_NUMBER && GITHUB_RUN_ID
+    ? `${GITHUB_WORKFLOW} #${GITHUB_RUN_NUMBER} (${GITHUB_RUN_ID})`
+    : ""
 }
 
 module.exports = function(karmaConfig) {

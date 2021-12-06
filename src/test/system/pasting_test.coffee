@@ -1,7 +1,9 @@
 import config from "trix/config"
 import { OBJECT_REPLACEMENT_CHARACTER } from "trix/constants"
 
-import { after, assert, clickToolbarButton, createFile, defer, expandSelection, moveCursor, pasteContent, pressKey, test, testIf, testGroup, triggerEvent, typeCharacters } from "test/test_helper"
+import { after, assert, clickToolbarButton, createFile, defer, expandSelection,
+  moveCursor, pasteContent, pressKey, test, testIf, testGroup, triggerEvent,
+  typeCharacters, TEST_IMAGE_URL } from "test/test_helper"
 
 testGroup "Pasting", template: "editor_empty", ->
   test "paste plain text", (expectDocument) ->

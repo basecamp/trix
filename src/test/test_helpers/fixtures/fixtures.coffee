@@ -19,6 +19,7 @@ import editor_with_labels from "./editor_with_labels"
 import editor_with_styled_content from "./editor_with_styled_content"
 import editor_with_toolbar_and_input from "./editor_with_toolbar_and_input"
 import editors_with_forms from "./editors_with_forms"
+import { TEST_IMAGE_URL } from "./test_image_url"
 
 export fixtureTemplates = {
  editor_default_aria_label,
@@ -34,9 +35,9 @@ export fixtureTemplates = {
  editors_with_forms,
 }
 
-{css} = config
+export { TEST_IMAGE_URL }
 
-@TEST_IMAGE_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs="
+{css} = config
 
 createDocument = (parts...) ->
   blocks = for part in parts

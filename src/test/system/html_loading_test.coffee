@@ -1,4 +1,4 @@
-import { after, assert, test, testGroup } from "test/test_helper"
+import { after, assert, test, testGroup, TEST_IMAGE_URL } from "test/test_helper"
 import { OBJECT_REPLACEMENT_CHARACTER } from "trix/constants"
 
 testGroup "HTML loading", ->
