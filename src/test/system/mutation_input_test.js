@@ -13,7 +13,7 @@ import {
   typeCharacters,
 } from "test/test_helper"
 
-const test = function () {
+const test = function() {
   testIf(config.input.getLevel() === 0, ...arguments)
 }
 

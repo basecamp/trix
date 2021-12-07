@@ -1,16 +1,3 @@
-/* eslint-disable
-    id-length,
-    no-cond-assign,
-    no-var,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import config from "trix/config"
 
 import { triggerEvent } from "event_helpers"
@@ -30,69 +17,69 @@ for (const code in config.keyNames) {
 
 const keys = {
   left: "ArrowLeft",
-  right: "ArrowRight"
+  right: "ArrowRight",
 }
 
-
-export var moveCursor = function(options, callback) {
+export const moveCursor = function (options, callback) {
   let direction, move, times
   if (typeof options === "string") {
     direction = options
   } else {
-    ({
-      direction
-    } = options);
-    ({
-      times
-    } = options)
+    times = options.times
+    direction = options.direction
   }
 
-  if (times == null) { times = 1 }
+  if (!times) times = 1
 
-  return (move = () => defer(function() {
-    if (triggerEvent(document.activeElement, "keydown", { keyCode: keyCodes[direction], key: keys[direction] })) {
-      const selection = rangy.getSelection()
-      selection.move("character", direction === "right" ? 1 : -1)
-      selectionChangeObserver.update()
-    }
+  return (move = () =>
+    defer(() => {
+      if (triggerEvent(document.activeElement, "keydown", { keyCode: keyCodes[direction], key: keys[direction] })) {
+        const selection = rangy.getSelection()
+        selection.move("character", direction === "right" ? 1 : -1)
+        selectionChangeObserver.update()
+      }
 
-    if (--times === 0) {
-      return defer(() => callback(getCursorCoordinates()))
-    } else {
-      return move()
-    }
-  }))()
+      if (--times === 0) {
+        defer(() => callback(getCursorCoordinates()))
+      } else {
+        return move()
+      }
+    }))()
 }
 
-export var expandSelection = (options, callback) => defer(function() {
-  let direction, expand, times
-  if (typeof options === "string") {
-    direction = options
-  } else {
-    ({
-      direction
-    } = options);
-    ({
-      times
-    } = options)
-  }
-
-  if (times == null) { times = 1 }
-
-  return (expand = () => defer(function() {
-    if (triggerEvent(document.activeElement, "keydown", { keyCode: keyCodes[direction], key: keys[direction], shiftKey: true })) {
-      getComposition().expandSelectionInDirection(direction === "left" ? "backward" : "forward")
-    }
-
-    if (--times === 0) {
-      return defer(callback)
+export const expandSelection = (options, callback) =>
+  defer(() => {
+    let direction, expand, times
+    if (typeof options === "string") {
+      direction = options
     } else {
-      return expand()
+      ({ direction } = options)
+      ;({ times } = options)
     }
-  }))()
-})
 
-export var collapseSelection = function(direction, callback) {
+    if (!times) times = 1
+
+    return (expand = () =>
+      defer(() => {
+        if (
+          triggerEvent(document.activeElement, "keydown", {
+            keyCode: keyCodes[direction],
+            key: keys[direction],
+            shiftKey: true,
+          })
+        ) {
+          getComposition().expandSelectionInDirection(direction === "left" ? "backward" : "forward")
+        }
+
+        if (--times === 0) {
+          defer(callback)
+        } else {
+          return expand()
+        }
+      }))()
+  })
+
+export const collapseSelection = function (direction, callback) {
   const selection = rangy.getSelection()
   if (direction === "left") {
     selection.collapseToStart()
@@ -100,24 +87,24 @@ export var collapseSelection = function(direction, callback) {
     selection.collapseToEnd()
   }
   selectionChangeObserver.update()
-  return defer(callback)
+  defer(callback)
 }
 
-export var selectAll = function(callback) {
+export const selectAll = function (callback) {
   rangy.getSelection().selectAllChildren(document.activeElement)
   selectionChangeObserver.update()
-  return defer(callback)
+  defer(callback)
 }
 
-export var deleteSelection = function() {
+export const deleteSelection = () => {
   const selection = rangy.getSelection()
   selection.getRangeAt(0).deleteContents()
-  return selectionChangeObserver.update()
+  selectionChangeObserver.update()
 }
 
-export var selectionIsCollapsed = () => rangy.getSelection().isCollapsed
+export const selectionIsCollapsed = () => rangy.getSelection().isCollapsed
 
-export var insertNode = function(node, callback) {
+export const insertNode = function (node, callback) {
   const selection = rangy.getSelection()
   const range = selection.getRangeAt(0)
   range.splitBoundaries()
@@ -126,33 +113,35 @@ export var insertNode = function(node, callback) {
   range.deleteContents()
   selection.setSingleRange(range)
   selectionChangeObserver.update()
-  if (callback) { return requestAnimationFrame(callback) }
+  if (callback) {
+    requestAnimationFrame(callback)
+  }
 }
 
-export var selectNode = function(node, callback) {
+export const selectNode = function (node, callback) {
   const selection = rangy.getSelection()
   selection.selectAllChildren(node)
   selectionChangeObserver.update()
-  return callback?.()
+  if (callback) callback()
 }
 
-export var createDOMRangeFromPoint = function(x, y) {
+export const createDOMRangeFromPoint = function (px, py) {
   if (document.caretPositionFromPoint) {
-    const { offsetNode, offset } = document.caretPositionFromPoint(x, y)
+    const { offsetNode, offset } = document.caretPositionFromPoint(px, py)
     const domRange = document.createRange()
     domRange.setStart(offsetNode, offset)
     return domRange
   } else if (document.caretRangeFromPoint) {
-    return document.caretRangeFromPoint(x, y)
+    return document.caretRangeFromPoint(px, py)
   }
 }
 
-var getCursorCoordinates = function() {
-  let rect
-  if (rect = window.getSelection().getRangeAt(0).getClientRects()[0]) {
+const getCursorCoordinates = () => {
+  const rect = window.getSelection().getRangeAt(0).getClientRects()[0]
+  if (rect) {
     return {
       clientX: rect.left,
-      clientY: rect.top + rect.height / 2
+      clientY: rect.top + rect.height / 2,
     }
   }
 }

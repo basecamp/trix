@@ -147,7 +147,10 @@ testGroup("Composition input", { template: "editor_empty" }, () => {
     })
   })
 
-  testIf(config.browser.composesExistingText, "composition events from cursor movement are ignored", (expectDocument) => {
+  testIf(
+    config.browser.composesExistingText,
+    "composition events from cursor movement are ignored",
+    (expectDocument) => {
       const element = getEditorElement()
       element.editor.insertString("ab ")
 

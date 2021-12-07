@@ -6,14 +6,16 @@ let observer = null
 let element = null
 let summaries = []
 
-const install = function(html) {
+const install = function (html) {
   element = document.createElement("div")
-  if (html) { element.innerHTML = html }
+  if (html) {
+    element.innerHTML = html
+  }
   observer = new MutationObserver(element)
   observer.delegate = {
     elementDidMutate(summary) {
       summaries.push(summary)
-    }
+    },
   }
 }
 
@@ -24,14 +26,14 @@ const uninstall = () => {
   summaries = []
 }
 
-const observerTest = (name, options = {}, callback) => test(name, (done) => {
-  install(options.html)
-  callback(() => {
-    uninstall()
-    done()
+const observerTest = (name, options = {}, callback) =>
+  test(name, (done) => {
+    install(options.html)
+    callback(() => {
+      uninstall()
+      done()
+    })
   })
-})
-
 
 testGroup("MutationObserver", () => {
   observerTest("add character", { html: "a" }, (done) => {

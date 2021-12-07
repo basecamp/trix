@@ -1,69 +1,59 @@
-/* eslint-disable
-    no-var,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import { TEST_IMAGE_URL } from "test/test_helpers/fixtures/test_image_url"
-
 import Attachment from "trix/models/attachment"
 
-export var insertString = function(string) {
+export const insertString = function (string) {
   getComposition().insertString(string)
-  return render()
+  render()
 }
 
-export var insertText = function(text) {
+export const insertText = function (text) {
   getComposition().insertText(text)
-  return render()
+  render()
 }
 
-export var insertDocument = function(document) {
+export const insertDocument = function (document) {
   getComposition().insertDocument(document)
-  return render()
+  render()
 }
 
-export var insertFile = function(file) {
+export const insertFile = function (file) {
   getComposition().insertFile(file)
-  return render()
+  render()
 }
 
-export var insertAttachment = function(attachment) {
+export const insertAttachment = function (attachment) {
   getComposition().insertAttachment(attachment)
-  return render()
+  render()
 }
 
-export var insertAttachments = function(attachments) {
+export const insertAttachments = function (attachments) {
   getComposition().insertAttachments(attachments)
-  return render()
+  render()
 }
 
-export var insertImageAttachment = function(attributes) {
+export const insertImageAttachment = function (attributes) {
   const attachment = createImageAttachment(attributes)
   return insertAttachment(attachment)
 }
 
-export var createImageAttachment = function(attributes) {
-  if (attributes == null) { attributes = {
-    url: TEST_IMAGE_URL,
-    width: 10,
-    height: 10,
-    filename: "image.gif",
-    filesize: 35,
-    contentType: "image/gif"
-  } }
+export const createImageAttachment = function (attributes) {
+  if (!attributes) {
+    attributes = {
+      url: TEST_IMAGE_URL,
+      width: 10,
+      height: 10,
+      filename: "image.gif",
+      filesize: 35,
+      contentType: "image/gif",
+    }
+  }
 
   return new Attachment(attributes)
 }
 
-export var replaceDocument = function(document) {
+export const replaceDocument = function (document) {
   getComposition().setDocument(document)
-  return render()
+  render()
 }
 
-var render = () => getEditorController().render()
+const render = () => getEditorController().render()

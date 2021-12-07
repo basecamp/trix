@@ -31,16 +31,35 @@ testGroup("LocationMapper", () => {
       //     5 e
       //   </blockquote>
       // </trix-editor>
-      { "text":[
-        { "type":"string", "attributes":{ "bold":true }, "string":"a\n" },
-        { "type":"string", "attributes":{ "blockBreak":true }, "string":"\n" }
-      ], "attributes":[] },
-      { "text":[
-        { "type":"string", "attributes":{}, "string":"b😭cd" },
-        { "type":"attachment", "attributes":{}, "attachment":{ "contentType":"image/png", "filename":"x.png", "filesize":0, "height":13, "href":TEST_IMAGE_URL, "identifier":"1", "url":TEST_IMAGE_URL, "width":15 } },
-        { "type":"string", "attributes":{}, "string":"e" },
-        { "type":"string", "attributes":{ "blockBreak":true }, "string":"\n" }
-      ], "attributes":[ "quote" ] }
+      {
+        text: [
+          { type: "string", attributes: { bold: true }, string: "a\n" },
+          { type: "string", attributes: { blockBreak: true }, string: "\n" },
+        ],
+        attributes: [],
+      },
+      {
+        text: [
+          { type: "string", attributes: {}, string: "b😭cd" },
+          {
+            type: "attachment",
+            attributes: {},
+            attachment: {
+              contentType: "image/png",
+              filename: "x.png",
+              filesize: 0,
+              height: 13,
+              href: TEST_IMAGE_URL,
+              identifier: "1",
+              url: TEST_IMAGE_URL,
+              width: 15,
+            },
+          },
+          { type: "string", attributes: {}, string: "e" },
+          { type: "string", attributes: { blockBreak: true }, string: "\n" },
+        ],
+        attributes: [ "quote" ],
+      },
     ])
 
     const assertions = [
@@ -75,7 +94,7 @@ testGroup("LocationMapper", () => {
       { location: [ 1, 6 ], container: [ 1 ], offset: 5 },
       { location: [ 1, 6 ], container: [ 1, 5 ], offset: 0 },
       { location: [ 1, 7 ], container: [ 1, 5 ], offset: 1 },
-      { location: [ 1, 7 ], container: [], offset: 2 }
+      { location: [ 1, 7 ], container: [], offset: 2 },
     ]
 
     for (const assertion of assertions) {
@@ -86,8 +105,11 @@ testGroup("LocationMapper", () => {
       const expectedLocation = { index: assertion.location[0], offset: assertion.location[1] }
       const actualLocation = mapper.findLocationFromContainerAndOffset(container, offset)
 
-      assert.equal(format(actualLocation), format(expectedLocation),
-        `${describe(container)} at [${path.join(", ")}], offset ${offset} = ${format(expectedLocation)}`)
+      assert.equal(
+        format(actualLocation),
+        format(expectedLocation),
+        `${describe(container)} at [${path.join(", ")}], offset ${offset} = ${format(expectedLocation)}`
+      )
     }
   })
 
@@ -101,9 +123,10 @@ testGroup("LocationMapper", () => {
       //       </li>
       //   </ul>
       // </trix-editor>
-      { "text":[
-        { "type":"string", "attributes":{ "blockBreak":true }, "string":"\n" }
-      ], "attributes":[ "bulletList", "bullet" ] },
+      {
+        text: [ { type: "string", attributes: { blockBreak: true }, string: "\n" } ],
+        attributes: [ "bulletList", "bullet" ],
+      },
     ])
 
     const location = { index: 0, offset: 0 }
@@ -124,10 +147,13 @@ testGroup("LocationMapper", () => {
       //       </strong>
       //   </div>
       // </trix-editor>
-      { "text":[
-        { "type":"string", "attributes":{ "bold":true }, "string":"a\n" },
-        { "type":"string", "attributes":{ "blockBreak":true }, "string":"\n" }
-      ], "attributes":[] },
+      {
+        text: [
+          { type: "string", attributes: { bold: true }, string: "a\n" },
+          { type: "string", attributes: { blockBreak: true }, string: "\n" },
+        ],
+        attributes: [],
+      },
     ])
 
     const location = { index: 0, offset: 2 }
@@ -152,13 +178,16 @@ testGroup("LocationMapper", () => {
       //   </blockquote>
       // </trix-editor>
       {
-        "text":[ { "type":"string", "attributes":{}, "string":"a" }, { "type":"string", "attributes":{ "blockBreak":true }, "string":"\n" } ],
-        "attributes":[ "quote", "bulletList", "bullet" ]
+        text: [
+          { type: "string", attributes: {}, string: "a" },
+          { type: "string", attributes: { blockBreak: true }, string: "\n" },
+        ],
+        attributes: [ "quote", "bulletList", "bullet" ],
       },
       {
-        "text":[ { "type":"string", "attributes":{ "blockBreak":true }, "string":"\n" } ],
-        "attributes":[ "quote" ]
-      }
+        text: [ { type: "string", attributes: { blockBreak: true }, string: "\n" } ],
+        attributes: [ "quote" ],
+      },
     ])
 
     const location = { index: 1, offset: 0 }
@@ -182,7 +211,9 @@ const setDocument = (json) => {
 
 const findContainer = (path) => {
   let el = element
-  for (const index of path) { el = el.childNodes[index] }
+  for (const index of path) {
+    el = el.childNodes[index]
+  }
   return el
 }
 

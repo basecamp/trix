@@ -1,5 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 export default () => `\
 <form id="ancestor-form">
   <trix-editor id="editor-with-ancestor-form"></trix-editor>

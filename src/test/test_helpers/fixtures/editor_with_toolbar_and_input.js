@@ -1,5 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 export default () => `\
 <ul id="my_editor">
   <li><trix-toolbar id="my_toolbar"></trix-toolbar></li>

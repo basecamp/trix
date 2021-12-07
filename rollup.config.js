@@ -39,7 +39,7 @@ export default [
     }
   },
   {
-    input: "src/test/test.coffee",
+    input: "src/test/test.js",
     output: [
       {
         name: "TrixTests",

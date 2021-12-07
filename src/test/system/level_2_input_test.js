@@ -16,7 +16,7 @@ import {
   typeCharacters,
 } from "test/test_helper"
 
-const test = function () {
+const test = function() {
   testIf(config.input.getLevel() === 2, ...arguments)
 }
 
@@ -62,7 +62,9 @@ const performInputTypeUsingExecCommand = function (command, { inputType, data },
 
 testGroup("Level 2 Input", testOptions, () => {
   test("insertText", (expectDocument) =>
-    performInputTypeUsingExecCommand("insertText", { inputType: "insertText", data: "abc" }, () => expectDocument("abc\n")))
+    performInputTypeUsingExecCommand("insertText", { inputType: "insertText", data: "abc" }, () =>
+      expectDocument("abc\n")
+    ))
 
   test("insertOrderedList", (expectDocument) => {
     insertString("a\nb")

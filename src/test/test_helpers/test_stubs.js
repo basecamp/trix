@@ -1,11 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import { normalizeRange, rangeIsCollapsed } from "trix/core/helpers"
 
 export class TestCompositionDelegate {
@@ -14,7 +6,8 @@ export class TestCompositionDelegate {
   }
 
   getSelectionManager() {
-    return this.selectionManager != null ? this.selectionManager : this.selectionManager = new TestSelectionManager
+    if (!this.selectionManager) this.selectionManager = new TestSelectionManager()
+    return this.selectionManager
   }
 }
 

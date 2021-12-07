@@ -1,64 +1,52 @@
-/* eslint-disable
-    no-cond-assign,
-    no-undef,
-    no-unused-vars,
-    no-var,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import { defer } from "trix/core/helpers"
-import { createEvent, triggerEvent } from "./event_helpers"
+import { triggerEvent } from "./event_helpers"
 import { selectionChangeObserver } from "trix/observers/selection_change_observer"
 
-export var clickToolbarButton = function(selector, callback) {
+export const clickToolbarButton = function (selector, callback) {
   selectionChangeObserver.update()
   const button = getToolbarButton(selector)
   triggerEvent(button, "mousedown")
-  return defer(callback)
+  defer(callback)
 }
 
-export var typeToolbarKeyCommand = function(selector, callback) {
-  let trixKey
+export const typeToolbarKeyCommand = function (selector, callback) {
   const button = getToolbarButton(selector)
-  if ({ trixKey } = button.dataset) {
+  const { trixKey } = button.dataset
+  if (trixKey) {
     const keyCode = trixKey.toUpperCase().charCodeAt(0)
     triggerEvent(getEditorElement(), "keydown", { keyCode, charCode: 0, metaKey: true, ctrlKey: true })
   }
-  return defer(callback)
+  defer(callback)
 }
 
-export var clickToolbarDialogButton = function({ method }, callback) {
+export const clickToolbarDialogButton = function ({ method }, callback) {
   const button = getToolbarElement().querySelector(`[data-trix-dialog] [data-trix-method='${method}']`)
   triggerEvent(button, "click")
-  return defer(callback)
+  defer(callback)
 }
 
-export var isToolbarButtonActive = function(selector) {
+export const isToolbarButtonActive = function (selector) {
   const button = getToolbarButton(selector)
   return button.hasAttribute("data-trix-active") && button.classList.contains("trix-active")
 }
 
-export var isToolbarButtonDisabled = selector => getToolbarButton(selector).disabled
+export const isToolbarButtonDisabled = (selector) => getToolbarButton(selector).disabled
 
-export var typeInToolbarDialog = function(string, { attribute }, callback) {
+export const typeInToolbarDialog = function (string, { attribute }, callback) {
   const dialog = getToolbarDialog({ attribute })
   const input = dialog.querySelector(`[data-trix-input][name='${attribute}']`)
   const button = dialog.querySelector("[data-trix-method='setAttribute']")
   input.value = string
   triggerEvent(button, "click")
-  return defer(callback)
+  defer(callback)
 }
 
-export var isToolbarDialogActive = function(selector) {
+export const isToolbarDialogActive = function (selector) {
   const dialog = getToolbarDialog(selector)
   return dialog.hasAttribute("data-trix-active") && dialog.classList.contains("trix-active")
 }
 
-var getToolbarButton = ({ attribute, action }) => getToolbarElement().querySelector(`[data-trix-attribute='${attribute}'], [data-trix-action='${action}']`)
+const getToolbarButton = ({ attribute, action }) =>
+  getToolbarElement().querySelector(`[data-trix-attribute='${attribute}'], [data-trix-action='${action}']`)
 
-var getToolbarDialog = ({ attribute, action }) => getToolbarElement().querySelector(`[data-trix-dialog='${attribute}']`)
+const getToolbarDialog = ({ attribute, action }) => getToolbarElement().querySelector(`[data-trix-dialog='${attribute}']`)

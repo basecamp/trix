@@ -27,15 +27,17 @@
   },
   "ignorePatterns": ["dist/**/*.js", "**/vendor/**/*.js"],
   "globals": {
+    "after": true,
     "getComposition": true,
     "getDocument": true,
     "getEditor": true,
     "getEditorController": true,
     "getEditorElement": true,
     "getSelectionManager": true,
+    "getToolbarElement": true,
+    "QUnit": true,
     "rangy": true,
     "Trix": true
-
   },
   "env": {
     "browser": true,

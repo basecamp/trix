@@ -81,7 +81,12 @@ testGroup("List formatting", { template: "editor_empty" }, () => {
   testIf(config.input.getLevel() === 0, "pressing shift-return at the end of a list item", (expectDocument) =>
     clickToolbarButton({ attribute: "bullet" }, () =>
       typeCharacters("a", () => {
-        const pressShiftReturn = triggerEvent(document.activeElement, "keydown", { charCode: 0, keyCode: 13, which: 13, shiftKey: true })
+        const pressShiftReturn = triggerEvent(document.activeElement, "keydown", {
+          charCode: 0,
+          keyCode: 13,
+          which: 13,
+          shiftKey: true,
+        })
         assert.notOk(pressShiftReturn) // Assert defaultPrevented
         assert.blockAttributes([ 0, 2 ], [ "bulletList", "bullet" ])
         expectDocument("a\n\n")

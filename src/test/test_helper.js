@@ -1,8 +1,3 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
 import config from "trix/config"
 
 export * from "trix/core/helpers/functions"
@@ -24,7 +19,9 @@ config.undoInterval = 0
 QUnit.config.hidepassed = true
 QUnit.config.testTimeout = 20000
 
-document.head.insertAdjacentHTML("beforeend", `\
+document.head.insertAdjacentHTML(
+  "beforeend",
+  `\
 <style type="text/css">
   #trix-container { height: 150px; }
   trix-toolbar { margin-bottom: 10px; }

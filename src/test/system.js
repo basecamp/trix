@@ -1,5 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 import "test/system/accessibility_test"
 import "test/system/attachment_caption_test"
 import "test/system/attachment_gallery_test"

@@ -1,5 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 import { TEST_IMAGE_URL } from "./test_image_url"
 
 export default () => `\
