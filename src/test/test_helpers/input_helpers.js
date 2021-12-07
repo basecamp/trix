@@ -1,232 +1,313 @@
-import config from "trix/config"
-import { defer } from "trix/core/helpers"
-import { createEvent, triggerEvent } from "./event_helpers"
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let code;
+import config from "trix/config";
+import { defer } from "trix/core/helpers";
+import { createEvent, triggerEvent } from "./event_helpers";
 import { selectionIsCollapsed, deleteSelection, insertNode, createDOMRangeFromPoint,
-  selectNode, collapseSelection } from "./selection_helpers"
+  selectNode, collapseSelection } from "./selection_helpers";
 
-keyCodes = {}
-for code, name of config.keyNames
-  keyCodes[name] = code
+const keyCodes = {};
+for (code in config.keyNames) {
+  const name = config.keyNames[code];
+  keyCodes[name] = code;
+}
 
-isIE = /Windows.*Trident/.test(navigator.userAgent)
+const isIE = /Windows.*Trident/.test(navigator.userAgent);
 
-export triggerInputEvent = (element, type, properties = {}) ->
-  if config.input.getLevel() is 2
-    if properties.ranges
-      ranges = properties.ranges
-      delete properties.ranges
-    else
-      ranges = []
-      selection = window.getSelection()
-      if selection.rangeCount > 0
-        ranges.push(selection.getRangeAt(0).cloneRange())
-    properties.getTargetRanges = -> ranges
-    triggerEvent(element, type, properties)
+export var triggerInputEvent = function(element, type, properties = {}) {
+  if (config.input.getLevel() === 2) {
+    let ranges;
+    if (properties.ranges) {
+      ({
+        ranges
+      } = properties);
+      delete properties.ranges;
+    } else {
+      ranges = [];
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        ranges.push(selection.getRangeAt(0).cloneRange());
+      }
+    }
+    properties.getTargetRanges = () => ranges;
+    return triggerEvent(element, type, properties);
+  }
+};
 
-export pasteContent = (contentType, value, callback) ->
-  if typeof contentType is "object"
-    data = contentType
-    callback = value
-  else
-    data = "#{contentType}": value
+export var pasteContent = function(contentType, value, callback) {
+  let data;
+  var key, value;
+  if (typeof contentType === "object") {
+    data = contentType;
+    callback = value;
+  } else {
+    data = {[contentType]: value};
+  }
 
-  testClipboardData =
-    getData: (type) ->
-      data[type]
-    types: (key for key of data)
-    items: (value for key, value of data)
+  const testClipboardData = {
+    getData(type) {
+      return data[type];
+    },
+    types: (((() => {
+      const result = [];
+      for (key in data) {
+        result.push(key);
+      }
+      return result;
+    })())),
+    items: (((() => {
+      const result1 = [];
+      for (key in data) {
+        value = data[key];
+        result1.push(value);
+      }
+      return result1;
+    })()))
+  };
 
-  if "Files" in testClipboardData.types
-    testClipboardData.files = testClipboardData.items
+  if (Array.from(testClipboardData.types).includes("Files")) {
+    testClipboardData.files = testClipboardData.items;
+  }
 
-  triggerInputEvent(document.activeElement, "beforeinput", inputType: "insertFromPaste", dataTransfer: testClipboardData)
-  triggerEvent(document.activeElement, "paste", {testClipboardData})
-  requestAnimationFrame(callback) if callback
+  triggerInputEvent(document.activeElement, "beforeinput", {inputType: "insertFromPaste", dataTransfer: testClipboardData});
+  triggerEvent(document.activeElement, "paste", {testClipboardData});
+  if (callback) { return requestAnimationFrame(callback); }
+};
 
-export createFile = (properties = {}) ->
-  file = getAsFile: -> {}
-  file[key] = value for key, value of properties
-  file
+export var createFile = function(properties = {}) {
+  const file = {getAsFile() { return {}; }};
+  for (let key in properties) { const value = properties[key]; file[key] = value; }
+  return file;
+};
 
-export typeCharacters = (string, callback) ->
-  if Array.isArray(string)
-    characters = string
-  else
-    characters = string.split("")
+export var typeCharacters = function(string, callback) {
+  let characters, typeNextCharacter;
+  if (Array.isArray(string)) {
+    characters = string;
+  } else {
+    characters = string.split("");
+  }
 
-  do typeNextCharacter = -> defer ->
-    character = characters.shift()
-    if character?
-      switch character
-        when "\n"
-          pressKey("return", typeNextCharacter)
-        when "\b"
-          pressKey("backspace", typeNextCharacter)
-        else
-          typeCharacterInElement(character, document.activeElement, typeNextCharacter)
-    else
-      callback()
+  return (typeNextCharacter = () => defer(function() {
+    const character = characters.shift();
+    if (character != null) {
+      switch (character) {
+        case "\n":
+          return pressKey("return", typeNextCharacter);
+        case "\b":
+          return pressKey("backspace", typeNextCharacter);
+        default:
+          return typeCharacterInElement(character, document.activeElement, typeNextCharacter);
+      }
+    } else {
+      return callback();
+    }
+  }))();
+};
 
-export pressKey = (keyName, callback) ->
-  element = document.activeElement
-  code = keyCodes[keyName]
-  properties = which: code, keyCode: code, charCode: 0, key: capitalize(keyName)
+export var pressKey = function(keyName, callback) {
+  const element = document.activeElement;
+  code = keyCodes[keyName];
+  const properties = {which: code, keyCode: code, charCode: 0, key: capitalize(keyName)};
 
-  return callback() unless triggerEvent(element, "keydown", properties)
+  if (!triggerEvent(element, "keydown", properties)) { return callback(); }
 
-  simulateKeypress keyName, ->
-    defer ->
-      triggerEvent(element, "keyup", properties)
-      defer(callback)
+  return simulateKeypress(keyName, () => defer(function() {
+    triggerEvent(element, "keyup", properties);
+    return defer(callback);
+  }));
+};
 
-export startComposition = (data, callback) ->
-  element = document.activeElement
-  triggerEvent(element, "compositionstart", data: "")
-  triggerInputEvent(element, "beforeinput", inputType: "insertCompositionText", data: data)
-  triggerEvent(element, "compositionupdate", data: data)
-  triggerEvent(element, "input")
+export var startComposition = function(data, callback) {
+  const element = document.activeElement;
+  triggerEvent(element, "compositionstart", {data: ""});
+  triggerInputEvent(element, "beforeinput", {inputType: "insertCompositionText", data});
+  triggerEvent(element, "compositionupdate", {data});
+  triggerEvent(element, "input");
 
-  node = document.createTextNode(data)
-  insertNode(node)
-  selectNode(node, callback)
+  const node = document.createTextNode(data);
+  insertNode(node);
+  return selectNode(node, callback);
+};
 
-export updateComposition = (data, callback) ->
-  element = document.activeElement
-  triggerInputEvent(element, "beforeinput", inputType: "insertCompositionText", data: data)
-  triggerEvent(element, "compositionupdate", data: data)
-  triggerEvent(element, "input")
+export var updateComposition = function(data, callback) {
+  const element = document.activeElement;
+  triggerInputEvent(element, "beforeinput", {inputType: "insertCompositionText", data});
+  triggerEvent(element, "compositionupdate", {data});
+  triggerEvent(element, "input");
 
-  node = document.createTextNode(data)
-  insertNode(node)
-  selectNode(node, callback)
+  const node = document.createTextNode(data);
+  insertNode(node);
+  return selectNode(node, callback);
+};
 
-export endComposition = (data, callback) ->
-  element = document.activeElement
-  triggerInputEvent(element, "beforeinput", inputType: "insertCompositionText", data: data)
-  triggerEvent(element, "compositionupdate", data: data)
+export var endComposition = function(data, callback) {
+  const element = document.activeElement;
+  triggerInputEvent(element, "beforeinput", {inputType: "insertCompositionText", data});
+  triggerEvent(element, "compositionupdate", {data});
 
-  node = document.createTextNode(data)
-  insertNode(node)
-  selectNode(node)
-  collapseSelection "right", ->
-    triggerEvent(element, "input")
-    triggerEvent(element, "compositionend", data: data)
-    requestAnimationFrame(callback)
+  const node = document.createTextNode(data);
+  insertNode(node);
+  selectNode(node);
+  return collapseSelection("right", function() {
+    triggerEvent(element, "input");
+    triggerEvent(element, "compositionend", {data});
+    return requestAnimationFrame(callback);
+  });
+};
 
-export clickElement = (element, callback) ->
-  if triggerEvent(element, "mousedown")
-    defer ->
-      if triggerEvent(element, "mouseup")
-        defer ->
-          triggerEvent(element, "click")
-          defer(callback)
+export var clickElement = function(element, callback) {
+  if (triggerEvent(element, "mousedown")) {
+    return defer(function() {
+      if (triggerEvent(element, "mouseup")) {
+        return defer(function() {
+          triggerEvent(element, "click");
+          return defer(callback);
+        });
+      }
+    });
+  }
+};
 
-export dragToCoordinates = (coordinates, callback) ->
-  element = document.activeElement
+export var dragToCoordinates = function(coordinates, callback) {
+  const element = document.activeElement;
 
-  # IE only allows writing "text" to DataTransfer
-  # https://msdn.microsoft.com/en-us/library/ms536744(v=vs.85).aspx
-  dataTransfer =
-    files: []
-    data: {}
-    getData: (format) ->
-      if isIE and format.toLowerCase() isnt "text"
-        throw new Error "Invalid argument."
-      else
-        @data[format]
-        true
-    setData: (format, data) ->
-      if isIE and format.toLowerCase() isnt "text"
-        throw new Error "Unexpected call to method or property access."
-      else
-        @data[format] = data
+  // IE only allows writing "text" to DataTransfer
+  // https://msdn.microsoft.com/en-us/library/ms536744(v=vs.85).aspx
+  const dataTransfer = {
+    files: [],
+    data: {},
+    getData(format) {
+      if (isIE && (format.toLowerCase() !== "text")) {
+        throw new Error("Invalid argument.");
+      } else {
+        this.data[format];
+        return true;
+      }
+    },
+    setData(format, data) {
+      if (isIE && (format.toLowerCase() !== "text")) {
+        throw new Error("Unexpected call to method or property access.");
+      } else {
+        return this.data[format] = data;
+      }
+    }
+  };
 
-  triggerEvent(element, "mousemove")
+  triggerEvent(element, "mousemove");
 
-  dragstartData = {dataTransfer}
-  triggerEvent(element, "dragstart", dragstartData)
-  triggerInputEvent(element, "beforeinput", inputType: "deleteByDrag")
+  const dragstartData = {dataTransfer};
+  triggerEvent(element, "dragstart", dragstartData);
+  triggerInputEvent(element, "beforeinput", {inputType: "deleteByDrag"});
 
-  dropData = {dataTransfer}
-  dropData[key] = value for key, value of coordinates
-  triggerEvent(element, "drop", dropData)
+  const dropData = {dataTransfer};
+  for (let key in coordinates) { const value = coordinates[key]; dropData[key] = value; }
+  triggerEvent(element, "drop", dropData);
 
-  {clientX, clientY} = coordinates
-  domRange = createDOMRangeFromPoint(clientX, clientY)
-  triggerInputEvent(element, "beforeinput", inputType: "insertFromDrop", ranges: [domRange])
+  const {clientX, clientY} = coordinates;
+  const domRange = createDOMRangeFromPoint(clientX, clientY);
+  triggerInputEvent(element, "beforeinput", {inputType: "insertFromDrop", ranges: [domRange]});
 
-  defer(callback)
+  return defer(callback);
+};
 
-export mouseDownOnElementAndMove = (element, distance, callback) ->
-  coordinates = getElementCoordinates(element)
-  triggerEvent(element, "mousedown", coordinates)
+export var mouseDownOnElementAndMove = function(element, distance, callback) {
+  const coordinates = getElementCoordinates(element);
+  triggerEvent(element, "mousedown", coordinates);
 
-  destination = (offset) ->
-    clientX: coordinates.clientX + offset
+  const destination = offset => ({
+    clientX: coordinates.clientX + offset,
     clientY: coordinates.clientY + offset
+  });
 
-  dragSpeed = 20
+  const dragSpeed = 20;
 
-  after dragSpeed, ->
-    offset = 0
-    do drag = =>
-      if ++offset <= distance
-        triggerEvent(element, "mousemove", destination(offset))
-        after(dragSpeed, drag)
-      else
-        triggerEvent(element, "mouseup", destination(distance))
-        after(dragSpeed, callback)
+  return after(dragSpeed, function() {
+    let drag;
+    let offset = 0;
+    return (drag = () => {
+      if (++offset <= distance) {
+        triggerEvent(element, "mousemove", destination(offset));
+        return after(dragSpeed, drag);
+      } else {
+        triggerEvent(element, "mouseup", destination(distance));
+        return after(dragSpeed, callback);
+      }
+    })();
+  });
+};
 
-typeCharacterInElement = (character, element, callback) ->
-  charCode = character.charCodeAt(0)
-  keyCode = character.toUpperCase().charCodeAt(0)
+var typeCharacterInElement = function(character, element, callback) {
+  const charCode = character.charCodeAt(0);
+  const keyCode = character.toUpperCase().charCodeAt(0);
 
-  return callback() unless triggerEvent(element, "keydown", keyCode: keyCode, charCode: 0)
+  if (!triggerEvent(element, "keydown", {keyCode, charCode: 0})) { return callback(); }
 
-  defer ->
-    return callback() unless triggerEvent(element, "keypress", keyCode: charCode, charCode: charCode)
-    triggerInputEvent(element, "beforeinput", inputType: "insertText", data: character)
-    insertCharacter character, ->
-      triggerEvent(element, "input")
+  return defer(function() {
+    if (!triggerEvent(element, "keypress", {keyCode: charCode, charCode})) { return callback(); }
+    triggerInputEvent(element, "beforeinput", {inputType: "insertText", data: character});
+    return insertCharacter(character, function() {
+      triggerEvent(element, "input");
 
-      defer ->
-        triggerEvent(element, "keyup", keyCode: keyCode, charCode: 0)
-        callback()
+      return defer(function() {
+        triggerEvent(element, "keyup", {keyCode, charCode: 0});
+        return callback();
+      });
+    });
+  });
+};
 
-insertCharacter = (character, callback) ->
-  node = document.createTextNode(character)
-  insertNode(node, callback)
+var insertCharacter = function(character, callback) {
+  const node = document.createTextNode(character);
+  return insertNode(node, callback);
+};
 
-simulateKeypress = (keyName, callback) ->
-  switch keyName
-    when "backspace"
-      deleteInDirection("left", callback)
-    when "delete"
-      deleteInDirection("right", callback)
-    when "return"
-      defer ->
-        triggerInputEvent(document.activeElement, "beforeinput", inputType: "insertParagraph")
-        node = document.createElement("br")
-        insertNode(node, callback)
+var simulateKeypress = function(keyName, callback) {
+  switch (keyName) {
+    case "backspace":
+      return deleteInDirection("left", callback);
+    case "delete":
+      return deleteInDirection("right", callback);
+    case "return":
+      return defer(function() {
+        triggerInputEvent(document.activeElement, "beforeinput", {inputType: "insertParagraph"});
+        const node = document.createElement("br");
+        return insertNode(node, callback);
+      });
+  }
+};
 
-deleteInDirection = (direction, callback) ->
-  if selectionIsCollapsed()
-    getComposition().expandSelectionInDirection(if direction is "left" then "backward" else "forward")
-    defer ->
-      inputType = if direction is "left" then "deleteContentBackward" else "deleteContentForward"
-      triggerInputEvent(document.activeElement, "beforeinput", {inputType})
-      defer ->
-        deleteSelection()
-        callback()
-  else
-    triggerInputEvent(document.activeElement, "beforeinput", inputType: "deleteContentBackward")
-    deleteSelection()
-    callback()
+var deleteInDirection = function(direction, callback) {
+  if (selectionIsCollapsed()) {
+    getComposition().expandSelectionInDirection(direction === "left" ? "backward" : "forward");
+    return defer(function() {
+      const inputType = direction === "left" ? "deleteContentBackward" : "deleteContentForward";
+      triggerInputEvent(document.activeElement, "beforeinput", {inputType});
+      return defer(function() {
+        deleteSelection();
+        return callback();
+      });
+    });
+  } else {
+    triggerInputEvent(document.activeElement, "beforeinput", {inputType: "deleteContentBackward"});
+    deleteSelection();
+    return callback();
+  }
+};
 
-getElementCoordinates = (element) ->
-  rect = element.getBoundingClientRect()
-  clientX: rect.left + rect.width / 2
-  clientY: rect.top + rect.height / 2
+var getElementCoordinates = function(element) {
+  const rect = element.getBoundingClientRect();
+  return {
+    clientX: rect.left + (rect.width / 2),
+    clientY: rect.top + (rect.height / 2)
+  };
+};
 
-capitalize = (string) ->
-  string.charAt(0).toUpperCase() + string.slice(1)
+var capitalize = string => string.charAt(0).toUpperCase() + string.slice(1);

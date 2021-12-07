@@ -1,4 +1,4 @@
-export default () => """
+export default () => `\
 <form id="ancestor-form">
   <trix-editor id="editor-with-ancestor-form"></trix-editor>
 </form>
@@ -8,5 +8,5 @@ export default () => """
 </form>
 <trix-editor id="editor-with-input-form" input="hidden-input"></trix-editor>
 
-<trix-editor id="editor-with-no-form"></trix-editor>
-"""
+<trix-editor id="editor-with-no-form"></trix-editor>\
+`;

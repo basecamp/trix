@@ -1,1 +1,1 @@
-export default () => """<trix-editor autofocus placeholder="Say hello..."></trix-editor>"""
+export default () => "<trix-editor autofocus placeholder=\"Say hello...\"></trix-editor>";

@@ -1,31 +1,47 @@
-import { normalizeRange, rangeIsCollapsed } from "trix/core/helpers"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import { normalizeRange, rangeIsCollapsed } from "trix/core/helpers";
 
-export class TestCompositionDelegate
-  compositionDidRequestChangingSelectionToLocationRange: ->
-    @getSelectionManager().setLocationRange(arguments...)
+export class TestCompositionDelegate {
+  compositionDidRequestChangingSelectionToLocationRange() {
+    return this.getSelectionManager().setLocationRange(...arguments);
+  }
 
-  getSelectionManager: ->
-    @selectionManager ?= new TestSelectionManager
+  getSelectionManager() {
+    return this.selectionManager != null ? this.selectionManager : (this.selectionManager = new TestSelectionManager);
+  }
+}
 
-export class TestSelectionManager
-  constructor: ->
-    @setLocationRange(index: 0, offset: 0)
+export class TestSelectionManager {
+  constructor() {
+    this.setLocationRange({index: 0, offset: 0});
+  }
 
-  getLocationRange: ->
-    @locationRange
+  getLocationRange() {
+    return this.locationRange;
+  }
 
-  setLocationRange: (locationRange) ->
-    @locationRange = normalizeRange(locationRange)
+  setLocationRange(locationRange) {
+    return this.locationRange = normalizeRange(locationRange);
+  }
 
-  preserveSelection: (block) ->
-    locationRange = @getLocationRange()
-    block()
-    @locationRange = locationRange
+  preserveSelection(block) {
+    const locationRange = this.getLocationRange();
+    block();
+    return this.locationRange = locationRange;
+  }
 
-  setLocationRangeFromPoint: (point) ->
+  setLocationRangeFromPoint(point) {}
 
-  locationIsCursorTarget: ->
-    false
+  locationIsCursorTarget() {
+    return false;
+  }
 
-  selectionIsExpanded: ->
-    not rangeIsCollapsed(@getLocationRange())
+  selectionIsExpanded() {
+    return !rangeIsCollapsed(this.getLocationRange());
+  }
+}

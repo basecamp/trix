@@ -1,46 +1,57 @@
-import DocumentView from "trix/views/document_view"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import DocumentView from "trix/views/document_view";
 
-import { normalizeRange, rangesAreEqual } from "trix/core/helpers"
+import { normalizeRange, rangesAreEqual } from "trix/core/helpers";
 
-assert = QUnit.assert
+const {
+  assert
+} = QUnit;
 
-assert.locationRange = (start, end) ->
-  expectedLocationRange = normalizeRange([start, end])
-  actualLocationRange = getEditorController().getLocationRange()
-  @deepEqual(actualLocationRange, expectedLocationRange)
+assert.locationRange = function(start, end) {
+  const expectedLocationRange = normalizeRange([start, end]);
+  const actualLocationRange = getEditorController().getLocationRange();
+  return this.deepEqual(actualLocationRange, expectedLocationRange);
+};
 
-assert.selectedRange = (range) ->
-  expectedRange = normalizeRange(range)
-  actualRange = getEditor().getSelectedRange()
-  @deepEqual(actualRange, expectedRange)
+assert.selectedRange = function(range) {
+  const expectedRange = normalizeRange(range);
+  const actualRange = getEditor().getSelectedRange();
+  return this.deepEqual(actualRange, expectedRange);
+};
 
-assert.textAttributes = (range, attributes) ->
-  document = window.getDocument().getDocumentAtRange(range)
-  blocks = document.getBlocks()
-  throw "range #{JSON.stringify(range)} spans more than one block" unless blocks.length is 1
+assert.textAttributes = function(range, attributes) {
+  const document = window.getDocument().getDocumentAtRange(range);
+  const blocks = document.getBlocks();
+  if (blocks.length !== 1) { throw `range ${JSON.stringify(range)} spans more than one block`; }
 
-  locationRange = window.getDocument().locationRangeFromRange(range)
-  textIndex = locationRange[0].index
-  textRange = [locationRange[0].offset, locationRange[1].offset]
-  text = window.getDocument().getTextAtIndex(textIndex).getTextAtRange(textRange)
-  pieces = text.getPieces()
-  throw "range #{JSON.stringify(range)} must only span one piece" unless pieces.length is 1
+  const locationRange = window.getDocument().locationRangeFromRange(range);
+  const textIndex = locationRange[0].index;
+  const textRange = [locationRange[0].offset, locationRange[1].offset];
+  const text = window.getDocument().getTextAtIndex(textIndex).getTextAtRange(textRange);
+  const pieces = text.getPieces();
+  if (pieces.length !== 1) { throw `range ${JSON.stringify(range)} must only span one piece`; }
 
-  piece = pieces[0]
-  @deepEqual piece.getAttributes(), attributes
+  const piece = pieces[0];
+  return this.deepEqual(piece.getAttributes(), attributes);
+};
 
-assert.blockAttributes = (range, attributes) ->
-  document = window.getDocument().getDocumentAtRange(range)
-  blocks = document.getBlocks()
-  throw "range #{JSON.stringify(range)} spans more than one block" unless blocks.length is 1
+assert.blockAttributes = function(range, attributes) {
+  const document = window.getDocument().getDocumentAtRange(range);
+  const blocks = document.getBlocks();
+  if (blocks.length !== 1) { throw `range ${JSON.stringify(range)} spans more than one block`; }
 
-  block = blocks[0]
-  @deepEqual block.getAttributes(), attributes
+  const block = blocks[0];
+  return this.deepEqual(block.getAttributes(), attributes);
+};
 
-assert.documentHTMLEqual = (trixDocument, html) ->
-  @equal getHTML(trixDocument), html
+assert.documentHTMLEqual = function(trixDocument, html) {
+  return this.equal(getHTML(trixDocument), html);
+};
 
-getHTML = (trixDocument) ->
-  DocumentView.render(trixDocument).innerHTML
+var getHTML = trixDocument => DocumentView.render(trixDocument).innerHTML;
 
-export { assert, getHTML }
+export { assert, getHTML };
