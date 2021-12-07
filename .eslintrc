@@ -27,7 +27,15 @@
   },
   "ignorePatterns": ["dist/**/*.js", "**/vendor/**/*.js"],
   "globals": {
+    "getComposition": true,
+    "getDocument": true,
+    "getEditor": true,
+    "getEditorController": true,
+    "getEditorElement": true,
+    "getSelectionManager": true,
+    "rangy": true,
     "Trix": true
+
   },
   "env": {
     "browser": true,
