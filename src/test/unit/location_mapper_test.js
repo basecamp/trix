@@ -1,4 +1,4 @@
-import { assert, test, testGroup, TEST_IMAGE_URL } from "test/test_helper"
+import { TEST_IMAGE_URL, assert, test, testGroup } from "test/test_helper"
 
 import DocumentView from "trix/views/document_view"
 import Document from "trix/models/document"

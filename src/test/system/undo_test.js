@@ -1,84 +1,95 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-import { assert, clickToolbarButton, expandSelection, moveCursor, test, testGroup, typeCharacters } from "test/test_helper"
+import {
+  assert,
+  clickToolbarButton,
+  expandSelection,
+  moveCursor,
+  test,
+  testGroup,
+  typeCharacters,
+} from "test/test_helper"
 
-testGroup("Undo/Redo", { template: "editor_empty" }, function() {
-  test("typing and undoing", function(done) {
+testGroup("Undo/Redo", { template: "editor_empty" }, () => {
+  test("typing and undoing", (done) => {
     const first = getDocument().copy()
-    return typeCharacters("abc", function() {
+    typeCharacters("abc", () => {
       assert.notOk(getDocument().isEqualTo(first))
-      return clickToolbarButton({ action: "undo" }, function() {
+      clickToolbarButton({ action: "undo" }, () => {
         assert.ok(getDocument().isEqualTo(first))
-        return done()
+        done()
       })
     })
   })
 
-  test("typing, formatting, typing, and undoing", function(done) {
+  test("typing, formatting, typing, and undoing", (done) => {
     const first = getDocument().copy()
-    return typeCharacters("abc", function() {
+    typeCharacters("abc", () => {
       const second = getDocument().copy()
-      return clickToolbarButton({ attribute: "bold" }, () => typeCharacters("def", function() {
-        const third = getDocument().copy()
-        return clickToolbarButton({ action: "undo" }, function() {
-          assert.ok(getDocument().isEqualTo(second))
-          return clickToolbarButton({ action: "undo" }, function() {
-            assert.ok(getDocument().isEqualTo(first))
-            return clickToolbarButton({ action: "redo" }, function() {
-              assert.ok(getDocument().isEqualTo(second))
-              return clickToolbarButton({ action: "redo" }, function() {
-                assert.ok(getDocument().isEqualTo(third))
-                return done()
+      clickToolbarButton({ attribute: "bold" }, () =>
+        typeCharacters("def", () => {
+          const third = getDocument().copy()
+          clickToolbarButton({ action: "undo" }, () => {
+            assert.ok(getDocument().isEqualTo(second))
+            clickToolbarButton({ action: "undo" }, () => {
+              assert.ok(getDocument().isEqualTo(first))
+              clickToolbarButton({ action: "redo" }, () => {
+                assert.ok(getDocument().isEqualTo(second))
+                clickToolbarButton({ action: "redo" }, () => {
+                  assert.ok(getDocument().isEqualTo(third))
+                  done()
+                })
               })
             })
           })
         })
-      }))
+      )
     })
   })
 
-  test("formatting changes are batched by location range", done => typeCharacters("abc", function() {
-    const first = getDocument().copy()
-    return expandSelection("left", () => clickToolbarButton({ attribute: "bold" }, () => clickToolbarButton({ attribute: "italic" }, function() {
-      const second = getDocument().copy()
-      return moveCursor("left", () => expandSelection("left", () => clickToolbarButton({ attribute: "italic" }, function() {
-        const third = getDocument().copy()
-        return clickToolbarButton({ action: "undo" }, function() {
-          assert.ok(getDocument().isEqualTo(second))
-          return clickToolbarButton({ action: "undo" }, function() {
-            assert.ok(getDocument().isEqualTo(first))
-            return clickToolbarButton({ action: "redo" }, function() {
-              assert.ok(getDocument().isEqualTo(second))
-              return clickToolbarButton({ action: "redo" }, function() {
-                assert.ok(getDocument().isEqualTo(third))
-                return done()
-              })
-            })
+  test("formatting changes are batched by location range", (done) =>
+    typeCharacters("abc", () => {
+      const first = getDocument().copy()
+      expandSelection("left", () =>
+        clickToolbarButton({ attribute: "bold" }, () =>
+          clickToolbarButton({ attribute: "italic" }, () => {
+            const second = getDocument().copy()
+            moveCursor("left", () =>
+              expandSelection("left", () =>
+                clickToolbarButton({ attribute: "italic" }, () => {
+                  const third = getDocument().copy()
+                  clickToolbarButton({ action: "undo" }, () => {
+                    assert.ok(getDocument().isEqualTo(second))
+                    clickToolbarButton({ action: "undo" }, () => {
+                      assert.ok(getDocument().isEqualTo(first))
+                      clickToolbarButton({ action: "redo" }, () => {
+                        assert.ok(getDocument().isEqualTo(second))
+                        clickToolbarButton({ action: "redo" }, () => {
+                          assert.ok(getDocument().isEqualTo(third))
+                          done()
+                        })
+                      })
+                    })
+                  })
+                })
+              )
+            )
           })
-        })
-      })))
-    })))
-  }))
+        )
+      )
+    }))
 
-  return test("block formatting are undoable", done => typeCharacters("abc", function() {
-    const first = getDocument().copy()
-    return clickToolbarButton({ attribute: "heading1" }, function() {
-      const second = getDocument().copy()
-      return clickToolbarButton({ action: "undo" }, function() {
-        assert.ok(getDocument().isEqualTo(first))
-        return clickToolbarButton({ action: "redo" }, function() {
-          assert.ok(getDocument().isEqualTo(second))
-          return done()
+  test("block formatting are undoable", (done) => {
+    typeCharacters("abc", () => {
+      const first = getDocument().copy()
+      clickToolbarButton({ attribute: "heading1" }, () => {
+        const second = getDocument().copy()
+        clickToolbarButton({ action: "undo" }, () => {
+          assert.ok(getDocument().isEqualTo(first))
+          clickToolbarButton({ action: "redo" }, () => {
+            assert.ok(getDocument().isEqualTo(second))
+            done()
+          })
         })
       })
     })
-  }))
+  })
 })

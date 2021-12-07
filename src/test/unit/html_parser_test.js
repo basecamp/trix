@@ -1,4 +1,4 @@
-import { after, assert, createCursorTarget, eachFixture, fixtures, getHTML, test, testGroup, TEST_IMAGE_URL } from "test/test_helper"
+import { TEST_IMAGE_URL, after, assert, createCursorTarget, eachFixture, fixtures, getHTML, test, testGroup } from "test/test_helper"
 
 import config from "trix/config"
 import HTMLParser from "trix/models/html_parser"
