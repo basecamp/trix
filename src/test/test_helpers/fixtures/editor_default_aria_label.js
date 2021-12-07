@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 export default () => `\
 <trix-editor id="editor-without-labels"></trix-editor>
 
@@ -18,5 +20,5 @@ export default () => `\
 
 <label id="modified-label" for="editor-with-modified-label">Original Value</label>
 <trix-editor id="editor-with-modified-label"></trix-editor>\
-`;
+`
 

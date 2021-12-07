@@ -1,14 +1,19 @@
+/* eslint-disable
+    no-var,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 export var extend = function(properties) {
-  for (let key in properties) {
-    const value = properties[key];
-    this[key] = value;
+  for (const key in properties) {
+    const value = properties[key]
+    this[key] = value
   }
-  return this;
-};
+  return this
+}
 
-export var after = (delay, callback) => setTimeout(callback, delay);
+export var after = (delay, callback) => setTimeout(callback, delay)

@@ -1,23 +1,28 @@
-import config from "trix/config";
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+import config from "trix/config"
 
-export * from "trix/core/helpers/functions";
-export * from "trix/core/helpers/global";
-export * from "./test_helpers/event_helpers";
-export * from "./test_helpers/assertions";
-export * from "./test_helpers/test_helpers";
-export * from "./test_helpers/test_stubs";
-export * from "./test_helpers/functions";
-export * from "./test_helpers/fixtures/fixtures";
-export * from "./test_helpers/event_helpers";
-export * from "./test_helpers/input_helpers";
-export * from "./test_helpers/editor_helpers";
-export * from "./test_helpers/toolbar_helpers";
-export * from "./test_helpers/selection_helpers";
+export * from "trix/core/helpers/functions"
+export * from "trix/core/helpers/global"
+export * from "./test_helpers/event_helpers"
+export * from "./test_helpers/assertions"
+export * from "./test_helpers/test_helpers"
+export * from "./test_helpers/test_stubs"
+export * from "./test_helpers/functions"
+export * from "./test_helpers/fixtures/fixtures"
+export * from "./test_helpers/event_helpers"
+export * from "./test_helpers/input_helpers"
+export * from "./test_helpers/editor_helpers"
+export * from "./test_helpers/toolbar_helpers"
+export * from "./test_helpers/selection_helpers"
 
-config.undoInterval = 0;
+config.undoInterval = 0
 
-QUnit.config.hidepassed = true;
-QUnit.config.testTimeout = 20000;
+QUnit.config.hidepassed = true
+QUnit.config.testTimeout = 20000
 
 document.head.insertAdjacentHTML("beforeend", `\
 <style type="text/css">
@@ -28,4 +33,4 @@ document.head.insertAdjacentHTML("beforeend", `\
   trix-toolbar button:disabled { color: #ccc; }
 </style>\
 `
-);
+)

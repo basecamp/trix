@@ -1,16 +1,22 @@
-import Trix from "trix/trix";
-import config from "trix/config";
+/* eslint-disable
+    no-undef,
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+import Trix from "trix/trix"
+import config from "trix/config"
 
-import "trix/core/helpers/global";
-import "test/test_helper";
+import "trix/core/helpers/global"
+import "test/test_helper"
 
-import "test/unit";
-import "test/system";
+import "test/unit"
+import "test/system"
 
-config.undoInterval = 0;
+config.undoInterval = 0
 
-QUnit.config.hidepassed = true;
-QUnit.config.testTimeout = 20000;
+QUnit.config.hidepassed = true
+QUnit.config.testTimeout = 20000
 
 document.head.insertAdjacentHTML("beforeend", `\
 <style type="text/css">
@@ -21,4 +27,4 @@ document.head.insertAdjacentHTML("beforeend", `\
   trix-toolbar button:disabled { color: #ccc; }
 </style>\
 `
-);
+)
