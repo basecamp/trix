@@ -1,7 +1,8 @@
 import { handleEvent } from "trix/core/helpers"
 
 export default class View
-  constructor: (@editorElement) ->
+  constructor: (editorElement) ->
+    @editorElement = editorElement
     {@editorController, @editor} = @editorElement
     {@compositionController, @composition} = @editorController
 

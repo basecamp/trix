@@ -12,8 +12,9 @@ export default class ToolbarController extends BasicObject
   dialogButtonSelector = "#{dialogSelector} [data-trix-method]"
   dialogInputSelector = "#{dialogSelector} [data-trix-input]"
 
-  constructor: (@element) ->
+  constructor: (element) ->
     super(arguments...)
+    @element = element
     @attributes = {}
     @actions = {}
     @resetDialogInputs()

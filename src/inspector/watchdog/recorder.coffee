@@ -2,7 +2,9 @@ import Recording from "inspector/watchdog/recording"
 import Serializer from "inspector/watchdog/serializer"
 
 export default class Recorder
-  constructor: (@element, {@snapshotLimit} = {}) ->
+  constructor: (element, {snapshotLimit} = {}) ->
+    @element = element
+    @snapshotLimit = snapshotLimit
     @recording = new Recording
 
   start: ->

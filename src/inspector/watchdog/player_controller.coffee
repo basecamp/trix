@@ -2,7 +2,9 @@ import Player from "inspector/watchdog/player"
 import PlayerView from "inspector/watchdog/player_view"
 
 export default class PlayerController
-  constructor: (@element, @recording) ->
+  constructor: (element, recording) ->
+    @element = element
+    @recording = recording
     @player = new Player @recording
     @player.delegate = this
 

@@ -7,9 +7,13 @@ import { defer, handleEvent, makeElement, tagName } from "trix/core/helpers"
 {lang, css, keyNames} = config
 
 export default class AttachmentEditorController extends BasicObject
-  constructor: (@attachmentPiece, @element, @container, @options = {}) ->
+  constructor: (attachmentPiece, element, container, options = {}) ->
     super(arguments...)
-    {@attachment} = @attachmentPiece
+    @attachmentPiece = attachmentPiece
+    @element = element
+    @container = container
+    @options = options
+    { @attachment } = @attachmentPiece
     @element = @element.firstChild if tagName(@element) is "a"
     @install()
 

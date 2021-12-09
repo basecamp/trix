@@ -4,7 +4,9 @@ export default class PlayerView
   @documentClassName: "trix-watchdog-player"
   @playingClassName: "trix-watchdog-player-playing"
 
-  constructor: (@element) ->
+  constructor: (element) ->
+    super(arguments...)
+    @element = element
     @frame = document.createElement("iframe")
     @frame.style.border = "none"
     @frame.style.width = "100%"

@@ -5,8 +5,9 @@ import FileVerificationOperation from "trix/operations/file_verification_operati
 import { handleEvent, innerElementIsActive } from "trix/core/helpers"
 
 export default class InputController extends BasicObject
-  constructor: (@element) ->
+  constructor: (element) ->
     super(arguments...)
+    @element = element
     @mutationObserver = new MutationObserver @element
     @mutationObserver.delegate = this
     for eventName of @events

@@ -1,5 +1,6 @@
 export default class LineBreakInsertion
-  constructor: (@composition) ->
+  constructor: (composition) ->
+    @composition = composition
     {@document} = @composition
 
     [@startPosition, @endPosition] = @composition.getSelectedRange()

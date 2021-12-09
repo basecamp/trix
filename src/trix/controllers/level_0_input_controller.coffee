@@ -434,8 +434,9 @@ pasteEventIsCrippledSafariHTMLPaste = (event) ->
       isExternalHTMLPaste or isExternalRichTextPaste
 
 class CompositionInput extends BasicObject
-  constructor: (@inputController) ->
+  constructor: (inputController) ->
     super(arguments...)
+    @inputController = inputController
     {@responder, @delegate, @inputSummary} = @inputController
     @data = {}
 

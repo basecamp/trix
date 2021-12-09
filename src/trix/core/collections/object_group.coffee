@@ -20,7 +20,8 @@ export default class ObjectGroup
       objects.push(new this group, {depth, asTree})
     objects
 
-  constructor: (@objects = [], {depth, asTree}) ->
+  constructor: (objects = [], {depth, asTree}) ->
+    @objects = objects
     if asTree
       @depth = depth
       @objects = @constructor.groupObjects(@objects, {asTree, depth: @depth + 1})

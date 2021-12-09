@@ -7,8 +7,10 @@ import { findClosestElementFromNode, handleEvent, innerElementIsActive, defer } 
 import { attachmentSelector } from "trix/config/attachments"
 
 export default class CompositionController extends BasicObject
-  constructor: (@element, @composition) ->
+  constructor: (element, composition) ->
     super(arguments...)
+    @element = element
+    @composition = composition
     @documentView = new DocumentView @composition.document, {@element}
 
     handleEvent "focus", onElement: @element, withCallback: @didFocus

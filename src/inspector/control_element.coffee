@@ -9,7 +9,8 @@ export default class ControlElement
     characterDataOldValue: true
     subtree: true
 
-  constructor: (@editorElement) ->
+  constructor: (editorElement) ->
+    @editorElement = editorElement
     @install()
 
   install: ->

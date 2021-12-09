@@ -22,7 +22,7 @@ export default class Attachment extends TrixObject
     new this attachmentJSON
 
   constructor: (attributes = {}) ->
-    super(arguments...)
+    super(attributes)
     @attributes = Hash.box(attributes)
     @didChangeAttributes()
 

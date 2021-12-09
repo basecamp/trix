@@ -9,8 +9,9 @@ import {getDOMSelection, getDOMRange, setDOMRange, elementContainsNode,
  rangeIsCollapsed, rangesAreEqual} from "trix/core/helpers"
 
 export default class SelectionManager extends BasicObject
-  constructor: (@element) ->
+  constructor: (element) ->
     super(arguments...)
+    @element = element
     @locationMapper = new LocationMapper @element
     @pointMapper = new PointMapper
     @lockCount = 0

@@ -3,7 +3,8 @@ import { elementContainsNode, findChildIndexOfNode, nodeIsBlockStart,
  nodeIsEmptyTextNode, nodeIsTextNode, nodeIsAttachmentElement, tagName, walkTree } from "trix/core/helpers"
 
 export default class LocationMapper
-  constructor: (@element) ->
+  constructor: (element) ->
+    @element = element
 
   findLocationFromContainerAndOffset: (container, offset, {strict} = strict: true) ->
     childIndex = 0

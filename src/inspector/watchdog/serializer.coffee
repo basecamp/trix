@@ -1,5 +1,6 @@
 export default class Serializer
-  constructor: (@element) ->
+  constructor: (element) ->
+    @element = element
     @id = 0
     @serializeTree()
     @serializeSelection()

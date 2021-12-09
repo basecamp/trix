@@ -1,8 +1,9 @@
 import Operation from "trix/core/utilities/operation"
 
 export default class FileVerificationOperation extends Operation
-  constructor: (@file) ->
+  constructor: (file) ->
     super(arguments...)
+    @file = file
 
   perform: (callback) ->
     reader = new FileReader

@@ -2,8 +2,10 @@ import "trix/models/attachment"
 import BasicObject from "trix/core/basic_object"
 
 export default class ManagedAttachment extends BasicObject
-  constructor: (@attachmentManager, @attachment) ->
+  constructor: (attachmentManager, attachment) ->
     super(arguments...)
+    @attachmentManager = attachmentManager
+    @attachment = attachment
     {@id, @file} = @attachment
 
   remove: ->

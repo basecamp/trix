@@ -2,8 +2,10 @@ import BasicObject from "trix/core/basic_object"
 import ObjectGroup from "trix/core/collections/object_group"
 
 export default class ObjectView extends BasicObject
-  constructor: (@object, @options = {}) ->
+  constructor: (object, options = {}) ->
     super(arguments...)
+    @object = object
+    @options = options
     @childViews = []
     @rootView = this
 

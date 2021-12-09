@@ -2,7 +2,9 @@ export default class Recording
   @fromJSON: ({snapshots, frames}) ->
     new this snapshots, frames
 
-  constructor: (@snapshots = [], @frames = []) ->
+  constructor: (snapshots = [], frames = []) ->
+    @snapshots = snapshots
+    @frames = frames
 
   recordSnapshot: (snapshot) ->
     snapshotJSON = JSON.stringify(snapshot)

@@ -1,5 +1,7 @@
 export default class Deserializer
-  constructor: (@document, @snapshot) ->
+  constructor: (document, snapshot) ->
+    @document = document
+    @snapshot = snapshot
     {@tree, @selection} = @snapshot
     @deserializeTree()
     @deserializeSelection()

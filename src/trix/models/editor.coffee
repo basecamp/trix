@@ -7,7 +7,10 @@ import { attachmentGalleryFilter } from "trix/filters/attachment_gallery_filter"
 export default class Editor
   DEFAULT_FILTERS = [ attachmentGalleryFilter ]
 
-  constructor: (@composition, @selectionManager, @element) ->
+  constructor: (composition, selectionManager, element) ->
+    @composition = composition
+    @selectionManager = selectionManager
+    @element = element
     @undoManager = new UndoManager @composition
     @filters = DEFAULT_FILTERS.slice(0)
 

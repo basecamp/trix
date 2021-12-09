@@ -12,11 +12,11 @@ export default class HTMLSanitizer extends BasicObject
     sanitizer.sanitize()
     sanitizer
 
-  constructor: (html, {@allowedAttributes, @forbiddenProtocols, @forbiddenElements} = {}) ->
+  constructor: (html, { allowedAttributes, forbiddenProtocols, forbiddenElements } = {}) ->
     super(arguments...)
-    @allowedAttributes ?= DEFAULT_ALLOWED_ATTRIBUTES
-    @forbiddenProtocols ?= DEFAULT_FORBIDDEN_PROTOCOLS
-    @forbiddenElements ?= DEFAULT_FORBIDDEN_ELEMENTS
+    @allowedAttributes  = allowedAttributes  || DEFAULT_ALLOWED_ATTRIBUTES
+    @forbiddenProtocols = forbiddenProtocols || DEFAULT_FORBIDDEN_PROTOCOLS
+    @forbiddenElements  = forbiddenElements  || DEFAULT_FORBIDDEN_ELEMENTS
     @body = createBodyElementForHTML(html)
 
   sanitize: ->

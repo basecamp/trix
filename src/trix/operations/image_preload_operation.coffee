@@ -1,8 +1,9 @@
 import Operation from "trix/core/utilities/operation"
 
 export default class ImagePreloadOperation extends Operation
-  constructor: (@url) ->
+  constructor: (url) ->
     super(arguments...)
+    @url = url
 
   perform: (callback) ->
     image = new Image

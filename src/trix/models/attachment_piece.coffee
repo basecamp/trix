@@ -9,8 +9,9 @@ export default class AttachmentPiece extends Piece
 
   @permittedAttributes: ["caption", "presentation"]
 
-  constructor: (@attachment) ->
+  constructor: (attachment) ->
     super(arguments...)
+    @attachment = attachment
     @length = 1
     @ensureAttachmentExclusivelyHasAttribute("href")
     @removeProhibitedAttributes() unless @attachment.hasContent()

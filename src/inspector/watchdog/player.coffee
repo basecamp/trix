@@ -1,7 +1,9 @@
 import "inspector/watchdog/recording"
 
 export default class Player
-  constructor: (@recording) ->
+  constructor: (recording) ->
+    super(arguments...)
+    @recording = recording
     @playing = false
     @index = -1
     @length = @recording.getFrameCount()

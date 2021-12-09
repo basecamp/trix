@@ -1,8 +1,9 @@
 import BasicObject from "trix/core/basic_object"
 
 export default class UndoManager extends BasicObject
-  constructor: (@composition) ->
+  constructor: (composition) ->
     super(arguments...)
+    @composition = composition
     @undoEntries = []
     @redoEntries = []
 
