@@ -3,7 +3,7 @@ import json from "@rollup/plugin-json"
 import filesize from "rollup-plugin-filesize"
 import includePaths from "rollup-plugin-includepaths"
 import commonjs from "rollup-plugin-commonjs"
-import { babel } from '@rollup/plugin-babel'
+import { babel } from "@rollup/plugin-babel"
 import nodeResolve from "rollup-plugin-node-resolve"
 
 import { version } from "./package.json"

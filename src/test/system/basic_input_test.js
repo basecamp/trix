@@ -32,44 +32,16 @@ testGroup("Basic input", { template: "editor_empty" }, () => {
 
   test("pressing escape in Safari", (expectDocument) =>
     typeCharacters("a", () => {
-      if (
-        triggerEvent(document.activeElement, "keydown", {
-          charCode: 0,
-          keyCode: 27,
-          which: 27,
-          key: "Escape",
-          code: "Escape",
-        })
-      ) {
-        triggerEvent(document.activeElement, "keypress", {
-          charCode: 27,
-          keyCode: 27,
-          which: 27,
-          key: "Escape",
-          code: "Escape",
-        })
+      if (triggerEvent(document.activeElement, "keydown", { charCode: 0, keyCode: 27, which: 27, key: "Escape", code: "Escape" })) {
+        triggerEvent(document.activeElement, "keypress", { charCode: 27, keyCode: 27, which: 27, key: "Escape", code: "Escape" })
       }
       defer(() => expectDocument("a\n"))
     }))
 
   test("pressing escape in Firefox", (expectDocument) =>
     typeCharacters("a", () => {
-      if (
-        triggerEvent(document.activeElement, "keydown", {
-          charCode: 0,
-          keyCode: 27,
-          which: 27,
-          key: "Escape",
-          code: "Escape",
-        })
-      ) {
-        triggerEvent(document.activeElement, "keypress", {
-          charCode: 0,
-          keyCode: 27,
-          which: 0,
-          key: "Escape",
-          code: "Escape",
-        })
+      if (triggerEvent(document.activeElement, "keydown", { charCode: 0, keyCode: 27, which: 27, key: "Escape", code: "Escape" })) {
+        triggerEvent(document.activeElement, "keypress", { charCode: 0, keyCode: 27, which: 0, key: "Escape", code: "Escape" })
       }
       defer(() => expectDocument("a\n"))
     }))
@@ -119,22 +91,8 @@ testGroup("Basic input", { template: "editor_empty" }, () => {
   testIf(config.input.getLevel() === 0, "inserting ó with control + alt + o (AltGr)", (expectDocument) =>
     typeCharacters("ab", () =>
       moveCursor("left", () => {
-        if (
-          triggerEvent(document.activeElement, "keydown", {
-            charCode: 0,
-            keyCode: 79,
-            which: 79,
-            altKey: true,
-            ctrlKey: true,
-          })
-        ) {
-          triggerEvent(document.activeElement, "keypress", {
-            charCode: 243,
-            keyCode: 243,
-            which: 243,
-            altKey: true,
-            ctrlKey: true,
-          })
+        if (triggerEvent(document.activeElement, "keydown", { charCode: 0, keyCode: 79, which: 79, altKey: true, ctrlKey: true })) {
+          triggerEvent(document.activeElement, "keypress", { charCode: 243, keyCode: 243, which: 243, altKey: true, ctrlKey: true })
           insertNode(document.createTextNode("ó"))
         }
 

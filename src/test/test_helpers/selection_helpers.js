@@ -61,13 +61,7 @@ export const expandSelection = (options, callback) =>
 
     return (expand = () =>
       defer(() => {
-        if (
-          triggerEvent(document.activeElement, "keydown", {
-            keyCode: keyCodes[direction],
-            key: keys[direction],
-            shiftKey: true,
-          })
-        ) {
+        if (triggerEvent(document.activeElement, "keydown", { keyCode: keyCodes[direction], key: keys[direction], shiftKey: true })) {
           getComposition().expandSelectionInDirection(direction === "left" ? "backward" : "forward")
         }
 

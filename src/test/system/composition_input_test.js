@@ -147,31 +147,27 @@ testGroup("Composition input", { template: "editor_empty" }, () => {
     })
   })
 
-  testIf(
-    config.browser.composesExistingText,
-    "composition events from cursor movement are ignored",
-    (expectDocument) => {
-      const element = getEditorElement()
-      element.editor.insertString("ab ")
+  testIf(config.browser.composesExistingText, "composition events from cursor movement are ignored", (expectDocument) => {
+    const element = getEditorElement()
+    element.editor.insertString("ab ")
 
-      element.editor.setSelectedRange(0)
-      triggerEvent(element, "compositionstart", { data: "" })
+    element.editor.setSelectedRange(0)
+    triggerEvent(element, "compositionstart", { data: "" })
+    triggerEvent(element, "compositionupdate", { data: "ab" })
+    defer(() => {
+      element.editor.setSelectedRange(1)
       triggerEvent(element, "compositionupdate", { data: "ab" })
       defer(() => {
-        element.editor.setSelectedRange(1)
+        element.editor.setSelectedRange(2)
         triggerEvent(element, "compositionupdate", { data: "ab" })
         defer(() => {
-          element.editor.setSelectedRange(2)
-          triggerEvent(element, "compositionupdate", { data: "ab" })
-          defer(() => {
-            element.editor.setSelectedRange(3)
-            triggerEvent(element, "compositionend", { data: "ab" })
-            defer(() => expectDocument("ab \n"))
-          })
+          element.editor.setSelectedRange(3)
+          triggerEvent(element, "compositionend", { data: "ab" })
+          defer(() => expectDocument("ab \n"))
         })
       })
-    }
-  )
+    })
+  })
 
   // Simulates compositions in Firefox where the final composition data is
   // dispatched as both compositionupdate and compositionend.
