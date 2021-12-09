@@ -10,7 +10,7 @@
     "dot-notation": ["error"],
     "eol-last": ["error"],
     "getter-return": ["error"],
-    "id-length": ["error", { "properties": "never", "exceptions": ["_", "i", "n"] }],
+    "id-length": ["error", { "properties": "never", "exceptions": ["_", "i", "j", "n"] }],
     "keyword-spacing": ["error"],
     "no-extra-parens": ["error"],
     "no-multi-spaces": ["error", { "exceptions": { "VariableDeclarator": true } }],
