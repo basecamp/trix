@@ -51,6 +51,8 @@
     "build": "rollup -c",
     "build-css": "node-sass --functions=./assets/trix/stylesheets/functions assets/trix.scss dist/trix.css",
     "watch": "rollup -c -w",
+    "lint": "eslint .",
+    "pretest": "yarn run lint && yarn run build",
     "test": "yarn run build && karma start"
   },
   "dependencies": {}

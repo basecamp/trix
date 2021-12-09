@@ -37,7 +37,7 @@ export triggerEvent = (eventName, {onElement, bubbles, cancelable, attributes} =
   event = document.createEvent("Events")
   event.initEvent(eventName, bubbles, cancelable)
   extend.call(event, attributes) if attributes?
-  element.dispatchEvent(event)
+  return element.dispatchEvent(event)
 
 export elementMatchesSelector = (element, selector) ->
   if element?.nodeType is 1

@@ -5,15 +5,15 @@ testGroup("Attachment", () => {
   const previewableTypes = "image image/gif image/png image/jpg".split(" ")
   const nonPreviewableTypes = "image/tiff application/foo".split(" ")
 
-  const createAttachment = attributes => new Attachment(attributes)
+  const createAttachment = (attributes) => new Attachment(attributes)
 
-  previewableTypes.forEach(contentType => {
+  previewableTypes.forEach((contentType) => {
     test(`${contentType} content type is previewable`, () => {
       assert.ok(createAttachment({ contentType }).isPreviewable())
     })
   })
 
-  nonPreviewableTypes.forEach(contentType => {
+  nonPreviewableTypes.forEach((contentType) => {
     test(`${contentType} content type is NOT previewable`, () => {
       assert.notOk(createAttachment({ contentType }).isPreviewable())
     })

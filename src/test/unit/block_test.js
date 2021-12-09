@@ -17,7 +17,7 @@ testGroup("Block", () => {
   })
 
   test("consolidating empty blocks creates text with one blockBreak piece", () => {
-    const consolidatedBlock = new Block().consolidateWith(new Block)
+    const consolidatedBlock = new Block().consolidateWith(new Block())
     const pieces = consolidatedBlock.text.getPieces()
 
     assert.equal(pieces.length, 2, JSON.stringify(pieces))

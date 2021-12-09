@@ -1,4 +1,14 @@
-import { after, assert, createCursorTarget, eachFixture, fixtures, getHTML, test, testGroup, TEST_IMAGE_URL } from "test/test_helper"
+import {
+  TEST_IMAGE_URL,
+  after,
+  assert,
+  createCursorTarget,
+  eachFixture,
+  fixtures,
+  getHTML,
+  test,
+  testGroup,
+} from "test/test_helper"
 
 import config from "trix/config"
 import HTMLParser from "trix/models/html_parser"
@@ -7,10 +17,12 @@ const cursorTargetLeft = createCursorTarget("left").outerHTML
 const cursorTargetRight = createCursorTarget("right").outerHTML
 
 testGroup("HTMLParser", () => {
-  eachFixture((name, { html, serializedHTML, document }) => test(name, () => {
-    const parsedDocument = HTMLParser.parse(html).getDocument()
-    assert.documentHTMLEqual(parsedDocument.copyUsingObjectsFromDocument(document), html)
-  }))
+  eachFixture((name, { html, serializedHTML, document }) =>
+    test(name, () => {
+      const parsedDocument = HTMLParser.parse(html).getDocument()
+      assert.documentHTMLEqual(parsedDocument.copyUsingObjectsFromDocument(document), html)
+    })
+  )
 
   eachFixture((name, { html, serializedHTML, document }) => {
     if (serializedHTML) {
@@ -25,12 +37,12 @@ testGroup("HTMLParser", () => {
     const cases = {
       "<div>a<div>b</div>c</div>": "<div><!--block-->a<br>b<br>c</div>",
       "<div>a<div><div><div>b</div></div></div>c</div>": "<div><!--block-->a<br>b<br>c</div>",
-      "<blockquote>a<div>b</div>c</blockquote>": "<blockquote><!--block-->a<br>b<br>c</blockquote>"
+      "<blockquote>a<div>b</div>c</blockquote>": "<blockquote><!--block-->a<br>b<br>c</blockquote>",
     }
-      // TODO:
-      // "<div><div>a</div><div>b</div>c</div>": "<div><!--block-->a<br>b<br>c</div>"
-      // "<blockquote><div>a</div><div>b</div><div>c</div></blockquote>": "<blockquote><!--block-->a<br>b<br>c</blockquote>"
-      // "<blockquote><div>a<br></div><div><br></div><div>b<br></div></blockquote>": "<blockquote><!--block-->a<br><br>b</blockquote>"
+    // TODO:
+    // "<div><div>a</div><div>b</div>c</div>": "<div><!--block-->a<br>b<br>c</div>"
+    // "<blockquote><div>a</div><div>b</div><div>c</div></blockquote>": "<blockquote><!--block-->a<br>b<br>c</blockquote>"
+    // "<blockquote><div>a<br></div><div><br></div><div>b<br></div></blockquote>": "<blockquote><!--block-->a<br><br>b</blockquote>"
 
     for (const [ html, expectedHTML ] of Object.entries(cases)) {
       test(html, () => {
@@ -58,8 +70,10 @@ testGroup("HTMLParser", () => {
   })
 
   test("parses unfamiliar html", () => {
-    const html = "<meta charset=\"UTF-8\"><span style=\"font-style: italic\">abc</span><span>d</span><section style=\"margin:0\"><blink>123</blink><a href=\"http://example.com\">45<b>6</b></a>x<br />y</section><p style=\"margin:0\">9</p>"
-    const expectedHTML = "<div><!--block--><em>abc</em>d</div><div><!--block-->123<a href=\"http://example.com\">45<strong>6</strong></a>x<br>y</div><div><!--block-->9</div>"
+    const html =
+      "<meta charset=\"UTF-8\"><span style=\"font-style: italic\">abc</span><span>d</span><section style=\"margin:0\"><blink>123</blink><a href=\"http://example.com\">45<b>6</b></a>x<br />y</section><p style=\"margin:0\">9</p>"
+    const expectedHTML =
+      "<div><!--block--><em>abc</em>d</div><div><!--block-->123<a href=\"http://example.com\">45<strong>6</strong></a>x<br>y</div><div><!--block-->9</div>"
     assert.documentHTMLEqual(HTMLParser.parse(html).getDocument(), expectedHTML)
   })
 
@@ -92,13 +106,15 @@ testGroup("HTMLParser", () => {
 
   test("parses incorrectly nested list html", () => {
     const html = "<ul><li>a</li><ul><li>b</li><ol><li>1</li><li>2</li><ol></ul></ul>"
-    const expectedHTML = "<ul><li><!--block-->a<ul><li><!--block-->b<ol><li><!--block-->1</li><li><!--block-->2</li></ol></li></ul></li></ul>"
+    const expectedHTML =
+      "<ul><li><!--block-->a<ul><li><!--block-->b<ol><li><!--block-->1</li><li><!--block-->2</li></ol></li></ul></li></ul>"
     assert.documentHTMLEqual(HTMLParser.parse(html).getDocument(), expectedHTML)
   })
 
   test("ignores whitespace between block elements", () => {
     const html = "<div>a</div> \n <div>b</div>     <article>c</article>  \n\n <section>d</section> "
-    const expectedHTML = "<div><!--block-->a</div><div><!--block-->b</div><div><!--block-->c</div><div><!--block-->d</div>"
+    const expectedHTML =
+      "<div><!--block-->a</div><div><!--block-->b</div><div><!--block-->c</div><div><!--block-->d</div>"
     assert.documentHTMLEqual(HTMLParser.parse(html).getDocument(), expectedHTML)
   })
 
@@ -121,8 +137,10 @@ testGroup("HTMLParser", () => {
   })
 
   test("parses block elements with leading breakable whitespace", () => {
-    const html = "<blockquote> <span>a</span> <blockquote>\n <strong>b</strong> <pre> <span>c</span></pre></blockquote></blockquote>"
-    const expectedHTML = "<blockquote><!--block-->a<blockquote><!--block--><strong>b</strong><pre><!--block--> c</pre></blockquote></blockquote>"
+    const html =
+      "<blockquote> <span>a</span> <blockquote>\n <strong>b</strong> <pre> <span>c</span></pre></blockquote></blockquote>"
+    const expectedHTML =
+      "<blockquote><!--block-->a<blockquote><!--block--><strong>b</strong><pre><!--block--> c</pre></blockquote></blockquote>"
     assert.documentHTMLEqual(HTMLParser.parse(html).getDocument(), expectedHTML)
   })
 
@@ -139,7 +157,8 @@ testGroup("HTMLParser", () => {
   })
 
   test("parses entire HTML document", () => {
-    const html = "<html><head><style>.bold {font-weight: bold}</style></head><body><span class=\"bold\">abc</span></body></html>"
+    const html =
+      "<html><head><style>.bold {font-weight: bold}</style></head><body><span class=\"bold\">abc</span></body></html>"
     const expectedHTML = "<div><!--block--><strong>abc</strong></div>"
     assert.documentHTMLEqual(HTMLParser.parse(html).getDocument(), expectedHTML)
   })
@@ -152,7 +171,8 @@ testGroup("HTMLParser", () => {
 
   test("parses text nodes following block elements", () => {
     const html = "<ul><li>a</li></ul>b<blockquote>c</blockquote>d"
-    const expectedHTML = "<ul><li><!--block-->a</li></ul><div><!--block-->b</div><blockquote><!--block-->c</blockquote><div><!--block-->d</div>"
+    const expectedHTML =
+      "<ul><li><!--block-->a</li></ul><div><!--block-->b</div><blockquote><!--block-->c</blockquote><div><!--block-->d</div>"
     assert.documentHTMLEqual(HTMLParser.parse(html).getDocument(), expectedHTML)
   })
 
@@ -182,14 +202,16 @@ testGroup("HTMLParser", () => {
   })
 
   test("translates block element margins to newlines", () => {
-    const html = "<p style=\"margin: 0 0 1em 0\">a</p><p style=\"margin: 0\">b</p><article style=\"margin: 1em 0 0 0\">c</article>"
+    const html =
+      "<p style=\"margin: 0 0 1em 0\">a</p><p style=\"margin: 0\">b</p><article style=\"margin: 1em 0 0 0\">c</article>"
     const expectedHTML = "<div><!--block-->a<br><br></div><div><!--block-->b</div><div><!--block--><br>c</div>"
     const document = HTMLParser.parse(html).getDocument()
     assert.documentHTMLEqual(document, expectedHTML)
   })
 
   test("skips translating empty block element margins to newlines", () => {
-    const html = "<p style=\"margin: 0 0 1em 0\">a</p><p style=\"margin: 0 0 1em 0\"><span></span></p><p style=\"margin: 0\">b</p>"
+    const html =
+      "<p style=\"margin: 0 0 1em 0\">a</p><p style=\"margin: 0 0 1em 0\"><span></span></p><p style=\"margin: 0\">b</p>"
     const expectedHTML = "<div><!--block-->a<br><br></div><div><!--block--><br></div><div><!--block-->b</div>"
     const document = HTMLParser.parse(html).getDocument()
     assert.documentHTMLEqual(document, expectedHTML)
@@ -224,13 +246,15 @@ testGroup("HTMLParser", () => {
   })
 
   test("forbids href attributes with javascript: protocol", () => {
-    const html = "<a href=\"javascript:alert()\">a</a> <a href=\" javascript: alert()\">b</a> <a href=\"JavaScript:alert()\">c</a>"
+    const html =
+      "<a href=\"javascript:alert()\">a</a> <a href=\" javascript: alert()\">b</a> <a href=\"JavaScript:alert()\">c</a>"
     const expectedHTML = "<div><!--block-->a b c</div>"
     assert.documentHTMLEqual(HTMLParser.parse(html).getDocument(), expectedHTML)
   })
 
   test("ignores attachment elements with malformed JSON", () => {
-    const html = "<div>a</div><div data-trix-attachment data-trix-attributes></div>" +
+    const html =
+      "<div>a</div><div data-trix-attachment data-trix-attributes></div>" +
       "<div data-trix-attachment=\"\" data-trix-attributes=\"\"></div>" +
       "<div data-trix-attachment=\"{&quot;x:}\" data-trix-attributes=\"{&quot;x:}\"></div>" +
       "<div>b</div>"
@@ -292,9 +316,11 @@ testGroup("HTMLParser", () => {
         styleProperty: "color",
         parser(element) {
           const { color } = element.style
-          if (color === "rgb(60, 179, 113)") { return color }
-        }
-      }
+          if (color === "rgb(60, 179, 113)") {
+            return color
+          }
+        },
+      },
     }
 
     withTextAttributeConfig(attrConfig, () => {
