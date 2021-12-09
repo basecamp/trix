@@ -78,7 +78,8 @@ export default class ObjectView extends BasicObject
     @getViewCache()?[object.getCacheKey()]
 
   cacheViewForObject: (view, object) ->
-    @getViewCache()?[object.getCacheKey()] = view
+    if cache = @getViewCache()
+      cache[object.getCacheKey()] = view
 
   garbageCollectCachedViews: ->
     if cache = @getViewCache()

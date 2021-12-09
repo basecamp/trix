@@ -186,7 +186,7 @@ registerElement "trix-editor", do ->
       triggerEvent("trix-#{message}", onElement: this, attributes: data)
 
   setInputElementValue: (value) ->
-    @inputElement?.value = value
+    @inputElement.value = value if @inputElement?
 
   # Element lifecycle
 

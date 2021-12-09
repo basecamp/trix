@@ -117,7 +117,8 @@ export default class AttachmentView extends ObjectView
 
   attachmentDidChangeUploadProgress: ->
     value = @attachment.getUploadProgress()
-    @findProgressElement()?.value = value
+    if progressElement = @findProgressElement()
+      progressElement.value = value
 
 htmlContainsTagName = (html, tagName) ->
   div = makeElement("div")

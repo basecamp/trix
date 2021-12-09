@@ -52,7 +52,8 @@ export default class View
 
   saveSetting: (key, value) ->
     key = @getSettingsKey(key)
-    window.sessionStorage?[key] = value
+    if window.sessionStorage?
+      window.sessionStorage[key] = value
 
   getSettingsKey: (key) ->
     "trix/inspector/#{@template}/#{key}"
