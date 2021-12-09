@@ -81,7 +81,7 @@ testGroup("HTML loading", () => {
   testGroup("images", { template: "editor_empty" }, () => {
     test("without dimensions", (expectDocument) => {
       getEditor().loadHTML(`<img src="${TEST_IMAGE_URL}">`)
-      after(20, () => {
+      after(50, () => {
         const attachment = getDocument().getAttachments()[0]
         const image = getEditorElement().querySelector("img")
         assert.equal(attachment.getWidth(), 1)
@@ -94,7 +94,7 @@ testGroup("HTML loading", () => {
 
     test("with dimensions", (expectDocument) => {
       getEditor().loadHTML(`<img src="${TEST_IMAGE_URL}" width="10" height="20">`)
-      after(20, () => {
+      after(50, () => {
         const attachment = getDocument().getAttachments()[0]
         const image = getEditorElement().querySelector("img")
         assert.equal(attachment.getWidth(), 10)
