@@ -12,7 +12,7 @@ const banner = `/*\nTrix ${version}\nCopyright © ${year} Basecamp, LLC\n */`
 
 export default [
   {
-    input: "src/trix/trix.coffee",
+    input: "src/trix/trix.js",
     output: [
       {
         name: "Trix",
