@@ -4,7 +4,7 @@ import { extend } from "./extend"
 import { attachmentSelector } from "trix/config/attachments"
 
 html = document.documentElement
-match = html.matchesSelector ? html.webkitMatchesSelector ? html.msMatchesSelector ? html.mozMatchesSelector
+match = html.matches
 
 export handleEvent = (eventName, {onElement, matchingSelector, withCallback, inPhase, preventDefault, times} = {}) ->
   element = onElement ? html
