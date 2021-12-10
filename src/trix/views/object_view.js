@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-cond-assign,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -6,132 +11,134 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-import BasicObject from "trix/core/basic_object";
-import ObjectGroup from "trix/core/collections/object_group";
+import BasicObject from "trix/core/basic_object"
+import ObjectGroup from "trix/core/collections/object_group"
 
 export default class ObjectView extends BasicObject {
   constructor(object, options = {}) {
-    super(...arguments);
-    this.object = object;
-    this.options = options;
-    this.childViews = [];
-    this.rootView = this;
+    super(...arguments)
+    this.object = object
+    this.options = options
+    this.childViews = []
+    this.rootView = this
   }
 
   getNodes() {
-    if (this.nodes == null) { this.nodes = this.createNodes(); }
-    return Array.from(this.nodes).map((node) => node.cloneNode(true));
+    if (this.nodes == null) { this.nodes = this.createNodes() }
+    return Array.from(this.nodes).map((node) => node.cloneNode(true))
   }
 
   invalidate() {
-    this.nodes = null;
-    this.childViews = [];
-    return this.parentView?.invalidate();
+    this.nodes = null
+    this.childViews = []
+    return this.parentView?.invalidate()
   }
 
   invalidateViewForObject(object) {
-    return this.findViewForObject(object)?.invalidate();
+    return this.findViewForObject(object)?.invalidate()
   }
 
   findOrCreateCachedChildView(viewClass, object, options) {
-    let view;
+    let view
     if (view = this.getCachedViewForObject(object)) {
-      this.recordChildView(view);
+      this.recordChildView(view)
     } else {
-      view = this.createChildView(...arguments);
-      this.cacheViewForObject(view, object);
+      view = this.createChildView(...arguments)
+      this.cacheViewForObject(view, object)
     }
-    return view;
+    return view
   }
 
   createChildView(viewClass, object, options = {}) {
     if (object instanceof ObjectGroup) {
-      options.viewClass = viewClass;
-      viewClass = ObjectGroupView;
+      options.viewClass = viewClass
+      viewClass = ObjectGroupView
     }
 
-    const view = new viewClass(object, options);
-    return this.recordChildView(view);
+    const view = new viewClass(object, options)
+    return this.recordChildView(view)
   }
 
   recordChildView(view) {
-    view.parentView = this;
-    view.rootView = this.rootView;
-    this.childViews.push(view);
-    return view;
+    view.parentView = this
+    view.rootView = this.rootView
+    this.childViews.push(view)
+    return view
   }
 
   getAllChildViews() {
-    let views = [];
-    for (let childView of Array.from(this.childViews)) {
-      views.push(childView);
-      views = views.concat(childView.getAllChildViews());
-    }
-    return views;
+    let views = []
+
+    Array.from(this.childViews).forEach((childView) => {
+      views.push(childView)
+      views = views.concat(childView.getAllChildViews())
+    })
+
+    return views
   }
 
   findElement() {
-    return this.findElementForObject(this.object);
+    return this.findElementForObject(this.object)
   }
 
   findElementForObject(object) {
-    let id;
+    let id
     if (id = object?.id) {
-      return this.rootView.element.querySelector(`[data-trix-id='${id}']`);
+      return this.rootView.element.querySelector(`[data-trix-id='${id}']`)
     }
   }
 
   findViewForObject(object) {
-    for (let view of Array.from(this.getAllChildViews())) { if (view.object === object) { return view; } }
+    for (const view of Array.from(this.getAllChildViews())) { if (view.object === object) { return view } }
   }
 
   getViewCache() {
     if (this.rootView === this) {
       if (this.isViewCachingEnabled()) {
-        return this.viewCache != null ? this.viewCache : (this.viewCache = {});
+        return this.viewCache != null ? this.viewCache : this.viewCache = {}
       }
     } else {
-      return this.rootView.getViewCache();
+      return this.rootView.getViewCache()
     }
   }
 
   isViewCachingEnabled() {
-    return this.shouldCacheViews !== false;
+    return this.shouldCacheViews !== false
   }
 
   enableViewCaching() {
-    return this.shouldCacheViews = true;
+    this.shouldCacheViews = true
   }
 
   disableViewCaching() {
-    return this.shouldCacheViews = false;
+    this.shouldCacheViews = false
   }
 
   getCachedViewForObject(object) {
-    return this.getViewCache()?.[object.getCacheKey()];
+    return this.getViewCache()?.[object.getCacheKey()]
   }
 
   cacheViewForObject(view, object) {
-    let cache;
+    let cache
     if (cache = this.getViewCache()) {
-      return cache[object.getCacheKey()] = view;
+      cache[object.getCacheKey()] = view
     }
   }
 
   garbageCollectCachedViews() {
-    let cache;
+    let cache
     if (cache = this.getViewCache()) {
-      const views = this.getAllChildViews().concat(this);
-      const objectKeys = (Array.from(views).map((view) => view.object.getCacheKey()));
+      const views = this.getAllChildViews().concat(this)
+      const objectKeys = Array.from(views).map((view) => view.object.getCacheKey())
       return (() => {
-        const result = [];
-        for (let key in cache) {
+        const result = []
+        for (const key in cache) {
           if (!Array.from(objectKeys).includes(key)) {
-            result.push(delete cache[key]);
+            result.push(delete cache[key])
           }
         }
-        return result;
-      })();
+        return result
+      })()
     }
   }
 }
@@ -139,32 +146,32 @@ export default class ObjectView extends BasicObject {
 
 export class ObjectGroupView extends ObjectView {
   constructor() {
-    super(...arguments);
+    super(...arguments)
     this.objectGroup = this.object;
-    ({viewClass: this.viewClass} = this.options);
-    delete this.options.viewClass;
+    ({ viewClass: this.viewClass } = this.options)
+    delete this.options.viewClass
   }
 
   getChildViews() {
     if (!this.childViews.length) {
-      for (let object of Array.from(this.objectGroup.getObjects())) {
-        this.findOrCreateCachedChildView(this.viewClass, object, this.options);
-      }
+      Array.from(this.objectGroup.getObjects()).forEach((object) => {
+        this.findOrCreateCachedChildView(this.viewClass, object, this.options)
+      })
     }
-    return this.childViews;
+    return this.childViews
   }
 
   createNodes() {
-    const element = this.createContainerElement();
+    const element = this.createContainerElement()
 
-    for (let view of Array.from(this.getChildViews())) {
-      for (let node of Array.from(view.getNodes())) { element.appendChild(node); }
-    }
+    Array.from(this.getChildViews()).forEach((view) => {
+      Array.from(view.getNodes()).forEach((node) => { element.appendChild(node) })
+    })
 
-    return [element];
+    return [ element ]
   }
 
   createContainerElement(depth = this.objectGroup.getDepth()) {
-    return this.getChildViews()[0].createContainerElement(depth);
+    return this.getChildViews()[0].createContainerElement(depth)
   }
 }

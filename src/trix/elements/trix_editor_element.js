@@ -1,3 +1,10 @@
+/* eslint-disable
+    no-cond-assign,
+    no-unused-vars,
+    no-var,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -6,85 +13,87 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-import config from "trix/config";
+import config from "trix/config"
 
-import { makeElement, triggerEvent, handleEvent, handleEventOnce,
-  findClosestElementFromNode, registerElement } from "trix/core/helpers";
+import { findClosestElementFromNode, handleEvent, handleEventOnce, makeElement,
+  registerElement, triggerEvent } from "trix/core/helpers"
 
-import { attachmentSelector } from "trix/config/attachments";
+import { attachmentSelector } from "trix/config/attachments"
 
-import AttachmentView from "trix/views/attachment_view";
-import EditorController from "trix/controllers/editor_controller";
-import "trix/elements/trix_toolbar_element";
+import AttachmentView from "trix/views/attachment_view"
+import EditorController from "trix/controllers/editor_controller"
+import "trix/elements/trix_toolbar_element"
 
 registerElement("trix-editor", (function() {
-  let id = 0;
+  let id = 0
 
   // Contenteditable support helpers
 
   const autofocus = function(element) {
     if (!document.querySelector(":focus")) {
-      if (element.hasAttribute("autofocus") && (document.querySelector("[autofocus]") === element)) {
-        return element.focus();
+      if (element.hasAttribute("autofocus") && document.querySelector("[autofocus]") === element) {
+        return element.focus()
       }
     }
-  };
+  }
 
   const makeEditable = function(element) {
-    if (element.hasAttribute("contenteditable")) { return; }
-    element.setAttribute("contenteditable", "");
-    return handleEventOnce("focus", {onElement: element, withCallback() { return configureContentEditable(element); }});
-  };
+    if (element.hasAttribute("contenteditable")) { return }
+    element.setAttribute("contenteditable", "")
+    return handleEventOnce("focus", { onElement: element, withCallback() { return configureContentEditable(element) } })
+  }
 
   var configureContentEditable = function(element) {
-    disableObjectResizing(element);
-    return setDefaultParagraphSeparator(element);
-  };
+    disableObjectResizing(element)
+    return setDefaultParagraphSeparator(element)
+  }
 
   var disableObjectResizing = function(element) {
     if (document.queryCommandSupported?.("enableObjectResizing")) {
-      document.execCommand("enableObjectResizing", false, false);
-      return handleEvent("mscontrolselect", {onElement: element, preventDefault: true});
+      document.execCommand("enableObjectResizing", false, false)
+      return handleEvent("mscontrolselect", { onElement: element, preventDefault: true })
     }
-  };
+  }
 
   var setDefaultParagraphSeparator = function(element) {
     if (document.queryCommandSupported?.("DefaultParagraphSeparator")) {
-      const {tagName} = config.blockAttributes.default;
-      if (["div", "p"].includes(tagName)) {
-        return document.execCommand("DefaultParagraphSeparator", false, tagName);
+      const { tagName } = config.blockAttributes.default
+      if ([ "div", "p" ].includes(tagName)) {
+        return document.execCommand("DefaultParagraphSeparator", false, tagName)
       }
     }
-  };
+  }
 
   // Accessibility helpers
 
   const addAccessibilityRole = function(element) {
-    if (element.hasAttribute("role")) { return; }
-    return element.setAttribute("role", "textbox");
-  };
+    if (element.hasAttribute("role")) { return }
+    return element.setAttribute("role", "textbox")
+  }
 
   const ensureAriaLabel = function(element) {
-    let update;
-    if (element.hasAttribute("aria-label") || element.hasAttribute("aria-labelledby")) { return; }
+    let update
+    if (element.hasAttribute("aria-label") || element.hasAttribute("aria-labelledby")) { return }
     (update = function() {
-      let text;
-      const texts = ((() => {
-        const result = [];
-        for (let label of Array.from(element.labels)) {           if (!label.contains(element)) {
-            result.push(label.textContent);
+      let text
+      const texts = (() => {
+        const result = []
+
+        Array.from(element.labels).forEach((label) => { if (!label.contains(element)) {
+            result.push(label.textContent)
           }
-        }
-        return result;
-      })());
-      if ((text = texts.join(" "))) {
-        return element.setAttribute("aria-label", text);
+        })
+
+        return result
+      })()
+      if (text = texts.join(" ")) {
+        return element.setAttribute("aria-label", text)
       } else {
-        return element.removeAttribute("aria-label");
+        return element.removeAttribute("aria-label")
       }
-    })();
-    return handleEvent("focus", {onElement: element, withCallback: update});
-  };
+    })()
+    return handleEvent("focus", { onElement: element, withCallback: update })
+  }
 
   // Style
 
@@ -93,14 +102,14 @@ registerElement("trix-editor", (function() {
       return {
         display: "inline",
         width: "auto"
-      };
+      }
     } else {
       return {
         display: "inline-block",
         width: "1px"
-      };
+      }
     }
-  })();
+  })()
 
   return {
     defaultCSS: `\
@@ -163,81 +172,81 @@ registerElement("trix-editor", (function() {
     trixId: {
       get() {
         if (this.hasAttribute("trix-id")) {
-          return this.getAttribute("trix-id");
+          return this.getAttribute("trix-id")
         } else {
-          this.setAttribute("trix-id", ++id);
-          return this.trixId;
+          this.setAttribute("trix-id", ++id)
+          return this.trixId
         }
       }
     },
 
     labels: {
       get() {
-        let label;
-        const labels = [];
+        let label
+        const labels = []
         if (this.id && this.ownerDocument) {
-          labels.push(...Array.from(this.ownerDocument.querySelectorAll(`label[for='${this.id}']`) || []));
+          labels.push(...Array.from(this.ownerDocument.querySelectorAll(`label[for='${this.id}']`) || []))
         }
-        if (label = findClosestElementFromNode(this, {matchingSelector: "label"})) {
-          if ([this, null].includes(label.control)) { labels.push(label); }
+        if (label = findClosestElementFromNode(this, { matchingSelector: "label" })) {
+          if ([ this, null ].includes(label.control)) { labels.push(label) }
         }
-        return labels;
+        return labels
       }
     },
 
     toolbarElement: {
       get() {
         if (this.hasAttribute("toolbar")) {
-          return this.ownerDocument?.getElementById(this.getAttribute("toolbar"));
+          return this.ownerDocument?.getElementById(this.getAttribute("toolbar"))
         } else if (this.parentNode) {
-          const toolbarId = `trix-toolbar-${this.trixId}`;
-          this.setAttribute("toolbar", toolbarId);
-          const element = makeElement("trix-toolbar", {id: toolbarId});
-          this.parentNode.insertBefore(element, this);
-          return element;
+          const toolbarId = `trix-toolbar-${this.trixId}`
+          this.setAttribute("toolbar", toolbarId)
+          const element = makeElement("trix-toolbar", { id: toolbarId })
+          this.parentNode.insertBefore(element, this)
+          return element
         }
       }
     },
 
     form: {
       get() {
-        return this.inputElement?.form;
+        return this.inputElement?.form
       }
     },
 
     inputElement: {
       get() {
         if (this.hasAttribute("input")) {
-          return this.ownerDocument?.getElementById(this.getAttribute("input"));
+          return this.ownerDocument?.getElementById(this.getAttribute("input"))
         } else if (this.parentNode) {
-          const inputId = `trix-input-${this.trixId}`;
-          this.setAttribute("input", inputId);
-          const element = makeElement("input", {type: "hidden", id: inputId});
-          this.parentNode.insertBefore(element, this.nextElementSibling);
-          return element;
+          const inputId = `trix-input-${this.trixId}`
+          this.setAttribute("input", inputId)
+          const element = makeElement("input", { type: "hidden", id: inputId })
+          this.parentNode.insertBefore(element, this.nextElementSibling)
+          return element
         }
       }
     },
 
     editor: {
       get() {
-        return this.editorController?.editor;
+        return this.editorController?.editor
       }
     },
 
     name: {
       get() {
-        return this.inputElement?.name;
+        return this.inputElement?.name
       }
     },
 
     value: {
       get() {
-        return this.inputElement?.value;
+        return this.inputElement?.value
       },
       set(defaultValue) {
-        this.defaultValue = defaultValue;
-        return this.editor?.loadHTML(this.defaultValue);
+        this.defaultValue = defaultValue
+        return this.editor?.loadHTML(this.defaultValue)
       }
     },
 
@@ -245,82 +254,84 @@ registerElement("trix-editor", (function() {
 
     notify(message, data) {
       if (this.editorController) {
-        return triggerEvent(`trix-${message}`, {onElement: this, attributes: data});
+        return triggerEvent(`trix-${message}`, { onElement: this, attributes: data })
       }
     },
 
     setInputElementValue(value) {
-      if (this.inputElement != null) { return this.inputElement.value = value; }
+      if (this.inputElement != null) {
+        this.inputElement.value = value
+      }
     },
 
     // Element lifecycle
 
     initialize() {
       if (!this.hasAttribute("data-trix-internal")) {
-        makeEditable(this);
-        addAccessibilityRole(this);
-        return ensureAriaLabel(this);
+        makeEditable(this)
+        addAccessibilityRole(this)
+        return ensureAriaLabel(this)
       }
     },
 
     connect() {
       if (!this.hasAttribute("data-trix-internal")) {
         if (!this.editorController) {
-          triggerEvent("trix-before-initialize", {onElement: this});
-          this.editorController = new EditorController({editorElement: this, html: (this.defaultValue = this.value)});
-          requestAnimationFrame(() => triggerEvent("trix-initialize", {onElement: this}));
+          triggerEvent("trix-before-initialize", { onElement: this })
+          this.editorController = new EditorController({ editorElement: this, html: this.defaultValue = this.value })
+          requestAnimationFrame(() => triggerEvent("trix-initialize", { onElement: this }))
         }
-        this.editorController.registerSelectionManager();
-        this.registerResetListener();
-        this.registerClickListener();
-        return autofocus(this);
+        this.editorController.registerSelectionManager()
+        this.registerResetListener()
+        this.registerClickListener()
+        return autofocus(this)
       }
     },
 
     disconnect() {
-      this.editorController?.unregisterSelectionManager();
-      this.unregisterResetListener();
-      return this.unregisterClickListener();
+      this.editorController?.unregisterSelectionManager()
+      this.unregisterResetListener()
+      return this.unregisterClickListener()
     },
 
     // Form support
 
     registerResetListener() {
-      this.resetListener = this.resetBubbled.bind(this);
-      return window.addEventListener("reset", this.resetListener, false);
+      this.resetListener = this.resetBubbled.bind(this)
+      return window.addEventListener("reset", this.resetListener, false)
     },
 
     unregisterResetListener() {
-      return window.removeEventListener("reset", this.resetListener, false);
+      return window.removeEventListener("reset", this.resetListener, false)
     },
 
     registerClickListener() {
-      this.clickListener = this.clickBubbled.bind(this);
-      return window.addEventListener("click", this.clickListener, false);
+      this.clickListener = this.clickBubbled.bind(this)
+      return window.addEventListener("click", this.clickListener, false)
     },
 
     unregisterClickListener() {
-      return window.removeEventListener("click", this.clickListener, false);
+      return window.removeEventListener("click", this.clickListener, false)
     },
 
     resetBubbled(event) {
-      if (event.defaultPrevented) { return; }
-      if (event.target !== this.form) { return; }
-      return this.reset();
+      if (event.defaultPrevented) { return }
+      if (event.target !== this.form) { return }
+      return this.reset()
     },
 
     clickBubbled(event) {
-      let label;
-      if (event.defaultPrevented) { return; }
-      if (this.contains(event.target)) { return; }
-      if (!(label = findClosestElementFromNode(event.target, {matchingSelector: "label"}))) { return; }
-      if (!Array.from(this.labels).includes(label)) { return; }
-      return this.focus();
+      let label
+      if (event.defaultPrevented) { return }
+      if (this.contains(event.target)) { return }
+      if (!(label = findClosestElementFromNode(event.target, { matchingSelector: "label" }))) { return }
+      if (!Array.from(this.labels).includes(label)) { return }
+      return this.focus()
     },
 
     reset() {
-      return this.value = this.defaultValue;
+      this.value = this.defaultValue
     }
-  };
+  }
 })()
-);
+)
