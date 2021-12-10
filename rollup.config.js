@@ -1,4 +1,3 @@
-import coffeescript from "rollup-plugin-coffee-script"
 import json from "@rollup/plugin-json"
 import filesize from "rollup-plugin-filesize"
 import includePaths from "rollup-plugin-includepaths"
@@ -67,7 +66,7 @@ export default [
     }
   },
   {
-    input: "src/inspector/inspector.coffee",
+    input: "src/inspector/inspector.js",
     output: [
       {
         name: "TrixInspector",
@@ -78,15 +77,14 @@ export default [
       }
     ],
     plugins: [
-      coffeescript(),
       json(),
       includePaths({
         paths: [ "src" ],
-        extensions: [ ".js", ".coffee" ]
+        extensions: [ ".js" ]
       }),
-      nodeResolve({ extensions: [ ".js", ".coffee" ] }),
+      nodeResolve({ extensions: [ ".js" ] }),
       commonjs({
-        extensions: [ ".js", ".coffee" ]
+        extensions: [ ".js" ]
       }),
       babel({ babelHelpers: "bundled" }),
     ],
