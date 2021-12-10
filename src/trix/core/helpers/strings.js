@@ -1,60 +1,76 @@
-import { NON_BREAKING_SPACE, ZERO_WIDTH_SPACE } from "trix/constants"
-import UTF16String from "trix/core/utilities/utf16_string"
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import { NON_BREAKING_SPACE, ZERO_WIDTH_SPACE } from "trix/constants";
+import UTF16String from "trix/core/utilities/utf16_string";
 
-export normalizeSpaces = (string) ->
-  string
-    .replace(///#{ZERO_WIDTH_SPACE}///g, "")
-    .replace(///#{NON_BREAKING_SPACE}///g, " ")
+export var normalizeSpaces = string => string
+  .replace(new RegExp(`${ZERO_WIDTH_SPACE}`, 'g'), "")
+  .replace(new RegExp(`${NON_BREAKING_SPACE}`, 'g'), " ");
 
-export normalizeNewlines = (string) ->
-  string.replace(/\r\n/g, "\n")
+export var normalizeNewlines = string => string.replace(/\r\n/g, "\n");
 
-export breakableWhitespacePattern = ///[^\S#{NON_BREAKING_SPACE}]///
+export var breakableWhitespacePattern = new RegExp(`[^\\S${NON_BREAKING_SPACE}]`);
 
-export squishBreakableWhitespace = (string) ->
-  string
-    # Replace all breakable whitespace characters with a space
-    .replace(///#{breakableWhitespacePattern.source}///g, " ")
-    # Replace two or more spaces with a single space
-    .replace(/\ {2,}/g, " ")
+export var squishBreakableWhitespace = string => string
+  // Replace all breakable whitespace characters with a space
+  .replace(new RegExp(`${breakableWhitespacePattern.source}`, 'g'), " ")
+  // Replace two or more spaces with a single space
+  .replace(/\ {2,}/g, " ");
 
-export summarizeStringChange = (oldString, newString) ->
-  oldString = UTF16String.box(oldString)
-  newString = UTF16String.box(newString)
+export var summarizeStringChange = function(oldString, newString) {
+  let added, removed;
+  oldString = UTF16String.box(oldString);
+  newString = UTF16String.box(newString);
 
-  if newString.length < oldString.length
-    [removed, added] = utf16StringDifferences(oldString, newString)
-  else
-    [added, removed] = utf16StringDifferences(newString, oldString)
+  if (newString.length < oldString.length) {
+    [removed, added] = Array.from(utf16StringDifferences(oldString, newString));
+  } else {
+    [added, removed] = Array.from(utf16StringDifferences(newString, oldString));
+  }
 
-  {added, removed}
+  return {added, removed};
+};
 
-utf16StringDifferences = (a, b) ->
-  return ["", ""] if a.isEqualTo(b)
+var utf16StringDifferences = function(a, b) {
+  if (a.isEqualTo(b)) { return ["", ""]; }
 
-  diffA = utf16StringDifference(a, b)
-  {length} = diffA.utf16String
+  const diffA = utf16StringDifference(a, b);
+  const {length} = diffA.utf16String;
 
-  diffB = if length
-    {offset} = diffA
-    codepoints = a.codepoints.slice(0, offset).concat(a.codepoints.slice(offset + length))
-    utf16StringDifference(b, UTF16String.fromCodepoints(codepoints))
-  else
-    utf16StringDifference(b, a)
+  const diffB = (() => {
+    if (length) {
+    const {offset} = diffA;
+    const codepoints = a.codepoints.slice(0, offset).concat(a.codepoints.slice(offset + length));
+    return utf16StringDifference(b, UTF16String.fromCodepoints(codepoints));
+  } else {
+    return utf16StringDifference(b, a);
+  }
+  })();
 
-  [diffA.utf16String.toString(), diffB.utf16String.toString()]
+  return [diffA.utf16String.toString(), diffB.utf16String.toString()];
+};
 
-utf16StringDifference = (a, b) ->
-  leftIndex = 0
-  rightIndexA = a.length
-  rightIndexB = b.length
+var utf16StringDifference = function(a, b) {
+  let leftIndex = 0;
+  let rightIndexA = a.length;
+  let rightIndexB = b.length;
 
-  while leftIndex < rightIndexA and a.charAt(leftIndex).isEqualTo(b.charAt(leftIndex))
-    leftIndex++
+  while ((leftIndex < rightIndexA) && a.charAt(leftIndex).isEqualTo(b.charAt(leftIndex))) {
+    leftIndex++;
+  }
 
-  while rightIndexA > leftIndex + 1 and a.charAt(rightIndexA - 1).isEqualTo(b.charAt(rightIndexB - 1))
-    rightIndexA--
-    rightIndexB--
+  while ((rightIndexA > (leftIndex + 1)) && a.charAt(rightIndexA - 1).isEqualTo(b.charAt(rightIndexB - 1))) {
+    rightIndexA--;
+    rightIndexB--;
+  }
 
-  utf16String: a.slice(leftIndex, rightIndexA)
-  offset: leftIndex
+  return {
+    utf16String: a.slice(leftIndex, rightIndexA),
+    offset: leftIndex
+  };
+};

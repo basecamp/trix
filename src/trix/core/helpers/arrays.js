@@ -1,33 +1,49 @@
-export arraysAreEqual = (a = [], b = []) ->
-  return false unless a.length is b.length
-  for value, index in a
-    return false unless value is b[index]
-  true
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+export var arraysAreEqual = function(a = [], b = []) {
+  if (a.length !== b.length) { return false; }
+  for (let index = 0; index < a.length; index++) {
+    const value = a[index];
+    if (value !== b[index]) { return false; }
+  }
+  return true;
+};
 
-export arrayStartsWith = (a = [], b = []) ->
-  arraysAreEqual(a.slice(0, b.length), b)
+export var arrayStartsWith = (a = [], b = []) => arraysAreEqual(a.slice(0, b.length), b);
 
-export spliceArray = (array, args...) ->
-  result = array.slice(0)
-  result.splice(args...)
-  result
+export var spliceArray = function(array, ...args) {
+  const result = array.slice(0);
+  result.splice(...Array.from(args || []));
+  return result;
+};
 
-export summarizeArrayChange = (oldArray = [], newArray = []) ->
-  added = []
-  removed = []
+export var summarizeArrayChange = function(oldArray = [], newArray = []) {
+  let value;
+  const added = [];
+  const removed = [];
 
-  existingValues = new Set
-  for value in oldArray
-    existingValues.add(value)
+  const existingValues = new Set;
+  for (value of Array.from(oldArray)) {
+    existingValues.add(value);
+  }
 
-  currentValues = new Set
-  for value in newArray
-    currentValues.add(value)
-    unless existingValues.has(value)
-      added.push(value)
+  const currentValues = new Set;
+  for (value of Array.from(newArray)) {
+    currentValues.add(value);
+    if (!existingValues.has(value)) {
+      added.push(value);
+    }
+  }
 
-  for value in oldArray
-    unless currentValues.has(value)
-      removed.push(value)
+  for (value of Array.from(oldArray)) {
+    if (!currentValues.has(value)) {
+      removed.push(value);
+    }
+  }
 
-  {added, removed}
+  return {added, removed};
+};

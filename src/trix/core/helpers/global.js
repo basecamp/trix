@@ -1,23 +1,22 @@
-# Explicitly require this file (not included in the main
-# Trix bundle) to install the following global helpers.
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS208: Avoid top-level this
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+// Explicitly require this file (not included in the main
+// Trix bundle) to install the following global helpers.
 
-@getEditorElement = ->
-  document.querySelector("trix-editor")
+this.getEditorElement = () => document.querySelector("trix-editor");
 
-@getToolbarElement = ->
-  getEditorElement().toolbarElement
+this.getToolbarElement = () => getEditorElement().toolbarElement;
 
-@getEditorController = ->
-  getEditorElement().editorController
+this.getEditorController = () => getEditorElement().editorController;
 
-@getEditor = ->
-  getEditorController().editor
+this.getEditor = () => getEditorController().editor;
 
-@getComposition = ->
-  getEditorController().composition
+this.getComposition = () => getEditorController().composition;
 
-@getDocument = ->
-  getComposition().document
+this.getDocument = () => getComposition().document;
 
-@getSelectionManager = ->
-  getEditorController().selectionManager
+this.getSelectionManager = () => getEditorController().selectionManager;

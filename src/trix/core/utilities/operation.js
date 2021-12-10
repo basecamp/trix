@@ -1,39 +1,65 @@
-import BasicObject from "trix/core/basic_object"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS206: Consider reworking classes to avoid initClass
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let Operation;
+import BasicObject from "trix/core/basic_object";
 
-export default class Operation extends BasicObject
-  isPerforming: ->
-    @performing is true
+export default Operation = (function() {
+  Operation = class Operation extends BasicObject {
+    static initClass() {
+  
+      this.proxyMethod("getPromise().then");
+      this.proxyMethod("getPromise().catch");
+    }
+    isPerforming() {
+      return this.performing === true;
+    }
 
-  hasPerformed: ->
-    @performed is true
+    hasPerformed() {
+      return this.performed === true;
+    }
 
-  hasSucceeded: ->
-    @performed and @succeeded
+    hasSucceeded() {
+      return this.performed && this.succeeded;
+    }
 
-  hasFailed: ->
-    @performed and not @succeeded
+    hasFailed() {
+      return this.performed && !this.succeeded;
+    }
 
-  getPromise: ->
-    @promise ?= new Promise (resolve, reject) =>
-      @performing = true
-      @perform (@succeeded, result) =>
-        @performing = false
-        @performed = true
+    getPromise() {
+      return this.promise != null ? this.promise : (this.promise = new Promise((resolve, reject) => {
+        this.performing = true;
+        return this.perform((succeeded, result) => {
+          this.succeeded = succeeded;
+          this.performing = false;
+          this.performed = true;
 
-        if @succeeded
-          resolve(result)
-        else
-          reject(result)
+          if (this.succeeded) {
+            return resolve(result);
+          } else {
+            return reject(result);
+          }
+        });
+      }));
+    }
 
-  perform: (callback) ->
-    callback(false)
+    perform(callback) {
+      return callback(false);
+    }
 
-  release: ->
-    @promise?.cancel?()
-    @promise = null
-    @performing = null
-    @performed = null
-    @succeeded = null
-
-  @proxyMethod "getPromise().then"
-  @proxyMethod "getPromise().catch"
+    release() {
+      this.promise?.cancel?.();
+      this.promise = null;
+      this.performing = null;
+      this.performed = null;
+      return this.succeeded = null;
+    }
+  };
+  Operation.initClass();
+  return Operation;
+})();

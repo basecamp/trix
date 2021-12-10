@@ -1,99 +1,146 @@
-import TrixObject from "trix/core/object" # Don't override window.Object
-import { arraysAreEqual } from "trix/core/helpers"
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import TrixObject from "trix/core/object"; // Don't override window.Object
+import { arraysAreEqual } from "trix/core/helpers";
 
-export default class Hash extends TrixObject
-  @fromCommonAttributesOfObjects: (objects = []) ->
-    return new this unless objects.length
-    hash = box(objects[0])
-    keys = hash.getKeys()
+export default class Hash extends TrixObject {
+  static fromCommonAttributesOfObjects(objects = []) {
+    if (!objects.length) { return new (this); }
+    let hash = box(objects[0]);
+    let keys = hash.getKeys();
 
-    for object in objects[1..]
-      keys = hash.getKeysCommonToHash(box(object))
-      hash = hash.slice(keys)
-    hash
+    for (let object of Array.from(objects.slice(1))) {
+      keys = hash.getKeysCommonToHash(box(object));
+      hash = hash.slice(keys);
+    }
+    return hash;
+  }
 
-  @box: (values) ->
-    box(values)
+  static box(values) {
+    return box(values);
+  }
 
-  constructor: (values = {}) ->
-    super(arguments...)
-    @values = copy(values)
+  constructor(values = {}) {
+    super(...arguments);
+    this.values = copy(values);
+  }
 
-  add: (key, value) ->
-    @merge(object(key, value))
+  add(key, value) {
+    return this.merge(object(key, value));
+  }
 
-  remove: (key) ->
-    new Hash copy(@values, key)
+  remove(key) {
+    return new Hash(copy(this.values, key));
+  }
 
-  get: (key) ->
-    @values[key]
+  get(key) {
+    return this.values[key];
+  }
 
-  has: (key) ->
-    key of @values
+  has(key) {
+    return key in this.values;
+  }
 
-  merge: (values) ->
-    new Hash merge(@values, unbox(values))
+  merge(values) {
+    return new Hash(merge(this.values, unbox(values)));
+  }
 
-  slice: (keys) ->
-    values = {}
-    values[key] = @values[key] for key in keys when @has(key)
-    new Hash values
+  slice(keys) {
+    const values = {};
+    for (let key of Array.from(keys)) { if (this.has(key)) { values[key] = this.values[key]; } }
+    return new Hash(values);
+  }
 
-  getKeys: ->
-    Object.keys(@values)
+  getKeys() {
+    return Object.keys(this.values);
+  }
 
-  getKeysCommonToHash: (hash) ->
-    hash = box(hash)
-    key for key in @getKeys() when @values[key] is hash.values[key]
+  getKeysCommonToHash(hash) {
+    hash = box(hash);
+    return Array.from(this.getKeys()).filter((key) => this.values[key] === hash.values[key]);
+  }
 
-  isEqualTo: (values) ->
-    arraysAreEqual(@toArray(), box(values).toArray())
+  isEqualTo(values) {
+    return arraysAreEqual(this.toArray(), box(values).toArray());
+  }
 
-  isEmpty: ->
-    @getKeys().length is 0
+  isEmpty() {
+    return this.getKeys().length === 0;
+  }
 
-  toArray: ->
-    (@array ?= (
-      result = []
-      result.push(key, value) for key, value of @values
+  toArray() {
+    let result;
+    return (this.array != null ? this.array : (this.array = (
+      (result = []),
+      (() => {
+        const result1 = [];
+        for (let key in this.values) {
+          const value = this.values[key];
+          result1.push(result.push(key, value));
+        }
+        return result1;
+      })(),
       result
-    )).slice(0)
+    ))).slice(0);
+  }
 
-  toObject: ->
-    copy(@values)
+  toObject() {
+    return copy(this.values);
+  }
 
-  toJSON: ->
-    @toObject()
+  toJSON() {
+    return this.toObject();
+  }
 
-  contentsForInspection: ->
-    values: JSON.stringify(@values)
+  contentsForInspection() {
+    return {values: JSON.stringify(this.values)};
+  }
+}
 
-object = (key, value) ->
-  result = {}
-  result[key] = value
-  result
+var object = function(key, value) {
+  const result = {};
+  result[key] = value;
+  return result;
+};
 
-merge = (object, values) ->
-  result = copy(object)
-  for key, value of values
-    result[key] = value
-  result
+var merge = function(object, values) {
+  const result = copy(object);
+  for (let key in values) {
+    const value = values[key];
+    result[key] = value;
+  }
+  return result;
+};
 
-copy = (object, keyToRemove) ->
-  result = {}
-  sortedKeys = Object.keys(object).sort()
-  for key in sortedKeys when key isnt keyToRemove
-    result[key] = object[key]
-  result
+var copy = function(object, keyToRemove) {
+  const result = {};
+  const sortedKeys = Object.keys(object).sort();
+  for (let key of Array.from(sortedKeys)) {
+    if (key !== keyToRemove) {
+      result[key] = object[key];
+    }
+  }
+  return result;
+};
 
-box = (object) ->
-  if object instanceof Hash
-    object
-  else
-    new Hash object
+var box = function(object) {
+  if (object instanceof Hash) {
+    return object;
+  } else {
+    return new Hash(object);
+  }
+};
 
-unbox = (object) ->
-  if object instanceof Hash
-    object.values
-  else
-    object
+var unbox = function(object) {
+  if (object instanceof Hash) {
+    return object.values;
+  } else {
+    return object;
+  }
+};

@@ -1,35 +1,69 @@
-import BasicObject from "trix/core/basic_object"
-import UTF16String from "trix/core/utilities/utf16_string"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS206: Consider reworking classes to avoid initClass
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let TrixObject;
+import BasicObject from "trix/core/basic_object";
+import UTF16String from "trix/core/utilities/utf16_string";
 
-export default class TrixObject extends BasicObject
-  id = 0
+export default TrixObject = (function() {
+  let id = undefined;
+  TrixObject = class TrixObject extends BasicObject {
+    static initClass() {
+      id = 0;
+    }
 
-  @fromJSONString: (jsonString) ->
-    @fromJSON JSON.parse(jsonString)
+    static fromJSONString(jsonString) {
+      return this.fromJSON(JSON.parse(jsonString));
+    }
 
-  constructor: ->
-    super(arguments...)
-    @id = ++id
+    constructor() {
+      super(...arguments);
+      this.id = ++id;
+    }
 
-  hasSameConstructorAs: (object) ->
-    @constructor is object?.constructor
+    hasSameConstructorAs(object) {
+      return this.constructor === object?.constructor;
+    }
 
-  isEqualTo: (object) ->
-    this is object
+    isEqualTo(object) {
+      return this === object;
+    }
 
-  inspect: ->
-    contents = for key, value of @contentsForInspection() ? {}
-      "#{key}=#{value}"
+    inspect() {
+      const contents = (() => {
+        let left;
+        const result = [];
+        const object = (left = this.contentsForInspection()) != null ? left : {};
+        for (let key in object) {
+          const value = object[key];
+          result.push(`${key}=${value}`);
+        }
+        return result;
+      })();
 
-    "#<#{@constructor.name}:#{@id}#{if contents.length then " #{contents.join(", ")}" else ""}>"
+      return `#<${this.constructor.name}:${this.id}${contents.length ? ` ${contents.join(", ")}` : ""}>`;
+    }
 
-  contentsForInspection: ->
+    contentsForInspection() {}
 
-  toJSONString: ->
-    JSON.stringify(this)
+    toJSONString() {
+      return JSON.stringify(this);
+    }
 
-  toUTF16String: ->
-    UTF16String.box(this)
+    toUTF16String() {
+      return UTF16String.box(this);
+    }
 
-  getCacheKey: ->
-    @id.toString()
+    getCacheKey() {
+      return this.id.toString();
+    }
+  };
+  TrixObject.initClass();
+  return TrixObject;
+})();

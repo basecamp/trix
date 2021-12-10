@@ -1,44 +1,64 @@
-export default class BasicObject
-  @proxyMethod: (expression) ->
-    {name, toMethod, toProperty, optional} = parseProxyMethodExpression(expression)
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+export default class BasicObject {
+  static proxyMethod(expression) {
+    const {name, toMethod, toProperty, optional} = parseProxyMethodExpression(expression);
 
-    @::[name] = ->
-      object = if toMethod?
-        if optional then @[toMethod]?() else @[toMethod]()
-      else if toProperty?
-        @[toProperty]
+    return this.prototype[name] = function() {
+      let subject;
+      const object = (() => {
+        if (toMethod != null) {
+        if (optional) { return this[toMethod]?.(); } else { return this[toMethod](); }
+      } else if (toProperty != null) {
+        return this[toProperty];
+      }
+      })();
 
-      if optional
-        subject = object?[name]
-        apply.call(subject, object, arguments) if subject?
-      else
-        subject = object[name]
-        apply.call(subject, object, arguments)
+      if (optional) {
+        subject = object?.[name];
+        if (subject != null) { return apply.call(subject, object, arguments); }
+      } else {
+        subject = object[name];
+        return apply.call(subject, object, arguments);
+      }
+    };
+  }
+}
 
-parseProxyMethodExpression = (expression) ->
-  unless match = expression.match(proxyMethodExpressionPattern)
-    throw new Error "can't parse @proxyMethod expression: #{expression}"
+var parseProxyMethodExpression = function(expression) {
+  let match;
+  if (!(match = expression.match(proxyMethodExpressionPattern))) {
+    throw new Error(`can't parse @proxyMethod expression: ${expression}`);
+  }
 
-  args = name: match[4]
+  const args = {name: match[4]};
 
-  if match[2]?
-    args.toMethod = match[1]
-  else
-    args.toProperty = match[1]
+  if (match[2] != null) {
+    args.toMethod = match[1];
+  } else {
+    args.toProperty = match[1];
+  }
 
-  if match[3]?
-    args.optional = true
+  if (match[3] != null) {
+    args.optional = true;
+  }
 
-  args
+  return args;
+};
 
-{apply} = Function.prototype
+var {apply} = Function.prototype;
 
-proxyMethodExpressionPattern = ///
-  ^
-    (.+?)
-      (\(\))?
-      (\?)?
-    \.
-    (.+?)
-  $
-///
+var proxyMethodExpressionPattern = new RegExp(`\
+^\
+(.+?)\
+(\\(\\))?\
+(\\?)?\
+\\.\
+(.+?)\
+$\
+`);

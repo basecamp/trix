@@ -1,194 +1,243 @@
-import config from "trix/config"
-import { ZERO_WIDTH_SPACE } from "trix/constants"
-import { extend } from "./extend"
-import { attachmentSelector } from "trix/config/attachments"
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * DS204: Change includes calls to have a more natural evaluation order
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import config from "trix/config";
+import { ZERO_WIDTH_SPACE } from "trix/constants";
+import { extend } from "./extend";
+import { attachmentSelector } from "trix/config/attachments";
 
-html = document.documentElement
-match = html.matches
+const html = document.documentElement;
+const match = html.matches;
 
-export handleEvent = (eventName, {onElement, matchingSelector, withCallback, inPhase, preventDefault, times} = {}) ->
-  element = onElement ? html
-  selector = matchingSelector
-  callback = withCallback
-  useCapture = inPhase is "capturing"
+export var handleEvent = function(eventName, {onElement, matchingSelector, withCallback, inPhase, preventDefault, times} = {}) {
+  const element = onElement != null ? onElement : html;
+  const selector = matchingSelector;
+  const callback = withCallback;
+  const useCapture = inPhase === "capturing";
 
-  handler = (event) ->
-    handler.destroy() if times? and --times is 0
-    target = findClosestElementFromNode(event.target, matchingSelector: selector)
-    if target?
-      withCallback?.call(target, event, target)
-      event.preventDefault() if preventDefault
+  var handler = function(event) {
+    if ((times != null) && (--times === 0)) { handler.destroy(); }
+    const target = findClosestElementFromNode(event.target, {matchingSelector: selector});
+    if (target != null) {
+      withCallback?.call(target, event, target);
+      if (preventDefault) { return event.preventDefault(); }
+    }
+  };
 
-  handler.destroy = ->
-    element.removeEventListener(eventName, handler, useCapture)
+  handler.destroy = () => element.removeEventListener(eventName, handler, useCapture);
 
-  element.addEventListener(eventName, handler, useCapture)
-  handler
+  element.addEventListener(eventName, handler, useCapture);
+  return handler;
+};
 
-export handleEventOnce = (eventName, options = {}) ->
-  options.times = 1
-  handleEvent(eventName, options)
+export var handleEventOnce = function(eventName, options = {}) {
+  options.times = 1;
+  return handleEvent(eventName, options);
+};
 
-export triggerEvent = (eventName, {onElement, bubbles, cancelable, attributes} = {}) ->
-  element = onElement ? html
-  bubbles = bubbles isnt false
-  cancelable = cancelable isnt false
+export var triggerEvent = function(eventName, {onElement, bubbles, cancelable, attributes} = {}) {
+  const element = onElement != null ? onElement : html;
+  bubbles = bubbles !== false;
+  cancelable = cancelable !== false;
 
-  event = document.createEvent("Events")
-  event.initEvent(eventName, bubbles, cancelable)
-  extend.call(event, attributes) if attributes?
-  return element.dispatchEvent(event)
+  const event = document.createEvent("Events");
+  event.initEvent(eventName, bubbles, cancelable);
+  if (attributes != null) { extend.call(event, attributes); }
+  return element.dispatchEvent(event);
+};
 
-export elementMatchesSelector = (element, selector) ->
-  if element?.nodeType is 1
-    match.call(element, selector)
+export var elementMatchesSelector = function(element, selector) {
+  if (element?.nodeType === 1) {
+    return match.call(element, selector);
+  }
+};
 
-export findClosestElementFromNode = (node, {matchingSelector, untilNode} = {}) ->
-  node = node.parentNode until not node? or node.nodeType is Node.ELEMENT_NODE
-  return unless node?
+export var findClosestElementFromNode = function(node, {matchingSelector, untilNode} = {}) {
+  while (!(node == null) && (node.nodeType !== Node.ELEMENT_NODE)) { node = node.parentNode; }
+  if (node == null) { return; }
 
-  if matchingSelector?
-    if node.closest and not untilNode?
-      node.closest(matchingSelector)
-    else
-      while node and node isnt untilNode
-        return node if elementMatchesSelector(node, matchingSelector)
-        node = node.parentNode
-  else
-    node
+  if (matchingSelector != null) {
+    if (node.closest && (untilNode == null)) {
+      return node.closest(matchingSelector);
+    } else {
+      while (node && (node !== untilNode)) {
+        if (elementMatchesSelector(node, matchingSelector)) { return node; }
+        node = node.parentNode;
+      }
+    }
+  } else {
+    return node;
+  }
+};
 
-export findInnerElement = (element) ->
-  element = element.firstElementChild while element?.firstElementChild
-  element
+export var findInnerElement = function(element) {
+  while (element?.firstElementChild) { element = element.firstElementChild; }
+  return element;
+};
 
-export innerElementIsActive = (element) ->
-  document.activeElement isnt element and elementContainsNode(element, document.activeElement)
+export var innerElementIsActive = element => (document.activeElement !== element) && elementContainsNode(element, document.activeElement);
 
-export elementContainsNode = (element, node) ->
-  return unless element and node
-  while node
-    return true if node is element
-    node = node.parentNode
+export var elementContainsNode = function(element, node) {
+  if (!element || !node) { return; }
+  while (node) {
+    if (node === element) { return true; }
+    node = node.parentNode;
+  }
+};
 
-export findNodeFromContainerAndOffset = (container, offset) ->
-  return unless container
-  if container.nodeType is Node.TEXT_NODE
-    container
-  else if offset is 0
-    container.firstChild ? container
-  else
-    container.childNodes.item(offset - 1)
+export var findNodeFromContainerAndOffset = function(container, offset) {
+  if (!container) { return; }
+  if (container.nodeType === Node.TEXT_NODE) {
+    return container;
+  } else if (offset === 0) {
+    return container.firstChild != null ? container.firstChild : container;
+  } else {
+    return container.childNodes.item(offset - 1);
+  }
+};
 
-export findElementFromContainerAndOffset = (container, offset) ->
-  node = findNodeFromContainerAndOffset(container, offset)
-  findClosestElementFromNode(node)
+export var findElementFromContainerAndOffset = function(container, offset) {
+  const node = findNodeFromContainerAndOffset(container, offset);
+  return findClosestElementFromNode(node);
+};
 
-export findChildIndexOfNode = (node) ->
-  return unless node?.parentNode
-  childIndex = 0
-  childIndex++ while node = node.previousSibling
-  childIndex
+export var findChildIndexOfNode = function(node) {
+  if (!node?.parentNode) { return; }
+  let childIndex = 0;
+  while ((node = node.previousSibling)) { childIndex++; }
+  return childIndex;
+};
 
-export removeNode = (node) ->
-  node?.parentNode?.removeChild(node)
+export var removeNode = node => node?.parentNode?.removeChild(node);
 
-export walkTree = (tree, {onlyNodesOfType, usingFilter, expandEntityReferences} = {}) ->
-  whatToShow = switch onlyNodesOfType
-    when "element" then NodeFilter.SHOW_ELEMENT
-    when "text"    then NodeFilter.SHOW_TEXT
-    when "comment" then NodeFilter.SHOW_COMMENT
-    else NodeFilter.SHOW_ALL
+export var walkTree = function(tree, {onlyNodesOfType, usingFilter, expandEntityReferences} = {}) {
+  const whatToShow = (() => { switch (onlyNodesOfType) {
+    case "element": return NodeFilter.SHOW_ELEMENT;
+    case "text":    return NodeFilter.SHOW_TEXT;
+    case "comment": return NodeFilter.SHOW_COMMENT;
+    default: return NodeFilter.SHOW_ALL;
+  } })();
 
-  document.createTreeWalker(tree, whatToShow, usingFilter ? null, expandEntityReferences is true)
+  return document.createTreeWalker(tree, whatToShow, usingFilter != null ? usingFilter : null, expandEntityReferences === true);
+};
 
-export tagName = (element) ->
-  element?.tagName?.toLowerCase()
+export var tagName = element => element?.tagName?.toLowerCase();
 
-export makeElement = (tag, options = {}) ->
-  if typeof tag is "object"
-    options = tag
-    tag = options.tagName
-  else
-    options = attributes: options
+export var makeElement = function(tag, options = {}) {
+  let key, value;
+  if (typeof tag === "object") {
+    options = tag;
+    tag = options.tagName;
+  } else {
+    options = {attributes: options};
+  }
 
-  element = document.createElement(tag)
+  const element = document.createElement(tag);
 
-  if options.editable?
-    options.attributes ?= {}
-    options.attributes.contenteditable = options.editable
+  if (options.editable != null) {
+    if (options.attributes == null) { options.attributes = {}; }
+    options.attributes.contenteditable = options.editable;
+  }
 
-  if options.attributes
-    for key, value of options.attributes
-      element.setAttribute(key, value)
+  if (options.attributes) {
+    for (key in options.attributes) {
+      value = options.attributes[key];
+      element.setAttribute(key, value);
+    }
+  }
 
-  if options.style
-    for key, value of options.style
-      element.style[key] = value
+  if (options.style) {
+    for (key in options.style) {
+      value = options.style[key];
+      element.style[key] = value;
+    }
+  }
 
-  if options.data
-    for key, value of options.data
-      element.dataset[key] = value
+  if (options.data) {
+    for (key in options.data) {
+      value = options.data[key];
+      element.dataset[key] = value;
+    }
+  }
 
-  if options.className
-    for className in options.className.split(" ")
-      element.classList.add(className)
+  if (options.className) {
+    for (let className of Array.from(options.className.split(" "))) {
+      element.classList.add(className);
+    }
+  }
 
-  if options.textContent
-    element.textContent = options.textContent
+  if (options.textContent) {
+    element.textContent = options.textContent;
+  }
 
-  if options.childNodes
-    for childNode in [].concat(options.childNodes)
-      element.appendChild(childNode)
+  if (options.childNodes) {
+    for (let childNode of Array.from([].concat(options.childNodes))) {
+      element.appendChild(childNode);
+    }
+  }
 
-  element
+  return element;
+};
 
-blockTagNames = undefined
+let blockTagNames = undefined;
 
-export getBlockTagNames = ->
-  return blockTagNames if blockTagNames?
+export var getBlockTagNames = function() {
+  if (blockTagNames != null) { return blockTagNames; }
 
-  blockTagNames = []
-  for key, attributes of config.blockAttributes
-    blockTagNames.push(attributes.tagName) if attributes.tagName
+  blockTagNames = [];
+  for (let key in config.blockAttributes) {
+    const attributes = config.blockAttributes[key];
+    if (attributes.tagName) { blockTagNames.push(attributes.tagName); }
+  }
 
-  blockTagNames
+  return blockTagNames;
+};
 
-export nodeIsBlockContainer = (node) ->
-  nodeIsBlockStartComment(node?.firstChild)
+export var nodeIsBlockContainer = node => nodeIsBlockStartComment(node?.firstChild);
 
-export nodeProbablyIsBlockContainer = (node) ->
-  tagName(node) in getBlockTagNames() and
-    tagName(node.firstChild) not in getBlockTagNames()
+export var nodeProbablyIsBlockContainer = function(node) {
+  let needle, needle1;
+  return (needle = tagName(node), Array.from(getBlockTagNames()).includes(needle)) &&
+    (needle1 = tagName(node.firstChild), !Array.from(getBlockTagNames()).includes(needle1));
+};
 
-export nodeIsBlockStart = (node, {strict} = strict: true) ->
-  if strict
-    nodeIsBlockStartComment(node)
-  else
-    nodeIsBlockStartComment(node) or
-      (not nodeIsBlockStartComment(node.firstChild) and nodeProbablyIsBlockContainer(node))
+export var nodeIsBlockStart = function(node, {strict} = {strict: true}) {
+  if (strict) {
+    return nodeIsBlockStartComment(node);
+  } else {
+    return nodeIsBlockStartComment(node) ||
+      (!nodeIsBlockStartComment(node.firstChild) && nodeProbablyIsBlockContainer(node));
+  }
+};
 
-export nodeIsBlockStartComment = (node) ->
-  nodeIsCommentNode(node) and node?.data is "block"
+export var nodeIsBlockStartComment = node => nodeIsCommentNode(node) && (node?.data === "block");
 
-export nodeIsCommentNode = (node) ->
-  node?.nodeType is Node.COMMENT_NODE
+export var nodeIsCommentNode = node => node?.nodeType === Node.COMMENT_NODE;
 
-export nodeIsCursorTarget = (node, {name} = {}) ->
-  return unless node
-  if nodeIsTextNode(node)
-    if node.data is ZERO_WIDTH_SPACE
-      if name
-        node.parentNode.dataset.trixCursorTarget is name
-      else
-        true
-  else
-    nodeIsCursorTarget(node.firstChild)
+export var nodeIsCursorTarget = function(node, {name} = {}) {
+  if (!node) { return; }
+  if (nodeIsTextNode(node)) {
+    if (node.data === ZERO_WIDTH_SPACE) {
+      if (name) {
+        return node.parentNode.dataset.trixCursorTarget === name;
+      } else {
+        return true;
+      }
+    }
+  } else {
+    return nodeIsCursorTarget(node.firstChild);
+  }
+};
 
-export nodeIsAttachmentElement = (node) ->
-  elementMatchesSelector(node, attachmentSelector)
+export var nodeIsAttachmentElement = node => elementMatchesSelector(node, attachmentSelector);
 
-export nodeIsEmptyTextNode = (node) ->
-  nodeIsTextNode(node) and node?.data is ""
+export var nodeIsEmptyTextNode = node => nodeIsTextNode(node) && (node?.data === "");
 
-export nodeIsTextNode = (node) ->
-  node?.nodeType is Node.TEXT_NODE
+export var nodeIsTextNode = node => node?.nodeType === Node.TEXT_NODE;

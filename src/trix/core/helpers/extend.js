@@ -1,6 +1,14 @@
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
 
 
-export extend = (properties) ->
-  for key, value of properties
-    this[key] = value
-  this
+export var extend = function(properties) {
+  for (let key in properties) {
+    const value = properties[key];
+    this[key] = value;
+  }
+  return this;
+};

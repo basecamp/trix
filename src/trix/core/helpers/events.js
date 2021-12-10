@@ -1,26 +1,42 @@
-testTransferData = "application/x-trix-feature-detection": "test"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const testTransferData = {"application/x-trix-feature-detection": "test"};
 
-export dataTransferIsPlainText = (dataTransfer) ->
-  text = dataTransfer.getData("text/plain")
-  html = dataTransfer.getData("text/html")
+export var dataTransferIsPlainText = function(dataTransfer) {
+  const text = dataTransfer.getData("text/plain");
+  const html = dataTransfer.getData("text/html");
 
-  if text and html
-    {body} = new DOMParser().parseFromString(html, "text/html")
-    if body.textContent is text
-      not body.querySelector("*")
-  else
-    text?.length
+  if (text && html) {
+    const {body} = new DOMParser().parseFromString(html, "text/html");
+    if (body.textContent === text) {
+      return !body.querySelector("*");
+    }
+  } else {
+    return text?.length;
+  }
+};
 
-export dataTransferIsWritable = (dataTransfer) ->
-  return unless dataTransfer?.setData?
-  for key, value of testTransferData
-    return unless try
-      dataTransfer.setData(key, value)
-      dataTransfer.getData(key) is value
-  true
+export var dataTransferIsWritable = function(dataTransfer) {
+  if (dataTransfer?.setData == null) { return; }
+  for (var key in testTransferData) {
+    var value = testTransferData[key];
+    if (!(() => { try {
+      dataTransfer.setData(key, value);
+      return dataTransfer.getData(key) === value;
+    } catch (error) {} })()) { return; }
+  }
+  return true;
+};
 
-export keyEventIsKeyboardCommand = do ->
-  if /Mac|^iP/.test(navigator.platform)
-    (event) -> event.metaKey
-  else
-    (event) -> event.ctrlKey
+export var keyEventIsKeyboardCommand = (function() {
+  if (/Mac|^iP/.test(navigator.platform)) {
+    return event => event.metaKey;
+  } else {
+    return event => event.ctrlKey;
+  }
+})();

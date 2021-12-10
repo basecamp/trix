@@ -1,24 +1,34 @@
-import config from "trix/config"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import config from "trix/config";
 
-allAttributeNames = null
-blockAttributeNames = null
-textAttributeNames = null
-listAttributeNames = null
+let allAttributeNames = null;
+let blockAttributeNames = null;
+let textAttributeNames = null;
+let listAttributeNames = null;
 
-export getAllAttributeNames = ->
-  allAttributeNames ?= getTextAttributeNames().concat getBlockAttributeNames()
+export var getAllAttributeNames = () => allAttributeNames != null ? allAttributeNames : (allAttributeNames = getTextAttributeNames().concat(getBlockAttributeNames()));
 
-export getBlockConfig = (attributeName) ->
-  config.blockAttributes[attributeName]
+export var getBlockConfig = attributeName => config.blockAttributes[attributeName];
 
-export getBlockAttributeNames = ->
-  blockAttributeNames ?= Object.keys(config.blockAttributes)
+export var getBlockAttributeNames = () => blockAttributeNames != null ? blockAttributeNames : (blockAttributeNames = Object.keys(config.blockAttributes));
 
-export getTextConfig = (attributeName) ->
-  config.textAttributes[attributeName]
+export var getTextConfig = attributeName => config.textAttributes[attributeName];
 
-export getTextAttributeNames = ->
-  textAttributeNames ?= Object.keys(config.textAttributes)
+export var getTextAttributeNames = () => textAttributeNames != null ? textAttributeNames : (textAttributeNames = Object.keys(config.textAttributes));
 
-export getListAttributeNames = ->
-  listAttributeNames ?= (listAttribute for key, {listAttribute} of config.blockAttributes when listAttribute?)
+export var getListAttributeNames = () => listAttributeNames != null ? listAttributeNames : (listAttributeNames = ((() => {
+  const result = [];
+  for (let key in config.blockAttributes) {
+    const {listAttribute} = config.blockAttributes[key];
+    if (listAttribute != null) {
+      result.push(listAttribute);
+    }
+  }
+  return result;
+})()));
