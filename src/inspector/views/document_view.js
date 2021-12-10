@@ -1,27 +1,29 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
  * DS206: Consider reworking classes to avoid initClass
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-import View from "inspector/view";
+import View from "inspector/view"
 
 class DocumentView extends View {
   static initClass() {
-    this.prototype.title = "Document";
-    this.prototype.template = "document";
+    this.prototype.title = "Document"
+    this.prototype.template = "document"
     this.prototype.events = {
       "trix-change"() {
-        return this.render();
+        return this.render()
       }
-    };
+    }
   }
 
   render() {
-    this.document = this.editor.getDocument();
-    return super.render(...arguments).render(...arguments);
+    this.document = this.editor.getDocument()
+    return super.render(...arguments).render(...arguments)
   }
 }
-DocumentView.initClass();
+DocumentView.initClass()
 
-Trix.Inspector.registerView(DocumentView);
+Trix.Inspector.registerView(DocumentView)

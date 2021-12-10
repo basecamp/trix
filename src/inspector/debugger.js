@@ -1,3 +1,10 @@
+/* eslint-disable
+    id-length,
+    no-empty,
+    no-var,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -10,21 +17,21 @@
 // should be explicitly required to enable the debugger.
 
 const DEBUG_METHODS = {
-  "AttachmentEditorController": `\
+  "AttachmentEditorController": "\
 didClickRemoveButton \
 uninstall\
-`,
+",
 
-  "Trix.CompositionController": `\
+  "Trix.CompositionController": "\
 didClickAttachment\
-`,
+",
 
-  "EditorController": `\
+  "EditorController": "\
 setEditor \
 loadDocument\
-`,
+",
 
-  "Trix.Level0InputController": `\
+  "Trix.Level0InputController": "\
 elementDidMutate \
 events.keydown \
 events.keypress \
@@ -36,106 +43,107 @@ events.cut \
 events.paste \
 events.compositionstart \
 events.compositionend\
-`,
+",
 
-  "Trix.Level2InputController": `\
+  "Trix.Level2InputController": "\
 elementDidMutate \
 events.beforeinput \
 events.input \
 events.compositionend\
-`,
+",
 
-  "Trix.ToolbarController": `\
+  "Trix.ToolbarController": "\
 didClickActionButton \
 didClickAttributeButton \
 didClickDialogButton \
 didKeyDownDialogInput\
-`
-};
+"
+}
 
-import { findClosestElementFromNode } from "trix/core/helpers";
+import { findClosestElementFromNode } from "trix/core/helpers"
 
-let errorListeners = [];
+let errorListeners = []
 
 Trix.Debugger = {
   addErrorListener(listener) {
     if (!Array.from(errorListeners).includes(listener)) {
-      return errorListeners.push(listener);
+      return errorListeners.push(listener)
     }
   },
 
   removeErrorListener(listener) {
-    return errorListeners = (Array.from(errorListeners).filter((l) => l !== listener));
+    errorListeners = Array.from(errorListeners).filter((l) => l !== listener)
   }
-};
+}
 
 const installMethodDebugger = function(className, methodName) {
-  let adjustedLength, array, propertyNames;
-  const [objectName, ...constructorNames] = Array.from(className.split("."));
+  let adjustedLength, array, propertyNames
+  const [ objectName, ...constructorNames ] = Array.from(className.split("."))
   array = methodName.split("."),
     adjustedLength = Math.max(array.length, 1),
     propertyNames = array.slice(0, adjustedLength - 1),
-    methodName = array[adjustedLength - 1];
+    methodName = array[adjustedLength - 1]
 
-  let object = this[objectName];
-  for (let constructorName of Array.from(constructorNames)) { object = object[constructorName]; }
-  object = object.prototype;
-  for (let propertyName of Array.from(propertyNames)) { object = object[propertyName]; }
+  let object = this[objectName]
+  Array.from(constructorNames).forEach((constructorName) => { object = object[constructorName] })
+  object = object.prototype
+  Array.from(propertyNames).forEach((propertyName) => { object = object[propertyName] })
 
   if (typeof object?.[methodName] === "function") {
-    return object[methodName] = wrapFunctionWithErrorHandler(object[methodName]);
+    object[methodName] = wrapFunctionWithErrorHandler(object[methodName])
   } else {
-    throw new Error("Can't install on non-function");
+    throw new Error("Can't install on non-function")
   }
-};
+}
 
 var wrapFunctionWithErrorHandler = function(fn) {
   const trixDebugWrapper = function() {
     try {
-      return fn.apply(this, arguments);
+      return fn.apply(this, arguments)
     } catch (error) {
-      reportError(error);
-      throw error;
+      reportError(error)
+      throw error
     }
-  };
-  return trixDebugWrapper;
-};
+  }
+  return trixDebugWrapper
+}
 
 var reportError = function(error) {
-  Trix.Debugger.lastError = error;
+  Trix.Debugger.lastError = error
 
-  console.error("Trix error!");
-  console.log(error.stack);
+  console.error("Trix error!")
+  console.log(error.stack)
 
   const {
     activeElement
-  } = document;
-  const editorElement = findClosestElementFromNode(activeElement, {matchingSelector: "trix-editor"});
+  } = document
+  const editorElement = findClosestElementFromNode(activeElement, { matchingSelector: "trix-editor" })
 
   if (editorElement) {
-    return notifyErrorListeners(error, editorElement);
+    return notifyErrorListeners(error, editorElement)
   } else {
-    return console.warn("Can't find <trix-editor> element. document.activeElement =", activeElement);
+    return console.warn("Can't find <trix-editor> element. document.activeElement =", activeElement)
   }
-};
+}
 
 var notifyErrorListeners = (error, element) => Array.from(errorListeners).map((listener) =>
-  (() => { try { return listener(error, element); } catch (error1) {} })());
+  (() => { try { return listener(error, element) } catch (error1) {} })());
 
 (function() {
-  console.groupCollapsed("Trix debugger");
+  console.groupCollapsed("Trix debugger")
 
-  for (let className in DEBUG_METHODS) {
-    const methodNames = DEBUG_METHODS[className];
-    for (let methodName of Array.from(methodNames.split(/\s/))) {
+  for (const className in DEBUG_METHODS) {
+    const methodNames = DEBUG_METHODS[className]
+
+    Array.from(methodNames.split(/\s/)).forEach((methodName) => {
       try {
-        installMethodDebugger(className, methodName);
-        console.log(`✓ ${className}#${methodName}`);
+        installMethodDebugger(className, methodName)
+        console.log(`✓ ${className}#${methodName}`)
       } catch (error) {
-        console.warn(`✗ ${className}#${methodName}:`, error.message);
+        console.warn(`✗ ${className}#${methodName}:`, error.message)
       }
-    }
+    })
   }
 
-  return console.groupEnd();
-})();
+  return console.groupEnd()
+})()

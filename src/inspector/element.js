@@ -1,10 +1,15 @@
+/* eslint-disable
+    id-length,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-import { registerElement } from "trix/core/helpers";
+import { registerElement } from "trix/core/helpers"
 
 registerElement("trix-inspector", {
   defaultCSS: `\
@@ -67,38 +72,38 @@ registerElement("trix-inspector", {
 `,
 
   connect() {
-    this.editorElement = document.querySelector(`trix-editor[trix-id='${this.dataset.trixId}']`);
-    this.views = this.createViews();
+    this.editorElement = document.querySelector(`trix-editor[trix-id='${this.dataset.trixId}']`)
+    this.views = this.createViews()
 
-    for (let view of Array.from(this.views)) {
-      view.render();
-      this.appendChild(view.element);
-    }
+    Array.from(this.views).forEach((view) => {
+      view.render()
+      this.appendChild(view.element)
+    })
 
-    this.reposition();
+    this.reposition()
 
-    this.resizeHandler = this.reposition.bind(this);
-    return addEventListener("resize", this.resizeHandler);
+    this.resizeHandler = this.reposition.bind(this)
+    return addEventListener("resize", this.resizeHandler)
   },
 
   disconnect() {
-    return removeEventListener("resize", this.resizeHandler);
+    return removeEventListener("resize", this.resizeHandler)
   },
 
   createViews() {
     const views = Array.from(Trix.Inspector.views).map((View) =>
-      new View(this.editorElement));
+      new View(this.editorElement))
 
-    return views.sort((a, b) => a.title.toLowerCase() > b.title.toLowerCase());
+    return views.sort((a, b) => a.title.toLowerCase() > b.title.toLowerCase())
   },
 
   reposition() {
-    const {top, right} = this.editorElement.getBoundingClientRect();
+    const { top, right } = this.editorElement.getBoundingClientRect()
 
-    this.style.top = `${top}px`;
-    this.style.left = `${right + 10}px`;
-    this.style.maxWidth = `${window.innerWidth - right - 40}px`;
-    return this.style.maxHeight = `${window.innerHeight - top - 30}px`;
+    this.style.top = `${top}px`
+    this.style.left = `${right + 10}px`
+    this.style.maxWidth = `${window.innerWidth - right - 40}px`
+    this.style.maxHeight = `${window.innerHeight - top - 30}px`
   }
 }
-);
+)

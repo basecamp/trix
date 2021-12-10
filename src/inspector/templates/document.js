@@ -1,14 +1,19 @@
+/* eslint-disable
+    no-var,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-if (!window.JST) { window.JST = {}; }
+if (!window.JST) { window.JST = {} }
 
 window.JST["trix/inspector/templates/document"] = function() {
   const details = this.document.getBlocks().map((block, index) => {
-    const { text } = block;
+    const { text } = block
 
     return `\
 <details class="block">
@@ -28,11 +33,11 @@ window.JST["trix/inspector/templates/document"] = function() {
     </div>
   </div>
 </details>\
-`;
-  });
+`
+  })
 
-  return details.join("\n");
-};
+  return details.join("\n")
+}
 
 var pieces = () => Array.from(pieces).map((piece, index) =>
   `\
@@ -47,4 +52,4 @@ var pieces = () => Array.from(pieces).map((piece, index) =>
   ${ JSON.stringify(piece.toString()) }
 </div>
 </div>\
-`);
+`)

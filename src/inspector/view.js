@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -5,90 +10,90 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-import { handleEvent } from "trix/core/helpers";
+import { handleEvent } from "trix/core/helpers"
 
 export default class View {
   constructor(editorElement) {
     this.editorElement = editorElement;
-    ({editorController: this.editorController, editor: this.editor} = this.editorElement);
-    ({compositionController: this.compositionController, composition: this.composition} = this.editorController);
+    ({ editorController: this.editorController, editor: this.editor } = this.editorElement);
+    ({ compositionController: this.compositionController, composition: this.composition } = this.editorController)
 
-    this.element = document.createElement("details");
-    if (this.getSetting("open") === "true") { this.element.open = true; }
-    this.element.classList.add(this.template);
+    this.element = document.createElement("details")
+    if (this.getSetting("open") === "true") { this.element.open = true }
+    this.element.classList.add(this.template)
 
-    this.titleElement = document.createElement("summary");
-    this.element.appendChild(this.titleElement);
+    this.titleElement = document.createElement("summary")
+    this.element.appendChild(this.titleElement)
 
-    this.panelElement = document.createElement("div");
-    this.panelElement.classList.add("panel");
-    this.element.appendChild(this.panelElement);
+    this.panelElement = document.createElement("div")
+    this.panelElement.classList.add("panel")
+    this.element.appendChild(this.panelElement)
 
     this.element.addEventListener("toggle", event => {
       if (event.target === this.element) {
-        return this.didToggle();
+        return this.didToggle()
       }
-    });
+    })
 
-    if (this.events) { this.installEventHandlers(); }
+    if (this.events) { this.installEventHandlers() }
   }
 
   installEventHandlers() {
     return (() => {
-      const result = [];
-      for (let eventName in this.events) {
-        const handler = this.events[eventName];
+      const result = []
+      for (const eventName in this.events) {
+        const handler = this.events[eventName]
         result.push(((eventName, handler) => {
           return handleEvent(eventName, { onElement: this.editorElement, withCallback: event => {
             return requestAnimationFrame(() => {
-              return handler.call(this, event);
-            });
+              return handler.call(this, event)
+            })
           }
         }
-          );
-        })(eventName, handler));
+          )
+        })(eventName, handler))
       }
-      return result;
-    })();
+      return result
+    })()
   }
 
   didToggle(event) {
-    this.saveSetting("open", this.isOpen());
-    return this.render();
+    this.saveSetting("open", this.isOpen())
+    return this.render()
   }
 
   isOpen() {
-    return this.element.hasAttribute("open");
+    return this.element.hasAttribute("open")
   }
 
   getTitle() {
-    return this.title != null ? this.title : "";
+    return this.title != null ? this.title : ""
   }
 
   render() {
-    this.renderTitle();
+    this.renderTitle()
     if (this.isOpen()) {
-      return this.panelElement.innerHTML = JST[`trix/inspector/templates/${this.template}`].apply(this);
+      this.panelElement.innerHTML = JST[`trix/inspector/templates/${this.template}`].apply(this)
     }
   }
 
   renderTitle() {
-    return this.titleElement.innerHTML = this.getTitle();
+    this.titleElement.innerHTML = this.getTitle()
   }
 
   getSetting(key) {
-    key = this.getSettingsKey(key);
-    return window.sessionStorage?.[key];
+    key = this.getSettingsKey(key)
+    return window.sessionStorage?.[key]
   }
 
   saveSetting(key, value) {
-    key = this.getSettingsKey(key);
+    key = this.getSettingsKey(key)
     if (window.sessionStorage != null) {
-      return window.sessionStorage[key] = value;
+      window.sessionStorage[key] = value
     }
   }
 
   getSettingsKey(key) {
-    return `trix/inspector/${this.template}/${key}`;
+    return `trix/inspector/${this.template}/${key}`
   }
 }
