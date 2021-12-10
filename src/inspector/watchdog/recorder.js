@@ -1,84 +1,112 @@
-import Recording from "inspector/watchdog/recording"
-import Serializer from "inspector/watchdog/serializer"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import Recording from "inspector/watchdog/recording";
+import Serializer from "inspector/watchdog/serializer";
 
-export default class Recorder
-  constructor: (element, {snapshotLimit} = {}) ->
-    @element = element
-    @snapshotLimit = snapshotLimit
-    @recording = new Recording
+export default class Recorder {
+  constructor(element, {snapshotLimit} = {}) {
+    this.recordSnapshotDuringNextAnimationFrame = this.recordSnapshotDuringNextAnimationFrame.bind(this);
+    this.handleEvent = this.handleEvent.bind(this);
+    this.element = element;
+    this.snapshotLimit = snapshotLimit;
+    this.recording = new Recording;
+  }
 
-  start: ->
-    return if @started
-    @installMutationObserver()
-    @installEventListeners()
-    @recordSnapshot()
-    @started = true
+  start() {
+    if (this.started) { return; }
+    this.installMutationObserver();
+    this.installEventListeners();
+    this.recordSnapshot();
+    return this.started = true;
+  }
 
-  stop: ->
-    return unless @started
-    @uninstallMutationObserver()
-    @uninstallEventListeners()
-    @started = false
+  stop() {
+    if (!this.started) { return; }
+    this.uninstallMutationObserver();
+    this.uninstallEventListeners();
+    return this.started = false;
+  }
 
-  log: (message) ->
-    @recording.recordEvent(type: "log", message: message)
+  log(message) {
+    return this.recording.recordEvent({type: "log", message});
+  }
 
-  installMutationObserver: ->
-    @mutationObserver = new MutationObserver @recordSnapshotDuringNextAnimationFrame
-    @mutationObserver.observe(@element, attributes: true, characterData: true, childList: true, subtree: true)
+  installMutationObserver() {
+    this.mutationObserver = new MutationObserver(this.recordSnapshotDuringNextAnimationFrame);
+    return this.mutationObserver.observe(this.element, {attributes: true, characterData: true, childList: true, subtree: true});
+  }
 
-  uninstallMutationObserver: ->
-    @mutationObserver.disconnect()
-    @mutationObserver = null
+  uninstallMutationObserver() {
+    this.mutationObserver.disconnect();
+    return this.mutationObserver = null;
+  }
 
-  recordSnapshotDuringNextAnimationFrame: =>
-    @animationFrameRequest ?= requestAnimationFrame =>
-      @animationFrameRequest = null
-      @recordSnapshot()
+  recordSnapshotDuringNextAnimationFrame() {
+    return this.animationFrameRequest != null ? this.animationFrameRequest : (this.animationFrameRequest = requestAnimationFrame(() => {
+      this.animationFrameRequest = null;
+      return this.recordSnapshot();
+    }));
+  }
 
-  installEventListeners: ->
-    @element.addEventListener("input", @handleEvent, true)
-    @element.addEventListener("keypress", @handleEvent, true)
-    document.addEventListener("selectionchange", @handleEvent, true)
+  installEventListeners() {
+    this.element.addEventListener("input", this.handleEvent, true);
+    this.element.addEventListener("keypress", this.handleEvent, true);
+    return document.addEventListener("selectionchange", this.handleEvent, true);
+  }
 
-  uninstallEventListeners: ->
-    @element.removeEventListener("input", @handleEvent, true)
-    @element.removeEventListener("keypress", @handleEvent, true)
-    document.removeEventListener("selectionchange", @handleEvent, true)
+  uninstallEventListeners() {
+    this.element.removeEventListener("input", this.handleEvent, true);
+    this.element.removeEventListener("keypress", this.handleEvent, true);
+    return document.removeEventListener("selectionchange", this.handleEvent, true);
+  }
 
-  handleEvent: (event) =>
-    switch event.type
-      when "input"
-        @recordInputEvent(event)
-      when "keypress"
-        @recordKeypressEvent(event)
-      when "selectionchange"
-        @recordSnapshotDuringNextAnimationFrame()
+  handleEvent(event) {
+    switch (event.type) {
+      case "input":
+        return this.recordInputEvent(event);
+      case "keypress":
+        return this.recordKeypressEvent(event);
+      case "selectionchange":
+        return this.recordSnapshotDuringNextAnimationFrame();
+    }
+  }
 
-  recordInputEvent: (event) ->
-    @recording.recordEvent(type: "input")
+  recordInputEvent(event) {
+    return this.recording.recordEvent({type: "input"});
+  }
 
-  recordKeypressEvent: (event) ->
-    @recording.recordEvent
-      type: "keypress"
-      altKey: event.altKey
-      ctrlKey: event.ctrlKey
-      metaKey: event.metaKey
-      shiftKey: event.shiftKey
-      keyCode: event.keyCode
-      charCode: event.charCode
+  recordKeypressEvent(event) {
+    return this.recording.recordEvent({
+      type: "keypress",
+      altKey: event.altKey,
+      ctrlKey: event.ctrlKey,
+      metaKey: event.metaKey,
+      shiftKey: event.shiftKey,
+      keyCode: event.keyCode,
+      charCode: event.charCode,
       character: characterFromKeyboardEvent(event)
+    });
+  }
 
-  recordSnapshot: ->
-    @recording.recordSnapshot(@getSnapshot())
-    @recording.truncateToSnapshotCount(@snapshotLimit) if @snapshotLimit?
+  recordSnapshot() {
+    this.recording.recordSnapshot(this.getSnapshot());
+    if (this.snapshotLimit != null) { return this.recording.truncateToSnapshotCount(this.snapshotLimit); }
+  }
 
-  getSnapshot: ->
-    serializer = new Serializer @element
-    serializer.getSnapshot()
+  getSnapshot() {
+    const serializer = new Serializer(this.element);
+    return serializer.getSnapshot();
+  }
+}
 
-characterFromKeyboardEvent = (event) ->
-  if event.which is null
-    String.fromCharCode(event.keyCode)
-  else if event.which isnt 0 and event.charCode isnt 0
-    String.fromCharCode(event.charCode)
+var characterFromKeyboardEvent = function(event) {
+  if (event.which === null) {
+    return String.fromCharCode(event.keyCode);
+  } else if ((event.which !== 0) && (event.charCode !== 0)) {
+    return String.fromCharCode(event.charCode);
+  }
+};

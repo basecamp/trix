@@ -1,62 +1,83 @@
-import "inspector/watchdog/recording"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import "inspector/watchdog/recording";
 
-export default class Player
-  constructor: (recording) ->
-    super(arguments...)
-    @recording = recording
-    @playing = false
-    @index = -1
-    @length = @recording.getFrameCount()
+export default class Player {
+  constructor(recording) {
+    this.tick = this.tick.bind(this);
+    super(...arguments);
+    this.recording = recording;
+    this.playing = false;
+    this.index = -1;
+    this.length = this.recording.getFrameCount();
+  }
 
-  play: ->
-    return if @playing
-    @index = -1 if @hasEnded()
-    @playing = true
-    @delegate?.playerDidStartPlaying?()
-    @tick()
+  play() {
+    if (this.playing) { return; }
+    if (this.hasEnded()) { this.index = -1; }
+    this.playing = true;
+    this.delegate?.playerDidStartPlaying?.();
+    return this.tick();
+  }
 
-  tick: =>
-    if @hasEnded()
-      @stop()
-    else
-      @seek(@index + 1)
-      duration = @getTimeToNextFrame()
-      @timeout = setTimeout(@tick, duration)
+  tick() {
+    if (this.hasEnded()) {
+      return this.stop();
+    } else {
+      this.seek(this.index + 1);
+      const duration = this.getTimeToNextFrame();
+      return this.timeout = setTimeout(this.tick, duration);
+    }
+  }
 
-  seek: (index) ->
-    previousIndex = @index
+  seek(index) {
+    const previousIndex = this.index;
 
-    if index < 0
-      @index = 0
-    else if index >= @length
-      @index = @length - 1
-    else
-      @index = index
+    if (index < 0) {
+      this.index = 0;
+    } else if (index >= this.length) {
+      this.index = this.length - 1;
+    } else {
+      this.index = index;
+    }
 
-    if @index isnt previousIndex
-      @delegate?.playerDidSeekToIndex?(index)
+    if (this.index !== previousIndex) {
+      return this.delegate?.playerDidSeekToIndex?.(index);
+    }
+  }
 
-  stop: ->
-    return unless @playing
-    clearTimeout(@timeout)
-    @timeout = null
-    @playing = false
-    @delegate?.playerDidStopPlaying?()
+  stop() {
+    if (!this.playing) { return; }
+    clearTimeout(this.timeout);
+    this.timeout = null;
+    this.playing = false;
+    return this.delegate?.playerDidStopPlaying?.();
+  }
 
-  isPlaying: ->
-    @playing
+  isPlaying() {
+    return this.playing;
+  }
 
-  hasEnded: ->
-    @index >= @length - 1
+  hasEnded() {
+    return this.index >= (this.length - 1);
+  }
 
-  getSnapshot: ->
-    @recording.getSnapshotAtFrameIndex(@index)
+  getSnapshot() {
+    return this.recording.getSnapshotAtFrameIndex(this.index);
+  }
 
-  getEvents: ->
-    @recording.getEventsUpToFrameIndex(@index)
+  getEvents() {
+    return this.recording.getEventsUpToFrameIndex(this.index);
+  }
 
-  getTimeToNextFrame: ->
-    current = @recording.getTimestampAtFrameIndex(@index)
-    next = @recording.getTimestampAtFrameIndex(@index + 1)
-    duration = if current? and next? then next - current else 0
-    Math.min(duration, 500)
+  getTimeToNextFrame() {
+    const current = this.recording.getTimestampAtFrameIndex(this.index);
+    const next = this.recording.getTimestampAtFrameIndex(this.index + 1);
+    const duration = (current != null) && (next != null) ? next - current : 0;
+    return Math.min(duration, 500);
+  }
+}

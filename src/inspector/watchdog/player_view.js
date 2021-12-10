@@ -1,135 +1,198 @@
-import Deserializer from "inspector/watchdog/deserializer"
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS206: Consider reworking classes to avoid initClass
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let PlayerView;
+import Deserializer from "inspector/watchdog/deserializer";
 
-export default class PlayerView
-  @documentClassName: "trix-watchdog-player"
-  @playingClassName: "trix-watchdog-player-playing"
+export default PlayerView = (function() {
+  let clear = undefined;
+  let render = undefined;
+  let select = undefined;
+  PlayerView = class PlayerView {
+    static initClass() {
+      this.documentClassName = "trix-watchdog-player";
+      this.playingClassName = "trix-watchdog-player-playing";
+  
+      clear = element => (() => {
+        const result = [];
+        while (element.lastChild) {
+          result.push(element.removeChild(element.lastChild));
+        }
+        return result;
+      })();
+  
+      render = function(element, ...contents) {
+        clear(element);
+        return Array.from(contents).map((content) => element.appendChild(content));
+      };
+  
+      select = function(document, range) {
+        if (!range) { return; }
+        const window = document.defaultView;
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        return selection.addRange(range);
+      };
+    }
 
-  constructor: (element) ->
-    super(arguments...)
-    @element = element
-    @frame = document.createElement("iframe")
-    @frame.style.border = "none"
-    @frame.style.width = "100%"
-    @frame.onload = @frameDidLoadDefaultDocument
-    @frame.onblur = @frameDidLoseFocus
+    constructor(element) {
+      this.frameDidLoadDefaultDocument = this.frameDidLoadDefaultDocument.bind(this);
+      this.frameDidLoadStylesheet = this.frameDidLoadStylesheet.bind(this);
+      this.frameDidLoseFocus = this.frameDidLoseFocus.bind(this);
+      this.didClickPlayButton = this.didClickPlayButton.bind(this);
+      this.didChangeSliderValue = this.didChangeSliderValue.bind(this);
+      this.updateFrame = this.updateFrame.bind(this);
+      super(...arguments);
+      this.element = element;
+      this.frame = document.createElement("iframe");
+      this.frame.style.border = "none";
+      this.frame.style.width = "100%";
+      this.frame.onload = this.frameDidLoadDefaultDocument;
+      this.frame.onblur = this.frameDidLoseFocus;
 
-    controlsContainer = document.createElement("div")
+      const controlsContainer = document.createElement("div");
 
-    @playButton = document.createElement("button")
-    @playButton.textContent = "Play"
-    @playButton.onclick = @didClickPlayButton
+      this.playButton = document.createElement("button");
+      this.playButton.textContent = "Play";
+      this.playButton.onclick = this.didClickPlayButton;
 
-    @slider = document.createElement("input")
-    @slider.type = "range"
-    @slider.oninput = @didChangeSliderValue
+      this.slider = document.createElement("input");
+      this.slider.type = "range";
+      this.slider.oninput = this.didChangeSliderValue;
 
-    @indexLabel = document.createElement("span")
+      this.indexLabel = document.createElement("span");
 
-    logContainer = document.createElement("div")
+      const logContainer = document.createElement("div");
 
-    @log = document.createElement("textarea")
-    @log.setAttribute("readonly", "")
-    @log.rows = 4
+      this.log = document.createElement("textarea");
+      this.log.setAttribute("readonly", "");
+      this.log.rows = 4;
 
-    render(controlsContainer, @playButton, @slider, @indexLabel)
-    render(logContainer, @log)
-    render(@element, @frame, controlsContainer, logContainer)
-    @setIndex(0)
+      render(controlsContainer, this.playButton, this.slider, this.indexLabel);
+      render(logContainer, this.log);
+      render(this.element, this.frame, controlsContainer, logContainer);
+      this.setIndex(0);
+    }
 
-  renderSnapshot: (snapshot) ->
-    if @body
-      {element, range} = @deserializeSnapshot(snapshot)
-      render(@body, element)
-      select(@document, range)
-      @updateFrame()
-    else
-      @snapshot = snapshot
+    renderSnapshot(snapshot) {
+      if (this.body) {
+        const {element, range} = this.deserializeSnapshot(snapshot);
+        render(this.body, element);
+        select(this.document, range);
+        return this.updateFrame();
+      } else {
+        return this.snapshot = snapshot;
+      }
+    }
 
-  renderEvents: (events) ->
-    renderedEvents = for event, index in events by -1
-      @renderEvent(event, index)
-    @log.innerText = renderedEvents.join("\n")
+    renderEvents(events) {
+      const renderedEvents = (() => {
+        const result = [];
+        for (let index = events.length - 1; index >= 0; index--) {
+          const event = events[index];
+          result.push(this.renderEvent(event, index));
+        }
+        return result;
+      })();
+      return this.log.innerText = renderedEvents.join("\n");
+    }
 
-  setIndex: (index) ->
-    @slider.value = index
-    @indexLabel.textContent = "Frame #{index}"
+    setIndex(index) {
+      this.slider.value = index;
+      return this.indexLabel.textContent = `Frame ${index}`;
+    }
 
-  setLength: (length) ->
-    @slider.max = length - 1
+    setLength(length) {
+      return this.slider.max = length - 1;
+    }
 
-  playerDidStartPlaying: ->
-    @element.classList.add(@constructor.playingClassName)
-    @playButton.textContent = "Pause"
+    playerDidStartPlaying() {
+      this.element.classList.add(this.constructor.playingClassName);
+      return this.playButton.textContent = "Pause";
+    }
 
-  playerDidStopPlaying: ->
-    @element.classList.remove(@constructor.playingClassName)
-    @playButton.textContent = "Play"
+    playerDidStopPlaying() {
+      this.element.classList.remove(this.constructor.playingClassName);
+      return this.playButton.textContent = "Play";
+    }
 
-  frameDidLoadDefaultDocument: =>
-    @document = @frame.contentDocument
-    @document.documentElement.classList.add(@constructor.documentClassName)
+    frameDidLoadDefaultDocument() {
+      this.document = this.frame.contentDocument;
+      this.document.documentElement.classList.add(this.constructor.documentClassName);
 
-    @document.head.innerHTML = document.head.innerHTML
-    for stylesheet in @document.head.querySelectorAll("link[rel=stylesheet]")
-      stylesheet.onload = @frameDidLoadStylesheet
+      this.document.head.innerHTML = document.head.innerHTML;
+      for (let stylesheet of Array.from(this.document.head.querySelectorAll("link[rel=stylesheet]"))) {
+        stylesheet.onload = this.frameDidLoadStylesheet;
+      }
 
-    @body = @document.body
-    @body.style.cssText = "margin: 0; padding: 0"
-    @body.onkeydown = (event) -> event.preventDefault()
+      this.body = this.document.body;
+      this.body.style.cssText = "margin: 0; padding: 0";
+      this.body.onkeydown = event => event.preventDefault();
 
-    if @snapshot
-      @renderSnapshot(snapshot)
-      @snapshot = null
+      if (this.snapshot) {
+        this.renderSnapshot(snapshot);
+        return this.snapshot = null;
+      }
+    }
 
-  frameDidLoadStylesheet: =>
-    @updateFrame()
+    frameDidLoadStylesheet() {
+      return this.updateFrame();
+    }
 
-  frameDidLoseFocus: =>
-    if @element.classList.contains(@constructor.playingClassName)
-      requestAnimationFrame(@updateFrame)
+    frameDidLoseFocus() {
+      if (this.element.classList.contains(this.constructor.playingClassName)) {
+        return requestAnimationFrame(this.updateFrame);
+      }
+    }
 
-  didClickPlayButton: =>
-    @delegate?.playerViewDidClickPlayButton?()
+    didClickPlayButton() {
+      return this.delegate?.playerViewDidClickPlayButton?.();
+    }
 
-  didChangeSliderValue: =>
-    value = parseInt(@slider.value, 10)
-    @delegate?.playerViewDidChangeSliderValue?(value)
+    didChangeSliderValue() {
+      const value = parseInt(this.slider.value, 10);
+      return this.delegate?.playerViewDidChangeSliderValue?.(value);
+    }
 
-  renderEvent: (event, index) ->
-    description = switch event.type
-      when "input"
-        "Browser input event received"
-      when "keypress"
-        key = event.character ? event.charCode ? event.keyCode
-        "Key pressed: #{JSON.stringify(key)}"
-      when "log"
-        event.message
-      when "snapshot"
-        "DOM update"
+    renderEvent(event, index) {
+      const description = (() => { let left;
+      switch (event.type) {
+        case "input":
+          return "Browser input event received";
+        case "keypress":
+          var key = (left = event.character != null ? event.character : event.charCode) != null ? left : event.keyCode;
+          return `Key pressed: ${JSON.stringify(key)}`;
+        case "log":
+          return event.message;
+        case "snapshot":
+          return "DOM update";
+      } })();
 
-    "[#{index}] #{description}"
+      return `[${index}] ${description}`;
+    }
 
-  deserializeSnapshot: (snapshot) ->
-    deserializer = new Deserializer @document, snapshot
-    element: deserializer.getElement()
-    range: deserializer.getRange()
+    deserializeSnapshot(snapshot) {
+      const deserializer = new Deserializer(this.document, snapshot);
+      return {
+        element: deserializer.getElement(),
+        range: deserializer.getRange()
+      };
+    }
 
-  updateFrame: =>
-    @frame.style.height = 0
-    @frame.style.height = @body.scrollHeight + "px"
-    @frame.focus()
-    @frame.contentWindow.focus()
-
-  clear = (element) ->
-    element.removeChild(element.lastChild) while element.lastChild
-
-  render = (element, contents...) ->
-    clear(element)
-    element.appendChild(content) for content in contents
-
-  select = (document, range) ->
-    return unless range
-    window = document.defaultView
-    selection = window.getSelection()
-    selection.removeAllRanges()
-    selection.addRange(range)
+    updateFrame() {
+      this.frame.style.height = 0;
+      this.frame.style.height = this.body.scrollHeight + "px";
+      this.frame.focus();
+      return this.frame.contentWindow.focus();
+    }
+  };
+  PlayerView.initClass();
+  return PlayerView;
+})();

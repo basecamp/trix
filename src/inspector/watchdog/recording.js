@@ -1,56 +1,88 @@
-export default class Recording
-  @fromJSON: ({snapshots, frames}) ->
-    new this snapshots, frames
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+export default class Recording {
+  static fromJSON({snapshots, frames}) {
+    return new (this)(snapshots, frames);
+  }
 
-  constructor: (snapshots = [], frames = []) ->
-    @snapshots = snapshots
-    @frames = frames
+  constructor(snapshots = [], frames = []) {
+    this.snapshots = snapshots;
+    this.frames = frames;
+  }
 
-  recordSnapshot: (snapshot) ->
-    snapshotJSON = JSON.stringify(snapshot)
-    if snapshotJSON isnt @lastSnapshotJSON
-      @lastSnapshotJSON = snapshotJSON
-      @snapshots.push(snapshot)
-      @recordEvent(type: "snapshot")
+  recordSnapshot(snapshot) {
+    const snapshotJSON = JSON.stringify(snapshot);
+    if (snapshotJSON !== this.lastSnapshotJSON) {
+      this.lastSnapshotJSON = snapshotJSON;
+      this.snapshots.push(snapshot);
+      return this.recordEvent({type: "snapshot"});
+    }
+  }
 
-  recordEvent: (event) ->
-    frame = [@getTimestamp(), @snapshots.length - 1, event]
-    @frames.push(frame)
+  recordEvent(event) {
+    const frame = [this.getTimestamp(), this.snapshots.length - 1, event];
+    return this.frames.push(frame);
+  }
 
-  getSnapshotAtIndex: (index) ->
-    @snapshots[index] if index >= 0
+  getSnapshotAtIndex(index) {
+    if (index >= 0) { return this.snapshots[index]; }
+  }
 
-  getSnapshotAtFrameIndex: (frameIndex) ->
-    snapshotIndex = @getSnapshotIndexAtFrameIndex(frameIndex)
-    @getSnapshotAtIndex(snapshotIndex)
+  getSnapshotAtFrameIndex(frameIndex) {
+    const snapshotIndex = this.getSnapshotIndexAtFrameIndex(frameIndex);
+    return this.getSnapshotAtIndex(snapshotIndex);
+  }
 
-  getTimestampAtFrameIndex: (index) ->
-    @frames[index]?[0]
+  getTimestampAtFrameIndex(index) {
+    return this.frames[index]?.[0];
+  }
 
-  getSnapshotIndexAtFrameIndex: (index) ->
-    @frames[index]?[1]
+  getSnapshotIndexAtFrameIndex(index) {
+    return this.frames[index]?.[1];
+  }
 
-  getEventAtFrameIndex: (index) ->
-    @frames[index]?[2]
+  getEventAtFrameIndex(index) {
+    return this.frames[index]?.[2];
+  }
 
-  getEventsUpToFrameIndex: (index) ->
-    frame[2] for frame in @frames.slice(0, index + 1)
+  getEventsUpToFrameIndex(index) {
+    return Array.from(this.frames.slice(0, index + 1)).map((frame) => frame[2]);
+  }
 
-  getFrameCount: ->
-    @frames.length
+  getFrameCount() {
+    return this.frames.length;
+  }
 
-  getTimestamp: ->
-    new Date().getTime()
+  getTimestamp() {
+    return new Date().getTime();
+  }
 
-  truncateToSnapshotCount: (snapshotCount) ->
-    offset = @snapshots.length - snapshotCount
-    return if offset < 0
+  truncateToSnapshotCount(snapshotCount) {
+    const offset = this.snapshots.length - snapshotCount;
+    if (offset < 0) { return; }
 
-    frames = @frames
-    @frames = for [timestamp, index, event] in frames when index >= offset
-      [timestamp, index - offset, event]
+    const {
+      frames
+    } = this;
+    this.frames = (() => {
+      const result = [];
+      for (let [timestamp, index, event] of Array.from(frames)) {
+        if (index >= offset) {
+          result.push([timestamp, index - offset, event]);
+        }
+      }
+      return result;
+    })();
 
-    @snapshots = @snapshots.slice(offset)
+    return this.snapshots = this.snapshots.slice(offset);
+  }
 
-  toJSON: ->
-    {@snapshots, @frames}
+  toJSON() {
+    return {snapshots: this.snapshots, frames: this.frames};
+  }
+}

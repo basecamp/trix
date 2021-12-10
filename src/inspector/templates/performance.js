@@ -1,21 +1,36 @@
-window.JST ||= {}
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+if (!window.JST) { window.JST = {}; }
 
-window.JST["trix/inspector/templates/performance"] = () ->
-  metrics = for name, data of @data
-    dataMetrics(name, data, @round)
+window.JST["trix/inspector/templates/performance"] = function() {
+  const metrics = (() => {
+    const result = [];
+    for (let name in this.data) {
+      const data = this.data[name];
+      result.push(dataMetrics(name, data, this.round));
+    }
+    return result;
+  })();
 
-  metrics.join("\n")
+  return metrics.join("\n");
+};
 
-dataMetrics = (name, data, round) ->
-  item = "<strong>#{name}</strong> (#{ data.calls })<br>"
+var dataMetrics = function(name, data, round) {
+  let item = `<strong>${name}</strong> (${ data.calls })<br>`;
 
-  if data.calls > 0
-    item += """
-      <div class="metrics">
-        Mean: #{ round(data.mean) }ms<br>
-        Max: #{ round(data.max) }ms<br>
-        Last: #{ round(data.last) }ms
-      </div>
-    """
+  if (data.calls > 0) {
+    item += `\
+<div class="metrics">
+  Mean: ${ round(data.mean) }ms<br>
+  Max: ${ round(data.max) }ms<br>
+  Last: ${ round(data.last) }ms
+</div>\
+`;
 
-    item
+    return item;
+  }
+};

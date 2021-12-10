@@ -1,111 +1,141 @@
-# This file is not included in the main Trix bundle and
-# should be explicitly required to enable the debugger.
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS201: Simplify complex destructure assignments
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+// This file is not included in the main Trix bundle and
+// should be explicitly required to enable the debugger.
 
-DEBUG_METHODS =
-  "AttachmentEditorController": "
-    didClickRemoveButton
-    uninstall
-  "
+const DEBUG_METHODS = {
+  "AttachmentEditorController": `\
+didClickRemoveButton \
+uninstall\
+`,
 
-  "Trix.CompositionController": "
-    didClickAttachment
-  "
+  "Trix.CompositionController": `\
+didClickAttachment\
+`,
 
-  "EditorController": "
-    setEditor
-    loadDocument
-  "
+  "EditorController": `\
+setEditor \
+loadDocument\
+`,
 
-  "Trix.Level0InputController": "
-    elementDidMutate
-    events.keydown
-    events.keypress
-    events.dragstart
-    events.dragover
-    events.dragend
-    events.drop
-    events.cut
-    events.paste
-    events.compositionstart
-    events.compositionend
-  "
+  "Trix.Level0InputController": `\
+elementDidMutate \
+events.keydown \
+events.keypress \
+events.dragstart \
+events.dragover \
+events.dragend \
+events.drop \
+events.cut \
+events.paste \
+events.compositionstart \
+events.compositionend\
+`,
 
-  "Trix.Level2InputController": "
-    elementDidMutate
-    events.beforeinput
-    events.input
-    events.compositionend
-  "
+  "Trix.Level2InputController": `\
+elementDidMutate \
+events.beforeinput \
+events.input \
+events.compositionend\
+`,
 
-  "Trix.ToolbarController": "
-    didClickActionButton
-    didClickAttributeButton
-    didClickDialogButton
-    didKeyDownDialogInput
-  "
+  "Trix.ToolbarController": `\
+didClickActionButton \
+didClickAttributeButton \
+didClickDialogButton \
+didKeyDownDialogInput\
+`
+};
 
-import { findClosestElementFromNode } from "trix/core/helpers"
+import { findClosestElementFromNode } from "trix/core/helpers";
 
-errorListeners = []
+let errorListeners = [];
 
-Trix.Debugger =
-  addErrorListener: (listener) ->
-    unless listener in errorListeners
-      errorListeners.push(listener)
+Trix.Debugger = {
+  addErrorListener(listener) {
+    if (!Array.from(errorListeners).includes(listener)) {
+      return errorListeners.push(listener);
+    }
+  },
 
-  removeErrorListener: (listener) ->
-    errorListeners = (l for l in errorListeners when l isnt listener)
+  removeErrorListener(listener) {
+    return errorListeners = (Array.from(errorListeners).filter((l) => l !== listener));
+  }
+};
 
-installMethodDebugger = (className, methodName) ->
-  [objectName, constructorNames...] = className.split(".")
-  [propertyNames..., methodName] = methodName.split(".")
+const installMethodDebugger = function(className, methodName) {
+  let adjustedLength, array, propertyNames;
+  const [objectName, ...constructorNames] = Array.from(className.split("."));
+  array = methodName.split("."),
+    adjustedLength = Math.max(array.length, 1),
+    propertyNames = array.slice(0, adjustedLength - 1),
+    methodName = array[adjustedLength - 1];
 
-  object = @[objectName]
-  object = object[constructorName] for constructorName in constructorNames
-  object = object.prototype
-  object = object[propertyName] for propertyName in propertyNames
+  let object = this[objectName];
+  for (let constructorName of Array.from(constructorNames)) { object = object[constructorName]; }
+  object = object.prototype;
+  for (let propertyName of Array.from(propertyNames)) { object = object[propertyName]; }
 
-  if typeof object?[methodName] is "function"
-    object[methodName] = wrapFunctionWithErrorHandler(object[methodName])
-  else
-    throw new Error "Can't install on non-function"
+  if (typeof object?.[methodName] === "function") {
+    return object[methodName] = wrapFunctionWithErrorHandler(object[methodName]);
+  } else {
+    throw new Error("Can't install on non-function");
+  }
+};
 
-wrapFunctionWithErrorHandler = (fn) ->
-  trixDebugWrapper = ->
-    try
-      fn.apply(this, arguments)
-    catch error
-      reportError(error)
-      throw error
-  trixDebugWrapper
+var wrapFunctionWithErrorHandler = function(fn) {
+  const trixDebugWrapper = function() {
+    try {
+      return fn.apply(this, arguments);
+    } catch (error) {
+      reportError(error);
+      throw error;
+    }
+  };
+  return trixDebugWrapper;
+};
 
-reportError = (error) ->
-  Trix.Debugger.lastError = error
+var reportError = function(error) {
+  Trix.Debugger.lastError = error;
 
-  console.error "Trix error!"
-  console.log error.stack
+  console.error("Trix error!");
+  console.log(error.stack);
 
-  activeElement = document.activeElement
-  editorElement = findClosestElementFromNode(activeElement, matchingSelector: "trix-editor")
+  const {
+    activeElement
+  } = document;
+  const editorElement = findClosestElementFromNode(activeElement, {matchingSelector: "trix-editor"});
 
-  if editorElement
-    notifyErrorListeners(error, editorElement)
-  else
-    console.warn "Can't find <trix-editor> element. document.activeElement =", activeElement
+  if (editorElement) {
+    return notifyErrorListeners(error, editorElement);
+  } else {
+    return console.warn("Can't find <trix-editor> element. document.activeElement =", activeElement);
+  }
+};
 
-notifyErrorListeners = (error, element) ->
-  for listener in errorListeners
-    try listener(error, element)
+var notifyErrorListeners = (error, element) => Array.from(errorListeners).map((listener) =>
+  (() => { try { return listener(error, element); } catch (error1) {} })());
 
-do ->
-  console.groupCollapsed("Trix debugger")
+(function() {
+  console.groupCollapsed("Trix debugger");
 
-  for className, methodNames of DEBUG_METHODS
-    for methodName in methodNames.split(/\s/)
-      try
-        installMethodDebugger(className, methodName)
-        console.log "✓ #{className}##{methodName}"
-      catch error
-        console.warn "✗ #{className}##{methodName}:", error.message
+  for (let className in DEBUG_METHODS) {
+    const methodNames = DEBUG_METHODS[className];
+    for (let methodName of Array.from(methodNames.split(/\s/))) {
+      try {
+        installMethodDebugger(className, methodName);
+        console.log(`✓ ${className}#${methodName}`);
+      } catch (error) {
+        console.warn(`✗ ${className}#${methodName}:`, error.message);
+      }
+    }
+  }
 
-  console.groupEnd()
+  return console.groupEnd();
+})();

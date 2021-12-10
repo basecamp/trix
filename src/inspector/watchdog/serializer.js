@@ -1,62 +1,88 @@
-export default class Serializer
-  constructor: (element) ->
-    @element = element
-    @id = 0
-    @serializeTree()
-    @serializeSelection()
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+export default class Serializer {
+  constructor(element) {
+    this.element = element;
+    this.id = 0;
+    this.serializeTree();
+    this.serializeSelection();
+  }
 
-  serializeTree: ->
-    @ids = new Map
-    @tree = @serializeNode(@element)
+  serializeTree() {
+    this.ids = new Map;
+    return this.tree = this.serializeNode(this.element);
+  }
 
-  serializeNode: (node) ->
-    object = id: ++@id, name: node.nodeName
-    @ids.set(node, object.id)
+  serializeNode(node) {
+    const object = {id: ++this.id, name: node.nodeName};
+    this.ids.set(node, object.id);
 
-    switch node.nodeType
-      when Node.ELEMENT_NODE
-        @serializeElementToObject(node, object)
-        @serializeElementChildrenToObject(node, object)
+    switch (node.nodeType) {
+      case Node.ELEMENT_NODE:
+        this.serializeElementToObject(node, object);
+        this.serializeElementChildrenToObject(node, object);
+        break;
 
-      when Node.TEXT_NODE, Node.COMMENT_NODE
-        @serializeNodeValueToObject(node, object)
+      case Node.TEXT_NODE: case Node.COMMENT_NODE:
+        this.serializeNodeValueToObject(node, object);
+        break;
+    }
 
-    object
+    return object;
+  }
 
-  serializeElementToObject: (node, object) ->
-    attributes = {}
-    hasAttributes = false
+  serializeElementToObject(node, object) {
+    const attributes = {};
+    let hasAttributes = false;
 
-    for {name} in node.attributes
-      if node.hasAttribute(name)
-        value = node.getAttribute(name)
-        value = "data:" if name is "src" and value[0...5] is "data:"
-        attributes[name] = value
-        hasAttributes = true
+    for (let {name} of Array.from(node.attributes)) {
+      if (node.hasAttribute(name)) {
+        let value = node.getAttribute(name);
+        if ((name === "src") && (value.slice(0, 5) === "data:")) { value = "data:"; }
+        attributes[name] = value;
+        hasAttributes = true;
+      }
+    }
 
-    if hasAttributes
-      object.attributes = attributes
+    if (hasAttributes) {
+      return object.attributes = attributes;
+    }
+  }
 
-  serializeElementChildrenToObject: (node, object) ->
-    if node.childNodes.length
-      object.children = for childNode in node.childNodes
-        @serializeNode(childNode)
+  serializeElementChildrenToObject(node, object) {
+    if (node.childNodes.length) {
+      return object.children = Array.from(node.childNodes).map((childNode) =>
+        this.serializeNode(childNode));
+    }
+  }
 
-  serializeNodeValueToObject: (node, object) ->
-    object.value = node.nodeValue
+  serializeNodeValueToObject(node, object) {
+    return object.value = node.nodeValue;
+  }
 
-  serializeSelection: ->
-    selection = window.getSelection()
-    return unless selection.rangeCount > 0
+  serializeSelection() {
+    const selection = window.getSelection();
+    if (selection.rangeCount <= 0) { return; }
 
-    range = selection.getRangeAt(0)
-    startId = @ids.get(range?.startContainer)
-    endId = @ids.get(range?.endContainer)
+    const range = selection.getRangeAt(0);
+    const startId = this.ids.get(range?.startContainer);
+    const endId = this.ids.get(range?.endContainer);
 
-    if startId and endId
-      @selection =
-        start: id: startId, offset: range.startOffset
-        end: id: endId, offset: range.endOffset
+    if (startId && endId) {
+      return this.selection = {
+        start: { id: startId, offset: range.startOffset
+      },
+        end: { id: endId, offset: range.endOffset
+      }
+      };
+    }
+  }
 
-  getSnapshot: ->
-    {@tree, @selection}
+  getSnapshot() {
+    return {tree: this.tree, selection: this.selection};
+  }
+}

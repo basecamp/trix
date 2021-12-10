@@ -1,36 +1,53 @@
-import View from "inspector/view"
-import UTF16String from "trix/core/utilities/utf16_string"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS206: Consider reworking classes to avoid initClass
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import View from "inspector/view";
+import UTF16String from "trix/core/utilities/utf16_string";
 
-class SelectionView extends View
-  title: "Selection"
-  template: "selection"
-  events:
-    "trix-selection-change": ->
-      @render()
-    "trix-render": ->
-      @render()
+class SelectionView extends View {
+  static initClass() {
+    this.prototype.title = "Selection";
+    this.prototype.template = "selection";
+    this.prototype.events = {
+      "trix-selection-change"() {
+        return this.render();
+      },
+      "trix-render"() {
+        return this.render();
+      }
+    };
+  }
 
-  render: ->
-    @document = @editor.getDocument()
-    @range = @editor.getSelectedRange()
-    @locationRange = @composition.getLocationRange()
-    @characters = @getCharacters()
-    super.render(arguments...)
+  render() {
+    this.document = this.editor.getDocument();
+    this.range = this.editor.getSelectedRange();
+    this.locationRange = this.composition.getLocationRange();
+    this.characters = this.getCharacters();
+    return super.render(...arguments).render(...arguments);
+  }
 
-  getCharacters: ->
-    chars = []
-    utf16string = UTF16String.box(@document.toString())
-    rangeIsExpanded = @range[0] isnt @range[1]
-    position = 0
-    while position < utf16string.length
-      string = utf16string.charAt(position).toString()
-      string = "⏎" if string is "\n"
-      selected = rangeIsExpanded and (position >= @range[0] and position < @range[1])
-      chars.push({string, selected})
-      position++
-    chars
+  getCharacters() {
+    const chars = [];
+    const utf16string = UTF16String.box(this.document.toString());
+    const rangeIsExpanded = this.range[0] !== this.range[1];
+    let position = 0;
+    while (position < utf16string.length) {
+      let string = utf16string.charAt(position).toString();
+      if (string === "\n") { string = "⏎"; }
+      const selected = rangeIsExpanded && ((position >= this.range[0]) && (position < this.range[1]));
+      chars.push({string, selected});
+      position++;
+    }
+    return chars;
+  }
 
-  getTitle: ->
-    "#{@title} (#{@range.join()})"
+  getTitle() {
+    return `${this.title} (${this.range.join()})`;
+  }
+}
+SelectionView.initClass();
 
-Trix.Inspector.registerView SelectionView
+Trix.Inspector.registerView(SelectionView);

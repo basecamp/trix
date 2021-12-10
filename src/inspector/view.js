@@ -1,60 +1,94 @@
-import { handleEvent } from "trix/core/helpers"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import { handleEvent } from "trix/core/helpers";
 
-export default class View
-  constructor: (editorElement) ->
-    @editorElement = editorElement
-    {@editorController, @editor} = @editorElement
-    {@compositionController, @composition} = @editorController
+export default class View {
+  constructor(editorElement) {
+    this.editorElement = editorElement;
+    ({editorController: this.editorController, editor: this.editor} = this.editorElement);
+    ({compositionController: this.compositionController, composition: this.composition} = this.editorController);
 
-    @element = document.createElement("details")
-    @element.open = true if @getSetting("open") is "true"
-    @element.classList.add(@template)
+    this.element = document.createElement("details");
+    if (this.getSetting("open") === "true") { this.element.open = true; }
+    this.element.classList.add(this.template);
 
-    @titleElement = document.createElement("summary")
-    @element.appendChild(@titleElement)
+    this.titleElement = document.createElement("summary");
+    this.element.appendChild(this.titleElement);
 
-    @panelElement = document.createElement("div")
-    @panelElement.classList.add("panel")
-    @element.appendChild(@panelElement)
+    this.panelElement = document.createElement("div");
+    this.panelElement.classList.add("panel");
+    this.element.appendChild(this.panelElement);
 
-    @element.addEventListener "toggle", (event) =>
-      if event.target is @element
-        @didToggle()
+    this.element.addEventListener("toggle", event => {
+      if (event.target === this.element) {
+        return this.didToggle();
+      }
+    });
 
-    @installEventHandlers() if @events
+    if (this.events) { this.installEventHandlers(); }
+  }
 
-  installEventHandlers: ->
-    for eventName, handler of @events then do (eventName, handler) =>
-      handleEvent eventName, onElement: @editorElement, withCallback: (event) =>
-        requestAnimationFrame =>
-          handler.call(this, event)
+  installEventHandlers() {
+    return (() => {
+      const result = [];
+      for (let eventName in this.events) {
+        const handler = this.events[eventName];
+        result.push(((eventName, handler) => {
+          return handleEvent(eventName, { onElement: this.editorElement, withCallback: event => {
+            return requestAnimationFrame(() => {
+              return handler.call(this, event);
+            });
+          }
+        }
+          );
+        })(eventName, handler));
+      }
+      return result;
+    })();
+  }
 
-  didToggle: (event) ->
-    @saveSetting("open", @isOpen())
-    @render()
+  didToggle(event) {
+    this.saveSetting("open", this.isOpen());
+    return this.render();
+  }
 
-  isOpen: ->
-    @element.hasAttribute("open")
+  isOpen() {
+    return this.element.hasAttribute("open");
+  }
 
-  getTitle: ->
-    @title ? ""
+  getTitle() {
+    return this.title != null ? this.title : "";
+  }
 
-  render: ->
-    @renderTitle()
-    if @isOpen()
-      @panelElement.innerHTML = JST["trix/inspector/templates/#{@template}"].apply(this)
+  render() {
+    this.renderTitle();
+    if (this.isOpen()) {
+      return this.panelElement.innerHTML = JST[`trix/inspector/templates/${this.template}`].apply(this);
+    }
+  }
 
-  renderTitle: ->
-    @titleElement.innerHTML = @getTitle()
+  renderTitle() {
+    return this.titleElement.innerHTML = this.getTitle();
+  }
 
-  getSetting: (key) ->
-    key = @getSettingsKey(key)
-    window.sessionStorage?[key]
+  getSetting(key) {
+    key = this.getSettingsKey(key);
+    return window.sessionStorage?.[key];
+  }
 
-  saveSetting: (key, value) ->
-    key = @getSettingsKey(key)
-    if window.sessionStorage?
-      window.sessionStorage[key] = value
+  saveSetting(key, value) {
+    key = this.getSettingsKey(key);
+    if (window.sessionStorage != null) {
+      return window.sessionStorage[key] = value;
+    }
+  }
 
-  getSettingsKey: (key) ->
-    "trix/inspector/#{@template}/#{key}"
+  getSettingsKey(key) {
+    return `trix/inspector/${this.template}/${key}`;
+  }
+}

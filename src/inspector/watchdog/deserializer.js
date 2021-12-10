@@ -1,57 +1,78 @@
-export default class Deserializer
-  constructor: (document, snapshot) ->
-    @document = document
-    @snapshot = snapshot
-    {@tree, @selection} = @snapshot
-    @deserializeTree()
-    @deserializeSelection()
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+export default class Deserializer {
+  constructor(document, snapshot) {
+    this.document = document;
+    this.snapshot = snapshot;
+    ({tree: this.tree, selection: this.selection} = this.snapshot);
+    this.deserializeTree();
+    this.deserializeSelection();
+  }
 
-  deserializeTree: ->
-    @nodes = {}
-    @element = @deserializeNode(@tree)
+  deserializeTree() {
+    this.nodes = {};
+    return this.element = this.deserializeNode(this.tree);
+  }
 
-  deserializeNode: (serializedNode) ->
-    node = switch serializedNode.name
-      when "#text"
-        @deserializeTextNode(serializedNode)
-      when "#comment"
-        @deserializeComment(serializedNode)
-      else
-        @deserializeElement(serializedNode)
+  deserializeNode(serializedNode) {
+    const node = (() => { switch (serializedNode.name) {
+      case "#text":
+        return this.deserializeTextNode(serializedNode);
+      case "#comment":
+        return this.deserializeComment(serializedNode);
+      default:
+        return this.deserializeElement(serializedNode);
+    } })();
 
-    @nodes[serializedNode.id] = node
-    node
+    this.nodes[serializedNode.id] = node;
+    return node;
+  }
 
-  deserializeTextNode: ({value}) ->
-    @document.createTextNode(value)
+  deserializeTextNode({value}) {
+    return this.document.createTextNode(value);
+  }
 
-  deserializeComment: ({value}) ->
-    @document.createComment(value)
+  deserializeComment({value}) {
+    return this.document.createComment(value);
+  }
 
-  deserializeChildren: (serializedNode) ->
-    for child in serializedNode.children ? []
-      @deserializeNode(child)
+  deserializeChildren(serializedNode) {
+    return Array.from(serializedNode.children != null ? serializedNode.children : []).map((child) =>
+      this.deserializeNode(child));
+  }
 
-  deserializeElement: (serializedNode) ->
-    node = @document.createElement(serializedNode.name)
-    node.setAttribute(name, value) for name, value of serializedNode.attributes ? {}
-    node.removeChild(node.lastChild) while node.lastChild
-    node.appendChild(childNode) for childNode in @deserializeChildren(serializedNode)
-    node
+  deserializeElement(serializedNode) {
+    const node = this.document.createElement(serializedNode.name);
+    const object = serializedNode.attributes != null ? serializedNode.attributes : {};
+    for (let name in object) { const value = object[name]; node.setAttribute(name, value); }
+    while (node.lastChild) { node.removeChild(node.lastChild); }
+    for (let childNode of Array.from(this.deserializeChildren(serializedNode))) { node.appendChild(childNode); }
+    return node;
+  }
 
-  deserializeSelection: ->
-    return unless @selection
-    {start, end} = @selection
-    startContainer = @nodes[start.id]
-    endContainer = @nodes[end.id]
+  deserializeSelection() {
+    if (!this.selection) { return; }
+    const {start, end} = this.selection;
+    const startContainer = this.nodes[start.id];
+    const endContainer = this.nodes[end.id];
 
-    @range = @document.createRange()
-    @range.setStart(startContainer, start.offset)
-    @range.setEnd(endContainer, end.offset)
-    @range
+    this.range = this.document.createRange();
+    this.range.setStart(startContainer, start.offset);
+    this.range.setEnd(endContainer, end.offset);
+    return this.range;
+  }
 
-  getElement: ->
-    @element
+  getElement() {
+    return this.element;
+  }
 
-  getRange: ->
-    @range
+  getRange() {
+    return this.range;
+  }
+}

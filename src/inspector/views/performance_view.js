@@ -1,53 +1,76 @@
-import View from "inspector/view"
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS201: Simplify complex destructure assignments
+ * DS206: Consider reworking classes to avoid initClass
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import View from "inspector/view";
 
-class PerformanceView extends View
-  title: "Performance"
-  template: "performance"
+var PerformanceView = (function() {
+  let now = undefined;
+  PerformanceView = class PerformanceView extends View {
+    static initClass() {
+      this.prototype.title = "Performance";
+      this.prototype.template = "performance";
+  
+      now =
+        (window.performance?.now != null) ?
+          () => performance.now()
+        :
+          () => new Date().getTime();
+    }
 
-  constructor: ->
-    super(arguments...)
-    {@documentView} = @compositionController
+    constructor() {
+      super(...arguments);
+      ({documentView: this.documentView} = this.compositionController);
 
-    @data = {}
-    @track("documentView.render")
-    @track("documentView.sync")
-    @track("documentView.garbageCollectCachedViews")
-    @track("composition.replaceHTML")
+      this.data = {};
+      this.track("documentView.render");
+      this.track("documentView.sync");
+      this.track("documentView.garbageCollectCachedViews");
+      this.track("composition.replaceHTML");
 
-    @render()
+      this.render();
+    }
 
-  track: (methodPath) ->
-    @data[methodPath] = calls: 0, total: 0, mean: 0, max: 0, last: 0
+    track(methodPath) {
+      this.data[methodPath] = {calls: 0, total: 0, mean: 0, max: 0, last: 0};
 
-    [propertyNames..., methodName] = methodPath.split(".")
-    object = this
-    for propertyName in propertyNames
-      object = object[propertyName]
+      const array = methodPath.split("."), adjustedLength = Math.max(array.length, 1), propertyNames = array.slice(0, adjustedLength - 1), methodName = array[adjustedLength - 1];
+      let object = this;
+      for (let propertyName of Array.from(propertyNames)) {
+        object = object[propertyName];
+      }
 
-    original = object[methodName]
-    object[methodName] = =>
-      started = now()
-      result = original.apply(object, arguments)
-      timing = now() - started
-      @record(methodPath, timing)
-      result
+      const original = object[methodName];
+      return object[methodName] = function() {
+        const started = now();
+        const result = original.apply(object, arguments);
+        const timing = now() - started;
+        this.record(methodPath, timing);
+        return result;
+      }.bind(this);
+    }
 
-  record: (methodPath, timing) ->
-    data = @data[methodPath]
-    data.calls += 1
-    data.total += timing
-    data.mean = data.total / data.calls
-    data.max = timing if timing > data.max
-    data.last = timing
-    @render()
+    record(methodPath, timing) {
+      const data = this.data[methodPath];
+      data.calls += 1;
+      data.total += timing;
+      data.mean = data.total / data.calls;
+      if (timing > data.max) { data.max = timing; }
+      data.last = timing;
+      return this.render();
+    }
 
-  round: (ms) ->
-    Math.round(ms * 1000) / 1000
+    round(ms) {
+      return Math.round(ms * 1000) / 1000;
+    }
+  };
+  PerformanceView.initClass();
+  return PerformanceView;
+})();
 
-  now =
-    if window.performance?.now?
-      -> performance.now()
-    else
-      -> new Date().getTime()
-
-Trix.Inspector.registerView PerformanceView
+Trix.Inspector.registerView(PerformanceView);

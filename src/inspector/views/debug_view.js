@@ -1,35 +1,57 @@
-import View from "inspector/view"
+/*
+ * decaffeinate suggestions:
+ * DS002: Fix invalid constructor
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS206: Consider reworking classes to avoid initClass
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import View from "inspector/view";
 
-import { handleEvent } from "trix/core/helpers"
+import { handleEvent } from "trix/core/helpers";
 
-class DebugView extends View
-  title: "Debug"
-  template: "debug"
+class DebugView extends View {
+  static initClass() {
+    this.prototype.title = "Debug";
+    this.prototype.template = "debug";
+  }
 
-  constructor: ->
-    super(arguments...)
-    handleEvent "change", onElement: @element, matchingSelector: "input[name=viewCaching]", withCallback: @didToggleViewCaching
-    handleEvent "click", onElement: @element, matchingSelector: "button[data-action=render]", withCallback: @didClickRenderButton
-    handleEvent "click", onElement: @element, matchingSelector: "button[data-action=parse]", withCallback: @didClickParseButton
-    handleEvent "change", onElement: @element, matchingSelector: "input[name=controlElement]", withCallback: @didToggleControlElement
+  constructor() {
+    this.didToggleViewCaching = this.didToggleViewCaching.bind(this);
+    this.didClickRenderButton = this.didClickRenderButton.bind(this);
+    this.didClickParseButton = this.didClickParseButton.bind(this);
+    this.didToggleControlElement = this.didToggleControlElement.bind(this);
+    super(...arguments);
+    handleEvent("change", {onElement: this.element, matchingSelector: "input[name=viewCaching]", withCallback: this.didToggleViewCaching});
+    handleEvent("click", {onElement: this.element, matchingSelector: "button[data-action=render]", withCallback: this.didClickRenderButton});
+    handleEvent("click", {onElement: this.element, matchingSelector: "button[data-action=parse]", withCallback: this.didClickParseButton});
+    handleEvent("change", {onElement: this.element, matchingSelector: "input[name=controlElement]", withCallback: this.didToggleControlElement});
+  }
 
-  didToggleViewCaching: ({target}) =>
-    if target.checked
-      @compositionController.enableViewCaching()
-    else
-      @compositionController.disableViewCaching()
+  didToggleViewCaching({target}) {
+    if (target.checked) {
+      return this.compositionController.enableViewCaching();
+    } else {
+      return this.compositionController.disableViewCaching();
+    }
+  }
 
-  didClickRenderButton: =>
-    @editorController.render()
+  didClickRenderButton() {
+    return this.editorController.render();
+  }
 
-  didClickParseButton: =>
-    @editorController.reparse()
+  didClickParseButton() {
+    return this.editorController.reparse();
+  }
 
-  didToggleControlElement: ({target}) =>
-    if target.checked
-      @control = new Trix.Inspector.ControlElement @editorElement
-    else
-      @control?.uninstall()
-      @control = null
+  didToggleControlElement({target}) {
+    if (target.checked) {
+      return this.control = new Trix.Inspector.ControlElement(this.editorElement);
+    } else {
+      this.control?.uninstall();
+      return this.control = null;
+    }
+  }
+}
+DebugView.initClass();
 
-Trix.Inspector.registerView DebugView
+Trix.Inspector.registerView(DebugView);

@@ -1,60 +1,102 @@
-KEY_EVENTS = "keydown keypress input".split(" ")
-COMPOSITION_EVENTS = "compositionstart compositionupdate compositionend textInput".split(" ")
-OBSERVER_OPTIONS =
-  attributes: true
-  childList: true
-  characterData: true
-  characterDataOldValue: true
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const KEY_EVENTS = "keydown keypress input".split(" ");
+const COMPOSITION_EVENTS = "compositionstart compositionupdate compositionend textInput".split(" ");
+const OBSERVER_OPTIONS = {
+  attributes: true,
+  childList: true,
+  characterData: true,
+  characterDataOldValue: true,
   subtree: true
+};
 
-export default class ControlElement
-  constructor: (editorElement) ->
-    @editorElement = editorElement
-    @install()
+export default class ControlElement {
+  constructor(editorElement) {
+    this.didMutate = this.didMutate.bind(this);
+    this.editorElement = editorElement;
+    this.install();
+  }
 
-  install: ->
-    @createElement()
-    @logInputEvents()
-    @logMutations()
+  install() {
+    this.createElement();
+    this.logInputEvents();
+    return this.logMutations();
+  }
 
-  uninstall: ->
-    @observer.disconnect()
-    @element.parentNode.removeChild(@element)
+  uninstall() {
+    this.observer.disconnect();
+    return this.element.parentNode.removeChild(this.element);
+  }
 
-  createElement: ->
-    @element = document.createElement("div")
-    @element.setAttribute("contenteditable", "")
-    @element.style.width = getComputedStyle(@editorElement).width
-    @element.style.minHeight = "50px"
-    @element.style.border = "1px solid green"
-    @editorElement.parentNode.insertBefore(@element, @editorElement.nextSibling)
+  createElement() {
+    this.element = document.createElement("div");
+    this.element.setAttribute("contenteditable", "");
+    this.element.style.width = getComputedStyle(this.editorElement).width;
+    this.element.style.minHeight = "50px";
+    this.element.style.border = "1px solid green";
+    return this.editorElement.parentNode.insertBefore(this.element, this.editorElement.nextSibling);
+  }
 
-  logInputEvents: ->
-    for eventName in KEY_EVENTS
-      @element.addEventListener eventName, (event) ->
-        console.log "#{event.type}: keyCode = #{event.keyCode}"
+  logInputEvents() {
+    let eventName;
+    for (eventName of Array.from(KEY_EVENTS)) {
+      this.element.addEventListener(eventName, event => console.log(`${event.type}: keyCode = ${event.keyCode}`));
+    }
 
-    for eventName in COMPOSITION_EVENTS
-      @element.addEventListener eventName, (event) ->
-        console.log "#{event.type}: data = #{JSON.stringify(event.data)}"
+    return (() => {
+      const result = [];
+      for (eventName of Array.from(COMPOSITION_EVENTS)) {
+        result.push(this.element.addEventListener(eventName, event => console.log(`${event.type}: data = ${JSON.stringify(event.data)}`)));
+      }
+      return result;
+    })();
+  }
 
-  logMutations: ->
-    @observer = new window.MutationObserver @didMutate
-    @observer.observe(@element, OBSERVER_OPTIONS)
+  logMutations() {
+    this.observer = new window.MutationObserver(this.didMutate);
+    return this.observer.observe(this.element, OBSERVER_OPTIONS);
+  }
 
-  didMutate: (mutations) =>
-    console.log "Mutations (#{mutations.length}):"
-    for mutation, index in mutations
-      console.log " #{index + 1}. #{mutation.type}:"
-      switch mutation.type
-        when "characterData"
-          console.log "  oldValue = #{JSON.stringify(mutation.oldValue)}, newValue = #{JSON.stringify(mutation.target.data)}"
-        when "childList"
-          console.log "  node added #{inspectNode(node)}" for node in mutation.addedNodes
-          console.log "  node removed #{inspectNode(node)}" for node in mutation.removedNodes
+  didMutate(mutations) {
+    console.log(`Mutations (${mutations.length}):`);
+    return (() => {
+      const result = [];
+      for (let index = 0; index < mutations.length; index++) {
+        var node;
+        var mutation = mutations[index];
+        console.log(` ${index + 1}. ${mutation.type}:`);
+        switch (mutation.type) {
+          case "characterData":
+            result.push(console.log(`  oldValue = ${JSON.stringify(mutation.oldValue)}, newValue = ${JSON.stringify(mutation.target.data)}`));
+            break;
+          case "childList":
+            for (node of Array.from(mutation.addedNodes)) { console.log(`  node added ${inspectNode(node)}`); }
+            result.push((() => {
+              const result1 = [];
+              for (node of Array.from(mutation.removedNodes)) {                 result1.push(console.log(`  node removed ${inspectNode(node)}`));
+              }
+              return result1;
+            })());
+            break;
+          default:
+            result.push(undefined);
+        }
+      }
+      return result;
+    })();
+  }
+}
 
-inspectNode = (node) ->
-  if node.data?
-    JSON.stringify(node.data)
-  else
-    JSON.stringify(node.outerHTML)
+var inspectNode = function(node) {
+  if (node.data != null) {
+    return JSON.stringify(node.data);
+  } else {
+    return JSON.stringify(node.outerHTML);
+  }
+};

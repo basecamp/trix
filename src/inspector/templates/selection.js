@@ -1,11 +1,16 @@
-window.JST ||= {}
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+if (!window.JST) { window.JST = {}; }
 
-window.JST["trix/inspector/templates/selection"] = () -> """
-Location range: [#{ @locationRange[0].index }:#{ @locationRange[0].offset }, #{ @locationRange[1].index }:#{ @locationRange[1].offset }]
+window.JST["trix/inspector/templates/selection"] = function() { return `\
+Location range: [${ this.locationRange[0].index }:${ this.locationRange[0].offset }, ${ this.locationRange[1].index }:${ this.locationRange[1].offset }]
 
-#{ charSpans(@characters).join("\n") }
-"""
+${ charSpans(this.characters).join("\n") }\
+`; };
 
-charSpans = (characters) ->
-  for char in characters
-    "<span class=\"character #{ "selected" if char.selected  }\">#{ char.string }</span>"
+var charSpans = characters => Array.from(characters).map((char) =>
+  `<span class=\"character ${ char.selected ? "selected" : undefined  }\">${ char.string }</span>`);

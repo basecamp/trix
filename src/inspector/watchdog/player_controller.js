@@ -1,45 +1,63 @@
-import Player from "inspector/watchdog/player"
-import PlayerView from "inspector/watchdog/player_view"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import Player from "inspector/watchdog/player";
+import PlayerView from "inspector/watchdog/player_view";
 
-export default class PlayerController
-  constructor: (element, recording) ->
-    @element = element
-    @recording = recording
-    @player = new Player @recording
-    @player.delegate = this
+export default class PlayerController {
+  constructor(element, recording) {
+    this.element = element;
+    this.recording = recording;
+    this.player = new Player(this.recording);
+    this.player.delegate = this;
 
-    @view = new PlayerView @element
-    @view.delegate = this
+    this.view = new PlayerView(this.element);
+    this.view.delegate = this;
 
-    @view.setLength(@player.length)
-    @player.seek(0)
+    this.view.setLength(this.player.length);
+    this.player.seek(0);
+  }
 
-  play: ->
-    @player.play()
+  play() {
+    return this.player.play();
+  }
 
-  stop: ->
-    @player.stop()
+  stop() {
+    return this.player.stop();
+  }
 
-  playerViewDidClickPlayButton: ->
-    if @player.isPlaying()
-      @player.stop()
-    else
-      @player.play()
+  playerViewDidClickPlayButton() {
+    if (this.player.isPlaying()) {
+      return this.player.stop();
+    } else {
+      return this.player.play();
+    }
+  }
 
-  playerViewDidChangeSliderValue: (value) ->
-    @player.seek(value)
+  playerViewDidChangeSliderValue(value) {
+    return this.player.seek(value);
+  }
 
-  playerDidSeekToIndex: (index) ->
-    @view.setIndex(index)
+  playerDidSeekToIndex(index) {
+    let events, snapshot;
+    this.view.setIndex(index);
 
-    if snapshot = @player.getSnapshot(index)
-      @view.renderSnapshot(snapshot)
+    if (snapshot = this.player.getSnapshot(index)) {
+      this.view.renderSnapshot(snapshot);
+    }
 
-    if events = @player.getEvents(index)
-      @view.renderEvents(events)
+    if (events = this.player.getEvents(index)) {
+      return this.view.renderEvents(events);
+    }
+  }
 
-  playerDidStartPlaying: ->
-    @view.playerDidStartPlaying()
+  playerDidStartPlaying() {
+    return this.view.playerDidStartPlaying();
+  }
 
-  playerDidStopPlaying: ->
-    @view.playerDidStopPlaying()
+  playerDidStopPlaying() {
+    return this.view.playerDidStopPlaying();
+  }
+}
