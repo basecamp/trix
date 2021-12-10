@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -6,53 +8,54 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 export default class ObjectGroup {
-  static groupObjects(ungroupedObjects = [], {depth, asTree} = {}) {
-    let group;
-    if (asTree) { if (depth == null) { depth = 0; } }
-    const objects = [];
-    for (let object of Array.from(ungroupedObjects)) {
+  static groupObjects(ungroupedObjects = [], { depth, asTree } = {}) {
+    let group
+    if (asTree) { if (depth == null) { depth = 0 } }
+    const objects = []
+
+    Array.from(ungroupedObjects).forEach((object) => {
       if (group) {
         if (object.canBeGrouped?.(depth) && group[group.length - 1].canBeGroupedWith?.(object, depth)) {
-          group.push(object);
-          continue;
+          group.push(object)
+          return
         } else {
-          objects.push(new (this)(group, {depth, asTree}));
-          group = null;
+          objects.push(new this(group, { depth, asTree }))
+          group = null
         }
       }
 
       if (object.canBeGrouped?.(depth)) {
-        group = [object];
+        group = [ object ]
       } else {
-        objects.push(object);
+        objects.push(object)
       }
-    }
+    })
 
     if (group) {
-      objects.push(new (this)(group, {depth, asTree}));
+      objects.push(new this(group, { depth, asTree }))
     }
-    return objects;
+    return objects
   }
 
-  constructor(objects = [], {depth, asTree}) {
-    this.objects = objects;
+  constructor(objects = [], { depth, asTree }) {
+    this.objects = objects
     if (asTree) {
-      this.depth = depth;
-      this.objects = this.constructor.groupObjects(this.objects, {asTree, depth: this.depth + 1});
+      this.depth = depth
+      this.objects = this.constructor.groupObjects(this.objects, { asTree, depth: this.depth + 1 })
     }
   }
 
   getObjects() {
-    return this.objects;
+    return this.objects
   }
 
   getDepth() {
-    return this.depth;
+    return this.depth
   }
 
   getCacheKey() {
-    const keys = ["objectGroup"];
-    for (let object of Array.from(this.getObjects())) { keys.push(object.getCacheKey()); }
-    return keys.join("/");
+    const keys = [ "objectGroup" ]
+    Array.from(this.getObjects()).forEach((object) => { keys.push(object.getCacheKey()) })
+    return keys.join("/")
   }
 }

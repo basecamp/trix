@@ -1,3 +1,9 @@
+/* eslint-disable
+    no-cond-assign,
+    no-var,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -6,28 +12,28 @@
  */
 export default class ElementStore {
   constructor(elements) {
-    this.reset(elements);
+    this.reset(elements)
   }
 
   add(element) {
-    const key = getKey(element);
-    return this.elements[key] = element;
+    const key = getKey(element)
+    this.elements[key] = element
   }
 
   remove(element) {
-    let value;
-    const key = getKey(element);
+    let value
+    const key = getKey(element)
     if (value = this.elements[key]) {
-      delete this.elements[key];
-      return value;
+      delete this.elements[key]
+      return value
     }
   }
 
   reset(elements = []) {
-    this.elements = {};
-    for (let element of Array.from(elements)) { this.add(element); }
-    return elements;
+    this.elements = {}
+    Array.from(elements).forEach((element) => { this.add(element) })
+    return elements
   }
 }
 
-var getKey = element => element.dataset.trixStoreKey;
+var getKey = element => element.dataset.trixStoreKey

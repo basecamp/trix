@@ -1,3 +1,9 @@
+/* eslint-disable
+    id-length,
+    no-var,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -5,45 +11,46 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 export var arraysAreEqual = function(a = [], b = []) {
-  if (a.length !== b.length) { return false; }
+  if (a.length !== b.length) { return false }
   for (let index = 0; index < a.length; index++) {
-    const value = a[index];
-    if (value !== b[index]) { return false; }
+    const value = a[index]
+    if (value !== b[index]) { return false }
   }
-  return true;
-};
+  return true
+}
 
-export var arrayStartsWith = (a = [], b = []) => arraysAreEqual(a.slice(0, b.length), b);
+export var arrayStartsWith = (a = [], b = []) => arraysAreEqual(a.slice(0, b.length), b)
 
 export var spliceArray = function(array, ...args) {
-  const result = array.slice(0);
-  result.splice(...Array.from(args || []));
-  return result;
-};
+  const result = array.slice(0)
+  result.splice(...Array.from(args || []))
+  return result
+}
 
 export var summarizeArrayChange = function(oldArray = [], newArray = []) {
-  let value;
-  const added = [];
-  const removed = [];
+  const added = []
+  const removed = []
 
-  const existingValues = new Set;
-  for (value of Array.from(oldArray)) {
-    existingValues.add(value);
-  }
+  const existingValues = new Set
 
-  const currentValues = new Set;
-  for (value of Array.from(newArray)) {
-    currentValues.add(value);
+  Array.from(oldArray).forEach((value) => {
+    existingValues.add(value)
+  })
+
+  const currentValues = new Set
+
+  Array.from(newArray).forEach((value) => {
+    currentValues.add(value)
     if (!existingValues.has(value)) {
-      added.push(value);
+      added.push(value)
     }
-  }
+  })
 
-  for (value of Array.from(oldArray)) {
+  Array.from(oldArray).forEach((value) => {
     if (!currentValues.has(value)) {
-      removed.push(value);
+      removed.push(value)
     }
-  }
+  })
 
-  return {added, removed};
-};
+  return { added, removed }
+}

@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -7,16 +9,16 @@
 // Explicitly require this file (not included in the main
 // Trix bundle) to install the following global helpers.
 
-this.getEditorElement = () => document.querySelector("trix-editor");
+this.getEditorElement = () => document.querySelector("trix-editor")
 
-this.getToolbarElement = () => getEditorElement().toolbarElement;
+this.getToolbarElement = () => getEditorElement().toolbarElement
 
-this.getEditorController = () => getEditorElement().editorController;
+this.getEditorController = () => getEditorElement().editorController
 
-this.getEditor = () => getEditorController().editor;
+this.getEditor = () => getEditorController().editor
 
-this.getComposition = () => getEditorController().composition;
+this.getComposition = () => getEditorController().composition
 
-this.getDocument = () => getComposition().document;
+this.getDocument = () => getComposition().document
 
-this.getSelectionManager = () => getEditorController().selectionManager;
+this.getSelectionManager = () => getEditorController().selectionManager

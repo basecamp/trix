@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-var,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -7,53 +12,53 @@
  */
 export default class BasicObject {
   static proxyMethod(expression) {
-    const {name, toMethod, toProperty, optional} = parseProxyMethodExpression(expression);
+    const { name, toMethod, toProperty, optional } = parseProxyMethodExpression(expression)
 
-    return this.prototype[name] = function() {
-      let subject;
+    this.prototype[name] = function() {
+      let subject
       const object = (() => {
         if (toMethod != null) {
-        if (optional) { return this[toMethod]?.(); } else { return this[toMethod](); }
+        if (optional) { return this[toMethod]?.() } else { return this[toMethod]() }
       } else if (toProperty != null) {
-        return this[toProperty];
+        return this[toProperty]
       }
-      })();
+      })()
 
       if (optional) {
-        subject = object?.[name];
-        if (subject != null) { return apply.call(subject, object, arguments); }
+        subject = object?.[name]
+        if (subject != null) { return apply.call(subject, object, arguments) }
       } else {
-        subject = object[name];
-        return apply.call(subject, object, arguments);
+        subject = object[name]
+        return apply.call(subject, object, arguments)
       }
-    };
+    }
   }
 }
 
 var parseProxyMethodExpression = function(expression) {
-  let match;
+  let match
   if (!(match = expression.match(proxyMethodExpressionPattern))) {
-    throw new Error(`can't parse @proxyMethod expression: ${expression}`);
+    throw new Error(`can't parse @proxyMethod expression: ${expression}`)
   }
 
-  const args = {name: match[4]};
+  const args = { name: match[4] }
 
   if (match[2] != null) {
-    args.toMethod = match[1];
+    args.toMethod = match[1]
   } else {
-    args.toProperty = match[1];
+    args.toProperty = match[1]
   }
 
   if (match[3] != null) {
-    args.optional = true;
+    args.optional = true
   }
 
-  return args;
-};
+  return args
+}
 
-var {apply} = Function.prototype;
+var { apply } = Function.prototype
 
-var proxyMethodExpressionPattern = new RegExp(`\
+var proxyMethodExpressionPattern = new RegExp("\
 ^\
 (.+?)\
 (\\(\\))?\
@@ -61,4 +66,4 @@ var proxyMethodExpressionPattern = new RegExp(`\
 \\.\
 (.+?)\
 $\
-`);
+")
