@@ -1,3 +1,9 @@
+/* eslint-disable
+    no-cond-assign,
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -5,143 +11,143 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-let Piece;
-import TrixObject from "trix/core/object"; // Don't override window.Object
-import Hash from "trix/core/collections/hash";
+let Piece
+import TrixObject from "trix/core/object" // Don't override window.Object
+import Hash from "trix/core/collections/hash"
 
 export default Piece = (function() {
   Piece = class Piece extends TrixObject {
     static initClass() {
-      this.types = {};
+      this.types = {}
     }
 
     static registerType(type, constructor) {
-      constructor.type = type;
-      return this.types[type] = constructor;
+      constructor.type = type
+      this.types[type] = constructor
     }
 
     static fromJSON(pieceJSON) {
-      let constructor;
+      let constructor
       if (constructor = this.types[pieceJSON.type]) {
-        return constructor.fromJSON(pieceJSON);
+        return constructor.fromJSON(pieceJSON)
       }
     }
 
     constructor(value, attributes = {}) {
-      super(...arguments);
-      this.attributes = Hash.box(attributes);
+      super(...arguments)
+      this.attributes = Hash.box(attributes)
     }
 
     copyWithAttributes(attributes) {
-      return new this.constructor(this.getValue(), attributes);
+      return new this.constructor(this.getValue(), attributes)
     }
 
     copyWithAdditionalAttributes(attributes) {
-      return this.copyWithAttributes(this.attributes.merge(attributes));
+      return this.copyWithAttributes(this.attributes.merge(attributes))
     }
 
     copyWithoutAttribute(attribute) {
-      return this.copyWithAttributes(this.attributes.remove(attribute));
+      return this.copyWithAttributes(this.attributes.remove(attribute))
     }
 
     copy() {
-      return this.copyWithAttributes(this.attributes);
+      return this.copyWithAttributes(this.attributes)
     }
 
     getAttribute(attribute) {
-      return this.attributes.get(attribute);
+      return this.attributes.get(attribute)
     }
 
     getAttributesHash() {
-      return this.attributes;
+      return this.attributes
     }
 
     getAttributes() {
-      return this.attributes.toObject();
+      return this.attributes.toObject()
     }
 
     getCommonAttributes() {
-      let piece;
-      if (!(piece = pieceList.getPieceAtIndex(0))) { return {}; }
+      let piece
+      if (!(piece = pieceList.getPieceAtIndex(0))) { return {} }
       let {
         attributes
-      } = piece;
-      let keys = attributes.getKeys();
+      } = piece
+      let keys = attributes.getKeys()
 
       pieceList.eachPiece(function(piece) {
-        keys = attributes.getKeysCommonToHash(piece.attributes);
-        return attributes = attributes.slice(keys);
-      });
+        keys = attributes.getKeysCommonToHash(piece.attributes)
+        attributes = attributes.slice(keys)
+      })
 
-      return attributes.toObject();
+      return attributes.toObject()
     }
 
     hasAttribute(attribute) {
-      return this.attributes.has(attribute);
+      return this.attributes.has(attribute)
     }
 
     hasSameStringValueAsPiece(piece) {
-      return (piece != null) && (this.toString() === piece.toString());
+      return piece != null && this.toString() === piece.toString()
     }
 
     hasSameAttributesAsPiece(piece) {
-      return (piece != null) && ((this.attributes === piece.attributes) || this.attributes.isEqualTo(piece.attributes));
+      return piece != null && (this.attributes === piece.attributes || this.attributes.isEqualTo(piece.attributes))
     }
 
     isBlockBreak() {
-      return false;
+      return false
     }
 
     isEqualTo(piece) {
-      return super.isEqualTo(...arguments) || (
+      return super.isEqualTo(...arguments) ||
         this.hasSameConstructorAs(piece) &&
         this.hasSameStringValueAsPiece(piece) &&
         this.hasSameAttributesAsPiece(piece)
-      );
+
     }
 
     isEmpty() {
-      return this.length === 0;
+      return this.length === 0
     }
 
     isSerializable() {
-      return true;
+      return true
     }
 
     toJSON() {
       return {
         type: this.constructor.type,
         attributes: this.getAttributes()
-      };
+      }
     }
 
     contentsForInspection() {
       return {
         type: this.constructor.type,
         attributes: this.attributes.inspect()
-      };
+      }
     }
 
     // Grouping
 
     canBeGrouped() {
-      return this.hasAttribute("href");
+      return this.hasAttribute("href")
     }
 
     canBeGroupedWith(piece) {
-      return this.getAttribute("href") === piece.getAttribute("href");
+      return this.getAttribute("href") === piece.getAttribute("href")
     }
 
     // Splittable
 
     getLength() {
-      return this.length;
+      return this.length
     }
 
     canBeConsolidatedWith(piece) {
-      return false;
+      return false
     }
-  };
-  Piece.initClass();
-  return Piece;
-})();
+  }
+  Piece.initClass()
+  return Piece
+})()

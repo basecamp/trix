@@ -1,3 +1,10 @@
+/* eslint-disable
+    no-unused-vars,
+    no-var,
+    prefer-const,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -6,225 +13,227 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-import TrixObject from "trix/core/object"; // Don't override window.Object
+import TrixObject from "trix/core/object" // Don't override window.Object
 
-import { spliceArray } from "trix/core/helpers";
+import { spliceArray } from "trix/core/helpers"
 
 export default class SplittableList extends TrixObject {
   static box(objects) {
     if (objects instanceof this) {
-      return objects;
+      return objects
     } else {
-      return new (this)(objects);
+      return new this(objects)
     }
   }
 
   constructor(objects = []) {
-    super(...arguments);
-    this.objects = objects.slice(0);
-    this.length = this.objects.length;
+    super(...arguments)
+    this.objects = objects.slice(0)
+    this.length = this.objects.length
   }
 
   indexOf(object) {
-    return this.objects.indexOf(object);
+    return this.objects.indexOf(object)
   }
 
   splice(...args) {
-    return new this.constructor(spliceArray(this.objects, ...Array.from(args)));
+    return new this.constructor(spliceArray(this.objects, ...Array.from(args)))
   }
 
   eachObject(callback) {
-    return Array.from(this.objects).map((object, index) => callback(object, index));
+    return Array.from(this.objects).map((object, index) => callback(object, index))
   }
 
   insertObjectAtIndex(object, index) {
-    return this.splice(index, 0, object);
+    return this.splice(index, 0, object)
   }
 
   insertSplittableListAtIndex(splittableList, index) {
-    return this.splice(index, 0, ...Array.from(splittableList.objects));
+    return this.splice(index, 0, ...Array.from(splittableList.objects))
   }
 
   insertSplittableListAtPosition(splittableList, position) {
-    const [objects, index] = Array.from(this.splitObjectAtPosition(position));
-    return new this.constructor(objects).insertSplittableListAtIndex(splittableList, index);
+    const [ objects, index ] = Array.from(this.splitObjectAtPosition(position))
+    return new this.constructor(objects).insertSplittableListAtIndex(splittableList, index)
   }
 
   editObjectAtIndex(index, callback) {
-    return this.replaceObjectAtIndex(callback(this.objects[index]), index);
+    return this.replaceObjectAtIndex(callback(this.objects[index]), index)
   }
 
   replaceObjectAtIndex(object, index) {
-    return this.splice(index, 1, object);
+    return this.splice(index, 1, object)
   }
 
   removeObjectAtIndex(index) {
-    return this.splice(index, 1);
+    return this.splice(index, 1)
   }
 
   getObjectAtIndex(index) {
-    return this.objects[index];
+    return this.objects[index]
   }
 
   getSplittableListInRange(range) {
-    const [objects, leftIndex, rightIndex] = Array.from(this.splitObjectsAtRange(range));
-    return new this.constructor(objects.slice(leftIndex, rightIndex + 1));
+    const [ objects, leftIndex, rightIndex ] = Array.from(this.splitObjectsAtRange(range))
+    return new this.constructor(objects.slice(leftIndex, rightIndex + 1))
   }
 
   selectSplittableList(test) {
-    const objects = ((() => {
-      const result = [];
-      for (let object of Array.from(this.objects)) {         if (test(object)) {
-          result.push(object);
+    const objects = (() => {
+      const result = []
+
+      Array.from(this.objects).forEach((object) => { if (test(object)) {
+          result.push(object)
         }
-      }
-      return result;
-    })());
-    return new this.constructor(objects);
+      })
+
+      return result
+    })()
+    return new this.constructor(objects)
   }
 
   removeObjectsInRange(range) {
-    const [objects, leftIndex, rightIndex] = Array.from(this.splitObjectsAtRange(range));
-    return new this.constructor(objects).splice(leftIndex, (rightIndex - leftIndex) + 1);
+    const [ objects, leftIndex, rightIndex ] = Array.from(this.splitObjectsAtRange(range))
+    return new this.constructor(objects).splice(leftIndex, rightIndex - leftIndex + 1)
   }
 
   transformObjectsInRange(range, transform) {
-    const [objects, leftIndex, rightIndex] = Array.from(this.splitObjectsAtRange(range));
+    const [ objects, leftIndex, rightIndex ] = Array.from(this.splitObjectsAtRange(range))
     const transformedObjects = Array.from(objects).map((object, index) =>
       leftIndex <= index && index <= rightIndex ?
         transform(object)
       :
-        object);
-    return new this.constructor(transformedObjects);
+        object)
+    return new this.constructor(transformedObjects)
   }
 
   splitObjectsAtRange(range) {
-    let rightOuterIndex;
-    let [objects, leftInnerIndex, offset] = Array.from(this.splitObjectAtPosition(startOfRange(range)));
-    [objects, rightOuterIndex] = Array.from(new this.constructor(objects).splitObjectAtPosition(endOfRange(range) + offset));
-    return [objects, leftInnerIndex, rightOuterIndex - 1];
+    let rightOuterIndex
+    let [ objects, leftInnerIndex, offset ] = Array.from(this.splitObjectAtPosition(startOfRange(range)));
+    [ objects, rightOuterIndex ] = Array.from(new this.constructor(objects).splitObjectAtPosition(endOfRange(range) + offset))
+    return [ objects, leftInnerIndex, rightOuterIndex - 1 ]
   }
 
   getObjectAtPosition(position) {
-    const {index, offset} = this.findIndexAndOffsetAtPosition(position);
-    return this.objects[index];
+    const { index, offset } = this.findIndexAndOffsetAtPosition(position)
+    return this.objects[index]
   }
 
   splitObjectAtPosition(position) {
-    let splitIndex, splitOffset;
-    const {index, offset} = this.findIndexAndOffsetAtPosition(position);
-    const objects = this.objects.slice(0);
+    let splitIndex, splitOffset
+    const { index, offset } = this.findIndexAndOffsetAtPosition(position)
+    const objects = this.objects.slice(0)
     if (index != null) {
       if (offset === 0) {
-        splitIndex = index;
-        splitOffset = 0;
+        splitIndex = index
+        splitOffset = 0
       } else {
-        const object = this.getObjectAtIndex(index);
-        const [leftObject, rightObject] = Array.from(object.splitAtOffset(offset));
-        objects.splice(index, 1, leftObject, rightObject);
-        splitIndex = index + 1;
-        splitOffset = leftObject.getLength() - offset;
+        const object = this.getObjectAtIndex(index)
+        const [ leftObject, rightObject ] = Array.from(object.splitAtOffset(offset))
+        objects.splice(index, 1, leftObject, rightObject)
+        splitIndex = index + 1
+        splitOffset = leftObject.getLength() - offset
       }
     } else {
-      splitIndex = objects.length;
-      splitOffset = 0;
+      splitIndex = objects.length
+      splitOffset = 0
     }
 
-    return [objects, splitIndex, splitOffset];
+    return [ objects, splitIndex, splitOffset ]
   }
 
   consolidate() {
-    const objects = [];
-    let pendingObject = this.objects[0];
+    const objects = []
+    let pendingObject = this.objects[0]
 
-    for (let object of Array.from(this.objects.slice(1))) {
+    Array.from(this.objects.slice(1)).forEach((object) => {
       if (pendingObject.canBeConsolidatedWith?.(object)) {
-        pendingObject = pendingObject.consolidateWith(object);
+        pendingObject = pendingObject.consolidateWith(object)
       } else {
-        objects.push(pendingObject);
-        pendingObject = object;
+        objects.push(pendingObject)
+        pendingObject = object
       }
-    }
+    })
 
     if (pendingObject != null) {
-      objects.push(pendingObject);
+      objects.push(pendingObject)
     }
 
-    return new this.constructor(objects);
+    return new this.constructor(objects)
   }
 
   consolidateFromIndexToIndex(startIndex, endIndex) {
-    const objects = this.objects.slice(0);
-    const objectsInRange = objects.slice(startIndex, endIndex + 1);
-    const consolidatedInRange = new this.constructor(objectsInRange).consolidate().toArray();
-    return this.splice(startIndex, objectsInRange.length, ...Array.from(consolidatedInRange));
+    const objects = this.objects.slice(0)
+    const objectsInRange = objects.slice(startIndex, endIndex + 1)
+    const consolidatedInRange = new this.constructor(objectsInRange).consolidate().toArray()
+    return this.splice(startIndex, objectsInRange.length, ...Array.from(consolidatedInRange))
   }
 
   findIndexAndOffsetAtPosition(position) {
-    let index;
-    let currentPosition = 0;
+    let index
+    let currentPosition = 0
     for (index = 0; index < this.objects.length; index++) {
-      const object = this.objects[index];
-      const nextPosition = currentPosition + object.getLength();
+      const object = this.objects[index]
+      const nextPosition = currentPosition + object.getLength()
       if (currentPosition <= position && position < nextPosition) {
-        return {index, offset: position - currentPosition};
+        return { index, offset: position - currentPosition }
       }
-      currentPosition = nextPosition;
+      currentPosition = nextPosition
     }
-    return {index: null, offset: null};
+    return { index: null, offset: null }
   }
 
   findPositionAtIndexAndOffset(index, offset) {
-    let position = 0;
+    let position = 0
     for (let currentIndex = 0; currentIndex < this.objects.length; currentIndex++) {
-      const object = this.objects[currentIndex];
+      const object = this.objects[currentIndex]
       if (currentIndex < index) {
-        position += object.getLength();
+        position += object.getLength()
       } else if (currentIndex === index) {
-        position += offset;
-        break;
+        position += offset
+        break
       }
     }
-    return position;
+    return position
   }
 
   getEndPosition() {
-    let position;
-    return this.endPosition != null ? this.endPosition : (this.endPosition = (
-      (position = 0),
-      Array.from(this.objects).map((object) => (position += object.getLength())),
+    let position
+    return this.endPosition != null ? this.endPosition : this.endPosition = (
+      position = 0,
+      Array.from(this.objects).map((object) => position += object.getLength()),
       position
-    ));
+    )
   }
 
   toString() {
-    return this.objects.join("");
+    return this.objects.join("")
   }
 
   toArray() {
-    return this.objects.slice(0);
+    return this.objects.slice(0)
   }
 
   toJSON() {
-    return this.toArray();
+    return this.toArray()
   }
 
   isEqualTo(splittableList) {
-    return super.isEqualTo(...arguments) || objectArraysAreEqual(this.objects, splittableList?.objects);
+    return super.isEqualTo(...arguments) || objectArraysAreEqual(this.objects, splittableList?.objects)
   }
 
   contentsForInspection() {
-    return {objects: `[${(Array.from(this.objects).map((object) => object.inspect())).join(", ")}]`};
+    return { objects: `[${Array.from(this.objects).map((object) => object.inspect()).join(", ")}]` }
   }
 }
 
 var objectArraysAreEqual = function(left, right = []) {
-  if (left.length !== right.length) { return false; }
-  let result = true;
-  for (let index = 0; index < left.length; index++) { const object = left[index]; if (result && !object.isEqualTo(right[index])) { result = false; } }
-  return result;
-};
+  if (left.length !== right.length) { return false }
+  let result = true
+  for (let index = 0; index < left.length; index++) { const object = left[index]; if (result && !object.isEqualTo(right[index])) { result = false } }
+  return result
+}
 
-var startOfRange = range => range[0];
+var startOfRange = range => range[0]
 
-var endOfRange = range => range[1];
+var endOfRange = range => range[1]

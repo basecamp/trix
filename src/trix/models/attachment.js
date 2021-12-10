@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-this-before-super,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS002: Fix invalid constructor
@@ -7,23 +12,23 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-let Attachment;
-import config from "trix/config";
-import TrixObject from "trix/core/object"; // Don't override window.Object
-import Hash from "trix/core/collections/hash";
-import ImagePreloadOperation from "trix/operations/image_preload_operation";
+let Attachment
+import config from "trix/config"
+import TrixObject from "trix/core/object" // Don't override window.Object
+import Hash from "trix/core/collections/hash"
+import ImagePreloadOperation from "trix/operations/image_preload_operation"
 
 export default Attachment = (function() {
   Attachment = class Attachment extends TrixObject {
     static initClass() {
-      this.previewablePattern = /^image(\/(gif|png|jpe?g)|$)/;
+      this.previewablePattern = /^image(\/(gif|png|jpe?g)|$)/
     }
 
     static attachmentForFile(file) {
-      const attributes = this.attributesForFile(file);
-      const attachment = new (this)(attributes);
-      attachment.setFile(file);
-      return attachment;
+      const attributes = this.attributesForFile(file)
+      const attachment = new this(attributes)
+      attachment.setFile(file)
+      return attachment
     }
 
     static attributesForFile(file) {
@@ -31,204 +36,203 @@ export default Attachment = (function() {
         filename:    file.name,
         filesize:    file.size,
         contentType: file.type
-      });
+      })
     }
 
     static fromJSON(attachmentJSON) {
-      return new (this)(attachmentJSON);
+      return new this(attachmentJSON)
     }
 
     constructor(attributes = {}) {
-      this.releaseFile = this.releaseFile.bind(this);
-      super(attributes);
-      this.attributes = Hash.box(attributes);
-      this.didChangeAttributes();
+      this.releaseFile = this.releaseFile.bind(this)
+      super(attributes)
+      this.attributes = Hash.box(attributes)
+      this.didChangeAttributes()
     }
 
     getAttribute(attribute) {
-      return this.attributes.get(attribute);
+      return this.attributes.get(attribute)
     }
 
     hasAttribute(attribute) {
-      return this.attributes.has(attribute);
+      return this.attributes.has(attribute)
     }
 
     getAttributes() {
-      return this.attributes.toObject();
+      return this.attributes.toObject()
     }
 
     setAttributes(attributes = {}) {
-      const newAttributes = this.attributes.merge(attributes);
+      const newAttributes = this.attributes.merge(attributes)
       if (!this.attributes.isEqualTo(newAttributes)) {
-        this.attributes = newAttributes;
-        this.didChangeAttributes();
-        this.previewDelegate?.attachmentDidChangeAttributes?.(this);
-        return this.delegate?.attachmentDidChangeAttributes?.(this);
+        this.attributes = newAttributes
+        this.didChangeAttributes()
+        this.previewDelegate?.attachmentDidChangeAttributes?.(this)
+        return this.delegate?.attachmentDidChangeAttributes?.(this)
       }
     }
 
     didChangeAttributes() {
       if (this.isPreviewable()) {
-        return this.preloadURL();
+        return this.preloadURL()
       }
     }
 
     isPending() {
-      return (this.file != null) && !(this.getURL() || this.getHref());
+      return this.file != null && !(this.getURL() || this.getHref())
     }
 
     isPreviewable() {
       if (this.attributes.has("previewable")) {
-        return this.attributes.get("previewable");
+        return this.attributes.get("previewable")
       } else {
-        return this.constructor.previewablePattern.test(this.getContentType());
+        return this.constructor.previewablePattern.test(this.getContentType())
       }
     }
 
     getType() {
       if (this.hasContent()) {
-        return "content";
+        return "content"
       } else if (this.isPreviewable()) {
-        return "preview";
+        return "preview"
       } else {
-        return "file";
+        return "file"
       }
     }
 
     getURL() {
-      return this.attributes.get("url");
+      return this.attributes.get("url")
     }
 
     getHref() {
-      return this.attributes.get("href");
+      return this.attributes.get("href")
     }
 
     getFilename() {
-      let left;
-      return (left = this.attributes.get("filename")) != null ? left : "";
+      return this.attributes.get("filename") || ""
     }
 
     getFilesize() {
-      return this.attributes.get("filesize");
+      return this.attributes.get("filesize")
     }
 
     getFormattedFilesize() {
-      const filesize = this.attributes.get("filesize");
+      const filesize = this.attributes.get("filesize")
       if (typeof filesize === "number") {
-        return config.fileSize.formatter(filesize);
+        return config.fileSize.formatter(filesize)
       } else {
-        return "";
+        return ""
       }
     }
 
     getExtension() {
-      return this.getFilename().match(/\.(\w+)$/)?.[1].toLowerCase();
+      return this.getFilename().match(/\.(\w+)$/)?.[1].toLowerCase()
     }
 
     getContentType() {
-      return this.attributes.get("contentType");
+      return this.attributes.get("contentType")
     }
 
     hasContent() {
-      return this.attributes.has("content");
+      return this.attributes.has("content")
     }
 
     getContent() {
-      return this.attributes.get("content");
+      return this.attributes.get("content")
     }
 
     getWidth() {
-      return this.attributes.get("width");
+      return this.attributes.get("width")
     }
 
     getHeight() {
-      return this.attributes.get("height");
+      return this.attributes.get("height")
     }
 
     getFile() {
-      return this.file;
+      return this.file
     }
 
     setFile(file) {
-      this.file = file;
+      this.file = file
       if (this.isPreviewable()) {
-        return this.preloadFile();
+        return this.preloadFile()
       }
     }
 
     releaseFile() {
-      this.releasePreloadedFile();
-      return this.file = null;
+      this.releasePreloadedFile()
+      this.file = null
     }
 
     getUploadProgress() {
-      return this.uploadProgress != null ? this.uploadProgress : 0;
+      return this.uploadProgress != null ? this.uploadProgress : 0
     }
 
     setUploadProgress(value) {
       if (this.uploadProgress !== value) {
-        this.uploadProgress = value;
-        return this.uploadProgressDelegate?.attachmentDidChangeUploadProgress?.(this);
+        this.uploadProgress = value
+        return this.uploadProgressDelegate?.attachmentDidChangeUploadProgress?.(this)
       }
     }
 
     toJSON() {
-      return this.getAttributes();
+      return this.getAttributes()
     }
 
     getCacheKey() {
-      return [super.getCacheKey(...arguments).getCacheKey(...arguments), this.attributes.getCacheKey(), this.getPreviewURL()].join("/");
+      return [ super.getCacheKey(...arguments).getCacheKey(...arguments), this.attributes.getCacheKey(), this.getPreviewURL() ].join("/")
     }
 
     // Previewable
 
     getPreviewURL() {
-      return this.previewURL || this.preloadingURL;
+      return this.previewURL || this.preloadingURL
     }
 
     setPreviewURL(url) {
       if (url !== this.getPreviewURL()) {
-        this.previewURL = url;
-        this.previewDelegate?.attachmentDidChangeAttributes?.(this);
-        return this.delegate?.attachmentDidChangePreviewURL?.(this);
+        this.previewURL = url
+        this.previewDelegate?.attachmentDidChangeAttributes?.(this)
+        return this.delegate?.attachmentDidChangePreviewURL?.(this)
       }
     }
 
     preloadURL() {
-      return this.preload(this.getURL(), this.releaseFile);
+      return this.preload(this.getURL(), this.releaseFile)
     }
 
     preloadFile() {
       if (this.file) {
-        this.fileObjectURL = URL.createObjectURL(this.file);
-        return this.preload(this.fileObjectURL);
+        this.fileObjectURL = URL.createObjectURL(this.file)
+        return this.preload(this.fileObjectURL)
       }
     }
 
     releasePreloadedFile() {
       if (this.fileObjectURL) {
-        URL.revokeObjectURL(this.fileObjectURL);
-        return this.fileObjectURL = null;
+        URL.revokeObjectURL(this.fileObjectURL)
+        this.fileObjectURL = null
       }
     }
 
     preload(url, callback) {
-      if (url && (url !== this.getPreviewURL())) {
-        this.preloadingURL = url;
-        const operation = new ImagePreloadOperation(url);
+      if (url && url !== this.getPreviewURL()) {
+        this.preloadingURL = url
+        const operation = new ImagePreloadOperation(url)
         return operation
-          .then(({width, height}) => {
-            if (!this.getWidth() || !this.getHeight()) { this.setAttributes({width, height}); }
-            this.preloadingURL = null;
-            this.setPreviewURL(url);
-            return callback?.();
+          .then(({ width, height }) => {
+            if (!this.getWidth() || !this.getHeight()) { this.setAttributes({ width, height }) }
+            this.preloadingURL = null
+            this.setPreviewURL(url)
+            return callback?.()
         }).catch(() => {
-            this.preloadingURL = null;
-            return callback?.();
-        });
+            this.preloadingURL = null
+            return callback?.()
+        })
       }
     }
-  };
-  Attachment.initClass();
-  return Attachment;
-})();
+  }
+  Attachment.initClass()
+  return Attachment
+})()

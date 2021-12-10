@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -6,44 +8,44 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-import ManagedAttachment from "trix/models/managed_attachment";
-import BasicObject from "trix/core/basic_object";
+import ManagedAttachment from "trix/models/managed_attachment"
+import BasicObject from "trix/core/basic_object"
 
 export default class AttachmentManager extends BasicObject {
   constructor(attachments = []) {
-    super(...arguments);
-    this.managedAttachments = {};
-    for (let attachment of Array.from(attachments)) { this.manageAttachment(attachment); }
+    super(...arguments)
+    this.managedAttachments = {}
+    Array.from(attachments).forEach((attachment) => { this.manageAttachment(attachment) })
   }
 
   getAttachments() {
     return (() => {
-      const result = [];
-      for (let id in this.managedAttachments) {
-        const attachment = this.managedAttachments[id];
-        result.push(attachment);
+      const result = []
+      for (const id in this.managedAttachments) {
+        const attachment = this.managedAttachments[id]
+        result.push(attachment)
       }
-      return result;
-    })();
+      return result
+    })()
   }
 
   manageAttachment(attachment) {
-    return this.managedAttachments[attachment.id] != null ? this.managedAttachments[attachment.id] : (this.managedAttachments[attachment.id] = new ManagedAttachment(this, attachment));
+    return this.managedAttachments[attachment.id] != null ? this.managedAttachments[attachment.id] : this.managedAttachments[attachment.id] = new ManagedAttachment(this, attachment)
   }
 
   attachmentIsManaged(attachment) {
-    return attachment.id in this.managedAttachments;
+    return attachment.id in this.managedAttachments
   }
 
   requestRemovalOfAttachment(attachment) {
     if (this.attachmentIsManaged(attachment)) {
-      return this.delegate?.attachmentManagerDidRequestRemovalOfAttachment?.(attachment);
+      return this.delegate?.attachmentManagerDidRequestRemovalOfAttachment?.(attachment)
     }
   }
 
   unmanageAttachment(attachment) {
-    const managedAttachment = this.managedAttachments[attachment.id];
-    delete this.managedAttachments[attachment.id];
-    return managedAttachment;
+    const managedAttachment = this.managedAttachments[attachment.id]
+    delete this.managedAttachments[attachment.id]
+    return managedAttachment
   }
 }

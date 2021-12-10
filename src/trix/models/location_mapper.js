@@ -1,3 +1,10 @@
+/* eslint-disable
+    no-cond-assign,
+    no-var,
+    prefer-const,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -5,205 +12,205 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-import { elementContainsNode, findChildIndexOfNode, nodeIsBlockStart,
- nodeIsBlockStartComment, nodeIsBlockContainer, nodeIsCursorTarget,
- nodeIsEmptyTextNode, nodeIsTextNode, nodeIsAttachmentElement, tagName, walkTree } from "trix/core/helpers";
+import { elementContainsNode, findChildIndexOfNode, nodeIsAttachmentElement,
+ nodeIsBlockContainer, nodeIsBlockStart, nodeIsBlockStartComment,
+ nodeIsCursorTarget, nodeIsEmptyTextNode, nodeIsTextNode, tagName, walkTree } from "trix/core/helpers"
 
 export default class LocationMapper {
   constructor(element) {
-    this.element = element;
+    this.element = element
   }
 
-  findLocationFromContainerAndOffset(container, offset, {strict} = {strict: true}) {
-    let attachmentElement;
-    let childIndex = 0;
-    let foundBlock = false;
-    const location = {index: 0, offset: 0};
+  findLocationFromContainerAndOffset(container, offset, { strict } = { strict: true }) {
+    let attachmentElement
+    let childIndex = 0
+    let foundBlock = false
+    const location = { index: 0, offset: 0 }
 
     if (attachmentElement = this.findAttachmentElementParentForNode(container)) {
-      container = attachmentElement.parentNode;
-      offset = findChildIndexOfNode(attachmentElement);
+      container = attachmentElement.parentNode
+      offset = findChildIndexOfNode(attachmentElement)
     }
 
-    const walker = walkTree(this.element, {usingFilter: rejectAttachmentContents});
+    const walker = walkTree(this.element, { usingFilter: rejectAttachmentContents })
 
     while (walker.nextNode()) {
-      const node = walker.currentNode;
+      const node = walker.currentNode
 
-      if ((node === container) && nodeIsTextNode(container)) {
+      if (node === container && nodeIsTextNode(container)) {
         if (!nodeIsCursorTarget(node)) {
-          location.offset += offset;
+          location.offset += offset
         }
-        break;
+        break
 
       } else {
         if (node.parentNode === container) {
-          if (childIndex++ === offset) { break; }
+          if (childIndex++ === offset) { break }
         } else if (!elementContainsNode(container, node)) {
-          if (childIndex > 0) { break; }
+          if (childIndex > 0) { break }
         }
 
-        if (nodeIsBlockStart(node, {strict})) {
-          if (foundBlock) { location.index++; }
-          location.offset = 0;
-          foundBlock = true;
+        if (nodeIsBlockStart(node, { strict })) {
+          if (foundBlock) { location.index++ }
+          location.offset = 0
+          foundBlock = true
         } else {
-          location.offset += nodeLength(node);
+          location.offset += nodeLength(node)
         }
       }
     }
 
-    return location;
+    return location
   }
 
   findContainerAndOffsetFromLocation(location) {
-    let container, offset;
-    if ((location.index === 0) && (location.offset === 0)) {
-      container = this.element;
-      offset = 0;
+    let container, offset
+    if (location.index === 0 && location.offset === 0) {
+      container = this.element
+      offset = 0
 
       while (container.firstChild) {
-        container = container.firstChild;
+        container = container.firstChild
         if (nodeIsBlockContainer(container)) {
-          offset = 1;
-          break;
+          offset = 1
+          break
         }
       }
 
-      return [container, offset];
+      return [ container, offset ]
     }
 
-    let [node, nodeOffset] = Array.from(this.findNodeAndOffsetFromLocation(location));
-    if (!node) { return; }
+    let [ node, nodeOffset ] = Array.from(this.findNodeAndOffsetFromLocation(location))
+    if (!node) { return }
 
     if (nodeIsTextNode(node)) {
       if (nodeLength(node) === 0) {
-        container = node.parentNode.parentNode;
-        offset = findChildIndexOfNode(node.parentNode);
-        if (nodeIsCursorTarget(node, {name: "right"})) { offset++; }
+        container = node.parentNode.parentNode
+        offset = findChildIndexOfNode(node.parentNode)
+        if (nodeIsCursorTarget(node, { name: "right" })) { offset++ }
       } else {
-        container = node;
-        offset = location.offset - nodeOffset;
+        container = node
+        offset = location.offset - nodeOffset
       }
     } else {
-      container = node.parentNode;
+      container = node.parentNode
 
       if (!nodeIsBlockStart(node.previousSibling)) {
         if (!nodeIsBlockContainer(container)) {
           while (node === container.lastChild) {
-            node = container;
-            container = container.parentNode;
-            if (nodeIsBlockContainer(container)) { break; }
+            node = container
+            container = container.parentNode
+            if (nodeIsBlockContainer(container)) { break }
           }
         }
       }
 
-      offset = findChildIndexOfNode(node);
-      if (location.offset !== 0) { offset++; }
+      offset = findChildIndexOfNode(node)
+      if (location.offset !== 0) { offset++ }
     }
 
-    return [container, offset];
+    return [ container, offset ]
   }
 
   findNodeAndOffsetFromLocation(location) {
-    let node, nodeOffset;
-    let offset = 0;
+    let node, nodeOffset
+    let offset = 0
 
-    for (let currentNode of Array.from(this.getSignificantNodesForIndex(location.index))) {
-      const length = nodeLength(currentNode);
+    for (const currentNode of Array.from(this.getSignificantNodesForIndex(location.index))) {
+      const length = nodeLength(currentNode)
 
-      if (location.offset <= (offset + length)) {
+      if (location.offset <= offset + length) {
         if (nodeIsTextNode(currentNode)) {
-          node = currentNode;
-          nodeOffset = offset;
-          if ((location.offset === nodeOffset) && nodeIsCursorTarget(node)) { break; }
+          node = currentNode
+          nodeOffset = offset
+          if (location.offset === nodeOffset && nodeIsCursorTarget(node)) { break }
 
         } else if (!node) {
-          node = currentNode;
-          nodeOffset = offset;
+          node = currentNode
+          nodeOffset = offset
         }
       }
 
-      offset += length;
-      if (offset > location.offset) { break; }
+      offset += length
+      if (offset > location.offset) { break }
     }
 
-    return [node, nodeOffset];
+    return [ node, nodeOffset ]
   }
 
   // Private
 
   findAttachmentElementParentForNode(node) {
-    while (node && (node !== this.element)) {
-      if (nodeIsAttachmentElement(node)) { return node; }
-      node = node.parentNode;
+    while (node && node !== this.element) {
+      if (nodeIsAttachmentElement(node)) { return node }
+      node = node.parentNode
     }
   }
 
   getSignificantNodesForIndex(index) {
-    const nodes = [];
-    const walker = walkTree(this.element, {usingFilter: acceptSignificantNodes});
-    let recordingNodes = false;
+    const nodes = []
+    const walker = walkTree(this.element, { usingFilter: acceptSignificantNodes })
+    let recordingNodes = false
 
     while (walker.nextNode()) {
-      const node = walker.currentNode;
+      const node = walker.currentNode
       if (nodeIsBlockStartComment(node)) {
-        var blockIndex;
+        var blockIndex
         if (blockIndex != null) {
-          blockIndex++;
+          blockIndex++
         } else {
-          blockIndex = 0;
+          blockIndex = 0
         }
 
         if (blockIndex === index) {
-          recordingNodes = true;
+          recordingNodes = true
         } else if (recordingNodes) {
-          break;
+          break
         }
       } else if (recordingNodes) {
-        nodes.push(node);
+        nodes.push(node)
       }
     }
 
-    return nodes;
+    return nodes
   }
 }
 
 var nodeLength = function(node) {
   if (node.nodeType === Node.TEXT_NODE) {
     if (nodeIsCursorTarget(node)) {
-      return 0;
+      return 0
     } else {
-      const string = node.textContent;
-      return string.length;
+      const string = node.textContent
+      return string.length
     }
-  } else if ((tagName(node) === "br") || nodeIsAttachmentElement(node)) {
-    return 1;
+  } else if (tagName(node) === "br" || nodeIsAttachmentElement(node)) {
+    return 1
   } else {
-    return 0;
+    return 0
   }
-};
+}
 
 var acceptSignificantNodes = function(node) {
   if (rejectEmptyTextNodes(node) === NodeFilter.FILTER_ACCEPT) {
-    return rejectAttachmentContents(node);
+    return rejectAttachmentContents(node)
   } else {
-    return NodeFilter.FILTER_REJECT;
+    return NodeFilter.FILTER_REJECT
   }
-};
+}
 
 var rejectEmptyTextNodes = function(node) {
   if (nodeIsEmptyTextNode(node)) {
-    return NodeFilter.FILTER_REJECT;
+    return NodeFilter.FILTER_REJECT
   } else {
-    return NodeFilter.FILTER_ACCEPT;
+    return NodeFilter.FILTER_ACCEPT
   }
-};
+}
 
 var rejectAttachmentContents = function(node) {
   if (nodeIsAttachmentElement(node.parentNode)) {
-    return NodeFilter.FILTER_REJECT;
+    return NodeFilter.FILTER_REJECT
   } else {
-    return NodeFilter.FILTER_ACCEPT;
+    return NodeFilter.FILTER_ACCEPT
   }
-};
+}

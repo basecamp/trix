@@ -1,3 +1,12 @@
+/* eslint-disable
+    no-cond-assign,
+    no-this-before-super,
+    no-unused-vars,
+    no-var,
+    prefer-const,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS002: Fix invalid constructor
@@ -8,84 +17,85 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-let SelectionManager;
-import BasicObject from "trix/core/basic_object";
+let SelectionManager
+import BasicObject from "trix/core/basic_object"
 
-import LocationMapper from "trix/models/location_mapper";
-import PointMapper from "trix/models/point_mapper";
-import SelectionChangeObserver, { selectionChangeObserver } from "trix/observers/selection_change_observer";
+import LocationMapper from "trix/models/location_mapper"
+import PointMapper from "trix/models/point_mapper"
+import SelectionChangeObserver, { selectionChangeObserver } from "trix/observers/selection_change_observer"
 
-import {getDOMSelection, getDOMRange, setDOMRange, elementContainsNode,
- nodeIsCursorTarget, innerElementIsActive, handleEvent, normalizeRange,
- rangeIsCollapsed, rangesAreEqual} from "trix/core/helpers";
+import { elementContainsNode, getDOMRange, getDOMSelection, handleEvent,
+ innerElementIsActive, nodeIsCursorTarget, normalizeRange, rangeIsCollapsed,
+ rangesAreEqual, setDOMRange } from "trix/core/helpers"
 
 export default SelectionManager = (function() {
   SelectionManager = class SelectionManager extends BasicObject {
     static initClass() {
-  
+
       // Private
-  
-      this.proxyMethod("locationMapper.findLocationFromContainerAndOffset");
-      this.proxyMethod("locationMapper.findContainerAndOffsetFromLocation");
-      this.proxyMethod("locationMapper.findNodeAndOffsetFromLocation");
-      this.proxyMethod("pointMapper.createDOMRangeFromPoint");
-      this.proxyMethod("pointMapper.getClientRectsForDOMRange");
+
+      this.proxyMethod("locationMapper.findLocationFromContainerAndOffset")
+      this.proxyMethod("locationMapper.findContainerAndOffsetFromLocation")
+      this.proxyMethod("locationMapper.findNodeAndOffsetFromLocation")
+      this.proxyMethod("pointMapper.createDOMRangeFromPoint")
+      this.proxyMethod("pointMapper.getClientRectsForDOMRange")
     }
     constructor(element) {
-      this.didMouseDown = this.didMouseDown.bind(this);
-      this.selectionDidChange = this.selectionDidChange.bind(this);
-      super(...arguments);
-      this.element = element;
-      this.locationMapper = new LocationMapper(this.element);
-      this.pointMapper = new PointMapper;
-      this.lockCount = 0;
-      handleEvent("mousedown", {onElement: this.element, withCallback: this.didMouseDown});
+      this.didMouseDown = this.didMouseDown.bind(this)
+      this.selectionDidChange = this.selectionDidChange.bind(this)
+      super(...arguments)
+      this.element = element
+      this.locationMapper = new LocationMapper(this.element)
+      this.pointMapper = new PointMapper
+      this.lockCount = 0
+      handleEvent("mousedown", { onElement: this.element, withCallback: this.didMouseDown })
     }
 
     getLocationRange(options = {}) {
-      let locationRange;
-      return locationRange =
+      let locationRange
+
+      locationRange =
         options.strict === false ?
-          this.createLocationRangeFromDOMRange(getDOMRange(), {strict: false})
+          this.createLocationRangeFromDOMRange(getDOMRange(), { strict: false })
         : options.ignoreLock ?
           this.currentLocationRange
         :
-          this.lockedLocationRange != null ? this.lockedLocationRange : this.currentLocationRange;
+          this.lockedLocationRange != null ? this.lockedLocationRange : this.currentLocationRange
     }
 
     setLocationRange(locationRange) {
-      let domRange;
-      if (this.lockedLocationRange) { return; }
-      locationRange = normalizeRange(locationRange);
+      let domRange
+      if (this.lockedLocationRange) { return }
+      locationRange = normalizeRange(locationRange)
       if (domRange = this.createDOMRangeFromLocationRange(locationRange)) {
-        setDOMRange(domRange);
-        return this.updateCurrentLocationRange(locationRange);
+        setDOMRange(domRange)
+        return this.updateCurrentLocationRange(locationRange)
       }
     }
 
     setLocationRangeFromPointRange(pointRange) {
-      pointRange = normalizeRange(pointRange);
-      const startLocation = this.getLocationAtPoint(pointRange[0]);
-      const endLocation = this.getLocationAtPoint(pointRange[1]);
-      return this.setLocationRange([startLocation, endLocation]);
+      pointRange = normalizeRange(pointRange)
+      const startLocation = this.getLocationAtPoint(pointRange[0])
+      const endLocation = this.getLocationAtPoint(pointRange[1])
+      return this.setLocationRange([ startLocation, endLocation ])
     }
 
     getClientRectAtLocationRange(locationRange) {
-      let domRange;
+      let domRange
       if (domRange = this.createDOMRangeFromLocationRange(locationRange)) {
-        return this.getClientRectsForDOMRange(domRange)[1];
+        return this.getClientRectsForDOMRange(domRange)[1]
       }
     }
 
     locationIsCursorTarget(location) {
-      const [node, offset] = Array.from(this.findNodeAndOffsetFromLocation(location));
-      return nodeIsCursorTarget(node);
+      const [ node, offset ] = Array.from(this.findNodeAndOffsetFromLocation(location))
+      return nodeIsCursorTarget(node)
     }
 
     lock() {
       if (this.lockCount++ === 0) {
-        this.updateCurrentLocationRange();
-        return this.lockedLocationRange = this.getLocationRange();
+        this.updateCurrentLocationRange()
+        this.lockedLocationRange = this.getLocationRange()
       }
     }
 
@@ -93,102 +103,104 @@ export default SelectionManager = (function() {
       if (--this.lockCount === 0) {
         const {
           lockedLocationRange
-        } = this;
-        this.lockedLocationRange = null;
-        if (lockedLocationRange != null) { return this.setLocationRange(lockedLocationRange); }
+        } = this
+        this.lockedLocationRange = null
+        if (lockedLocationRange != null) { return this.setLocationRange(lockedLocationRange) }
       }
     }
 
     clearSelection() {
-      return getDOMSelection()?.removeAllRanges();
+      return getDOMSelection()?.removeAllRanges()
     }
 
     selectionIsCollapsed() {
-      return getDOMRange()?.collapsed === true;
+      return getDOMRange()?.collapsed === true
     }
 
     selectionIsExpanded() {
-      return !this.selectionIsCollapsed();
+      return !this.selectionIsCollapsed()
     }
 
     createLocationRangeFromDOMRange(domRange, options) {
-      let end, start;
-      if ((domRange == null) || !this.domRangeWithinElement(domRange)) { return; }
-      if (!(start = this.findLocationFromContainerAndOffset(domRange.startContainer, domRange.startOffset, options))) { return; }
-      if (!domRange.collapsed) { end = this.findLocationFromContainerAndOffset(domRange.endContainer, domRange.endOffset, options); }
-      return normalizeRange([start, end]);
+      let end, start
+      if (domRange == null || !this.domRangeWithinElement(domRange)) { return }
+      if (!(start = this.findLocationFromContainerAndOffset(domRange.startContainer, domRange.startOffset, options))) { return }
+      if (!domRange.collapsed) { end = this.findLocationFromContainerAndOffset(domRange.endContainer, domRange.endOffset, options) }
+      return normalizeRange([ start, end ])
     }
 
     didMouseDown() {
-      return this.pauseTemporarily();
+      return this.pauseTemporarily()
     }
 
     pauseTemporarily() {
-      let resumeHandlers;
-      this.paused = true;
+      let resumeHandlers
+      this.paused = true
 
       const resume = () => {
-        this.paused = false;
-        clearTimeout(resumeTimeout);
-        for (let handler of Array.from(resumeHandlers)) {
-          handler.destroy();
-        }
-        if (elementContainsNode(document, this.element)) {
-          return this.selectionDidChange();
-        }
-      };
+        this.paused = false
+        clearTimeout(resumeTimeout)
 
-      var resumeTimeout = setTimeout(resume, 200);
-      return resumeHandlers = ["mousemove", "keydown"].map((eventName) =>
-        handleEvent(eventName, {onElement: document, withCallback: resume}));
+        Array.from(resumeHandlers).forEach((handler) => {
+          handler.destroy()
+        })
+
+        if (elementContainsNode(document, this.element)) {
+          return this.selectionDidChange()
+        }
+      }
+
+      var resumeTimeout = setTimeout(resume, 200)
+
+      resumeHandlers = [ "mousemove", "keydown" ].map((eventName) =>
+        handleEvent(eventName, { onElement: document, withCallback: resume }))
     }
 
     selectionDidChange() {
       if (!this.paused && !innerElementIsActive(this.element)) {
-        return this.updateCurrentLocationRange();
+        return this.updateCurrentLocationRange()
       }
     }
 
     updateCurrentLocationRange(locationRange) {
-      if (locationRange != null ? locationRange : (locationRange = this.createLocationRangeFromDOMRange(getDOMRange()))) {
+      if (locationRange != null ? locationRange : locationRange = this.createLocationRangeFromDOMRange(getDOMRange())) {
         if (!rangesAreEqual(locationRange, this.currentLocationRange)) {
-          this.currentLocationRange = locationRange;
-          return this.delegate?.locationRangeDidChange?.(this.currentLocationRange.slice(0));
+          this.currentLocationRange = locationRange
+          return this.delegate?.locationRangeDidChange?.(this.currentLocationRange.slice(0))
         }
       }
     }
 
     createDOMRangeFromLocationRange(locationRange) {
-      let left;
-      const rangeStart = this.findContainerAndOffsetFromLocation(locationRange[0]);
+      const rangeStart = this.findContainerAndOffsetFromLocation(locationRange[0])
       const rangeEnd = rangeIsCollapsed(locationRange) ?
         rangeStart
       :
-        (left = this.findContainerAndOffsetFromLocation(locationRange[1])) != null ? left : rangeStart;
+        this.findContainerAndOffsetFromLocation(locationRange[1]) || rangeStart
 
-      if ((rangeStart != null) && (rangeEnd != null)) {
-        const domRange = document.createRange();
-        domRange.setStart(...Array.from(rangeStart || []));
-        domRange.setEnd(...Array.from(rangeEnd || []));
-        return domRange;
+      if (rangeStart != null && rangeEnd != null) {
+        const domRange = document.createRange()
+        domRange.setStart(...Array.from(rangeStart || []))
+        domRange.setEnd(...Array.from(rangeEnd || []))
+        return domRange
       }
     }
 
     getLocationAtPoint(point) {
-      let domRange;
+      let domRange
       if (domRange = this.createDOMRangeFromPoint(point)) {
-        return this.createLocationRangeFromDOMRange(domRange)?.[0];
+        return this.createLocationRangeFromDOMRange(domRange)?.[0]
       }
     }
 
     domRangeWithinElement(domRange) {
       if (domRange.collapsed) {
-        return elementContainsNode(this.element, domRange.startContainer);
+        return elementContainsNode(this.element, domRange.startContainer)
       } else {
-        return elementContainsNode(this.element, domRange.startContainer) && elementContainsNode(this.element, domRange.endContainer);
+        return elementContainsNode(this.element, domRange.startContainer) && elementContainsNode(this.element, domRange.endContainer)
       }
     }
-  };
-  SelectionManager.initClass();
-  return SelectionManager;
-})();
+  }
+  SelectionManager.initClass()
+  return SelectionManager
+})()

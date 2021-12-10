@@ -1,3 +1,9 @@
+/* eslint-disable
+    id-length,
+    no-empty,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -5,37 +11,37 @@
  * DS201: Simplify complex destructure assignments
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-import { getDOMRange, setDOMRange } from "trix/core/helpers";
+import { getDOMRange, setDOMRange } from "trix/core/helpers"
 
 export default class PointMapper {
-  createDOMRangeFromPoint({x, y}) {
-    let domRange;
+  createDOMRangeFromPoint({ x, y }) {
+    let domRange
     if (document.caretPositionFromPoint) {
-      const {offsetNode, offset} = document.caretPositionFromPoint(x, y);
-      domRange = document.createRange();
-      domRange.setStart(offsetNode, offset);
-      return domRange;
+      const { offsetNode, offset } = document.caretPositionFromPoint(x, y)
+      domRange = document.createRange()
+      domRange.setStart(offsetNode, offset)
+      return domRange
 
     } else if (document.caretRangeFromPoint) {
-      return document.caretRangeFromPoint(x, y);
+      return document.caretRangeFromPoint(x, y)
 
     } else if (document.body.createTextRange) {
-      const originalDOMRange = getDOMRange();
+      const originalDOMRange = getDOMRange()
       try {
         // IE 11 throws "Unspecified error" when using moveToPoint
         // during a drag-and-drop operation.
-        const textRange = document.body.createTextRange();
-        textRange.moveToPoint(x, y);
-        textRange.select();
+        const textRange = document.body.createTextRange()
+        textRange.moveToPoint(x, y)
+        textRange.select()
       } catch (error) {}
-      domRange = getDOMRange();
-      setDOMRange(originalDOMRange);
-      return domRange;
+      domRange = getDOMRange()
+      setDOMRange(originalDOMRange)
+      return domRange
     }
   }
 
   getClientRectsForDOMRange(domRange) {
-    const array = [...Array.from(domRange.getClientRects())], start = array[0], end = array[array.length - 1];
-    return [start, end];
+    const array = [ ...Array.from(domRange.getClientRects()) ], start = array[0], end = array[array.length - 1]
+    return [ start, end ]
   }
 }
