@@ -23,12 +23,11 @@ export default [
       }
     ],
     plugins: [
-      coffeescript(),
       json(),
-      nodeResolve({ extensions: [ ".js", ".coffee" ] }),
+      nodeResolve({ extensions: [ ".js" ] }),
       includePaths({
         paths: [ "src" ],
-        extensions: [ ".js", ".coffee" ]
+        extensions: [ ".js" ]
       }),
       filesize()
     ],
@@ -50,15 +49,14 @@ export default [
       }
     ],
     plugins: [
-      coffeescript(),
       json(),
       includePaths({
         paths: [ "src" ],
-        extensions: [ ".js", ".coffee" ]
+        extensions: [ ".js" ]
       }),
-      nodeResolve({ extensions: [ ".js", ".coffee" ] }),
+      nodeResolve({ extensions: [ ".js" ] }),
       commonjs({
-        extensions: [ ".js", ".coffee" ]
+        extensions: [ ".js" ]
       }),
       babel({ babelHelpers: "bundled" }),
     ],
