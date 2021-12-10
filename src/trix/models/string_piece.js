@@ -34,7 +34,7 @@ export default class StringPiece extends Piece {
   }
 
   toJSON() {
-    const result = super.toJSON(...arguments).toJSON(...arguments)
+    const result = super.toJSON(...arguments)
     result.string = this.string
     return result
   }

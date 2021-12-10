@@ -56,7 +56,7 @@ export default class HTMLSanitizer extends BasicObject {
     const nodesToRemove = []
 
     while (walker.nextNode()) {
-      node = walker.currentNode
+      const node = walker.currentNode
       switch (node.nodeType) {
         case Node.ELEMENT_NODE:
           if (this.elementIsRemovable(node)) {

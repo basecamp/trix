@@ -39,8 +39,9 @@ export default class Block extends TrixObject {
   }
 
   isEqualTo(block) {
-    return super.isEqualTo(...arguments).isEqualTo(block) ||
-      this.text.isEqualTo(block?.text) &&
+    if (super.isEqualTo(block)) return true
+
+    return this.text.isEqualTo(block?.text) &&
       arraysAreEqual(this.attributes, block?.attributes)
 
   }

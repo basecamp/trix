@@ -61,7 +61,7 @@ export default AttachmentPiece = (function() {
     }
 
     isEqualTo(piece) {
-      return super.isEqualTo(...arguments).isEqualTo(piece) && this.attachment.id === piece?.attachment?.id
+      return super.isEqualTo(piece) && this.attachment.id === piece?.attachment?.id
     }
 
     toString() {
@@ -69,7 +69,7 @@ export default AttachmentPiece = (function() {
     }
 
     toJSON() {
-      const json = super.toJSON(...arguments).toJSON(...arguments)
+      const json = super.toJSON(...arguments)
       json.attachment = this.attachment
       return json
     }

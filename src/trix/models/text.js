@@ -216,7 +216,7 @@ export default class Text extends TrixObject {
   }
 
   isEqualTo(text) {
-    return super.isEqualTo(...arguments).isEqualTo(text) || text?.pieceList?.isEqualTo(this.pieceList)
+    return super.isEqualTo(text) || text?.pieceList?.isEqualTo(this.pieceList)
   }
 
   isBlockBreak() {
