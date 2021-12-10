@@ -8,7 +8,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS002: Fix invalid constructor
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
@@ -17,9 +16,9 @@ import BasicObject from "trix/core/basic_object"
 
 export default class SelectionChangeObserver extends BasicObject {
   constructor() {
+    super(...arguments)
     this.update = this.update.bind(this)
     this.run = this.run.bind(this)
-    super(...arguments)
     this.selectionManagers = []
   }
 

@@ -6,7 +6,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS002: Fix invalid constructor
  * DS102: Remove unnecessary code created because of implicit returns
  * DS206: Consider reworking classes to avoid initClass
  * DS207: Consider shorter variations of null checks
@@ -162,13 +161,13 @@ export default AttachmentEditorController = (function() {
       })
     }
     constructor(attachmentPiece, element, container, options = {}) {
+      super(...arguments)
       this.didClickToolbar = this.didClickToolbar.bind(this)
       this.didClickActionButton = this.didClickActionButton.bind(this)
       this.didKeyDownCaption = this.didKeyDownCaption.bind(this)
       this.didInputCaption = this.didInputCaption.bind(this)
       this.didChangeCaption = this.didChangeCaption.bind(this)
       this.didBlurCaption = this.didBlurCaption.bind(this)
-      super(...arguments)
       this.attachmentPiece = attachmentPiece
       this.element = element
       this.container = container

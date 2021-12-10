@@ -6,7 +6,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS002: Fix invalid constructor
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * DS104: Avoid inline assignments
@@ -60,11 +59,11 @@ export default ToolbarController = (function() {
     }
 
     constructor(element) {
+      super(element)
       this.didClickActionButton = this.didClickActionButton.bind(this)
       this.didClickAttributeButton = this.didClickAttributeButton.bind(this)
       this.didClickDialogButton = this.didClickDialogButton.bind(this)
       this.didKeyDownDialogInput = this.didKeyDownDialogInput.bind(this)
-      super(...arguments)
       this.element = element
       this.attributes = {}
       this.actions = {}

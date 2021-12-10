@@ -7,7 +7,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS002: Fix invalid constructor
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * DS104: Avoid inline assignments
@@ -28,12 +27,11 @@ import { selectionChangeObserver } from "trix/observers/selection_change_observe
 export default Level2InputController = (function() {
   Level2InputController = class Level2InputController extends InputController {
     constructor(...args) {
-      this.render = this.render.bind(this)
       super(...args)
+      this.render = this.render.bind(this)
     }
 
     static initClass() {
-
       this.prototype.events = {
         keydown(event) {
           if (keyEventIsKeyboardCommand(event)) {

@@ -38,8 +38,8 @@ export default MutationObserver = (function() {
     }
 
     constructor(element) {
+      super(element)
       this.didMutate = this.didMutate.bind(this)
-      super(...arguments)
       this.element = element
       this.observer = new window.MutationObserver(this.didMutate)
       this.start()

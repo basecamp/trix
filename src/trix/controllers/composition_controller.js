@@ -6,7 +6,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS002: Fix invalid constructor
  * DS102: Remove unnecessary code created because of implicit returns
  * DS104: Avoid inline assignments
  * DS207: Consider shorter variations of null checks
@@ -22,10 +21,11 @@ import { attachmentSelector } from "trix/config/attachments"
 
 export default class CompositionController extends BasicObject {
   constructor(element, composition) {
+    super(...arguments)
     this.didFocus = this.didFocus.bind(this)
     this.didBlur = this.didBlur.bind(this)
     this.didClickAttachment = this.didClickAttachment.bind(this)
-    super(...arguments)
+
     this.element = element
     this.composition = composition
     this.documentView = new DocumentView(this.composition.document, { element: this.element })
