@@ -26,7 +26,7 @@ const serializedAttributesSelector = `[${serializedAttributesAttribute}]`
 const blockCommentPattern = new RegExp("<!--block-->", "g")
 
 const serializers = {
-  "application/json"(serializable) {
+  "application/json": function(serializable) {
     let document
     if (serializable instanceof Document) {
       document = serializable
@@ -39,7 +39,8 @@ const serializers = {
     return document.toSerializableDocument().toJSONString()
   },
 
-  "text/html"(serializable) {
+  "text/html": function(serializable) {
+    let element
     if (serializable instanceof Document) {
       element = DocumentView.render(serializable)
     } else if (serializable instanceof HTMLElement) {
@@ -75,11 +76,11 @@ const serializers = {
 }
 
 const deserializers = {
-  "application/json"(string) {
+  "application/json": function(string) {
     return Document.fromJSONString(string)
   },
 
-  "text/html"(string) {
+  "text/html": function(string) {
     return HTMLParser.parse(string).getDocument()
   }
 }
