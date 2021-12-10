@@ -5,7 +5,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS002: Fix invalid constructor
  * DS102: Remove unnecessary code created because of implicit returns
  * DS104: Avoid inline assignments
  * DS206: Consider reworking classes to avoid initClass
@@ -44,8 +43,8 @@ export default Attachment = (function() {
     }
 
     constructor(attributes = {}) {
-      this.releaseFile = this.releaseFile.bind(this)
       super(attributes)
+      this.releaseFile = this.releaseFile.bind(this)
       this.attributes = Hash.box(attributes)
       this.didChangeAttributes()
     }
@@ -181,7 +180,7 @@ export default Attachment = (function() {
     }
 
     getCacheKey() {
-      return [ super.getCacheKey(...arguments).getCacheKey(...arguments), this.attributes.getCacheKey(), this.getPreviewURL() ].join("/")
+      return [ super.getCacheKey(...arguments), this.attributes.getCacheKey(), this.getPreviewURL() ].join("/")
     }
 
     // Previewable

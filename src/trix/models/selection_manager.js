@@ -9,7 +9,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS002: Fix invalid constructor
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * DS104: Avoid inline assignments
@@ -41,9 +40,9 @@ export default SelectionManager = (function() {
       this.proxyMethod("pointMapper.getClientRectsForDOMRange")
     }
     constructor(element) {
+      super(...arguments)
       this.didMouseDown = this.didMouseDown.bind(this)
       this.selectionDidChange = this.selectionDidChange.bind(this)
-      super(...arguments)
       this.element = element
       this.locationMapper = new LocationMapper(this.element)
       this.pointMapper = new PointMapper
