@@ -1,11 +1,17 @@
-export attachmentSelector = "[data-trix-attachment]"
+let attachments;
+export var attachmentSelector = "[data-trix-attachment]";
 
-export default attachments =
-  preview:
-    presentation: "gallery"
-    caption:
-      name: true
+export default attachments = {
+  preview: {
+    presentation: "gallery",
+    caption: {
+      name: true,
       size: true
-  file:
-    caption:
+    }
+  },
+  file: {
+    caption: {
       size: true
+    }
+  }
+};

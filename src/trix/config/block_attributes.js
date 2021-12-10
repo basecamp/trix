@@ -1,48 +1,65 @@
-attributes =
-  default:
-    tagName: "div"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+var attributes = {
+  default: {
+    tagName: "div",
     parse: false
-  quote:
-    tagName: "blockquote"
+  },
+  quote: {
+    tagName: "blockquote",
     nestable: true
-  heading1:
-    tagName: "h1"
-    terminal: true
-    breakOnReturn: true
+  },
+  heading1: {
+    tagName: "h1",
+    terminal: true,
+    breakOnReturn: true,
     group: false
-  code:
-    tagName: "pre"
-    terminal: true
-    text:
+  },
+  code: {
+    tagName: "pre",
+    terminal: true,
+    text: {
       plaintext: true
-  bulletList:
-    tagName: "ul"
+    }
+  },
+  bulletList: {
+    tagName: "ul",
     parse: false
-  bullet:
-    tagName: "li"
-    listAttribute: "bulletList"
-    group: false
-    nestable: true
-    test: (element) ->
-      tagName(element.parentNode) is attributes[@listAttribute].tagName
-  numberList:
-    tagName: "ol"
+  },
+  bullet: {
+    tagName: "li",
+    listAttribute: "bulletList",
+    group: false,
+    nestable: true,
+    test(element) {
+      return tagName(element.parentNode) === attributes[this.listAttribute].tagName;
+    }
+  },
+  numberList: {
+    tagName: "ol",
     parse: false
-  number:
-    tagName: "li"
-    listAttribute: "numberList"
+  },
+  number: {
+    tagName: "li",
+    listAttribute: "numberList",
+    group: false,
+    nestable: true,
+    test(element) {
+      return tagName(element.parentNode) === attributes[this.listAttribute].tagName;
+    }
+  },
+  attachmentGallery: {
+    tagName: "div",
+    exclusive: true,
+    terminal: true,
+    parse: false,
     group: false
-    nestable: true
-    test: (element) ->
-      tagName(element.parentNode) is attributes[@listAttribute].tagName
-  attachmentGallery:
-    tagName: "div"
-    exclusive: true
-    terminal: true
-    parse: false
-    group: false
+  }
+};
 
-tagName = (element) ->
-  element?.tagName?.toLowerCase()
+var tagName = element => element?.tagName?.toLowerCase();
 
-export default attributes
+export default attributes;
