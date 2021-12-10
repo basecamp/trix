@@ -1,248 +1,345 @@
-import TrixObject from "trix/core/object" # Don't override window.Object
-import Text from "trix/models/text"
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * DS201: Simplify complex destructure assignments
+ * DS204: Change includes calls to have a more natural evaluation order
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import TrixObject from "trix/core/object"; // Don't override window.Object
+import Text from "trix/models/text";
 
-import { arraysAreEqual, spliceArray, getBlockConfig, getBlockAttributeNames, getListAttributeNames } from "trix/core/helpers"
+import { arraysAreEqual, spliceArray, getBlockConfig, getBlockAttributeNames, getListAttributeNames } from "trix/core/helpers";
 
-export default class Block extends TrixObject
-  @fromJSON: (blockJSON) ->
-    text = Text.fromJSON(blockJSON.text)
-    new this text, blockJSON.attributes
+export default class Block extends TrixObject {
+  static fromJSON(blockJSON) {
+    const text = Text.fromJSON(blockJSON.text);
+    return new (this)(text, blockJSON.attributes);
+  }
 
-  constructor: (text, attributes) ->
-    super(arguments...)
-    @text = applyBlockBreakToText(text || new Text)
-    @attributes = attributes || []
+  constructor(text, attributes) {
+    super(...arguments);
+    this.text = applyBlockBreakToText(text || new Text);
+    this.attributes = attributes || [];
+  }
 
-  isEmpty: ->
-    @text.isBlockBreak()
+  isEmpty() {
+    return this.text.isBlockBreak();
+  }
 
-  isEqualTo: (block) ->
-    super.isEqualTo(block) or (
-      @text.isEqualTo(block?.text) and
-      arraysAreEqual(@attributes, block?.attributes)
-    )
+  isEqualTo(block) {
+    return super.isEqualTo(...arguments).isEqualTo(block) || (
+      this.text.isEqualTo(block?.text) &&
+      arraysAreEqual(this.attributes, block?.attributes)
+    );
+  }
 
-  copyWithText: (text) ->
-    new Block text, @attributes
+  copyWithText(text) {
+    return new Block(text, this.attributes);
+  }
 
-  copyWithoutText: ->
-    @copyWithText(null)
+  copyWithoutText() {
+    return this.copyWithText(null);
+  }
 
-  copyWithAttributes: (attributes) ->
-    new Block @text, attributes
+  copyWithAttributes(attributes) {
+    return new Block(this.text, attributes);
+  }
 
-  copyWithoutAttributes: ->
-    @copyWithAttributes(null)
+  copyWithoutAttributes() {
+    return this.copyWithAttributes(null);
+  }
 
-  copyUsingObjectMap: (objectMap) ->
-    if mappedText = objectMap.find(@text)
-      @copyWithText(mappedText)
-    else
-      @copyWithText(@text.copyUsingObjectMap(objectMap))
+  copyUsingObjectMap(objectMap) {
+    let mappedText;
+    if ((mappedText = objectMap.find(this.text))) {
+      return this.copyWithText(mappedText);
+    } else {
+      return this.copyWithText(this.text.copyUsingObjectMap(objectMap));
+    }
+  }
 
-  addAttribute: (attribute) ->
-    attributes = @attributes.concat(expandAttribute(attribute))
-    @copyWithAttributes(attributes)
+  addAttribute(attribute) {
+    const attributes = this.attributes.concat(expandAttribute(attribute));
+    return this.copyWithAttributes(attributes);
+  }
 
-  removeAttribute: (attribute) ->
-    {listAttribute} = getBlockConfig(attribute)
-    attributes = removeLastValue(removeLastValue(@attributes, attribute), listAttribute)
-    @copyWithAttributes(attributes)
+  removeAttribute(attribute) {
+    const {listAttribute} = getBlockConfig(attribute);
+    const attributes = removeLastValue(removeLastValue(this.attributes, attribute), listAttribute);
+    return this.copyWithAttributes(attributes);
+  }
 
-  removeLastAttribute: ->
-    @removeAttribute(@getLastAttribute())
+  removeLastAttribute() {
+    return this.removeAttribute(this.getLastAttribute());
+  }
 
-  getLastAttribute: ->
-    getLastElement(@attributes)
+  getLastAttribute() {
+    return getLastElement(this.attributes);
+  }
 
-  getAttributes: ->
-    @attributes.slice(0)
+  getAttributes() {
+    return this.attributes.slice(0);
+  }
 
-  getAttributeLevel: ->
-    @attributes.length
+  getAttributeLevel() {
+    return this.attributes.length;
+  }
 
-  getAttributeAtLevel: (level) ->
-    @attributes[level - 1]
+  getAttributeAtLevel(level) {
+    return this.attributes[level - 1];
+  }
 
-  hasAttribute: (attributeName) ->
-    attributeName in @attributes
+  hasAttribute(attributeName) {
+    return Array.from(this.attributes).includes(attributeName);
+  }
 
-  hasAttributes: ->
-    @getAttributeLevel() > 0
+  hasAttributes() {
+    return this.getAttributeLevel() > 0;
+  }
 
-  getLastNestableAttribute: ->
-    getLastElement(@getNestableAttributes())
+  getLastNestableAttribute() {
+    return getLastElement(this.getNestableAttributes());
+  }
 
-  getNestableAttributes: ->
-    attribute for attribute in @attributes when getBlockConfig(attribute).nestable
+  getNestableAttributes() {
+    return (() => {
+      const result = [];
+      for (let attribute of Array.from(this.attributes)) {         if (getBlockConfig(attribute).nestable) {
+          result.push(attribute);
+        }
+      }
+      return result;
+    })();
+  }
 
-  getNestingLevel: ->
-    @getNestableAttributes().length
+  getNestingLevel() {
+    return this.getNestableAttributes().length;
+  }
 
-  decreaseNestingLevel: ->
-    if attribute = @getLastNestableAttribute()
-      @removeAttribute(attribute)
-    else
-      this
+  decreaseNestingLevel() {
+    let attribute;
+    if ((attribute = this.getLastNestableAttribute())) {
+      return this.removeAttribute(attribute);
+    } else {
+      return this;
+    }
+  }
 
-  increaseNestingLevel: ->
-    if attribute = @getLastNestableAttribute()
-      index = @attributes.lastIndexOf(attribute)
-      attributes = spliceArray(@attributes, index + 1, 0, expandAttribute(attribute)...)
-      @copyWithAttributes(attributes)
-    else
-      this
+  increaseNestingLevel() {
+    let attribute;
+    if (attribute = this.getLastNestableAttribute()) {
+      const index = this.attributes.lastIndexOf(attribute);
+      const attributes = spliceArray(this.attributes, index + 1, 0, ...Array.from(expandAttribute(attribute)));
+      return this.copyWithAttributes(attributes);
+    } else {
+      return this;
+    }
+  }
 
-  getListItemAttributes: ->
-    attribute for attribute in @attributes when getBlockConfig(attribute).listAttribute
+  getListItemAttributes() {
+    return (() => {
+      const result = [];
+      for (let attribute of Array.from(this.attributes)) {         if (getBlockConfig(attribute).listAttribute) {
+          result.push(attribute);
+        }
+      }
+      return result;
+    })();
+  }
 
-  isListItem: ->
-    getBlockConfig(@getLastAttribute())?.listAttribute
+  isListItem() {
+    return getBlockConfig(this.getLastAttribute())?.listAttribute;
+  }
 
-  isTerminalBlock: ->
-    getBlockConfig(@getLastAttribute())?.terminal
+  isTerminalBlock() {
+    return getBlockConfig(this.getLastAttribute())?.terminal;
+  }
 
-  breaksOnReturn: ->
-    getBlockConfig(@getLastAttribute())?.breakOnReturn
+  breaksOnReturn() {
+    return getBlockConfig(this.getLastAttribute())?.breakOnReturn;
+  }
 
-  findLineBreakInDirectionFromPosition: (direction, position) ->
-    string = @toString()
-    result = switch direction
-      when "forward"
-        string.indexOf("\n", position)
-      when "backward"
-        string.slice(0, position).lastIndexOf("\n")
+  findLineBreakInDirectionFromPosition(direction, position) {
+    const string = this.toString();
+    const result = (() => { switch (direction) {
+      case "forward":
+        return string.indexOf("\n", position);
+      case "backward":
+        return string.slice(0, position).lastIndexOf("\n");
+    } })();
 
-    result unless result is -1
+    if (result !== -1) { return result; }
+  }
 
-  contentsForInspection: ->
-    text: @text.inspect()
-    attributes: @attributes
+  contentsForInspection() {
+    return {
+      text: this.text.inspect(),
+      attributes: this.attributes
+    };
+  }
 
-  toString: ->
-    @text.toString()
+  toString() {
+    return this.text.toString();
+  }
 
-  toJSON: ->
-    text: @text
-    attributes: @attributes
+  toJSON() {
+    return {
+      text: this.text,
+      attributes: this.attributes
+    };
+  }
 
-  # BIDI
+  // BIDI
 
-  getDirection: ->
-    @text.getDirection()
+  getDirection() {
+    return this.text.getDirection();
+  }
 
-  isRTL: ->
-    @text.isRTL()
+  isRTL() {
+    return this.text.isRTL();
+  }
 
-  # Splittable
+  // Splittable
 
-  getLength: ->
-    @text.getLength()
+  getLength() {
+    return this.text.getLength();
+  }
 
-  canBeConsolidatedWith: (block) ->
-    not @hasAttributes() and
-      not block.hasAttributes() and
-      @getDirection() is block.getDirection()
+  canBeConsolidatedWith(block) {
+    return !this.hasAttributes() &&
+      !block.hasAttributes() &&
+      (this.getDirection() === block.getDirection());
+  }
 
-  consolidateWith: (block) ->
-    newlineText = Text.textForStringWithAttributes("\n")
-    text = @getTextWithoutBlockBreak().appendText(newlineText)
-    @copyWithText(text.appendText(block.text))
+  consolidateWith(block) {
+    const newlineText = Text.textForStringWithAttributes("\n");
+    const text = this.getTextWithoutBlockBreak().appendText(newlineText);
+    return this.copyWithText(text.appendText(block.text));
+  }
 
-  splitAtOffset: (offset) ->
-    if offset is 0
-      left = null
-      right = this
-    else if offset is @getLength()
-      left = this
-      right = null
-    else
-      left = @copyWithText(@text.getTextAtRange([0, offset]))
-      right = @copyWithText(@text.getTextAtRange([offset, @getLength()]))
-    [left, right]
+  splitAtOffset(offset) {
+    let left, right;
+    if (offset === 0) {
+      left = null;
+      right = this;
+    } else if (offset === this.getLength()) {
+      left = this;
+      right = null;
+    } else {
+      left = this.copyWithText(this.text.getTextAtRange([0, offset]));
+      right = this.copyWithText(this.text.getTextAtRange([offset, this.getLength()]));
+    }
+    return [left, right];
+  }
 
-  getBlockBreakPosition: ->
-    @text.getLength() - 1
+  getBlockBreakPosition() {
+    return this.text.getLength() - 1;
+  }
 
-  getTextWithoutBlockBreak: ->
-    if textEndsInBlockBreak(@text)
-      @text.getTextAtRange([0, @getBlockBreakPosition()])
-    else
-      @text.copy()
+  getTextWithoutBlockBreak() {
+    if (textEndsInBlockBreak(this.text)) {
+      return this.text.getTextAtRange([0, this.getBlockBreakPosition()]);
+    } else {
+      return this.text.copy();
+    }
+  }
 
-  # Grouping
+  // Grouping
 
-  canBeGrouped: (depth) ->
-    @attributes[depth]
+  canBeGrouped(depth) {
+    return this.attributes[depth];
+  }
 
-  canBeGroupedWith: (otherBlock, depth) ->
-    otherAttributes = otherBlock.getAttributes()
-    otherAttribute = otherAttributes[depth]
-    attribute = @attributes[depth]
+  canBeGroupedWith(otherBlock, depth) {
+    let needle;
+    const otherAttributes = otherBlock.getAttributes();
+    const otherAttribute = otherAttributes[depth];
+    const attribute = this.attributes[depth];
 
-    attribute is otherAttribute and
-      not (getBlockConfig(attribute).group is false and
-      otherAttributes[depth + 1] not in getListAttributeNames()) and
-      (@getDirection() is otherBlock.getDirection() or otherBlock.isEmpty())
+    return (attribute === otherAttribute) &&
+      !((getBlockConfig(attribute).group === false) &&
+      (needle = otherAttributes[depth + 1], !Array.from(getListAttributeNames()).includes(needle))) &&
+      ((this.getDirection() === otherBlock.getDirection()) || otherBlock.isEmpty());
+  }
+}
 
-# Block breaks
+// Block breaks
 
-applyBlockBreakToText = (text) ->
-  text = unmarkExistingInnerBlockBreaksInText(text)
-  text = addBlockBreakToText(text)
-  text
+var applyBlockBreakToText = function(text) {
+  text = unmarkExistingInnerBlockBreaksInText(text);
+  text = addBlockBreakToText(text);
+  return text;
+};
 
-unmarkExistingInnerBlockBreaksInText = (text) ->
-  modified = false
-  [innerPieces..., lastPiece] = text.getPieces()
-  return text unless lastPiece?
+var unmarkExistingInnerBlockBreaksInText = function(text) {
+  let modified;
+  modified = false;
+  let array = text.getPieces(), adjustedLength = Math.max(array.length, 1), innerPieces = array.slice(0, adjustedLength - 1), lastPiece = array[adjustedLength - 1];
+  if (lastPiece == null) { return text; }
 
-  innerPieces = for piece in innerPieces
-    if piece.isBlockBreak()
-      modified = true
-      unmarkBlockBreakPiece(piece)
-    else
-      piece
+  innerPieces = (() => {
+    const result = [];
+    for (let piece of Array.from(innerPieces)) {
+      if (piece.isBlockBreak()) {
+        modified = true;
+        result.push(unmarkBlockBreakPiece(piece));
+      } else {
+        result.push(piece);
+      }
+    }
+    return result;
+  })();
 
-  if modified
-    new Text [innerPieces..., lastPiece]
-  else
-    text
+  if (modified) {
+    return new Text([...Array.from(innerPieces), lastPiece]);
+  } else {
+    return text;
+  }
+};
 
-blockBreakText = Text.textForStringWithAttributes("\n", blockBreak: true)
+const blockBreakText = Text.textForStringWithAttributes("\n", {blockBreak: true});
 
-addBlockBreakToText = (text) ->
-  if textEndsInBlockBreak(text)
-    text
-  else
-    text.appendText(blockBreakText)
+var addBlockBreakToText = function(text) {
+  if (textEndsInBlockBreak(text)) {
+    return text;
+  } else {
+    return text.appendText(blockBreakText);
+  }
+};
 
-textEndsInBlockBreak = (text) ->
-  length = text.getLength()
-  return false if length is 0
-  endText = text.getTextAtRange([length - 1, length])
-  endText.isBlockBreak()
+var textEndsInBlockBreak = function(text) {
+  const length = text.getLength();
+  if (length === 0) { return false; }
+  const endText = text.getTextAtRange([length - 1, length]);
+  return endText.isBlockBreak();
+};
 
-unmarkBlockBreakPiece = (piece) ->
-  piece.copyWithoutAttribute("blockBreak")
+var unmarkBlockBreakPiece = piece => piece.copyWithoutAttribute("blockBreak");
 
-# Attributes
+// Attributes
 
-expandAttribute = (attribute) ->
-  {listAttribute} = getBlockConfig(attribute)
-  if listAttribute?
-    [listAttribute, attribute]
-  else
-    [attribute]
+var expandAttribute = function(attribute) {
+  const {listAttribute} = getBlockConfig(attribute);
+  if (listAttribute != null) {
+    return [listAttribute, attribute];
+  } else {
+    return [attribute];
+  }
+};
 
-# Array helpers
+// Array helpers
 
-getLastElement = (array) ->
-  array.slice(-1)[0]
+var getLastElement = array => array.slice(-1)[0];
 
-removeLastValue = (array, value) ->
-  index = array.lastIndexOf(value)
-  if index is -1
-    array
-  else
-    spliceArray(array, index, 1)
+var removeLastValue = function(array, value) {
+  const index = array.lastIndexOf(value);
+  if (index === -1) {
+    return array;
+  } else {
+    return spliceArray(array, index, 1);
+  }
+};

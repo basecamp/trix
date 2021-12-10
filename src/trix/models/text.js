@@ -1,183 +1,261 @@
-import TrixObject from "trix/core/object" # Don't override window.Object
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import TrixObject from "trix/core/object"; // Don't override window.Object
 
-import { getDirection } from "trix/core/helpers"
+import { getDirection } from "trix/core/helpers";
 
-import Piece from "trix/models/piece"
-import AttachmentPiece from "trix/models/attachment_piece"
-import StringPiece from "trix/models/string_piece"
-import SplittableList from "trix/models/splittable_list"
+import Piece from "trix/models/piece";
+import AttachmentPiece from "trix/models/attachment_piece";
+import StringPiece from "trix/models/string_piece";
+import SplittableList from "trix/models/splittable_list";
 
-import Hash from "trix/core/collections/hash"
+import Hash from "trix/core/collections/hash";
 
-export default class Text extends TrixObject
-  @textForAttachmentWithAttributes: (attachment, attributes) ->
-    piece = new AttachmentPiece attachment, attributes
-    new this [piece]
+export default class Text extends TrixObject {
+  static textForAttachmentWithAttributes(attachment, attributes) {
+    const piece = new AttachmentPiece(attachment, attributes);
+    return new (this)([piece]);
+  }
 
-  @textForStringWithAttributes: (string, attributes) ->
-    piece = new StringPiece string, attributes
-    new this [piece]
+  static textForStringWithAttributes(string, attributes) {
+    const piece = new StringPiece(string, attributes);
+    return new (this)([piece]);
+  }
 
-  @fromJSON: (textJSON) ->
-    pieces = for pieceJSON in textJSON
-      Piece.fromJSON pieceJSON
-    new this pieces
+  static fromJSON(textJSON) {
+    const pieces = Array.from(textJSON).map((pieceJSON) =>
+      Piece.fromJSON(pieceJSON));
+    return new (this)(pieces);
+  }
 
-  constructor: (pieces = []) ->
-    super(arguments...)
-    @pieceList = new SplittableList (piece for piece in pieces when not piece.isEmpty())
+  constructor(pieces = []) {
+    super(...arguments);
+    this.pieceList = new SplittableList(((() => {
+      const result = [];
+      for (let piece of Array.from(pieces)) {         if (!piece.isEmpty()) {
+          result.push(piece);
+        }
+      }
+      return result;
+    })()));
+  }
 
-  copy: ->
-    @copyWithPieceList @pieceList
+  copy() {
+    return this.copyWithPieceList(this.pieceList);
+  }
 
-  copyWithPieceList: (pieceList) ->
-    new @constructor pieceList.consolidate().toArray()
+  copyWithPieceList(pieceList) {
+    return new this.constructor(pieceList.consolidate().toArray());
+  }
 
-  copyUsingObjectMap: (objectMap) ->
-    pieces = for piece in @getPieces()
-      objectMap.find(piece) ? piece
-    new @constructor pieces
+  copyUsingObjectMap(objectMap) {
+    let left;
+    const pieces = Array.from(this.getPieces()).map((piece) =>
+      (left = objectMap.find(piece)) != null ? left : piece);
+    return new this.constructor(pieces);
+  }
 
-  appendText: (text) ->
-    @insertTextAtPosition(text, @getLength())
+  appendText(text) {
+    return this.insertTextAtPosition(text, this.getLength());
+  }
 
-  insertTextAtPosition: (text, position) ->
-    @copyWithPieceList @pieceList.insertSplittableListAtPosition(text.pieceList, position)
+  insertTextAtPosition(text, position) {
+    return this.copyWithPieceList(this.pieceList.insertSplittableListAtPosition(text.pieceList, position));
+  }
 
-  removeTextAtRange: (range) ->
-    @copyWithPieceList @pieceList.removeObjectsInRange(range)
+  removeTextAtRange(range) {
+    return this.copyWithPieceList(this.pieceList.removeObjectsInRange(range));
+  }
 
-  replaceTextAtRange: (text, range) ->
-    @removeTextAtRange(range).insertTextAtPosition(text, range[0])
+  replaceTextAtRange(text, range) {
+    return this.removeTextAtRange(range).insertTextAtPosition(text, range[0]);
+  }
 
-  moveTextFromRangeToPosition: (range, position) ->
-    return if range[0] <= position <= range[1]
-    text = @getTextAtRange(range)
-    length = text.getLength()
-    position -= length if range[0] < position
-    @removeTextAtRange(range).insertTextAtPosition(text, position)
+  moveTextFromRangeToPosition(range, position) {
+    if (range[0] <= position && position <= range[1]) { return; }
+    const text = this.getTextAtRange(range);
+    const length = text.getLength();
+    if (range[0] < position) { position -= length; }
+    return this.removeTextAtRange(range).insertTextAtPosition(text, position);
+  }
 
-  addAttributeAtRange: (attribute, value, range) ->
-    attributes = {}
-    attributes[attribute] = value
-    @addAttributesAtRange(attributes, range)
+  addAttributeAtRange(attribute, value, range) {
+    const attributes = {};
+    attributes[attribute] = value;
+    return this.addAttributesAtRange(attributes, range);
+  }
 
-  addAttributesAtRange: (attributes, range) ->
-    @copyWithPieceList @pieceList.transformObjectsInRange range, (piece) ->
-      piece.copyWithAdditionalAttributes(attributes)
+  addAttributesAtRange(attributes, range) {
+    return this.copyWithPieceList(this.pieceList.transformObjectsInRange(range, piece => piece.copyWithAdditionalAttributes(attributes))
+    );
+  }
 
-  removeAttributeAtRange: (attribute, range) ->
-    @copyWithPieceList @pieceList.transformObjectsInRange range, (piece) ->
-      piece.copyWithoutAttribute(attribute)
+  removeAttributeAtRange(attribute, range) {
+    return this.copyWithPieceList(this.pieceList.transformObjectsInRange(range, piece => piece.copyWithoutAttribute(attribute))
+    );
+  }
 
-  setAttributesAtRange: (attributes, range) ->
-    @copyWithPieceList @pieceList.transformObjectsInRange range, (piece) ->
-      piece.copyWithAttributes(attributes)
+  setAttributesAtRange(attributes, range) {
+    return this.copyWithPieceList(this.pieceList.transformObjectsInRange(range, piece => piece.copyWithAttributes(attributes))
+    );
+  }
 
-  getAttributesAtPosition: (position) ->
-    @pieceList.getObjectAtPosition(position)?.getAttributes() ? {}
+  getAttributesAtPosition(position) {
+    let left;
+    return (left = this.pieceList.getObjectAtPosition(position)?.getAttributes()) != null ? left : {};
+  }
 
-  getCommonAttributes: ->
-    objects = (piece.getAttributes() for piece in @pieceList.toArray())
-    Hash.fromCommonAttributesOfObjects(objects).toObject()
+  getCommonAttributes() {
+    const objects = (Array.from(this.pieceList.toArray()).map((piece) => piece.getAttributes()));
+    return Hash.fromCommonAttributesOfObjects(objects).toObject();
+  }
 
-  getCommonAttributesAtRange: (range) ->
-    @getTextAtRange(range).getCommonAttributes() ? {}
+  getCommonAttributesAtRange(range) {
+    let left;
+    return (left = this.getTextAtRange(range).getCommonAttributes()) != null ? left : {};
+  }
 
-  getExpandedRangeForAttributeAtOffset: (attributeName, offset) ->
-    left = right = offset
-    length = @getLength()
+  getExpandedRangeForAttributeAtOffset(attributeName, offset) {
+    let right;
+    let left = (right = offset);
+    const length = this.getLength();
 
-    left-- while left > 0 and @getCommonAttributesAtRange([left - 1, right])[attributeName]
-    right++ while right < length and @getCommonAttributesAtRange([offset, right + 1])[attributeName]
+    while ((left > 0) && this.getCommonAttributesAtRange([left - 1, right])[attributeName]) { left--; }
+    while ((right < length) && this.getCommonAttributesAtRange([offset, right + 1])[attributeName]) { right++; }
 
-    [left, right]
+    return [left, right];
+  }
 
-  getTextAtRange: (range) ->
-    @copyWithPieceList @pieceList.getSplittableListInRange(range)
+  getTextAtRange(range) {
+    return this.copyWithPieceList(this.pieceList.getSplittableListInRange(range));
+  }
 
-  getStringAtRange: (range) ->
-    @pieceList.getSplittableListInRange(range).toString()
+  getStringAtRange(range) {
+    return this.pieceList.getSplittableListInRange(range).toString();
+  }
 
-  getStringAtPosition: (position) ->
-    @getStringAtRange([position, position + 1])
+  getStringAtPosition(position) {
+    return this.getStringAtRange([position, position + 1]);
+  }
 
-  startsWithString: (string) ->
-    @getStringAtRange([0, string.length]) is string
+  startsWithString(string) {
+    return this.getStringAtRange([0, string.length]) === string;
+  }
 
-  endsWithString: (string) ->
-    length = @getLength()
-    @getStringAtRange([length - string.length, length]) is string
+  endsWithString(string) {
+    const length = this.getLength();
+    return this.getStringAtRange([length - string.length, length]) === string;
+  }
 
-  getAttachmentPieces: ->
-    piece for piece in @pieceList.toArray() when piece.attachment?
+  getAttachmentPieces() {
+    return (() => {
+      const result = [];
+      for (let piece of Array.from(this.pieceList.toArray())) {         if (piece.attachment != null) {
+          result.push(piece);
+        }
+      }
+      return result;
+    })();
+  }
 
-  getAttachments: ->
-    piece.attachment for piece in @getAttachmentPieces()
+  getAttachments() {
+    return Array.from(this.getAttachmentPieces()).map((piece) => piece.attachment);
+  }
 
-  getAttachmentAndPositionById: (attachmentId) ->
-    position = 0
-    for piece in @pieceList.toArray()
-      if piece.attachment?.id is attachmentId
-        return { attachment: piece.attachment, position }
-      position += piece.length
-    attachment: null, position: null
+  getAttachmentAndPositionById(attachmentId) {
+    let position = 0;
+    for (let piece of Array.from(this.pieceList.toArray())) {
+      if (piece.attachment?.id === attachmentId) {
+        return { attachment: piece.attachment, position };
+      }
+      position += piece.length;
+    }
+    return {attachment: null, position: null};
+  }
 
-  getAttachmentById: (attachmentId) ->
-    {attachment, position} = @getAttachmentAndPositionById(attachmentId)
-    attachment
+  getAttachmentById(attachmentId) {
+    const {attachment, position} = this.getAttachmentAndPositionById(attachmentId);
+    return attachment;
+  }
 
-  getRangeOfAttachment: (attachment) ->
-    {attachment, position} = @getAttachmentAndPositionById(attachment.id)
-    [position, position + 1] if attachment?
+  getRangeOfAttachment(attachment) {
+    let position;
+    ({attachment, position} = this.getAttachmentAndPositionById(attachment.id));
+    if (attachment != null) { return [position, position + 1]; }
+  }
 
-  updateAttributesForAttachment: (attributes, attachment) ->
-    if range = @getRangeOfAttachment(attachment)
-      @addAttributesAtRange(attributes, range)
-    else
-      this
+  updateAttributesForAttachment(attributes, attachment) {
+    let range;
+    if ((range = this.getRangeOfAttachment(attachment))) {
+      return this.addAttributesAtRange(attributes, range);
+    } else {
+      return this;
+    }
+  }
 
-  getLength: ->
-    @pieceList.getEndPosition()
+  getLength() {
+    return this.pieceList.getEndPosition();
+  }
 
-  isEmpty: ->
-    @getLength() is 0
+  isEmpty() {
+    return this.getLength() === 0;
+  }
 
-  isEqualTo: (text) ->
-    super.isEqualTo(text) or text?.pieceList?.isEqualTo(@pieceList)
+  isEqualTo(text) {
+    return super.isEqualTo(...arguments).isEqualTo(text) || text?.pieceList?.isEqualTo(this.pieceList);
+  }
 
-  isBlockBreak: ->
-    @getLength() is 1 and @pieceList.getObjectAtIndex(0).isBlockBreak()
+  isBlockBreak() {
+    return (this.getLength() === 1) && this.pieceList.getObjectAtIndex(0).isBlockBreak();
+  }
 
-  eachPiece: (callback) ->
-    @pieceList.eachObject(callback)
+  eachPiece(callback) {
+    return this.pieceList.eachObject(callback);
+  }
 
-  getPieces: ->
-    @pieceList.toArray()
+  getPieces() {
+    return this.pieceList.toArray();
+  }
 
-  getPieceAtPosition: (position) ->
-    @pieceList.getObjectAtPosition(position)
+  getPieceAtPosition(position) {
+    return this.pieceList.getObjectAtPosition(position);
+  }
 
-  contentsForInspection: ->
-    pieceList: @pieceList.inspect()
+  contentsForInspection() {
+    return {pieceList: this.pieceList.inspect()};
+  }
 
-  toSerializableText: ->
-    pieceList = @pieceList.selectSplittableList (piece) -> piece.isSerializable()
-    @copyWithPieceList(pieceList)
+  toSerializableText() {
+    const pieceList = this.pieceList.selectSplittableList(piece => piece.isSerializable());
+    return this.copyWithPieceList(pieceList);
+  }
 
-  toString: ->
-    @pieceList.toString()
+  toString() {
+    return this.pieceList.toString();
+  }
 
-  toJSON: ->
-    @pieceList.toJSON()
+  toJSON() {
+    return this.pieceList.toJSON();
+  }
 
-  toConsole: ->
-    JSON.stringify(JSON.parse(piece.toConsole()) for piece in @pieceList.toArray())
+  toConsole() {
+    return JSON.stringify(Array.from(this.pieceList.toArray()).map((piece) => JSON.parse(piece.toConsole())));
+  }
 
-  # BIDI
+  // BIDI
 
-  getDirection: ->
-    getDirection(@toString())
+  getDirection() {
+    return getDirection(this.toString());
+  }
 
-  isRTL: ->
-    @getDirection() is "rtl"
+  isRTL() {
+    return this.getDirection() === "rtl";
+  }
+}

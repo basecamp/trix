@@ -1,44 +1,63 @@
-import BasicObject from "trix/core/basic_object"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import BasicObject from "trix/core/basic_object";
 
-export default class UndoManager extends BasicObject
-  constructor: (composition) ->
-    super(arguments...)
-    @composition = composition
-    @undoEntries = []
-    @redoEntries = []
+export default class UndoManager extends BasicObject {
+  constructor(composition) {
+    super(...arguments);
+    this.composition = composition;
+    this.undoEntries = [];
+    this.redoEntries = [];
+  }
 
-  recordUndoEntry: (description, {context, consolidatable} = {}) ->
-    previousEntry = @undoEntries[-1..][0]
+  recordUndoEntry(description, {context, consolidatable} = {}) {
+    const previousEntry = this.undoEntries.slice(-1)[0];
 
-    unless consolidatable and entryHasDescriptionAndContext(previousEntry, description, context)
-      undoEntry = @createEntry({description, context})
-      @undoEntries.push(undoEntry)
-      @redoEntries = []
+    if (!consolidatable || !entryHasDescriptionAndContext(previousEntry, description, context)) {
+      const undoEntry = this.createEntry({description, context});
+      this.undoEntries.push(undoEntry);
+      return this.redoEntries = [];
+    }
+  }
 
-  undo: ->
-    if undoEntry = @undoEntries.pop()
-      redoEntry = @createEntry(undoEntry)
-      @redoEntries.push(redoEntry)
-      @composition.loadSnapshot(undoEntry.snapshot)
+  undo() {
+    let undoEntry;
+    if (undoEntry = this.undoEntries.pop()) {
+      const redoEntry = this.createEntry(undoEntry);
+      this.redoEntries.push(redoEntry);
+      return this.composition.loadSnapshot(undoEntry.snapshot);
+    }
+  }
 
-  redo: ->
-    if redoEntry = @redoEntries.pop()
-      undoEntry = @createEntry(redoEntry)
-      @undoEntries.push(undoEntry)
-      @composition.loadSnapshot(redoEntry.snapshot)
+  redo() {
+    let redoEntry;
+    if (redoEntry = this.redoEntries.pop()) {
+      const undoEntry = this.createEntry(redoEntry);
+      this.undoEntries.push(undoEntry);
+      return this.composition.loadSnapshot(redoEntry.snapshot);
+    }
+  }
 
-  canUndo: ->
-    @undoEntries.length > 0
+  canUndo() {
+    return this.undoEntries.length > 0;
+  }
 
-  canRedo: ->
-    @redoEntries.length > 0
+  canRedo() {
+    return this.redoEntries.length > 0;
+  }
 
-  # Private
+  // Private
 
-  createEntry: ({description, context} = {}) ->
-    description: description?.toString()
-    context: JSON.stringify(context)
-    snapshot: @composition.getSnapshot()
+  createEntry({description, context} = {}) {
+    return {
+      description: description?.toString(),
+      context: JSON.stringify(context),
+      snapshot: this.composition.getSnapshot()
+    };
+  }
+}
 
-entryHasDescriptionAndContext = (entry, description, context) ->
-  entry?.description is description?.toString() and entry?.context is JSON.stringify(context)
+var entryHasDescriptionAndContext = (entry, description, context) => (entry?.description === description?.toString()) && (entry?.context === JSON.stringify(context));

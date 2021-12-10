@@ -1,56 +1,88 @@
-import { OBJECT_REPLACEMENT_CHARACTER } from "trix/constants"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * DS206: Consider reworking classes to avoid initClass
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let AttachmentPiece;
+import { OBJECT_REPLACEMENT_CHARACTER } from "trix/constants";
 
-import Attachment from "trix/models/attachment"
-import Piece from "trix/models/piece"
+import Attachment from "trix/models/attachment";
+import Piece from "trix/models/piece";
 
-export default class AttachmentPiece extends Piece
-  @fromJSON: (pieceJSON) ->
-    new this Attachment.fromJSON(pieceJSON.attachment), pieceJSON.attributes
+export default AttachmentPiece = (function() {
+  AttachmentPiece = class AttachmentPiece extends Piece {
+    static initClass() {
+  
+      this.permittedAttributes = ["caption", "presentation"];
+    }
+    static fromJSON(pieceJSON) {
+      return new (this)(Attachment.fromJSON(pieceJSON.attachment), pieceJSON.attributes);
+    }
 
-  @permittedAttributes: ["caption", "presentation"]
+    constructor(attachment) {
+      super(...arguments);
+      this.attachment = attachment;
+      this.length = 1;
+      this.ensureAttachmentExclusivelyHasAttribute("href");
+      if (!this.attachment.hasContent()) { this.removeProhibitedAttributes(); }
+    }
 
-  constructor: (attachment) ->
-    super(arguments...)
-    @attachment = attachment
-    @length = 1
-    @ensureAttachmentExclusivelyHasAttribute("href")
-    @removeProhibitedAttributes() unless @attachment.hasContent()
+    ensureAttachmentExclusivelyHasAttribute(attribute) {
+      if (this.hasAttribute(attribute)) {
+        if (!this.attachment.hasAttribute(attribute)) {
+          this.attachment.setAttributes(this.attributes.slice(attribute));
+        }
+        return this.attributes = this.attributes.remove(attribute);
+      }
+    }
 
-  ensureAttachmentExclusivelyHasAttribute: (attribute) ->
-    if @hasAttribute(attribute)
-      unless @attachment.hasAttribute(attribute)
-        @attachment.setAttributes(@attributes.slice(attribute))
-      @attributes = @attributes.remove(attribute)
+    removeProhibitedAttributes() {
+      const attributes = this.attributes.slice(this.constructor.permittedAttributes);
+      if (!attributes.isEqualTo(this.attributes)) {
+        return this.attributes = attributes;
+      }
+    }
 
-  removeProhibitedAttributes: ->
-    attributes = @attributes.slice(@constructor.permittedAttributes)
-    unless attributes.isEqualTo(@attributes)
-      @attributes = attributes
+    getValue() {
+      return this.attachment;
+    }
 
-  getValue: ->
-    @attachment
+    isSerializable() {
+      return !this.attachment.isPending();
+    }
 
-  isSerializable: ->
-    not @attachment.isPending()
+    getCaption() {
+      let left;
+      return (left = this.attributes.get("caption")) != null ? left : "";
+    }
 
-  getCaption: ->
-    @attributes.get("caption") ? ""
+    isEqualTo(piece) {
+      return super.isEqualTo(...arguments).isEqualTo(piece) && (this.attachment.id === piece?.attachment?.id);
+    }
 
-  isEqualTo: (piece) ->
-    super.isEqualTo(piece) and @attachment.id is piece?.attachment?.id
+    toString() {
+      return OBJECT_REPLACEMENT_CHARACTER;
+    }
 
-  toString: ->
-    OBJECT_REPLACEMENT_CHARACTER
+    toJSON() {
+      const json = super.toJSON(...arguments).toJSON(...arguments);
+      json.attachment = this.attachment;
+      return json;
+    }
 
-  toJSON: ->
-    json = super.toJSON(arguments...)
-    json.attachment = @attachment
-    json
+    getCacheKey() {
+      return [super.getCacheKey(...arguments), this.attachment.getCacheKey()].join("/");
+    }
 
-  getCacheKey: ->
-    [super(arguments...), @attachment.getCacheKey()].join("/")
+    toConsole() {
+      return JSON.stringify(this.toString());
+    }
+  };
+  AttachmentPiece.initClass();
+  return AttachmentPiece;
+})();
 
-  toConsole: ->
-    JSON.stringify(@toString())
-
-Piece.registerType "attachment", AttachmentPiece
+Piece.registerType("attachment", AttachmentPiece);

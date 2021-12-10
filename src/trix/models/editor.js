@@ -1,143 +1,192 @@
-import Document from "trix/models/document"
-import HTMLParser from "trix/models/html_parser"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import Document from "trix/models/document";
+import HTMLParser from "trix/models/html_parser";
 
-import UndoManager from "trix/models/undo_manager"
-import { attachmentGalleryFilter } from "trix/filters/attachment_gallery_filter"
-DEFAULT_FILTERS = [ attachmentGalleryFilter ]
+import UndoManager from "trix/models/undo_manager";
+import { attachmentGalleryFilter } from "trix/filters/attachment_gallery_filter";
+const DEFAULT_FILTERS = [ attachmentGalleryFilter ];
 
-export default class Editor
-  constructor: (composition, selectionManager, element) ->
-    @composition = composition
-    @selectionManager = selectionManager
-    @element = element
-    @undoManager = new UndoManager @composition
-    @filters = DEFAULT_FILTERS.slice(0)
+export default class Editor {
+  constructor(composition, selectionManager, element) {
+    this.insertFiles = this.insertFiles.bind(this);
+    this.composition = composition;
+    this.selectionManager = selectionManager;
+    this.element = element;
+    this.undoManager = new UndoManager(this.composition);
+    this.filters = DEFAULT_FILTERS.slice(0);
+  }
 
-  loadDocument: (document) ->
-    @loadSnapshot({document, selectedRange: [0, 0]})
+  loadDocument(document) {
+    return this.loadSnapshot({document, selectedRange: [0, 0]});
+  }
 
-  loadHTML: (html = "") ->
-    document = HTMLParser.parse(html, referenceElement: @element).getDocument()
-    @loadDocument(document)
+  loadHTML(html = "") {
+    const document = HTMLParser.parse(html, {referenceElement: this.element}).getDocument();
+    return this.loadDocument(document);
+  }
 
-  loadJSON: ({document, selectedRange}) ->
-    document = Document.fromJSON(document)
-    @loadSnapshot({document, selectedRange})
+  loadJSON({document, selectedRange}) {
+    document = Document.fromJSON(document);
+    return this.loadSnapshot({document, selectedRange});
+  }
 
-  loadSnapshot: (snapshot) ->
-    @undoManager = new UndoManager @composition
-    @composition.loadSnapshot(snapshot)
+  loadSnapshot(snapshot) {
+    this.undoManager = new UndoManager(this.composition);
+    return this.composition.loadSnapshot(snapshot);
+  }
 
-  getDocument: ->
-    @composition.document
+  getDocument() {
+    return this.composition.document;
+  }
 
-  getSelectedDocument: ->
-    @composition.getSelectedDocument()
+  getSelectedDocument() {
+    return this.composition.getSelectedDocument();
+  }
 
-  getSnapshot: ->
-    @composition.getSnapshot()
+  getSnapshot() {
+    return this.composition.getSnapshot();
+  }
 
-  toJSON: ->
-    @getSnapshot()
+  toJSON() {
+    return this.getSnapshot();
+  }
 
-  # Document manipulation
+  // Document manipulation
 
-  deleteInDirection: (direction) ->
-    @composition.deleteInDirection(direction)
+  deleteInDirection(direction) {
+    return this.composition.deleteInDirection(direction);
+  }
 
-  insertAttachment: (attachment) ->
-    @composition.insertAttachment(attachment)
+  insertAttachment(attachment) {
+    return this.composition.insertAttachment(attachment);
+  }
 
-  insertAttachments: (attachments) ->
-    @composition.insertAttachments(attachments)
+  insertAttachments(attachments) {
+    return this.composition.insertAttachments(attachments);
+  }
 
-  insertDocument: (document) ->
-    @composition.insertDocument(document)
+  insertDocument(document) {
+    return this.composition.insertDocument(document);
+  }
 
-  insertFile: (file) ->
-    @composition.insertFile(file)
+  insertFile(file) {
+    return this.composition.insertFile(file);
+  }
 
-  insertFiles: (files) =>
-    @composition.insertFiles(files)
+  insertFiles(files) {
+    return this.composition.insertFiles(files);
+  }
 
-  insertHTML: (html) ->
-    @composition.insertHTML(html)
+  insertHTML(html) {
+    return this.composition.insertHTML(html);
+  }
 
-  insertString: (string) ->
-    @composition.insertString(string)
+  insertString(string) {
+    return this.composition.insertString(string);
+  }
 
-  insertText: (text) ->
-    @composition.insertText(text)
+  insertText(text) {
+    return this.composition.insertText(text);
+  }
 
-  insertLineBreak: ->
-    @composition.insertLineBreak()
+  insertLineBreak() {
+    return this.composition.insertLineBreak();
+  }
 
-  # Selection
+  // Selection
 
-  getSelectedRange: ->
-    @composition.getSelectedRange()
+  getSelectedRange() {
+    return this.composition.getSelectedRange();
+  }
 
-  getPosition: ->
-    @composition.getPosition()
+  getPosition() {
+    return this.composition.getPosition();
+  }
 
-  getClientRectAtPosition: (position) ->
-    locationRange = @getDocument().locationRangeFromRange([position, position + 1])
-    @selectionManager.getClientRectAtLocationRange(locationRange)
+  getClientRectAtPosition(position) {
+    const locationRange = this.getDocument().locationRangeFromRange([position, position + 1]);
+    return this.selectionManager.getClientRectAtLocationRange(locationRange);
+  }
 
-  expandSelectionInDirection: (direction) ->
-    @composition.expandSelectionInDirection(direction)
+  expandSelectionInDirection(direction) {
+    return this.composition.expandSelectionInDirection(direction);
+  }
 
-  moveCursorInDirection: (direction) ->
-    @composition.moveCursorInDirection(direction)
+  moveCursorInDirection(direction) {
+    return this.composition.moveCursorInDirection(direction);
+  }
 
-  setSelectedRange: (selectedRange) ->
-    @composition.setSelectedRange(selectedRange)
+  setSelectedRange(selectedRange) {
+    return this.composition.setSelectedRange(selectedRange);
+  }
 
-  # Attributes
+  // Attributes
 
-  activateAttribute: (name, value = true) ->
-    @composition.setCurrentAttribute(name, value)
+  activateAttribute(name, value = true) {
+    return this.composition.setCurrentAttribute(name, value);
+  }
 
-  attributeIsActive: (name) ->
-    @composition.hasCurrentAttribute(name)
+  attributeIsActive(name) {
+    return this.composition.hasCurrentAttribute(name);
+  }
 
-  canActivateAttribute: (name) ->
-    @composition.canSetCurrentAttribute(name)
+  canActivateAttribute(name) {
+    return this.composition.canSetCurrentAttribute(name);
+  }
 
-  deactivateAttribute: (name) ->
-    @composition.removeCurrentAttribute(name)
+  deactivateAttribute(name) {
+    return this.composition.removeCurrentAttribute(name);
+  }
 
-  # Nesting level
+  // Nesting level
 
-  canDecreaseNestingLevel: ->
-    @composition.canDecreaseNestingLevel()
+  canDecreaseNestingLevel() {
+    return this.composition.canDecreaseNestingLevel();
+  }
 
-  canIncreaseNestingLevel: ->
-    @composition.canIncreaseNestingLevel()
+  canIncreaseNestingLevel() {
+    return this.composition.canIncreaseNestingLevel();
+  }
 
-  decreaseNestingLevel: ->
-    if @canDecreaseNestingLevel()
-      @composition.decreaseNestingLevel()
+  decreaseNestingLevel() {
+    if (this.canDecreaseNestingLevel()) {
+      return this.composition.decreaseNestingLevel();
+    }
+  }
 
-  increaseNestingLevel: ->
-    if @canIncreaseNestingLevel()
-      @composition.increaseNestingLevel()
+  increaseNestingLevel() {
+    if (this.canIncreaseNestingLevel()) {
+      return this.composition.increaseNestingLevel();
+    }
+  }
 
-  # Undo/redo
+  // Undo/redo
 
-  canRedo: ->
-    @undoManager.canRedo()
+  canRedo() {
+    return this.undoManager.canRedo();
+  }
 
-  canUndo: ->
-    @undoManager.canUndo()
+  canUndo() {
+    return this.undoManager.canUndo();
+  }
 
-  recordUndoEntry: (description, {context, consolidatable} = {}) ->
-    @undoManager.recordUndoEntry(description, {context, consolidatable})
+  recordUndoEntry(description, {context, consolidatable} = {}) {
+    return this.undoManager.recordUndoEntry(description, {context, consolidatable});
+  }
 
-  redo: ->
-    if @canRedo()
-      @undoManager.redo()
+  redo() {
+    if (this.canRedo()) {
+      return this.undoManager.redo();
+    }
+  }
 
-  undo: ->
-    if @canUndo()
-      @undoManager.undo()
+  undo() {
+    if (this.canUndo()) {
+      return this.undoManager.undo();
+    }
+  }
+}

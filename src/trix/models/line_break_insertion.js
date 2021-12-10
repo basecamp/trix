@@ -1,32 +1,46 @@
-export default class LineBreakInsertion
-  constructor: (composition) ->
-    @composition = composition
-    {@document} = @composition
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+export default class LineBreakInsertion {
+  constructor(composition) {
+    this.composition = composition;
+    ({document: this.document} = this.composition);
 
-    [@startPosition, @endPosition] = @composition.getSelectedRange()
-    @startLocation = @document.locationFromPosition(@startPosition)
-    @endLocation = @document.locationFromPosition(@endPosition)
+    [this.startPosition, this.endPosition] = Array.from(this.composition.getSelectedRange());
+    this.startLocation = this.document.locationFromPosition(this.startPosition);
+    this.endLocation = this.document.locationFromPosition(this.endPosition);
 
-    @block = @document.getBlockAtIndex(@endLocation.index)
-    @breaksOnReturn = @block.breaksOnReturn()
-    @previousCharacter = @block.text.getStringAtPosition(@endLocation.offset - 1)
-    @nextCharacter = @block.text.getStringAtPosition(@endLocation.offset)
+    this.block = this.document.getBlockAtIndex(this.endLocation.index);
+    this.breaksOnReturn = this.block.breaksOnReturn();
+    this.previousCharacter = this.block.text.getStringAtPosition(this.endLocation.offset - 1);
+    this.nextCharacter = this.block.text.getStringAtPosition(this.endLocation.offset);
+  }
 
-  shouldInsertBlockBreak: ->
-    if @block.hasAttributes() and @block.isListItem() and not @block.isEmpty()
-      @startLocation.offset isnt 0
-    else
-      @breaksOnReturn and @nextCharacter isnt "\n"
+  shouldInsertBlockBreak() {
+    if (this.block.hasAttributes() && this.block.isListItem() && !this.block.isEmpty()) {
+      return this.startLocation.offset !== 0;
+    } else {
+      return this.breaksOnReturn && (this.nextCharacter !== "\n");
+    }
+  }
 
-  shouldBreakFormattedBlock: ->
-    @block.hasAttributes() and not @block.isListItem() and
-      ((@breaksOnReturn and @nextCharacter is "\n") or @previousCharacter is "\n")
+  shouldBreakFormattedBlock() {
+    return this.block.hasAttributes() && !this.block.isListItem() &&
+      ((this.breaksOnReturn && (this.nextCharacter === "\n")) || (this.previousCharacter === "\n"));
+  }
 
-  shouldDecreaseListLevel: ->
-    @block.hasAttributes() and @block.isListItem() and @block.isEmpty()
+  shouldDecreaseListLevel() {
+    return this.block.hasAttributes() && this.block.isListItem() && this.block.isEmpty();
+  }
 
-  shouldPrependListItem: ->
-    @block.isListItem() and @startLocation.offset is 0 and not @block.isEmpty()
+  shouldPrependListItem() {
+    return this.block.isListItem() && (this.startLocation.offset === 0) && !this.block.isEmpty();
+  }
 
-  shouldRemoveLastBlockAttribute: ->
-    @block.hasAttributes() and not @block.isListItem() and @block.isEmpty()
+  shouldRemoveLastBlockAttribute() {
+    return this.block.hasAttributes() && !this.block.isListItem() && this.block.isEmpty();
+  }
+}

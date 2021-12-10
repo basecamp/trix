@@ -1,88 +1,126 @@
-import BasicObject from "trix/core/basic_object"
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * DS204: Change includes calls to have a more natural evaluation order
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import BasicObject from "trix/core/basic_object";
 
-import { tagName, removeNode, walkTree, nodeIsAttachmentElement } from "trix/core/helpers"
+import { tagName, removeNode, walkTree, nodeIsAttachmentElement } from "trix/core/helpers";
 
-DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height class".split(" ")
-DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
-DEFAULT_FORBIDDEN_ELEMENTS = "script iframe".split(" ")
+const DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height class".split(" ");
+const DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ");
+const DEFAULT_FORBIDDEN_ELEMENTS = "script iframe".split(" ");
 
-export default class HTMLSanitizer extends BasicObject
-  @sanitize: (html, options) ->
-    sanitizer = new this html, options
-    sanitizer.sanitize()
-    sanitizer
+export default class HTMLSanitizer extends BasicObject {
+  static sanitize(html, options) {
+    const sanitizer = new (this)(html, options);
+    sanitizer.sanitize();
+    return sanitizer;
+  }
 
-  constructor: (html, { allowedAttributes, forbiddenProtocols, forbiddenElements } = {}) ->
-    super(arguments...)
-    @allowedAttributes  = allowedAttributes  || DEFAULT_ALLOWED_ATTRIBUTES
-    @forbiddenProtocols = forbiddenProtocols || DEFAULT_FORBIDDEN_PROTOCOLS
-    @forbiddenElements  = forbiddenElements  || DEFAULT_FORBIDDEN_ELEMENTS
-    @body = createBodyElementForHTML(html)
+  constructor(html, { allowedAttributes, forbiddenProtocols, forbiddenElements } = {}) {
+    super(...arguments);
+    this.allowedAttributes  = allowedAttributes  || DEFAULT_ALLOWED_ATTRIBUTES;
+    this.forbiddenProtocols = forbiddenProtocols || DEFAULT_FORBIDDEN_PROTOCOLS;
+    this.forbiddenElements  = forbiddenElements  || DEFAULT_FORBIDDEN_ELEMENTS;
+    this.body = createBodyElementForHTML(html);
+  }
 
-  sanitize: ->
-    @sanitizeElements()
-    @normalizeListElementNesting()
+  sanitize() {
+    this.sanitizeElements();
+    return this.normalizeListElementNesting();
+  }
 
-  getHTML: ->
-    @body.innerHTML
+  getHTML() {
+    return this.body.innerHTML;
+  }
 
-  getBody: ->
-    @body
+  getBody() {
+    return this.body;
+  }
 
-  # Private
+  // Private
 
-  sanitizeElements: ->
-    walker = walkTree(@body)
-    nodesToRemove = []
+  sanitizeElements() {
+    let node;
+    const walker = walkTree(this.body);
+    const nodesToRemove = [];
 
-    while walker.nextNode()
-      node = walker.currentNode
-      switch node.nodeType
-        when Node.ELEMENT_NODE
-          if @elementIsRemovable(node)
-            nodesToRemove.push(node)
-          else
-            @sanitizeElement(node)
-        when Node.COMMENT_NODE
-          nodesToRemove.push(node)
+    while (walker.nextNode()) {
+      node = walker.currentNode;
+      switch (node.nodeType) {
+        case Node.ELEMENT_NODE:
+          if (this.elementIsRemovable(node)) {
+            nodesToRemove.push(node);
+          } else {
+            this.sanitizeElement(node);
+          }
+          break;
+        case Node.COMMENT_NODE:
+          nodesToRemove.push(node);
+          break;
+      }
+    }
 
-    for node in nodesToRemove
-      removeNode(node)
-    @body
+    for (node of Array.from(nodesToRemove)) {
+      removeNode(node);
+    }
+    return this.body;
+  }
 
-  sanitizeElement: (element) ->
-    if element.hasAttribute("href")
-      if element.protocol in @forbiddenProtocols
-        element.removeAttribute("href")
+  sanitizeElement(element) {
+    if (element.hasAttribute("href")) {
+      if (Array.from(this.forbiddenProtocols).includes(element.protocol)) {
+        element.removeAttribute("href");
+      }
+    }
 
-    for {name} in [element.attributes...]
-      unless name in @allowedAttributes or name.indexOf("data-trix") is 0
-        element.removeAttribute(name)
+    for (let {name} of [...Array.from(element.attributes)]) {
+      if (!Array.from(this.allowedAttributes).includes(name) && (name.indexOf("data-trix") !== 0)) {
+        element.removeAttribute(name);
+      }
+    }
 
-    element
+    return element;
+  }
 
-  normalizeListElementNesting: ->
-    for listElement in [@body.querySelectorAll("ul,ol")...]
-      if previousElement = listElement.previousElementSibling
-        if tagName(previousElement) is "li"
-          previousElement.appendChild(listElement)
-    @body
+  normalizeListElementNesting() {
+    for (let listElement of [...Array.from(this.body.querySelectorAll("ul,ol"))]) {
+      var previousElement;
+      if (previousElement = listElement.previousElementSibling) {
+        if (tagName(previousElement) === "li") {
+          previousElement.appendChild(listElement);
+        }
+      }
+    }
+    return this.body;
+  }
 
-  elementIsRemovable: (element) ->
-    return unless element?.nodeType is Node.ELEMENT_NODE
-    @elementIsForbidden(element) or @elementIsntSerializable(element)
+  elementIsRemovable(element) {
+    if (element?.nodeType !== Node.ELEMENT_NODE) { return; }
+    return this.elementIsForbidden(element) || this.elementIsntSerializable(element);
+  }
 
-  elementIsForbidden: (element) ->
-    tagName(element) in @forbiddenElements
+  elementIsForbidden(element) {
+    let needle;
+    return (needle = tagName(element), Array.from(this.forbiddenElements).includes(needle));
+  }
 
-  elementIsntSerializable: (element) ->
-    element.getAttribute("data-trix-serialize") is "false" and not nodeIsAttachmentElement(element)
+  elementIsntSerializable(element) {
+    return (element.getAttribute("data-trix-serialize") === "false") && !nodeIsAttachmentElement(element);
+  }
+}
 
-createBodyElementForHTML = (html = "") ->
-  # Remove everything after </html>
-  html = html.replace(/<\/html[^>]*>[^]*$/i, "</html>")
-  doc = document.implementation.createHTMLDocument("")
-  doc.documentElement.innerHTML = html
-  for element in doc.head.querySelectorAll("style")
-    doc.body.appendChild(element)
-  doc.body
+var createBodyElementForHTML = function(html = "") {
+  // Remove everything after </html>
+  html = html.replace(/<\/html[^>]*>[^]*$/i, "</html>");
+  const doc = document.implementation.createHTMLDocument("");
+  doc.documentElement.innerHTML = html;
+  for (let element of Array.from(doc.head.querySelectorAll("style"))) {
+    doc.body.appendChild(element);
+  }
+  return doc.body;
+};

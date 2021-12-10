@@ -1,160 +1,209 @@
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
 import { elementContainsNode, findChildIndexOfNode, nodeIsBlockStart,
  nodeIsBlockStartComment, nodeIsBlockContainer, nodeIsCursorTarget,
- nodeIsEmptyTextNode, nodeIsTextNode, nodeIsAttachmentElement, tagName, walkTree } from "trix/core/helpers"
+ nodeIsEmptyTextNode, nodeIsTextNode, nodeIsAttachmentElement, tagName, walkTree } from "trix/core/helpers";
 
-export default class LocationMapper
-  constructor: (element) ->
-    @element = element
+export default class LocationMapper {
+  constructor(element) {
+    this.element = element;
+  }
 
-  findLocationFromContainerAndOffset: (container, offset, {strict} = strict: true) ->
-    childIndex = 0
-    foundBlock = false
-    location = index: 0, offset: 0
+  findLocationFromContainerAndOffset(container, offset, {strict} = {strict: true}) {
+    let attachmentElement;
+    let childIndex = 0;
+    let foundBlock = false;
+    const location = {index: 0, offset: 0};
 
-    if attachmentElement = @findAttachmentElementParentForNode(container)
-      container = attachmentElement.parentNode
-      offset = findChildIndexOfNode(attachmentElement)
+    if (attachmentElement = this.findAttachmentElementParentForNode(container)) {
+      container = attachmentElement.parentNode;
+      offset = findChildIndexOfNode(attachmentElement);
+    }
 
-    walker = walkTree(@element, usingFilter: rejectAttachmentContents)
+    const walker = walkTree(this.element, {usingFilter: rejectAttachmentContents});
 
-    while walker.nextNode()
-      node = walker.currentNode
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
 
-      if node is container and nodeIsTextNode(container)
-        unless nodeIsCursorTarget(node)
-          location.offset += offset
-        break
+      if ((node === container) && nodeIsTextNode(container)) {
+        if (!nodeIsCursorTarget(node)) {
+          location.offset += offset;
+        }
+        break;
 
-      else
-        if node.parentNode is container
-          break if childIndex++ is offset
-        else unless elementContainsNode(container, node)
-          break if childIndex > 0
+      } else {
+        if (node.parentNode === container) {
+          if (childIndex++ === offset) { break; }
+        } else if (!elementContainsNode(container, node)) {
+          if (childIndex > 0) { break; }
+        }
 
-        if nodeIsBlockStart(node, {strict})
-          location.index++ if foundBlock
-          location.offset = 0
-          foundBlock = true
-        else
-          location.offset += nodeLength(node)
+        if (nodeIsBlockStart(node, {strict})) {
+          if (foundBlock) { location.index++; }
+          location.offset = 0;
+          foundBlock = true;
+        } else {
+          location.offset += nodeLength(node);
+        }
+      }
+    }
 
-    location
+    return location;
+  }
 
-  findContainerAndOffsetFromLocation: (location) ->
-    if location.index is 0 and location.offset is 0
-      container = @element
-      offset = 0
+  findContainerAndOffsetFromLocation(location) {
+    let container, offset;
+    if ((location.index === 0) && (location.offset === 0)) {
+      container = this.element;
+      offset = 0;
 
-      while container.firstChild
-        container = container.firstChild
-        if nodeIsBlockContainer(container)
-          offset = 1
-          break
+      while (container.firstChild) {
+        container = container.firstChild;
+        if (nodeIsBlockContainer(container)) {
+          offset = 1;
+          break;
+        }
+      }
 
-      return [container, offset]
+      return [container, offset];
+    }
 
-    [node, nodeOffset] = @findNodeAndOffsetFromLocation(location)
-    return unless node
+    let [node, nodeOffset] = Array.from(this.findNodeAndOffsetFromLocation(location));
+    if (!node) { return; }
 
-    if nodeIsTextNode(node)
-      if nodeLength(node) is 0
-        container = node.parentNode.parentNode
-        offset = findChildIndexOfNode(node.parentNode)
-        offset++ if nodeIsCursorTarget(node, name: "right")
-      else
-        container = node
-        offset = location.offset - nodeOffset
-    else
-      container = node.parentNode
+    if (nodeIsTextNode(node)) {
+      if (nodeLength(node) === 0) {
+        container = node.parentNode.parentNode;
+        offset = findChildIndexOfNode(node.parentNode);
+        if (nodeIsCursorTarget(node, {name: "right"})) { offset++; }
+      } else {
+        container = node;
+        offset = location.offset - nodeOffset;
+      }
+    } else {
+      container = node.parentNode;
 
-      unless nodeIsBlockStart(node.previousSibling)
-        unless nodeIsBlockContainer(container)
-          while node is container.lastChild
-            node = container
-            container = container.parentNode
-            break if nodeIsBlockContainer(container)
+      if (!nodeIsBlockStart(node.previousSibling)) {
+        if (!nodeIsBlockContainer(container)) {
+          while (node === container.lastChild) {
+            node = container;
+            container = container.parentNode;
+            if (nodeIsBlockContainer(container)) { break; }
+          }
+        }
+      }
 
-      offset = findChildIndexOfNode(node)
-      offset++ unless location.offset is 0
+      offset = findChildIndexOfNode(node);
+      if (location.offset !== 0) { offset++; }
+    }
 
-    [container, offset]
+    return [container, offset];
+  }
 
-  findNodeAndOffsetFromLocation: (location) ->
-    offset = 0
+  findNodeAndOffsetFromLocation(location) {
+    let node, nodeOffset;
+    let offset = 0;
 
-    for currentNode in @getSignificantNodesForIndex(location.index)
-      length = nodeLength(currentNode)
+    for (let currentNode of Array.from(this.getSignificantNodesForIndex(location.index))) {
+      const length = nodeLength(currentNode);
 
-      if location.offset <= offset + length
-        if nodeIsTextNode(currentNode)
-          node = currentNode
-          nodeOffset = offset
-          break if location.offset is nodeOffset and nodeIsCursorTarget(node)
+      if (location.offset <= (offset + length)) {
+        if (nodeIsTextNode(currentNode)) {
+          node = currentNode;
+          nodeOffset = offset;
+          if ((location.offset === nodeOffset) && nodeIsCursorTarget(node)) { break; }
 
-        else if not node
-          node = currentNode
-          nodeOffset = offset
+        } else if (!node) {
+          node = currentNode;
+          nodeOffset = offset;
+        }
+      }
 
-      offset += length
-      break if offset > location.offset
+      offset += length;
+      if (offset > location.offset) { break; }
+    }
 
-    [node, nodeOffset]
+    return [node, nodeOffset];
+  }
 
-  # Private
+  // Private
 
-  findAttachmentElementParentForNode: (node) ->
-    while node and node isnt @element
-      return node if nodeIsAttachmentElement(node)
-      node = node.parentNode
+  findAttachmentElementParentForNode(node) {
+    while (node && (node !== this.element)) {
+      if (nodeIsAttachmentElement(node)) { return node; }
+      node = node.parentNode;
+    }
+  }
 
-  getSignificantNodesForIndex: (index) ->
-    nodes = []
-    walker = walkTree(@element, usingFilter: acceptSignificantNodes)
-    recordingNodes = false
+  getSignificantNodesForIndex(index) {
+    const nodes = [];
+    const walker = walkTree(this.element, {usingFilter: acceptSignificantNodes});
+    let recordingNodes = false;
 
-    while walker.nextNode()
-      node = walker.currentNode
-      if nodeIsBlockStartComment(node)
-        if blockIndex?
-          blockIndex++
-        else
-          blockIndex = 0
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      if (nodeIsBlockStartComment(node)) {
+        var blockIndex;
+        if (blockIndex != null) {
+          blockIndex++;
+        } else {
+          blockIndex = 0;
+        }
 
-        if blockIndex is index
-          recordingNodes = true
-        else if recordingNodes
-          break
-      else if recordingNodes
-        nodes.push(node)
+        if (blockIndex === index) {
+          recordingNodes = true;
+        } else if (recordingNodes) {
+          break;
+        }
+      } else if (recordingNodes) {
+        nodes.push(node);
+      }
+    }
 
-    nodes
+    return nodes;
+  }
+}
 
-nodeLength = (node) ->
-  if node.nodeType is Node.TEXT_NODE
-    if nodeIsCursorTarget(node)
-      0
-    else
-      string = node.textContent
-      string.length
-  else if tagName(node) is "br" or nodeIsAttachmentElement(node)
-    1
-  else
-    0
+var nodeLength = function(node) {
+  if (node.nodeType === Node.TEXT_NODE) {
+    if (nodeIsCursorTarget(node)) {
+      return 0;
+    } else {
+      const string = node.textContent;
+      return string.length;
+    }
+  } else if ((tagName(node) === "br") || nodeIsAttachmentElement(node)) {
+    return 1;
+  } else {
+    return 0;
+  }
+};
 
-acceptSignificantNodes = (node) ->
-  if rejectEmptyTextNodes(node) is NodeFilter.FILTER_ACCEPT
-    rejectAttachmentContents(node)
-  else
-    NodeFilter.FILTER_REJECT
+var acceptSignificantNodes = function(node) {
+  if (rejectEmptyTextNodes(node) === NodeFilter.FILTER_ACCEPT) {
+    return rejectAttachmentContents(node);
+  } else {
+    return NodeFilter.FILTER_REJECT;
+  }
+};
 
-rejectEmptyTextNodes = (node) ->
-  if nodeIsEmptyTextNode(node)
-    NodeFilter.FILTER_REJECT
-  else
-    NodeFilter.FILTER_ACCEPT
+var rejectEmptyTextNodes = function(node) {
+  if (nodeIsEmptyTextNode(node)) {
+    return NodeFilter.FILTER_REJECT;
+  } else {
+    return NodeFilter.FILTER_ACCEPT;
+  }
+};
 
-rejectAttachmentContents = (node) ->
-  if nodeIsAttachmentElement(node.parentNode)
-    NodeFilter.FILTER_REJECT
-  else
-    NodeFilter.FILTER_ACCEPT
+var rejectAttachmentContents = function(node) {
+  if (nodeIsAttachmentElement(node.parentNode)) {
+    return NodeFilter.FILTER_REJECT;
+  } else {
+    return NodeFilter.FILTER_ACCEPT;
+  }
+};

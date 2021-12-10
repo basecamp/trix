@@ -1,165 +1,234 @@
-import config from "trix/config"
-import TrixObject from "trix/core/object" # Don't override window.Object
-import Hash from "trix/core/collections/hash"
-import ImagePreloadOperation from "trix/operations/image_preload_operation"
+/*
+ * decaffeinate suggestions:
+ * DS002: Fix invalid constructor
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * DS206: Consider reworking classes to avoid initClass
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let Attachment;
+import config from "trix/config";
+import TrixObject from "trix/core/object"; // Don't override window.Object
+import Hash from "trix/core/collections/hash";
+import ImagePreloadOperation from "trix/operations/image_preload_operation";
 
-export default class Attachment extends TrixObject
-  @previewablePattern: /^image(\/(gif|png|jpe?g)|$)/
+export default Attachment = (function() {
+  Attachment = class Attachment extends TrixObject {
+    static initClass() {
+      this.previewablePattern = /^image(\/(gif|png|jpe?g)|$)/;
+    }
 
-  @attachmentForFile: (file) ->
-    attributes = @attributesForFile(file)
-    attachment = new this attributes
-    attachment.setFile(file)
-    attachment
+    static attachmentForFile(file) {
+      const attributes = this.attributesForFile(file);
+      const attachment = new (this)(attributes);
+      attachment.setFile(file);
+      return attachment;
+    }
 
-  @attributesForFile: (file) ->
-    new Hash
-      filename:    file.name
-      filesize:    file.size
-      contentType: file.type
+    static attributesForFile(file) {
+      return new Hash({
+        filename:    file.name,
+        filesize:    file.size,
+        contentType: file.type
+      });
+    }
 
-  @fromJSON: (attachmentJSON) ->
-    new this attachmentJSON
+    static fromJSON(attachmentJSON) {
+      return new (this)(attachmentJSON);
+    }
 
-  constructor: (attributes = {}) ->
-    super(attributes)
-    @attributes = Hash.box(attributes)
-    @didChangeAttributes()
+    constructor(attributes = {}) {
+      this.releaseFile = this.releaseFile.bind(this);
+      super(attributes);
+      this.attributes = Hash.box(attributes);
+      this.didChangeAttributes();
+    }
 
-  getAttribute: (attribute) ->
-    @attributes.get(attribute)
+    getAttribute(attribute) {
+      return this.attributes.get(attribute);
+    }
 
-  hasAttribute: (attribute) ->
-    @attributes.has(attribute)
+    hasAttribute(attribute) {
+      return this.attributes.has(attribute);
+    }
 
-  getAttributes: ->
-    @attributes.toObject()
+    getAttributes() {
+      return this.attributes.toObject();
+    }
 
-  setAttributes: (attributes = {}) ->
-    newAttributes = @attributes.merge(attributes)
-    unless @attributes.isEqualTo(newAttributes)
-      @attributes = newAttributes
-      @didChangeAttributes()
-      @previewDelegate?.attachmentDidChangeAttributes?(this)
-      @delegate?.attachmentDidChangeAttributes?(this)
+    setAttributes(attributes = {}) {
+      const newAttributes = this.attributes.merge(attributes);
+      if (!this.attributes.isEqualTo(newAttributes)) {
+        this.attributes = newAttributes;
+        this.didChangeAttributes();
+        this.previewDelegate?.attachmentDidChangeAttributes?.(this);
+        return this.delegate?.attachmentDidChangeAttributes?.(this);
+      }
+    }
 
-  didChangeAttributes: ->
-    if @isPreviewable()
-      @preloadURL()
+    didChangeAttributes() {
+      if (this.isPreviewable()) {
+        return this.preloadURL();
+      }
+    }
 
-  isPending: ->
-    @file? and not (@getURL() or @getHref())
+    isPending() {
+      return (this.file != null) && !(this.getURL() || this.getHref());
+    }
 
-  isPreviewable: ->
-    if @attributes.has("previewable")
-      @attributes.get("previewable")
-    else
-      @constructor.previewablePattern.test(@getContentType())
+    isPreviewable() {
+      if (this.attributes.has("previewable")) {
+        return this.attributes.get("previewable");
+      } else {
+        return this.constructor.previewablePattern.test(this.getContentType());
+      }
+    }
 
-  getType: ->
-    if @hasContent()
-      "content"
-    else if @isPreviewable()
-      "preview"
-    else
-      "file"
+    getType() {
+      if (this.hasContent()) {
+        return "content";
+      } else if (this.isPreviewable()) {
+        return "preview";
+      } else {
+        return "file";
+      }
+    }
 
-  getURL: ->
-    @attributes.get("url")
+    getURL() {
+      return this.attributes.get("url");
+    }
 
-  getHref: ->
-    @attributes.get("href")
+    getHref() {
+      return this.attributes.get("href");
+    }
 
-  getFilename: ->
-    @attributes.get("filename") ? ""
+    getFilename() {
+      let left;
+      return (left = this.attributes.get("filename")) != null ? left : "";
+    }
 
-  getFilesize: ->
-    @attributes.get("filesize")
+    getFilesize() {
+      return this.attributes.get("filesize");
+    }
 
-  getFormattedFilesize: ->
-    filesize = @attributes.get("filesize")
-    if typeof filesize is "number"
-      config.fileSize.formatter(filesize)
-    else
-      ""
+    getFormattedFilesize() {
+      const filesize = this.attributes.get("filesize");
+      if (typeof filesize === "number") {
+        return config.fileSize.formatter(filesize);
+      } else {
+        return "";
+      }
+    }
 
-  getExtension: ->
-    @getFilename().match(/\.(\w+)$/)?[1].toLowerCase()
+    getExtension() {
+      return this.getFilename().match(/\.(\w+)$/)?.[1].toLowerCase();
+    }
 
-  getContentType: ->
-    @attributes.get("contentType")
+    getContentType() {
+      return this.attributes.get("contentType");
+    }
 
-  hasContent: ->
-    @attributes.has("content")
+    hasContent() {
+      return this.attributes.has("content");
+    }
 
-  getContent: ->
-    @attributes.get("content")
+    getContent() {
+      return this.attributes.get("content");
+    }
 
-  getWidth: ->
-    @attributes.get("width")
+    getWidth() {
+      return this.attributes.get("width");
+    }
 
-  getHeight: ->
-    @attributes.get("height")
+    getHeight() {
+      return this.attributes.get("height");
+    }
 
-  getFile: ->
-    @file
+    getFile() {
+      return this.file;
+    }
 
-  setFile: (@file) ->
-    if @isPreviewable()
-      @preloadFile()
+    setFile(file) {
+      this.file = file;
+      if (this.isPreviewable()) {
+        return this.preloadFile();
+      }
+    }
 
-  releaseFile: =>
-    @releasePreloadedFile()
-    @file = null
+    releaseFile() {
+      this.releasePreloadedFile();
+      return this.file = null;
+    }
 
-  getUploadProgress: ->
-    @uploadProgress ? 0
+    getUploadProgress() {
+      return this.uploadProgress != null ? this.uploadProgress : 0;
+    }
 
-  setUploadProgress: (value) ->
-    unless @uploadProgress is value
-      @uploadProgress = value
-      @uploadProgressDelegate?.attachmentDidChangeUploadProgress?(this)
+    setUploadProgress(value) {
+      if (this.uploadProgress !== value) {
+        this.uploadProgress = value;
+        return this.uploadProgressDelegate?.attachmentDidChangeUploadProgress?.(this);
+      }
+    }
 
-  toJSON: ->
-    @getAttributes()
+    toJSON() {
+      return this.getAttributes();
+    }
 
-  getCacheKey: ->
-    [super.getCacheKey(arguments...), @attributes.getCacheKey(), @getPreviewURL()].join("/")
+    getCacheKey() {
+      return [super.getCacheKey(...arguments).getCacheKey(...arguments), this.attributes.getCacheKey(), this.getPreviewURL()].join("/");
+    }
 
-  # Previewable
+    // Previewable
 
-  getPreviewURL: ->
-    @previewURL or @preloadingURL
+    getPreviewURL() {
+      return this.previewURL || this.preloadingURL;
+    }
 
-  setPreviewURL: (url) ->
-    unless url is @getPreviewURL()
-      @previewURL = url
-      @previewDelegate?.attachmentDidChangeAttributes?(this)
-      @delegate?.attachmentDidChangePreviewURL?(this)
+    setPreviewURL(url) {
+      if (url !== this.getPreviewURL()) {
+        this.previewURL = url;
+        this.previewDelegate?.attachmentDidChangeAttributes?.(this);
+        return this.delegate?.attachmentDidChangePreviewURL?.(this);
+      }
+    }
 
-  preloadURL: ->
-    @preload(@getURL(), @releaseFile)
+    preloadURL() {
+      return this.preload(this.getURL(), this.releaseFile);
+    }
 
-  preloadFile: ->
-    if @file
-      @fileObjectURL = URL.createObjectURL(@file)
-      @preload(@fileObjectURL)
+    preloadFile() {
+      if (this.file) {
+        this.fileObjectURL = URL.createObjectURL(this.file);
+        return this.preload(this.fileObjectURL);
+      }
+    }
 
-  releasePreloadedFile: ->
-    if @fileObjectURL
-      URL.revokeObjectURL(@fileObjectURL)
-      @fileObjectURL = null
+    releasePreloadedFile() {
+      if (this.fileObjectURL) {
+        URL.revokeObjectURL(this.fileObjectURL);
+        return this.fileObjectURL = null;
+      }
+    }
 
-  preload: (url, callback) ->
-    if url and url isnt @getPreviewURL()
-      @preloadingURL = url
-      operation = new ImagePreloadOperation url
-      operation
-        .then ({width, height}) =>
-          @setAttributes({width, height}) unless @getWidth() and @getHeight()
-          @preloadingURL = null
-          @setPreviewURL(url)
-          callback?()
-        .catch =>
-          @preloadingURL = null
-          callback?()
+    preload(url, callback) {
+      if (url && (url !== this.getPreviewURL())) {
+        this.preloadingURL = url;
+        const operation = new ImagePreloadOperation(url);
+        return operation
+          .then(({width, height}) => {
+            if (!this.getWidth() || !this.getHeight()) { this.setAttributes({width, height}); }
+            this.preloadingURL = null;
+            this.setPreviewURL(url);
+            return callback?.();
+        }).catch(() => {
+            this.preloadingURL = null;
+            return callback?.();
+        });
+      }
+    }
+  };
+  Attachment.initClass();
+  return Attachment;
+})();

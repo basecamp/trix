@@ -1,53 +1,74 @@
-import Piece from "trix/models/piece"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import Piece from "trix/models/piece";
 
-import { normalizeNewlines } from "trix/core/helpers"
+import { normalizeNewlines } from "trix/core/helpers";
 
-export default class StringPiece extends Piece
-  @fromJSON: (pieceJSON) ->
-    new this pieceJSON.string, pieceJSON.attributes
+export default class StringPiece extends Piece {
+  static fromJSON(pieceJSON) {
+    return new (this)(pieceJSON.string, pieceJSON.attributes);
+  }
 
-  constructor: (string) ->
-    super(arguments...)
-    @string = normalizeNewlines(string)
-    @length = @string.length
+  constructor(string) {
+    super(...arguments);
+    this.string = normalizeNewlines(string);
+    this.length = this.string.length;
+  }
 
-  getValue: ->
-    @string
+  getValue() {
+    return this.string;
+  }
 
-  toString: ->
-    @string.toString()
+  toString() {
+    return this.string.toString();
+  }
 
-  isBlockBreak: ->
-    @toString() is "\n" and @getAttribute("blockBreak") is true
+  isBlockBreak() {
+    return (this.toString() === "\n") && (this.getAttribute("blockBreak") === true);
+  }
 
-  toJSON: ->
-    result = super.toJSON(arguments...)
-    result.string = @string
-    result
+  toJSON() {
+    const result = super.toJSON(...arguments).toJSON(...arguments);
+    result.string = this.string;
+    return result;
+  }
 
-  # Splittable
+  // Splittable
 
-  canBeConsolidatedWith: (piece) ->
-    piece? and @hasSameConstructorAs(piece) and @hasSameAttributesAsPiece(piece)
+  canBeConsolidatedWith(piece) {
+    return (piece != null) && this.hasSameConstructorAs(piece) && this.hasSameAttributesAsPiece(piece);
+  }
 
-  consolidateWith: (piece) ->
-    new @constructor @toString() + piece.toString(), @attributes
+  consolidateWith(piece) {
+    return new this.constructor(this.toString() + piece.toString(), this.attributes);
+  }
 
-  splitAtOffset: (offset) ->
-    if offset is 0
-      left = null
-      right = this
-    else if offset is @length
-      left = this
-      right = null
-    else
-      left = new @constructor @string.slice(0, offset), @attributes
-      right = new @constructor @string.slice(offset), @attributes
-    [left, right]
+  splitAtOffset(offset) {
+    let left, right;
+    if (offset === 0) {
+      left = null;
+      right = this;
+    } else if (offset === this.length) {
+      left = this;
+      right = null;
+    } else {
+      left = new this.constructor(this.string.slice(0, offset), this.attributes);
+      right = new this.constructor(this.string.slice(offset), this.attributes);
+    }
+    return [left, right];
+  }
 
-  toConsole: ->
-    string = @string
-    string = string.slice(0, 14) + "…" if string.length > 15
-    JSON.stringify(string.toString())
+  toConsole() {
+    let {
+      string
+    } = this;
+    if (string.length > 15) { string = string.slice(0, 14) + "…"; }
+    return JSON.stringify(string.toString());
+  }
+}
 
-Piece.registerType "string", StringPiece
+Piece.registerType("string", StringPiece);

@@ -1,326 +1,456 @@
-import config from "trix/config"
-import BasicObject from "trix/core/basic_object"
-import Document from "trix/models/document"
-import HTMLSanitizer from "trix/models/html_sanitizer"
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * DS204: Change includes calls to have a more natural evaluation order
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS206: Consider reworking classes to avoid initClass
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let HTMLParser;
+import config from "trix/config";
+import BasicObject from "trix/core/basic_object";
+import Document from "trix/models/document";
+import HTMLSanitizer from "trix/models/html_sanitizer";
 
 import {arraysAreEqual, makeElement, removeNode, tagName, getBlockTagNames, walkTree,
  findClosestElementFromNode, elementContainsNode, nodeIsAttachmentElement,
- normalizeSpaces, breakableWhitespacePattern, squishBreakableWhitespace} from "trix/core/helpers"
+ normalizeSpaces, breakableWhitespacePattern, squishBreakableWhitespace} from "trix/core/helpers";
 
-export default class HTMLParser extends BasicObject
-  @parse: (html, options) ->
-    parser = new this html, options
-    parser.parse()
-    parser
+export default HTMLParser = (function() {
+  let pieceForString = undefined;
+  let pieceForAttachment = undefined;
+  let blockForAttributes = undefined;
+  let parseTrixDataAttribute = undefined;
+  let getImageDimensions = undefined;
+  HTMLParser = class HTMLParser extends BasicObject {
+    static initClass() {
+  
+      pieceForString = function(string, attributes = {}) {
+        const type = "string";
+        string = normalizeSpaces(string);
+        return {string, attributes, type};
+      };
+  
+      pieceForAttachment = function(attachment, attributes = {}) {
+        const type = "attachment";
+        return {attachment, attributes, type};
+      };
+  
+      blockForAttributes = function(attributes = {}) {
+        const text = [];
+        return {text, attributes};
+      };
+  
+      parseTrixDataAttribute = function(element, name) {
+        try {
+         return JSON.parse(element.getAttribute(`data-trix-${name}`));
+        } catch (error) {
+          return {};
+        }
+      };
+  
+      getImageDimensions = function(element) {
+        const width = element.getAttribute("width");
+        const height = element.getAttribute("height");
+        const dimensions = {};
+        if (width) { dimensions.width = parseInt(width, 10); }
+        if (height) { dimensions.height = parseInt(height, 10); }
+        return dimensions;
+      };
+    }
+    static parse(html, options) {
+      const parser = new (this)(html, options);
+      parser.parse();
+      return parser;
+    }
 
-  constructor: (html, {referenceElement} = {}) ->
-    super(arguments...)
-    @html = html
-    @referenceElement  = referenceElement
-    @blocks = []
-    @blockElements = []
-    @processedElements = []
+    constructor(html, {referenceElement} = {}) {
+      super(...arguments);
+      this.html = html;
+      this.referenceElement  = referenceElement;
+      this.blocks = [];
+      this.blockElements = [];
+      this.processedElements = [];
+    }
 
-  getDocument: ->
-    Document.fromJSON(@blocks)
+    getDocument() {
+      return Document.fromJSON(this.blocks);
+    }
 
-  # HTML parsing
+    // HTML parsing
 
-  parse: ->
-    try
-      @createHiddenContainer()
-      html = HTMLSanitizer.sanitize(@html).getHTML()
-      @containerElement.innerHTML = html
-      walker = walkTree(@containerElement, usingFilter: nodeFilter)
-      @processNode(walker.currentNode) while walker.nextNode()
-      @translateBlockElementMarginsToNewlines()
-    finally
-      @removeHiddenContainer()
+    parse() {
+      try {
+        this.createHiddenContainer();
+        const html = HTMLSanitizer.sanitize(this.html).getHTML();
+        this.containerElement.innerHTML = html;
+        const walker = walkTree(this.containerElement, {usingFilter: nodeFilter});
+        while (walker.nextNode()) { this.processNode(walker.currentNode); }
+        return this.translateBlockElementMarginsToNewlines();
+      } finally {
+        this.removeHiddenContainer();
+      }
+    }
 
-  createHiddenContainer: ->
-    if @referenceElement
-      @containerElement = @referenceElement.cloneNode(false)
-      @containerElement.removeAttribute("id")
-      @containerElement.setAttribute("data-trix-internal", "")
-      @containerElement.style.display = "none"
-      @referenceElement.parentNode.insertBefore(@containerElement, @referenceElement.nextSibling)
-    else
-      @containerElement = makeElement(tagName: "div", style: { display: "none" })
-      document.body.appendChild(@containerElement)
+    createHiddenContainer() {
+      if (this.referenceElement) {
+        this.containerElement = this.referenceElement.cloneNode(false);
+        this.containerElement.removeAttribute("id");
+        this.containerElement.setAttribute("data-trix-internal", "");
+        this.containerElement.style.display = "none";
+        return this.referenceElement.parentNode.insertBefore(this.containerElement, this.referenceElement.nextSibling);
+      } else {
+        this.containerElement = makeElement({tagName: "div", style: { display: "none" }});
+        return document.body.appendChild(this.containerElement);
+      }
+    }
 
-  removeHiddenContainer: ->
-    removeNode(@containerElement)
+    removeHiddenContainer() {
+      return removeNode(this.containerElement);
+    }
 
-  processNode: (node) ->
-    switch node.nodeType
-      when Node.TEXT_NODE
-        unless @isInsignificantTextNode(node)
-          @appendBlockForTextNode(node)
-          @processTextNode(node)
-      when Node.ELEMENT_NODE
-        @appendBlockForElement(node)
-        @processElement(node)
+    processNode(node) {
+      switch (node.nodeType) {
+        case Node.TEXT_NODE:
+          if (!this.isInsignificantTextNode(node)) {
+            this.appendBlockForTextNode(node);
+            return this.processTextNode(node);
+          }
+          break;
+        case Node.ELEMENT_NODE:
+          this.appendBlockForElement(node);
+          return this.processElement(node);
+      }
+    }
 
-  appendBlockForTextNode: (node) ->
-    element = node.parentNode
-    if element is @currentBlockElement and @isBlockElement(node.previousSibling)
-      @appendStringWithAttributes("\n")
-    else if element is @containerElement or @isBlockElement(element)
-      attributes = @getBlockAttributes(element)
-      unless arraysAreEqual(attributes, @currentBlock?.attributes)
-        @currentBlock = @appendBlockForAttributesWithElement(attributes, element)
-        @currentBlockElement = element
+    appendBlockForTextNode(node) {
+      const element = node.parentNode;
+      if ((element === this.currentBlockElement) && this.isBlockElement(node.previousSibling)) {
+        return this.appendStringWithAttributes("\n");
+      } else if ((element === this.containerElement) || this.isBlockElement(element)) {
+        const attributes = this.getBlockAttributes(element);
+        if (!arraysAreEqual(attributes, this.currentBlock?.attributes)) {
+          this.currentBlock = this.appendBlockForAttributesWithElement(attributes, element);
+          return this.currentBlockElement = element;
+        }
+      }
+    }
 
-  appendBlockForElement: (element) ->
-    elementIsBlockElement = @isBlockElement(element)
-    currentBlockContainsElement = elementContainsNode(@currentBlockElement, element)
+    appendBlockForElement(element) {
+      const elementIsBlockElement = this.isBlockElement(element);
+      const currentBlockContainsElement = elementContainsNode(this.currentBlockElement, element);
 
-    if elementIsBlockElement and not @isBlockElement(element.firstChild)
-      unless @isInsignificantTextNode(element.firstChild) and @isBlockElement(element.firstElementChild)
-        attributes = @getBlockAttributes(element)
-        if element.firstChild
-          if not (currentBlockContainsElement and arraysAreEqual(attributes, @currentBlock.attributes))
-            @currentBlock = @appendBlockForAttributesWithElement(attributes, element)
-            @currentBlockElement = element
-          else
-            @appendStringWithAttributes("\n")
+      if (elementIsBlockElement && !this.isBlockElement(element.firstChild)) {
+        if (!this.isInsignificantTextNode(element.firstChild) || !this.isBlockElement(element.firstElementChild)) {
+          const attributes = this.getBlockAttributes(element);
+          if (element.firstChild) {
+            if (!(currentBlockContainsElement && arraysAreEqual(attributes, this.currentBlock.attributes))) {
+              this.currentBlock = this.appendBlockForAttributesWithElement(attributes, element);
+              return this.currentBlockElement = element;
+            } else {
+              return this.appendStringWithAttributes("\n");
+            }
+          }
+        }
 
-    else if @currentBlockElement and not currentBlockContainsElement and not elementIsBlockElement
-      if parentBlockElement = @findParentBlockElement(element)
-        @appendBlockForElement(parentBlockElement)
-      else
-        @currentBlock = @appendEmptyBlock()
-        @currentBlockElement = null
+      } else if (this.currentBlockElement && !currentBlockContainsElement && !elementIsBlockElement) {
+        let parentBlockElement;
+        if (parentBlockElement = this.findParentBlockElement(element)) {
+          return this.appendBlockForElement(parentBlockElement);
+        } else {
+          this.currentBlock = this.appendEmptyBlock();
+          return this.currentBlockElement = null;
+        }
+      }
+    }
 
-  findParentBlockElement: (element) ->
-    {parentElement} = element
-    while parentElement and parentElement isnt @containerElement
-      if @isBlockElement(parentElement) and parentElement in @blockElements
-        return parentElement
-      else
-        {parentElement} = parentElement
-    null
+    findParentBlockElement(element) {
+      let {parentElement} = element;
+      while (parentElement && (parentElement !== this.containerElement)) {
+        if (this.isBlockElement(parentElement) && Array.from(this.blockElements).includes(parentElement)) {
+          return parentElement;
+        } else {
+          ({parentElement} = parentElement);
+        }
+      }
+      return null;
+    }
 
-  processTextNode: (node) ->
-    string = node.data
-    unless elementCanDisplayPreformattedText(node.parentNode)
-      string = squishBreakableWhitespace(string)
-      if stringEndsWithWhitespace(node.previousSibling?.textContent)
-        string = leftTrimBreakableWhitespace(string)
-    @appendStringWithAttributes(string, @getTextAttributes(node.parentNode))
+    processTextNode(node) {
+      let string = node.data;
+      if (!elementCanDisplayPreformattedText(node.parentNode)) {
+        string = squishBreakableWhitespace(string);
+        if (stringEndsWithWhitespace(node.previousSibling?.textContent)) {
+          string = leftTrimBreakableWhitespace(string);
+        }
+      }
+      return this.appendStringWithAttributes(string, this.getTextAttributes(node.parentNode));
+    }
 
-  processElement: (element) ->
-    if nodeIsAttachmentElement(element)
-      attributes = parseTrixDataAttribute(element, "attachment")
-      if Object.keys(attributes).length
-        textAttributes = @getTextAttributes(element)
-        @appendAttachmentWithAttributes(attributes, textAttributes)
-        # We have everything we need so avoid processing inner nodes
-        element.innerHTML = ""
-      @processedElements.push(element)
-    else
-      switch tagName(element)
-        when "br"
-          unless @isExtraBR(element) or @isBlockElement(element.nextSibling)
-            @appendStringWithAttributes("\n", @getTextAttributes(element))
-          @processedElements.push(element)
-        when "img"
-          attributes = url: element.getAttribute("src"), contentType: "image"
-          attributes[key] = value for key, value of getImageDimensions(element)
-          @appendAttachmentWithAttributes(attributes, @getTextAttributes(element))
-          @processedElements.push(element)
-        when "tr"
-          unless element.parentNode.firstChild is element
-            @appendStringWithAttributes("\n")
-        when "td"
-          unless element.parentNode.firstChild is element
-            @appendStringWithAttributes(" | ")
+    processElement(element) {
+      let attributes;
+      if (nodeIsAttachmentElement(element)) {
+        attributes = parseTrixDataAttribute(element, "attachment");
+        if (Object.keys(attributes).length) {
+          const textAttributes = this.getTextAttributes(element);
+          this.appendAttachmentWithAttributes(attributes, textAttributes);
+          // We have everything we need so avoid processing inner nodes
+          element.innerHTML = "";
+        }
+        return this.processedElements.push(element);
+      } else {
+        switch (tagName(element)) {
+          case "br":
+            if (!this.isExtraBR(element) && !this.isBlockElement(element.nextSibling)) {
+              this.appendStringWithAttributes("\n", this.getTextAttributes(element));
+            }
+            return this.processedElements.push(element);
+          case "img":
+            attributes = {url: element.getAttribute("src"), contentType: "image"};
+            var object = getImageDimensions(element);
+            for (let key in object) { const value = object[key]; attributes[key] = value; }
+            this.appendAttachmentWithAttributes(attributes, this.getTextAttributes(element));
+            return this.processedElements.push(element);
+          case "tr":
+            if (element.parentNode.firstChild !== element) {
+              return this.appendStringWithAttributes("\n");
+            }
+            break;
+          case "td":
+            if (element.parentNode.firstChild !== element) {
+              return this.appendStringWithAttributes(" | ");
+            }
+            break;
+        }
+      }
+    }
 
-  # Document construction
+    // Document construction
 
-  appendBlockForAttributesWithElement: (attributes, element) ->
-    @blockElements.push(element)
-    block = blockForAttributes(attributes)
-    @blocks.push(block)
-    block
+    appendBlockForAttributesWithElement(attributes, element) {
+      this.blockElements.push(element);
+      const block = blockForAttributes(attributes);
+      this.blocks.push(block);
+      return block;
+    }
 
-  appendEmptyBlock: ->
-    @appendBlockForAttributesWithElement([], null)
+    appendEmptyBlock() {
+      return this.appendBlockForAttributesWithElement([], null);
+    }
 
-  appendStringWithAttributes: (string, attributes) ->
-    @appendPiece(pieceForString(string, attributes))
+    appendStringWithAttributes(string, attributes) {
+      return this.appendPiece(pieceForString(string, attributes));
+    }
 
-  appendAttachmentWithAttributes: (attachment, attributes) ->
-    @appendPiece(pieceForAttachment(attachment, attributes))
+    appendAttachmentWithAttributes(attachment, attributes) {
+      return this.appendPiece(pieceForAttachment(attachment, attributes));
+    }
 
-  appendPiece: (piece) ->
-    if @blocks.length is 0
-      @appendEmptyBlock()
-    @blocks[@blocks.length - 1].text.push(piece)
+    appendPiece(piece) {
+      if (this.blocks.length === 0) {
+        this.appendEmptyBlock();
+      }
+      return this.blocks[this.blocks.length - 1].text.push(piece);
+    }
 
-  appendStringToTextAtIndex: (string, index) ->
-    {text} = @blocks[index]
-    piece = text[text.length - 1]
+    appendStringToTextAtIndex(string, index) {
+      const {text} = this.blocks[index];
+      const piece = text[text.length - 1];
 
-    if piece?.type is "string"
-      piece.string += string
-    else
-      text.push(pieceForString(string))
+      if (piece?.type === "string") {
+        return piece.string += string;
+      } else {
+        return text.push(pieceForString(string));
+      }
+    }
 
-  prependStringToTextAtIndex: (string, index) ->
-    {text} = @blocks[index]
-    piece = text[0]
+    prependStringToTextAtIndex(string, index) {
+      const {text} = this.blocks[index];
+      const piece = text[0];
 
-    if piece?.type is "string"
-      piece.string = string + piece.string
-    else
-      text.unshift(pieceForString(string))
+      if (piece?.type === "string") {
+        return piece.string = string + piece.string;
+      } else {
+        return text.unshift(pieceForString(string));
+      }
+    }
 
-  pieceForString = (string, attributes = {}) ->
-    type = "string"
-    string = normalizeSpaces(string)
-    {string, attributes, type}
+    // Attribute parsing
 
-  pieceForAttachment = (attachment, attributes = {}) ->
-    type = "attachment"
-    {attachment, attributes, type}
+    getTextAttributes(element) {
+      let value;
+      const attributes = {};
+      for (let attribute in config.textAttributes) {
+        const configAttr = config.textAttributes[attribute];
+        if (configAttr.tagName && findClosestElementFromNode(element, {matchingSelector: configAttr.tagName, untilNode: this.containerElement})) {
+          attributes[attribute] = true;
 
-  blockForAttributes = (attributes = {}) ->
-    text = []
-    {text, attributes}
+        } else if (configAttr.parser) {
+          if (value = configAttr.parser(element)) {
+            let attributeInheritedFromBlock = false;
+            for (let blockElement of Array.from(this.findBlockElementAncestors(element))) {
+              if (configAttr.parser(blockElement) === value) {
+                attributeInheritedFromBlock = true;
+                break;
+              }
+            }
+            if (!attributeInheritedFromBlock) {
+              attributes[attribute] = value;
+            }
+          }
 
-  # Attribute parsing
+        } else if (configAttr.styleProperty) {
+          if (value = element.style[configAttr.styleProperty]) {
+            attributes[attribute] = value;
+          }
+        }
+      }
 
-  getTextAttributes: (element) ->
-    attributes = {}
-    for attribute, configAttr of config.textAttributes
-      if configAttr.tagName and findClosestElementFromNode(element, matchingSelector: configAttr.tagName, untilNode: @containerElement)
-        attributes[attribute] = true
+      if (nodeIsAttachmentElement(element)) {
+        const object = parseTrixDataAttribute(element, "attributes");
+        for (let key in object) {
+          value = object[key];
+          attributes[key] = value;
+        }
+      }
 
-      else if configAttr.parser
-        if value = configAttr.parser(element)
-          attributeInheritedFromBlock = false
-          for blockElement in @findBlockElementAncestors(element)
-            if configAttr.parser(blockElement) is value
-              attributeInheritedFromBlock = true
-              break
-          unless attributeInheritedFromBlock
-            attributes[attribute] = value
+      return attributes;
+    }
 
-      else if configAttr.styleProperty
-        if value = element.style[configAttr.styleProperty]
-          attributes[attribute] = value
+    getBlockAttributes(element) {
+      const attributes = [];
+      while (element && (element !== this.containerElement)) {
+        for (let attribute in config.blockAttributes) {
+          const attrConfig = config.blockAttributes[attribute];
+          if (attrConfig.parse !== false) {
+            if (tagName(element) === attrConfig.tagName) {
+              if (attrConfig.test?.(element) || !attrConfig.test) {
+                attributes.push(attribute);
+                if (attrConfig.listAttribute) { attributes.push(attrConfig.listAttribute); }
+              }
+            }
+          }
+        }
+        element = element.parentNode;
+      }
+      return attributes.reverse();
+    }
 
-    if nodeIsAttachmentElement(element)
-      for key, value of parseTrixDataAttribute(element, "attributes")
-        attributes[key] = value
+    findBlockElementAncestors(element) {
+      const ancestors = [];
+      while (element && (element !== this.containerElement)) {
+        var needle;
+        if ((needle = tagName(element), Array.from(getBlockTagNames()).includes(needle))) {
+          ancestors.push(element);
+        }
+        element = element.parentNode;
+      }
+      return ancestors;
+    }
 
-    attributes
+    // Element inspection
 
-  getBlockAttributes: (element) ->
-    attributes = []
-    while element and element isnt @containerElement
-      for attribute, attrConfig of config.blockAttributes when attrConfig.parse isnt false
-        if tagName(element) is attrConfig.tagName
-          if attrConfig.test?(element) or not attrConfig.test
-            attributes.push(attribute)
-            attributes.push(attrConfig.listAttribute) if attrConfig.listAttribute
-      element = element.parentNode
-    attributes.reverse()
+    isBlockElement(element) {
+      let needle;
+      if (element?.nodeType !== Node.ELEMENT_NODE) { return; }
+      if (nodeIsAttachmentElement(element)) { return; }
+      if (findClosestElementFromNode(element, {matchingSelector: "td", untilNode: this.containerElement})) { return; }
+      return (needle = tagName(element), Array.from(getBlockTagNames()).includes(needle)) || (window.getComputedStyle(element).display === "block");
+    }
 
-  findBlockElementAncestors: (element) ->
-    ancestors = []
-    while element and element isnt @containerElement
-      if tagName(element) in getBlockTagNames()
-        ancestors.push(element)
-      element = element.parentNode
-    ancestors
+    isInsignificantTextNode(node) {
+      if (node?.nodeType !== Node.TEXT_NODE) { return; }
+      if (!stringIsAllBreakableWhitespace(node.data)) { return; }
+      const {parentNode, previousSibling, nextSibling} = node;
+      if (nodeEndsWithNonWhitespace(parentNode.previousSibling) && !this.isBlockElement(parentNode.previousSibling)) { return; }
+      if (elementCanDisplayPreformattedText(parentNode)) { return; }
+      return !previousSibling || this.isBlockElement(previousSibling) || !nextSibling || this.isBlockElement(nextSibling);
+    }
 
-  parseTrixDataAttribute = (element, name) ->
-    try
-     JSON.parse(element.getAttribute("data-trix-#{name}"))
-    catch
-      {}
+    isExtraBR(element) {
+      return (tagName(element) === "br") &&
+        this.isBlockElement(element.parentNode) &&
+        (element.parentNode.lastChild === element);
+    }
 
-  getImageDimensions = (element) ->
-    width = element.getAttribute("width")
-    height = element.getAttribute("height")
-    dimensions = {}
-    dimensions.width = parseInt(width, 10) if width
-    dimensions.height = parseInt(height, 10) if height
-    dimensions
+    // Margin translation
 
-  # Element inspection
+    translateBlockElementMarginsToNewlines() {
+      const defaultMargin = this.getMarginOfDefaultBlockElement();
 
-  isBlockElement: (element) ->
-    return unless element?.nodeType is Node.ELEMENT_NODE
-    return if nodeIsAttachmentElement(element)
-    return if findClosestElementFromNode(element, matchingSelector: "td", untilNode: @containerElement)
-    tagName(element) in getBlockTagNames() or window.getComputedStyle(element).display is "block"
+      return (() => {
+        const result = [];
+        for (let index = 0; index < this.blocks.length; index++) {
+          var margin;
+          const block = this.blocks[index];
+          if ((margin = this.getMarginOfBlockElementAtIndex(index))) {
+            if (margin.top > (defaultMargin.top * 2)) {
+              this.prependStringToTextAtIndex("\n", index);
+            }
 
-  isInsignificantTextNode: (node) ->
-    return unless node?.nodeType is Node.TEXT_NODE
-    return unless stringIsAllBreakableWhitespace(node.data)
-    {parentNode, previousSibling, nextSibling} = node
-    return if nodeEndsWithNonWhitespace(parentNode.previousSibling) and not @isBlockElement(parentNode.previousSibling)
-    return if elementCanDisplayPreformattedText(parentNode)
-    not previousSibling or @isBlockElement(previousSibling) or not nextSibling or @isBlockElement(nextSibling)
+            if (margin.bottom > (defaultMargin.bottom * 2)) {
+              result.push(this.appendStringToTextAtIndex("\n", index));
+            } else {
+              result.push(undefined);
+            }
+          }
+        }
+        return result;
+      })();
+    }
 
-  isExtraBR: (element) ->
-    tagName(element) is "br" and
-      @isBlockElement(element.parentNode) and
-      element.parentNode.lastChild is element
+    getMarginOfBlockElementAtIndex(index) {
+      let element;
+      if (element = this.blockElements[index]) {
+        if (element.textContent) {
+          let needle;
+          if ((needle = tagName(element), !Array.from(getBlockTagNames()).includes(needle)) && !Array.from(this.processedElements).includes(element)) {
+            return getBlockElementMargin(element);
+          }
+        }
+      }
+    }
 
-  # Margin translation
+    getMarginOfDefaultBlockElement() {
+      const element = makeElement(config.blockAttributes.default.tagName);
+      this.containerElement.appendChild(element);
+      return getBlockElementMargin(element);
+    }
+  };
+  HTMLParser.initClass();
+  return HTMLParser;
+})();
 
-  translateBlockElementMarginsToNewlines: ->
-    defaultMargin = @getMarginOfDefaultBlockElement()
+// Helpers
 
-    for block, index in @blocks when margin = @getMarginOfBlockElementAtIndex(index)
-      if margin.top > defaultMargin.top * 2
-        @prependStringToTextAtIndex("\n", index)
+var elementCanDisplayPreformattedText = function(element) {
+  const {whiteSpace} = window.getComputedStyle(element);
+  return ["pre", "pre-wrap", "pre-line"].includes(whiteSpace);
+};
 
-      if margin.bottom > defaultMargin.bottom * 2
-        @appendStringToTextAtIndex("\n", index)
+var nodeEndsWithNonWhitespace = node => node && !stringEndsWithWhitespace(node.textContent);
 
-  getMarginOfBlockElementAtIndex: (index) ->
-    if element = @blockElements[index]
-      if element.textContent
-        unless tagName(element) in getBlockTagNames() or element in @processedElements
-          getBlockElementMargin(element)
+var getBlockElementMargin = function(element) {
+  const style = window.getComputedStyle(element);
+  if (style.display === "block") {
+    return {top: parseInt(style.marginTop), bottom: parseInt(style.marginBottom)};
+  }
+};
 
-  getMarginOfDefaultBlockElement: ->
-    element = makeElement(config.blockAttributes.default.tagName)
-    @containerElement.appendChild(element)
-    getBlockElementMargin(element)
+var nodeFilter = function(node) {
+  if (tagName(node) === "style") {
+    return NodeFilter.FILTER_REJECT;
+  } else {
+    return NodeFilter.FILTER_ACCEPT;
+  }
+};
 
-# Helpers
+// Whitespace
 
-elementCanDisplayPreformattedText = (element) ->
-  {whiteSpace} = window.getComputedStyle(element)
-  whiteSpace in ["pre", "pre-wrap", "pre-line"]
+var leftTrimBreakableWhitespace = string => string.replace(new RegExp(`^${breakableWhitespacePattern.source}+`), "");
 
-nodeEndsWithNonWhitespace = (node) ->
-  node and not stringEndsWithWhitespace(node.textContent)
+var stringIsAllBreakableWhitespace = string => new RegExp(`^${breakableWhitespacePattern.source}*$`).test(string);
 
-getBlockElementMargin = (element) ->
-  style = window.getComputedStyle(element)
-  if style.display is "block"
-    top: parseInt(style.marginTop), bottom: parseInt(style.marginBottom)
-
-nodeFilter = (node) ->
-  if tagName(node) is "style"
-    NodeFilter.FILTER_REJECT
-  else
-    NodeFilter.FILTER_ACCEPT
-
-# Whitespace
-
-leftTrimBreakableWhitespace = (string) ->
-  string.replace(///^#{breakableWhitespacePattern.source}+///, "")
-
-stringIsAllBreakableWhitespace = (string) ->
-  ///^#{breakableWhitespacePattern.source}*$///.test(string)
-
-stringEndsWithWhitespace = (string) ->
-  /\s$/.test(string)
+var stringEndsWithWhitespace = string => /\s$/.test(string);
