@@ -447,12 +447,6 @@ export default class Document extends TrixObject
 
     baseBlockAttributes
 
-  attributesForBlock = (block) ->
-    attributes = {}
-    if attributeName = block.getLastAttribute()
-      attributes[attributeName] = true
-    attributes
-
   getAttachmentById: (attachmentId) ->
     return attachment for attachment in @getAttachments() when attachment.id is attachmentId
 
@@ -570,3 +564,9 @@ export default class Document extends TrixObject
 
   toConsole: ->
     JSON.stringify(JSON.parse(block.text.toConsole()) for block in @blockList.toArray())
+
+attributesForBlock = (block) ->
+  attributes = {}
+  if attributeName = block.getLastAttribute()
+    attributes[attributeName] = true
+  attributes

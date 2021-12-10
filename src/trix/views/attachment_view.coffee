@@ -105,20 +105,20 @@ export default class AttachmentView extends ObjectView
   findProgressElement: ->
     @findElement()?.querySelector("progress")
 
-  createCursorTarget = (name) ->
-    makeElement
-      tagName: "span"
-      textContent: ZERO_WIDTH_SPACE
-      data:
-        trixCursorTarget: name
-        trixSerialize: false
-
   # Attachment delegate
 
   attachmentDidChangeUploadProgress: ->
     value = @attachment.getUploadProgress()
     if progressElement = @findProgressElement()
       progressElement.value = value
+
+createCursorTarget = (name) ->
+  makeElement
+    tagName: "span"
+    textContent: ZERO_WIDTH_SPACE
+    data:
+      trixCursorTarget: name
+      trixSerialize: false
 
 htmlContainsTagName = (html, tagName) ->
   div = makeElement("div")

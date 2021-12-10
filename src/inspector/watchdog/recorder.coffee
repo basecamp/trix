@@ -77,8 +77,8 @@ export default class Recorder
     serializer = new Serializer @element
     serializer.getSnapshot()
 
-  characterFromKeyboardEvent = (event) ->
-    if event.which is null
-      String.fromCharCode(event.keyCode)
-    else if event.which isnt 0 and event.charCode isnt 0
-      String.fromCharCode(event.charCode)
+characterFromKeyboardEvent = (event) ->
+  if event.which is null
+    String.fromCharCode(event.keyCode)
+  else if event.which isnt 0 and event.charCode isnt 0
+    String.fromCharCode(event.charCode)

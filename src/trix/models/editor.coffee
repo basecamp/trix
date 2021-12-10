@@ -3,10 +3,9 @@ import HTMLParser from "trix/models/html_parser"
 
 import UndoManager from "trix/models/undo_manager"
 import { attachmentGalleryFilter } from "trix/filters/attachment_gallery_filter"
+DEFAULT_FILTERS = [ attachmentGalleryFilter ]
 
 export default class Editor
-  DEFAULT_FILTERS = [ attachmentGalleryFilter ]
-
   constructor: (composition, selectionManager, element) ->
     @composition = composition
     @selectionManager = selectionManager

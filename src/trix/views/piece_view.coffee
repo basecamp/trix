@@ -85,18 +85,16 @@ export default class PieceView extends ObjectView
         attributes[key] = value
         return makeElement(config.groupTagName, attributes)
 
-  nbsp = NON_BREAKING_SPACE
-
   preserveSpaces: (string) ->
     if @context.isLast
-      string = string.replace(/\ $/, nbsp)
+      string = string.replace(/\ $/, NON_BREAKING_SPACE)
 
     string = string
-      .replace(/(\S)\ {3}(\S)/g, "$1 #{nbsp} $2")
-      .replace(/\ {2}/g, "#{nbsp} ")
-      .replace(/\ {2}/g, " #{nbsp}")
+      .replace(/(\S)\ {3}(\S)/g, "$1 #{NON_BREAKING_SPACE} $2")
+      .replace(/\ {2}/g, "#{NON_BREAKING_SPACE} ")
+      .replace(/\ {2}/g, " #{NON_BREAKING_SPACE}")
 
     if @context.isFirst or @context.followsWhitespace
-      string = string.replace(/^\ /, nbsp)
+      string = string.replace(/^\ /, NON_BREAKING_SPACE)
 
     string

@@ -129,32 +129,32 @@ export default class LocationMapper
 
     nodes
 
-  nodeLength = (node) ->
-    if node.nodeType is Node.TEXT_NODE
-      if nodeIsCursorTarget(node)
-        0
-      else
-        string = node.textContent
-        string.length
-    else if tagName(node) is "br" or nodeIsAttachmentElement(node)
-      1
-    else
+nodeLength = (node) ->
+  if node.nodeType is Node.TEXT_NODE
+    if nodeIsCursorTarget(node)
       0
-
-  acceptSignificantNodes = (node) ->
-    if rejectEmptyTextNodes(node) is NodeFilter.FILTER_ACCEPT
-      rejectAttachmentContents(node)
     else
-      NodeFilter.FILTER_REJECT
+      string = node.textContent
+      string.length
+  else if tagName(node) is "br" or nodeIsAttachmentElement(node)
+    1
+  else
+    0
 
-  rejectEmptyTextNodes = (node) ->
-    if nodeIsEmptyTextNode(node)
-      NodeFilter.FILTER_REJECT
-    else
-      NodeFilter.FILTER_ACCEPT
+acceptSignificantNodes = (node) ->
+  if rejectEmptyTextNodes(node) is NodeFilter.FILTER_ACCEPT
+    rejectAttachmentContents(node)
+  else
+    NodeFilter.FILTER_REJECT
 
-  rejectAttachmentContents = (node) ->
-    if nodeIsAttachmentElement(node.parentNode)
-      NodeFilter.FILTER_REJECT
-    else
-      NodeFilter.FILTER_ACCEPT
+rejectEmptyTextNodes = (node) ->
+  if nodeIsEmptyTextNode(node)
+    NodeFilter.FILTER_REJECT
+  else
+    NodeFilter.FILTER_ACCEPT
+
+rejectAttachmentContents = (node) ->
+  if nodeIsAttachmentElement(node.parentNode)
+    NodeFilter.FILTER_REJECT
+  else
+    NodeFilter.FILTER_ACCEPT

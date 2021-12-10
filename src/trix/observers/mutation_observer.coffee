@@ -3,10 +3,10 @@ import BasicObject from "trix/core/basic_object"
 import { findClosestElementFromNode, nodeIsEmptyTextNode, nodeIsBlockStartComment,
 normalizeSpaces, summarizeStringChange, tagName } from "trix/core/helpers"
 
-export default class MutationObserver extends BasicObject
-  mutableAttributeName = "data-trix-mutable"
-  mutableSelector = "[#{mutableAttributeName}]"
+mutableAttributeName = "data-trix-mutable"
+mutableSelector = "[#{mutableAttributeName}]"
 
+export default class MutationObserver extends BasicObject
   options =
     attributes: true
     childList: true
@@ -123,15 +123,15 @@ export default class MutationObserver extends BasicObject
     additions: if added then [added] else []
     deletions: if removed then [removed] else []
 
-  getTextForNodes = (nodes = []) ->
-    text = []
-    for node in nodes
-      switch node.nodeType
-        when Node.TEXT_NODE
-          text.push(node.data)
-        when Node.ELEMENT_NODE
-          if tagName(node) is "br"
-            text.push("\n")
-          else
-            text.push(getTextForNodes(node.childNodes)...)
-    text
+getTextForNodes = (nodes = []) ->
+  text = []
+  for node in nodes
+    switch node.nodeType
+      when Node.TEXT_NODE
+        text.push(node.data)
+      when Node.ELEMENT_NODE
+        if tagName(node) is "br"
+          text.push("\n")
+        else
+          text.push(getTextForNodes(node.childNodes)...)
+  text

@@ -399,14 +399,6 @@ export default class Level2InputController extends InputController
         if minLength is 0 or domRange.toString().length >= minLength
           domRange
 
-  staticRangeToRange = (staticRange) ->
-    range = document.createRange()
-    range.setStart(staticRange.startContainer, staticRange.startOffset)
-    range.setEnd(staticRange.endContainer, staticRange.endOffset)
-    range
-
-  # Event helpers
-
   withEvent: (event, fn) ->
     @event = event
     try
@@ -415,27 +407,35 @@ export default class Level2InputController extends InputController
       @event = null
     result
 
-  dragEventHasFiles = (event) ->
-    "Files" in (event.dataTransfer?.types ? [])
+staticRangeToRange = (staticRange) ->
+  range = document.createRange()
+  range.setStart(staticRange.startContainer, staticRange.startOffset)
+  range.setEnd(staticRange.endContainer, staticRange.endOffset)
+  range
 
-  pasteEventHasFilesOnly = (event) ->
-    if clipboard = event.clipboardData
-      "Files" in clipboard.types and
-        clipboard.types.length is 1 and
-        clipboard.files.length >= 1
+# Event helpers
 
-  pasteEventHasPlainTextOnly = (event) ->
-    if clipboard = event.clipboardData
-      "text/plain" in clipboard.types and
-        clipboard.types.length is 1
+dragEventHasFiles = (event) ->
+  "Files" in (event.dataTransfer?.types ? [])
 
-  keyboardCommandFromKeyEvent = (event) ->
-    command = []
-    command.push("alt") if event.altKey
-    command.push("shift") if event.shiftKey
-    command.push(event.key)
-    command
+pasteEventHasFilesOnly = (event) ->
+  if clipboard = event.clipboardData
+    "Files" in clipboard.types and
+      clipboard.types.length is 1 and
+      clipboard.files.length >= 1
 
-  pointFromEvent = (event) ->
-    x: event.clientX
-    y: event.clientY
+pasteEventHasPlainTextOnly = (event) ->
+  if clipboard = event.clipboardData
+    "text/plain" in clipboard.types and
+      clipboard.types.length is 1
+
+keyboardCommandFromKeyEvent = (event) ->
+  command = []
+  command.push("alt") if event.altKey
+  command.push("shift") if event.shiftKey
+  command.push(event.key)
+  command
+
+pointFromEvent = (event) ->
+  x: event.clientX
+  y: event.clientY

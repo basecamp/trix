@@ -2,11 +2,11 @@ import BasicObject from "trix/core/basic_object"
 
 import { tagName, removeNode, walkTree, nodeIsAttachmentElement } from "trix/core/helpers"
 
-export default class HTMLSanitizer extends BasicObject
-  DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height class".split(" ")
-  DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
-  DEFAULT_FORBIDDEN_ELEMENTS = "script iframe".split(" ")
+DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height class".split(" ")
+DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
+DEFAULT_FORBIDDEN_ELEMENTS = "script iframe".split(" ")
 
+export default class HTMLSanitizer extends BasicObject
   @sanitize: (html, options) ->
     sanitizer = new this html, options
     sanitizer.sanitize()
@@ -78,11 +78,11 @@ export default class HTMLSanitizer extends BasicObject
   elementIsntSerializable: (element) ->
     element.getAttribute("data-trix-serialize") is "false" and not nodeIsAttachmentElement(element)
 
-  createBodyElementForHTML = (html = "") ->
-    # Remove everything after </html>
-    html = html.replace(/<\/html[^>]*>[^]*$/i, "</html>")
-    doc = document.implementation.createHTMLDocument("")
-    doc.documentElement.innerHTML = html
-    for element in doc.head.querySelectorAll("style")
-      doc.body.appendChild(element)
-    doc.body
+createBodyElementForHTML = (html = "") ->
+  # Remove everything after </html>
+  html = html.replace(/<\/html[^>]*>[^]*$/i, "</html>")
+  doc = document.implementation.createHTMLDocument("")
+  doc.documentElement.innerHTML = html
+  for element in doc.head.querySelectorAll("style")
+    doc.body.appendChild(element)
+  doc.body

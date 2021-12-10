@@ -1,6 +1,6 @@
 import View from "inspector/view"
 
-Trix.Inspector.registerView class extends View
+class PerformanceView extends View
   title: "Performance"
   template: "performance"
 
@@ -49,3 +49,5 @@ Trix.Inspector.registerView class extends View
       -> performance.now()
     else
       -> new Date().getTime()
+
+Trix.Inspector.registerView PerformanceView

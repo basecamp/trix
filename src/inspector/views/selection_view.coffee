@@ -1,7 +1,7 @@
 import View from "inspector/view"
 import UTF16String from "trix/core/utilities/utf16_string"
 
-Trix.Inspector.registerView class extends View
+class SelectionView extends View
   title: "Selection"
   template: "selection"
   events:
@@ -32,3 +32,5 @@ Trix.Inspector.registerView class extends View
 
   getTitle: ->
     "#{@title} (#{@range.join()})"
+
+Trix.Inspector.registerView SelectionView

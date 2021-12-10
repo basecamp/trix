@@ -63,11 +63,11 @@ export default class DocumentView extends ObjectView
 
     fragment
 
-  findStoredElements = (element) ->
-    element.querySelectorAll("[data-trix-store-key]")
+findStoredElements = (element) ->
+  element.querySelectorAll("[data-trix-store-key]")
 
-  elementsHaveEqualHTML = (element, otherElement) ->
-    ignoreSpaces(element.innerHTML) is ignoreSpaces(otherElement.innerHTML)
+elementsHaveEqualHTML = (element, otherElement) ->
+  ignoreSpaces(element.innerHTML) is ignoreSpaces(otherElement.innerHTML)
 
-  ignoreSpaces = (html) ->
-    html.replace(/&nbsp;/g, " ")
+ignoreSpaces = (html) ->
+  html.replace(/&nbsp;/g, " ")

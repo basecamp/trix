@@ -48,11 +48,11 @@ export default class SelectionChangeObserver extends BasicObject
       @update()
       requestAnimationFrame(@run)
 
-  domRangesAreEqual = (left, right) ->
-    left?.startContainer is right?.startContainer and
-      left?.startOffset is right?.startOffset and
-      left?.endContainer is right?.endContainer and
-      left?.endOffset is right?.endOffset
+domRangesAreEqual = (left, right) ->
+  left?.startContainer is right?.startContainer and
+    left?.startOffset is right?.startOffset and
+    left?.endContainer is right?.endContainer and
+    left?.endOffset is right?.endOffset
 
 export selectionChangeObserver = new SelectionChangeObserver
 

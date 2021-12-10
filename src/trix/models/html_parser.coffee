@@ -51,12 +51,6 @@ export default class HTMLParser extends BasicObject
   removeHiddenContainer: ->
     removeNode(@containerElement)
 
-  nodeFilter = (node) ->
-    if tagName(node) is "style"
-      NodeFilter.FILTER_REJECT
-    else
-      NodeFilter.FILTER_ACCEPT
-
   processNode: (node) ->
     switch node.nodeType
       when Node.TEXT_NODE
@@ -277,13 +271,6 @@ export default class HTMLParser extends BasicObject
       @isBlockElement(element.parentNode) and
       element.parentNode.lastChild is element
 
-  elementCanDisplayPreformattedText = (element) ->
-    {whiteSpace} = window.getComputedStyle(element)
-    whiteSpace in ["pre", "pre-wrap", "pre-line"]
-
-  nodeEndsWithNonWhitespace = (node) ->
-    node and not stringEndsWithWhitespace(node.textContent)
-
   # Margin translation
 
   translateBlockElementMarginsToNewlines: ->
@@ -307,18 +294,33 @@ export default class HTMLParser extends BasicObject
     @containerElement.appendChild(element)
     getBlockElementMargin(element)
 
-  getBlockElementMargin = (element) ->
-    style = window.getComputedStyle(element)
-    if style.display is "block"
-      top: parseInt(style.marginTop), bottom: parseInt(style.marginBottom)
+# Helpers
 
-  # Whitespace
+elementCanDisplayPreformattedText = (element) ->
+  {whiteSpace} = window.getComputedStyle(element)
+  whiteSpace in ["pre", "pre-wrap", "pre-line"]
 
-  leftTrimBreakableWhitespace = (string) ->
-    string.replace(///^#{breakableWhitespacePattern.source}+///, "")
+nodeEndsWithNonWhitespace = (node) ->
+  node and not stringEndsWithWhitespace(node.textContent)
 
-  stringIsAllBreakableWhitespace = (string) ->
-    ///^#{breakableWhitespacePattern.source}*$///.test(string)
+getBlockElementMargin = (element) ->
+  style = window.getComputedStyle(element)
+  if style.display is "block"
+    top: parseInt(style.marginTop), bottom: parseInt(style.marginBottom)
 
-  stringEndsWithWhitespace = (string) ->
-    /\s$/.test(string)
+nodeFilter = (node) ->
+  if tagName(node) is "style"
+    NodeFilter.FILTER_REJECT
+  else
+    NodeFilter.FILTER_ACCEPT
+
+# Whitespace
+
+leftTrimBreakableWhitespace = (string) ->
+  string.replace(///^#{breakableWhitespacePattern.source}+///, "")
+
+stringIsAllBreakableWhitespace = (string) ->
+  ///^#{breakableWhitespacePattern.source}*$///.test(string)
+
+stringEndsWithWhitespace = (string) ->
+  /\s$/.test(string)

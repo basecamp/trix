@@ -11,10 +11,9 @@ import { dataTransferIsPlainText, dataTransferIsWritable, keyEventIsKeyboardComm
 import { selectionChangeObserver } from "trix/observers/selection_change_observer"
 
 { browser, keyNames } = config
+pastedFileCount = 0
 
 export default class Level0InputController extends InputController
-  pastedFileCount = 0
-
   constructor: ->
     super(arguments...)
     @resetInputSummary()

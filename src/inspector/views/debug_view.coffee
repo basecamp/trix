@@ -2,7 +2,7 @@ import View from "inspector/view"
 
 import { handleEvent } from "trix/core/helpers"
 
-Trix.Inspector.registerView class extends View
+class DebugView extends View
   title: "Debug"
   template: "debug"
 
@@ -31,3 +31,5 @@ Trix.Inspector.registerView class extends View
     else
       @control?.uninstall()
       @control = null
+
+Trix.Inspector.registerView DebugView

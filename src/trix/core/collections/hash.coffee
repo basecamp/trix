@@ -68,32 +68,32 @@ export default class Hash extends TrixObject
   contentsForInspection: ->
     values: JSON.stringify(@values)
 
-  object = (key, value) ->
-    result = {}
+object = (key, value) ->
+  result = {}
+  result[key] = value
+  result
+
+merge = (object, values) ->
+  result = copy(object)
+  for key, value of values
     result[key] = value
-    result
+  result
 
-  merge = (object, values) ->
-    result = copy(object)
-    for key, value of values
-      result[key] = value
-    result
+copy = (object, keyToRemove) ->
+  result = {}
+  sortedKeys = Object.keys(object).sort()
+  for key in sortedKeys when key isnt keyToRemove
+    result[key] = object[key]
+  result
 
-  copy = (object, keyToRemove) ->
-    result = {}
-    sortedKeys = Object.keys(object).sort()
-    for key in sortedKeys when key isnt keyToRemove
-      result[key] = object[key]
-    result
+box = (object) ->
+  if object instanceof Hash
+    object
+  else
+    new Hash object
 
-  box = (object) ->
-    if object instanceof Hash
-      object
-    else
-      new Hash object
-
-  unbox = (object) ->
-    if object instanceof Hash
-      object.values
-    else
-      object
+unbox = (object) ->
+  if object instanceof Hash
+    object.values
+  else
+    object

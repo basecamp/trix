@@ -11,6 +11,8 @@ import LineBreakInsertion from "trix/models/line_break_insertion"
 
 import { normalizeRange, rangesAreEqual, rangeIsCollapsed, objectsAreEqual, arrayStartsWith, summarizeArrayChange, getAllAttributeNames, getBlockConfig, getTextConfig, extend } from "trix/core/helpers"
 
+PLACEHOLDER = " "
+
 export default class Composition extends BasicObject
   constructor: ->
     super(arguments...)
@@ -205,11 +207,9 @@ export default class Composition extends BasicObject
     @removeCurrentAttribute(block.getLastAttribute())
     @setSelection(startPosition)
 
-  placeholder = " "
-
   insertPlaceholder: ->
     @placeholderPosition = @getPosition()
-    @insertString(placeholder)
+    @insertString(PLACEHOLDER)
 
   selectPlaceholder: ->
     if @placeholderPosition?

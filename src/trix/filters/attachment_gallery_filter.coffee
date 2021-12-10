@@ -3,11 +3,11 @@ export attachmentGalleryFilter = (snapshot) ->
   filter.perform()
   filter.getSnapshot()
 
-class Filter
-  BLOCK_ATTRIBUTE_NAME = "attachmentGallery"
-  TEXT_ATTRIBUTE_NAME  = "presentation"
-  TEXT_ATTRIBUTE_VALUE = "gallery"
+BLOCK_ATTRIBUTE_NAME = "attachmentGallery"
+TEXT_ATTRIBUTE_NAME  = "presentation"
+TEXT_ATTRIBUTE_VALUE = "gallery"
 
+class Filter
   constructor: (snapshot) ->
     {@document, @selectedRange} = snapshot
 

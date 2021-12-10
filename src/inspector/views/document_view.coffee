@@ -1,6 +1,6 @@
 import View from "inspector/view"
 
-Trix.Inspector.registerView class extends View
+class DocumentView extends View
   title: "Document"
   template: "document"
   events:
@@ -10,3 +10,5 @@ Trix.Inspector.registerView class extends View
   render: ->
     @document = @editor.getDocument()
     super.render(arguments...)
+
+Trix.Inspector.registerView DocumentView

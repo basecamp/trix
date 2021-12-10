@@ -28,5 +28,5 @@ export default class TextView extends ObjectView
   getPieces: ->
     piece for piece in @text.getPieces() when not piece.hasAttribute("blockBreak")
 
-  endsWithWhitespace = (piece) ->
-    /\s$/.test(piece?.toString())
+endsWithWhitespace = (piece) ->
+  /\s$/.test(piece?.toString())

@@ -1,6 +1,6 @@
 import View from "inspector/view"
 
-Trix.Inspector.registerView class extends View
+class UndoView extends View
   title: "Undo"
   template: "undo"
   events:
@@ -10,3 +10,5 @@ Trix.Inspector.registerView class extends View
   render: ->
     {@undoEntries, @redoEntries} = @editor.undoManager
     super(arguments...)
+
+Trix.Inspector.registerView UndoView

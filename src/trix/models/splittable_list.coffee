@@ -154,17 +154,17 @@ export default class SplittableList extends TrixObject
   isEqualTo: (splittableList) ->
     super(arguments...) or objectArraysAreEqual(@objects, splittableList?.objects)
 
-  objectArraysAreEqual = (left, right = []) ->
-    return false unless left.length is right.length
-    result = true
-    result = false for object, index in left when result and not object.isEqualTo(right[index])
-    result
-
   contentsForInspection: ->
     objects: "[#{(object.inspect() for object in @objects).join(", ")}]"
 
-  startOfRange = (range) ->
-    range[0]
+objectArraysAreEqual = (left, right = []) ->
+  return false unless left.length is right.length
+  result = true
+  result = false for object, index in left when result and not object.isEqualTo(right[index])
+  result
 
-  endOfRange = (range) ->
-    range[1]
+startOfRange = (range) ->
+  range[0]
+
+endOfRange = (range) ->
+  range[1]

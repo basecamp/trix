@@ -40,5 +40,5 @@ export default class UndoManager extends BasicObject
     context: JSON.stringify(context)
     snapshot: @composition.getSnapshot()
 
-  entryHasDescriptionAndContext = (entry, description, context) ->
-    entry?.description is description?.toString() and entry?.context is JSON.stringify(context)
+entryHasDescriptionAndContext = (entry, description, context) ->
+  entry?.description is description?.toString() and entry?.context is JSON.stringify(context)

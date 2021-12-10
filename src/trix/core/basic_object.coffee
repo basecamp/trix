@@ -15,30 +15,30 @@ export default class BasicObject
         subject = object[name]
         apply.call(subject, object, arguments)
 
-  parseProxyMethodExpression = (expression) ->
-    unless match = expression.match(proxyMethodExpressionPattern)
-      throw new Error "can't parse @proxyMethod expression: #{expression}"
+parseProxyMethodExpression = (expression) ->
+  unless match = expression.match(proxyMethodExpressionPattern)
+    throw new Error "can't parse @proxyMethod expression: #{expression}"
 
-    args = name: match[4]
+  args = name: match[4]
 
-    if match[2]?
-      args.toMethod = match[1]
-    else
-      args.toProperty = match[1]
+  if match[2]?
+    args.toMethod = match[1]
+  else
+    args.toProperty = match[1]
 
-    if match[3]?
-      args.optional = true
+  if match[3]?
+    args.optional = true
 
-    args
+  args
 
-  {apply} = Function.prototype
+{apply} = Function.prototype
 
-  proxyMethodExpressionPattern = ///
-    ^
-      (.+?)
-        (\(\))?
-        (\?)?
-      \.
-      (.+?)
-    $
-  ///
+proxyMethodExpressionPattern = ///
+  ^
+    (.+?)
+      (\(\))?
+      (\?)?
+    \.
+    (.+?)
+  $
+///

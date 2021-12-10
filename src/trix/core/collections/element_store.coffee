@@ -17,5 +17,5 @@ export default class ElementStore
     @add(element) for element in elements
     elements
 
-  getKey = (element) ->
-    element.dataset.trixStoreKey
+getKey = (element) ->
+  element.dataset.trixStoreKey

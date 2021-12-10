@@ -6,6 +6,12 @@ import BasicObject from "trix/core/basic_object"
 import { defer, handleEvent, makeElement, tagName } from "trix/core/helpers"
 {lang, css, keyNames} = config
 
+undoable = (fn) -> ->
+  commands = fn.apply(this, arguments)
+  commands.do()
+  @undos ?= []
+  @undos.push(commands.undo)
+
 export default class AttachmentEditorController extends BasicObject
   constructor: (attachmentPiece, element, container, options = {}) ->
     super(arguments...)
@@ -16,12 +22,6 @@ export default class AttachmentEditorController extends BasicObject
     { @attachment } = @attachmentPiece
     @element = @element.firstChild if tagName(@element) is "a"
     @install()
-
-  undoable = (fn) -> ->
-    commands = fn.apply(this, arguments)
-    commands.do()
-    @undos ?= []
-    @undos.push(commands.undo)
 
   install: ->
     @makeElementMutable()

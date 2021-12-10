@@ -185,64 +185,64 @@ export default class Block extends TrixObject
       otherAttributes[depth + 1] not in getListAttributeNames()) and
       (@getDirection() is otherBlock.getDirection() or otherBlock.isEmpty())
 
-  # Block breaks
+# Block breaks
 
-  applyBlockBreakToText = (text) ->
-    text = unmarkExistingInnerBlockBreaksInText(text)
-    text = addBlockBreakToText(text)
+applyBlockBreakToText = (text) ->
+  text = unmarkExistingInnerBlockBreaksInText(text)
+  text = addBlockBreakToText(text)
+  text
+
+unmarkExistingInnerBlockBreaksInText = (text) ->
+  modified = false
+  [innerPieces..., lastPiece] = text.getPieces()
+  return text unless lastPiece?
+
+  innerPieces = for piece in innerPieces
+    if piece.isBlockBreak()
+      modified = true
+      unmarkBlockBreakPiece(piece)
+    else
+      piece
+
+  if modified
+    new Text [innerPieces..., lastPiece]
+  else
     text
 
-  unmarkExistingInnerBlockBreaksInText = (text) ->
-    modified = false
-    [innerPieces..., lastPiece] = text.getPieces()
-    return text unless lastPiece?
+blockBreakText = Text.textForStringWithAttributes("\n", blockBreak: true)
 
-    innerPieces = for piece in innerPieces
-      if piece.isBlockBreak()
-        modified = true
-        unmarkBlockBreakPiece(piece)
-      else
-        piece
+addBlockBreakToText = (text) ->
+  if textEndsInBlockBreak(text)
+    text
+  else
+    text.appendText(blockBreakText)
 
-    if modified
-      new Text [innerPieces..., lastPiece]
-    else
-      text
+textEndsInBlockBreak = (text) ->
+  length = text.getLength()
+  return false if length is 0
+  endText = text.getTextAtRange([length - 1, length])
+  endText.isBlockBreak()
 
-  blockBreakText = Text.textForStringWithAttributes("\n", blockBreak: true)
+unmarkBlockBreakPiece = (piece) ->
+  piece.copyWithoutAttribute("blockBreak")
 
-  addBlockBreakToText = (text) ->
-    if textEndsInBlockBreak(text)
-      text
-    else
-      text.appendText(blockBreakText)
+# Attributes
 
-  textEndsInBlockBreak = (text) ->
-    length = text.getLength()
-    return false if length is 0
-    endText = text.getTextAtRange([length - 1, length])
-    endText.isBlockBreak()
+expandAttribute = (attribute) ->
+  {listAttribute} = getBlockConfig(attribute)
+  if listAttribute?
+    [listAttribute, attribute]
+  else
+    [attribute]
 
-  unmarkBlockBreakPiece = (piece) ->
-    piece.copyWithoutAttribute("blockBreak")
+# Array helpers
 
-  # Attributes
+getLastElement = (array) ->
+  array.slice(-1)[0]
 
-  expandAttribute = (attribute) ->
-    {listAttribute} = getBlockConfig(attribute)
-    if listAttribute?
-      [listAttribute, attribute]
-    else
-      [attribute]
-
-  # Array helpers
-
-  getLastElement = (array) ->
-    array.slice(-1)[0]
-
-  removeLastValue = (array, value) ->
-    index = array.lastIndexOf(value)
-    if index is -1
-      array
-    else
-      spliceArray(array, index, 1)
+removeLastValue = (array, value) ->
+  index = array.lastIndexOf(value)
+  if index is -1
+    array
+  else
+    spliceArray(array, index, 1)
