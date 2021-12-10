@@ -1,115 +1,170 @@
-import BasicObject from "trix/core/basic_object"
-import ObjectGroup from "trix/core/collections/object_group"
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import BasicObject from "trix/core/basic_object";
+import ObjectGroup from "trix/core/collections/object_group";
 
-export default class ObjectView extends BasicObject
-  constructor: (object, options = {}) ->
-    super(arguments...)
-    @object = object
-    @options = options
-    @childViews = []
-    @rootView = this
+export default class ObjectView extends BasicObject {
+  constructor(object, options = {}) {
+    super(...arguments);
+    this.object = object;
+    this.options = options;
+    this.childViews = [];
+    this.rootView = this;
+  }
 
-  getNodes: ->
-    @nodes ?= @createNodes()
-    node.cloneNode(true) for node in @nodes
+  getNodes() {
+    if (this.nodes == null) { this.nodes = this.createNodes(); }
+    return Array.from(this.nodes).map((node) => node.cloneNode(true));
+  }
 
-  invalidate: ->
-    @nodes = null
-    @childViews = []
-    @parentView?.invalidate()
+  invalidate() {
+    this.nodes = null;
+    this.childViews = [];
+    return this.parentView?.invalidate();
+  }
 
-  invalidateViewForObject: (object) ->
-    @findViewForObject(object)?.invalidate()
+  invalidateViewForObject(object) {
+    return this.findViewForObject(object)?.invalidate();
+  }
 
-  findOrCreateCachedChildView: (viewClass, object, options) ->
-    if view = @getCachedViewForObject(object)
-      @recordChildView(view)
-    else
-      view = @createChildView(arguments...)
-      @cacheViewForObject(view, object)
-    view
+  findOrCreateCachedChildView(viewClass, object, options) {
+    let view;
+    if (view = this.getCachedViewForObject(object)) {
+      this.recordChildView(view);
+    } else {
+      view = this.createChildView(...arguments);
+      this.cacheViewForObject(view, object);
+    }
+    return view;
+  }
 
-  createChildView: (viewClass, object, options = {}) ->
-    if object instanceof ObjectGroup
-      options.viewClass = viewClass
-      viewClass = ObjectGroupView
+  createChildView(viewClass, object, options = {}) {
+    if (object instanceof ObjectGroup) {
+      options.viewClass = viewClass;
+      viewClass = ObjectGroupView;
+    }
 
-    view = new viewClass object, options
-    @recordChildView(view)
+    const view = new viewClass(object, options);
+    return this.recordChildView(view);
+  }
 
-  recordChildView: (view) ->
-    view.parentView = this
-    view.rootView = @rootView
-    @childViews.push(view)
-    view
+  recordChildView(view) {
+    view.parentView = this;
+    view.rootView = this.rootView;
+    this.childViews.push(view);
+    return view;
+  }
 
-  getAllChildViews: ->
-    views = []
-    for childView in @childViews
-      views.push(childView)
-      views = views.concat(childView.getAllChildViews())
-    views
+  getAllChildViews() {
+    let views = [];
+    for (let childView of Array.from(this.childViews)) {
+      views.push(childView);
+      views = views.concat(childView.getAllChildViews());
+    }
+    return views;
+  }
 
-  findElement: ->
-    @findElementForObject(@object)
+  findElement() {
+    return this.findElementForObject(this.object);
+  }
 
-  findElementForObject: (object) ->
-    if id = object?.id
-      @rootView.element.querySelector("[data-trix-id='#{id}']")
+  findElementForObject(object) {
+    let id;
+    if (id = object?.id) {
+      return this.rootView.element.querySelector(`[data-trix-id='${id}']`);
+    }
+  }
 
-  findViewForObject: (object) ->
-    return view for view in @getAllChildViews() when view.object is object
+  findViewForObject(object) {
+    for (let view of Array.from(this.getAllChildViews())) { if (view.object === object) { return view; } }
+  }
 
-  getViewCache: ->
-    if @rootView is this
-      if @isViewCachingEnabled()
-        @viewCache ?= {}
-    else
-      @rootView.getViewCache()
+  getViewCache() {
+    if (this.rootView === this) {
+      if (this.isViewCachingEnabled()) {
+        return this.viewCache != null ? this.viewCache : (this.viewCache = {});
+      }
+    } else {
+      return this.rootView.getViewCache();
+    }
+  }
 
-  isViewCachingEnabled: ->
-    @shouldCacheViews isnt false
+  isViewCachingEnabled() {
+    return this.shouldCacheViews !== false;
+  }
 
-  enableViewCaching: ->
-    @shouldCacheViews = true
+  enableViewCaching() {
+    return this.shouldCacheViews = true;
+  }
 
-  disableViewCaching: ->
-    @shouldCacheViews = false
+  disableViewCaching() {
+    return this.shouldCacheViews = false;
+  }
 
-  getCachedViewForObject: (object) ->
-    @getViewCache()?[object.getCacheKey()]
+  getCachedViewForObject(object) {
+    return this.getViewCache()?.[object.getCacheKey()];
+  }
 
-  cacheViewForObject: (view, object) ->
-    if cache = @getViewCache()
-      cache[object.getCacheKey()] = view
+  cacheViewForObject(view, object) {
+    let cache;
+    if (cache = this.getViewCache()) {
+      return cache[object.getCacheKey()] = view;
+    }
+  }
 
-  garbageCollectCachedViews: ->
-    if cache = @getViewCache()
-      views = @getAllChildViews().concat(this)
-      objectKeys = (view.object.getCacheKey() for view in views)
-      delete cache[key] for key of cache when key not in objectKeys
+  garbageCollectCachedViews() {
+    let cache;
+    if (cache = this.getViewCache()) {
+      const views = this.getAllChildViews().concat(this);
+      const objectKeys = (Array.from(views).map((view) => view.object.getCacheKey()));
+      return (() => {
+        const result = [];
+        for (let key in cache) {
+          if (!Array.from(objectKeys).includes(key)) {
+            result.push(delete cache[key]);
+          }
+        }
+        return result;
+      })();
+    }
+  }
+}
 
 
-export class ObjectGroupView extends ObjectView
-  constructor: ->
-    super(arguments...)
-    @objectGroup = @object
-    {@viewClass} = @options
-    delete @options.viewClass
+export class ObjectGroupView extends ObjectView {
+  constructor() {
+    super(...arguments);
+    this.objectGroup = this.object;
+    ({viewClass: this.viewClass} = this.options);
+    delete this.options.viewClass;
+  }
 
-  getChildViews: ->
-    unless @childViews.length
-      for object in @objectGroup.getObjects()
-        @findOrCreateCachedChildView(@viewClass, object, @options)
-    @childViews
+  getChildViews() {
+    if (!this.childViews.length) {
+      for (let object of Array.from(this.objectGroup.getObjects())) {
+        this.findOrCreateCachedChildView(this.viewClass, object, this.options);
+      }
+    }
+    return this.childViews;
+  }
 
-  createNodes: ->
-    element = @createContainerElement()
+  createNodes() {
+    const element = this.createContainerElement();
 
-    for view in @getChildViews()
-      element.appendChild(node) for node in view.getNodes()
+    for (let view of Array.from(this.getChildViews())) {
+      for (let node of Array.from(view.getNodes())) { element.appendChild(node); }
+    }
 
-    [element]
+    return [element];
+  }
 
-  createContainerElement: (depth = @objectGroup.getDepth()) ->
-    @getChildViews()[0].createContainerElement(depth)
+  createContainerElement(depth = this.objectGroup.getDepth()) {
+    return this.getChildViews()[0].createContainerElement(depth);
+  }
+}

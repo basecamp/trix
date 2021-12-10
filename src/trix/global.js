@@ -1,10 +1,11 @@
-import { version } from "../../package.json"
-import config from "trix/config"
+import { version } from "../../package.json";
+import config from "trix/config";
 
-Trix =
-  VERSION: version
-  config: config
+const Trix = {
+  VERSION: version,
+  config
+};
 
-window.Trix = Trix
+window.Trix = Trix;
 
-export default Trix
+export default Trix;

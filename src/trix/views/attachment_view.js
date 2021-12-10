@@ -1,126 +1,167 @@
-import config from "trix/config"
-import { ZERO_WIDTH_SPACE } from "trix/constants"
-import { copyObject, makeElement } from "trix/core/helpers"
-import ObjectView from "trix/views/object_view"
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import config from "trix/config";
+import { ZERO_WIDTH_SPACE } from "trix/constants";
+import { copyObject, makeElement } from "trix/core/helpers";
+import ObjectView from "trix/views/object_view";
 
-{css} = config
+const {css} = config;
 
-export default class AttachmentView extends ObjectView
+export default class AttachmentView extends ObjectView {
 
-  constructor: ->
-    super(arguments...)
-    @attachment = @object
-    @attachment.uploadProgressDelegate = this
-    @attachmentPiece = @options.piece
+  constructor() {
+    super(...arguments);
+    this.attachment = this.object;
+    this.attachment.uploadProgressDelegate = this;
+    this.attachmentPiece = this.options.piece;
+  }
 
-  createContentNodes: ->
-    []
+  createContentNodes() {
+    return [];
+  }
 
-  createNodes: ->
-    figure = innerElement = makeElement
-      tagName: "figure"
-      className: @getClassName()
-      data: @getData()
+  createNodes() {
+    let href, innerElement;
+    const figure = (innerElement = makeElement({
+      tagName: "figure",
+      className: this.getClassName(),
+      data: this.getData(),
       editable: false
+    }));
 
-    if href = @getHref()
-      innerElement = makeElement(tagName: "a", editable: false, attributes: {href, tabindex: -1})
-      figure.appendChild(innerElement)
+    if (href = this.getHref()) {
+      innerElement = makeElement({tagName: "a", editable: false, attributes: {href, tabindex: -1}});
+      figure.appendChild(innerElement);
+    }
 
-    if @attachment.hasContent()
-      innerElement.innerHTML = @attachment.getContent()
-    else
-      innerElement.appendChild(node) for node in @createContentNodes()
+    if (this.attachment.hasContent()) {
+      innerElement.innerHTML = this.attachment.getContent();
+    } else {
+      for (let node of Array.from(this.createContentNodes())) { innerElement.appendChild(node); }
+    }
 
-    innerElement.appendChild(@createCaptionElement())
+    innerElement.appendChild(this.createCaptionElement());
 
-    if @attachment.isPending()
-      @progressElement = makeElement
-        tagName: "progress"
-        attributes:
-          class: css.attachmentProgress
-          value: @attachment.getUploadProgress()
+    if (this.attachment.isPending()) {
+      this.progressElement = makeElement({
+        tagName: "progress",
+        attributes: {
+          class: css.attachmentProgress,
+          value: this.attachment.getUploadProgress(),
           max: 100
-        data:
-          trixMutable: true
-          trixStoreKey: ["progressElement", @attachment.id].join("/")
+        },
+        data: {
+          trixMutable: true,
+          trixStoreKey: ["progressElement", this.attachment.id].join("/")
+        }
+      });
 
-      figure.appendChild(@progressElement)
+      figure.appendChild(this.progressElement);
+    }
 
-    [createCursorTarget("left"), figure, createCursorTarget("right")]
+    return [createCursorTarget("left"), figure, createCursorTarget("right")];
+  }
 
-  createCaptionElement: ->
-    figcaption = makeElement(tagName: "figcaption", className: css.attachmentCaption)
+  createCaptionElement() {
+    let caption;
+    const figcaption = makeElement({tagName: "figcaption", className: css.attachmentCaption});
 
-    if caption = @attachmentPiece.getCaption()
-      figcaption.classList.add("#{css.attachmentCaption}--edited")
-      figcaption.textContent = caption
-    else
-      captionConfig = @getCaptionConfig()
-      name = @attachment.getFilename() if captionConfig.name
-      size = @attachment.getFormattedFilesize() if captionConfig.size
+    if (caption = this.attachmentPiece.getCaption()) {
+      figcaption.classList.add(`${css.attachmentCaption}--edited`);
+      figcaption.textContent = caption;
+    } else {
+      let name, size;
+      const captionConfig = this.getCaptionConfig();
+      if (captionConfig.name) { name = this.attachment.getFilename(); }
+      if (captionConfig.size) { size = this.attachment.getFormattedFilesize(); }
 
-      if name
-        nameElement = makeElement(tagName: "span", className: css.attachmentName, textContent: name)
-        figcaption.appendChild(nameElement)
+      if (name) {
+        const nameElement = makeElement({tagName: "span", className: css.attachmentName, textContent: name});
+        figcaption.appendChild(nameElement);
+      }
 
-      if size
-        figcaption.appendChild(document.createTextNode(" ")) if name
-        sizeElement = makeElement(tagName: "span", className: css.attachmentSize, textContent: size)
-        figcaption.appendChild(sizeElement)
+      if (size) {
+        if (name) { figcaption.appendChild(document.createTextNode(" ")); }
+        const sizeElement = makeElement({tagName: "span", className: css.attachmentSize, textContent: size});
+        figcaption.appendChild(sizeElement);
+      }
+    }
 
-    figcaption
+    return figcaption;
+  }
 
-  getClassName: ->
-    names = [css.attachment, "#{css.attachment}--#{@attachment.getType()}"]
-    if extension = @attachment.getExtension()
-      names.push("#{css.attachment}--#{extension}")
-    names.join(" ")
+  getClassName() {
+    let extension;
+    const names = [css.attachment, `${css.attachment}--${this.attachment.getType()}`];
+    if (extension = this.attachment.getExtension()) {
+      names.push(`${css.attachment}--${extension}`);
+    }
+    return names.join(" ");
+  }
 
-  getData: ->
-    data =
-      trixAttachment: JSON.stringify(@attachment)
-      trixContentType: @attachment.getContentType()
-      trixId: @attachment.id
+  getData() {
+    const data = {
+      trixAttachment: JSON.stringify(this.attachment),
+      trixContentType: this.attachment.getContentType(),
+      trixId: this.attachment.id
+    };
 
-    {attributes} = @attachmentPiece
-    unless attributes.isEmpty()
-      data.trixAttributes = JSON.stringify(attributes)
+    const {attributes} = this.attachmentPiece;
+    if (!attributes.isEmpty()) {
+      data.trixAttributes = JSON.stringify(attributes);
+    }
 
-    if @attachment.isPending()
-      data.trixSerialize = false
+    if (this.attachment.isPending()) {
+      data.trixSerialize = false;
+    }
 
-    data
+    return data;
+  }
 
-  getHref: ->
-    unless htmlContainsTagName(@attachment.getContent(), "a")
-      @attachment.getHref()
+  getHref() {
+    if (!htmlContainsTagName(this.attachment.getContent(), "a")) {
+      return this.attachment.getHref();
+    }
+  }
 
-  getCaptionConfig: ->
-    type = @attachment.getType()
-    captionConfig = copyObject(config.attachments[type]?.caption)
-    captionConfig.name = true if type is "file"
-    captionConfig
+  getCaptionConfig() {
+    const type = this.attachment.getType();
+    const captionConfig = copyObject(config.attachments[type]?.caption);
+    if (type === "file") { captionConfig.name = true; }
+    return captionConfig;
+  }
 
-  findProgressElement: ->
-    @findElement()?.querySelector("progress")
+  findProgressElement() {
+    return this.findElement()?.querySelector("progress");
+  }
 
-  # Attachment delegate
+  // Attachment delegate
 
-  attachmentDidChangeUploadProgress: ->
-    value = @attachment.getUploadProgress()
-    if progressElement = @findProgressElement()
-      progressElement.value = value
+  attachmentDidChangeUploadProgress() {
+    let progressElement;
+    const value = this.attachment.getUploadProgress();
+    if (progressElement = this.findProgressElement()) {
+      return progressElement.value = value;
+    }
+  }
+}
 
-createCursorTarget = (name) ->
-  makeElement
-    tagName: "span"
-    textContent: ZERO_WIDTH_SPACE
-    data:
-      trixCursorTarget: name
-      trixSerialize: false
+var createCursorTarget = name => makeElement({
+  tagName: "span",
+  textContent: ZERO_WIDTH_SPACE,
+  data: {
+    trixCursorTarget: name,
+    trixSerialize: false
+  }
+});
 
-htmlContainsTagName = (html, tagName) ->
-  div = makeElement("div")
-  div.innerHTML = html ? ""
-  div.querySelector(tagName)
+var htmlContainsTagName = function(html, tagName) {
+  const div = makeElement("div");
+  div.innerHTML = html != null ? html : "";
+  return div.querySelector(tagName);
+};

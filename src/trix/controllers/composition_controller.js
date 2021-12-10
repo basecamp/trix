@@ -1,124 +1,168 @@
-import BasicObject from "trix/core/basic_object"
-import AttachmentView from "trix/views/attachment_view"
-import DocumentView from "trix/views/document_view"
-import AttachmentEditorController from "trix/controllers/attachment_editor_controller"
+/*
+ * decaffeinate suggestions:
+ * DS002: Fix invalid constructor
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import BasicObject from "trix/core/basic_object";
+import AttachmentView from "trix/views/attachment_view";
+import DocumentView from "trix/views/document_view";
+import AttachmentEditorController from "trix/controllers/attachment_editor_controller";
 
-import { findClosestElementFromNode, handleEvent, innerElementIsActive, defer } from "trix/core/helpers"
-import { attachmentSelector } from "trix/config/attachments"
+import { findClosestElementFromNode, handleEvent, innerElementIsActive, defer } from "trix/core/helpers";
+import { attachmentSelector } from "trix/config/attachments";
 
-export default class CompositionController extends BasicObject
-  constructor: (element, composition) ->
-    super(arguments...)
-    @element = element
-    @composition = composition
-    @documentView = new DocumentView @composition.document, {@element}
+export default class CompositionController extends BasicObject {
+  constructor(element, composition) {
+    this.didFocus = this.didFocus.bind(this);
+    this.didBlur = this.didBlur.bind(this);
+    this.didClickAttachment = this.didClickAttachment.bind(this);
+    super(...arguments);
+    this.element = element;
+    this.composition = composition;
+    this.documentView = new DocumentView(this.composition.document, {element: this.element});
 
-    handleEvent "focus", onElement: @element, withCallback: @didFocus
-    handleEvent "blur", onElement: @element, withCallback: @didBlur
-    handleEvent "click", onElement: @element, matchingSelector: "a[contenteditable=false]", preventDefault: true
-    handleEvent "mousedown", onElement: @element, matchingSelector: attachmentSelector, withCallback: @didClickAttachment
-    handleEvent "click", onElement: @element, matchingSelector: "a#{attachmentSelector}", preventDefault: true
+    handleEvent("focus", {onElement: this.element, withCallback: this.didFocus});
+    handleEvent("blur", {onElement: this.element, withCallback: this.didBlur});
+    handleEvent("click", {onElement: this.element, matchingSelector: "a[contenteditable=false]", preventDefault: true});
+    handleEvent("mousedown", {onElement: this.element, matchingSelector: attachmentSelector, withCallback: this.didClickAttachment});
+    handleEvent("click", {onElement: this.element, matchingSelector: `a${attachmentSelector}`, preventDefault: true});
+  }
 
-  didFocus: (event) =>
-    perform = =>
-      unless @focused
-        @focused = true
-        @delegate?.compositionControllerDidFocus?()
+  didFocus(event) {
+    let left;
+    const perform = () => {
+      if (!this.focused) {
+        this.focused = true;
+        return this.delegate?.compositionControllerDidFocus?.();
+      }
+    };
 
-    @blurPromise?.then(perform) ? perform()
+    return (left = this.blurPromise?.then(perform)) != null ? left : perform();
+  }
 
-  didBlur: (event) =>
-    @blurPromise = new Promise (resolve) =>
-      defer =>
-        unless innerElementIsActive(@element)
-          @focused = null
-          @delegate?.compositionControllerDidBlur?()
-        @blurPromise = null
-        resolve()
+  didBlur(event) {
+    return this.blurPromise = new Promise(resolve => {
+      return defer(() => {
+        if (!innerElementIsActive(this.element)) {
+          this.focused = null;
+          this.delegate?.compositionControllerDidBlur?.();
+        }
+        this.blurPromise = null;
+        return resolve();
+      });
+    });
+  }
 
-  didClickAttachment: (event, target) =>
-    attachment = @findAttachmentForElement(target)
-    editCaption = findClosestElementFromNode(event.target, matchingSelector: "figcaption")?
-    @delegate?.compositionControllerDidSelectAttachment?(attachment, {editCaption})
+  didClickAttachment(event, target) {
+    const attachment = this.findAttachmentForElement(target);
+    const editCaption = (findClosestElementFromNode(event.target, {matchingSelector: "figcaption"}) != null);
+    return this.delegate?.compositionControllerDidSelectAttachment?.(attachment, {editCaption});
+  }
 
-  getSerializableElement: ->
-    if @isEditingAttachment()
-      @documentView.shadowElement
-    else
-      @element
+  getSerializableElement() {
+    if (this.isEditingAttachment()) {
+      return this.documentView.shadowElement;
+    } else {
+      return this.element;
+    }
+  }
 
-  render: ->
-    unless @revision is @composition.revision
-      @documentView.setDocument(@composition.document)
-      @documentView.render()
-      @revision = @composition.revision
+  render() {
+    if (this.revision !== this.composition.revision) {
+      this.documentView.setDocument(this.composition.document);
+      this.documentView.render();
+      this.revision = this.composition.revision;
+    }
 
-    if @canSyncDocumentView() and not @documentView.isSynced()
-      @delegate?.compositionControllerWillSyncDocumentView?()
-      @documentView.sync()
-      @delegate?.compositionControllerDidSyncDocumentView?()
+    if (this.canSyncDocumentView() && !this.documentView.isSynced()) {
+      this.delegate?.compositionControllerWillSyncDocumentView?.();
+      this.documentView.sync();
+      this.delegate?.compositionControllerDidSyncDocumentView?.();
+    }
 
-    @delegate?.compositionControllerDidRender?()
+    return this.delegate?.compositionControllerDidRender?.();
+  }
 
-  rerenderViewForObject: (object) ->
-    @invalidateViewForObject(object)
-    @render()
+  rerenderViewForObject(object) {
+    this.invalidateViewForObject(object);
+    return this.render();
+  }
 
-  invalidateViewForObject: (object) ->
-    @documentView.invalidateViewForObject(object)
+  invalidateViewForObject(object) {
+    return this.documentView.invalidateViewForObject(object);
+  }
 
-  isViewCachingEnabled: ->
-    @documentView.isViewCachingEnabled()
+  isViewCachingEnabled() {
+    return this.documentView.isViewCachingEnabled();
+  }
 
-  enableViewCaching: ->
-    @documentView.enableViewCaching()
+  enableViewCaching() {
+    return this.documentView.enableViewCaching();
+  }
 
-  disableViewCaching: ->
-    @documentView.disableViewCaching()
+  disableViewCaching() {
+    return this.documentView.disableViewCaching();
+  }
 
-  refreshViewCache: ->
-    @documentView.garbageCollectCachedViews()
+  refreshViewCache() {
+    return this.documentView.garbageCollectCachedViews();
+  }
 
-  # Attachment editor management
+  // Attachment editor management
 
-  isEditingAttachment: ->
-    @attachmentEditor?
+  isEditingAttachment() {
+    return (this.attachmentEditor != null);
+  }
 
-  installAttachmentEditorForAttachment: (attachment, options) ->
-    return if @attachmentEditor?.attachment is attachment
-    return unless element = @documentView.findElementForObject(attachment)
-    @uninstallAttachmentEditor()
-    attachmentPiece = @composition.document.getAttachmentPieceForAttachment(attachment)
-    @attachmentEditor = new AttachmentEditorController attachmentPiece, element, @element, options
-    @attachmentEditor.delegate = this
+  installAttachmentEditorForAttachment(attachment, options) {
+    let element;
+    if (this.attachmentEditor?.attachment === attachment) { return; }
+    if (!(element = this.documentView.findElementForObject(attachment))) { return; }
+    this.uninstallAttachmentEditor();
+    const attachmentPiece = this.composition.document.getAttachmentPieceForAttachment(attachment);
+    this.attachmentEditor = new AttachmentEditorController(attachmentPiece, element, this.element, options);
+    return this.attachmentEditor.delegate = this;
+  }
 
-  uninstallAttachmentEditor: ->
-    @attachmentEditor?.uninstall()
+  uninstallAttachmentEditor() {
+    return this.attachmentEditor?.uninstall();
+  }
 
-  # Attachment controller delegate
+  // Attachment controller delegate
 
-  didUninstallAttachmentEditor: ->
-    @attachmentEditor = null
-    @render()
+  didUninstallAttachmentEditor() {
+    this.attachmentEditor = null;
+    return this.render();
+  }
 
-  attachmentEditorDidRequestUpdatingAttributesForAttachment: (attributes, attachment) ->
-    @delegate?.compositionControllerWillUpdateAttachment?(attachment)
-    @composition.updateAttributesForAttachment(attributes, attachment)
+  attachmentEditorDidRequestUpdatingAttributesForAttachment(attributes, attachment) {
+    this.delegate?.compositionControllerWillUpdateAttachment?.(attachment);
+    return this.composition.updateAttributesForAttachment(attributes, attachment);
+  }
 
-  attachmentEditorDidRequestRemovingAttributeForAttachment: (attribute, attachment) ->
-    @delegate?.compositionControllerWillUpdateAttachment?(attachment)
-    @composition.removeAttributeForAttachment(attribute, attachment)
+  attachmentEditorDidRequestRemovingAttributeForAttachment(attribute, attachment) {
+    this.delegate?.compositionControllerWillUpdateAttachment?.(attachment);
+    return this.composition.removeAttributeForAttachment(attribute, attachment);
+  }
 
-  attachmentEditorDidRequestRemovalOfAttachment: (attachment) ->
-    @delegate?.compositionControllerDidRequestRemovalOfAttachment?(attachment)
+  attachmentEditorDidRequestRemovalOfAttachment(attachment) {
+    return this.delegate?.compositionControllerDidRequestRemovalOfAttachment?.(attachment);
+  }
 
-  attachmentEditorDidRequestDeselectingAttachment: (attachment) ->
-    @delegate?.compositionControllerDidRequestDeselectingAttachment?(attachment)
+  attachmentEditorDidRequestDeselectingAttachment(attachment) {
+    return this.delegate?.compositionControllerDidRequestDeselectingAttachment?.(attachment);
+  }
 
-  # Private
+  // Private
 
-  canSyncDocumentView: ->
-    not @isEditingAttachment()
+  canSyncDocumentView() {
+    return !this.isEditingAttachment();
+  }
 
-  findAttachmentForElement: (element) ->
-    @composition.document.getAttachmentById(parseInt(element.dataset.trixId, 10))
+  findAttachmentForElement(element) {
+    return this.composition.document.getAttachmentById(parseInt(element.dataset.trixId, 10));
+  }
+}

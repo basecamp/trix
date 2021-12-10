@@ -1,56 +1,83 @@
-export attachmentGalleryFilter = (snapshot) ->
-  filter = new Filter snapshot
-  filter.perform()
-  filter.getSnapshot()
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+export var attachmentGalleryFilter = function(snapshot) {
+  const filter = new Filter(snapshot);
+  filter.perform();
+  return filter.getSnapshot();
+};
 
-BLOCK_ATTRIBUTE_NAME = "attachmentGallery"
-TEXT_ATTRIBUTE_NAME  = "presentation"
-TEXT_ATTRIBUTE_VALUE = "gallery"
+const BLOCK_ATTRIBUTE_NAME = "attachmentGallery";
+const TEXT_ATTRIBUTE_NAME  = "presentation";
+const TEXT_ATTRIBUTE_VALUE = "gallery";
 
-class Filter
-  constructor: (snapshot) ->
-    {@document, @selectedRange} = snapshot
+class Filter {
+  constructor(snapshot) {
+    ({document: this.document, selectedRange: this.selectedRange} = snapshot);
+  }
 
-  perform: ->
-    @removeBlockAttribute()
-    @applyBlockAttribute()
+  perform() {
+    this.removeBlockAttribute();
+    return this.applyBlockAttribute();
+  }
 
-  getSnapshot: ->
-    {@document, @selectedRange}
+  getSnapshot() {
+    return {document: this.document, selectedRange: this.selectedRange};
+  }
 
-  # Private
+  // Private
 
-  removeBlockAttribute: ->
-    for range in @findRangesOfBlocks()
-      @document = @document.removeAttributeAtRange(BLOCK_ATTRIBUTE_NAME, range)
+  removeBlockAttribute() {
+    return Array.from(this.findRangesOfBlocks()).map((range) =>
+      (this.document = this.document.removeAttributeAtRange(BLOCK_ATTRIBUTE_NAME, range)));
+  }
 
-  applyBlockAttribute: ->
-    offset = 0
-    for range in @findRangesOfPieces() when range[1] - range[0] > 1
-      range[0] += offset
-      range[1] += offset
+  applyBlockAttribute() {
+    let offset = 0;
+    return (() => {
+      const result = [];
+      for (let range of Array.from(this.findRangesOfPieces())) {
+        if ((range[1] - range[0]) > 1) {
+          range[0] += offset;
+          range[1] += offset;
 
-      unless @document.getCharacterAtPosition(range[1]) is "\n"
-        @document = @document.insertBlockBreakAtRange(range[1])
-        @moveSelectedRangeForward() if range[1] < @selectedRange[1]
-        range[1]++
-        offset++
+          if (this.document.getCharacterAtPosition(range[1]) !== "\n") {
+            this.document = this.document.insertBlockBreakAtRange(range[1]);
+            if (range[1] < this.selectedRange[1]) { this.moveSelectedRangeForward(); }
+            range[1]++;
+            offset++;
+          }
 
-      unless range[0] is 0
-        unless @document.getCharacterAtPosition(range[0] - 1) is "\n"
-          @document = @document.insertBlockBreakAtRange(range[0])
-          @moveSelectedRangeForward() if range[0] < @selectedRange[0]
-          range[0]++
-          offset++
+          if (range[0] !== 0) {
+            if (this.document.getCharacterAtPosition(range[0] - 1) !== "\n") {
+              this.document = this.document.insertBlockBreakAtRange(range[0]);
+              if (range[0] < this.selectedRange[0]) { this.moveSelectedRangeForward(); }
+              range[0]++;
+              offset++;
+            }
+          }
 
-      @document = @document.applyBlockAttributeAtRange(BLOCK_ATTRIBUTE_NAME, true, range)
+          result.push(this.document = this.document.applyBlockAttributeAtRange(BLOCK_ATTRIBUTE_NAME, true, range));
+        }
+      }
+      return result;
+    })();
+  }
 
-  findRangesOfBlocks: ->
-    @document.findRangesForBlockAttribute(BLOCK_ATTRIBUTE_NAME)
+  findRangesOfBlocks() {
+    return this.document.findRangesForBlockAttribute(BLOCK_ATTRIBUTE_NAME);
+  }
 
-  findRangesOfPieces: ->
-    @document.findRangesForTextAttribute(TEXT_ATTRIBUTE_NAME, withValue: TEXT_ATTRIBUTE_VALUE)
+  findRangesOfPieces() {
+    return this.document.findRangesForTextAttribute(TEXT_ATTRIBUTE_NAME, {withValue: TEXT_ATTRIBUTE_VALUE});
+  }
 
-  moveSelectedRangeForward: ->
-    @selectedRange[0] += 1
-    @selectedRange[1] += 1
+  moveSelectedRangeForward() {
+    this.selectedRange[0] += 1;
+    return this.selectedRange[1] += 1;
+  }
+}

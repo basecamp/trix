@@ -1,173 +1,239 @@
-import { removeNode } from "trix/core/helpers"
+/*
+ * decaffeinate suggestions:
+ * DS002: Fix invalid constructor
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS206: Consider reworking classes to avoid initClass
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let AttachmentEditorController;
+import { removeNode } from "trix/core/helpers";
 
-import config from "trix/config"
-import BasicObject from "trix/core/basic_object"
+import config from "trix/config";
+import BasicObject from "trix/core/basic_object";
 
-import { defer, handleEvent, makeElement, tagName } from "trix/core/helpers"
-{lang, css, keyNames} = config
+import { defer, handleEvent, makeElement, tagName } from "trix/core/helpers";
+const {lang, css, keyNames} = config;
 
-undoable = (fn) -> ->
-  commands = fn.apply(this, arguments)
-  commands.do()
-  @undos ?= []
-  @undos.push(commands.undo)
+const undoable = fn => (function() {
+  const commands = fn.apply(this, arguments);
+  commands.do();
+  if (this.undos == null) { this.undos = []; }
+  return this.undos.push(commands.undo);
+});
 
-export default class AttachmentEditorController extends BasicObject
-  constructor: (attachmentPiece, element, container, options = {}) ->
-    super(arguments...)
-    @attachmentPiece = attachmentPiece
-    @element = element
-    @container = container
-    @options = options
-    { @attachment } = @attachmentPiece
-    @element = @element.firstChild if tagName(@element) is "a"
-    @install()
+export default AttachmentEditorController = (function() {
+  AttachmentEditorController = class AttachmentEditorController extends BasicObject {
+    static initClass() {
+  
+      // Installing and uninstalling
+  
+      this.prototype.makeElementMutable = undoable(function() {
+        return {
+          do: () => { return this.element.dataset.trixMutable = true; },
+          undo: () => delete this.element.dataset.trixMutable
+        };
+      });
+  
+      this.prototype.addToolbar = undoable(function() {
+        // <div class="#{css.attachmentMetadataContainer}" data-trix-mutable="true">
+        //   <div class="trix-button-row">
+        //     <span class="trix-button-group trix-button-group--actions">
+        //       <button type="button" class="trix-button trix-button--remove" title="#{lang.remove}" data-trix-action="remove">#{lang.remove}</button>
+        //     </span>
+        //   </div>
+        // </div>
+        const element = makeElement({
+          tagName: "div",
+          className: css.attachmentToolbar,
+          data: { trixMutable: true
+        },
+          childNodes: makeElement({
+            tagName: "div",
+            className: "trix-button-row",
+            childNodes: makeElement({
+              tagName: "span",
+              className: "trix-button-group trix-button-group--actions",
+              childNodes: makeElement({
+                tagName: "button",
+                className: "trix-button trix-button--remove",
+                textContent: lang.remove,
+                attributes: { title: lang.remove
+              },
+                data: { trixAction: "remove"
+              }
+              })
+            })
+          })
+        });
+  
+        if (this.attachment.isPreviewable()) {
+          // <div class="#{css.attachmentMetadataContainer}">
+          //   <span class="#{css.attachmentMetadata}">
+          //     <span class="#{css.attachmentName}" title="#{name}">#{name}</span>
+          //     <span class="#{css.attachmentSize}">#{size}</span>
+          //   </span>
+          // </div>
+          element.appendChild(makeElement({
+            tagName: "div",
+            className: css.attachmentMetadataContainer,
+            childNodes: makeElement({
+              tagName: "span",
+              className: css.attachmentMetadata,
+              childNodes: [
+                makeElement({
+                  tagName: "span",
+                  className: css.attachmentName,
+                  textContent: this.attachment.getFilename(),
+                  attributes: { title: this.attachment.getFilename()
+                }
+                }),
+                makeElement({
+                  tagName: "span",
+                  className: css.attachmentSize,
+                  textContent: this.attachment.getFormattedFilesize()
+                })
+              ]})}));
+        }
+  
+        handleEvent("click", {onElement: element, withCallback: this.didClickToolbar});
+        handleEvent("click", {onElement: element, matchingSelector: "[data-trix-action]", withCallback: this.didClickActionButton});
+  
+        return {
+          do: () => this.element.appendChild(element),
+          undo: () => removeNode(element)
+        };
+      });
+  
+      this.prototype.installCaptionEditor = undoable(function() {
+        const textarea = makeElement({
+          tagName: "textarea",
+          className: css.attachmentCaptionEditor,
+          attributes: { placeholder: lang.captionPlaceholder
+        },
+          data: { trixMutable: true
+        }
+        });
+        textarea.value = this.attachmentPiece.getCaption();
+  
+        const textareaClone = textarea.cloneNode();
+        textareaClone.classList.add("trix-autoresize-clone");
+        textareaClone.tabIndex = -1;
+  
+        const autoresize = function() {
+          textareaClone.value = textarea.value;
+          return textarea.style.height = textareaClone.scrollHeight + "px";
+        };
+  
+        handleEvent("input", {onElement: textarea, withCallback: autoresize});
+        handleEvent("input", {onElement: textarea, withCallback: this.didInputCaption});
+        handleEvent("keydown", {onElement: textarea, withCallback: this.didKeyDownCaption});
+        handleEvent("change", {onElement: textarea, withCallback: this.didChangeCaption});
+        handleEvent("blur", {onElement: textarea, withCallback: this.didBlurCaption});
+  
+        const figcaption = this.element.querySelector("figcaption");
+        const editingFigcaption = figcaption.cloneNode();
+  
+        return {
+          do: () => {
+            figcaption.style.display = "none";
+            editingFigcaption.appendChild(textarea);
+            editingFigcaption.appendChild(textareaClone);
+            editingFigcaption.classList.add(`${css.attachmentCaption}--editing`);
+            figcaption.parentElement.insertBefore(editingFigcaption, figcaption);
+            autoresize();
+            if (this.options.editCaption) {
+              return defer(() => textarea.focus());
+            }
+          },
+          undo() {
+            removeNode(editingFigcaption);
+            return figcaption.style.display = null;
+          }
+        };
+      });
+    }
+    constructor(attachmentPiece, element, container, options = {}) {
+      this.didClickToolbar = this.didClickToolbar.bind(this);
+      this.didClickActionButton = this.didClickActionButton.bind(this);
+      this.didKeyDownCaption = this.didKeyDownCaption.bind(this);
+      this.didInputCaption = this.didInputCaption.bind(this);
+      this.didChangeCaption = this.didChangeCaption.bind(this);
+      this.didBlurCaption = this.didBlurCaption.bind(this);
+      super(...arguments);
+      this.attachmentPiece = attachmentPiece;
+      this.element = element;
+      this.container = container;
+      this.options = options;
+      ({ attachment: this.attachment } = this.attachmentPiece);
+      if (tagName(this.element) === "a") { this.element = this.element.firstChild; }
+      this.install();
+    }
 
-  install: ->
-    @makeElementMutable()
-    @addToolbar()
-    if @attachment.isPreviewable()
-      @installCaptionEditor()
+    install() {
+      this.makeElementMutable();
+      this.addToolbar();
+      if (this.attachment.isPreviewable()) {
+        return this.installCaptionEditor();
+      }
+    }
 
-  uninstall: ->
-    @savePendingCaption()
-    undo() while undo = @undos.pop()
-    @delegate?.didUninstallAttachmentEditor(this)
+    uninstall() {
+      let undo;
+      this.savePendingCaption();
+      while ((undo = this.undos.pop())) { undo(); }
+      return this.delegate?.didUninstallAttachmentEditor(this);
+    }
 
-  # Private
+    // Private
 
-  savePendingCaption: ->
-    if @pendingCaption?
-      caption = @pendingCaption
-      @pendingCaption = null
-      if caption
-        @delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?({caption}, @attachment)
-      else
-        @delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?("caption", @attachment)
+    savePendingCaption() {
+      if (this.pendingCaption != null) {
+        const caption = this.pendingCaption;
+        this.pendingCaption = null;
+        if (caption) {
+          return this.delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?.({caption}, this.attachment);
+        } else {
+          return this.delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?.("caption", this.attachment);
+        }
+      }
+    }
 
-  # Installing and uninstalling
+    // Event handlers
 
-  makeElementMutable: undoable ->
-    do: => @element.dataset.trixMutable = true
-    undo: => delete @element.dataset.trixMutable
+    didClickToolbar(event) {
+      event.preventDefault();
+      return event.stopPropagation();
+    }
 
-  addToolbar: undoable ->
-    # <div class="#{css.attachmentMetadataContainer}" data-trix-mutable="true">
-    #   <div class="trix-button-row">
-    #     <span class="trix-button-group trix-button-group--actions">
-    #       <button type="button" class="trix-button trix-button--remove" title="#{lang.remove}" data-trix-action="remove">#{lang.remove}</button>
-    #     </span>
-    #   </div>
-    # </div>
-    element = makeElement
-      tagName: "div"
-      className: css.attachmentToolbar
-      data: trixMutable: true
-      childNodes: makeElement
-        tagName: "div"
-        className: "trix-button-row"
-        childNodes: makeElement
-          tagName: "span"
-          className: "trix-button-group trix-button-group--actions"
-          childNodes: makeElement
-            tagName: "button"
-            className: "trix-button trix-button--remove"
-            textContent: lang.remove
-            attributes: title: lang.remove
-            data: trixAction: "remove"
+    didClickActionButton(event) {
+      const action = event.target.getAttribute("data-trix-action");
+      switch (action) {
+        case "remove":
+          return this.delegate?.attachmentEditorDidRequestRemovalOfAttachment(this.attachment);
+      }
+    }
 
-    if @attachment.isPreviewable()
-      # <div class="#{css.attachmentMetadataContainer}">
-      #   <span class="#{css.attachmentMetadata}">
-      #     <span class="#{css.attachmentName}" title="#{name}">#{name}</span>
-      #     <span class="#{css.attachmentSize}">#{size}</span>
-      #   </span>
-      # </div>
-      element.appendChild makeElement
-        tagName: "div"
-        className: css.attachmentMetadataContainer
-        childNodes: makeElement
-          tagName: "span"
-          className: css.attachmentMetadata
-          childNodes: [
-            makeElement
-              tagName: "span"
-              className: css.attachmentName
-              textContent: @attachment.getFilename()
-              attributes: title: @attachment.getFilename()
-            makeElement
-              tagName: "span"
-              className: css.attachmentSize
-              textContent: @attachment.getFormattedFilesize()
-          ]
+    didKeyDownCaption(event) {
+      if (keyNames[event.keyCode] === "return") {
+        event.preventDefault();
+        this.savePendingCaption();
+        return this.delegate?.attachmentEditorDidRequestDeselectingAttachment?.(this.attachment);
+      }
+    }
 
-    handleEvent("click", onElement: element, withCallback: @didClickToolbar)
-    handleEvent("click", onElement: element, matchingSelector: "[data-trix-action]", withCallback: @didClickActionButton)
+    didInputCaption(event) {
+      return this.pendingCaption = event.target.value.replace(/\s/g, " ").trim();
+    }
 
-    do: => @element.appendChild(element)
-    undo: => removeNode(element)
+    didChangeCaption(event) {
+      return this.savePendingCaption();
+    }
 
-  installCaptionEditor: undoable ->
-    textarea = makeElement
-      tagName: "textarea"
-      className: css.attachmentCaptionEditor
-      attributes: placeholder: lang.captionPlaceholder
-      data: trixMutable: true
-    textarea.value = @attachmentPiece.getCaption()
-
-    textareaClone = textarea.cloneNode()
-    textareaClone.classList.add("trix-autoresize-clone")
-    textareaClone.tabIndex = -1
-
-    autoresize = ->
-      textareaClone.value = textarea.value
-      textarea.style.height = textareaClone.scrollHeight + "px"
-
-    handleEvent("input", onElement: textarea, withCallback: autoresize)
-    handleEvent("input", onElement: textarea, withCallback: @didInputCaption)
-    handleEvent("keydown", onElement: textarea, withCallback: @didKeyDownCaption)
-    handleEvent("change", onElement: textarea, withCallback: @didChangeCaption)
-    handleEvent("blur", onElement: textarea, withCallback: @didBlurCaption)
-
-    figcaption = @element.querySelector("figcaption")
-    editingFigcaption = figcaption.cloneNode()
-
-    do: =>
-      figcaption.style.display = "none"
-      editingFigcaption.appendChild(textarea)
-      editingFigcaption.appendChild(textareaClone)
-      editingFigcaption.classList.add("#{css.attachmentCaption}--editing")
-      figcaption.parentElement.insertBefore(editingFigcaption, figcaption)
-      autoresize()
-      if @options.editCaption
-        defer -> textarea.focus()
-    undo: ->
-      removeNode(editingFigcaption)
-      figcaption.style.display = null
-
-  # Event handlers
-
-  didClickToolbar: (event) =>
-    event.preventDefault()
-    event.stopPropagation()
-
-  didClickActionButton: (event) =>
-    action = event.target.getAttribute("data-trix-action")
-    switch action
-      when "remove"
-        @delegate?.attachmentEditorDidRequestRemovalOfAttachment(@attachment)
-
-  didKeyDownCaption: (event) =>
-    if keyNames[event.keyCode] is "return"
-      event.preventDefault()
-      @savePendingCaption()
-      @delegate?.attachmentEditorDidRequestDeselectingAttachment?(@attachment)
-
-  didInputCaption: (event) =>
-    @pendingCaption = event.target.value.replace(/\s/g, " ").trim()
-
-  didChangeCaption: (event) =>
-    @savePendingCaption()
-
-  didBlurCaption: (event) =>
-    @savePendingCaption()
+    didBlurCaption(event) {
+      return this.savePendingCaption();
+    }
+  };
+  AttachmentEditorController.initClass();
+  return AttachmentEditorController;
+})();

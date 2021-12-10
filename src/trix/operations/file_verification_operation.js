@@ -1,19 +1,27 @@
-import Operation from "trix/core/utilities/operation"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import Operation from "trix/core/utilities/operation";
 
-export default class FileVerificationOperation extends Operation
-  constructor: (file) ->
-    super(arguments...)
-    @file = file
+export default class FileVerificationOperation extends Operation {
+  constructor(file) {
+    super(...arguments);
+    this.file = file;
+  }
 
-  perform: (callback) ->
-    reader = new FileReader
+  perform(callback) {
+    const reader = new FileReader;
 
-    reader.onerror = ->
-      callback(false)
+    reader.onerror = () => callback(false);
 
-    reader.onload = =>
-      reader.onerror = null
-      try reader.abort()
-      callback(true, @file)
+    reader.onload = () => {
+      reader.onerror = null;
+      try { reader.abort(); } catch (error) {}
+      return callback(true, this.file);
+    };
 
-    reader.readAsArrayBuffer(@file)
+    return reader.readAsArrayBuffer(this.file);
+  }
+}

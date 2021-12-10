@@ -1,73 +1,97 @@
-import { makeElement } from "trix/core/helpers"
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import { makeElement } from "trix/core/helpers";
 
-import ElementStore from "trix/core/collections/element_store"
-import ObjectGroup from "trix/core/collections/object_group"
-import ObjectView from "trix/views/object_view"
-import BlockView from "trix/views/block_view"
+import ElementStore from "trix/core/collections/element_store";
+import ObjectGroup from "trix/core/collections/object_group";
+import ObjectView from "trix/views/object_view";
+import BlockView from "trix/views/block_view";
 
-import { defer } from "trix/core/helpers"
+import { defer } from "trix/core/helpers";
 
-export default class DocumentView extends ObjectView
-  @render: (document) ->
-    element = makeElement("div")
-    view = new this document, {element}
-    view.render()
-    view.sync()
-    element
+export default class DocumentView extends ObjectView {
+  static render(document) {
+    const element = makeElement("div");
+    const view = new (this)(document, {element});
+    view.render();
+    view.sync();
+    return element;
+  }
 
-  constructor: ->
-    super(arguments...)
-    {@element} = @options
-    @elementStore = new ElementStore
-    @setDocument(@object)
+  constructor() {
+    super(...arguments);
+    ({element: this.element} = this.options);
+    this.elementStore = new ElementStore;
+    this.setDocument(this.object);
+  }
 
-  setDocument: (document) ->
-    unless document.isEqualTo(@document)
-      @document = @object = document
+  setDocument(document) {
+    if (!document.isEqualTo(this.document)) {
+      return this.document = (this.object = document);
+    }
+  }
 
-  render: ->
-    @childViews = []
+  render() {
+    this.childViews = [];
 
-    @shadowElement = makeElement("div")
+    this.shadowElement = makeElement("div");
 
-    unless @document.isEmpty()
-      objects = ObjectGroup.groupObjects(@document.getBlocks(), asTree: true)
-      for object in objects
-        view = @findOrCreateCachedChildView(BlockView, object)
-        @shadowElement.appendChild(node) for node in view.getNodes()
+    if (!this.document.isEmpty()) {
+      const objects = ObjectGroup.groupObjects(this.document.getBlocks(), {asTree: true});
+      return (() => {
+        const result = [];
+        for (let object of Array.from(objects)) {
+          const view = this.findOrCreateCachedChildView(BlockView, object);
+          result.push(Array.from(view.getNodes()).map((node) => this.shadowElement.appendChild(node)));
+        }
+        return result;
+      })();
+    }
+  }
 
-  isSynced: ->
-    elementsHaveEqualHTML(@shadowElement, @element)
+  isSynced() {
+    return elementsHaveEqualHTML(this.shadowElement, this.element);
+  }
 
-  sync: ->
-    fragment = @createDocumentFragmentForSync()
-    @element.removeChild(@element.lastChild) while @element.lastChild
-    @element.appendChild(fragment)
-    @didSync()
+  sync() {
+    const fragment = this.createDocumentFragmentForSync();
+    while (this.element.lastChild) { this.element.removeChild(this.element.lastChild); }
+    this.element.appendChild(fragment);
+    return this.didSync();
+  }
 
-  # Private
+  // Private
 
-  didSync: ->
-    @elementStore.reset(findStoredElements(@element))
-    defer => @garbageCollectCachedViews()
+  didSync() {
+    this.elementStore.reset(findStoredElements(this.element));
+    return defer(() => this.garbageCollectCachedViews());
+  }
 
-  createDocumentFragmentForSync: ->
-    fragment = document.createDocumentFragment()
+  createDocumentFragmentForSync() {
+    const fragment = document.createDocumentFragment();
 
-    for node in @shadowElement.childNodes
-      fragment.appendChild(node.cloneNode(true))
+    for (let node of Array.from(this.shadowElement.childNodes)) {
+      fragment.appendChild(node.cloneNode(true));
+    }
 
-    for element in findStoredElements(fragment)
-      if storedElement = @elementStore.remove(element)
-        element.parentNode.replaceChild(storedElement, element)
+    for (let element of Array.from(findStoredElements(fragment))) {
+      var storedElement;
+      if (storedElement = this.elementStore.remove(element)) {
+        element.parentNode.replaceChild(storedElement, element);
+      }
+    }
 
-    fragment
+    return fragment;
+  }
+}
 
-findStoredElements = (element) ->
-  element.querySelectorAll("[data-trix-store-key]")
+var findStoredElements = element => element.querySelectorAll("[data-trix-store-key]");
 
-elementsHaveEqualHTML = (element, otherElement) ->
-  ignoreSpaces(element.innerHTML) is ignoreSpaces(otherElement.innerHTML)
+var elementsHaveEqualHTML = (element, otherElement) => ignoreSpaces(element.innerHTML) === ignoreSpaces(otherElement.innerHTML);
 
-ignoreSpaces = (html) ->
-  html.replace(/&nbsp;/g, " ")
+var ignoreSpaces = html => html.replace(/&nbsp;/g, " ");

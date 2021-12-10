@@ -1,100 +1,145 @@
-import { NON_BREAKING_SPACE } from "trix/constants"
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import { NON_BREAKING_SPACE } from "trix/constants";
 
-import ObjectView from "trix/views/object_view"
-import AttachmentView from "trix/views/attachment_view"
-import PreviewableAttachmentView from "trix/views/previewable_attachment_view"
+import ObjectView from "trix/views/object_view";
+import AttachmentView from "trix/views/attachment_view";
+import PreviewableAttachmentView from "trix/views/previewable_attachment_view";
 
-import { makeElement, findInnerElement, getTextConfig } from "trix/core/helpers"
+import { makeElement, findInnerElement, getTextConfig } from "trix/core/helpers";
 
-export default class PieceView extends ObjectView
-  constructor: ->
-    super(arguments...)
-    @piece = @object
-    @attributes = @piece.getAttributes()
-    {@textConfig, @context} = @options
+export default class PieceView extends ObjectView {
+  constructor() {
+    super(...arguments);
+    this.piece = this.object;
+    this.attributes = this.piece.getAttributes();
+    ({textConfig: this.textConfig, context: this.context} = this.options);
 
-    if @piece.attachment
-      @attachment = @piece.attachment
-    else
-      @string = @piece.toString()
+    if (this.piece.attachment) {
+      this.attachment = this.piece.attachment;
+    } else {
+      this.string = this.piece.toString();
+    }
+  }
 
-  createNodes: ->
-    nodes = if @attachment
-      @createAttachmentNodes()
-    else
-      @createStringNodes()
+  createNodes() {
+    let element;
+    let nodes = this.attachment ?
+      this.createAttachmentNodes()
+    :
+      this.createStringNodes();
 
-    if element = @createElement()
-      innerElement = findInnerElement(element)
-      innerElement.appendChild(node) for node in nodes
-      nodes = [element]
-    nodes
+    if (element = this.createElement()) {
+      const innerElement = findInnerElement(element);
+      for (let node of Array.from(nodes)) { innerElement.appendChild(node); }
+      nodes = [element];
+    }
+    return nodes;
+  }
 
-  createAttachmentNodes: ->
-    constructor = if @attachment.isPreviewable()
+  createAttachmentNodes() {
+    const constructor = this.attachment.isPreviewable() ?
       PreviewableAttachmentView
-    else
-      AttachmentView
+    :
+      AttachmentView;
 
-    view = @createChildView(constructor, @piece.attachment, {@piece})
-    view.getNodes()
+    const view = this.createChildView(constructor, this.piece.attachment, {piece: this.piece});
+    return view.getNodes();
+  }
 
-  createStringNodes: ->
-    if @textConfig?.plaintext
-      [document.createTextNode(@string)]
-    else
-      nodes = []
-      for substring, index in @string.split("\n")
-        if index > 0
-          element = makeElement("br")
-          nodes.push(element)
+  createStringNodes() {
+    if (this.textConfig?.plaintext) {
+      return [document.createTextNode(this.string)];
+    } else {
+      const nodes = [];
+      const iterable = this.string.split("\n");
+      for (let index = 0; index < iterable.length; index++) {
+        var length;
+        const substring = iterable[index];
+        if (index > 0) {
+          const element = makeElement("br");
+          nodes.push(element);
+        }
 
-        if length = substring.length
-          node = document.createTextNode(@preserveSpaces(substring))
-          nodes.push(node)
-      nodes
+        if (length = substring.length) {
+          const node = document.createTextNode(this.preserveSpaces(substring));
+          nodes.push(node);
+        }
+      }
+      return nodes;
+    }
+  }
 
-  createElement: ->
-    styles = {}
+  createElement() {
+    let element, key, value;
+    const styles = {};
 
-    for key, value of @attributes when config = getTextConfig(key)
-      if config.tagName
-        pendingElement = makeElement(config.tagName)
+    for (key in this.attributes) {
+      var config;
+      value = this.attributes[key];
+      if ((config = getTextConfig(key))) {
+        if (config.tagName) {
+          var innerElement;
+          const pendingElement = makeElement(config.tagName);
 
-        if innerElement
-          innerElement.appendChild(pendingElement)
-          innerElement = pendingElement
-        else
-          element = innerElement = pendingElement
+          if (innerElement) {
+            innerElement.appendChild(pendingElement);
+            innerElement = pendingElement;
+          } else {
+            element = (innerElement = pendingElement);
+          }
+        }
 
-      if config.styleProperty
-        styles[config.styleProperty] = value
+        if (config.styleProperty) {
+          styles[config.styleProperty] = value;
+        }
 
-      if config.style
-        styles[key] = value for key, value of config.style
+        if (config.style) {
+          for (key in config.style) { value = config.style[key]; styles[key] = value; }
+        }
+      }
+    }
 
-    if Object.keys(styles).length
-      element ?= makeElement("span")
-      element.style[key] = value for key, value of styles
-    element
+    if (Object.keys(styles).length) {
+      if (element == null) { element = makeElement("span"); }
+      for (key in styles) { value = styles[key]; element.style[key] = value; }
+    }
+    return element;
+  }
 
-  createContainerElement: ->
-    for key, value of @attributes when config = getTextConfig(key)
-      if config.groupTagName
-        attributes = {}
-        attributes[key] = value
-        return makeElement(config.groupTagName, attributes)
+  createContainerElement() {
+    for (let key in this.attributes) {
+      var config;
+      const value = this.attributes[key];
+      if ((config = getTextConfig(key))) {
+        if (config.groupTagName) {
+          const attributes = {};
+          attributes[key] = value;
+          return makeElement(config.groupTagName, attributes);
+        }
+      }
+    }
+  }
 
-  preserveSpaces: (string) ->
-    if @context.isLast
-      string = string.replace(/\ $/, NON_BREAKING_SPACE)
+  preserveSpaces(string) {
+    if (this.context.isLast) {
+      string = string.replace(/\ $/, NON_BREAKING_SPACE);
+    }
 
     string = string
-      .replace(/(\S)\ {3}(\S)/g, "$1 #{NON_BREAKING_SPACE} $2")
-      .replace(/\ {2}/g, "#{NON_BREAKING_SPACE} ")
-      .replace(/\ {2}/g, " #{NON_BREAKING_SPACE}")
+      .replace(/(\S)\ {3}(\S)/g, `$1 ${NON_BREAKING_SPACE} $2`)
+      .replace(/\ {2}/g, `${NON_BREAKING_SPACE} `)
+      .replace(/\ {2}/g, ` ${NON_BREAKING_SPACE}`);
 
-    if @context.isFirst or @context.followsWhitespace
-      string = string.replace(/^\ /, NON_BREAKING_SPACE)
+    if (this.context.isFirst || this.context.followsWhitespace) {
+      string = string.replace(/^\ /, NON_BREAKING_SPACE);
+    }
 
-    string
+    return string;
+  }
+}

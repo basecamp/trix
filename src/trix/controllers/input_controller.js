@@ -1,62 +1,95 @@
-import BasicObject from "trix/core/basic_object"
-import MutationObserver from "trix/observers/mutation_observer"
-import FileVerificationOperation from "trix/operations/file_verification_operation"
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS206: Consider reworking classes to avoid initClass
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let InputController;
+import BasicObject from "trix/core/basic_object";
+import MutationObserver from "trix/observers/mutation_observer";
+import FileVerificationOperation from "trix/operations/file_verification_operation";
 
-import { handleEvent, innerElementIsActive } from "trix/core/helpers"
+import { handleEvent, innerElementIsActive } from "trix/core/helpers";
 
-export default class InputController extends BasicObject
-  constructor: (element) ->
-    super(arguments...)
-    @element = element
-    @mutationObserver = new MutationObserver @element
-    @mutationObserver.delegate = this
-    for eventName of @events
-      handleEvent eventName, onElement: @element, withCallback: @handlerFor(eventName)
+export default InputController = (function() {
+  InputController = class InputController extends BasicObject {
+    static initClass() {
+  
+      this.prototype.events = {};
+    }
+    constructor(element) {
+      super(...arguments);
+      this.element = element;
+      this.mutationObserver = new MutationObserver(this.element);
+      this.mutationObserver.delegate = this;
+      for (let eventName in this.events) {
+        handleEvent(eventName, {onElement: this.element, withCallback: this.handlerFor(eventName)});
+      }
+    }
 
-  events: {}
+    elementDidMutate(mutationSummary) {}
 
-  elementDidMutate: (mutationSummary) ->
+    editorWillSyncDocumentView() {
+      return this.mutationObserver.stop();
+    }
 
-  editorWillSyncDocumentView: ->
-    @mutationObserver.stop()
+    editorDidSyncDocumentView() {
+      return this.mutationObserver.start();
+    }
 
-  editorDidSyncDocumentView: ->
-    @mutationObserver.start()
+    requestRender() {
+      return this.delegate?.inputControllerDidRequestRender?.();
+    }
 
-  requestRender: ->
-    @delegate?.inputControllerDidRequestRender?()
+    requestReparse() {
+      this.delegate?.inputControllerDidRequestReparse?.();
+      return this.requestRender();
+    }
 
-  requestReparse: ->
-    @delegate?.inputControllerDidRequestReparse?()
-    @requestRender()
+    attachFiles(files) {
+      const operations = (Array.from(files).map((file) => new FileVerificationOperation(file)));
+      return Promise.all(operations).then(files => {
+        return this.handleInput(function() {
+          this.delegate?.inputControllerWillAttachFiles();
+          this.responder?.insertFiles(files);
+          return this.requestRender();
+        });
+      });
+    }
 
-  attachFiles: (files) ->
-    operations = (new FileVerificationOperation(file) for file in files)
-    Promise.all(operations).then (files) =>
-      @handleInput ->
-        @delegate?.inputControllerWillAttachFiles()
-        @responder?.insertFiles(files)
-        @requestRender()
+    // Private
 
-  # Private
+    handlerFor(eventName) {
+      return event => {
+        if (!event.defaultPrevented) {
+          return this.handleInput(function() {
+            if (!innerElementIsActive(this.element)) {
+              this.eventName = eventName;
+              return this.events[eventName].call(this, event);
+            }
+          });
+        }
+      };
+    }
 
-  handlerFor: (eventName) ->
-    (event) =>
-      unless event.defaultPrevented
-        @handleInput ->
-          unless innerElementIsActive(@element)
-            @eventName = eventName
-            @events[eventName].call(this, event)
+    handleInput(callback) {
+      try {
+        this.delegate?.inputControllerWillHandleInput();
+        return callback.call(this);
+      } finally {
+        this.delegate?.inputControllerDidHandleInput();
+      }
+    }
 
-  handleInput: (callback) ->
-    try
-      @delegate?.inputControllerWillHandleInput()
-      callback.call(this)
-    finally
-      @delegate?.inputControllerDidHandleInput()
-
-  createLinkHTML: (href, text) ->
-    link = document.createElement("a")
-    link.href = href
-    link.textContent = text ? href
-    link.outerHTML
+    createLinkHTML(href, text) {
+      const link = document.createElement("a");
+      link.href = href;
+      link.textContent = text != null ? text : href;
+      return link.outerHTML;
+    }
+  };
+  InputController.initClass();
+  return InputController;
+})();

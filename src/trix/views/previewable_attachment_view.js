@@ -1,56 +1,74 @@
-import config from "trix/config"
-import { makeElement } from "trix/core/helpers"
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import config from "trix/config";
+import { makeElement } from "trix/core/helpers";
 
-import AttachmentView from "trix/views/attachment_view"
+import AttachmentView from "trix/views/attachment_view";
 
-export default class PreviewableAttachmentView extends AttachmentView
-  constructor: ->
-    super(arguments...)
-    @attachment.previewDelegate = this
+export default class PreviewableAttachmentView extends AttachmentView {
+  constructor() {
+    super(...arguments);
+    this.attachment.previewDelegate = this;
+  }
 
-  createContentNodes: ->
-    @image = makeElement
-      tagName: "img"
-      attributes:
+  createContentNodes() {
+    this.image = makeElement({
+      tagName: "img",
+      attributes: {
         src: ""
-      data:
+      },
+      data: {
         trixMutable: true
+      }
+    });
 
-    @refresh(@image)
-    [@image]
+    this.refresh(this.image);
+    return [this.image];
+  }
 
-  createCaptionElement: ->
-    figcaption = super(arguments...)
-    unless figcaption.textContent
-      figcaption.setAttribute("data-trix-placeholder", config.lang.captionPlaceholder)
-    figcaption
+  createCaptionElement() {
+    const figcaption = super.createCaptionElement(...arguments);
+    if (!figcaption.textContent) {
+      figcaption.setAttribute("data-trix-placeholder", config.lang.captionPlaceholder);
+    }
+    return figcaption;
+  }
 
-  refresh: (image) ->
-    image ?= @findElement()?.querySelector("img")
-    @updateAttributesForImage(image) if image
+  refresh(image) {
+    if (image == null) { image = this.findElement()?.querySelector("img"); }
+    if (image) { return this.updateAttributesForImage(image); }
+  }
 
-  updateAttributesForImage: (image) ->
-    url = @attachment.getURL()
-    previewURL = @attachment.getPreviewURL()
-    image.src = previewURL or url
+  updateAttributesForImage(image) {
+    const url = this.attachment.getURL();
+    const previewURL = this.attachment.getPreviewURL();
+    image.src = previewURL || url;
 
-    if previewURL is url
-      image.removeAttribute("data-trix-serialized-attributes")
-    else
-      serializedAttributes = JSON.stringify(src: url)
-      image.setAttribute("data-trix-serialized-attributes", serializedAttributes)
+    if (previewURL === url) {
+      image.removeAttribute("data-trix-serialized-attributes");
+    } else {
+      const serializedAttributes = JSON.stringify({src: url});
+      image.setAttribute("data-trix-serialized-attributes", serializedAttributes);
+    }
 
-    width = @attachment.getWidth()
-    height = @attachment.getHeight()
+    const width = this.attachment.getWidth();
+    const height = this.attachment.getHeight();
 
-    image.width = width if width?
-    image.height = height if height?
+    if (width != null) { image.width = width; }
+    if (height != null) { image.height = height; }
 
-    storeKey = ["imageElement", @attachment.id, image.src, image.width, image.height].join("/")
-    image.dataset.trixStoreKey = storeKey
+    const storeKey = ["imageElement", this.attachment.id, image.src, image.width, image.height].join("/");
+    return image.dataset.trixStoreKey = storeKey;
+  }
 
-  # Attachment delegate
+  // Attachment delegate
 
-  attachmentDidChangeAttributes: ->
-    @refresh(@image)
-    @refresh()
+  attachmentDidChangeAttributes() {
+    this.refresh(this.image);
+    return this.refresh();
+  }
+}

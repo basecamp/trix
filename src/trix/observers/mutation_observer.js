@@ -1,137 +1,221 @@
-import BasicObject from "trix/core/basic_object"
+/*
+ * decaffeinate suggestions:
+ * DS002: Fix invalid constructor
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS201: Simplify complex destructure assignments
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS206: Consider reworking classes to avoid initClass
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let MutationObserver;
+import BasicObject from "trix/core/basic_object";
 
 import { findClosestElementFromNode, nodeIsEmptyTextNode, nodeIsBlockStartComment,
-normalizeSpaces, summarizeStringChange, tagName } from "trix/core/helpers"
+normalizeSpaces, summarizeStringChange, tagName } from "trix/core/helpers";
 
-mutableAttributeName = "data-trix-mutable"
-mutableSelector = "[#{mutableAttributeName}]"
+const mutableAttributeName = "data-trix-mutable";
+const mutableSelector = `[${mutableAttributeName}]`;
 
-export default class MutationObserver extends BasicObject
-  options =
-    attributes: true
-    childList: true
-    characterData: true
-    characterDataOldValue: true
-    subtree: true
+export default MutationObserver = (function() {
+  let options = undefined;
+  MutationObserver = class MutationObserver extends BasicObject {
+    static initClass() {
+      options = {
+        attributes: true,
+        childList: true,
+        characterData: true,
+        characterDataOldValue: true,
+        subtree: true
+      };
+    }
 
-  constructor: (element) ->
-    super(arguments...)
-    @element = element
-    @observer = new window.MutationObserver @didMutate
-    @start()
+    constructor(element) {
+      this.didMutate = this.didMutate.bind(this);
+      super(...arguments);
+      this.element = element;
+      this.observer = new window.MutationObserver(this.didMutate);
+      this.start();
+    }
 
-  start: ->
-    @reset()
-    @observer.observe(@element, options)
+    start() {
+      this.reset();
+      return this.observer.observe(this.element, options);
+    }
 
-  stop: ->
-    @observer.disconnect()
+    stop() {
+      return this.observer.disconnect();
+    }
 
-  didMutate: (mutations) =>
-    @mutations.push(@findSignificantMutations(mutations)...)
+    didMutate(mutations) {
+      this.mutations.push(...Array.from(this.findSignificantMutations(mutations) || []));
 
-    if @mutations.length
-      @delegate?.elementDidMutate?(@getMutationSummary())
-      @reset()
+      if (this.mutations.length) {
+        this.delegate?.elementDidMutate?.(this.getMutationSummary());
+        return this.reset();
+      }
+    }
 
-  # Private
+    // Private
 
-  reset: ->
-    @mutations = []
+    reset() {
+      return this.mutations = [];
+    }
 
-  findSignificantMutations: (mutations) ->
-    mutation for mutation in mutations when @mutationIsSignificant(mutation)
+    findSignificantMutations(mutations) {
+      return (() => {
+        const result = [];
+        for (let mutation of Array.from(mutations)) {           if (this.mutationIsSignificant(mutation)) {
+            result.push(mutation);
+          }
+        }
+        return result;
+      })();
+    }
 
-  mutationIsSignificant: (mutation) ->
-    return false if @nodeIsMutable(mutation.target)
-    return true for node in @nodesModifiedByMutation(mutation) when @nodeIsSignificant(node)
-    false
+    mutationIsSignificant(mutation) {
+      if (this.nodeIsMutable(mutation.target)) { return false; }
+      for (let node of Array.from(this.nodesModifiedByMutation(mutation))) { if (this.nodeIsSignificant(node)) { return true; } }
+      return false;
+    }
 
-  nodeIsSignificant: (node) ->
-    node isnt @element and not @nodeIsMutable(node) and not nodeIsEmptyTextNode(node)
+    nodeIsSignificant(node) {
+      return (node !== this.element) && !this.nodeIsMutable(node) && !nodeIsEmptyTextNode(node);
+    }
 
-  nodeIsMutable: (node) ->
-    findClosestElementFromNode(node, matchingSelector: mutableSelector)
+    nodeIsMutable(node) {
+      return findClosestElementFromNode(node, {matchingSelector: mutableSelector});
+    }
 
-  nodesModifiedByMutation: (mutation) ->
-    nodes = []
-    switch mutation.type
-      when "attributes"
-        unless mutation.attributeName is mutableAttributeName
-          nodes.push(mutation.target)
-      when "characterData"
-        # Changes to text nodes should consider the parent element
-        nodes.push(mutation.target.parentNode)
-        nodes.push(mutation.target)
-      when "childList"
-        # Consider each added or removed node
-        nodes.push(mutation.addedNodes...)
-        nodes.push(mutation.removedNodes...)
-    nodes
+    nodesModifiedByMutation(mutation) {
+      const nodes = [];
+      switch (mutation.type) {
+        case "attributes":
+          if (mutation.attributeName !== mutableAttributeName) {
+            nodes.push(mutation.target);
+          }
+          break;
+        case "characterData":
+          // Changes to text nodes should consider the parent element
+          nodes.push(mutation.target.parentNode);
+          nodes.push(mutation.target);
+          break;
+        case "childList":
+          // Consider each added or removed node
+          nodes.push(...Array.from(mutation.addedNodes || []));
+          nodes.push(...Array.from(mutation.removedNodes || []));
+          break;
+      }
+      return nodes;
+    }
 
-  getMutationSummary: ->
-    @getTextMutationSummary()
+    getMutationSummary() {
+      return this.getTextMutationSummary();
+    }
 
-  getTextMutationSummary: ->
-    {additions, deletions} = @getTextChangesFromCharacterData()
+    getTextMutationSummary() {
+      let added, deleted;
+      const {additions, deletions} = this.getTextChangesFromCharacterData();
 
-    textChanges = @getTextChangesFromChildList()
-    additions.push(addition) for addition in textChanges.additions when addition not in additions
-    deletions.push(textChanges.deletions...)
+      const textChanges = this.getTextChangesFromChildList();
+      for (let addition of Array.from(textChanges.additions)) { if (!Array.from(additions).includes(addition)) { additions.push(addition); } }
+      deletions.push(...Array.from(textChanges.deletions || []));
 
-    summary = {}
-    summary.textAdded = added if added = additions.join("")
-    summary.textDeleted = deleted if deleted = deletions.join("")
-    summary
+      const summary = {};
+      if (added = additions.join("")) { summary.textAdded = added; }
+      if (deleted = deletions.join("")) { summary.textDeleted = deleted; }
+      return summary;
+    }
 
-  getMutationsByType: (type) ->
-    mutation for mutation in @mutations when mutation.type is type
+    getMutationsByType(type) {
+      return Array.from(this.mutations).filter((mutation) => mutation.type === type);
+    }
 
-  getTextChangesFromChildList: ->
-    addedNodes = []
-    removedNodes = []
+    getTextChangesFromChildList() {
+      let textAdded, textRemoved;
+      let index, text;
+      const addedNodes = [];
+      const removedNodes = [];
 
-    for mutation in @getMutationsByType("childList")
-      addedNodes.push(mutation.addedNodes...)
-      removedNodes.push(mutation.removedNodes...)
+      for (let mutation of Array.from(this.getMutationsByType("childList"))) {
+        addedNodes.push(...Array.from(mutation.addedNodes || []));
+        removedNodes.push(...Array.from(mutation.removedNodes || []));
+      }
 
-    singleBlockCommentRemoved =
-      addedNodes.length is 0 and
-        removedNodes.length is 1 and
-        nodeIsBlockStartComment(removedNodes[0])
+      const singleBlockCommentRemoved =
+        (addedNodes.length === 0) &&
+          (removedNodes.length === 1) &&
+          nodeIsBlockStartComment(removedNodes[0]);
 
-    if singleBlockCommentRemoved
-      textAdded = []
-      textRemoved = ["\n"]
-    else
-      textAdded = getTextForNodes(addedNodes)
-      textRemoved = getTextForNodes(removedNodes)
+      if (singleBlockCommentRemoved) {
+        textAdded = [];
+        textRemoved = ["\n"];
+      } else {
+        textAdded = getTextForNodes(addedNodes);
+        textRemoved = getTextForNodes(removedNodes);
+      }
 
-    additions: (normalizeSpaces(text) for text, index in textAdded when text isnt textRemoved[index])
-    deletions: (normalizeSpaces(text) for text, index in textRemoved when text isnt textAdded[index])
+      return {
+        additions: (((() => {
+          const result = [];
+          for (index = 0; index < textAdded.length; index++) {
+            text = textAdded[index];
+            if (text !== textRemoved[index]) {
+              result.push(normalizeSpaces(text));
+            }
+          }
+          return result;
+        })())),
+        deletions: (((() => {
+          const result1 = [];
+          for (index = 0; index < textRemoved.length; index++) {
+            text = textRemoved[index];
+            if (text !== textAdded[index]) {
+              result1.push(normalizeSpaces(text));
+            }
+          }
+          return result1;
+        })()))
+      };
+    }
 
-  getTextChangesFromCharacterData: ->
-    characterMutations = @getMutationsByType("characterData")
+    getTextChangesFromCharacterData() {
+      let added, removed;
+      const characterMutations = this.getMutationsByType("characterData");
 
-    if characterMutations.length
-      [startMutation, ..., endMutation] = characterMutations
+      if (characterMutations.length) {
+        const startMutation = characterMutations[0], endMutation = characterMutations[characterMutations.length - 1];
 
-      oldString = normalizeSpaces(startMutation.oldValue)
-      newString = normalizeSpaces(endMutation.target.data)
-      {added, removed} = summarizeStringChange(oldString, newString)
+        const oldString = normalizeSpaces(startMutation.oldValue);
+        const newString = normalizeSpaces(endMutation.target.data);
+        ({added, removed} = summarizeStringChange(oldString, newString));
+      }
 
-    additions: if added then [added] else []
-    deletions: if removed then [removed] else []
+      return {
+        additions: added ? [added] : [],
+        deletions: removed ? [removed] : []
+      };
+    }
+  };
+  MutationObserver.initClass();
+  return MutationObserver;
+})();
 
-getTextForNodes = (nodes = []) ->
-  text = []
-  for node in nodes
-    switch node.nodeType
-      when Node.TEXT_NODE
-        text.push(node.data)
-      when Node.ELEMENT_NODE
-        if tagName(node) is "br"
-          text.push("\n")
-        else
-          text.push(getTextForNodes(node.childNodes)...)
-  text
+var getTextForNodes = function(nodes = []) {
+  const text = [];
+  for (let node of Array.from(nodes)) {
+    switch (node.nodeType) {
+      case Node.TEXT_NODE:
+        text.push(node.data);
+        break;
+      case Node.ELEMENT_NODE:
+        if (tagName(node) === "br") {
+          text.push("\n");
+        } else {
+          text.push(...Array.from(getTextForNodes(node.childNodes) || []));
+        }
+        break;
+    }
+  }
+  return text;
+};

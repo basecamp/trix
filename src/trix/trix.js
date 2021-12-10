@@ -1,8 +1,8 @@
-import Trix from "trix/global"
+import Trix from "trix/global";
 
-import "trix/core"
-import "trix/views"
-import "trix/observers"
-import "trix/elements/trix_editor_element"
+import "trix/core";
+import "trix/views";
+import "trix/observers";
+import "trix/elements/trix_editor_element";
 
-export default Trix
+export default Trix;

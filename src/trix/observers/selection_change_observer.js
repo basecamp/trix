@@ -1,82 +1,110 @@
-import BasicObject from "trix/core/basic_object"
+/*
+ * decaffeinate suggestions:
+ * DS002: Fix invalid constructor
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+import BasicObject from "trix/core/basic_object";
 
-export default class SelectionChangeObserver extends BasicObject
-  constructor: ->
-    super(arguments...)
-    @selectionManagers = []
+export default class SelectionChangeObserver extends BasicObject {
+  constructor() {
+    this.update = this.update.bind(this);
+    this.run = this.run.bind(this);
+    super(...arguments);
+    this.selectionManagers = [];
+  }
 
-  start: ->
-    unless @started
-      @started = true
-      if "onselectionchange" of document
-        document.addEventListener "selectionchange", @update, true
-      else
-        @run()
+  start() {
+    if (!this.started) {
+      this.started = true;
+      if ("onselectionchange" in document) {
+        return document.addEventListener("selectionchange", this.update, true);
+      } else {
+        return this.run();
+      }
+    }
+  }
 
-  stop: ->
-    if @started
-      @started = false
-      document.removeEventListener "selectionchange", @update, true
+  stop() {
+    if (this.started) {
+      this.started = false;
+      return document.removeEventListener("selectionchange", this.update, true);
+    }
+  }
 
-  registerSelectionManager: (selectionManager) ->
-    unless selectionManager in @selectionManagers
-      @selectionManagers.push(selectionManager)
-      @start()
+  registerSelectionManager(selectionManager) {
+    if (!Array.from(this.selectionManagers).includes(selectionManager)) {
+      this.selectionManagers.push(selectionManager);
+      return this.start();
+    }
+  }
 
-  unregisterSelectionManager: (selectionManager) ->
-    @selectionManagers = (s for s in @selectionManagers when s isnt selectionManager)
-    @stop() if @selectionManagers.length is 0
+  unregisterSelectionManager(selectionManager) {
+    this.selectionManagers = (Array.from(this.selectionManagers).filter((s) => s !== selectionManager));
+    if (this.selectionManagers.length === 0) { return this.stop(); }
+  }
 
-  notifySelectionManagersOfSelectionChange: ->
-    for selectionManager in @selectionManagers
-      selectionManager.selectionDidChange()
+  notifySelectionManagersOfSelectionChange() {
+    return Array.from(this.selectionManagers).map((selectionManager) =>
+      selectionManager.selectionDidChange());
+  }
 
-  update: =>
-    domRange = getDOMRange()
-    unless domRangesAreEqual(domRange, @domRange)
-      @domRange = domRange
-      @notifySelectionManagersOfSelectionChange()
+  update() {
+    const domRange = getDOMRange();
+    if (!domRangesAreEqual(domRange, this.domRange)) {
+      this.domRange = domRange;
+      return this.notifySelectionManagersOfSelectionChange();
+    }
+  }
 
-  reset: ->
-    @domRange = null
-    @update()
+  reset() {
+    this.domRange = null;
+    return this.update();
+  }
 
-  # Private
+  // Private
 
-  run: =>
-    if @started
-      @update()
-      requestAnimationFrame(@run)
+  run() {
+    if (this.started) {
+      this.update();
+      return requestAnimationFrame(this.run);
+    }
+  }
+}
 
-domRangesAreEqual = (left, right) ->
-  left?.startContainer is right?.startContainer and
-    left?.startOffset is right?.startOffset and
-    left?.endContainer is right?.endContainer and
-    left?.endOffset is right?.endOffset
+var domRangesAreEqual = (left, right) => (left?.startContainer === right?.startContainer) &&
+  (left?.startOffset === right?.startOffset) &&
+  (left?.endContainer === right?.endContainer) &&
+  (left?.endOffset === right?.endOffset);
 
-export selectionChangeObserver = new SelectionChangeObserver
+export var selectionChangeObserver = new SelectionChangeObserver;
 
-export getDOMSelection = ->
-  selection = window.getSelection()
-  selection if selection.rangeCount > 0
+export var getDOMSelection = function() {
+  const selection = window.getSelection();
+  if (selection.rangeCount > 0) { return selection; }
+};
 
-export getDOMRange = ->
-  if domRange = getDOMSelection()?.getRangeAt(0)
-    unless domRangeIsPrivate(domRange)
-      domRange
+export var getDOMRange = function() {
+  let domRange;
+  if (domRange = getDOMSelection()?.getRangeAt(0)) {
+    if (!domRangeIsPrivate(domRange)) {
+      return domRange;
+    }
+  }
+};
 
-export setDOMRange = (domRange) ->
-  selection = window.getSelection()
-  selection.removeAllRanges()
-  selection.addRange(domRange)
-  selectionChangeObserver.update()
+export var setDOMRange = function(domRange) {
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(domRange);
+  return selectionChangeObserver.update();
+};
 
-# In Firefox, clicking certain <input> elements changes the selection to a
-# private element used to draw its UI. Attempting to access properties of those
-# elements throws an error.
-# https://bugzilla.mozilla.org/show_bug.cgi?id=208427
-domRangeIsPrivate = (domRange) ->
-  nodeIsPrivate(domRange.startContainer) or nodeIsPrivate(domRange.endContainer)
+// In Firefox, clicking certain <input> elements changes the selection to a
+// private element used to draw its UI. Attempting to access properties of those
+// elements throws an error.
+// https://bugzilla.mozilla.org/show_bug.cgi?id=208427
+var domRangeIsPrivate = domRange => nodeIsPrivate(domRange.startContainer) || nodeIsPrivate(domRange.endContainer);
 
-nodeIsPrivate = (node) ->
-  not Object.getPrototypeOf(node)
+var nodeIsPrivate = node => !Object.getPrototypeOf(node);
