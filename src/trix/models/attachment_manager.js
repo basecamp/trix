@@ -1,13 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import ManagedAttachment from "trix/models/managed_attachment"
 import BasicObject from "trix/core/basic_object"
 
@@ -19,18 +9,19 @@ export default class AttachmentManager extends BasicObject {
   }
 
   getAttachments() {
-    return (() => {
-      const result = []
-      for (const id in this.managedAttachments) {
-        const attachment = this.managedAttachments[id]
-        result.push(attachment)
-      }
-      return result
-    })()
+    const result = []
+    for (const id in this.managedAttachments) {
+      const attachment = this.managedAttachments[id]
+      result.push(attachment)
+    }
+    return result
   }
 
   manageAttachment(attachment) {
-    return this.managedAttachments[attachment.id] != null ? this.managedAttachments[attachment.id] : this.managedAttachments[attachment.id] = new ManagedAttachment(this, attachment)
+    if (!this.managedAttachments[attachment.id]) {
+      this.managedAttachments[attachment.id] = new ManagedAttachment(this, attachment)
+    }
+    return this.managedAttachments[attachment.id]
   }
 
   attachmentIsManaged(attachment) {

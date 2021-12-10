@@ -272,14 +272,12 @@ export default class Block extends TrixObject {
   }
 
   canBeGroupedWith(otherBlock, depth) {
-    let needle
     const otherAttributes = otherBlock.getAttributes()
     const otherAttribute = otherAttributes[depth]
     const attribute = this.attributes[depth]
 
     return attribute === otherAttribute &&
-      !(getBlockConfig(attribute).group === false &&
-      (needle = otherAttributes[depth + 1], !Array.from(getListAttributeNames()).includes(needle))) &&
+      !(getBlockConfig(attribute).group === false && !getListAttributeNames().includes(otherAttributes[depth + 1])) &&
       (this.getDirection() === otherBlock.getDirection() || otherBlock.isEmpty())
   }
 }

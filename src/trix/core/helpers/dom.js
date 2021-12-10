@@ -236,11 +236,7 @@ export const getBlockTagNames = function() {
 export const nodeIsBlockContainer = (node) => nodeIsBlockStartComment(node?.firstChild)
 
 export const nodeProbablyIsBlockContainer = function(node) {
-  let needle, needle1
-  return (
-    (needle = tagName(node), getBlockTagNames().includes(needle)) &&
-    (needle1 = tagName(node.firstChild), !getBlockTagNames().includes(needle1))
-  )
+  return getBlockTagNames().includes(tagName(node)) && !getBlockTagNames().includes(tagName(node.firstChild))
 }
 
 export const nodeIsBlockStart = function(node, { strict } = { strict: true }) {
