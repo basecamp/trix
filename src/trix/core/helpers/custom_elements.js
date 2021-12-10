@@ -1,23 +1,14 @@
 /* eslint-disable
-    no-cond-assign,
-    no-var,
     prefer-const,
 */
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-export var registerElement = function(tagName, definition = {}) {
-  let defaultCSS
+export const registerElement = function(tagName, definition = {}) {
   tagName = tagName.toLowerCase()
 
   definition = rewriteLifecycleCallbacks(definition)
   const properties = rewriteFunctionsAsValues(definition)
+  const defaultCSS = properties.defaultCSS
 
-  if (defaultCSS = properties.defaultCSS) {
+  if (defaultCSS) {
     delete properties.defaultCSS
     installDefaultCSSForTagName(defaultCSS, tagName)
   }
@@ -25,31 +16,33 @@ export var registerElement = function(tagName, definition = {}) {
   return doRegisterElement(tagName, properties)
 }
 
-var installDefaultCSSForTagName = function(defaultCSS, tagName) {
+const installDefaultCSSForTagName = function(defaultCSS, tagName) {
   const styleElement = insertStyleElementForTagName(tagName)
   styleElement.textContent = defaultCSS.replace(/%t/g, tagName)
 }
 
-var insertStyleElementForTagName = function(tagName) {
-  let nonce
+const insertStyleElementForTagName = function(tagName) {
   const element = document.createElement("style")
   element.setAttribute("type", "text/css")
   element.setAttribute("data-tag-name", tagName.toLowerCase())
-  if (nonce = getCSPNonce()) { element.setAttribute("nonce", nonce) }
+  const nonce = getCSPNonce()
+  if (nonce) {
+    element.setAttribute("nonce", nonce)
+  }
   document.head.insertBefore(element, document.head.firstChild)
   return element
 }
 
-var getCSPNonce = function() {
-  let element
-  if (element = getMetaElement("trix-csp-nonce") || getMetaElement("csp-nonce")) {
+const getCSPNonce = function() {
+  const element = getMetaElement("trix-csp-nonce") || getMetaElement("csp-nonce")
+  if (element) {
     return element.getAttribute("content")
   }
 }
 
-var getMetaElement = name => document.head.querySelector(`meta[name=${name}]`)
+const getMetaElement = (name) => document.head.querySelector(`meta[name=${name}]`)
 
-var rewriteFunctionsAsValues = function(definition) {
+const rewriteFunctionsAsValues = function(definition) {
   const object = {}
   for (const key in definition) {
     const value = definition[key]
@@ -58,11 +51,11 @@ var rewriteFunctionsAsValues = function(definition) {
   return object
 }
 
-var rewriteLifecycleCallbacks = (function() {
+const rewriteLifecycleCallbacks = (function() {
   const extract = function(definition) {
-    const callbacks = {};
+    const callbacks = {}
 
-    [ "initialize", "connect", "disconnect" ].forEach((key) => {
+    ;[ "initialize", "connect", "disconnect" ].forEach((key) => {
       callbacks[key] = definition[key]
       delete definition[key]
     })
@@ -86,25 +79,35 @@ var rewriteLifecycleCallbacks = (function() {
         }
       }
 
-      if (connect) { definition.connectedCallback = connect }
-      if (disconnect) { definition.disconnectedCallback = disconnect }
+      if (connect) {
+        definition.connectedCallback = connect
+      }
+      if (disconnect) {
+        definition.disconnectedCallback = disconnect
+      }
       return definition
     }
   } else {
     return function(definition) {
       const { initialize, connect, disconnect } = extract(definition)
-      if (initialize) { definition.createdCallback = initialize }
-      if (connect) { definition.attachedCallback = connect }
-      if (disconnect) { definition.detachedCallback = disconnect }
+      if (initialize) {
+        definition.createdCallback = initialize
+      }
+      if (connect) {
+        definition.attachedCallback = connect
+      }
+      if (disconnect) {
+        definition.detachedCallback = disconnect
+      }
       return definition
     }
   }
 })()
 
-var doRegisterElement = (function() {
+const doRegisterElement = (function() {
   if (window.customElements) {
     return function(tagName, properties) {
-      var constructor = function() {
+      const constructor = function() {
         if (typeof Reflect === "object") {
           return Reflect.construct(HTMLElement, [], constructor)
         } else {

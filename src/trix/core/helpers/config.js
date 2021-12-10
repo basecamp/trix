@@ -1,15 +1,3 @@
-/* eslint-disable
-    no-var,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import config from "trix/config"
 
 let allAttributeNames = null
@@ -17,23 +5,40 @@ let blockAttributeNames = null
 let textAttributeNames = null
 let listAttributeNames = null
 
-export var getAllAttributeNames = () => allAttributeNames != null ? allAttributeNames : allAttributeNames = getTextAttributeNames().concat(getBlockAttributeNames())
+export const getAllAttributeNames = () => {
+  if (!allAttributeNames) {
+    allAttributeNames = getTextAttributeNames().concat(getBlockAttributeNames())
+  }
+  return allAttributeNames
+}
 
-export var getBlockConfig = attributeName => config.blockAttributes[attributeName]
+export const getBlockConfig = (attributeName) => config.blockAttributes[attributeName]
 
-export var getBlockAttributeNames = () => blockAttributeNames != null ? blockAttributeNames : blockAttributeNames = Object.keys(config.blockAttributes)
+export const getBlockAttributeNames = () => {
+  if (!blockAttributeNames) {
+    blockAttributeNames = Object.keys(config.blockAttributes)
+  }
+  return blockAttributeNames
+}
 
-export var getTextConfig = attributeName => config.textAttributes[attributeName]
+export const getTextConfig = (attributeName) => config.textAttributes[attributeName]
 
-export var getTextAttributeNames = () => textAttributeNames != null ? textAttributeNames : textAttributeNames = Object.keys(config.textAttributes)
+export const getTextAttributeNames = () => {
+  if (!textAttributeNames) {
+    textAttributeNames = Object.keys(config.textAttributes)
+  }
+  return textAttributeNames
+}
 
-export var getListAttributeNames = () => listAttributeNames != null ? listAttributeNames : listAttributeNames = (() => {
-  const result = []
-  for (const key in config.blockAttributes) {
-    const { listAttribute } = config.blockAttributes[key]
-    if (listAttribute != null) {
-      result.push(listAttribute)
+export const getListAttributeNames = () => {
+  if (!listAttributeNames) {
+    listAttributeNames = []
+    for (const key in config.blockAttributes) {
+      const { listAttribute } = config.blockAttributes[key]
+      if (listAttribute != null) {
+        listAttributeNames.push(listAttribute)
+      }
     }
   }
-  return result
-})()
+  return listAttributeNames
+}

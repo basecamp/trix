@@ -1,14 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-let ucs2decode, ucs2encode
 import BasicObject from "trix/core/basic_object"
 
 export default class UTF16String extends BasicObject {
@@ -76,29 +65,29 @@ const hasStringFromCodePoint = String.fromCodePoint?.(32, 128124) === " \ud83d\u
 // UCS-2 conversion helpers ported from Mathias Bynens' Punycode.js:
 // https://github.com/bestiejs/punycode.js#punycodeucs2
 
+let ucs2decode, ucs2encode
+
 // Creates an array containing the numeric code points of each Unicode
 // character in the string. While JavaScript uses UCS-2 internally,
 // this function will convert a pair of surrogate halves (each of which
 // UCS-2 exposes as separate characters) into a single code point,
 // matching UTF-16.
 if (hasArrayFrom && hasStringCodePointAt) {
-  ucs2decode = string => Array.from(string).map(char => char.codePointAt(0))
+  ucs2decode = (string) => Array.from(string).map((char) => char.codePointAt(0))
 } else {
   ucs2decode = function(string) {
     const output = []
     let counter = 0
-    const {
-      length
-    } = string
+    const { length } = string
 
     while (counter < length) {
       let value = string.charCodeAt(counter++)
-      if (0xD800 <= value && value <= 0xDBFF && counter < length) {
+      if (0xd800 <= value && value <= 0xdbff && counter < length) {
         // high surrogate, and there is a next character
         const extra = string.charCodeAt(counter++)
-        if ((extra & 0xFC00) === 0xDC00) {
+        if ((extra & 0xfc00) === 0xdc00) {
           // low surrogate
-          value = ((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000
+          value = ((value & 0x3ff) << 10) + (extra & 0x3ff) + 0x10000
         } else {
           // unmatched surrogate; only append this code unit, in case the
           // next code unit is the high surrogate of a surrogate pair
@@ -114,7 +103,7 @@ if (hasArrayFrom && hasStringCodePointAt) {
 
 // Creates a string based on an array of numeric code points.
 if (hasStringFromCodePoint) {
-  ucs2encode = array => String.fromCodePoint(...Array.from(array || []))
+  ucs2encode = (array) => String.fromCodePoint(...Array.from(array || []))
 } else {
   ucs2encode = function(array) {
     const characters = (() => {
@@ -122,10 +111,10 @@ if (hasStringFromCodePoint) {
 
       Array.from(array).forEach((value) => {
         let output = ""
-        if (value > 0xFFFF) {
+        if (value > 0xffff) {
           value -= 0x10000
-          output += String.fromCharCode(value >>> 10 & 0x3FF | 0xD800)
-          value = 0xDC00 | value & 0x3FF
+          output += String.fromCharCode(value >>> 10 & 0x3ff | 0xd800)
+          value = 0xdc00 | value & 0x3ff
         }
         result.push(output + String.fromCharCode(value))
       })

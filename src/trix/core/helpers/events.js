@@ -1,19 +1,6 @@
-/* eslint-disable
-    no-empty,
-    no-var,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const testTransferData = { "application/x-trix-feature-detection": "test" }
 
-export var dataTransferIsPlainText = function(dataTransfer) {
+export const dataTransferIsPlainText = function(dataTransfer) {
   const text = dataTransfer.getData("text/plain")
   const html = dataTransfer.getData("text/html")
 
@@ -27,22 +14,26 @@ export var dataTransferIsPlainText = function(dataTransfer) {
   }
 }
 
-export var dataTransferIsWritable = function(dataTransfer) {
-  if (dataTransfer?.setData == null) { return }
-  for (var key in testTransferData) {
-    var value = testTransferData[key]
-    if (!(() => { try {
+export const dataTransferIsWritable = function(dataTransfer) {
+  if (!dataTransfer?.setData) return false
+
+  for (const key in testTransferData) {
+    const value = testTransferData[key]
+
+    try {
       dataTransfer.setData(key, value)
-      return dataTransfer.getData(key) === value
-    } catch (error) {} })()) { return }
+      if (!dataTransfer.getData(key) === value) return false
+    } catch (error) {
+      return false
+    }
   }
   return true
 }
 
-export var keyEventIsKeyboardCommand = (function() {
+export const keyEventIsKeyboardCommand = (function() {
   if (/Mac|^iP/.test(navigator.platform)) {
-    return event => event.metaKey
+    return (event) => event.metaKey
   } else {
-    return event => event.ctrlKey
+    return (event) => event.ctrlKey
   }
 })()

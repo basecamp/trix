@@ -1,40 +1,29 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS206: Consider reworking classes to avoid initClass
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-let Operation
 import BasicObject from "trix/core/basic_object"
 
-export default Operation = (function() {
-  Operation = class Operation extends BasicObject {
-    static initClass() {
+export default class Operation extends BasicObject {
+  static initClass() {
+    this.proxyMethod("getPromise().then")
+    this.proxyMethod("getPromise().catch")
+  }
+  isPerforming() {
+    return this.performing === true
+  }
 
-      this.proxyMethod("getPromise().then")
-      this.proxyMethod("getPromise().catch")
-    }
-    isPerforming() {
-      return this.performing === true
-    }
+  hasPerformed() {
+    return this.performed === true
+  }
 
-    hasPerformed() {
-      return this.performed === true
-    }
+  hasSucceeded() {
+    return this.performed && this.succeeded
+  }
 
-    hasSucceeded() {
-      return this.performed && this.succeeded
-    }
+  hasFailed() {
+    return this.performed && !this.succeeded
+  }
 
-    hasFailed() {
-      return this.performed && !this.succeeded
-    }
-
-    getPromise() {
-      return this.promise != null ? this.promise : this.promise = new Promise((resolve, reject) => {
+  getPromise() {
+    if (!this.promise) {
+      this.promise = new Promise((resolve, reject) => {
         this.performing = true
         return this.perform((succeeded, result) => {
           this.succeeded = succeeded
@@ -42,26 +31,29 @@ export default Operation = (function() {
           this.performed = true
 
           if (this.succeeded) {
-            return resolve(result)
+            resolve(result)
           } else {
-            return reject(result)
+            reject(result)
           }
         })
       })
     }
 
-    perform(callback) {
-      return callback(false)
-    }
-
-    release() {
-      this.promise?.cancel?.()
-      this.promise = null
-      this.performing = null
-      this.performed = null
-      this.succeeded = null
-    }
+    return this.promise
   }
-  Operation.initClass()
-  return Operation
-})()
+
+  perform(callback) {
+    return callback(false)
+  }
+
+  release() {
+    this.promise?.cancel?.()
+    this.promise = null
+    this.performing = null
+    this.performed = null
+    this.succeeded = null
+  }
+}
+
+Operation.initClass()
+

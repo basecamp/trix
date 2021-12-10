@@ -1,16 +1,11 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 export default class ObjectGroup {
   static groupObjects(ungroupedObjects = [], { depth, asTree } = {}) {
     let group
-    if (asTree) { if (depth == null) { depth = 0 } }
+    if (asTree) {
+      if (depth == null) {
+        depth = 0
+      }
+    }
     const objects = []
 
     Array.from(ungroupedObjects).forEach((object) => {
@@ -55,7 +50,9 @@ export default class ObjectGroup {
 
   getCacheKey() {
     const keys = [ "objectGroup" ]
-    Array.from(this.getObjects()).forEach((object) => { keys.push(object.getCacheKey()) })
+    Array.from(this.getObjects()).forEach((object) => {
+      keys.push(object.getCacheKey())
+    })
     return keys.join("/")
   }
 }
