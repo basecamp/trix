@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-var,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -35,7 +40,7 @@ var attributes = {
     group: false,
     nestable: true,
     test(element) {
-      return tagName(element.parentNode) === attributes[this.listAttribute].tagName;
+      return tagName(element.parentNode) === attributes[this.listAttribute].tagName
     }
   },
   numberList: {
@@ -48,7 +53,7 @@ var attributes = {
     group: false,
     nestable: true,
     test(element) {
-      return tagName(element.parentNode) === attributes[this.listAttribute].tagName;
+      return tagName(element.parentNode) === attributes[this.listAttribute].tagName
     }
   },
   attachmentGallery: {
@@ -58,8 +63,8 @@ var attributes = {
     parse: false,
     group: false
   }
-};
+}
 
-var tagName = element => element?.tagName?.toLowerCase();
+var tagName = element => element?.tagName?.toLowerCase()
 
-export default attributes;
+export default attributes

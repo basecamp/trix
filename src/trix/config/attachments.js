@@ -1,5 +1,11 @@
-let attachments;
-export var attachmentSelector = "[data-trix-attachment]";
+/* eslint-disable
+    no-unused-vars,
+    no-var,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+let attachments
+export var attachmentSelector = "[data-trix-attachment]"
 
 export default attachments = {
   preview: {
@@ -14,4 +20,4 @@ export default attachments = {
       size: true
     }
   }
-};
+}

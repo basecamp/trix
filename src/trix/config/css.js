@@ -1,4 +1,9 @@
-let css;
+/* eslint-disable
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+let css
 export default css = {
   attachment: "attachment",
   attachmentCaption: "attachment__caption",
@@ -10,4 +15,4 @@ export default css = {
   attachmentSize: "attachment__size",
   attachmentToolbar: "attachment__toolbar",
   attachmentGallery: "attachment-gallery"
-};
+}

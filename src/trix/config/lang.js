@@ -1,4 +1,9 @@
-let lang;
+/* eslint-disable
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
+let lang
 export default lang = {
   attachFiles: "Attach Files",
   bold: "Bold",
@@ -26,4 +31,4 @@ export default lang = {
   MB: "MB",
   PB: "PB",
   TB: "TB"
-};
+}
