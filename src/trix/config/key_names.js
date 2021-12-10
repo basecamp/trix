@@ -1,10 +1,4 @@
-/* eslint-disable
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-let keyNames
-export default keyNames = {
+export default {
   "8":  "backspace",
   "9":  "tab",
   "13": "return",

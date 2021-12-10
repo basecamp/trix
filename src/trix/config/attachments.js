@@ -1,13 +1,6 @@
-/* eslint-disable
-    no-unused-vars,
-    no-var,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-let attachments
-export var attachmentSelector = "[data-trix-attachment]"
+export const attachmentSelector = "[data-trix-attachment]"
 
-export default attachments = {
+const attachments = {
   preview: {
     presentation: "gallery",
     caption: {
@@ -21,3 +14,4 @@ export default attachments = {
     }
   }
 }
+export default attachments
