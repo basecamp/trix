@@ -20,7 +20,13 @@
 import TrixObject from "trix/core/object" // Don't override window.Object
 import Text from "trix/models/text"
 
-import { arraysAreEqual, getBlockAttributeNames, getBlockConfig, getListAttributeNames, spliceArray } from "trix/core/helpers"
+import {
+  arraysAreEqual,
+  getBlockAttributeNames,
+  getBlockConfig,
+  getListAttributeNames,
+  spliceArray,
+} from "trix/core/helpers"
 
 export default class Block extends TrixObject {
   static fromJSON(blockJSON) {
@@ -30,7 +36,7 @@ export default class Block extends TrixObject {
 
   constructor(text, attributes) {
     super(...arguments)
-    this.text = applyBlockBreakToText(text || new Text)
+    this.text = applyBlockBreakToText(text || new Text())
     this.attributes = attributes || []
   }
 
@@ -41,9 +47,7 @@ export default class Block extends TrixObject {
   isEqualTo(block) {
     if (super.isEqualTo(block)) return true
 
-    return this.text.isEqualTo(block?.text) &&
-      arraysAreEqual(this.attributes, block?.attributes)
-
+    return this.text.isEqualTo(block?.text) && arraysAreEqual(this.attributes, block?.attributes)
   }
 
   copyWithText(text) {
@@ -118,12 +122,11 @@ export default class Block extends TrixObject {
     return (() => {
       const result = []
 
-      Array.from(this.attributes).forEach(
-        (attribute) => { if (getBlockConfig(attribute).nestable) {
-            result.push(attribute)
-          }
+      Array.from(this.attributes).forEach((attribute) => {
+        if (getBlockConfig(attribute).nestable) {
+          result.push(attribute)
         }
-      )
+      })
 
       return result
     })()
@@ -157,12 +160,11 @@ export default class Block extends TrixObject {
     return (() => {
       const result = []
 
-      Array.from(this.attributes).forEach(
-        (attribute) => { if (getBlockConfig(attribute).listAttribute) {
-            result.push(attribute)
-          }
+      Array.from(this.attributes).forEach((attribute) => {
+        if (getBlockConfig(attribute).listAttribute) {
+          result.push(attribute)
         }
-      )
+      })
 
       return result
     })()
@@ -182,20 +184,24 @@ export default class Block extends TrixObject {
 
   findLineBreakInDirectionFromPosition(direction, position) {
     const string = this.toString()
-    const result = (() => { switch (direction) {
-      case "forward":
-        return string.indexOf("\n", position)
-      case "backward":
-        return string.slice(0, position).lastIndexOf("\n")
-    } })()
+    const result = (() => {
+      switch (direction) {
+        case "forward":
+          return string.indexOf("\n", position)
+        case "backward":
+          return string.slice(0, position).lastIndexOf("\n")
+      }
+    })()
 
-    if (result !== -1) { return result }
+    if (result !== -1) {
+      return result
+    }
   }
 
   contentsForInspection() {
     return {
       text: this.text.inspect(),
-      attributes: this.attributes
+      attributes: this.attributes,
     }
   }
 
@@ -206,7 +212,7 @@ export default class Block extends TrixObject {
   toJSON() {
     return {
       text: this.text,
-      attributes: this.attributes
+      attributes: this.attributes,
     }
   }
 
@@ -227,9 +233,7 @@ export default class Block extends TrixObject {
   }
 
   canBeConsolidatedWith(block) {
-    return !this.hasAttributes() &&
-      !block.hasAttributes() &&
-      this.getDirection() === block.getDirection()
+    return !this.hasAttributes() && !block.hasAttributes() && this.getDirection() === block.getDirection()
   }
 
   consolidateWith(block) {
@@ -276,9 +280,11 @@ export default class Block extends TrixObject {
     const otherAttribute = otherAttributes[depth]
     const attribute = this.attributes[depth]
 
-    return attribute === otherAttribute &&
+    return (
+      attribute === otherAttribute &&
       !(getBlockConfig(attribute).group === false && !getListAttributeNames().includes(otherAttributes[depth + 1])) &&
       (this.getDirection() === otherBlock.getDirection() || otherBlock.isEmpty())
+    )
   }
 }
 
@@ -293,8 +299,13 @@ var applyBlockBreakToText = function(text) {
 var unmarkExistingInnerBlockBreaksInText = function(text) {
   let modified
   modified = false
-  let array = text.getPieces(), adjustedLength = Math.max(array.length, 1), innerPieces = array.slice(0, adjustedLength - 1), lastPiece = array[adjustedLength - 1]
-  if (lastPiece == null) { return text }
+  let array = text.getPieces(),
+    adjustedLength = Math.max(array.length, 1),
+    innerPieces = array.slice(0, adjustedLength - 1),
+    lastPiece = array[adjustedLength - 1]
+  if (lastPiece == null) {
+    return text
+  }
 
   innerPieces = (() => {
     const result = []
@@ -330,12 +341,14 @@ var addBlockBreakToText = function(text) {
 
 var textEndsInBlockBreak = function(text) {
   const length = text.getLength()
-  if (length === 0) { return false }
+  if (length === 0) {
+    return false
+  }
   const endText = text.getTextAtRange([ length - 1, length ])
   return endText.isBlockBreak()
 }
 
-var unmarkBlockBreakPiece = piece => piece.copyWithoutAttribute("blockBreak")
+var unmarkBlockBreakPiece = (piece) => piece.copyWithoutAttribute("blockBreak")
 
 // Attributes
 
@@ -350,7 +363,7 @@ var expandAttribute = function(attribute) {
 
 // Array helpers
 
-var getLastElement = array => array.slice(-1)[0]
+var getLastElement = (array) => array.slice(-1)[0]
 
 var removeLastValue = function(array, value) {
   const index = array.lastIndexOf(value)

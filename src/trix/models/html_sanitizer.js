@@ -108,7 +108,9 @@ export default class HTMLSanitizer extends BasicObject {
   }
 
   elementIsRemovable(element) {
-    if (element?.nodeType !== Node.ELEMENT_NODE) { return }
+    if (element?.nodeType !== Node.ELEMENT_NODE) {
+      return
+    }
     return this.elementIsForbidden(element) || this.elementIsntSerializable(element)
   }
 

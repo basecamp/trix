@@ -15,7 +15,7 @@ class UndoView extends View {
     this.prototype.events = {
       "trix-change"() {
         return this.render()
-      }
+      },
     }
   }
 

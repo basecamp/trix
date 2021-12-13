@@ -26,10 +26,26 @@ class DebugView extends View {
     this.didClickParseButton = this.didClickParseButton.bind(this)
     this.didToggleControlElement = this.didToggleControlElement.bind(this)
     super(...arguments)
-    handleEvent("change", { onElement: this.element, matchingSelector: "input[name=viewCaching]", withCallback: this.didToggleViewCaching })
-    handleEvent("click", { onElement: this.element, matchingSelector: "button[data-action=render]", withCallback: this.didClickRenderButton })
-    handleEvent("click", { onElement: this.element, matchingSelector: "button[data-action=parse]", withCallback: this.didClickParseButton })
-    handleEvent("change", { onElement: this.element, matchingSelector: "input[name=controlElement]", withCallback: this.didToggleControlElement })
+    handleEvent("change", {
+      onElement: this.element,
+      matchingSelector: "input[name=viewCaching]",
+      withCallback: this.didToggleViewCaching,
+    })
+    handleEvent("click", {
+      onElement: this.element,
+      matchingSelector: "button[data-action=render]",
+      withCallback: this.didClickRenderButton,
+    })
+    handleEvent("click", {
+      onElement: this.element,
+      matchingSelector: "button[data-action=parse]",
+      withCallback: this.didClickParseButton,
+    })
+    handleEvent("change", {
+      onElement: this.element,
+      matchingSelector: "input[name=controlElement]",
+      withCallback: this.didToggleControlElement,
+    })
   }
 
   didToggleViewCaching({ target }) {

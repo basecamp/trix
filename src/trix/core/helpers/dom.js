@@ -6,7 +6,10 @@ import { attachmentSelector } from "trix/config/attachments"
 const html = document.documentElement
 const match = html.matches
 
-export const handleEvent = function(eventName, { onElement, matchingSelector, withCallback, inPhase, preventDefault, times } = {}) {
+export const handleEvent = function(
+  eventName,
+  { onElement, matchingSelector, withCallback, inPhase, preventDefault, times } = {}
+) {
   const element = onElement != null ? onElement : html
   const selector = matchingSelector
   const useCapture = inPhase === "capturing"

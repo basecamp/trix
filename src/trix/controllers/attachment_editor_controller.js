@@ -20,17 +20,19 @@ import BasicObject from "trix/core/basic_object"
 import { defer, handleEvent, makeElement, tagName } from "trix/core/helpers"
 const { lang, css, keyNames } = config
 
-const undoable = fn => function() {
-  const commands = fn.apply(this, arguments)
-  commands.do()
-  if (this.undos == null) { this.undos = [] }
-  return this.undos.push(commands.undo)
-}
+const undoable = (fn) =>
+  function() {
+    const commands = fn.apply(this, arguments)
+    commands.do()
+    if (this.undos == null) {
+      this.undos = []
+    }
+    return this.undos.push(commands.undo)
+  }
 
 export default AttachmentEditorController = (function() {
   AttachmentEditorController = class AttachmentEditorController extends BasicObject {
     static initClass() {
-
       // Installing and uninstalling
 
       this.prototype.makeElementMutable = undoable(function() {
@@ -38,7 +40,7 @@ export default AttachmentEditorController = (function() {
           do: () => {
             this.element.dataset.trixMutable = true
           },
-          undo: () => delete this.element.dataset.trixMutable
+          undo: () => delete this.element.dataset.trixMutable,
         }
       })
 
@@ -53,8 +55,7 @@ export default AttachmentEditorController = (function() {
         const element = makeElement({
           tagName: "div",
           className: css.attachmentToolbar,
-          data: { trixMutable: true
-        },
+          data: { trixMutable: true },
           childNodes: makeElement({
             tagName: "div",
             className: "trix-button-row",
@@ -65,13 +66,11 @@ export default AttachmentEditorController = (function() {
                 tagName: "button",
                 className: "trix-button trix-button--remove",
                 textContent: lang.remove,
-                attributes: { title: lang.remove
-              },
-                data: { trixAction: "remove"
-              }
-              })
-            })
-          })
+                attributes: { title: lang.remove },
+                data: { trixAction: "remove" },
+              }),
+            }),
+          }),
         })
 
         if (this.attachment.isPreviewable()) {
@@ -81,34 +80,41 @@ export default AttachmentEditorController = (function() {
           //     <span class="#{css.attachmentSize}">#{size}</span>
           //   </span>
           // </div>
-          element.appendChild(makeElement({
-            tagName: "div",
-            className: css.attachmentMetadataContainer,
-            childNodes: makeElement({
-              tagName: "span",
-              className: css.attachmentMetadata,
-              childNodes: [
-                makeElement({
-                  tagName: "span",
-                  className: css.attachmentName,
-                  textContent: this.attachment.getFilename(),
-                  attributes: { title: this.attachment.getFilename()
-                }
-                }),
-                makeElement({
-                  tagName: "span",
-                  className: css.attachmentSize,
-                  textContent: this.attachment.getFormattedFilesize()
-                })
-              ] }) }))
+          element.appendChild(
+            makeElement({
+              tagName: "div",
+              className: css.attachmentMetadataContainer,
+              childNodes: makeElement({
+                tagName: "span",
+                className: css.attachmentMetadata,
+                childNodes: [
+                  makeElement({
+                    tagName: "span",
+                    className: css.attachmentName,
+                    textContent: this.attachment.getFilename(),
+                    attributes: { title: this.attachment.getFilename() },
+                  }),
+                  makeElement({
+                    tagName: "span",
+                    className: css.attachmentSize,
+                    textContent: this.attachment.getFormattedFilesize(),
+                  }),
+                ],
+              }),
+            })
+          )
         }
 
         handleEvent("click", { onElement: element, withCallback: this.didClickToolbar })
-        handleEvent("click", { onElement: element, matchingSelector: "[data-trix-action]", withCallback: this.didClickActionButton })
+        handleEvent("click", {
+          onElement: element,
+          matchingSelector: "[data-trix-action]",
+          withCallback: this.didClickActionButton,
+        })
 
         return {
           do: () => this.element.appendChild(element),
-          undo: () => removeNode(element)
+          undo: () => removeNode(element),
         }
       })
 
@@ -116,10 +122,8 @@ export default AttachmentEditorController = (function() {
         const textarea = makeElement({
           tagName: "textarea",
           className: css.attachmentCaptionEditor,
-          attributes: { placeholder: lang.captionPlaceholder
-        },
-          data: { trixMutable: true
-        }
+          attributes: { placeholder: lang.captionPlaceholder },
+          data: { trixMutable: true },
         })
         textarea.value = this.attachmentPiece.getCaption()
 
@@ -156,7 +160,7 @@ export default AttachmentEditorController = (function() {
           undo() {
             removeNode(editingFigcaption)
             figcaption.style.display = null
-          }
+          },
         }
       })
     }
@@ -171,9 +175,11 @@ export default AttachmentEditorController = (function() {
       this.attachmentPiece = attachmentPiece
       this.element = element
       this.container = container
-      this.options = options;
-      ({ attachment: this.attachment } = this.attachmentPiece)
-      if (tagName(this.element) === "a") { this.element = this.element.firstChild }
+      this.options = options
+      ;({ attachment: this.attachment } = this.attachmentPiece)
+      if (tagName(this.element) === "a") {
+        this.element = this.element.firstChild
+      }
       this.install()
     }
 
@@ -188,7 +194,9 @@ export default AttachmentEditorController = (function() {
     uninstall() {
       let undo
       this.savePendingCaption()
-      while (undo = this.undos.pop()) { undo() }
+      while (undo = this.undos.pop()) {
+        undo()
+      }
       return this.delegate?.didUninstallAttachmentEditor(this)
     }
 
@@ -199,7 +207,10 @@ export default AttachmentEditorController = (function() {
         const caption = this.pendingCaption
         this.pendingCaption = null
         if (caption) {
-          return this.delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?.({ caption }, this.attachment)
+          return this.delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?.(
+            { caption },
+            this.attachment
+          )
         } else {
           return this.delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?.("caption", this.attachment)
         }

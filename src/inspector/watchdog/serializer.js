@@ -15,7 +15,7 @@ export default class Serializer {
   }
 
   serializeTree() {
-    this.ids = new Map
+    this.ids = new Map()
     this.tree = this.serializeNode(this.element)
   }
 
@@ -29,7 +29,8 @@ export default class Serializer {
         this.serializeElementChildrenToObject(node, object)
         break
 
-      case Node.TEXT_NODE: case Node.COMMENT_NODE:
+      case Node.TEXT_NODE:
+      case Node.COMMENT_NODE:
         this.serializeNodeValueToObject(node, object)
         break
     }
@@ -44,7 +45,9 @@ export default class Serializer {
     Array.from(node.attributes).forEach(({ name }) => {
       if (node.hasAttribute(name)) {
         let value = node.getAttribute(name)
-        if (name === "src" && value.slice(0, 5) === "data:") { value = "data:" }
+        if (name === "src" && value.slice(0, 5) === "data:") {
+          value = "data:"
+        }
         attributes[name] = value
         hasAttributes = true
       }
@@ -57,8 +60,7 @@ export default class Serializer {
 
   serializeElementChildrenToObject(node, object) {
     if (node.childNodes.length) {
-      object.children = Array.from(node.childNodes).map((childNode) =>
-        this.serializeNode(childNode))
+      object.children = Array.from(node.childNodes).map((childNode) => this.serializeNode(childNode))
     }
   }
 
@@ -68,7 +70,9 @@ export default class Serializer {
 
   serializeSelection() {
     const selection = window.getSelection()
-    if (selection.rangeCount <= 0) { return }
+    if (selection.rangeCount <= 0) {
+      return
+    }
 
     const range = selection.getRangeAt(0)
     const startId = this.ids.get(range?.startContainer)
@@ -76,10 +80,8 @@ export default class Serializer {
 
     if (startId && endId) {
       this.selection = {
-        start: { id: startId, offset: range.startOffset
-      },
-        end: { id: endId, offset: range.endOffset
-      }
+        start: { id: startId, offset: range.startOffset },
+        end: { id: endId, offset: range.endOffset },
       }
     }
   }

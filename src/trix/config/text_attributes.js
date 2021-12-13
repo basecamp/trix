@@ -7,7 +7,7 @@ export default {
     parser(element) {
       const style = window.getComputedStyle(element)
       return style.fontWeight === "bold" || style.fontWeight >= 600
-    }
+    },
   },
   italic: {
     tagName: "em",
@@ -15,7 +15,7 @@ export default {
     parser(element) {
       const style = window.getComputedStyle(element)
       return style.fontStyle === "italic"
-    }
+    },
   },
   href: {
     groupTagName: "a",
@@ -25,13 +25,13 @@ export default {
       if (link) {
         return link.getAttribute("href")
       }
-    }
+    },
   },
   strike: {
     tagName: "del",
-    inheritable: true
+    inheritable: true,
   },
   frozen: {
-    style: { "backgroundColor": "highlight" }
-  }
+    style: { backgroundColor: "highlight" },
+  },
 }

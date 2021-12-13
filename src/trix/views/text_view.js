@@ -17,8 +17,8 @@ import PieceView from "trix/views/piece_view"
 export default class TextView extends ObjectView {
   constructor() {
     super(...arguments)
-    this.text = this.object;
-    ({ textConfig: this.textConfig } = this.options)
+    this.text = this.object
+    ;({ textConfig: this.textConfig } = this.options)
   }
 
   createNodes() {
@@ -29,9 +29,15 @@ export default class TextView extends ObjectView {
     for (let index = 0; index < pieces.length; index++) {
       const piece = pieces[index]
       const context = {}
-      if (index === 0) { context.isFirst = true }
-      if (index === lastIndex) { context.isLast = true }
-      if (endsWithWhitespace(previousPiece)) { context.followsWhitespace = true }
+      if (index === 0) {
+        context.isFirst = true
+      }
+      if (index === lastIndex) {
+        context.isLast = true
+      }
+      if (endsWithWhitespace(previousPiece)) {
+        context.followsWhitespace = true
+      }
 
       const view = this.findOrCreateCachedChildView(PieceView, piece, { textConfig: this.textConfig, context })
       nodes.push(...Array.from(view.getNodes() || []))
@@ -45,7 +51,8 @@ export default class TextView extends ObjectView {
     return (() => {
       const result = []
 
-      Array.from(this.text.getPieces()).forEach((piece) => { if (!piece.hasAttribute("blockBreak")) {
+      Array.from(this.text.getPieces()).forEach((piece) => {
+        if (!piece.hasAttribute("blockBreak")) {
           result.push(piece)
         }
       })
@@ -55,4 +62,4 @@ export default class TextView extends ObjectView {
   }
 }
 
-var endsWithWhitespace = piece => /\s$/.test(piece?.toString())
+var endsWithWhitespace = (piece) => /\s$/.test(piece?.toString())

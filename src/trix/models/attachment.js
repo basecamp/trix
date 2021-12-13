@@ -15,9 +15,9 @@ export default class Attachment extends TrixObject {
 
   static attributesForFile(file) {
     return new Hash({
-      filename:    file.name,
-      filesize:    file.size,
-      contentType: file.type
+      filename: file.name,
+      filesize: file.size,
+      contentType: file.type,
     })
   }
 
@@ -108,7 +108,9 @@ export default class Attachment extends TrixObject {
   }
 
   getExtension() {
-    return this.getFilename().match(/\.(\w+)$/)?.[1].toLowerCase()
+    return this.getFilename()
+      .match(/\.(\w+)$/)?.[1]
+      .toLowerCase()
   }
 
   getContentType() {
@@ -204,14 +206,17 @@ export default class Attachment extends TrixObject {
       const operation = new ImagePreloadOperation(url)
       return operation
         .then(({ width, height }) => {
-          if (!this.getWidth() || !this.getHeight()) { this.setAttributes({ width, height }) }
+          if (!this.getWidth() || !this.getHeight()) {
+            this.setAttributes({ width, height })
+          }
           this.preloadingURL = null
           this.setPreviewURL(url)
           return callback?.()
-      }).catch(() => {
+        })
+        .catch(() => {
           this.preloadingURL = null
           return callback?.()
-      })
+        })
     }
   }
 }

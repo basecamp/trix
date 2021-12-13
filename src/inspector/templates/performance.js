@@ -9,7 +9,9 @@
  * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-if (!window.JST) { window.JST = {} }
+if (!window.JST) {
+  window.JST = {}
+}
 
 window.JST["trix/inspector/templates/performance"] = function() {
   const metrics = (() => {
@@ -25,14 +27,14 @@ window.JST["trix/inspector/templates/performance"] = function() {
 }
 
 var dataMetrics = function(name, data, round) {
-  let item = `<strong>${name}</strong> (${ data.calls })<br>`
+  let item = `<strong>${name}</strong> (${data.calls})<br>`
 
   if (data.calls > 0) {
     item += `\
 <div class="metrics">
-  Mean: ${ round(data.mean) }ms<br>
-  Max: ${ round(data.max) }ms<br>
-  Last: ${ round(data.last) }ms
+  Mean: ${round(data.mean)}ms<br>
+  Max: ${round(data.max)}ms<br>
+  Last: ${round(data.last)}ms
 </div>\
 `
 

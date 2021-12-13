@@ -6,10 +6,14 @@ export default {
   forcesObjectResizing: /Trident.*rv:11/.test(navigator.userAgent),
   // https://www.w3.org/TR/input-events-1/ + https://www.w3.org/TR/input-events-2/
   supportsInputEvents: (function() {
-    if (typeof InputEvent === "undefined") { return false }
+    if (typeof InputEvent === "undefined") {
+      return false
+    }
     for (const property of [ "data", "getTargetRanges", "inputType" ]) {
-      if (!(property in InputEvent.prototype)) { return false }
+      if (!(property in InputEvent.prototype)) {
+        return false
+      }
     }
     return true
-  })()
+  })(),
 }

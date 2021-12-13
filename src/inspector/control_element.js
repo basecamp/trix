@@ -18,7 +18,7 @@ const OBSERVER_OPTIONS = {
   childList: true,
   characterData: true,
   characterDataOldValue: true,
-  subtree: true
+  subtree: true,
 }
 
 export default class ControlElement {
@@ -50,14 +50,18 @@ export default class ControlElement {
 
   logInputEvents() {
     Array.from(KEY_EVENTS).forEach((eventName) => {
-      this.element.addEventListener(eventName, event => console.log(`${event.type}: keyCode = ${event.keyCode}`))
+      this.element.addEventListener(eventName, (event) => console.log(`${event.type}: keyCode = ${event.keyCode}`))
     })
 
     return (() => {
       const result = []
 
       Array.from(COMPOSITION_EVENTS).forEach((eventName) => {
-        result.push(this.element.addEventListener(eventName, event => console.log(`${event.type}: data = ${JSON.stringify(event.data)}`)))
+        result.push(
+          this.element.addEventListener(eventName, (event) =>
+            console.log(`${event.type}: data = ${JSON.stringify(event.data)}`)
+          )
+        )
       })
 
       return result
@@ -78,23 +82,28 @@ export default class ControlElement {
         console.log(` ${index + 1}. ${mutation.type}:`)
         switch (mutation.type) {
           case "characterData":
-            result.push(console.log(`  oldValue = ${JSON.stringify(mutation.oldValue)}, newValue = ${JSON.stringify(mutation.target.data)}`))
+            result.push(
+              console.log(
+                `  oldValue = ${JSON.stringify(mutation.oldValue)}, newValue = ${JSON.stringify(mutation.target.data)}`
+              )
+            )
             break
           case "childList":
-            Array.from(mutation.addedNodes).forEach(
-              (node) => { console.log(`  node added ${inspectNode(node)}`) }
+            Array.from(mutation.addedNodes).forEach((node) => {
+              console.log(`  node added ${inspectNode(node)}`)
+            })
+
+            result.push(
+              (() => {
+                const result1 = []
+
+                Array.from(mutation.removedNodes).forEach((node) => {
+                  result1.push(console.log(`  node removed ${inspectNode(node)}`))
+                })
+
+                return result1
+              })()
             )
-
-            result.push((() => {
-              const result1 = []
-
-              Array.from(mutation.removedNodes).forEach(
-                (node) => { result1.push(console.log(`  node removed ${inspectNode(node)}`))
-                }
-              )
-
-              return result1
-            })())
             break
           default:
             result.push(undefined)

@@ -65,10 +65,10 @@ export default class StringPiece extends Piece {
   }
 
   toConsole() {
-    let {
-      string
-    } = this
-    if (string.length > 15) { string = string.slice(0, 14) + "…" }
+    let { string } = this
+    if (string.length > 15) {
+      string = string.slice(0, 14) + "…"
+    }
     return JSON.stringify(string.toString())
   }
 }

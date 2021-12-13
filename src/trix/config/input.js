@@ -9,7 +9,7 @@ const input = {
     } else {
       return 0
     }
-  }
+  },
 }
 
 export default input

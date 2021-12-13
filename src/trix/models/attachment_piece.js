@@ -15,7 +15,9 @@ export default class AttachmentPiece extends Piece {
     this.attachment = attachment
     this.length = 1
     this.ensureAttachmentExclusivelyHasAttribute("href")
-    if (!this.attachment.hasContent()) { this.removeProhibitedAttributes() }
+    if (!this.attachment.hasContent()) {
+      this.removeProhibitedAttributes()
+    }
   }
 
   ensureAttachmentExclusivelyHasAttribute(attribute) {

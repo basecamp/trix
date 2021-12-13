@@ -17,13 +17,15 @@ export default class FileVerificationOperation extends Operation {
   }
 
   perform(callback) {
-    const reader = new FileReader
+    const reader = new FileReader()
 
     reader.onerror = () => callback(false)
 
     reader.onload = () => {
       reader.onerror = null
-      try { reader.abort() } catch (error) {}
+      try {
+        reader.abort()
+      } catch (error) {}
       return callback(true, this.file)
     }
 

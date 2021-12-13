@@ -5,7 +5,7 @@ import config from "trix/config"
 
 const Trix = {
   VERSION: version,
-  config
+  config,
 }
 
 window.Trix = Trix

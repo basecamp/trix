@@ -8,10 +8,10 @@
  */
 export default class LineBreakInsertion {
   constructor(composition) {
-    this.composition = composition;
-    ({ document: this.document } = this.composition);
+    this.composition = composition
+    ;({ document: this.document } = this.composition)
 
-    [ this.startPosition, this.endPosition ] = Array.from(this.composition.getSelectedRange())
+    ;[ this.startPosition, this.endPosition ] = Array.from(this.composition.getSelectedRange())
     this.startLocation = this.document.locationFromPosition(this.startPosition)
     this.endLocation = this.document.locationFromPosition(this.endPosition)
 
@@ -30,8 +30,11 @@ export default class LineBreakInsertion {
   }
 
   shouldBreakFormattedBlock() {
-    return this.block.hasAttributes() && !this.block.isListItem() &&
+    return (
+      this.block.hasAttributes() &&
+      !this.block.isListItem() &&
       (this.breaksOnReturn && this.nextCharacter === "\n" || this.previousCharacter === "\n")
+    )
   }
 
   shouldDecreaseListLevel() {

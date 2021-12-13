@@ -36,23 +36,25 @@ export default class Text extends TrixObject {
   }
 
   static fromJSON(textJSON) {
-    const pieces = Array.from(textJSON).map((pieceJSON) =>
-      Piece.fromJSON(pieceJSON))
+    const pieces = Array.from(textJSON).map((pieceJSON) => Piece.fromJSON(pieceJSON))
     return new this(pieces)
   }
 
   constructor(pieces = []) {
     super(...arguments)
-    this.pieceList = new SplittableList((() => {
-      const result = []
+    this.pieceList = new SplittableList(
+      (() => {
+        const result = []
 
-      Array.from(pieces).forEach((piece) => { if (!piece.isEmpty()) {
-          result.push(piece)
-        }
-      })
+        Array.from(pieces).forEach((piece) => {
+          if (!piece.isEmpty()) {
+            result.push(piece)
+          }
+        })
 
-      return result
-    })())
+        return result
+      })()
+    )
   }
 
   copy() {
@@ -64,8 +66,7 @@ export default class Text extends TrixObject {
   }
 
   copyUsingObjectMap(objectMap) {
-    const pieces = Array.from(this.getPieces()).map((piece) =>
-      objectMap.find(piece) || piece)
+    const pieces = Array.from(this.getPieces()).map((piece) => objectMap.find(piece) || piece)
     return new this.constructor(pieces)
   }
 
@@ -86,10 +87,14 @@ export default class Text extends TrixObject {
   }
 
   moveTextFromRangeToPosition(range, position) {
-    if (range[0] <= position && position <= range[1]) { return }
+    if (range[0] <= position && position <= range[1]) {
+      return
+    }
     const text = this.getTextAtRange(range)
     const length = text.getLength()
-    if (range[0] < position) { position -= length }
+    if (range[0] < position) {
+      position -= length
+    }
     return this.removeTextAtRange(range).insertTextAtPosition(text, position)
   }
 
@@ -100,17 +105,20 @@ export default class Text extends TrixObject {
   }
 
   addAttributesAtRange(attributes, range) {
-    return this.copyWithPieceList(this.pieceList.transformObjectsInRange(range, piece => piece.copyWithAdditionalAttributes(attributes))
+    return this.copyWithPieceList(
+      this.pieceList.transformObjectsInRange(range, (piece) => piece.copyWithAdditionalAttributes(attributes))
     )
   }
 
   removeAttributeAtRange(attribute, range) {
-    return this.copyWithPieceList(this.pieceList.transformObjectsInRange(range, piece => piece.copyWithoutAttribute(attribute))
+    return this.copyWithPieceList(
+      this.pieceList.transformObjectsInRange(range, (piece) => piece.copyWithoutAttribute(attribute))
     )
   }
 
   setAttributesAtRange(attributes, range) {
-    return this.copyWithPieceList(this.pieceList.transformObjectsInRange(range, piece => piece.copyWithAttributes(attributes))
+    return this.copyWithPieceList(
+      this.pieceList.transformObjectsInRange(range, (piece) => piece.copyWithAttributes(attributes))
     )
   }
 
@@ -132,8 +140,12 @@ export default class Text extends TrixObject {
     let left = right = offset
     const length = this.getLength()
 
-    while (left > 0 && this.getCommonAttributesAtRange([ left - 1, right ])[attributeName]) { left-- }
-    while (right < length && this.getCommonAttributesAtRange([ offset, right + 1 ])[attributeName]) { right++ }
+    while (left > 0 && this.getCommonAttributesAtRange([ left - 1, right ])[attributeName]) {
+      left--
+    }
+    while (right < length && this.getCommonAttributesAtRange([ offset, right + 1 ])[attributeName]) {
+      right++
+    }
 
     return [ left, right ]
   }
@@ -163,7 +175,8 @@ export default class Text extends TrixObject {
     return (() => {
       const result = []
 
-      Array.from(this.pieceList.toArray()).forEach((piece) => { if (piece.attachment != null) {
+      Array.from(this.pieceList.toArray()).forEach((piece) => {
+        if (piece.attachment != null) {
           result.push(piece)
         }
       })
@@ -193,9 +206,11 @@ export default class Text extends TrixObject {
   }
 
   getRangeOfAttachment(attachment) {
-    let position;
-    ({ attachment, position } = this.getAttachmentAndPositionById(attachment.id))
-    if (attachment != null) { return [ position, position + 1 ] }
+    let position
+    ;({ attachment, position } = this.getAttachmentAndPositionById(attachment.id))
+    if (attachment != null) {
+      return [ position, position + 1 ]
+    }
   }
 
   updateAttributesForAttachment(attributes, attachment) {
@@ -240,7 +255,7 @@ export default class Text extends TrixObject {
   }
 
   toSerializableText() {
-    const pieceList = this.pieceList.selectSplittableList(piece => piece.isSerializable())
+    const pieceList = this.pieceList.selectSplittableList((piece) => piece.isSerializable())
     return this.copyWithPieceList(pieceList)
   }
 

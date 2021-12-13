@@ -25,8 +25,8 @@ export default class PieceView extends ObjectView {
   constructor() {
     super(...arguments)
     this.piece = this.object
-    this.attributes = this.piece.getAttributes();
-    ({ textConfig: this.textConfig, context: this.context } = this.options)
+    this.attributes = this.piece.getAttributes()
+    ;({ textConfig: this.textConfig, context: this.context } = this.options)
 
     if (this.piece.attachment) {
       this.attachment = this.piece.attachment
@@ -37,24 +37,20 @@ export default class PieceView extends ObjectView {
 
   createNodes() {
     let element
-    let nodes = this.attachment ?
-      this.createAttachmentNodes()
-    :
-      this.createStringNodes()
+    let nodes = this.attachment ? this.createAttachmentNodes() : this.createStringNodes()
 
     if (element = this.createElement()) {
       const innerElement = findInnerElement(element)
-      Array.from(nodes).forEach((node) => { innerElement.appendChild(node) })
+      Array.from(nodes).forEach((node) => {
+        innerElement.appendChild(node)
+      })
       nodes = [ element ]
     }
     return nodes
   }
 
   createAttachmentNodes() {
-    const constructor = this.attachment.isPreviewable() ?
-      PreviewableAttachmentView
-    :
-      AttachmentView
+    const constructor = this.attachment.isPreviewable() ? PreviewableAttachmentView : AttachmentView
 
     const view = this.createChildView(constructor, this.piece.attachment, { piece: this.piece })
     return view.getNodes()
@@ -108,14 +104,22 @@ export default class PieceView extends ObjectView {
         }
 
         if (config.style) {
-          for (key in config.style) { value = config.style[key]; styles[key] = value }
+          for (key in config.style) {
+            value = config.style[key]
+            styles[key] = value
+          }
         }
       }
     }
 
     if (Object.keys(styles).length) {
-      if (element == null) { element = makeElement("span") }
-      for (key in styles) { value = styles[key]; element.style[key] = value }
+      if (element == null) {
+        element = makeElement("span")
+      }
+      for (key in styles) {
+        value = styles[key]
+        element.style[key] = value
+      }
     }
     return element
   }

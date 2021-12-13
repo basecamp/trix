@@ -5,13 +5,13 @@ const attachments = {
     presentation: "gallery",
     caption: {
       name: true,
-      size: true
-    }
+      size: true,
+    },
   },
   file: {
     caption: {
-      size: true
-    }
-  }
+      size: true,
+    },
+  },
 }
 export default attachments

@@ -2,7 +2,7 @@ export default {
   attachFiles: "Attach Files",
   bold: "Bold",
   bullets: "Bullets",
-  byte:  "Byte",
+  byte: "Byte",
   bytes: "Bytes",
   captionPlaceholder: "Add a caption…",
   code: "Code",
@@ -24,5 +24,5 @@ export default {
   KB: "KB",
   MB: "MB",
   PB: "PB",
-  TB: "TB"
+  TB: "TB",
 }

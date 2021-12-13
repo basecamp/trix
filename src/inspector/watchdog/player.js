@@ -22,8 +22,12 @@ export default class Player {
   }
 
   play() {
-    if (this.playing) { return }
-    if (this.hasEnded()) { this.index = -1 }
+    if (this.playing) {
+      return
+    }
+    if (this.hasEnded()) {
+      this.index = -1
+    }
     this.playing = true
     this.delegate?.playerDidStartPlaying?.()
     return this.tick()
@@ -56,7 +60,9 @@ export default class Player {
   }
 
   stop() {
-    if (!this.playing) { return }
+    if (!this.playing) {
+      return
+    }
     clearTimeout(this.timeout)
     this.timeout = null
     this.playing = false

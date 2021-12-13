@@ -32,8 +32,16 @@ export default class CompositionController extends BasicObject {
 
     handleEvent("focus", { onElement: this.element, withCallback: this.didFocus })
     handleEvent("blur", { onElement: this.element, withCallback: this.didBlur })
-    handleEvent("click", { onElement: this.element, matchingSelector: "a[contenteditable=false]", preventDefault: true })
-    handleEvent("mousedown", { onElement: this.element, matchingSelector: attachmentSelector, withCallback: this.didClickAttachment })
+    handleEvent("click", {
+      onElement: this.element,
+      matchingSelector: "a[contenteditable=false]",
+      preventDefault: true,
+    })
+    handleEvent("mousedown", {
+      onElement: this.element,
+      matchingSelector: attachmentSelector,
+      withCallback: this.didClickAttachment,
+    })
     handleEvent("click", { onElement: this.element, matchingSelector: `a${attachmentSelector}`, preventDefault: true })
   }
 
@@ -49,7 +57,7 @@ export default class CompositionController extends BasicObject {
   }
 
   didBlur(event) {
-    this.blurPromise = new Promise(resolve => {
+    this.blurPromise = new Promise((resolve) => {
       return defer(() => {
         if (!innerElementIsActive(this.element)) {
           this.focused = null
@@ -124,8 +132,12 @@ export default class CompositionController extends BasicObject {
 
   installAttachmentEditorForAttachment(attachment, options) {
     let element
-    if (this.attachmentEditor?.attachment === attachment) { return }
-    if (!(element = this.documentView.findElementForObject(attachment))) { return }
+    if (this.attachmentEditor?.attachment === attachment) {
+      return
+    }
+    if (!(element = this.documentView.findElementForObject(attachment))) {
+      return
+    }
     this.uninstallAttachmentEditor()
     const attachmentPiece = this.composition.document.getAttachmentPieceForAttachment(attachment)
     this.attachmentEditor = new AttachmentEditorController(attachmentPiece, element, this.element, options)

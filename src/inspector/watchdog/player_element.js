@@ -36,7 +36,7 @@ registerElement("trix-watchdog-player", {
 
   fetchRecordingAtURL(url) {
     this.activeRequest?.abort()
-    this.activeRequest = new XMLHttpRequest
+    this.activeRequest = new XMLHttpRequest()
     this.activeRequest.open("GET", url)
     this.activeRequest.send()
 
@@ -50,6 +50,5 @@ registerElement("trix-watchdog-player", {
 
   loadRecording(recording) {
     this.controller = new PlayerController(this, recording)
-  }
-}
-)
+  },
+})

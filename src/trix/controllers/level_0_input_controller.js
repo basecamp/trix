@@ -22,8 +22,16 @@ import InputController from "trix/controllers/input_controller"
 import DocumentView from "trix/views/document_view"
 import Document from "trix/models/document"
 
-import { dataTransferIsPlainText, dataTransferIsWritable, keyEventIsKeyboardCommand, makeElement,
-  objectsAreEqual, removeNode, squishBreakableWhitespace, tagName } from "trix/core/helpers"
+import {
+  dataTransferIsPlainText,
+  dataTransferIsWritable,
+  keyEventIsKeyboardCommand,
+  makeElement,
+  objectsAreEqual,
+  removeNode,
+  squishBreakableWhitespace,
+  tagName,
+} from "trix/core/helpers"
 
 import { selectionChangeObserver } from "trix/observers/selection_change_observer"
 
@@ -33,21 +41,24 @@ let pastedFileCount = 0
 export default Level0InputController = (function() {
   Level0InputController = class Level0InputController extends InputController {
     static initClass() {
-
       // Input handlers
 
       this.prototype.events = {
         keydown(event) {
           let keyName
-          if (!this.isComposing()) { this.resetInputSummary() }
+          if (!this.isComposing()) {
+            this.resetInputSummary()
+          }
           this.inputSummary.didInput = true
 
           if (keyName = keyNames[event.keyCode]) {
-            let context = this.keys;
+            let context = this.keys
 
-            [ "ctrl", "alt", "shift", "meta" ].forEach((modifier) => {
+            ;[ "ctrl", "alt", "shift", "meta" ].forEach((modifier) => {
               if (event[`${modifier}Key`]) {
-                if (modifier === "ctrl") { modifier = "control" }
+                if (modifier === "ctrl") {
+                  modifier = "control"
+                }
                 context = context?.[modifier]
               }
             })
@@ -63,14 +74,13 @@ export default Level0InputController = (function() {
             let character
             if (character = String.fromCharCode(event.keyCode).toLowerCase()) {
               const keys = (() => {
-                const result = [];
+                const result = []
 
-                [ "alt", "shift" ].forEach(
-                  (modifier) => { if (event[`${modifier}Key`]) {
-                      result.push(modifier)
-                    }
+                ;[ "alt", "shift" ].forEach((modifier) => {
+                  if (event[`${modifier}Key`]) {
+                    result.push(modifier)
                   }
-                )
+                })
 
                 return result
               })()
@@ -84,9 +94,15 @@ export default Level0InputController = (function() {
 
         keypress(event) {
           let string
-          if (this.inputSummary.eventName != null) { return }
-          if (event.metaKey) { return }
-          if (event.ctrlKey && !event.altKey) { return }
+          if (this.inputSummary.eventName != null) {
+            return
+          }
+          if (event.metaKey) {
+            return
+          }
+          if (event.ctrlKey && !event.altKey) {
+            return
+          }
 
           if (string = stringFromKeyEvent(event)) {
             this.delegate?.inputControllerWillPerformTyping()
@@ -113,9 +129,7 @@ export default Level0InputController = (function() {
         },
 
         dragstart(event) {
-          const {
-            target
-          } = event
+          const { target } = event
           this.serializeSelectionToDataTransfer(event.dataTransfer)
           this.draggedRange = this.getSelectedRange()
           return this.delegate?.inputControllerDidStartDrag?.()
@@ -148,13 +162,11 @@ export default Level0InputController = (function() {
 
           if (files?.length) {
             this.attachFiles(files)
-
           } else if (this.draggedRange) {
             this.delegate?.inputControllerWillMoveText()
             this.responder?.moveTextFromRange(this.draggedRange)
             this.draggedRange = null
             this.requestRender()
-
           } else if (documentJSON = event.dataTransfer.getData("application/x-trix-document")) {
             const document = Document.fromJSONString(documentJSON)
             this.responder?.insertDocument(document)
@@ -173,7 +185,9 @@ export default Level0InputController = (function() {
 
             this.delegate?.inputControllerWillCutText()
             this.deleteInDirection("backward")
-            if (event.defaultPrevented) { return this.requestRender() }
+            if (event.defaultPrevented) {
+              return this.requestRender()
+            }
           }
         },
 
@@ -191,7 +205,7 @@ export default Level0InputController = (function() {
           const paste = { clipboard }
 
           if (clipboard == null || pasteEventIsCrippledSafariHTMLPaste(event)) {
-            this.getPastedHTMLUsingHiddenElement(html => {
+            this.getPastedHTMLUsingHiddenElement((html) => {
               paste.type = "text/html"
               paste.html = html
               this.delegate?.inputControllerWillPaste(paste)
@@ -215,7 +229,6 @@ export default Level0InputController = (function() {
             this.responder?.insertHTML(paste.html)
             this.requestRender()
             this.delegate?.inputControllerDidPaste(paste)
-
           } else if (dataTransferIsPlainText(clipboard)) {
             paste.type = "text/plain"
             paste.string = clipboard.getData("text/plain")
@@ -224,7 +237,6 @@ export default Level0InputController = (function() {
             this.responder?.insertString(paste.string)
             this.requestRender()
             this.delegate?.inputControllerDidPaste(paste)
-
           } else if (html = clipboard.getData("text/html")) {
             paste.type = "text/html"
             paste.html = html
@@ -232,7 +244,6 @@ export default Level0InputController = (function() {
             this.responder?.insertHTML(paste.html)
             this.requestRender()
             this.delegate?.inputControllerDidPaste(paste)
-
           } else if (Array.from(clipboard.types).includes("Files")) {
             let file
             if (file = clipboard.items?.[0]?.getAsFile?.()) {
@@ -271,7 +282,7 @@ export default Level0InputController = (function() {
         input(event) {
           this.inputSummary.didInput = true
           return event.stopPropagation()
-        }
+        },
       }
 
       this.prototype.keys = {
@@ -329,7 +340,7 @@ export default Level0InputController = (function() {
             this.delegate?.inputControllerWillPerformTyping()
             this.responder?.insertString("\n", { updatePosition: false })
             return this.requestRender()
-          }
+          },
         },
 
         shift: {
@@ -360,22 +371,22 @@ export default Level0InputController = (function() {
               event.preventDefault()
               return this.expandSelectionInDirection("forward")
             }
-          }
+          },
         },
 
         alt: {
           backspace(event) {
             this.setInputSummary({ preferDocument: false })
             return this.delegate?.inputControllerWillPerformTyping()
-          }
+          },
         },
 
         meta: {
           backspace(event) {
             this.setInputSummary({ preferDocument: false })
             return this.delegate?.inputControllerWillPerformTyping()
-          }
-        }
+          },
+        },
       }
 
       this.proxyMethod("responder?.getSelectedRange")
@@ -391,7 +402,10 @@ export default Level0InputController = (function() {
 
     setInputSummary(summary = {}) {
       this.inputSummary.eventName = this.eventName
-      for (const key in summary) { const value = summary[key]; this.inputSummary[key] = value }
+      for (const key in summary) {
+        const value = summary[key]
+        this.inputSummary[key] = value
+      }
       return this.inputSummary
     }
 
@@ -424,23 +438,17 @@ export default Level0InputController = (function() {
     }
 
     mutationIsExpected({ textAdded, textDeleted }) {
-      if (this.inputSummary.preferDocument) { return true }
+      if (this.inputSummary.preferDocument) {
+        return true
+      }
 
       const mutationAdditionMatchesSummary =
-        textAdded != null ?
-          textAdded === this.inputSummary.textAdded
-        :
-          !this.inputSummary.textAdded
+        textAdded != null ? textAdded === this.inputSummary.textAdded : !this.inputSummary.textAdded
       const mutationDeletionMatchesSummary =
-        textDeleted != null ?
-          this.inputSummary.didDelete
-        :
-          !this.inputSummary.didDelete
+        textDeleted != null ? this.inputSummary.didDelete : !this.inputSummary.didDelete
 
-      const unexpectedNewlineAddition =
-        [ "\n", " \n" ].includes(textAdded) && !mutationAdditionMatchesSummary
-      const unexpectedNewlineDeletion =
-        textDeleted === "\n" && !mutationDeletionMatchesSummary
+      const unexpectedNewlineAddition = [ "\n", " \n" ].includes(textAdded) && !mutationAdditionMatchesSummary
+      const unexpectedNewlineDeletion = textDeleted === "\n" && !mutationDeletionMatchesSummary
       const singleUnexpectedNewline =
         unexpectedNewlineAddition && !unexpectedNewlineDeletion ||
         unexpectedNewlineDeletion && !unexpectedNewlineAddition
@@ -448,11 +456,7 @@ export default Level0InputController = (function() {
       if (singleUnexpectedNewline) {
         let range
         if (range = this.getSelectedRange()) {
-          const offset =
-            unexpectedNewlineAddition ?
-              textAdded.replace(/\n$/, "").length || -1
-            :
-              textAdded?.length || 1
+          const offset = unexpectedNewlineAddition ? textAdded.replace(/\n$/, "").length || -1 : textAdded?.length || 1
           if (this.responder?.positionIsBlockBreak(range[1] + offset)) {
             return true
           }
@@ -494,7 +498,9 @@ export default Level0InputController = (function() {
     }
 
     serializeSelectionToDataTransfer(dataTransfer) {
-      if (!dataTransferIsWritable(dataTransfer)) { return }
+      if (!dataTransferIsWritable(dataTransfer)) {
+        return
+      }
       const document = this.responder?.getSelectedDocument().toSerializableDocument()
 
       dataTransfer.setData("application/x-trix-document", JSON.stringify(document))
@@ -505,7 +511,9 @@ export default Level0InputController = (function() {
 
     canAcceptDataTransfer(dataTransfer) {
       const types = {}
-      Array.from(dataTransfer?.types != null ? dataTransfer?.types : []).forEach((type) => { types[type] = true })
+      Array.from(dataTransfer?.types != null ? dataTransfer?.types : []).forEach((type) => {
+        types[type] = true
+      })
       return types.Files || types["application/x-trix-document"] || types["text/html"] || types["text/plain"]
     }
 
@@ -516,7 +524,7 @@ export default Level0InputController = (function() {
         position: "absolute",
         left: `${window.pageXOffset}px`,
         top: `${window.pageYOffset}px`,
-        opacity: 0
+        opacity: 0,
       }
 
       const element = makeElement({ style, tagName: "div", editable: true })
@@ -535,7 +543,7 @@ export default Level0InputController = (function() {
   return Level0InputController
 })()
 
-var extensionForFile = file => file.type?.match(/\/(\w+)$/)?.[1]
+var extensionForFile = (file) => file.type?.match(/\/(\w+)$/)?.[1]
 
 const hasStringCodePointAt = " ".codePointAt?.(0) != null
 
@@ -566,7 +574,9 @@ var pasteEventIsCrippledSafariHTMLPaste = function(event) {
         const hasPasteboardFlavor = /^CorePasteboardFlavorType/.test(type)
         const hasReadableDynamicData = /^dyn\./.test(type) && paste.getData(type)
         const mightBePasteAndMatchStyle = hasPasteboardFlavor || hasReadableDynamicData
-        if (mightBePasteAndMatchStyle) { return true }
+        if (mightBePasteAndMatchStyle) {
+          return true
+        }
       }
       return false
     } else {
@@ -579,7 +589,6 @@ var pasteEventIsCrippledSafariHTMLPaste = function(event) {
 
 class CompositionInput extends BasicObject {
   static initClass() {
-
     this.proxyMethod("inputController.setInputSummary")
     this.proxyMethod("inputController.requestRender")
     this.proxyMethod("inputController.requestReparse")
@@ -590,8 +599,8 @@ class CompositionInput extends BasicObject {
   }
   constructor(inputController) {
     super(...arguments)
-    this.inputController = inputController;
-    ({ responder: this.responder, delegate: this.delegate, inputSummary: this.inputSummary } = this.inputController)
+    this.inputController = inputController
+    ;({ responder: this.responder, delegate: this.delegate, inputSummary: this.inputSummary } = this.inputController)
     this.data = {}
   }
 
@@ -636,7 +645,6 @@ class CompositionInput extends BasicObject {
         this.responder?.setSelectedRange(this.range)
         this.responder?.insertString(this.data.end)
         return this.responder?.setSelectedRange(this.range[0] + this.data.end.length)
-
       } else if (this.data.start != null || this.data.update != null) {
         this.requestReparse()
         return this.inputController.reset()

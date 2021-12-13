@@ -1,4 +1,3 @@
-
 export default class ElementStore {
   constructor(elements) {
     this.reset(elements)

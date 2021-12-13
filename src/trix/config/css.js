@@ -8,5 +8,5 @@ export default {
   attachmentProgress: "attachment__progress",
   attachmentSize: "attachment__size",
   attachmentToolbar: "attachment__toolbar",
-  attachmentGallery: "attachment-gallery"
+  attachmentGallery: "attachment-gallery",
 }

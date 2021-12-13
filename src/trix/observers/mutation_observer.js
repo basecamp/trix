@@ -18,8 +18,14 @@
 let MutationObserver
 import BasicObject from "trix/core/basic_object"
 
-import { findClosestElementFromNode, nodeIsBlockStartComment, nodeIsEmptyTextNode,
-normalizeSpaces, summarizeStringChange, tagName } from "trix/core/helpers"
+import {
+  findClosestElementFromNode,
+  nodeIsBlockStartComment,
+  nodeIsEmptyTextNode,
+  normalizeSpaces,
+  summarizeStringChange,
+  tagName,
+} from "trix/core/helpers"
 
 const mutableAttributeName = "data-trix-mutable"
 const mutableSelector = `[${mutableAttributeName}]`
@@ -33,7 +39,7 @@ export default MutationObserver = (function() {
         childList: true,
         characterData: true,
         characterDataOldValue: true,
-        subtree: true
+        subtree: true,
       }
     }
 
@@ -73,20 +79,25 @@ export default MutationObserver = (function() {
       return (() => {
         const result = []
 
-        Array.from(mutations).forEach(
-          (mutation) => { if (this.mutationIsSignificant(mutation)) {
-              result.push(mutation)
-            }
+        Array.from(mutations).forEach((mutation) => {
+          if (this.mutationIsSignificant(mutation)) {
+            result.push(mutation)
           }
-        )
+        })
 
         return result
       })()
     }
 
     mutationIsSignificant(mutation) {
-      if (this.nodeIsMutable(mutation.target)) { return false }
-      for (const node of Array.from(this.nodesModifiedByMutation(mutation))) { if (this.nodeIsSignificant(node)) { return true } }
+      if (this.nodeIsMutable(mutation.target)) {
+        return false
+      }
+      for (const node of Array.from(this.nodesModifiedByMutation(mutation))) {
+        if (this.nodeIsSignificant(node)) {
+          return true
+        }
+      }
       return false
     }
 
@@ -130,15 +141,21 @@ export default MutationObserver = (function() {
 
       const textChanges = this.getTextChangesFromChildList()
 
-      Array.from(textChanges.additions).forEach(
-        (addition) => { if (!Array.from(additions).includes(addition)) { additions.push(addition) } }
-      )
+      Array.from(textChanges.additions).forEach((addition) => {
+        if (!Array.from(additions).includes(addition)) {
+          additions.push(addition)
+        }
+      })
 
       deletions.push(...Array.from(textChanges.deletions || []))
 
       const summary = {}
-      if (added = additions.join("")) { summary.textAdded = added }
-      if (deleted = deletions.join("")) { summary.textDeleted = deleted }
+      if (added = additions.join("")) {
+        summary.textAdded = added
+      }
+      if (deleted = deletions.join("")) {
+        summary.textDeleted = deleted
+      }
       return summary
     }
 
@@ -158,9 +175,7 @@ export default MutationObserver = (function() {
       })
 
       const singleBlockCommentRemoved =
-        addedNodes.length === 0 &&
-          removedNodes.length === 1 &&
-          nodeIsBlockStartComment(removedNodes[0])
+        addedNodes.length === 0 && removedNodes.length === 1 && nodeIsBlockStartComment(removedNodes[0])
 
       if (singleBlockCommentRemoved) {
         textAdded = []
@@ -190,7 +205,7 @@ export default MutationObserver = (function() {
             }
           }
           return result1
-        })()
+        })(),
       }
     }
 
@@ -199,16 +214,17 @@ export default MutationObserver = (function() {
       const characterMutations = this.getMutationsByType("characterData")
 
       if (characterMutations.length) {
-        const startMutation = characterMutations[0], endMutation = characterMutations[characterMutations.length - 1]
+        const startMutation = characterMutations[0],
+          endMutation = characterMutations[characterMutations.length - 1]
 
         const oldString = normalizeSpaces(startMutation.oldValue)
-        const newString = normalizeSpaces(endMutation.target.data);
-        ({ added, removed } = summarizeStringChange(oldString, newString))
+        const newString = normalizeSpaces(endMutation.target.data)
+        ;({ added, removed } = summarizeStringChange(oldString, newString))
       }
 
       return {
         additions: added ? [ added ] : [],
-        deletions: removed ? [ removed ] : []
+        deletions: removed ? [ removed ] : [],
       }
     }
   }

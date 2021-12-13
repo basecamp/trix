@@ -43,19 +43,21 @@ export default ToolbarController = (function() {
       dialogInputSelector = `${dialogSelector} [data-trix-input]`
 
       getInputForDialog = function(element, attributeName) {
-        if (attributeName == null) { attributeName = getAttributeName(element) }
+        if (attributeName == null) {
+          attributeName = getAttributeName(element)
+        }
         return element.querySelector(`[data-trix-input][name='${attributeName}']`)
       }
 
       // General helpers
 
-      getActionName = element => element.getAttribute("data-trix-action")
+      getActionName = (element) => element.getAttribute("data-trix-action")
 
       getAttributeName = function(element) {
         return element.getAttribute("data-trix-attribute") || element.getAttribute("data-trix-dialog-attribute")
       }
 
-      getDialogName = element => element.getAttribute("data-trix-dialog")
+      getDialogName = (element) => element.getAttribute("data-trix-dialog")
     }
 
     constructor(element) {
@@ -69,11 +71,27 @@ export default ToolbarController = (function() {
       this.actions = {}
       this.resetDialogInputs()
 
-      handleEvent("mousedown", { onElement: this.element, matchingSelector: actionButtonSelector, withCallback: this.didClickActionButton })
-      handleEvent("mousedown", { onElement: this.element, matchingSelector: attributeButtonSelector, withCallback: this.didClickAttributeButton })
+      handleEvent("mousedown", {
+        onElement: this.element,
+        matchingSelector: actionButtonSelector,
+        withCallback: this.didClickActionButton,
+      })
+      handleEvent("mousedown", {
+        onElement: this.element,
+        matchingSelector: attributeButtonSelector,
+        withCallback: this.didClickAttributeButton,
+      })
       handleEvent("click", { onElement: this.element, matchingSelector: toolbarButtonSelector, preventDefault: true })
-      handleEvent("click", { onElement: this.element, matchingSelector: dialogButtonSelector, withCallback: this.didClickDialogButton })
-      handleEvent("keydown", { onElement: this.element, matchingSelector: dialogInputSelector, withCallback: this.didKeyDownDialogInput })
+      handleEvent("click", {
+        onElement: this.element,
+        matchingSelector: dialogButtonSelector,
+        withCallback: this.didClickDialogButton,
+      })
+      handleEvent("keydown", {
+        onElement: this.element,
+        matchingSelector: dialogInputSelector,
+        withCallback: this.didKeyDownDialogInput,
+      })
     }
 
     // Event handlers
@@ -111,13 +129,15 @@ export default ToolbarController = (function() {
     }
 
     didKeyDownDialogInput(event, element) {
-      if (event.keyCode === 13) { // Enter key
+      if (event.keyCode === 13) {
+        // Enter key
         event.preventDefault()
         const attribute = element.getAttribute("name")
         const dialog = this.getDialog(attribute)
         this.setAttribute(dialog)
       }
-      if (event.keyCode === 27) { // Escape key
+      if (event.keyCode === 27) {
+        // Escape key
         event.preventDefault()
         return this.hideDialog()
       }
@@ -138,7 +158,8 @@ export default ToolbarController = (function() {
 
     eachActionButton(callback) {
       return Array.from(this.element.querySelectorAll(actionButtonSelector)).map((element) =>
-        callback(element, getActionName(element)))
+        callback(element, getActionName(element))
+      )
     }
 
     // Attribute buttons
@@ -163,7 +184,8 @@ export default ToolbarController = (function() {
 
     eachAttributeButton(callback) {
       return Array.from(this.element.querySelectorAll(attributeButtonSelector)).map((element) =>
-        callback(element, getAttributeName(element)))
+        callback(element, getAttributeName(element))
+      )
     }
 
     applyKeyboardCommand(keys) {

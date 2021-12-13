@@ -91,8 +91,7 @@ registerElement("trix-inspector", {
   },
 
   createViews() {
-    const views = Array.from(Trix.Inspector.views).map((View) =>
-      new View(this.editorElement))
+    const views = Array.from(Trix.Inspector.views).map((View) => new View(this.editorElement))
 
     return views.sort((a, b) => a.title.toLowerCase() > b.title.toLowerCase())
   },
@@ -104,6 +103,5 @@ registerElement("trix-inspector", {
     this.style.left = `${right + 10}px`
     this.style.maxWidth = `${window.innerWidth - right - 40}px`
     this.style.maxHeight = `${window.innerHeight - top - 30}px`
-  }
-}
-)
+  },
+})

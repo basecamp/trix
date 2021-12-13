@@ -27,13 +27,14 @@ export default PlayerView = (function() {
       this.documentClassName = "trix-watchdog-player"
       this.playingClassName = "trix-watchdog-player-playing"
 
-      clear = element => (() => {
-        const result = []
-        while (element.lastChild) {
-          result.push(element.removeChild(element.lastChild))
-        }
-        return result
-      })()
+      clear = (element) =>
+        (() => {
+          const result = []
+          while (element.lastChild) {
+            result.push(element.removeChild(element.lastChild))
+          }
+          return result
+        })()
 
       render = function(element, ...contents) {
         clear(element)
@@ -41,7 +42,9 @@ export default PlayerView = (function() {
       }
 
       select = function(document, range) {
-        if (!range) { return }
+        if (!range) {
+          return
+        }
         const window = document.defaultView
         const selection = window.getSelection()
         selection.removeAllRanges()
@@ -142,7 +145,7 @@ export default PlayerView = (function() {
 
       this.body = this.document.body
       this.body.style.cssText = "margin: 0; padding: 0"
-      this.body.onkeydown = event => event.preventDefault()
+      this.body.onkeydown = (event) => event.preventDefault()
 
       if (this.snapshot) {
         this.renderSnapshot(snapshot)
@@ -191,7 +194,7 @@ export default PlayerView = (function() {
       const deserializer = new Deserializer(this.document, snapshot)
       return {
         element: deserializer.getElement(),
-        range: deserializer.getRange()
+        range: deserializer.getRange(),
       }
     }
 

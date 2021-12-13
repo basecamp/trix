@@ -17,7 +17,7 @@ export var attachmentGalleryFilter = function(snapshot) {
 }
 
 const BLOCK_ATTRIBUTE_NAME = "attachmentGallery"
-const TEXT_ATTRIBUTE_NAME  = "presentation"
+const TEXT_ATTRIBUTE_NAME = "presentation"
 const TEXT_ATTRIBUTE_VALUE = "gallery"
 
 class Filter {
@@ -37,8 +37,9 @@ class Filter {
   // Private
 
   removeBlockAttribute() {
-    return Array.from(this.findRangesOfBlocks()).map((range) =>
-      this.document = this.document.removeAttributeAtRange(BLOCK_ATTRIBUTE_NAME, range))
+    return Array.from(this.findRangesOfBlocks()).map(
+      (range) => this.document = this.document.removeAttributeAtRange(BLOCK_ATTRIBUTE_NAME, range)
+    )
   }
 
   applyBlockAttribute() {
@@ -53,7 +54,9 @@ class Filter {
 
           if (this.document.getCharacterAtPosition(range[1]) !== "\n") {
             this.document = this.document.insertBlockBreakAtRange(range[1])
-            if (range[1] < this.selectedRange[1]) { this.moveSelectedRangeForward() }
+            if (range[1] < this.selectedRange[1]) {
+              this.moveSelectedRangeForward()
+            }
             range[1]++
             offset++
           }
@@ -61,7 +64,9 @@ class Filter {
           if (range[0] !== 0) {
             if (this.document.getCharacterAtPosition(range[0] - 1) !== "\n") {
               this.document = this.document.insertBlockBreakAtRange(range[0])
-              if (range[0] < this.selectedRange[0]) { this.moveSelectedRangeForward() }
+              if (range[0] < this.selectedRange[0]) {
+                this.moveSelectedRangeForward()
+              }
               range[0]++
               offset++
             }

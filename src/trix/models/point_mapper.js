@@ -21,10 +21,8 @@ export default class PointMapper {
       domRange = document.createRange()
       domRange.setStart(offsetNode, offset)
       return domRange
-
     } else if (document.caretRangeFromPoint) {
       return document.caretRangeFromPoint(x, y)
-
     } else if (document.body.createTextRange) {
       const originalDOMRange = getDOMRange()
       try {
@@ -41,7 +39,9 @@ export default class PointMapper {
   }
 
   getClientRectsForDOMRange(domRange) {
-    const array = [ ...Array.from(domRange.getClientRects()) ], start = array[0], end = array[array.length - 1]
+    const array = [ ...Array.from(domRange.getClientRects()) ],
+      start = array[0],
+      end = array[array.length - 1]
     return [ start, end ]
   }
 }

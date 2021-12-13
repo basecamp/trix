@@ -82,7 +82,8 @@ export default class SplittableList extends TrixObject {
     const objects = (() => {
       const result = []
 
-      Array.from(this.objects).forEach((object) => { if (test(object)) {
+      Array.from(this.objects).forEach((object) => {
+        if (test(object)) {
           result.push(object)
         }
       })
@@ -100,17 +101,17 @@ export default class SplittableList extends TrixObject {
   transformObjectsInRange(range, transform) {
     const [ objects, leftIndex, rightIndex ] = Array.from(this.splitObjectsAtRange(range))
     const transformedObjects = Array.from(objects).map((object, index) =>
-      leftIndex <= index && index <= rightIndex ?
-        transform(object)
-      :
-        object)
+      leftIndex <= index && index <= rightIndex ? transform(object) : object
+    )
     return new this.constructor(transformedObjects)
   }
 
   splitObjectsAtRange(range) {
     let rightOuterIndex
-    let [ objects, leftInnerIndex, offset ] = Array.from(this.splitObjectAtPosition(startOfRange(range)));
-    [ objects, rightOuterIndex ] = Array.from(new this.constructor(objects).splitObjectAtPosition(endOfRange(range) + offset))
+    let [ objects, leftInnerIndex, offset ] = Array.from(this.splitObjectAtPosition(startOfRange(range)))
+    ;[ objects, rightOuterIndex ] = Array.from(
+      new this.constructor(objects).splitObjectAtPosition(endOfRange(range) + offset)
+    )
     return [ objects, leftInnerIndex, rightOuterIndex - 1 ]
   }
 
@@ -199,11 +200,10 @@ export default class SplittableList extends TrixObject {
 
   getEndPosition() {
     let position
-    return this.endPosition != null ? this.endPosition : this.endPosition = (
-      position = 0,
-      Array.from(this.objects).map((object) => position += object.getLength()),
-      position
-    )
+    return this.endPosition != null
+      ? this.endPosition
+      : this.endPosition =
+          (position = 0, Array.from(this.objects).map((object) => position += object.getLength()), position)
   }
 
   toString() {
@@ -223,17 +223,28 @@ export default class SplittableList extends TrixObject {
   }
 
   contentsForInspection() {
-    return { objects: `[${Array.from(this.objects).map((object) => object.inspect()).join(", ")}]` }
+    return {
+      objects: `[${Array.from(this.objects)
+        .map((object) => object.inspect())
+        .join(", ")}]`,
+    }
   }
 }
 
 var objectArraysAreEqual = function(left, right = []) {
-  if (left.length !== right.length) { return false }
+  if (left.length !== right.length) {
+    return false
+  }
   let result = true
-  for (let index = 0; index < left.length; index++) { const object = left[index]; if (result && !object.isEqualTo(right[index])) { result = false } }
+  for (let index = 0; index < left.length; index++) {
+    const object = left[index]
+    if (result && !object.isEqualTo(right[index])) {
+      result = false
+    }
+  }
   return result
 }
 
-var startOfRange = range => range[0]
+var startOfRange = (range) => range[0]
 
-var endOfRange = range => range[1]
+var endOfRange = (range) => range[1]

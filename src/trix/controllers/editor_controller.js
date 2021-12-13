@@ -34,7 +34,6 @@ export default EditorController = (function() {
   let snapshotsAreEqual = undefined
   EditorController = class EditorController extends Controller {
     static initClass() {
-
       this.proxyMethod("getSelectionManager().setLocationRange")
       this.proxyMethod("getSelectionManager().getLocationRange")
 
@@ -42,32 +41,53 @@ export default EditorController = (function() {
 
       this.prototype.actions = {
         undo: {
-          test() { return this.editor.canUndo() },
-          perform() { return this.editor.undo() }
+          test() {
+            return this.editor.canUndo()
+          },
+          perform() {
+            return this.editor.undo()
+          },
         },
         redo: {
-          test() { return this.editor.canRedo() },
-          perform() { return this.editor.redo() }
+          test() {
+            return this.editor.canRedo()
+          },
+          perform() {
+            return this.editor.redo()
+          },
         },
         link: {
-          test() { return this.editor.canActivateAttribute("href") }
+          test() {
+            return this.editor.canActivateAttribute("href")
+          },
         },
         increaseNestingLevel: {
-          test() { return this.editor.canIncreaseNestingLevel() },
-          perform() { return this.editor.increaseNestingLevel() && this.render() }
+          test() {
+            return this.editor.canIncreaseNestingLevel()
+          },
+          perform() {
+            return this.editor.increaseNestingLevel() && this.render()
+          },
         },
         decreaseNestingLevel: {
-          test() { return this.editor.canDecreaseNestingLevel() },
-          perform() { return this.editor.decreaseNestingLevel() && this.render() }
+          test() {
+            return this.editor.canDecreaseNestingLevel()
+          },
+          perform() {
+            return this.editor.decreaseNestingLevel() && this.render()
+          },
         },
         attachFiles: {
-          test() { return true },
-          perform() { return config.input.pickFiles(this.editor.insertFiles) }
-        }
+          test() {
+            return true
+          },
+          perform() {
+            return config.input.pickFiles(this.editor.insertFiles)
+          },
+        },
       }
 
-      snapshotsAreEqual = (a, b) => rangesAreEqual(a.selectedRange, b.selectedRange) &&
-        a.document.isEqualTo(b.document)
+      snapshotsAreEqual = (a, b) => rangesAreEqual(a.selectedRange, b.selectedRange) && a.document.isEqualTo(b.document)
     }
     constructor({ editorElement, document, html }) {
       super(...arguments)
@@ -75,16 +95,16 @@ export default EditorController = (function() {
       this.selectionManager = new SelectionManager(this.editorElement)
       this.selectionManager.delegate = this
 
-      this.composition = new Composition
+      this.composition = new Composition()
       this.composition.delegate = this
 
       this.attachmentManager = new AttachmentManager(this.composition.getAttachments())
       this.attachmentManager.delegate = this
 
-      this.inputController = config.input.getLevel() === 2 ?
-        new Level2InputController(this.editorElement)
-      :
-        new Level0InputController(this.editorElement)
+      this.inputController =
+        config.input.getLevel() === 2
+          ? new Level2InputController(this.editorElement)
+          : new Level0InputController(this.editorElement)
 
       this.inputController.delegate = this
       this.inputController.responder = this.composition
@@ -123,7 +143,9 @@ export default EditorController = (function() {
 
     compositionDidChangeDocument(document) {
       this.notifyEditorElement("document-change")
-      if (!this.handlingInput) { return this.render() }
+      if (!this.handlingInput) {
+        return this.render()
+      }
     }
 
     compositionDidChangeCurrentAttributes(currentAttributes) {
@@ -177,10 +199,14 @@ export default EditorController = (function() {
     }
 
     compositionDidRequestChangingSelectionToLocationRange(locationRange) {
-      if (this.loadingSnapshot && !this.isFocused()) { return }
+      if (this.loadingSnapshot && !this.isFocused()) {
+        return
+      }
       this.requestedLocationRange = locationRange
       this.compositionRevisionWhenLocationRangeRequested = this.composition.revision
-      if (!this.handlingInput) { return this.render() }
+      if (!this.handlingInput) {
+        return this.render()
+      }
     }
 
     compositionWillLoadSnapshot() {
@@ -237,7 +263,9 @@ export default EditorController = (function() {
     }
 
     compositionControllerDidFocus() {
-      if (this.isFocusedInvisibly()) { this.setLocationRange({ index: 0, offset: 0 }) }
+      if (this.isFocusedInvisibly()) {
+        this.setLocationRange({ index: 0, offset: 0 })
+      }
       this.toolbarController.hideDialog()
       return this.notifyEditorElement("focus")
     }
@@ -252,7 +280,10 @@ export default EditorController = (function() {
     }
 
     compositionControllerDidRequestDeselectingAttachment(attachment) {
-      const locationRange = this.attachmentLocationRange != null ? this.attachmentLocationRange : this.composition.document.getLocationRangeOfAttachment(attachment)
+      const locationRange =
+        this.attachmentLocationRange != null
+          ? this.attachmentLocationRange
+          : this.composition.document.getLocationRangeOfAttachment(attachment)
       return this.selectionManager.setLocationRange(locationRange[1])
     }
 
@@ -363,7 +394,9 @@ export default EditorController = (function() {
     // Toolbar controller delegate
 
     toolbarDidClickButton() {
-      if (!this.getLocationRange()) { return this.setLocationRange({ index: 0, offset: 0 }) }
+      if (!this.getLocationRange()) {
+        return this.setLocationRange({ index: 0, offset: 0 })
+      }
     }
 
     toolbarDidInvokeAction(actionName) {
@@ -374,21 +407,27 @@ export default EditorController = (function() {
       this.recordFormattingUndoEntry(attributeName)
       this.composition.toggleCurrentAttribute(attributeName)
       this.render()
-      if (!this.selectionFrozen) { return this.editorElement.focus() }
+      if (!this.selectionFrozen) {
+        return this.editorElement.focus()
+      }
     }
 
     toolbarDidUpdateAttribute(attributeName, value) {
       this.recordFormattingUndoEntry(attributeName)
       this.composition.setCurrentAttribute(attributeName, value)
       this.render()
-      if (!this.selectionFrozen) { return this.editorElement.focus() }
+      if (!this.selectionFrozen) {
+        return this.editorElement.focus()
+      }
     }
 
     toolbarDidRemoveAttribute(attributeName) {
       this.recordFormattingUndoEntry(attributeName)
       this.composition.removeCurrentAttribute(attributeName)
       this.render()
-      if (!this.selectionFrozen) { return this.editorElement.focus() }
+      if (!this.selectionFrozen) {
+        return this.editorElement.focus()
+      }
     }
 
     toolbarWillShowDialog(dialogElement) {
@@ -471,8 +510,12 @@ export default EditorController = (function() {
       Array.from(this.editor.filters).forEach((filter) => {
         const { document, selectedRange } = snapshot
         snapshot = filter.call(this.editor, snapshot) || {}
-        if (snapshot.document == null) { snapshot.document = document }
-        if (snapshot.selectedRange == null) { snapshot.selectedRange = selectedRange }
+        if (snapshot.document == null) {
+          snapshot.document = document
+        }
+        if (snapshot.selectedRange == null) {
+          snapshot.selectedRange = selectedRange
+        }
       })
 
       if (!snapshotsAreEqual(snapshot, this.composition.getSnapshot())) {
@@ -499,7 +542,10 @@ export default EditorController = (function() {
             this.notifyEditorElement("change")
           }
           break
-        case "change": case "attachment-add": case "attachment-edit": case "attachment-remove":
+        case "change":
+        case "attachment-add":
+        case "attachment-edit":
+        case "attachment-remove":
           this.updateInputElement()
           break
       }
@@ -522,7 +568,10 @@ export default EditorController = (function() {
     }
 
     recordTypingUndoEntry() {
-      return this.editor.recordUndoEntry("Typing", { context: this.getUndoContext(this.currentAttributes), consolidatable: true })
+      return this.editor.recordUndoEntry("Typing", {
+        context: this.getUndoContext(this.currentAttributes),
+        consolidatable: true,
+      })
     }
 
     getUndoContext(...context) {

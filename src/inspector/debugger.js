@@ -17,7 +17,7 @@
 // should be explicitly required to enable the debugger.
 
 const DEBUG_METHODS = {
-  "AttachmentEditorController": "\
+  AttachmentEditorController: "\
 didClickRemoveButton \
 uninstall\
 ",
@@ -26,12 +26,13 @@ uninstall\
 didClickAttachment\
 ",
 
-  "EditorController": "\
+  EditorController: "\
 setEditor \
 loadDocument\
 ",
 
-  "Trix.Level0InputController": "\
+  "Trix.Level0InputController":
+    "\
 elementDidMutate \
 events.keydown \
 events.keypress \
@@ -52,12 +53,13 @@ events.input \
 events.compositionend\
 ",
 
-  "Trix.ToolbarController": "\
+  "Trix.ToolbarController":
+    "\
 didClickActionButton \
 didClickAttributeButton \
 didClickDialogButton \
 didKeyDownDialogInput\
-"
+",
 }
 
 import { findClosestElementFromNode } from "trix/core/helpers"
@@ -73,7 +75,7 @@ Trix.Debugger = {
 
   removeErrorListener(listener) {
     errorListeners = Array.from(errorListeners).filter((l) => l !== listener)
-  }
+  },
 }
 
 const installMethodDebugger = function(className, methodName) {
@@ -85,9 +87,13 @@ const installMethodDebugger = function(className, methodName) {
     methodName = array[adjustedLength - 1]
 
   let object = this[objectName]
-  Array.from(constructorNames).forEach((constructorName) => { object = object[constructorName] })
+  Array.from(constructorNames).forEach((constructorName) => {
+    object = object[constructorName]
+  })
   object = object.prototype
-  Array.from(propertyNames).forEach((propertyName) => { object = object[propertyName] })
+  Array.from(propertyNames).forEach((propertyName) => {
+    object = object[propertyName]
+  })
 
   if (typeof object?.[methodName] === "function") {
     object[methodName] = wrapFunctionWithErrorHandler(object[methodName])
@@ -114,9 +120,7 @@ var reportError = function(error) {
   console.error("Trix error!")
   console.log(error.stack)
 
-  const {
-    activeElement
-  } = document
+  const { activeElement } = document
   const editorElement = findClosestElementFromNode(activeElement, { matchingSelector: "trix-editor" })
 
   if (editorElement) {
@@ -126,10 +130,16 @@ var reportError = function(error) {
   }
 }
 
-var notifyErrorListeners = (error, element) => Array.from(errorListeners).map((listener) =>
-  (() => { try { return listener(error, element) } catch (error1) {} })());
+var notifyErrorListeners = (error, element) =>
+  Array.from(errorListeners).map((listener) =>
+    (() => {
+      try {
+        return listener(error, element)
+      } catch (error1) {}
+    })()
+  )
 
-(function() {
+;(function() {
   console.groupCollapsed("Trix debugger")
 
   for (const className in DEBUG_METHODS) {

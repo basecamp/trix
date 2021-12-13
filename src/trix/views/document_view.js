@@ -30,9 +30,9 @@ export default class DocumentView extends ObjectView {
   }
 
   constructor() {
-    super(...arguments);
-    ({ element: this.element } = this.options)
-    this.elementStore = new ElementStore
+    super(...arguments)
+    ;({ element: this.element } = this.options)
+    this.elementStore = new ElementStore()
     this.setDocument(this.object)
   }
 
@@ -68,7 +68,9 @@ export default class DocumentView extends ObjectView {
 
   sync() {
     const fragment = this.createDocumentFragmentForSync()
-    while (this.element.lastChild) { this.element.removeChild(this.element.lastChild) }
+    while (this.element.lastChild) {
+      this.element.removeChild(this.element.lastChild)
+    }
     this.element.appendChild(fragment)
     return this.didSync()
   }
@@ -98,8 +100,9 @@ export default class DocumentView extends ObjectView {
   }
 }
 
-var findStoredElements = element => element.querySelectorAll("[data-trix-store-key]")
+var findStoredElements = (element) => element.querySelectorAll("[data-trix-store-key]")
 
-var elementsHaveEqualHTML = (element, otherElement) => ignoreSpaces(element.innerHTML) === ignoreSpaces(otherElement.innerHTML)
+var elementsHaveEqualHTML = (element, otherElement) =>
+  ignoreSpaces(element.innerHTML) === ignoreSpaces(otherElement.innerHTML)
 
-var ignoreSpaces = html => html.replace(/&nbsp;/g, " ")
+var ignoreSpaces = (html) => html.replace(/&nbsp;/g, " ")

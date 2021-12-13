@@ -42,8 +42,12 @@ export default Level2InputController = (function() {
           } else {
             let handler
             let name = event.key
-            if (event.altKey) { name += "+Alt" }
-            if (event.shiftKey) { name += "+Shift" }
+            if (event.altKey) {
+              name += "+Alt"
+            }
+            if (event.shiftKey) {
+              name += "+Shift"
+            }
             if (handler = this.keys[name]) {
               return this.withEvent(event, handler)
             }
@@ -59,24 +63,24 @@ export default Level2InputController = (function() {
             event.preventDefault()
             return this.attachFiles(event.clipboardData.files)
 
-          // https://bugs.chromium.org/p/chromium/issues/detail?id=934448
+            // https://bugs.chromium.org/p/chromium/issues/detail?id=934448
           } else if (pasteEventHasPlainTextOnly(event)) {
             event.preventDefault()
             paste = {
               type: "text/plain",
-              string: event.clipboardData.getData("text/plain")
+              string: event.clipboardData.getData("text/plain"),
             }
             this.delegate?.inputControllerWillPaste(paste)
             this.responder?.insertString(paste.string)
             this.render()
             return this.delegate?.inputControllerDidPaste(paste)
 
-          // https://bugs.webkit.org/show_bug.cgi?id=196702
+            // https://bugs.webkit.org/show_bug.cgi?id=196702
           } else if (href = event.clipboardData?.getData("URL")) {
             event.preventDefault()
             paste = {
               type: "text/html",
-              html: this.createLinkHTML(href)
+              html: this.createLinkHTML(href),
             }
             this.delegate?.inputControllerWillPaste(paste)
             this.responder?.insertHTML(paste.html)
@@ -103,7 +107,7 @@ export default Level2InputController = (function() {
 
             this.dragging = {
               range: this.responder?.getSelectedRange(),
-              point: pointFromEvent(event)
+              point: pointFromEvent(event),
             }
           }
         },
@@ -122,7 +126,6 @@ export default Level2InputController = (function() {
               this.dragging.point = point
               return this.responder?.setLocationRangeFromPointRange(point)
             }
-
           } else if (dragEventHasFiles(event)) {
             return event.preventDefault()
           }
@@ -135,7 +138,6 @@ export default Level2InputController = (function() {
             this.responder?.moveTextFromRange(this.dragging.range)
             this.dragging = null
             return this.scheduleRender()
-
           } else if (dragEventHasFiles(event)) {
             event.preventDefault()
             const point = pointFromEvent(event)
@@ -156,7 +158,7 @@ export default Level2InputController = (function() {
             this.composing = false
             return this.scheduleRender()
           }
-        }
+        },
       }
 
       this.prototype.keys = {
@@ -197,7 +199,7 @@ export default Level2InputController = (function() {
             this.responder?.decreaseNestingLevel()
             return this.render()
           }
-        }
+        },
       }
 
       this.prototype.inputTypes = {
@@ -465,7 +467,9 @@ export default Level2InputController = (function() {
         },
 
         insertText() {
-          return this.insertString(this.event.data != null ? this.event.data : this.event.dataTransfer?.getData("text/plain"))
+          return this.insertString(
+            this.event.data != null ? this.event.data : this.event.dataTransfer?.getData("text/plain")
+          )
         },
 
         insertTranspose() {
@@ -474,25 +478,31 @@ export default Level2InputController = (function() {
 
         insertUnorderedList() {
           return this.toggleAttributeIfSupported("bullet")
-        }
+        },
       }
     }
     elementDidMutate() {
       if (this.scheduledRender) {
-        if (this.composing) { return this.delegate?.inputControllerDidAllowUnhandledInput?.() }
+        if (this.composing) {
+          return this.delegate?.inputControllerDidAllowUnhandledInput?.()
+        }
       } else {
         return this.reparse()
       }
     }
 
     scheduleRender() {
-      return this.scheduledRender != null ? this.scheduledRender : this.scheduledRender = requestAnimationFrame(this.render)
+      return this.scheduledRender != null
+        ? this.scheduledRender
+        : this.scheduledRender = requestAnimationFrame(this.render)
     }
 
     render() {
       cancelAnimationFrame(this.scheduledRender)
       this.scheduledRender = null
-      if (!this.composing) { this.delegate?.render() }
+      if (!this.composing) {
+        this.delegate?.render()
+      }
       this.afterRender?.()
       this.afterRender = null
     }
@@ -532,7 +542,9 @@ export default Level2InputController = (function() {
 
     deleteInDirection(direction, { recordUndoEntry } = { recordUndoEntry: true }) {
       let domRange
-      if (recordUndoEntry) { this.delegate?.inputControllerWillPerformTyping() }
+      if (recordUndoEntry) {
+        this.delegate?.inputControllerWillPerformTyping()
+      }
       const perform = () => this.responder?.deleteInDirection(direction)
       if (domRange = this.getTargetDOMRange({ minLength: 2 })) {
         return this.withTargetDOMRange(domRange, perform)
@@ -592,34 +604,36 @@ var staticRangeToRange = function(staticRange) {
 
 // Event helpers
 
-var dragEventHasFiles = event => Array.from(event.dataTransfer?.types != null ? event.dataTransfer?.types : []).includes("Files")
+var dragEventHasFiles = (event) =>
+  Array.from(event.dataTransfer?.types != null ? event.dataTransfer?.types : []).includes("Files")
 
 var pasteEventHasFilesOnly = function(event) {
   let clipboard
   if (clipboard = event.clipboardData) {
-    return Array.from(clipboard.types).includes("Files") &&
-      clipboard.types.length === 1 &&
-      clipboard.files.length >= 1
+    return Array.from(clipboard.types).includes("Files") && clipboard.types.length === 1 && clipboard.files.length >= 1
   }
 }
 
 var pasteEventHasPlainTextOnly = function(event) {
   let clipboard
   if (clipboard = event.clipboardData) {
-    return Array.from(clipboard.types).includes("text/plain") &&
-      clipboard.types.length === 1
+    return Array.from(clipboard.types).includes("text/plain") && clipboard.types.length === 1
   }
 }
 
 var keyboardCommandFromKeyEvent = function(event) {
   const command = []
-  if (event.altKey) { command.push("alt") }
-  if (event.shiftKey) { command.push("shift") }
+  if (event.altKey) {
+    command.push("alt")
+  }
+  if (event.shiftKey) {
+    command.push("shift")
+  }
   command.push(event.key)
   return command
 }
 
-var pointFromEvent = event => ({
+var pointFromEvent = (event) => ({
   x: event.clientX,
-  y: event.clientY
+  y: event.clientY,
 })

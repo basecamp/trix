@@ -61,9 +61,10 @@ export default class UndoManager extends BasicObject {
     return {
       description: description?.toString(),
       context: JSON.stringify(context),
-      snapshot: this.composition.getSnapshot()
+      snapshot: this.composition.getSnapshot(),
     }
   }
 }
 
-var entryHasDescriptionAndContext = (entry, description, context) => entry?.description === description?.toString() && entry?.context === JSON.stringify(context)
+var entryHasDescriptionAndContext = (entry, description, context) =>
+  entry?.description === description?.toString() && entry?.context === JSON.stringify(context)

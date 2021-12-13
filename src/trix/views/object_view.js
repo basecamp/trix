@@ -24,7 +24,9 @@ export default class ObjectView extends BasicObject {
   }
 
   getNodes() {
-    if (this.nodes == null) { this.nodes = this.createNodes() }
+    if (this.nodes == null) {
+      this.nodes = this.createNodes()
+    }
     return Array.from(this.nodes).map((node) => node.cloneNode(true))
   }
 
@@ -89,7 +91,11 @@ export default class ObjectView extends BasicObject {
   }
 
   findViewForObject(object) {
-    for (const view of Array.from(this.getAllChildViews())) { if (view.object === object) { return view } }
+    for (const view of Array.from(this.getAllChildViews())) {
+      if (view.object === object) {
+        return view
+      }
+    }
   }
 
   getViewCache() {
@@ -143,12 +149,11 @@ export default class ObjectView extends BasicObject {
   }
 }
 
-
 export class ObjectGroupView extends ObjectView {
   constructor() {
     super(...arguments)
-    this.objectGroup = this.object;
-    ({ viewClass: this.viewClass } = this.options)
+    this.objectGroup = this.object
+    ;({ viewClass: this.viewClass } = this.options)
     delete this.options.viewClass
   }
 
@@ -165,7 +170,9 @@ export class ObjectGroupView extends ObjectView {
     const element = this.createContainerElement()
 
     Array.from(this.getChildViews()).forEach((view) => {
-      Array.from(view.getNodes()).forEach((node) => { element.appendChild(node) })
+      Array.from(view.getNodes()).forEach((node) => {
+        element.appendChild(node)
+      })
     })
 
     return [ element ]

@@ -29,7 +29,9 @@ export default class BlockView extends ObjectView {
       const textConfig = getBlockConfig(this.block.getLastAttribute())?.text
       const textView = this.findOrCreateCachedChildView(TextView, this.block.text, { textConfig })
       nodes.push(...Array.from(textView.getNodes() || []))
-      if (this.shouldAddExtraNewlineElement()) { nodes.push(makeElement("br")) }
+      if (this.shouldAddExtraNewlineElement()) {
+        nodes.push(makeElement("br"))
+      }
     }
 
     if (this.attributes.length) {
@@ -37,10 +39,14 @@ export default class BlockView extends ObjectView {
     } else {
       let attributes
       const { tagName } = config.blockAttributes.default
-      if (this.block.isRTL()) { attributes = { dir: "rtl" } }
+      if (this.block.isRTL()) {
+        attributes = { dir: "rtl" }
+      }
 
       const element = makeElement({ tagName, attributes })
-      Array.from(nodes).forEach((node) => { element.appendChild(node) })
+      Array.from(nodes).forEach((node) => {
+        element.appendChild(node)
+      })
       return [ element ]
     }
   }
@@ -50,7 +56,9 @@ export default class BlockView extends ObjectView {
     const attributeName = this.attributes[depth]
 
     const { tagName } = getBlockConfig(attributeName)
-    if (depth === 0 && this.block.isRTL()) { attributes = { dir: "rtl" } }
+    if (depth === 0 && this.block.isRTL()) {
+      attributes = { dir: "rtl" }
+    }
 
     if (attributeName === "attachmentGallery") {
       const size = this.block.getBlockBreakPosition()

@@ -32,7 +32,9 @@ export default class Recording {
   }
 
   getSnapshotAtIndex(index) {
-    if (index >= 0) { return this.snapshots[index] }
+    if (index >= 0) {
+      return this.snapshots[index]
+    }
   }
 
   getSnapshotAtFrameIndex(frameIndex) {
@@ -66,11 +68,11 @@ export default class Recording {
 
   truncateToSnapshotCount(snapshotCount) {
     const offset = this.snapshots.length - snapshotCount
-    if (offset < 0) { return }
+    if (offset < 0) {
+      return
+    }
 
-    const {
-      frames
-    } = this
+    const { frames } = this
     this.frames = (() => {
       const result = []
 

@@ -21,16 +21,12 @@ var PerformanceView = (function() {
       this.prototype.title = "Performance"
       this.prototype.template = "performance"
 
-      now =
-        window.performance?.now != null ?
-          () => performance.now()
-        :
-          () => new Date().getTime()
+      now = window.performance?.now != null ? () => performance.now() : () => new Date().getTime()
     }
 
     constructor() {
-      super(...arguments);
-      ({ documentView: this.documentView } = this.compositionController)
+      super(...arguments)
+      this.documentView = this.compositionController.documentView
 
       this.data = {}
       this.track("documentView.render")
@@ -44,7 +40,10 @@ var PerformanceView = (function() {
     track(methodPath) {
       this.data[methodPath] = { calls: 0, total: 0, mean: 0, max: 0, last: 0 }
 
-      const array = methodPath.split("."), adjustedLength = Math.max(array.length, 1), propertyNames = array.slice(0, adjustedLength - 1), methodName = array[adjustedLength - 1]
+      const array = methodPath.split("."),
+        adjustedLength = Math.max(array.length, 1),
+        propertyNames = array.slice(0, adjustedLength - 1),
+        methodName = array[adjustedLength - 1]
       let object = this
 
       Array.from(propertyNames).forEach((propertyName) => {
@@ -67,7 +66,9 @@ var PerformanceView = (function() {
       data.calls += 1
       data.total += timing
       data.mean = data.total / data.calls
-      if (timing > data.max) { data.max = timing }
+      if (timing > data.max) {
+        data.max = timing
+      }
       data.last = timing
       return this.render()
     }

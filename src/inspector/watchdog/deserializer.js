@@ -11,8 +11,8 @@
 export default class Deserializer {
   constructor(document, snapshot) {
     this.document = document
-    this.snapshot = snapshot;
-    ({ tree: this.tree, selection: this.selection } = this.snapshot)
+    this.snapshot = snapshot
+    ;({ tree: this.tree, selection: this.selection } = this.snapshot)
     this.deserializeTree()
     this.deserializeSelection()
   }
@@ -23,14 +23,16 @@ export default class Deserializer {
   }
 
   deserializeNode(serializedNode) {
-    const node = (() => { switch (serializedNode.name) {
-      case "#text":
-        return this.deserializeTextNode(serializedNode)
-      case "#comment":
-        return this.deserializeComment(serializedNode)
-      default:
-        return this.deserializeElement(serializedNode)
-    } })()
+    const node = (() => {
+      switch (serializedNode.name) {
+        case "#text":
+          return this.deserializeTextNode(serializedNode)
+        case "#comment":
+          return this.deserializeComment(serializedNode)
+        default:
+          return this.deserializeElement(serializedNode)
+      }
+    })()
 
     this.nodes[serializedNode.id] = node
     return node
@@ -46,20 +48,30 @@ export default class Deserializer {
 
   deserializeChildren(serializedNode) {
     return Array.from(serializedNode.children != null ? serializedNode.children : []).map((child) =>
-      this.deserializeNode(child))
+      this.deserializeNode(child)
+    )
   }
 
   deserializeElement(serializedNode) {
     const node = this.document.createElement(serializedNode.name)
     const object = serializedNode.attributes != null ? serializedNode.attributes : {}
-    for (const name in object) { const value = object[name]; node.setAttribute(name, value) }
-    while (node.lastChild) { node.removeChild(node.lastChild) }
-    Array.from(this.deserializeChildren(serializedNode)).forEach((childNode) => { node.appendChild(childNode) })
+    for (const name in object) {
+      const value = object[name]
+      node.setAttribute(name, value)
+    }
+    while (node.lastChild) {
+      node.removeChild(node.lastChild)
+    }
+    Array.from(this.deserializeChildren(serializedNode)).forEach((childNode) => {
+      node.appendChild(childNode)
+    })
     return node
   }
 
   deserializeSelection() {
-    if (!this.selection) { return }
+    if (!this.selection) {
+      return
+    }
     const { start, end } = this.selection
     const startContainer = this.nodes[start.id]
     const endContainer = this.nodes[end.id]

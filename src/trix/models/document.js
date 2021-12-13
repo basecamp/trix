@@ -28,8 +28,7 @@ import { arraysAreEqual, getBlockConfig, normalizeRange, rangeIsCollapsed } from
 
 export default class Document extends TrixObject {
   static fromJSON(documentJSON) {
-    const blocks = Array.from(documentJSON).map((blockJSON) =>
-      Block.fromJSON(blockJSON))
+    const blocks = Array.from(documentJSON).map((blockJSON) => Block.fromJSON(blockJSON))
     return new this(blocks)
   }
 
@@ -38,26 +37,21 @@ export default class Document extends TrixObject {
     return new this([ new Block(text) ])
   }
 
-
   constructor(blocks = []) {
     super(...arguments)
-    if (blocks.length === 0) { blocks = [ new Block ] }
+    if (blocks.length === 0) {
+      blocks = [ new Block() ]
+    }
     this.blockList = SplittableList.box(blocks)
   }
 
   isEmpty() {
     let block
-    return this.blockList.length === 1 && (
-      block = this.getBlockAtIndex(0),
-      block.isEmpty() && !block.hasAttributes()
-    )
+    return this.blockList.length === 1 && (block = this.getBlockAtIndex(0), block.isEmpty() && !block.hasAttributes())
   }
 
-  copy(options = {}){
-    const blocks = options.consolidateBlocks ?
-      this.blockList.consolidate().toArray()
-    :
-      this.blockList.toArray()
+  copy(options = {}) {
+    const blocks = options.consolidateBlocks ? this.blockList.consolidate().toArray() : this.blockList.toArray()
 
     return new this.constructor(blocks)
   }
@@ -70,10 +64,8 @@ export default class Document extends TrixObject {
   copyUsingObjectMap(objectMap) {
     let mappedBlock
     const blocks = Array.from(this.getBlocks()).map((block) =>
-      (mappedBlock = objectMap.find(block)) ?
-        mappedBlock
-      :
-        block.copyUsingObjectMap(objectMap))
+      (mappedBlock = objectMap.find(block)) ? mappedBlock : block.copyUsingObjectMap(objectMap)
+    )
     return new this.constructor(blocks)
   }
 
@@ -93,7 +85,9 @@ export default class Document extends TrixObject {
 
   replaceBlock(oldBlock, newBlock) {
     const index = this.blockList.indexOf(oldBlock)
-    if (index === -1) { return this }
+    if (index === -1) {
+      return this
+    }
     return new this.constructor(this.blockList.replaceObjectAtIndex(newBlock, index))
   }
 
@@ -154,14 +148,19 @@ export default class Document extends TrixObject {
     const { index, offset } = this.locationFromPosition(startPosition)
 
     const document = this.removeTextAtRange(range)
-    return new this.constructor(document.blockList.editObjectAtIndex(index, block => block.copyWithText(block.text.insertTextAtPosition(text, offset)))
+    return new this.constructor(
+      document.blockList.editObjectAtIndex(index, (block) =>
+        block.copyWithText(block.text.insertTextAtPosition(text, offset))
+      )
     )
   }
 
   removeTextAtRange(range) {
     let blocks
     const [ leftPosition, rightPosition ] = Array.from(range = normalizeRange(range))
-    if (rangeIsCollapsed(range)) { return this }
+    if (rangeIsCollapsed(range)) {
+      return this
+    }
     const [ leftLocation, rightLocation ] = Array.from(this.locationRangeFromRange(range))
 
     const leftIndex = leftLocation.index
@@ -172,13 +171,16 @@ export default class Document extends TrixObject {
     const rightOffset = rightLocation.offset
     const rightBlock = this.getBlockAtIndex(rightIndex)
 
-    const removeRightNewline = rightPosition - leftPosition === 1 &&
+    const removeRightNewline =
+      rightPosition - leftPosition === 1 &&
       leftBlock.getBlockBreakPosition() === leftOffset &&
       rightBlock.getBlockBreakPosition() !== rightOffset &&
       rightBlock.text.getStringAtPosition(rightOffset) === "\n"
 
     if (removeRightNewline) {
-      blocks = this.blockList.editObjectAtIndex(rightIndex, block => block.copyWithText(block.text.removeTextAtRange([ rightOffset, rightOffset + 1 ])))
+      blocks = this.blockList.editObjectAtIndex(rightIndex, (block) =>
+        block.copyWithText(block.text.removeTextAtRange([ rightOffset, rightOffset + 1 ]))
+      )
     } else {
       let block
       const leftText = leftBlock.text.getTextAtRange([ 0, leftOffset ])
@@ -204,26 +206,32 @@ export default class Document extends TrixObject {
   moveTextFromRangeToPosition(range, position) {
     let text
     const [ startPosition, endPosition ] = Array.from(range = normalizeRange(range))
-    if (startPosition <= position && position <= endPosition) { return this }
+    if (startPosition <= position && position <= endPosition) {
+      return this
+    }
 
     let document = this.getDocumentAtRange(range)
     let result = this.removeTextAtRange(range)
 
     const movingRightward = startPosition < position
-    if (movingRightward) { position -= document.getLength() }
+    if (movingRightward) {
+      position -= document.getLength()
+    }
 
     const [ firstBlock, ...blocks ] = Array.from(document.getBlocks())
     if (blocks.length === 0) {
       text = firstBlock.getTextWithoutBlockBreak()
-      if (movingRightward) { position += 1 }
+      if (movingRightward) {
+        position += 1
+      }
     } else {
-      ({
-        text
-      } = firstBlock)
+      ({ text } = firstBlock)
     }
 
     result = result.insertTextAtRange(text, position)
-    if (blocks.length === 0) { return result }
+    if (blocks.length === 0) {
+      return result
+    }
 
     document = new this.constructor(blocks)
     position += text.getLength()
@@ -232,40 +240,42 @@ export default class Document extends TrixObject {
   }
 
   addAttributeAtRange(attribute, value, range) {
-    let {
-      blockList
-    } = this
-    this.eachBlockAtRange(range, (block, textRange, index) => blockList = blockList.editObjectAtIndex(index, function() {
-      if (getBlockConfig(attribute)) {
-        return block.addAttribute(attribute, value)
-      } else {
-        if (textRange[0] === textRange[1]) {
-          return block
-        } else {
-          return block.copyWithText(block.text.addAttributeAtRange(attribute, value, textRange))
-        }
-      }
-    }))
+    let { blockList } = this
+    this.eachBlockAtRange(
+      range,
+      (block, textRange, index) =>
+        blockList = blockList.editObjectAtIndex(index, function() {
+          if (getBlockConfig(attribute)) {
+            return block.addAttribute(attribute, value)
+          } else {
+            if (textRange[0] === textRange[1]) {
+              return block
+            } else {
+              return block.copyWithText(block.text.addAttributeAtRange(attribute, value, textRange))
+            }
+          }
+        })
+    )
     return new this.constructor(blockList)
   }
 
   addAttribute(attribute, value) {
-    let {
-      blockList
-    } = this
-    this.eachBlock((block, index) => blockList = blockList.editObjectAtIndex(index, () => block.addAttribute(attribute, value)))
+    let { blockList } = this
+    this.eachBlock(
+      (block, index) => blockList = blockList.editObjectAtIndex(index, () => block.addAttribute(attribute, value))
+    )
     return new this.constructor(blockList)
   }
 
   removeAttributeAtRange(attribute, range) {
-    let {
-      blockList
-    } = this
+    let { blockList } = this
     this.eachBlockAtRange(range, function(block, textRange, index) {
       if (getBlockConfig(attribute)) {
         blockList = blockList.editObjectAtIndex(index, () => block.removeAttribute(attribute))
       } else if (textRange[0] !== textRange[1]) {
-        blockList = blockList.editObjectAtIndex(index, () => block.copyWithText(block.text.removeAttributeAtRange(attribute, textRange)))
+        blockList = blockList.editObjectAtIndex(index, () =>
+          block.copyWithText(block.text.removeAttributeAtRange(attribute, textRange))
+        )
       }
     })
     return new this.constructor(blockList)
@@ -277,7 +287,10 @@ export default class Document extends TrixObject {
     const { index } = this.locationFromPosition(startPosition)
     const text = this.getTextAtIndex(index)
 
-    return new this.constructor(this.blockList.editObjectAtIndex(index, block => block.copyWithText(text.updateAttributesForAttachment(attributes, attachment)))
+    return new this.constructor(
+      this.blockList.editObjectAtIndex(index, (block) =>
+        block.copyWithText(text.updateAttributesForAttachment(attributes, attachment))
+      )
     )
   }
 
@@ -292,18 +305,22 @@ export default class Document extends TrixObject {
     const { offset } = this.locationFromPosition(startPosition)
 
     const document = this.removeTextAtRange(range)
-    if (offset === 0) { blocks = [ new Block ] }
-    return new this.constructor(document.blockList.insertSplittableListAtPosition(new SplittableList(blocks), startPosition))
+    if (offset === 0) {
+      blocks = [ new Block() ]
+    }
+    return new this.constructor(
+      document.blockList.insertSplittableListAtPosition(new SplittableList(blocks), startPosition)
+    )
   }
 
   applyBlockAttributeAtRange(attributeName, value, range) {
-    let document;
-    ({ document, range } = this.expandRangeToLineBreaksAndSplitBlocks(range))
+    let document
+    ;({ document, range } = this.expandRangeToLineBreaksAndSplitBlocks(range))
     const blockConfig = getBlockConfig(attributeName)
 
     if (blockConfig.listAttribute) {
-      document = document.removeLastListAttributeAtRange(range, { exceptAttributeName: attributeName });
-      ({ document, range } = document.convertLineBreaksToBlockBreaksInRange(range))
+      document = document.removeLastListAttributeAtRange(range, { exceptAttributeName: attributeName })
+      ;({ document, range } = document.convertLineBreaksToBlockBreaksInRange(range))
     } else if (blockConfig.exclusive) {
       document = document.removeBlockAttributesAtRange(range)
     } else if (blockConfig.terminal) {
@@ -316,36 +333,40 @@ export default class Document extends TrixObject {
   }
 
   removeLastListAttributeAtRange(range, options = {}) {
-    let {
-      blockList
-    } = this
+    let { blockList } = this
     this.eachBlockAtRange(range, function(block, textRange, index) {
       let lastAttributeName
-      if (!(lastAttributeName = block.getLastAttribute())) { return }
-      if (!getBlockConfig(lastAttributeName).listAttribute) { return }
-      if (lastAttributeName === options.exceptAttributeName) { return }
+      if (!(lastAttributeName = block.getLastAttribute())) {
+        return
+      }
+      if (!getBlockConfig(lastAttributeName).listAttribute) {
+        return
+      }
+      if (lastAttributeName === options.exceptAttributeName) {
+        return
+      }
       blockList = blockList.editObjectAtIndex(index, () => block.removeAttribute(lastAttributeName))
     })
     return new this.constructor(blockList)
   }
 
   removeLastTerminalAttributeAtRange(range) {
-    let {
-      blockList
-    } = this
+    let { blockList } = this
     this.eachBlockAtRange(range, function(block, textRange, index) {
       let lastAttributeName
-      if (!(lastAttributeName = block.getLastAttribute())) { return }
-      if (!getBlockConfig(lastAttributeName).terminal) { return }
+      if (!(lastAttributeName = block.getLastAttribute())) {
+        return
+      }
+      if (!getBlockConfig(lastAttributeName).terminal) {
+        return
+      }
       blockList = blockList.editObjectAtIndex(index, () => block.removeAttribute(lastAttributeName))
     })
     return new this.constructor(blockList)
   }
 
   removeBlockAttributesAtRange(range) {
-    let {
-      blockList
-    } = this
+    let { blockList } = this
     this.eachBlockAtRange(range, function(block, textRange, index) {
       if (block.hasAttributes()) {
         blockList = blockList.editObjectAtIndex(index, () => block.copyWithoutAttributes())
@@ -362,7 +383,9 @@ export default class Document extends TrixObject {
     let document = this
 
     const startBlock = document.getBlockAtIndex(startLocation.index)
-    if ((startLocation.offset = startBlock.findLineBreakInDirectionFromPosition("backward", startLocation.offset)) != null) {
+    if (
+      (startLocation.offset = startBlock.findLineBreakInDirectionFromPosition("backward", startLocation.offset)) != null
+    ) {
       position = document.positionFromLocation(startLocation)
       document = document.insertBlockBreakAtRange([ position, position + 1 ])
       endLocation.index += 1
@@ -422,8 +445,11 @@ export default class Document extends TrixObject {
 
   getStringAtRange(range) {
     let endIndex
-    const array = range = normalizeRange(range), endPosition = array[array.length - 1]
-    if (endPosition !== this.getLength()) { endIndex = -1 }
+    const array = range = normalizeRange(range),
+      endPosition = array[array.length - 1]
+    if (endPosition !== this.getLength()) {
+      endIndex = -1
+    }
     return this.getDocumentAtRange(range).toString().slice(0, endIndex)
   }
 
@@ -488,18 +514,22 @@ export default class Document extends TrixObject {
     } else {
       return (() => {
         const result = []
-        for (var {
-          index
-        } = startLocation, end = endLocation.index, asc = startLocation.index <= end; asc ? index <= end : index >= end; asc ? index++ : index--) {
+        for (
+          var { index } = startLocation, end = endLocation.index, asc = startLocation.index <= end;
+          asc ? index <= end : index >= end;
+          asc ? index++ : index--
+        ) {
           if (block = this.getBlockAtIndex(index)) {
-            textRange = (() => { switch (index) {
-              case startLocation.index:
-                return [ startLocation.offset, block.text.getLength() ]
-              case endLocation.index:
-                return [ 0, endLocation.offset ]
-              default:
-                return [ 0, block.text.getLength() ]
-            } })()
+            textRange = (() => {
+              switch (index) {
+                case startLocation.index:
+                  return [ startLocation.offset, block.text.getLength() ]
+                case endLocation.index:
+                  return [ 0, endLocation.offset ]
+                default:
+                  return [ 0, block.text.getLength() ]
+              }
+            })()
             result.push(callback(block, textRange, index))
           } else {
             result.push(undefined)
@@ -535,7 +565,9 @@ export default class Document extends TrixObject {
     let key, value
     const { index, offset } = this.locationFromPosition(position)
     const block = this.getBlockAtIndex(index)
-    if (!block) { return {} }
+    if (!block) {
+      return {}
+    }
 
     const commonAttributes = attributesForBlock(block)
     const attributes = block.text.getAttributesAtPosition(offset)
@@ -574,14 +606,24 @@ export default class Document extends TrixObject {
   getBaseBlockAttributes() {
     let baseBlockAttributes = this.getBlockAtIndex(0).getAttributes()
 
-    for (let blockIndex = 1, end = this.getBlockCount(), asc = 1 <= end; asc ? blockIndex < end : blockIndex > end; asc ? blockIndex++ : blockIndex--) {
+    for (
+      let blockIndex = 1, end = this.getBlockCount(), asc = 1 <= end;
+      asc ? blockIndex < end : blockIndex > end;
+      asc ? blockIndex++ : blockIndex--
+    ) {
       var blockAttributes = this.getBlockAtIndex(blockIndex).getAttributes()
       var lastAttributeIndex = Math.min(baseBlockAttributes.length, blockAttributes.length)
 
       baseBlockAttributes = (() => {
         const result = []
-        for (let index = 0, end1 = lastAttributeIndex, asc1 = 0 <= end1; asc1 ? index < end1 : index > end1; asc1 ? index++ : index--) {
-          if (blockAttributes[index] !== baseBlockAttributes[index]) { break }
+        for (
+          let index = 0, end1 = lastAttributeIndex, asc1 = 0 <= end1;
+          asc1 ? index < end1 : index > end1;
+          asc1 ? index++ : index--
+        ) {
+          if (blockAttributes[index] !== baseBlockAttributes[index]) {
+            break
+          }
           result.push(blockAttributes[index])
         }
         return result
@@ -592,7 +634,11 @@ export default class Document extends TrixObject {
   }
 
   getAttachmentById(attachmentId) {
-    for (const attachment of Array.from(this.getAttachments())) { if (attachment.id === attachmentId) { return attachment } }
+    for (const attachment of Array.from(this.getAttachments())) {
+      if (attachment.id === attachmentId) {
+        return attachment
+      }
+    }
   }
 
   getAttachmentPieces() {
@@ -624,7 +670,11 @@ export default class Document extends TrixObject {
   }
 
   getAttachmentPieceForAttachment(attachment) {
-    for (const piece of Array.from(this.getAttachmentPieces())) { if (piece.attachment === attachment) { return piece } }
+    for (const piece of Array.from(this.getAttachmentPieces())) {
+      if (piece.attachment === attachment) {
+        return piece
+      }
+    }
   }
 
   findRangesForBlockAttribute(attributeName) {
@@ -689,7 +739,9 @@ export default class Document extends TrixObject {
   }
 
   locationRangeFromRange(range) {
-    if (!(range = normalizeRange(range))) { return }
+    if (!(range = normalizeRange(range))) {
+      return
+    }
     const [ startPosition, endPosition ] = Array.from(range)
     const startLocation = this.locationFromPosition(startPosition)
     const endLocation = this.locationFromPosition(endPosition)
@@ -700,7 +752,9 @@ export default class Document extends TrixObject {
     let rightPosition
     locationRange = normalizeRange(locationRange)
     const leftPosition = this.positionFromLocation(locationRange[0])
-    if (!rangeIsCollapsed(locationRange)) { rightPosition = this.positionFromLocation(locationRange[1]) }
+    if (!rangeIsCollapsed(locationRange)) {
+      rightPosition = this.positionFromLocation(locationRange[1])
+    }
     return normalizeRange([ leftPosition, rightPosition ])
   }
 
@@ -728,7 +782,7 @@ export default class Document extends TrixObject {
 
   toSerializableDocument() {
     const blocks = []
-    this.blockList.eachObject(block => blocks.push(block.copyWithText(block.text.toSerializableText())))
+    this.blockList.eachObject((block) => blocks.push(block.copyWithText(block.text.toSerializableText())))
     return new this.constructor(blocks)
   }
 

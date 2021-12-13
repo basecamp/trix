@@ -56,4 +56,3 @@ export default class Operation extends BasicObject {
 }
 
 Operation.initClass()
-

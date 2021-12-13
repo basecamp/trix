@@ -68,10 +68,10 @@ export default Piece = (function() {
 
     getCommonAttributes() {
       let piece
-      if (!(piece = pieceList.getPieceAtIndex(0))) { return {} }
-      let {
-        attributes
-      } = piece
+      if (!(piece = pieceList.getPieceAtIndex(0))) {
+        return {}
+      }
+      let { attributes } = piece
       let keys = attributes.getKeys()
 
       pieceList.eachPiece(function(piece) {
@@ -99,11 +99,12 @@ export default Piece = (function() {
     }
 
     isEqualTo(piece) {
-      return super.isEqualTo(...arguments) ||
+      return (
+        super.isEqualTo(...arguments) ||
         this.hasSameConstructorAs(piece) &&
-        this.hasSameStringValueAsPiece(piece) &&
-        this.hasSameAttributesAsPiece(piece)
-
+          this.hasSameStringValueAsPiece(piece) &&
+          this.hasSameAttributesAsPiece(piece)
+      )
     }
 
     isEmpty() {
@@ -117,14 +118,14 @@ export default Piece = (function() {
     toJSON() {
       return {
         type: this.constructor.type,
-        attributes: this.getAttributes()
+        attributes: this.getAttributes(),
       }
     }
 
     contentsForInspection() {
       return {
         type: this.constructor.type,
-        attributes: this.attributes.inspect()
+        attributes: this.attributes.inspect(),
       }
     }
 

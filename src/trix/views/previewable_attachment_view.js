@@ -21,11 +21,11 @@ export default class PreviewableAttachmentView extends AttachmentView {
     this.image = makeElement({
       tagName: "img",
       attributes: {
-        src: ""
+        src: "",
       },
       data: {
-        trixMutable: true
-      }
+        trixMutable: true,
+      },
     })
 
     this.refresh(this.image)
@@ -41,8 +41,12 @@ export default class PreviewableAttachmentView extends AttachmentView {
   }
 
   refresh(image) {
-    if (image == null) { image = this.findElement()?.querySelector("img") }
-    if (image) { return this.updateAttributesForImage(image) }
+    if (image == null) {
+      image = this.findElement()?.querySelector("img")
+    }
+    if (image) {
+      return this.updateAttributesForImage(image)
+    }
   }
 
   updateAttributesForImage(image) {
@@ -60,8 +64,12 @@ export default class PreviewableAttachmentView extends AttachmentView {
     const width = this.attachment.getWidth()
     const height = this.attachment.getHeight()
 
-    if (width != null) { image.width = width }
-    if (height != null) { image.height = height }
+    if (width != null) {
+      image.width = width
+    }
+    if (height != null) {
+      image.height = height
+    }
 
     const storeKey = [ "imageElement", this.attachment.id, image.src, image.width, image.height ].join("/")
     image.dataset.trixStoreKey = storeKey

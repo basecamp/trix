@@ -49,12 +49,13 @@ export default class SelectionChangeObserver extends BasicObject {
 
   unregisterSelectionManager(selectionManager) {
     this.selectionManagers = Array.from(this.selectionManagers).filter((s) => s !== selectionManager)
-    if (this.selectionManagers.length === 0) { return this.stop() }
+    if (this.selectionManagers.length === 0) {
+      return this.stop()
+    }
   }
 
   notifySelectionManagersOfSelectionChange() {
-    return Array.from(this.selectionManagers).map((selectionManager) =>
-      selectionManager.selectionDidChange())
+    return Array.from(this.selectionManagers).map((selectionManager) => selectionManager.selectionDidChange())
   }
 
   update() {
@@ -80,16 +81,19 @@ export default class SelectionChangeObserver extends BasicObject {
   }
 }
 
-var domRangesAreEqual = (left, right) => left?.startContainer === right?.startContainer &&
+var domRangesAreEqual = (left, right) =>
+  left?.startContainer === right?.startContainer &&
   left?.startOffset === right?.startOffset &&
   left?.endContainer === right?.endContainer &&
   left?.endOffset === right?.endOffset
 
-export var selectionChangeObserver = new SelectionChangeObserver
+export var selectionChangeObserver = new SelectionChangeObserver()
 
 export var getDOMSelection = function() {
   const selection = window.getSelection()
-  if (selection.rangeCount > 0) { return selection }
+  if (selection.rangeCount > 0) {
+    return selection
+  }
 }
 
 export var getDOMRange = function() {
@@ -112,6 +116,6 @@ export var setDOMRange = function(domRange) {
 // private element used to draw its UI. Attempting to access properties of those
 // elements throws an error.
 // https://bugzilla.mozilla.org/show_bug.cgi?id=208427
-var domRangeIsPrivate = domRange => nodeIsPrivate(domRange.startContainer) || nodeIsPrivate(domRange.endContainer)
+var domRangeIsPrivate = (domRange) => nodeIsPrivate(domRange.startContainer) || nodeIsPrivate(domRange.endContainer)
 
-var nodeIsPrivate = node => !Object.getPrototypeOf(node)
+var nodeIsPrivate = (node) => !Object.getPrototypeOf(node)

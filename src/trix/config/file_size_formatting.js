@@ -11,8 +11,10 @@ export default {
 
   formatter(number) {
     switch (number) {
-      case 0: return `0 ${lang.bytes}`
-      case 1: return `1 ${lang.byte}`
+      case 0:
+        return `0 ${lang.bytes}`
+      case 1:
+        return `1 ${lang.byte}`
       default:
         let base
 
@@ -28,5 +30,5 @@ export default {
         const withoutInsignificantZeros = string.replace(/0*$/, "").replace(/\.$/, "")
         return `${withoutInsignificantZeros} ${sizes[exp]}`
     }
-  }
+  },
 }

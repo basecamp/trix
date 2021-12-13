@@ -22,9 +22,20 @@ import BasicObject from "trix/core/basic_object"
 import Document from "trix/models/document"
 import HTMLSanitizer from "trix/models/html_sanitizer"
 
-import { arraysAreEqual, breakableWhitespacePattern, elementContainsNode, findClosestElementFromNode, getBlockTagNames, makeElement,
- nodeIsAttachmentElement, normalizeSpaces, removeNode,
- squishBreakableWhitespace, tagName, walkTree } from "trix/core/helpers"
+import {
+  arraysAreEqual,
+  breakableWhitespacePattern,
+  elementContainsNode,
+  findClosestElementFromNode,
+  getBlockTagNames,
+  makeElement,
+  nodeIsAttachmentElement,
+  normalizeSpaces,
+  removeNode,
+  squishBreakableWhitespace,
+  tagName,
+  walkTree,
+} from "trix/core/helpers"
 
 export default HTMLParser = (function() {
   let pieceForString = undefined
@@ -34,7 +45,6 @@ export default HTMLParser = (function() {
   let getImageDimensions = undefined
   HTMLParser = class HTMLParser extends BasicObject {
     static initClass() {
-
       pieceForString = function(string, attributes = {}) {
         const type = "string"
         string = normalizeSpaces(string)
@@ -53,7 +63,7 @@ export default HTMLParser = (function() {
 
       parseTrixDataAttribute = function(element, name) {
         try {
-         return JSON.parse(element.getAttribute(`data-trix-${name}`))
+          return JSON.parse(element.getAttribute(`data-trix-${name}`))
         } catch (error) {
           return {}
         }
@@ -63,8 +73,12 @@ export default HTMLParser = (function() {
         const width = element.getAttribute("width")
         const height = element.getAttribute("height")
         const dimensions = {}
-        if (width) { dimensions.width = parseInt(width, 10) }
-        if (height) { dimensions.height = parseInt(height, 10) }
+        if (width) {
+          dimensions.width = parseInt(width, 10)
+        }
+        if (height) {
+          dimensions.height = parseInt(height, 10)
+        }
         return dimensions
       }
     }
@@ -95,7 +109,9 @@ export default HTMLParser = (function() {
         const html = HTMLSanitizer.sanitize(this.html).getHTML()
         this.containerElement.innerHTML = html
         const walker = walkTree(this.containerElement, { usingFilter: nodeFilter })
-        while (walker.nextNode()) { this.processNode(walker.currentNode) }
+        while (walker.nextNode()) {
+          this.processNode(walker.currentNode)
+        }
         return this.translateBlockElementMarginsToNewlines()
       } finally {
         this.removeHiddenContainer()
@@ -162,7 +178,6 @@ export default HTMLParser = (function() {
             }
           }
         }
-
       } else if (this.currentBlockElement && !currentBlockContainsElement && !elementIsBlockElement) {
         let parentBlockElement
         if (parentBlockElement = this.findParentBlockElement(element)) {
@@ -218,7 +233,10 @@ export default HTMLParser = (function() {
           case "img":
             attributes = { url: element.getAttribute("src"), contentType: "image" }
             var object = getImageDimensions(element)
-            for (const key in object) { const value = object[key]; attributes[key] = value }
+            for (const key in object) {
+              const value = object[key]
+              attributes[key] = value
+            }
             this.appendAttachmentWithAttributes(attributes, this.getTextAttributes(element))
             return this.processedElements.push(element)
           case "tr":
@@ -292,9 +310,14 @@ export default HTMLParser = (function() {
       const attributes = {}
       for (const attribute in config.textAttributes) {
         const configAttr = config.textAttributes[attribute]
-        if (configAttr.tagName && findClosestElementFromNode(element, { matchingSelector: configAttr.tagName, untilNode: this.containerElement })) {
+        if (
+          configAttr.tagName &&
+          findClosestElementFromNode(element, {
+            matchingSelector: configAttr.tagName,
+            untilNode: this.containerElement,
+          })
+        ) {
           attributes[attribute] = true
-
         } else if (configAttr.parser) {
           if (value = configAttr.parser(element)) {
             let attributeInheritedFromBlock = false
@@ -308,7 +331,6 @@ export default HTMLParser = (function() {
               attributes[attribute] = value
             }
           }
-
         } else if (configAttr.styleProperty) {
           if (value = element.style[configAttr.styleProperty]) {
             attributes[attribute] = value
@@ -336,7 +358,9 @@ export default HTMLParser = (function() {
             if (tagName(element) === attrConfig.tagName) {
               if (attrConfig.test?.(element) || !attrConfig.test) {
                 attributes.push(attribute)
-                if (attrConfig.listAttribute) { attributes.push(attrConfig.listAttribute) }
+                if (attrConfig.listAttribute) {
+                  attributes.push(attrConfig.listAttribute)
+                }
               }
             }
           }
@@ -362,25 +386,44 @@ export default HTMLParser = (function() {
 
     isBlockElement(element) {
       let needle
-      if (element?.nodeType !== Node.ELEMENT_NODE) { return }
-      if (nodeIsAttachmentElement(element)) { return }
-      if (findClosestElementFromNode(element, { matchingSelector: "td", untilNode: this.containerElement })) { return }
-      return (needle = tagName(element), Array.from(getBlockTagNames()).includes(needle)) || window.getComputedStyle(element).display === "block"
+      if (element?.nodeType !== Node.ELEMENT_NODE) {
+        return
+      }
+      if (nodeIsAttachmentElement(element)) {
+        return
+      }
+      if (findClosestElementFromNode(element, { matchingSelector: "td", untilNode: this.containerElement })) {
+        return
+      }
+      return (
+        (needle = tagName(element), Array.from(getBlockTagNames()).includes(needle)) ||
+        window.getComputedStyle(element).display === "block"
+      )
     }
 
     isInsignificantTextNode(node) {
-      if (node?.nodeType !== Node.TEXT_NODE) { return }
-      if (!stringIsAllBreakableWhitespace(node.data)) { return }
+      if (node?.nodeType !== Node.TEXT_NODE) {
+        return
+      }
+      if (!stringIsAllBreakableWhitespace(node.data)) {
+        return
+      }
       const { parentNode, previousSibling, nextSibling } = node
-      if (nodeEndsWithNonWhitespace(parentNode.previousSibling) && !this.isBlockElement(parentNode.previousSibling)) { return }
-      if (elementCanDisplayPreformattedText(parentNode)) { return }
-      return !previousSibling || this.isBlockElement(previousSibling) || !nextSibling || this.isBlockElement(nextSibling)
+      if (nodeEndsWithNonWhitespace(parentNode.previousSibling) && !this.isBlockElement(parentNode.previousSibling)) {
+        return
+      }
+      if (elementCanDisplayPreformattedText(parentNode)) {
+        return
+      }
+      return (
+        !previousSibling || this.isBlockElement(previousSibling) || !nextSibling || this.isBlockElement(nextSibling)
+      )
     }
 
     isExtraBR(element) {
-      return tagName(element) === "br" &&
-        this.isBlockElement(element.parentNode) &&
-        element.parentNode.lastChild === element
+      return (
+        tagName(element) === "br" && this.isBlockElement(element.parentNode) && element.parentNode.lastChild === element
+      )
     }
 
     // Margin translation
@@ -414,7 +457,10 @@ export default HTMLParser = (function() {
       if (element = this.blockElements[index]) {
         if (element.textContent) {
           let needle
-          if ((needle = tagName(element), !Array.from(getBlockTagNames()).includes(needle)) && !Array.from(this.processedElements).includes(element)) {
+          if (
+            (needle = tagName(element), !Array.from(getBlockTagNames()).includes(needle)) &&
+            !Array.from(this.processedElements).includes(element)
+          ) {
             return getBlockElementMargin(element)
           }
         }
@@ -438,7 +484,7 @@ var elementCanDisplayPreformattedText = function(element) {
   return [ "pre", "pre-wrap", "pre-line" ].includes(whiteSpace)
 }
 
-var nodeEndsWithNonWhitespace = node => node && !stringEndsWithWhitespace(node.textContent)
+var nodeEndsWithNonWhitespace = (node) => node && !stringEndsWithWhitespace(node.textContent)
 
 var getBlockElementMargin = function(element) {
   const style = window.getComputedStyle(element)
@@ -457,8 +503,8 @@ var nodeFilter = function(node) {
 
 // Whitespace
 
-var leftTrimBreakableWhitespace = string => string.replace(new RegExp(`^${breakableWhitespacePattern.source}+`), "")
+var leftTrimBreakableWhitespace = (string) => string.replace(new RegExp(`^${breakableWhitespacePattern.source}+`), "")
 
-var stringIsAllBreakableWhitespace = string => new RegExp(`^${breakableWhitespacePattern.source}*$`).test(string)
+var stringIsAllBreakableWhitespace = (string) => new RegExp(`^${breakableWhitespacePattern.source}*$`).test(string)
 
-var stringEndsWithWhitespace = string => /\s$/.test(string)
+var stringEndsWithWhitespace = (string) => /\s$/.test(string)

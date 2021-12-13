@@ -38,6 +38,5 @@ registerElement("trix-toolbar", {
     if (this.innerHTML === "") {
       this.innerHTML = config.toolbar.getDefaultHTML()
     }
-  }
-}
-)
+  },
+})

@@ -19,7 +19,6 @@ import ObjectView from "trix/views/object_view"
 const { css } = config
 
 export default class AttachmentView extends ObjectView {
-
   constructor() {
     super(...arguments)
     this.attachment = this.object
@@ -37,7 +36,7 @@ export default class AttachmentView extends ObjectView {
       tagName: "figure",
       className: this.getClassName(),
       data: this.getData(),
-      editable: false
+      editable: false,
     })
 
     if (href = this.getHref()) {
@@ -48,7 +47,9 @@ export default class AttachmentView extends ObjectView {
     if (this.attachment.hasContent()) {
       innerElement.innerHTML = this.attachment.getContent()
     } else {
-      Array.from(this.createContentNodes()).forEach((node) => { innerElement.appendChild(node) })
+      Array.from(this.createContentNodes()).forEach((node) => {
+        innerElement.appendChild(node)
+      })
     }
 
     innerElement.appendChild(this.createCaptionElement())
@@ -59,12 +60,12 @@ export default class AttachmentView extends ObjectView {
         attributes: {
           class: css.attachmentProgress,
           value: this.attachment.getUploadProgress(),
-          max: 100
+          max: 100,
         },
         data: {
           trixMutable: true,
-          trixStoreKey: [ "progressElement", this.attachment.id ].join("/")
-        }
+          trixStoreKey: [ "progressElement", this.attachment.id ].join("/"),
+        },
       })
 
       figure.appendChild(this.progressElement)
@@ -83,8 +84,12 @@ export default class AttachmentView extends ObjectView {
     } else {
       let name, size
       const captionConfig = this.getCaptionConfig()
-      if (captionConfig.name) { name = this.attachment.getFilename() }
-      if (captionConfig.size) { size = this.attachment.getFormattedFilesize() }
+      if (captionConfig.name) {
+        name = this.attachment.getFilename()
+      }
+      if (captionConfig.size) {
+        size = this.attachment.getFormattedFilesize()
+      }
 
       if (name) {
         const nameElement = makeElement({ tagName: "span", className: css.attachmentName, textContent: name })
@@ -92,7 +97,9 @@ export default class AttachmentView extends ObjectView {
       }
 
       if (size) {
-        if (name) { figcaption.appendChild(document.createTextNode(" ")) }
+        if (name) {
+          figcaption.appendChild(document.createTextNode(" "))
+        }
         const sizeElement = makeElement({ tagName: "span", className: css.attachmentSize, textContent: size })
         figcaption.appendChild(sizeElement)
       }
@@ -114,7 +121,7 @@ export default class AttachmentView extends ObjectView {
     const data = {
       trixAttachment: JSON.stringify(this.attachment),
       trixContentType: this.attachment.getContentType(),
-      trixId: this.attachment.id
+      trixId: this.attachment.id,
     }
 
     const { attributes } = this.attachmentPiece
@@ -138,7 +145,9 @@ export default class AttachmentView extends ObjectView {
   getCaptionConfig() {
     const type = this.attachment.getType()
     const captionConfig = copyObject(config.attachments[type]?.caption)
-    if (type === "file") { captionConfig.name = true }
+    if (type === "file") {
+      captionConfig.name = true
+    }
     return captionConfig
   }
 
@@ -157,14 +166,15 @@ export default class AttachmentView extends ObjectView {
   }
 }
 
-var createCursorTarget = name => makeElement({
-  tagName: "span",
-  textContent: ZERO_WIDTH_SPACE,
-  data: {
-    trixCursorTarget: name,
-    trixSerialize: false
-  }
-})
+var createCursorTarget = (name) =>
+  makeElement({
+    tagName: "span",
+    textContent: ZERO_WIDTH_SPACE,
+    data: {
+      trixCursorTarget: name,
+      trixSerialize: false,
+    },
+  })
 
 var htmlContainsTagName = function(html, tagName) {
   const div = makeElement("div")

@@ -14,7 +14,7 @@ export default class ImagePreloadOperation extends Operation {
   }
 
   perform(callback) {
-    const image = new Image
+    const image = new Image()
 
     image.onload = () => {
       image.width = this.width = image.naturalWidth

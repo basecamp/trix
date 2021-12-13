@@ -5,7 +5,9 @@ export default class AttachmentManager extends BasicObject {
   constructor(attachments = []) {
     super(...arguments)
     this.managedAttachments = {}
-    Array.from(attachments).forEach((attachment) => { this.manageAttachment(attachment) })
+    Array.from(attachments).forEach((attachment) => {
+      this.manageAttachment(attachment)
+    })
   }
 
   getAttachments() {

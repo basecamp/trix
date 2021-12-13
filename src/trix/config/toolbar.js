@@ -45,5 +45,5 @@ export default {
   </div>
 </div>\
 `
-  }
+  },
 }

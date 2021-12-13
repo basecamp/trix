@@ -1,29 +1,28 @@
-
 const attributes = {
   default: {
     tagName: "div",
-    parse: false
+    parse: false,
   },
   quote: {
     tagName: "blockquote",
-    nestable: true
+    nestable: true,
   },
   heading1: {
     tagName: "h1",
     terminal: true,
     breakOnReturn: true,
-    group: false
+    group: false,
   },
   code: {
     tagName: "pre",
     terminal: true,
     text: {
-      plaintext: true
-    }
+      plaintext: true,
+    },
   },
   bulletList: {
     tagName: "ul",
-    parse: false
+    parse: false,
   },
   bullet: {
     tagName: "li",
@@ -32,11 +31,11 @@ const attributes = {
     nestable: true,
     test(element) {
       return tagName(element.parentNode) === attributes[this.listAttribute].tagName
-    }
+    },
   },
   numberList: {
     tagName: "ol",
-    parse: false
+    parse: false,
   },
   number: {
     tagName: "li",
@@ -45,17 +44,17 @@ const attributes = {
     nestable: true,
     test(element) {
       return tagName(element.parentNode) === attributes[this.listAttribute].tagName
-    }
+    },
   },
   attachmentGallery: {
     tagName: "div",
     exclusive: true,
     terminal: true,
     parse: false,
-    group: false
-  }
+    group: false,
+  },
 }
 
-const tagName = element => element?.tagName?.toLowerCase()
+const tagName = (element) => element?.tagName?.toLowerCase()
 
 export default attributes

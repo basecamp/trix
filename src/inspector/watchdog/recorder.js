@@ -18,11 +18,13 @@ export default class Recorder {
     this.handleEvent = this.handleEvent.bind(this)
     this.element = element
     this.snapshotLimit = snapshotLimit
-    this.recording = new Recording
+    this.recording = new Recording()
   }
 
   start() {
-    if (this.started) { return }
+    if (this.started) {
+      return
+    }
     this.installMutationObserver()
     this.installEventListeners()
     this.recordSnapshot()
@@ -30,7 +32,9 @@ export default class Recorder {
   }
 
   stop() {
-    if (!this.started) { return }
+    if (!this.started) {
+      return
+    }
     this.uninstallMutationObserver()
     this.uninstallEventListeners()
     this.started = false
@@ -42,7 +46,12 @@ export default class Recorder {
 
   installMutationObserver() {
     this.mutationObserver = new MutationObserver(this.recordSnapshotDuringNextAnimationFrame)
-    return this.mutationObserver.observe(this.element, { attributes: true, characterData: true, childList: true, subtree: true })
+    return this.mutationObserver.observe(this.element, {
+      attributes: true,
+      characterData: true,
+      childList: true,
+      subtree: true,
+    })
   }
 
   uninstallMutationObserver() {
@@ -51,10 +60,12 @@ export default class Recorder {
   }
 
   recordSnapshotDuringNextAnimationFrame() {
-    return this.animationFrameRequest != null ? this.animationFrameRequest : this.animationFrameRequest = requestAnimationFrame(() => {
-      this.animationFrameRequest = null
-      return this.recordSnapshot()
-    })
+    return this.animationFrameRequest != null
+      ? this.animationFrameRequest
+      : this.animationFrameRequest = requestAnimationFrame(() => {
+          this.animationFrameRequest = null
+          return this.recordSnapshot()
+        })
   }
 
   installEventListeners() {
@@ -93,13 +104,15 @@ export default class Recorder {
       shiftKey: event.shiftKey,
       keyCode: event.keyCode,
       charCode: event.charCode,
-      character: characterFromKeyboardEvent(event)
+      character: characterFromKeyboardEvent(event),
     })
   }
 
   recordSnapshot() {
     this.recording.recordSnapshot(this.getSnapshot())
-    if (this.snapshotLimit != null) { return this.recording.truncateToSnapshotCount(this.snapshotLimit) }
+    if (this.snapshotLimit != null) {
+      return this.recording.truncateToSnapshotCount(this.snapshotLimit)
+    }
   }
 
   getSnapshot() {

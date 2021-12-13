@@ -13,7 +13,6 @@ import BasicObject from "trix/core/basic_object"
 export default ManagedAttachment = (function() {
   ManagedAttachment = class ManagedAttachment extends BasicObject {
     static initClass() {
-
       this.proxyMethod("attachment.getAttribute")
       this.proxyMethod("attachment.hasAttribute")
       this.proxyMethod("attachment.setAttribute")
@@ -37,8 +36,8 @@ export default ManagedAttachment = (function() {
     constructor(attachmentManager, attachment) {
       super(...arguments)
       this.attachmentManager = attachmentManager
-      this.attachment = attachment;
-      ({ id: this.id, file: this.file } = this.attachment)
+      this.attachment = attachment
+      ;({ id: this.id, file: this.file } = this.attachment)
     }
 
     remove() {

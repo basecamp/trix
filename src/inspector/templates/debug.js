@@ -5,9 +5,12 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-if (!window.JST) { window.JST = {} }
+if (!window.JST) {
+  window.JST = {}
+}
 
-window.JST["trix/inspector/templates/debug"] = function() { return `\
+window.JST["trix/inspector/templates/debug"] = function() {
+  return `\
 <p>
   <label>
     <input type="checkbox" name="viewCaching" checked="${this.compositionController.isViewCachingEnabled()}">
@@ -25,4 +28,5 @@ window.JST["trix/inspector/templates/debug"] = function() { return `\
     Show <code>contenteditable</code> control element
   </label>
 </p>\
-` }
+`
+}

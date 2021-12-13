@@ -9,13 +9,23 @@ import Document from "trix/models/document"
 import HTMLParser from "trix/models/html_parser"
 import LineBreakInsertion from "trix/models/line_break_insertion"
 
-import { arrayStartsWith, extend, getAllAttributeNames, getBlockConfig, getTextConfig, normalizeRange, objectsAreEqual, rangeIsCollapsed, rangesAreEqual, summarizeArrayChange } from "trix/core/helpers"
+import {
+  arrayStartsWith,
+  extend,
+  getAllAttributeNames,
+  getBlockConfig,
+  getTextConfig,
+  normalizeRange,
+  objectsAreEqual,
+  rangeIsCollapsed,
+  rangesAreEqual,
+  summarizeArrayChange,
+} from "trix/core/helpers"
 
 const PLACEHOLDER = " "
 
 export default class Composition extends BasicObject {
   static initClass() {
-
     // Selection
 
     this.proxyMethod("getSelectionManager().getPointRange")
@@ -27,7 +37,7 @@ export default class Composition extends BasicObject {
   }
   constructor() {
     super(...arguments)
-    this.document = new Document
+    this.document = new Document()
     this.attachments = []
     this.currentAttributes = {}
     this.revision = 0
@@ -47,13 +57,13 @@ export default class Composition extends BasicObject {
   getSnapshot() {
     return {
       document: this.document,
-      selectedRange: this.getSelectedRange()
+      selectedRange: this.getSelectedRange(),
     }
   }
 
   loadSnapshot({ document, selectedRange }) {
     this.delegate?.compositionWillLoadSnapshot?.()
-    this.setDocument(document != null ? document : new Document)
+    this.setDocument(document != null ? document : new Document())
     this.setSelection(selectedRange != null ? selectedRange : [ 0, 0 ])
     return this.delegate?.compositionDidLoadSnapshot?.()
   }
@@ -67,16 +77,18 @@ export default class Composition extends BasicObject {
     const startPosition = selectedRange[0]
     const endPosition = startPosition + text.getLength()
 
-    if (updatePosition) { this.setSelection(endPosition) }
+    if (updatePosition) {
+      this.setSelection(endPosition)
+    }
     return this.notifyDelegateOfInsertionAtRange([ startPosition, endPosition ])
   }
 
-  insertBlock(block = new Block) {
+  insertBlock(block = new Block()) {
     const document = new Document([ block ])
     return this.insertDocument(document)
   }
 
-  insertDocument(document = new Document) {
+  insertDocument(document = new Document()) {
     const selectedRange = this.getSelectedRange()
     this.setDocument(this.document.insertDocumentAtRange(document, selectedRange))
 
@@ -167,14 +179,16 @@ export default class Composition extends BasicObject {
   }
 
   insertAttachments(attachments) {
-    let text = new Text
+    let text = new Text()
 
     Array.from(attachments).forEach((attachment) => {
       const type = attachment.getType()
       const presentation = config.attachments[type]?.presentation
 
       const attributes = this.getCurrentTextAttributes()
-      if (presentation) { attributes.presentation = presentation }
+      if (presentation) {
+        attributes.presentation = presentation
+      }
 
       const attachmentText = Text.textForAttachmentWithAttributes(attachment, attributes)
       text = text.appendText(attachmentText)
@@ -186,10 +200,16 @@ export default class Composition extends BasicObject {
   shouldManageDeletingInDirection(direction) {
     const locationRange = this.getLocationRange()
     if (rangeIsCollapsed(locationRange)) {
-      if (direction === "backward" && locationRange[0].offset === 0) { return true }
-      if (this.shouldManageMovingCursorInDirection(direction)) { return true }
+      if (direction === "backward" && locationRange[0].offset === 0) {
+        return true
+      }
+      if (this.shouldManageMovingCursorInDirection(direction)) {
+        return true
+      }
     } else {
-      if (locationRange[0].index !== locationRange[1].index) { return true }
+      if (locationRange[0].index !== locationRange[1].index) {
+        return true
+      }
     }
     return false
   }
@@ -217,7 +237,9 @@ export default class Composition extends BasicObject {
         }
 
         this.setSelection(range[0])
-        if (block.isEmpty()) { return false }
+        if (block.isEmpty()) {
+          return false
+        }
       }
     }
 
@@ -234,7 +256,9 @@ export default class Composition extends BasicObject {
     } else {
       this.setDocument(this.document.removeTextAtRange(range))
       this.setSelection(range[0])
-      if (deletingIntoPreviousBlock || selectionSpansBlocks) { return false }
+      if (deletingIntoPreviousBlock || selectionSpansBlocks) {
+        return false
+      }
     }
   }
 
@@ -304,14 +328,18 @@ export default class Composition extends BasicObject {
     const document = this.getSelectedDocument()
     if (!document) return
     for (const attachment of Array.from(document.getAttachments())) {
-      if (!attachment.hasContent()) { return false }
+      if (!attachment.hasContent()) {
+        return false
+      }
     }
     return true
   }
 
   canSetCurrentBlockAttribute(attributeName) {
     let block
-    if (!(block = this.getBlock())) { return }
+    if (!(block = this.getBlock())) {
+      return
+    }
     return !block.isTerminalBlock()
   }
 
@@ -327,7 +355,9 @@ export default class Composition extends BasicObject {
 
   setTextAttribute(attributeName, value) {
     let selectedRange
-    if (!(selectedRange = this.getSelectedRange())) { return }
+    if (!(selectedRange = this.getSelectedRange())) {
+      return
+    }
     const [ startPosition, endPosition ] = Array.from(selectedRange)
     if (startPosition === endPosition) {
       if (attributeName === "href") {
@@ -418,7 +448,9 @@ export default class Composition extends BasicObject {
 
     let block = this.document.getBlockAtIndex(endIndex + 1)
     while (block) {
-      if (!block.isListItem() || block.getAttributeLevel() <= attributeLevel) { break }
+      if (!block.isListItem() || block.getAttributeLevel() <= attributeLevel) {
+        break
+      }
       endIndex++
       block = this.document.getBlockAtIndex(endIndex + 1)
     }
@@ -457,7 +489,9 @@ export default class Composition extends BasicObject {
     for (const key in this.currentAttributes) {
       const value = this.currentAttributes[key]
       if (value !== false) {
-        if (getTextConfig(key)) { attributes[key] = value }
+        if (getTextConfig(key)) {
+          attributes[key] = value
+        }
       }
     }
     return attributes
@@ -502,7 +536,11 @@ export default class Composition extends BasicObject {
   }
 
   getLocationRange(options) {
-    return (this.targetLocationRange != null ? this.targetLocationRange : this.getSelectionManager().getLocationRange(options)) || normalizeRange({ index: 0, offset: 0 })
+    return (
+      (this.targetLocationRange != null
+        ? this.targetLocationRange
+        : this.getSelectionManager().getLocationRange(options)) || normalizeRange({ index: 0, offset: 0 })
+    )
   }
 
   withTargetLocationRange(locationRange, fn) {
@@ -545,7 +583,9 @@ export default class Composition extends BasicObject {
   }
 
   shouldManageMovingCursorInDirection(direction) {
-    if (this.editingAttachment) { return true }
+    if (this.editingAttachment) {
+      return true
+    }
     const range = this.getExpandedRangeInDirection(direction)
     return this.getAttachmentAtRange(range) != null
   }
@@ -664,14 +704,18 @@ export default class Composition extends BasicObject {
   // Attachment editing
 
   editAttachment(attachment, options) {
-    if (attachment === this.editingAttachment) { return }
+    if (attachment === this.editingAttachment) {
+      return
+    }
     this.stopEditingAttachment()
     this.editingAttachment = attachment
     return this.delegate?.compositionDidStartEditingAttachment?.(this.editingAttachment, options)
   }
 
   stopEditingAttachment() {
-    if (!this.editingAttachment) { return }
+    if (!this.editingAttachment) {
+      return
+    }
     this.delegate?.compositionDidStopEditingAttachment?.(this.editingAttachment)
     this.editingAttachment = null
   }
@@ -719,7 +763,9 @@ export default class Composition extends BasicObject {
     const locationRange = this.getLocationRange()
     if (locationRange) {
       const { index } = locationRange[0]
-      if (index > 0) { return this.document.getBlockAtIndex(index - 1) }
+      if (index > 0) {
+        return this.document.getBlockAtIndex(index - 1)
+      }
     }
   }
 

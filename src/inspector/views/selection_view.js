@@ -19,7 +19,7 @@ class SelectionView extends View {
       },
       "trix-render"() {
         return this.render()
-      }
+      },
     }
   }
 
@@ -38,8 +38,10 @@ class SelectionView extends View {
     let position = 0
     while (position < utf16string.length) {
       let string = utf16string.charAt(position).toString()
-      if (string === "\n") { string = "⏎" }
-      const selected = rangeIsExpanded && (position >= this.range[0] && position < this.range[1])
+      if (string === "\n") {
+        string = "⏎"
+      }
+      const selected = rangeIsExpanded && position >= this.range[0] && position < this.range[1]
       chars.push({ string, selected })
       position++
     }

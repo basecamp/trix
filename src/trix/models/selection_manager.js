@@ -7,13 +7,21 @@ import BasicObject from "trix/core/basic_object"
 import LocationMapper from "trix/models/location_mapper"
 import PointMapper from "trix/models/point_mapper"
 
-import { elementContainsNode, getDOMRange, getDOMSelection, handleEvent,
- innerElementIsActive, nodeIsCursorTarget, normalizeRange, rangeIsCollapsed,
- rangesAreEqual, setDOMRange } from "trix/core/helpers"
+import {
+  elementContainsNode,
+  getDOMRange,
+  getDOMSelection,
+  handleEvent,
+  innerElementIsActive,
+  nodeIsCursorTarget,
+  normalizeRange,
+  rangeIsCollapsed,
+  rangesAreEqual,
+  setDOMRange,
+} from "trix/core/helpers"
 
 export default class SelectionManager extends BasicObject {
   static initClass() {
-
     // Private
 
     this.proxyMethod("locationMapper.findLocationFromContainerAndOffset")
@@ -29,7 +37,7 @@ export default class SelectionManager extends BasicObject {
     this.selectionDidChange = this.selectionDidChange.bind(this)
     this.element = element
     this.locationMapper = new LocationMapper(this.element)
-    this.pointMapper = new PointMapper
+    this.pointMapper = new PointMapper()
     this.lockCount = 0
     handleEvent("mousedown", { onElement: this.element, withCallback: this.didMouseDown })
   }
@@ -46,7 +54,9 @@ export default class SelectionManager extends BasicObject {
   }
 
   setLocationRange(locationRange) {
-    if (this.lockedLocationRange) { return }
+    if (this.lockedLocationRange) {
+      return
+    }
     locationRange = normalizeRange(locationRange)
 
     const domRange = this.createDOMRangeFromLocationRange(locationRange)
@@ -84,11 +94,11 @@ export default class SelectionManager extends BasicObject {
 
   unlock() {
     if (--this.lockCount === 0) {
-      const {
-        lockedLocationRange
-      } = this
+      const { lockedLocationRange } = this
       this.lockedLocationRange = null
-      if (lockedLocationRange != null) { return this.setLocationRange(lockedLocationRange) }
+      if (lockedLocationRange != null) {
+        return this.setLocationRange(lockedLocationRange)
+      }
     }
   }
 
@@ -110,7 +120,9 @@ export default class SelectionManager extends BasicObject {
     const start = this.findLocationFromContainerAndOffset(domRange.startContainer, domRange.startOffset, options)
     if (!start) return
 
-    const end = domRange.collapsed ? undefined : this.findLocationFromContainerAndOffset(domRange.endContainer, domRange.endOffset, options)
+    const end = domRange.collapsed
+      ? undefined
+      : this.findLocationFromContainerAndOffset(domRange.endContainer, domRange.endOffset, options)
 
     return normalizeRange([ start, end ])
   }
@@ -139,7 +151,8 @@ export default class SelectionManager extends BasicObject {
     const resumeTimeout = setTimeout(resume, 200)
 
     resumeHandlers = [ "mousemove", "keydown" ].map((eventName) =>
-      handleEvent(eventName, { onElement: document, withCallback: resume }))
+      handleEvent(eventName, { onElement: document, withCallback: resume })
+    )
   }
 
   selectionDidChange() {
@@ -159,10 +172,9 @@ export default class SelectionManager extends BasicObject {
 
   createDOMRangeFromLocationRange(locationRange) {
     const rangeStart = this.findContainerAndOffsetFromLocation(locationRange[0])
-    const rangeEnd = rangeIsCollapsed(locationRange) ?
-      rangeStart
-    :
-      this.findContainerAndOffsetFromLocation(locationRange[1]) || rangeStart
+    const rangeEnd = rangeIsCollapsed(locationRange)
+      ? rangeStart
+      : this.findContainerAndOffsetFromLocation(locationRange[1]) || rangeStart
 
     if (rangeStart != null && rangeEnd != null) {
       const domRange = document.createRange()
@@ -183,7 +195,10 @@ export default class SelectionManager extends BasicObject {
     if (domRange.collapsed) {
       return elementContainsNode(this.element, domRange.startContainer)
     } else {
-      return elementContainsNode(this.element, domRange.startContainer) && elementContainsNode(this.element, domRange.endContainer)
+      return (
+        elementContainsNode(this.element, domRange.startContainer) &&
+        elementContainsNode(this.element, domRange.endContainer)
+      )
     }
   }
 }

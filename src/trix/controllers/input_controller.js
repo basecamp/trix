@@ -18,7 +18,6 @@ import { handleEvent, innerElementIsActive } from "trix/core/helpers"
 export default InputController = (function() {
   InputController = class InputController extends BasicObject {
     static initClass() {
-
       this.prototype.events = {}
     }
     constructor(element) {
@@ -52,7 +51,7 @@ export default InputController = (function() {
 
     attachFiles(files) {
       const operations = Array.from(files).map((file) => new FileVerificationOperation(file))
-      return Promise.all(operations).then(files => {
+      return Promise.all(operations).then((files) => {
         return this.handleInput(function() {
           this.delegate?.inputControllerWillAttachFiles()
           this.responder?.insertFiles(files)
@@ -64,7 +63,7 @@ export default InputController = (function() {
     // Private
 
     handlerFor(eventName) {
-      return event => {
+      return (event) => {
         if (!event.defaultPrevented) {
           return this.handleInput(function() {
             if (!innerElementIsActive(this.element)) {

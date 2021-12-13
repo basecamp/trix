@@ -9,7 +9,9 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-if (!window.JST) { window.JST = {} }
+if (!window.JST) {
+  window.JST = {}
+}
 
 window.JST["trix/inspector/templates/document"] = function() {
   const details = this.document.getBlocks().map((block, index) => {
@@ -29,7 +31,7 @@ window.JST["trix/inspector/templates/document"] = function() {
       Text: ${text.id}, Pieces: ${pieces.length}, Length: ${text.getLength()}
     </div>
     <div class="pieces">
-      ${ pieces(text.pieceList.toArray()).join("\n") }
+      ${pieces(text.pieceList.toArray()).join("\n")}
     </div>
   </div>
 </details>\
@@ -39,17 +41,20 @@ window.JST["trix/inspector/templates/document"] = function() {
   return details.join("\n")
 }
 
-var pieces = () => Array.from(pieces).map((piece, index) =>
-  `\
+var pieces = () =>
+  Array.from(pieces).map(
+    (piece, index) =>
+      `\
 <div class="piece">
 <div class="title">
-  Piece ${ piece.id }, Index: ${ index }
+  Piece ${piece.id}, Index: ${index}
 </div>
 <div class="attributes">
-  Attributes: ${ JSON.stringify(piece.attributes) }
+  Attributes: ${JSON.stringify(piece.attributes)}
 </div>
 <div class="content">
-  ${ JSON.stringify(piece.toString()) }
+  ${JSON.stringify(piece.toString())}
 </div>
 </div>\
-`)
+`
+  )

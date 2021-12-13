@@ -17,5 +17,5 @@ window.Trix.Inspector = {
     const element = document.createElement("trix-inspector")
     element.dataset.trixId = this.editorElement.trixId
     return document.body.appendChild(element)
-  }
+  },
 }

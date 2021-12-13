@@ -12,9 +12,19 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-import { elementContainsNode, findChildIndexOfNode, nodeIsAttachmentElement,
- nodeIsBlockContainer, nodeIsBlockStart, nodeIsBlockStartComment,
- nodeIsCursorTarget, nodeIsEmptyTextNode, nodeIsTextNode, tagName, walkTree } from "trix/core/helpers"
+import {
+  elementContainsNode,
+  findChildIndexOfNode,
+  nodeIsAttachmentElement,
+  nodeIsBlockContainer,
+  nodeIsBlockStart,
+  nodeIsBlockStartComment,
+  nodeIsCursorTarget,
+  nodeIsEmptyTextNode,
+  nodeIsTextNode,
+  tagName,
+  walkTree,
+} from "trix/core/helpers"
 
 export default class LocationMapper {
   constructor(element) {
@@ -42,16 +52,21 @@ export default class LocationMapper {
           location.offset += offset
         }
         break
-
       } else {
         if (node.parentNode === container) {
-          if (childIndex++ === offset) { break }
+          if (childIndex++ === offset) {
+            break
+          }
         } else if (!elementContainsNode(container, node)) {
-          if (childIndex > 0) { break }
+          if (childIndex > 0) {
+            break
+          }
         }
 
         if (nodeIsBlockStart(node, { strict })) {
-          if (foundBlock) { location.index++ }
+          if (foundBlock) {
+            location.index++
+          }
           location.offset = 0
           foundBlock = true
         } else {
@@ -81,13 +96,17 @@ export default class LocationMapper {
     }
 
     let [ node, nodeOffset ] = Array.from(this.findNodeAndOffsetFromLocation(location))
-    if (!node) { return }
+    if (!node) {
+      return
+    }
 
     if (nodeIsTextNode(node)) {
       if (nodeLength(node) === 0) {
         container = node.parentNode.parentNode
         offset = findChildIndexOfNode(node.parentNode)
-        if (nodeIsCursorTarget(node, { name: "right" })) { offset++ }
+        if (nodeIsCursorTarget(node, { name: "right" })) {
+          offset++
+        }
       } else {
         container = node
         offset = location.offset - nodeOffset
@@ -100,13 +119,17 @@ export default class LocationMapper {
           while (node === container.lastChild) {
             node = container
             container = container.parentNode
-            if (nodeIsBlockContainer(container)) { break }
+            if (nodeIsBlockContainer(container)) {
+              break
+            }
           }
         }
       }
 
       offset = findChildIndexOfNode(node)
-      if (location.offset !== 0) { offset++ }
+      if (location.offset !== 0) {
+        offset++
+      }
     }
 
     return [ container, offset ]
@@ -123,8 +146,9 @@ export default class LocationMapper {
         if (nodeIsTextNode(currentNode)) {
           node = currentNode
           nodeOffset = offset
-          if (location.offset === nodeOffset && nodeIsCursorTarget(node)) { break }
-
+          if (location.offset === nodeOffset && nodeIsCursorTarget(node)) {
+            break
+          }
         } else if (!node) {
           node = currentNode
           nodeOffset = offset
@@ -132,7 +156,9 @@ export default class LocationMapper {
       }
 
       offset += length
-      if (offset > location.offset) { break }
+      if (offset > location.offset) {
+        break
+      }
     }
 
     return [ node, nodeOffset ]
@@ -142,7 +168,9 @@ export default class LocationMapper {
 
   findAttachmentElementParentForNode(node) {
     while (node && node !== this.element) {
-      if (nodeIsAttachmentElement(node)) { return node }
+      if (nodeIsAttachmentElement(node)) {
+        return node
+      }
       node = node.parentNode
     }
   }

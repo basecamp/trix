@@ -14,12 +14,14 @@ import { handleEvent } from "trix/core/helpers"
 
 export default class View {
   constructor(editorElement) {
-    this.editorElement = editorElement;
-    ({ editorController: this.editorController, editor: this.editor } = this.editorElement);
-    ({ compositionController: this.compositionController, composition: this.composition } = this.editorController)
+    this.editorElement = editorElement
+    ;({ editorController: this.editorController, editor: this.editor } = this.editorElement)
+    ;({ compositionController: this.compositionController, composition: this.composition } = this.editorController)
 
     this.element = document.createElement("details")
-    if (this.getSetting("open") === "true") { this.element.open = true }
+    if (this.getSetting("open") === "true") {
+      this.element.open = true
+    }
     this.element.classList.add(this.template)
 
     this.titleElement = document.createElement("summary")
@@ -29,13 +31,15 @@ export default class View {
     this.panelElement.classList.add("panel")
     this.element.appendChild(this.panelElement)
 
-    this.element.addEventListener("toggle", event => {
+    this.element.addEventListener("toggle", (event) => {
       if (event.target === this.element) {
         return this.didToggle()
       }
     })
 
-    if (this.events) { this.installEventHandlers() }
+    if (this.events) {
+      this.installEventHandlers()
+    }
   }
 
   installEventHandlers() {
@@ -43,15 +47,18 @@ export default class View {
       const result = []
       for (const eventName in this.events) {
         const handler = this.events[eventName]
-        result.push(((eventName, handler) => {
-          return handleEvent(eventName, { onElement: this.editorElement, withCallback: event => {
-            return requestAnimationFrame(() => {
-              return handler.call(this, event)
+        result.push(
+          ((eventName, handler) => {
+            return handleEvent(eventName, {
+              onElement: this.editorElement,
+              withCallback: (event) => {
+                return requestAnimationFrame(() => {
+                  return handler.call(this, event)
+                })
+              },
             })
-          }
-        }
-          )
-        })(eventName, handler))
+          })(eventName, handler)
+        )
       }
       return result
     })()
