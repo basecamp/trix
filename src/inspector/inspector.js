@@ -1,6 +1,5 @@
 // TODO: This file was created by bulk-decaffeinate.
 // Sanity-check the conversion and remove this comment.
-import "inspector/polyfills/vendor/details-element-polyfill"
 import "inspector/element"
 import "inspector/global"
 import "inspector/templates"
