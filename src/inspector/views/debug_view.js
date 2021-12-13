@@ -5,7 +5,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS002: Fix invalid constructor
  * DS102: Remove unnecessary code created because of implicit returns
  * DS206: Consider reworking classes to avoid initClass
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
@@ -21,11 +20,12 @@ class DebugView extends View {
   }
 
   constructor() {
+    super(...arguments)
     this.didToggleViewCaching = this.didToggleViewCaching.bind(this)
     this.didClickRenderButton = this.didClickRenderButton.bind(this)
     this.didClickParseButton = this.didClickParseButton.bind(this)
     this.didToggleControlElement = this.didToggleControlElement.bind(this)
-    super(...arguments)
+
     handleEvent("change", {
       onElement: this.element,
       matchingSelector: "input[name=viewCaching]",
