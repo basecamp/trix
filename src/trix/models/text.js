@@ -206,8 +206,9 @@ export default class Text extends TrixObject {
   }
 
   getRangeOfAttachment(attachment) {
-    let position
-    ;({ attachment, position } = this.getAttachmentAndPositionById(attachment.id))
+    const attachmentAndPosition = this.getAttachmentAndPositionById(attachment.id)
+    const position = attachmentAndPosition.position
+    attachment = attachmentAndPosition.attachment
     if (attachment != null) {
       return [ position, position + 1 ]
     }

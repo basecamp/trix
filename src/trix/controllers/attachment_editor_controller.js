@@ -176,7 +176,7 @@ export default AttachmentEditorController = (function() {
       this.element = element
       this.container = container
       this.options = options
-      ;({ attachment: this.attachment } = this.attachmentPiece)
+      this.attachment = this.attachmentPiece.attachment
       if (tagName(this.element) === "a") {
         this.element = this.element.firstChild
       }

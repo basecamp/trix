@@ -219,7 +219,9 @@ export default MutationObserver = (function() {
 
         const oldString = normalizeSpaces(startMutation.oldValue)
         const newString = normalizeSpaces(endMutation.target.data)
-        ;({ added, removed } = summarizeStringChange(oldString, newString))
+        const summarized = summarizeStringChange(oldString, newString)
+        added = summarized.added
+        removed = summarized.removed
       }
 
       return {

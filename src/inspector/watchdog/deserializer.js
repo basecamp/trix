@@ -12,7 +12,8 @@ export default class Deserializer {
   constructor(document, snapshot) {
     this.document = document
     this.snapshot = snapshot
-    ;({ tree: this.tree, selection: this.selection } = this.snapshot)
+    this.tree = this.snapshot.tree
+    this.selection = this.snapshot.selection
     this.deserializeTree()
     this.deserializeSelection()
   }

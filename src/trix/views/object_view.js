@@ -153,7 +153,7 @@ export class ObjectGroupView extends ObjectView {
   constructor() {
     super(...arguments)
     this.objectGroup = this.object
-    ;({ viewClass: this.viewClass } = this.options)
+    this.viewClass = this.options.viewClass
     delete this.options.viewClass
   }
 

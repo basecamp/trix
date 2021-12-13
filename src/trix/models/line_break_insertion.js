@@ -9,7 +9,7 @@
 export default class LineBreakInsertion {
   constructor(composition) {
     this.composition = composition
-    ;({ document: this.document } = this.composition)
+    this.document = this.composition.document
 
     ;[ this.startPosition, this.endPosition ] = Array.from(this.composition.getSelectedRange())
     this.startLocation = this.document.locationFromPosition(this.startPosition)

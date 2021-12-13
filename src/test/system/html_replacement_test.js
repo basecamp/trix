@@ -92,16 +92,16 @@ const pressCommandBackspace = function ({ replaceText, replaceElementWithText },
 
   if (replaceElementWithText) {
     const element = getElementWithText(replaceElementWithText)
-    ;({ previousSibling } = element)
+    previousSibling = element.previousSibling
     element.parentNode.removeChild(element)
     range.collapseAfter(previousSibling)
   } else {
-    let nextSibling, parentNode
     range.findText(replaceText, { direction: "backward" })
     range.splitBoundaries()
 
     const node = range.getNodes()[0]
-    ;({ previousSibling, nextSibling, parentNode } = node)
+    previousSibling = node.previousSibling
+    const { nextSibling, parentNode } = node
 
     if (previousSibling?.nodeType === Node.COMMENT_NODE) {
       parentNode.removeChild(previousSibling)

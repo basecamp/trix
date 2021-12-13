@@ -26,7 +26,8 @@ export default class PieceView extends ObjectView {
     super(...arguments)
     this.piece = this.object
     this.attributes = this.piece.getAttributes()
-    ;({ textConfig: this.textConfig, context: this.context } = this.options)
+    this.textConfig = this.options.textConfig
+    this.context = this.options.context
 
     if (this.piece.attachment) {
       this.attachment = this.piece.attachment

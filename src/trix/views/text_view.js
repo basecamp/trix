@@ -18,7 +18,7 @@ export default class TextView extends ObjectView {
   constructor() {
     super(...arguments)
     this.text = this.object
-    ;({ textConfig: this.textConfig } = this.options)
+    this.textConfig = this.options.textConfig
   }
 
   createNodes() {

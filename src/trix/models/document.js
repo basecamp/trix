@@ -225,7 +225,7 @@ export default class Document extends TrixObject {
         position += 1
       }
     } else {
-      ({ text } = firstBlock)
+      text = firstBlock.text
     }
 
     result = result.insertTextAtRange(text, position)
@@ -314,13 +314,16 @@ export default class Document extends TrixObject {
   }
 
   applyBlockAttributeAtRange(attributeName, value, range) {
-    let document
-    ;({ document, range } = this.expandRangeToLineBreaksAndSplitBlocks(range))
+    const expanded = this.expandRangeToLineBreaksAndSplitBlocks(range)
+    let document = expanded.document
+    range = expanded.range
     const blockConfig = getBlockConfig(attributeName)
 
     if (blockConfig.listAttribute) {
       document = document.removeLastListAttributeAtRange(range, { exceptAttributeName: attributeName })
-      ;({ document, range } = document.convertLineBreaksToBlockBreaksInRange(range))
+      const converted = document.convertLineBreaksToBlockBreaksInRange(range)
+      document = converted.document
+      range = converted.range
     } else if (blockConfig.exclusive) {
       document = document.removeBlockAttributesAtRange(range)
     } else if (blockConfig.terminal) {

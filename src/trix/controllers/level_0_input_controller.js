@@ -600,7 +600,9 @@ class CompositionInput extends BasicObject {
   constructor(inputController) {
     super(...arguments)
     this.inputController = inputController
-    ;({ responder: this.responder, delegate: this.delegate, inputSummary: this.inputSummary } = this.inputController)
+    this.responder = this.inputController.responder
+    this.delegate = this.inputController.delegate
+    this.inputSummary = this.inputController.inputSummary
     this.data = {}
   }
 

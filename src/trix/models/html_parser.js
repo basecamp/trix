@@ -195,7 +195,7 @@ export default HTMLParser = (function() {
         if (this.isBlockElement(parentElement) && Array.from(this.blockElements).includes(parentElement)) {
           return parentElement
         } else {
-          ({ parentElement } = parentElement)
+          parentElement = parentElement.parentElement
         }
       }
       return null

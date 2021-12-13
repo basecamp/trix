@@ -37,7 +37,8 @@ export default ManagedAttachment = (function() {
       super(...arguments)
       this.attachmentManager = attachmentManager
       this.attachment = attachment
-      ;({ id: this.id, file: this.file } = this.attachment)
+      this.id = this.attachment.id
+      this.file = this.attachment.file
     }
 
     remove() {

@@ -15,8 +15,10 @@ import { handleEvent } from "trix/core/helpers"
 export default class View {
   constructor(editorElement) {
     this.editorElement = editorElement
-    ;({ editorController: this.editorController, editor: this.editor } = this.editorElement)
-    ;({ compositionController: this.compositionController, composition: this.composition } = this.editorController)
+    this.editorController = this.editorElement.editorController
+    this.editor = this.editorElement.editor
+    this.compositionController = this.editorController.compositionController
+    this.composition = this.editorController.composition
 
     this.element = document.createElement("details")
     if (this.getSetting("open") === "true") {

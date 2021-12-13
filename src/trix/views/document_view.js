@@ -31,7 +31,7 @@ export default class DocumentView extends ObjectView {
 
   constructor() {
     super(...arguments)
-    ;({ element: this.element } = this.options)
+    this.element = this.options.element
     this.elementStore = new ElementStore()
     this.setDocument(this.object)
   }

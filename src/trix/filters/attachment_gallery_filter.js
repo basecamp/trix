@@ -22,7 +22,8 @@ const TEXT_ATTRIBUTE_VALUE = "gallery"
 
 class Filter {
   constructor(snapshot) {
-    ({ document: this.document, selectedRange: this.selectedRange } = snapshot)
+    this.document = snapshot.document
+    this.selectedRange = snapshot.selectedRange
   }
 
   perform() {

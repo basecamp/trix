@@ -20,7 +20,8 @@ class UndoView extends View {
   }
 
   render() {
-    ({ undoEntries: this.undoEntries, redoEntries: this.redoEntries } = this.editor.undoManager)
+    this.undoEntries = this.editor.undoManager.undoEntries
+    this.redoEntries = this.editor.undoManager.redoEntries
     return super.render(...arguments)
   }
 }

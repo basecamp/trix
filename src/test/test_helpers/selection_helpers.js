@@ -54,7 +54,7 @@ export const expandSelection = (options, callback) =>
       direction = options
     } else {
       ({ direction } = options)
-      ;({ times } = options)
+      times = options.times
     }
 
     if (!times) times = 1
