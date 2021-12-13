@@ -7,7 +7,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS201: Simplify complex destructure assignments
  * DS206: Consider reworking classes to avoid initClass
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
@@ -36,11 +35,10 @@ class PerformanceView extends View {
 
   track(methodPath) {
     this.data[methodPath] = { calls: 0, total: 0, mean: 0, max: 0, last: 0 }
+    const parts = methodPath.split(".")
+    const propertyNames = parts.slice(0, parts.length - 1)
+    const methodName = parts[parts.length - 1]
 
-    const array = methodPath.split("."),
-      adjustedLength = Math.max(array.length, 1),
-      propertyNames = array.slice(0, adjustedLength - 1),
-      methodName = array[adjustedLength - 1]
     let object = this
 
     Array.from(propertyNames).forEach((propertyName) => {

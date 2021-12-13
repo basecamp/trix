@@ -11,7 +11,6 @@
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * DS104: Avoid inline assignments
- * DS201: Simplify complex destructure assignments
  * DS204: Change includes calls to have a more natural evaluation order
  * DS205: Consider reworking code to avoid use of IIFEs
  * DS207: Consider shorter variations of null checks
@@ -22,7 +21,6 @@ import Text from "trix/models/text"
 
 import {
   arraysAreEqual,
-  getBlockAttributeNames,
   getBlockConfig,
   getListAttributeNames,
   spliceArray,
@@ -297,33 +295,25 @@ var applyBlockBreakToText = function(text) {
 }
 
 var unmarkExistingInnerBlockBreaksInText = function(text) {
-  let modified
-  modified = false
-  let array = text.getPieces(),
-    adjustedLength = Math.max(array.length, 1),
-    innerPieces = array.slice(0, adjustedLength - 1),
-    lastPiece = array[adjustedLength - 1]
-  if (lastPiece == null) {
-    return text
-  }
+  let modified = false
+  const pieces = text.getPieces()
 
-  innerPieces = (() => {
-    const result = []
+  let innerPieces = pieces.slice(0, pieces.length - 1)
+  const lastPiece = pieces[pieces.length - 1]
 
-    Array.from(innerPieces).forEach((piece) => {
-      if (piece.isBlockBreak()) {
-        modified = true
-        result.push(unmarkBlockBreakPiece(piece))
-      } else {
-        result.push(piece)
-      }
-    })
+  if (!lastPiece) return text
 
-    return result
-  })()
+  innerPieces = innerPieces.map((piece) => {
+    if (piece.isBlockBreak()) {
+      modified = true
+      return unmarkBlockBreakPiece(piece)
+    } else {
+      return piece
+    }
+  })
 
   if (modified) {
-    return new Text([ ...Array.from(innerPieces), lastPiece ])
+    return new Text([ ...innerPieces, lastPiece ])
   } else {
     return text
   }

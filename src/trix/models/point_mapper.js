@@ -8,7 +8,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS201: Simplify complex destructure assignments
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import { getDOMRange, setDOMRange } from "trix/core/helpers"
@@ -39,9 +38,10 @@ export default class PointMapper {
   }
 
   getClientRectsForDOMRange(domRange) {
-    const array = [ ...Array.from(domRange.getClientRects()) ],
-      start = array[0],
-      end = array[array.length - 1]
+    const array = Array.from(domRange.getClientRects())
+    const start = array[0]
+    const end = array[array.length - 1]
+
     return [ start, end ]
   }
 }

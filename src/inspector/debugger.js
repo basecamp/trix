@@ -9,7 +9,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS201: Simplify complex destructure assignments
  * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -79,12 +78,11 @@ Trix.Debugger = {
 }
 
 const installMethodDebugger = function(className, methodName) {
-  let adjustedLength, array, propertyNames
-  const [ objectName, ...constructorNames ] = Array.from(className.split("."))
-  array = methodName.split("."),
-    adjustedLength = Math.max(array.length, 1),
-    propertyNames = array.slice(0, adjustedLength - 1),
-    methodName = array[adjustedLength - 1]
+  const [ objectName, ...constructorNames ] = className.split(".")
+
+  const parts = methodName.split(".")
+  const propertyNames = parts.slice(0, parts.length - 1)
+  methodName = parts[parts.length - 1]
 
   let object = this[objectName]
   Array.from(constructorNames).forEach((constructorName) => {
