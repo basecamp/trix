@@ -15,196 +15,186 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-let PlayerView
 import Deserializer from "inspector/watchdog/deserializer"
 
-export default PlayerView = (function() {
-  let clear = undefined
-  let render = undefined
-  let select = undefined
-  PlayerView = class PlayerView {
-    static initClass() {
-      this.documentClassName = "trix-watchdog-player"
-      this.playingClassName = "trix-watchdog-player-playing"
+const clear = (element) => {
+  while (element.lastChild) {
+    result.push(element.removeChild(element.lastChild))
+  }
+}
 
-      clear = (element) =>
-        (() => {
-          const result = []
-          while (element.lastChild) {
-            result.push(element.removeChild(element.lastChild))
-          }
-          return result
-        })()
+const render = (element, ...contents) => {
+  clear(element)
+  contents.forEach((content) => element.appendChild(content))
+}
 
-      render = function(element, ...contents) {
-        clear(element)
-        return Array.from(contents).map((content) => element.appendChild(content))
-      }
+const select = (document, range) => {
+  if (!range) return
+  const selection = window.getSelection()
+  selection.removeAllRanges()
+  selection.addRange(range)
+}
 
-      select = function(document, range) {
-        if (!range) {
-          return
-        }
-        const window = document.defaultView
-        const selection = window.getSelection()
-        selection.removeAllRanges()
-        return selection.addRange(range)
-      }
-    }
+export default class PlayerView extends View {
+  static initClass() {
+    this.documentClassName = "trix-watchdog-player"
+    this.playingClassName = "trix-watchdog-player-playing"
+  }
 
-    constructor(element) {
-      this.frameDidLoadDefaultDocument = this.frameDidLoadDefaultDocument.bind(this)
-      this.frameDidLoadStylesheet = this.frameDidLoadStylesheet.bind(this)
-      this.frameDidLoseFocus = this.frameDidLoseFocus.bind(this)
-      this.didClickPlayButton = this.didClickPlayButton.bind(this)
-      this.didChangeSliderValue = this.didChangeSliderValue.bind(this)
-      this.updateFrame = this.updateFrame.bind(this)
-      super(...arguments)
-      this.element = element
-      this.frame = document.createElement("iframe")
-      this.frame.style.border = "none"
-      this.frame.style.width = "100%"
-      this.frame.onload = this.frameDidLoadDefaultDocument
-      this.frame.onblur = this.frameDidLoseFocus
+  constructor(element) {
+    super(...arguments)
+    this.frameDidLoadDefaultDocument = this.frameDidLoadDefaultDocument.bind(this)
+    this.frameDidLoadStylesheet = this.frameDidLoadStylesheet.bind(this)
+    this.frameDidLoseFocus = this.frameDidLoseFocus.bind(this)
+    this.didClickPlayButton = this.didClickPlayButton.bind(this)
+    this.didChangeSliderValue = this.didChangeSliderValue.bind(this)
+    this.updateFrame = this.updateFrame.bind(this)
 
-      const controlsContainer = document.createElement("div")
+    this.element = element
+    this.frame = document.createElement("iframe")
+    this.frame.style.border = "none"
+    this.frame.style.width = "100%"
+    this.frame.onload = this.frameDidLoadDefaultDocument
+    this.frame.onblur = this.frameDidLoseFocus
 
-      this.playButton = document.createElement("button")
-      this.playButton.textContent = "Play"
-      this.playButton.onclick = this.didClickPlayButton
+    const controlsContainer = document.createElement("div")
 
-      this.slider = document.createElement("input")
-      this.slider.type = "range"
-      this.slider.oninput = this.didChangeSliderValue
+    this.playButton = document.createElement("button")
+    this.playButton.textContent = "Play"
+    this.playButton.onclick = this.didClickPlayButton
 
-      this.indexLabel = document.createElement("span")
+    this.slider = document.createElement("input")
+    this.slider.type = "range"
+    this.slider.oninput = this.didChangeSliderValue
 
-      const logContainer = document.createElement("div")
+    this.indexLabel = document.createElement("span")
 
-      this.log = document.createElement("textarea")
-      this.log.setAttribute("readonly", "")
-      this.log.rows = 4
+    const logContainer = document.createElement("div")
 
-      render(controlsContainer, this.playButton, this.slider, this.indexLabel)
-      render(logContainer, this.log)
-      render(this.element, this.frame, controlsContainer, logContainer)
-      this.setIndex(0)
-    }
+    this.log = document.createElement("textarea")
+    this.log.setAttribute("readonly", "")
+    this.log.rows = 4
 
-    renderSnapshot(snapshot) {
-      if (this.body) {
-        const { element, range } = this.deserializeSnapshot(snapshot)
-        render(this.body, element)
-        select(this.document, range)
-        return this.updateFrame()
-      } else {
-        this.snapshot = snapshot
-      }
-    }
+    render(controlsContainer, this.playButton, this.slider, this.indexLabel)
+    render(logContainer, this.log)
+    render(this.element, this.frame, controlsContainer, logContainer)
+    this.setIndex(0)
+  }
 
-    renderEvents(events) {
-      const renderedEvents = (() => {
-        const result = []
-        for (let index = events.length - 1; index >= 0; index--) {
-          const event = events[index]
-          result.push(this.renderEvent(event, index))
-        }
-        return result
-      })()
-      this.log.innerText = renderedEvents.join("\n")
-    }
-
-    setIndex(index) {
-      this.slider.value = index
-      this.indexLabel.textContent = `Frame ${index}`
-    }
-
-    setLength(length) {
-      this.slider.max = length - 1
-    }
-
-    playerDidStartPlaying() {
-      this.element.classList.add(this.constructor.playingClassName)
-      this.playButton.textContent = "Pause"
-    }
-
-    playerDidStopPlaying() {
-      this.element.classList.remove(this.constructor.playingClassName)
-      this.playButton.textContent = "Play"
-    }
-
-    frameDidLoadDefaultDocument() {
-      this.document = this.frame.contentDocument
-      this.document.documentElement.classList.add(this.constructor.documentClassName)
-
-      this.document.head.innerHTML = document.head.innerHTML
-
-      Array.from(this.document.head.querySelectorAll("link[rel=stylesheet]")).forEach((stylesheet) => {
-        stylesheet.onload = this.frameDidLoadStylesheet
-      })
-
-      this.body = this.document.body
-      this.body.style.cssText = "margin: 0; padding: 0"
-      this.body.onkeydown = (event) => event.preventDefault()
-
-      if (this.snapshot) {
-        this.renderSnapshot(snapshot)
-        this.snapshot = null
-      }
-    }
-
-    frameDidLoadStylesheet() {
+  renderSnapshot(snapshot) {
+    if (this.body) {
+      const { element, range } = this.deserializeSnapshot(snapshot)
+      render(this.body, element)
+      select(this.document, range)
       return this.updateFrame()
-    }
-
-    frameDidLoseFocus() {
-      if (this.element.classList.contains(this.constructor.playingClassName)) {
-        return requestAnimationFrame(this.updateFrame)
-      }
-    }
-
-    didClickPlayButton() {
-      return this.delegate?.playerViewDidClickPlayButton?.()
-    }
-
-    didChangeSliderValue() {
-      const value = parseInt(this.slider.value, 10)
-      return this.delegate?.playerViewDidChangeSliderValue?.(value)
-    }
-
-    renderEvent(event, index) {
-      const description = (() => {
-        switch (event.type) {
-          case "input":
-            return "Browser input event received"
-          case "keypress":
-            var key = (event.character != null ? event.character : event.charCode) || event.keyCode
-            return `Key pressed: ${JSON.stringify(key)}`
-          case "log":
-            return event.message
-          case "snapshot":
-            return "DOM update"
-        }
-      })()
-
-      return `[${index}] ${description}`
-    }
-
-    deserializeSnapshot(snapshot) {
-      const deserializer = new Deserializer(this.document, snapshot)
-      return {
-        element: deserializer.getElement(),
-        range: deserializer.getRange(),
-      }
-    }
-
-    updateFrame() {
-      this.frame.style.height = 0
-      this.frame.style.height = this.body.scrollHeight + "px"
-      this.frame.focus()
-      return this.frame.contentWindow.focus()
+    } else {
+      this.snapshot = snapshot
     }
   }
-  PlayerView.initClass()
-  return PlayerView
-})()
+
+  renderEvents(events) {
+    const renderedEvents = (() => {
+      const result = []
+      for (let index = events.length - 1; index >= 0; index--) {
+        const event = events[index]
+        result.push(this.renderEvent(event, index))
+      }
+      return result
+    })()
+    this.log.innerText = renderedEvents.join("\n")
+  }
+
+  setIndex(index) {
+    this.slider.value = index
+    this.indexLabel.textContent = `Frame ${index}`
+  }
+
+  setLength(length) {
+    this.slider.max = length - 1
+  }
+
+  playerDidStartPlaying() {
+    this.element.classList.add(this.constructor.playingClassName)
+    this.playButton.textContent = "Pause"
+  }
+
+  playerDidStopPlaying() {
+    this.element.classList.remove(this.constructor.playingClassName)
+    this.playButton.textContent = "Play"
+  }
+
+  frameDidLoadDefaultDocument() {
+    this.document = this.frame.contentDocument
+    this.document.documentElement.classList.add(this.constructor.documentClassName)
+
+    this.document.head.innerHTML = document.head.innerHTML
+
+    Array.from(this.document.head.querySelectorAll("link[rel=stylesheet]")).forEach((stylesheet) => {
+      stylesheet.onload = this.frameDidLoadStylesheet
+    })
+
+    this.body = this.document.body
+    this.body.style.cssText = "margin: 0; padding: 0"
+    this.body.onkeydown = (event) => event.preventDefault()
+
+    if (this.snapshot) {
+      this.renderSnapshot(snapshot)
+      this.snapshot = null
+    }
+  }
+
+  frameDidLoadStylesheet() {
+    return this.updateFrame()
+  }
+
+  frameDidLoseFocus() {
+    if (this.element.classList.contains(this.constructor.playingClassName)) {
+      return requestAnimationFrame(this.updateFrame)
+    }
+  }
+
+  didClickPlayButton() {
+    return this.delegate?.playerViewDidClickPlayButton?.()
+  }
+
+  didChangeSliderValue() {
+    const value = parseInt(this.slider.value, 10)
+    return this.delegate?.playerViewDidChangeSliderValue?.(value)
+  }
+
+  renderEvent(event, index) {
+    const description = (() => {
+      switch (event.type) {
+        case "input":
+          return "Browser input event received"
+        case "keypress":
+          var key = (event.character != null ? event.character : event.charCode) || event.keyCode
+          return `Key pressed: ${JSON.stringify(key)}`
+        case "log":
+          return event.message
+        case "snapshot":
+          return "DOM update"
+      }
+    })()
+
+    return `[${index}] ${description}`
+  }
+
+  deserializeSnapshot(snapshot) {
+    const deserializer = new Deserializer(this.document, snapshot)
+    return {
+      element: deserializer.getElement(),
+      range: deserializer.getRange(),
+    }
+  }
+
+  updateFrame() {
+    this.frame.style.height = 0
+    this.frame.style.height = this.body.scrollHeight + "px"
+    this.frame.focus()
+    return this.frame.contentWindow.focus()
+  }
+}
+
+PlayerView.initClass()
+

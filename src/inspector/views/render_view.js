@@ -8,36 +8,34 @@
  */
 import View from "inspector/view"
 
-Trix.Inspector.registerView(
-  (function() {
-    const Cls = class extends View {
-      static initClass() {
-        this.prototype.title = "Renders"
-        this.prototype.template = "render"
-        this.prototype.events = {
-          "trix-render"() {
-            this.renderCount++
-            return this.render()
-          },
+export default class RenderView extends View {
+  static initClass() {
+    this.prototype.title = "Renders"
+    this.prototype.template = "render"
+    this.prototype.events = {
+      "trix-render": function() {
+        this.renderCount++
+        return this.render()
+      },
 
-          "trix-sync"() {
-            this.syncCount++
-            return this.render()
-          },
-        }
-      }
-
-      constructor() {
-        super(...arguments)
-        this.renderCount = 0
-        this.syncCount = 0
-      }
-
-      getTitle() {
-        return `${this.title} (${this.renderCount})`
-      }
+      "trix-sync": function() {
+        this.syncCount++
+        return this.render()
+      },
     }
-    Cls.initClass()
-    return Cls
-  })()
-)
+  }
+
+  constructor() {
+    super(...arguments)
+    this.renderCount = 0
+    this.syncCount = 0
+  }
+
+  getTitle() {
+    return `${this.title} (${this.renderCount})`
+  }
+}
+
+RenderView.initClass()
+
+Trix.Inspector.registerView(RenderView)
