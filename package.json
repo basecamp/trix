@@ -46,12 +46,14 @@
     "svgo": "^2.8.0"
   },
   "scripts": {
-    "build": "rollup -c",
     "build-css": "node-sass --functions=./assets/trix/stylesheets/functions assets/trix.scss dist/trix.css",
+    "build-js": "rollup -c",
+    "build-assets": "cp assets/index.html dist/index.html",
+    "build": "yarn run build-js && yarn run build-css && yarn run build-assets",
     "watch": "rollup -c -w",
     "lint": "eslint .",
-    "pretest": "yarn run lint && yarn run build",
-    "test": "yarn run build && karma start"
+    "pretest": "yarn run lint && yarn run build-js",
+    "test": "karma start"
   },
   "dependencies": {}
 }
