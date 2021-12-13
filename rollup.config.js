@@ -28,7 +28,8 @@ export default [
         paths: [ "src" ],
         extensions: [ ".js" ]
       }),
-      filesize()
+      babel({ babelHelpers: "bundled" }),
+      filesize(),
     ],
     context: "window",
     treeshake: false,
