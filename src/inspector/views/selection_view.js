@@ -28,7 +28,7 @@ class SelectionView extends View {
     this.range = this.editor.getSelectedRange()
     this.locationRange = this.composition.getLocationRange()
     this.characters = this.getCharacters()
-    return super.render(...arguments).render(...arguments)
+    return super.render(...arguments)
   }
 
   getCharacters() {

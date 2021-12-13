@@ -21,7 +21,7 @@ class DocumentView extends View {
 
   render() {
     this.document = this.editor.getDocument()
-    return super.render(...arguments).render(...arguments)
+    return super.render(...arguments)
   }
 }
 DocumentView.initClass()
