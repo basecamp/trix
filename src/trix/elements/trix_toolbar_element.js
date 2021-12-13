@@ -7,10 +7,9 @@
  */
 import config from "trix/config"
 
-import { registerElement } from "trix/core/helpers"
+import { installDefaultCSSForTagName } from "trix/core/helpers"
 
-registerElement("trix-toolbar", {
-  defaultCSS: `\
+installDefaultCSSForTagName("trix-toolbar", `\
 %t {
   display: block;
 }
@@ -30,13 +29,17 @@ registerElement("trix-toolbar", {
 %t [data-trix-dialog] [data-trix-validate]:invalid {
   background-color: #ffdddd;
 }\
-`,
+`)
+
+export default class TrixToolbarElement extends HTMLElement {
 
   // Element lifecycle
 
-  initialize() {
+  connectedCallback() {
     if (this.innerHTML === "") {
       this.innerHTML = config.toolbar.getDefaultHTML()
     }
-  },
-})
+  }
+}
+
+window.customElements.define("trix-toolbar", TrixToolbarElement)
