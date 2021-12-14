@@ -4,7 +4,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS206: Consider reworking classes to avoid initClass
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -15,16 +14,15 @@ import FileVerificationOperation from "trix/operations/file_verification_operati
 import { handleEvent, innerElementIsActive } from "trix/core/helpers"
 
 export default class InputController extends BasicObject {
-  static initClass() {
-    this.prototype.events = {}
-  }
+
+  static events = {}
 
   constructor(element) {
     super(...arguments)
     this.element = element
     this.mutationObserver = new MutationObserver(this.element)
     this.mutationObserver.delegate = this
-    for (const eventName in this.events) {
+    for (const eventName in this.constructor.events) {
       handleEvent(eventName, { onElement: this.element, withCallback: this.handlerFor(eventName) })
     }
   }
@@ -51,7 +49,7 @@ export default class InputController extends BasicObject {
   attachFiles(files) {
     const operations = Array.from(files).map((file) => new FileVerificationOperation(file))
     return Promise.all(operations).then((files) => {
-      return this.handleInput(function() {
+      this.handleInput(function() {
         this.delegate?.inputControllerWillAttachFiles()
         this.responder?.insertFiles(files)
         return this.requestRender()
@@ -64,10 +62,10 @@ export default class InputController extends BasicObject {
   handlerFor(eventName) {
     return (event) => {
       if (!event.defaultPrevented) {
-        return this.handleInput(function() {
+        this.handleInput(() => {
           if (!innerElementIsActive(this.element)) {
             this.eventName = eventName
-            return this.events[eventName].call(this, event)
+            this.constructor.events[eventName].call(this, event)
           }
         })
       }
@@ -77,7 +75,7 @@ export default class InputController extends BasicObject {
   handleInput(callback) {
     try {
       this.delegate?.inputControllerWillHandleInput()
-      return callback.call(this)
+      callback.call(this)
     } finally {
       this.delegate?.inputControllerDidHandleInput()
     }
@@ -86,10 +84,8 @@ export default class InputController extends BasicObject {
   createLinkHTML(href, text) {
     const link = document.createElement("a")
     link.href = href
-    link.textContent = text != null ? text : href
+    link.textContent = text ? text : href
     return link.outerHTML
   }
 }
-
-InputController.initClass()
 

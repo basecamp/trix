@@ -38,271 +38,318 @@ const { browser, keyNames } = config
 let pastedFileCount = 0
 
 export default class Level0InputController extends InputController {
-  static initClass() {
-    // Input handlers
 
-    this.prototype.events = {
-      keydown(event) {
-        let keyName
-        if (!this.isComposing()) {
-          this.resetInputSummary()
+  static events = {
+    keydown(event) {
+      let keyName
+      if (!this.isComposing()) {
+        this.resetInputSummary()
+      }
+      this.inputSummary.didInput = true
+
+      if (keyName = keyNames[event.keyCode]) {
+        let context = this.keys
+
+        ;[ "ctrl", "alt", "shift", "meta" ].forEach((modifier) => {
+          if (event[`${modifier}Key`]) {
+            if (modifier === "ctrl") {
+              modifier = "control"
+            }
+            context = context?.[modifier]
+          }
+        })
+
+        if (context?.[keyName] != null) {
+          this.setInputSummary({ keyName })
+          selectionChangeObserver.reset()
+          context[keyName].call(this, event)
         }
-        this.inputSummary.didInput = true
+      }
 
-        if (keyName = keyNames[event.keyCode]) {
-          let context = this.keys
+      if (keyEventIsKeyboardCommand(event)) {
+        let character
+        if (character = String.fromCharCode(event.keyCode).toLowerCase()) {
+          const keys = (() => {
+            const result = []
 
-          ;[ "ctrl", "alt", "shift", "meta" ].forEach((modifier) => {
-            if (event[`${modifier}Key`]) {
-              if (modifier === "ctrl") {
-                modifier = "control"
+            ;[ "alt", "shift" ].forEach((modifier) => {
+              if (event[`${modifier}Key`]) {
+                result.push(modifier)
               }
-              context = context?.[modifier]
-            }
-          })
+            })
 
-          if (context?.[keyName] != null) {
-            this.setInputSummary({ keyName })
-            selectionChangeObserver.reset()
-            context[keyName].call(this, event)
-          }
-        }
-
-        if (keyEventIsKeyboardCommand(event)) {
-          let character
-          if (character = String.fromCharCode(event.keyCode).toLowerCase()) {
-            const keys = (() => {
-              const result = []
-
-              ;[ "alt", "shift" ].forEach((modifier) => {
-                if (event[`${modifier}Key`]) {
-                  result.push(modifier)
-                }
-              })
-
-              return result
-            })()
-            keys.push(character)
-            if (this.delegate?.inputControllerDidReceiveKeyboardCommand(keys)) {
-              return event.preventDefault()
-            }
-          }
-        }
-      },
-
-      keypress(event) {
-        let string
-        if (this.inputSummary.eventName != null) {
-          return
-        }
-        if (event.metaKey) {
-          return
-        }
-        if (event.ctrlKey && !event.altKey) {
-          return
-        }
-
-        if (string = stringFromKeyEvent(event)) {
-          this.delegate?.inputControllerWillPerformTyping()
-          this.responder?.insertString(string)
-          return this.setInputSummary({ textAdded: string, didDelete: this.selectionIsExpanded() })
-        }
-      },
-
-      textInput(event) {
-        // Handle autocapitalization
-        const { data } = event
-        const { textAdded } = this.inputSummary
-        if (textAdded && textAdded !== data && textAdded.toUpperCase() === data) {
-          const range = this.getSelectedRange()
-          this.setSelectedRange([ range[0], range[1] + textAdded.length ])
-          this.responder?.insertString(data)
-          this.setInputSummary({ textAdded: data })
-          return this.setSelectedRange(range)
-        }
-      },
-
-      dragenter(event) {
-        return event.preventDefault()
-      },
-
-      dragstart(event) {
-        const { target } = event
-        this.serializeSelectionToDataTransfer(event.dataTransfer)
-        this.draggedRange = this.getSelectedRange()
-        return this.delegate?.inputControllerDidStartDrag?.()
-      },
-
-      dragover(event) {
-        if (this.draggedRange || this.canAcceptDataTransfer(event.dataTransfer)) {
-          event.preventDefault()
-          const draggingPoint = { x: event.clientX, y: event.clientY }
-          if (!objectsAreEqual(draggingPoint, this.draggingPoint)) {
-            this.draggingPoint = draggingPoint
-            return this.delegate?.inputControllerDidReceiveDragOverPoint?.(this.draggingPoint)
-          }
-        }
-      },
-
-      dragend(event) {
-        this.delegate?.inputControllerDidCancelDrag?.()
-        this.draggedRange = null
-        this.draggingPoint = null
-      },
-
-      drop(event) {
-        let documentJSON
-        event.preventDefault()
-        const files = event.dataTransfer?.files
-
-        const point = { x: event.clientX, y: event.clientY }
-        this.responder?.setLocationRangeFromPointRange(point)
-
-        if (files?.length) {
-          this.attachFiles(files)
-        } else if (this.draggedRange) {
-          this.delegate?.inputControllerWillMoveText()
-          this.responder?.moveTextFromRange(this.draggedRange)
-          this.draggedRange = null
-          this.requestRender()
-        } else if (documentJSON = event.dataTransfer.getData("application/x-trix-document")) {
-          const document = Document.fromJSONString(documentJSON)
-          this.responder?.insertDocument(document)
-          this.requestRender()
-        }
-
-        this.draggedRange = null
-        this.draggingPoint = null
-      },
-
-      cut(event) {
-        if (this.responder?.selectionIsExpanded()) {
-          if (this.serializeSelectionToDataTransfer(event.clipboardData)) {
-            event.preventDefault()
-          }
-
-          this.delegate?.inputControllerWillCutText()
-          this.deleteInDirection("backward")
-          if (event.defaultPrevented) {
-            return this.requestRender()
-          }
-        }
-      },
-
-      copy(event) {
-        if (this.responder?.selectionIsExpanded()) {
-          if (this.serializeSelectionToDataTransfer(event.clipboardData)) {
+            return result
+          })()
+          keys.push(character)
+          if (this.delegate?.inputControllerDidReceiveKeyboardCommand(keys)) {
             return event.preventDefault()
           }
         }
-      },
+      }
+    },
 
-      paste(event) {
-        let href, html, name, string
-        const clipboard = event.clipboardData != null ? event.clipboardData : event.testClipboardData
-        const paste = { clipboard }
+    keypress(event) {
+      let string
+      if (this.inputSummary.eventName != null) {
+        return
+      }
+      if (event.metaKey) {
+        return
+      }
+      if (event.ctrlKey && !event.altKey) {
+        return
+      }
 
-        if (clipboard == null || pasteEventIsCrippledSafariHTMLPaste(event)) {
-          this.getPastedHTMLUsingHiddenElement((html) => {
-            paste.type = "text/html"
-            paste.html = html
-            this.delegate?.inputControllerWillPaste(paste)
-            this.responder?.insertHTML(paste.html)
-            this.requestRender()
-            return this.delegate?.inputControllerDidPaste(paste)
-          })
-          return
+      if (string = stringFromKeyEvent(event)) {
+        this.delegate?.inputControllerWillPerformTyping()
+        this.responder?.insertString(string)
+        return this.setInputSummary({ textAdded: string, didDelete: this.selectionIsExpanded() })
+      }
+    },
+
+    textInput(event) {
+      // Handle autocapitalization
+      const { data } = event
+      const { textAdded } = this.inputSummary
+      if (textAdded && textAdded !== data && textAdded.toUpperCase() === data) {
+        const range = this.getSelectedRange()
+        this.setSelectedRange([ range[0], range[1] + textAdded.length ])
+        this.responder?.insertString(data)
+        this.setInputSummary({ textAdded: data })
+        return this.setSelectedRange(range)
+      }
+    },
+
+    dragenter(event) {
+      return event.preventDefault()
+    },
+
+    dragstart(event) {
+      const { target } = event
+      this.serializeSelectionToDataTransfer(event.dataTransfer)
+      this.draggedRange = this.getSelectedRange()
+      return this.delegate?.inputControllerDidStartDrag?.()
+    },
+
+    dragover(event) {
+      if (this.draggedRange || this.canAcceptDataTransfer(event.dataTransfer)) {
+        event.preventDefault()
+        const draggingPoint = { x: event.clientX, y: event.clientY }
+        if (!objectsAreEqual(draggingPoint, this.draggingPoint)) {
+          this.draggingPoint = draggingPoint
+          return this.delegate?.inputControllerDidReceiveDragOverPoint?.(this.draggingPoint)
+        }
+      }
+    },
+
+    dragend(event) {
+      this.delegate?.inputControllerDidCancelDrag?.()
+      this.draggedRange = null
+      this.draggingPoint = null
+    },
+
+    drop(event) {
+      let documentJSON
+      event.preventDefault()
+      const files = event.dataTransfer?.files
+
+      const point = { x: event.clientX, y: event.clientY }
+      this.responder?.setLocationRangeFromPointRange(point)
+
+      if (files?.length) {
+        this.attachFiles(files)
+      } else if (this.draggedRange) {
+        this.delegate?.inputControllerWillMoveText()
+        this.responder?.moveTextFromRange(this.draggedRange)
+        this.draggedRange = null
+        this.requestRender()
+      } else if (documentJSON = event.dataTransfer.getData("application/x-trix-document")) {
+        const document = Document.fromJSONString(documentJSON)
+        this.responder?.insertDocument(document)
+        this.requestRender()
+      }
+
+      this.draggedRange = null
+      this.draggingPoint = null
+    },
+
+    cut(event) {
+      if (this.responder?.selectionIsExpanded()) {
+        if (this.serializeSelectionToDataTransfer(event.clipboardData)) {
+          event.preventDefault()
         }
 
-        if (href = clipboard.getData("URL")) {
-          paste.type = "text/html"
-          if (name = clipboard.getData("public.url-name")) {
-            string = squishBreakableWhitespace(name).trim()
-          } else {
-            string = href
-          }
-          paste.html = this.createLinkHTML(href, string)
-          this.delegate?.inputControllerWillPaste(paste)
-          this.setInputSummary({ textAdded: string, didDelete: this.selectionIsExpanded() })
-          this.responder?.insertHTML(paste.html)
-          this.requestRender()
-          this.delegate?.inputControllerDidPaste(paste)
-        } else if (dataTransferIsPlainText(clipboard)) {
-          paste.type = "text/plain"
-          paste.string = clipboard.getData("text/plain")
-          this.delegate?.inputControllerWillPaste(paste)
-          this.setInputSummary({ textAdded: paste.string, didDelete: this.selectionIsExpanded() })
-          this.responder?.insertString(paste.string)
-          this.requestRender()
-          this.delegate?.inputControllerDidPaste(paste)
-        } else if (html = clipboard.getData("text/html")) {
+        this.delegate?.inputControllerWillCutText()
+        this.deleteInDirection("backward")
+        if (event.defaultPrevented) {
+          return this.requestRender()
+        }
+      }
+    },
+
+    copy(event) {
+      if (this.responder?.selectionIsExpanded()) {
+        if (this.serializeSelectionToDataTransfer(event.clipboardData)) {
+          return event.preventDefault()
+        }
+      }
+    },
+
+    paste(event) {
+      let href, html, name, string
+      const clipboard = event.clipboardData != null ? event.clipboardData : event.testClipboardData
+      const paste = { clipboard }
+
+      if (clipboard == null || pasteEventIsCrippledSafariHTMLPaste(event)) {
+        this.getPastedHTMLUsingHiddenElement((html) => {
           paste.type = "text/html"
           paste.html = html
           this.delegate?.inputControllerWillPaste(paste)
           this.responder?.insertHTML(paste.html)
           this.requestRender()
-          this.delegate?.inputControllerDidPaste(paste)
-        } else if (Array.from(clipboard.types).includes("Files")) {
-          let file
-          if (file = clipboard.items?.[0]?.getAsFile?.()) {
-            let extension
-            if (!file.name && (extension = extensionForFile(file))) {
-              file.name = `pasted-file-${++pastedFileCount}.${extension}`
-            }
-            paste.type = "File"
-            paste.file = file
-            this.delegate?.inputControllerWillAttachFiles()
-            this.responder?.insertFile(paste.file)
-            this.requestRender()
-            this.delegate?.inputControllerDidPaste(paste)
-          }
+          return this.delegate?.inputControllerDidPaste(paste)
+        })
+        return
+      }
+
+      if (href = clipboard.getData("URL")) {
+        paste.type = "text/html"
+        if (name = clipboard.getData("public.url-name")) {
+          string = squishBreakableWhitespace(name).trim()
+        } else {
+          string = href
         }
+        paste.html = this.createLinkHTML(href, string)
+        this.delegate?.inputControllerWillPaste(paste)
+        this.setInputSummary({ textAdded: string, didDelete: this.selectionIsExpanded() })
+        this.responder?.insertHTML(paste.html)
+        this.requestRender()
+        this.delegate?.inputControllerDidPaste(paste)
+      } else if (dataTransferIsPlainText(clipboard)) {
+        paste.type = "text/plain"
+        paste.string = clipboard.getData("text/plain")
+        this.delegate?.inputControllerWillPaste(paste)
+        this.setInputSummary({ textAdded: paste.string, didDelete: this.selectionIsExpanded() })
+        this.responder?.insertString(paste.string)
+        this.requestRender()
+        this.delegate?.inputControllerDidPaste(paste)
+      } else if (html = clipboard.getData("text/html")) {
+        paste.type = "text/html"
+        paste.html = html
+        this.delegate?.inputControllerWillPaste(paste)
+        this.responder?.insertHTML(paste.html)
+        this.requestRender()
+        this.delegate?.inputControllerDidPaste(paste)
+      } else if (Array.from(clipboard.types).includes("Files")) {
+        let file
+        if (file = clipboard.items?.[0]?.getAsFile?.()) {
+          let extension
+          if (!file.name && (extension = extensionForFile(file))) {
+            file.name = `pasted-file-${++pastedFileCount}.${extension}`
+          }
+          paste.type = "File"
+          paste.file = file
+          this.delegate?.inputControllerWillAttachFiles()
+          this.responder?.insertFile(paste.file)
+          this.requestRender()
+          this.delegate?.inputControllerDidPaste(paste)
+        }
+      }
 
+      return event.preventDefault()
+    },
+
+    compositionstart(event) {
+      return this.getCompositionInput().start(event.data)
+    },
+
+    compositionupdate(event) {
+      return this.getCompositionInput().update(event.data)
+    },
+
+    compositionend(event) {
+      return this.getCompositionInput().end(event.data)
+    },
+
+    beforeinput(event) {
+      this.inputSummary.didInput = true
+    },
+
+    input(event) {
+      this.inputSummary.didInput = true
+      return event.stopPropagation()
+    },
+  }
+
+  static keys = {
+    backspace(event) {
+      this.delegate?.inputControllerWillPerformTyping()
+      return this.deleteInDirection("backward", event)
+    },
+
+    delete(event) {
+      this.delegate?.inputControllerWillPerformTyping()
+      return this.deleteInDirection("forward", event)
+    },
+
+    return(event) {
+      this.setInputSummary({ preferDocument: true })
+      this.delegate?.inputControllerWillPerformTyping()
+      return this.responder?.insertLineBreak()
+    },
+
+    tab(event) {
+      if (this.responder?.canIncreaseNestingLevel()) {
+        this.responder?.increaseNestingLevel()
+        this.requestRender()
         return event.preventDefault()
-      },
+      }
+    },
 
-      compositionstart(event) {
-        return this.getCompositionInput().start(event.data)
-      },
+    left(event) {
+      if (this.selectionIsInCursorTarget()) {
+        event.preventDefault()
+        return this.responder?.moveCursorInDirection("backward")
+      }
+    },
 
-      compositionupdate(event) {
-        return this.getCompositionInput().update(event.data)
-      },
+    right(event) {
+      if (this.selectionIsInCursorTarget()) {
+        event.preventDefault()
+        return this.responder?.moveCursorInDirection("forward")
+      }
+    },
 
-      compositionend(event) {
-        return this.getCompositionInput().end(event.data)
-      },
-
-      beforeinput(event) {
-        this.inputSummary.didInput = true
-      },
-
-      input(event) {
-        this.inputSummary.didInput = true
-        return event.stopPropagation()
-      },
-    }
-
-    this.prototype.keys = {
-      backspace(event) {
-        this.delegate?.inputControllerWillPerformTyping()
-        return this.deleteInDirection("backward", event)
-      },
-
-      delete(event) {
+    control: {
+      d(event) {
         this.delegate?.inputControllerWillPerformTyping()
         return this.deleteInDirection("forward", event)
       },
 
-      return(event) {
-        this.setInputSummary({ preferDocument: true })
+      h(event) {
         this.delegate?.inputControllerWillPerformTyping()
-        return this.responder?.insertLineBreak()
+        return this.deleteInDirection("backward", event)
+      },
+
+      o(event) {
+        event.preventDefault()
+        this.delegate?.inputControllerWillPerformTyping()
+        this.responder?.insertString("\n", { updatePosition: false })
+        return this.requestRender()
+      },
+    },
+
+    shift: {
+      return(event) {
+        this.delegate?.inputControllerWillPerformTyping()
+        this.responder?.insertString("\n")
+        this.requestRender()
+        return event.preventDefault()
       },
 
       tab(event) {
-        if (this.responder?.canIncreaseNestingLevel()) {
-          this.responder?.increaseNestingLevel()
+        if (this.responder?.canDecreaseNestingLevel()) {
+          this.responder?.decreaseNestingLevel()
           this.requestRender()
           return event.preventDefault()
         }
@@ -311,87 +358,31 @@ export default class Level0InputController extends InputController {
       left(event) {
         if (this.selectionIsInCursorTarget()) {
           event.preventDefault()
-          return this.responder?.moveCursorInDirection("backward")
+          return this.expandSelectionInDirection("backward")
         }
       },
 
       right(event) {
         if (this.selectionIsInCursorTarget()) {
           event.preventDefault()
-          return this.responder?.moveCursorInDirection("forward")
+          return this.expandSelectionInDirection("forward")
         }
       },
+    },
 
-      control: {
-        d(event) {
-          this.delegate?.inputControllerWillPerformTyping()
-          return this.deleteInDirection("forward", event)
-        },
-
-        h(event) {
-          this.delegate?.inputControllerWillPerformTyping()
-          return this.deleteInDirection("backward", event)
-        },
-
-        o(event) {
-          event.preventDefault()
-          this.delegate?.inputControllerWillPerformTyping()
-          this.responder?.insertString("\n", { updatePosition: false })
-          return this.requestRender()
-        },
+    alt: {
+      backspace(event) {
+        this.setInputSummary({ preferDocument: false })
+        return this.delegate?.inputControllerWillPerformTyping()
       },
+    },
 
-      shift: {
-        return(event) {
-          this.delegate?.inputControllerWillPerformTyping()
-          this.responder?.insertString("\n")
-          this.requestRender()
-          return event.preventDefault()
-        },
-
-        tab(event) {
-          if (this.responder?.canDecreaseNestingLevel()) {
-            this.responder?.decreaseNestingLevel()
-            this.requestRender()
-            return event.preventDefault()
-          }
-        },
-
-        left(event) {
-          if (this.selectionIsInCursorTarget()) {
-            event.preventDefault()
-            return this.expandSelectionInDirection("backward")
-          }
-        },
-
-        right(event) {
-          if (this.selectionIsInCursorTarget()) {
-            event.preventDefault()
-            return this.expandSelectionInDirection("forward")
-          }
-        },
+    meta: {
+      backspace(event) {
+        this.setInputSummary({ preferDocument: false })
+        return this.delegate?.inputControllerWillPerformTyping()
       },
-
-      alt: {
-        backspace(event) {
-          this.setInputSummary({ preferDocument: false })
-          return this.delegate?.inputControllerWillPerformTyping()
-        },
-      },
-
-      meta: {
-        backspace(event) {
-          this.setInputSummary({ preferDocument: false })
-          return this.delegate?.inputControllerWillPerformTyping()
-        },
-      },
-    }
-
-    this.proxyMethod("responder?.getSelectedRange")
-    this.proxyMethod("responder?.setSelectedRange")
-    this.proxyMethod("responder?.expandSelectionInDirection")
-    this.proxyMethod("responder?.selectionIsInCursorTarget")
-    this.proxyMethod("responder?.selectionIsExpanded")
+    },
   }
 
   constructor() {
@@ -539,8 +530,11 @@ export default class Level0InputController extends InputController {
   }
 }
 
-Level0InputController.initClass()
-
+Level0InputController.proxyMethod("responder?.getSelectedRange")
+Level0InputController.proxyMethod("responder?.setSelectedRange")
+Level0InputController.proxyMethod("responder?.expandSelectionInDirection")
+Level0InputController.proxyMethod("responder?.selectionIsInCursorTarget")
+Level0InputController.proxyMethod("responder?.selectionIsExpanded")
 
 var extensionForFile = (file) => file.type?.match(/\/(\w+)$/)?.[1]
 
@@ -677,4 +671,5 @@ class CompositionInput extends BasicObject {
     return this.data.start?.length === 0 && this.data.end?.length > 0 && this.range != null
   }
 }
-CompositionInput.initClass()
+
+
