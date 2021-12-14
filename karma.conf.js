@@ -46,11 +46,13 @@ if (process.env.CI) {
     sl_firefox_72: {
       base: "SauceLabs",
       browserName: "firefox",
+      platform: "Windows 10",
       version: "72.0"
     },
     sl_firefox_latest: {
       base: "SauceLabs",
       browserName: "firefox",
+      platform: "Windows 10",
       version: "latest"
     },
     sl_safari_12_1: {
