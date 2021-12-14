@@ -48,7 +48,7 @@
   "scripts": {
     "build-css": "node-sass --functions=./assets/trix/stylesheets/functions assets/trix.scss dist/trix.css",
     "build-js": "rollup -c",
-    "build-assets": "cp assets/index.html dist/index.html",
+    "build-assets": "cp -f assets/*.html dist/",
     "build": "yarn run build-js && yarn run build-css && yarn run build-assets",
     "watch": "rollup -c -w",
     "lint": "eslint .",
