@@ -326,10 +326,8 @@ export default class Composition extends BasicObject {
   }
 
   canSetCurrentBlockAttribute(attributeName) {
-    let block
-    if (!(block = this.getBlock())) {
-      return
-    }
+    const block = this.getBlock()
+    if (!block) return
     return !block.isTerminalBlock()
   }
 
@@ -344,10 +342,9 @@ export default class Composition extends BasicObject {
   }
 
   setTextAttribute(attributeName, value) {
-    let selectedRange
-    if (!(selectedRange = this.getSelectedRange())) {
-      return
-    }
+    const selectedRange = this.getSelectedRange()
+    if (!selectedRange) return
+
     const [ startPosition, endPosition ] = Array.from(selectedRange)
     if (startPosition === endPosition) {
       if (attributeName === "href") {

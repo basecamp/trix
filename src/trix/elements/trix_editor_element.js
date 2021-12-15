@@ -327,19 +327,14 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   clickBubbled(event) {
-    let label
-    if (event.defaultPrevented) {
-      return
-    }
-    if (this.contains(event.target)) {
-      return
-    }
-    if (!(label = findClosestElementFromNode(event.target, { matchingSelector: "label" }))) {
-      return
-    }
-    if (!Array.from(this.labels).includes(label)) {
-      return
-    }
+    if (event.defaultPrevented) return
+    if (this.contains(event.target)) return
+
+    const label = findClosestElementFromNode(event.target, { matchingSelector: "label" })
+    if (!label) return
+
+    if (!Array.from(this.labels).includes(label)) return
+
     return this.focus()
   }
 

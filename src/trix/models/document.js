@@ -42,8 +42,8 @@ export default class Document extends TrixObject {
   }
 
   isEmpty() {
-    let block
-    return this.blockList.length === 1 && (block = this.getBlockAtIndex(0), block.isEmpty() && !block.hasAttributes())
+    const block = this.getBlockAtIndex(0)
+    return this.blockList.length === 1 && block.isEmpty() && !block.hasAttributes()
   }
 
   copy(options = {}) {
@@ -84,7 +84,8 @@ export default class Document extends TrixObject {
 
   insertDocumentAtRange(document, range) {
     const { blockList } = document
-    let [ position ] = Array.from(range = normalizeRange(range))
+    range = normalizeRange(range)
+    let [ position ] = range
     const { index, offset } = this.locationFromPosition(position)
 
     let result = this
@@ -102,7 +103,8 @@ export default class Document extends TrixObject {
 
   mergeDocumentAtRange(document, range) {
     let formattedDocument, result
-    const [ startPosition ] = Array.from(range = normalizeRange(range))
+    range = normalizeRange(range)
+    const [ startPosition ] = range
     const startLocation = this.locationFromPosition(startPosition)
     const blockAttributes = this.getBlockAtIndex(startLocation.index).getAttributes()
     const baseBlockAttributes = document.getBaseBlockAttributes()
@@ -135,7 +137,8 @@ export default class Document extends TrixObject {
   }
 
   insertTextAtRange(text, range) {
-    const [ startPosition ] = Array.from(range = normalizeRange(range))
+    range = normalizeRange(range)
+    const [ startPosition ] = range
     const { index, offset } = this.locationFromPosition(startPosition)
 
     const document = this.removeTextAtRange(range)
@@ -148,7 +151,8 @@ export default class Document extends TrixObject {
 
   removeTextAtRange(range) {
     let blocks
-    const [ leftPosition, rightPosition ] = Array.from(range = normalizeRange(range))
+    range = normalizeRange(range)
+    const [ leftPosition, rightPosition ] = range
     if (rangeIsCollapsed(range)) {
       return this
     }
@@ -196,7 +200,8 @@ export default class Document extends TrixObject {
 
   moveTextFromRangeToPosition(range, position) {
     let text
-    const [ startPosition, endPosition ] = Array.from(range = normalizeRange(range))
+    range = normalizeRange(range)
+    const [ startPosition, endPosition ] = range
     if (startPosition <= position && position <= endPosition) {
       return this
     }
@@ -273,8 +278,8 @@ export default class Document extends TrixObject {
   }
 
   updateAttributesForAttachment(attributes, attachment) {
-    let range
-    const [ startPosition ] = Array.from(range = this.getRangeOfAttachment(attachment))
+    const range = this.getRangeOfAttachment(attachment)
+    const [ startPosition ] = Array.from(range)
     const { index } = this.locationFromPosition(startPosition)
     const text = this.getTextAtIndex(index)
 
@@ -292,7 +297,8 @@ export default class Document extends TrixObject {
 
   insertBlockBreakAtRange(range) {
     let blocks
-    const [ startPosition ] = Array.from(range = normalizeRange(range))
+    range = normalizeRange(range)
+    const [ startPosition ] = range
     const { offset } = this.locationFromPosition(startPosition)
 
     const document = this.removeTextAtRange(range)
@@ -347,8 +353,8 @@ export default class Document extends TrixObject {
   removeLastTerminalAttributeAtRange(range) {
     let { blockList } = this
     this.eachBlockAtRange(range, function(block, textRange, index) {
-      let lastAttributeName
-      if (!(lastAttributeName = block.getLastAttribute())) {
+      const lastAttributeName = block.getLastAttribute()
+      if (!lastAttributeName) {
         return
       }
       if (!getBlockConfig(lastAttributeName).terminal) {
@@ -371,7 +377,8 @@ export default class Document extends TrixObject {
 
   expandRangeToLineBreaksAndSplitBlocks(range) {
     let position
-    let [ startPosition, endPosition ] = Array.from(range = normalizeRange(range))
+    range = normalizeRange(range)
+    let [ startPosition, endPosition ] = range
     const startLocation = this.locationFromPosition(startPosition)
     const endLocation = this.locationFromPosition(endPosition)
     let document = this
@@ -412,7 +419,8 @@ export default class Document extends TrixObject {
   }
 
   convertLineBreaksToBlockBreaksInRange(range) {
-    let [ position ] = Array.from(range = normalizeRange(range))
+    range = normalizeRange(range)
+    let [ position ] = range
     const string = this.getStringAtRange(range).slice(0, -1)
     let document = this
 
@@ -425,7 +433,8 @@ export default class Document extends TrixObject {
   }
 
   consolidateBlocksAtRange(range) {
-    const [ startPosition, endPosition ] = Array.from(range = normalizeRange(range))
+    range = normalizeRange(range)
+    const [ startPosition, endPosition ] = range
     const startIndex = this.locationFromPosition(startPosition).index
     const endIndex = this.locationFromPosition(endPosition).index
     return new this.constructor(this.blockList.consolidateFromIndexToIndex(startIndex, endIndex))
@@ -497,7 +506,8 @@ export default class Document extends TrixObject {
 
   eachBlockAtRange(range, callback) {
     let block, textRange
-    const [ startPosition, endPosition ] = Array.from(range = normalizeRange(range))
+    range = normalizeRange(range)
+    const [ startPosition, endPosition ] = range
     const startLocation = this.locationFromPosition(startPosition)
     const endLocation = this.locationFromPosition(endPosition)
 
@@ -526,7 +536,8 @@ export default class Document extends TrixObject {
   }
 
   getCommonAttributesAtRange(range) {
-    const [ startPosition ] = Array.from(range = normalizeRange(range))
+    range = normalizeRange(range)
+    const [ startPosition ] = range
     if (rangeIsCollapsed(range)) {
       return this.getCommonAttributesAtPosition(startPosition)
     } else {
@@ -709,9 +720,9 @@ export default class Document extends TrixObject {
   }
 
   locationRangeFromRange(range) {
-    if (!(range = normalizeRange(range))) {
-      return
-    }
+    range = normalizeRange(range)
+    if (!range) return
+
     const [ startPosition, endPosition ] = Array.from(range)
     const startLocation = this.locationFromPosition(startPosition)
     const endLocation = this.locationFromPosition(endPosition)

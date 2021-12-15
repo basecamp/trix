@@ -188,11 +188,12 @@ export default class SplittableList extends TrixObject {
   }
 
   getEndPosition() {
-    let position
-    return this.endPosition != null
-      ? this.endPosition
-      : this.endPosition =
-          (position = 0, Array.from(this.objects).map((object) => position += object.getLength()), position)
+    if (this.endPosition == null) {
+      this.endPosition = 0
+      Array.from(this.objects).forEach((object) => this.endPosition += object.getLength())
+    }
+
+    return this.endPosition
   }
 
   toString() {

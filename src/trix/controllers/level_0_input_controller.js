@@ -238,8 +238,8 @@ export default class Level0InputController extends InputController {
       } else if (Array.from(clipboard.types).includes("Files")) {
         const file = clipboard.items?.[0]?.getAsFile?.()
         if (file) {
-          let extension
-          if (!file.name && (extension = extensionForFile(file))) {
+          const extension = extensionForFile(file)
+          if (!file.name && extension) {
             file.name = `pasted-file-${++pastedFileCount}.${extension}`
           }
           paste.type = "File"

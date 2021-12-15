@@ -9,7 +9,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS104: Avoid inline assignments
  * DS204: Change includes calls to have a more natural evaluation order
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -364,8 +363,8 @@ export default class HTMLParser extends BasicObject {
   findBlockElementAncestors(element) {
     const ancestors = []
     while (element && element !== this.containerElement) {
-      var needle
-      if (needle = tagName(element), Array.from(getBlockTagNames()).includes(needle)) {
+      const tag = tagName(element)
+      if (getBlockTagNames().includes(tag)) {
         ancestors.push(element)
       }
       element = element.parentNode
@@ -376,7 +375,6 @@ export default class HTMLParser extends BasicObject {
   // Element inspection
 
   isBlockElement(element) {
-    let needle
     if (element?.nodeType !== Node.ELEMENT_NODE) {
       return
     }
@@ -386,10 +384,9 @@ export default class HTMLParser extends BasicObject {
     if (findClosestElementFromNode(element, { matchingSelector: "td", untilNode: this.containerElement })) {
       return
     }
-    return (
-      (needle = tagName(element), Array.from(getBlockTagNames()).includes(needle)) ||
+
+    return getBlockTagNames().includes(tagName(element)) ||
       window.getComputedStyle(element).display === "block"
-    )
   }
 
   isInsignificantTextNode(node) {
@@ -406,15 +403,11 @@ export default class HTMLParser extends BasicObject {
     if (elementCanDisplayPreformattedText(parentNode)) {
       return
     }
-    return (
-      !previousSibling || this.isBlockElement(previousSibling) || !nextSibling || this.isBlockElement(nextSibling)
-    )
+    return !previousSibling || this.isBlockElement(previousSibling) || !nextSibling || this.isBlockElement(nextSibling)
   }
 
   isExtraBR(element) {
-    return (
-      tagName(element) === "br" && this.isBlockElement(element.parentNode) && element.parentNode.lastChild === element
-    )
+    return tagName(element) === "br" && this.isBlockElement(element.parentNode) && element.parentNode.lastChild === element
   }
 
   // Margin translation
@@ -440,11 +433,7 @@ export default class HTMLParser extends BasicObject {
     const element = this.blockElements[index]
     if (element) {
       if (element.textContent) {
-        let needle
-        if (
-          (needle = tagName(element), !Array.from(getBlockTagNames()).includes(needle)) &&
-          !Array.from(this.processedElements).includes(element)
-        ) {
+        if (!getBlockTagNames().includes(tagName(element)) && !this.processedElements.includes(element)) {
           return getBlockElementMargin(element)
         }
       }

@@ -30,8 +30,8 @@ export default class BasicObject {
 }
 
 const parseProxyMethodExpression = function(expression) {
-  let match
-  if (!(match = expression.match(proxyMethodExpressionPattern))) {
+  const match = expression.match(proxyMethodExpressionPattern)
+  if (!match) {
     throw new Error(`can't parse @proxyMethod expression: ${expression}`)
   }
 

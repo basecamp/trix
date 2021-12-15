@@ -61,10 +61,9 @@ export default class Piece extends TrixObject {
   }
 
   getCommonAttributes() {
-    let piece
-    if (!(piece = pieceList.getPieceAtIndex(0))) {
-      return {}
-    }
+    const piece = pieceList.getPieceAtIndex(0)
+    if (!piece) return {}
+
     let { attributes } = piece
     let keys = attributes.getKeys()
 
