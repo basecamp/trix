@@ -39,19 +39,8 @@ export default class Text extends TrixObject {
 
   constructor(pieces = []) {
     super(...arguments)
-    this.pieceList = new SplittableList(
-      (() => {
-        const result = []
-
-        Array.from(pieces).forEach((piece) => {
-          if (!piece.isEmpty()) {
-            result.push(piece)
-          }
-        })
-
-        return result
-      })()
-    )
+    const notEmpty = pieces.filter((piece) => !piece.isEmpty())
+    this.pieceList = new SplittableList(notEmpty)
   }
 
   copy() {
