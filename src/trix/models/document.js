@@ -8,7 +8,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS201: Simplify complex destructure assignments
  * DS202: Simplify dynamic range loops
  * DS205: Consider reworking code to avoid use of IIFEs
  * DS207: Consider shorter variations of null checks
@@ -337,8 +336,8 @@ export default class Document extends TrixObject {
   removeLastListAttributeAtRange(range, options = {}) {
     let { blockList } = this
     this.eachBlockAtRange(range, function(block, textRange, index) {
-      let lastAttributeName
-      if (!(lastAttributeName = block.getLastAttribute())) {
+      const lastAttributeName = block.getLastAttribute()
+      if (!lastAttributeName) {
         return
       }
       if (!getBlockConfig(lastAttributeName).listAttribute) {

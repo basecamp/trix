@@ -7,7 +7,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS201: Simplify complex destructure assignments
  * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -67,17 +66,9 @@ export default class MutationObserver extends BasicObject {
   }
 
   findSignificantMutations(mutations) {
-    return (() => {
-      const result = []
-
-      Array.from(mutations).forEach((mutation) => {
-        if (this.mutationIsSignificant(mutation)) {
-          result.push(mutation)
-        }
-      })
-
-      return result
-    })()
+    return mutations.filter((mutation) => {
+      return this.mutationIsSignificant(mutation)
+    })
   }
 
   mutationIsSignificant(mutation) {
@@ -85,9 +76,7 @@ export default class MutationObserver extends BasicObject {
       return false
     }
     for (const node of Array.from(this.nodesModifiedByMutation(mutation))) {
-      if (this.nodeIsSignificant(node)) {
-        return true
-      }
+      if (this.nodeIsSignificant(node)) return true
     }
     return false
   }
@@ -159,7 +148,6 @@ export default class MutationObserver extends BasicObject {
 
   getTextChangesFromChildList() {
     let textAdded, textRemoved
-    let index, text
     const addedNodes = []
     const removedNodes = []
 
@@ -179,28 +167,10 @@ export default class MutationObserver extends BasicObject {
       textRemoved = getTextForNodes(removedNodes)
     }
 
-    return {
-      additions: (() => {
-        const result = []
-        for (index = 0; index < textAdded.length; index++) {
-          text = textAdded[index]
-          if (text !== textRemoved[index]) {
-            result.push(normalizeSpaces(text))
-          }
-        }
-        return result
-      })(),
-      deletions: (() => {
-        const result1 = []
-        for (index = 0; index < textRemoved.length; index++) {
-          text = textRemoved[index]
-          if (text !== textAdded[index]) {
-            result1.push(normalizeSpaces(text))
-          }
-        }
-        return result1
-      })(),
-    }
+    const additions = textAdded.filter((text, index) => text !== textRemoved[index]).map(normalizeSpaces)
+    const deletions = textRemoved.filter((text, index) => text !== textAdded[index]).map(normalizeSpaces)
+
+    return { additions, deletions }
   }
 
   getTextChangesFromCharacterData() {
