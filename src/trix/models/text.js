@@ -8,7 +8,6 @@
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * DS104: Avoid inline assignments
- * DS205: Consider reworking code to avoid use of IIFEs
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -171,17 +170,7 @@ export default class Text extends TrixObject {
   }
 
   getAttachmentPieces() {
-    return (() => {
-      const result = []
-
-      Array.from(this.pieceList.toArray()).forEach((piece) => {
-        if (piece.attachment != null) {
-          result.push(piece)
-        }
-      })
-
-      return result
-    })()
+    return this.pieceList.toArray().filter((piece) => piece.attachment != null)
   }
 
   getAttachments() {

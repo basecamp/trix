@@ -8,7 +8,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -67,17 +66,11 @@ export default class Level0InputController extends InputController {
       if (keyEventIsKeyboardCommand(event)) {
         const character = String.fromCharCode(event.keyCode).toLowerCase()
         if (character) {
-          const keys = (() => {
-            const result = []
-
-            ;[ "alt", "shift" ].forEach((modifier) => {
-              if (event[`${modifier}Key`]) {
-                result.push(modifier)
-              }
-            })
-
-            return result
-          })()
+          const keys = [ "alt", "shift" ].map((modifier) => {
+            if (event[`${modifier}Key`]) {
+              return modifier
+            }
+          }).filter(key => key)
           keys.push(character)
           if (this.delegate?.inputControllerDidReceiveKeyboardCommand(keys)) {
             return event.preventDefault()

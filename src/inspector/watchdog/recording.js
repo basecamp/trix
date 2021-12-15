@@ -4,7 +4,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 export default class Recording {
@@ -73,17 +72,11 @@ export default class Recording {
     }
 
     const { frames } = this
-    this.frames = (() => {
-      const result = []
-
-      Array.from(frames).forEach(([ timestamp, index, event ]) => {
-        if (index >= offset) {
-          result.push([ timestamp, index - offset, event ])
-        }
-      })
-
-      return result
-    })()
+    this.frames = Array.from(frames).map(([ timestamp, index, event ]) => {
+      if (index >= offset) {
+        return [ timestamp, index - offset, event ]
+      }
+    }).filter(frame => frame)
 
     this.snapshots = this.snapshots.slice(offset)
   }

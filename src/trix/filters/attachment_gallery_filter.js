@@ -7,7 +7,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 export var attachmentGalleryFilter = function(snapshot) {
@@ -45,40 +44,35 @@ class Filter {
 
   applyBlockAttribute() {
     let offset = 0
-    return (() => {
-      const result = []
 
-      Array.from(this.findRangesOfPieces()).forEach((range) => {
-        if (range[1] - range[0] > 1) {
-          range[0] += offset
-          range[1] += offset
+    Array.from(this.findRangesOfPieces()).forEach((range) => {
+      if (range[1] - range[0] > 1) {
+        range[0] += offset
+        range[1] += offset
 
-          if (this.document.getCharacterAtPosition(range[1]) !== "\n") {
-            this.document = this.document.insertBlockBreakAtRange(range[1])
-            if (range[1] < this.selectedRange[1]) {
+        if (this.document.getCharacterAtPosition(range[1]) !== "\n") {
+          this.document = this.document.insertBlockBreakAtRange(range[1])
+          if (range[1] < this.selectedRange[1]) {
+            this.moveSelectedRangeForward()
+          }
+          range[1]++
+          offset++
+        }
+
+        if (range[0] !== 0) {
+          if (this.document.getCharacterAtPosition(range[0] - 1) !== "\n") {
+            this.document = this.document.insertBlockBreakAtRange(range[0])
+            if (range[0] < this.selectedRange[0]) {
               this.moveSelectedRangeForward()
             }
-            range[1]++
+            range[0]++
             offset++
           }
-
-          if (range[0] !== 0) {
-            if (this.document.getCharacterAtPosition(range[0] - 1) !== "\n") {
-              this.document = this.document.insertBlockBreakAtRange(range[0])
-              if (range[0] < this.selectedRange[0]) {
-                this.moveSelectedRangeForward()
-              }
-              range[0]++
-              offset++
-            }
-          }
-
-          result.push(this.document = this.document.applyBlockAttributeAtRange(BLOCK_ATTRIBUTE_NAME, true, range))
         }
-      })
 
-      return result
-    })()
+        this.document = this.document.applyBlockAttributeAtRange(BLOCK_ATTRIBUTE_NAME, true, range)
+      }
+    })
   }
 
   findRangesOfBlocks() {

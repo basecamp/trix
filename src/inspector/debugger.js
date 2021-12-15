@@ -9,7 +9,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 // This file is not included in the main Trix bundle and
@@ -128,16 +127,15 @@ var reportError = function(error) {
   }
 }
 
-var notifyErrorListeners = (error, element) =>
-  Array.from(errorListeners).map((listener) =>
-    (() => {
-      try {
-        return listener(error, element)
-      } catch (error1) {}
-    })()
-  )
+var notifyErrorListeners = (error, element) => {
+  Array.from(errorListeners).forEach((listener) => {
+    try {
+      listener(error, element)
+    } catch (error1) {}
+  })
+}
 
-;(function() {
+(function() {
   console.groupCollapsed("Trix debugger")
 
   for (const className in DEBUG_METHODS) {

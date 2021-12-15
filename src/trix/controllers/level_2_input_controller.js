@@ -9,7 +9,6 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * DS104: Avoid inline assignments
  * DS204: Change includes calls to have a more natural evaluation order
- * DS205: Consider reworking code to avoid use of IIFEs
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -310,14 +309,10 @@ export default class Level2InputController extends InputController {
     },
 
     formatRemove() {
-      return this.withTargetDOMRange(function() {
-        return (() => {
-          const result = []
-          for (const attributeName in this.responder?.getCurrentAttributes()) {
-            result.push(this.responder?.removeCurrentAttribute(attributeName))
-          }
-          return result
-        })()
+      this.withTargetDOMRange(function() {
+        for (const attributeName in this.responder?.getCurrentAttributes()) {
+          this.responder?.removeCurrentAttribute(attributeName)
+        }
       })
     },
 

@@ -7,7 +7,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import ObjectView from "trix/views/object_view"
@@ -48,17 +47,7 @@ export default class TextView extends ObjectView {
   }
 
   getPieces() {
-    return (() => {
-      const result = []
-
-      Array.from(this.text.getPieces()).forEach((piece) => {
-        if (!piece.hasAttribute("blockBreak")) {
-          result.push(piece)
-        }
-      })
-
-      return result
-    })()
+    return Array.from(this.text.getPieces()).filter((piece) => !piece.hasAttribute("blockBreak"))
   }
 }
 

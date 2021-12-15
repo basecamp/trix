@@ -10,7 +10,6 @@
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * DS104: Avoid inline assignments
- * DS205: Consider reworking code to avoid use of IIFEs
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -18,7 +17,7 @@ import Deserializer from "inspector/watchdog/deserializer"
 
 const clear = (element) => {
   while (element.lastChild) {
-    result.push(element.removeChild(element.lastChild))
+    element.removeChild(element.lastChild)
   }
 }
 
@@ -90,14 +89,9 @@ export default class PlayerView extends View {
   }
 
   renderEvents(events) {
-    const renderedEvents = (() => {
-      const result = []
-      for (let index = events.length - 1; index >= 0; index--) {
-        const event = events[index]
-        result.push(this.renderEvent(event, index))
-      }
-      return result
-    })()
+    const renderedEvents = events.slice().reverse().map((event, index) => {
+      return this.renderEvent(event, index)
+    })
     this.log.innerText = renderedEvents.join("\n")
   }
 
@@ -160,19 +154,22 @@ export default class PlayerView extends View {
   }
 
   renderEvent(event, index) {
-    const description = (() => {
-      switch (event.type) {
-        case "input":
-          return "Browser input event received"
-        case "keypress":
-          var key = (event.character != null ? event.character : event.charCode) || event.keyCode
-          return `Key pressed: ${JSON.stringify(key)}`
-        case "log":
-          return event.message
-        case "snapshot":
-          return "DOM update"
-      }
-    })()
+    let description, key
+
+    switch (event.type) {
+      case "input":
+        description = "Browser input event received"
+        break
+      case "keypress":
+        key = event.character || event.charCode || event.keyCode
+        description = `Key pressed: ${JSON.stringify(key)}`
+        break
+      case "log":
+        description = event.message
+        break
+      case "snapshot":
+        description = "DOM update"
+    }
 
     return `[${index}] ${description}`
   }

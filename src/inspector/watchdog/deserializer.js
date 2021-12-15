@@ -4,7 +4,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -24,16 +23,18 @@ export default class Deserializer {
   }
 
   deserializeNode(serializedNode) {
-    const node = (() => {
-      switch (serializedNode.name) {
-        case "#text":
-          return this.deserializeTextNode(serializedNode)
-        case "#comment":
-          return this.deserializeComment(serializedNode)
-        default:
-          return this.deserializeElement(serializedNode)
-      }
-    })()
+    let node
+    switch (serializedNode.name) {
+      case "#text":
+        node = this.deserializeTextNode(serializedNode)
+        break
+      case "#comment":
+        node = this.deserializeComment(serializedNode)
+        break
+      default:
+        node = this.deserializeElement(serializedNode)
+        break
+    }
 
     this.nodes[serializedNode.id] = node
     return node

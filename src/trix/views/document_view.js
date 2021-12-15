@@ -7,7 +7,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import { makeElement } from "trix/core/helpers"
@@ -48,16 +47,11 @@ export default class DocumentView extends ObjectView {
 
     if (!this.document.isEmpty()) {
       const objects = ObjectGroup.groupObjects(this.document.getBlocks(), { asTree: true })
-      return (() => {
-        const result = []
 
-        Array.from(objects).forEach((object) => {
-          const view = this.findOrCreateCachedChildView(BlockView, object)
-          result.push(Array.from(view.getNodes()).map((node) => this.shadowElement.appendChild(node)))
-        })
-
-        return result
-      })()
+      Array.from(objects).forEach((object) => {
+        const view = this.findOrCreateCachedChildView(BlockView, object)
+        Array.from(view.getNodes()).map((node) => this.shadowElement.appendChild(node))
+      })
     }
   }
 

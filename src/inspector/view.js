@@ -6,7 +6,6 @@
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -45,25 +44,16 @@ export default class View {
   }
 
   installEventHandlers() {
-    return (() => {
-      const result = []
-      for (const eventName in this.events) {
-        const handler = this.events[eventName]
-        result.push(
-          ((eventName, handler) => {
-            return handleEvent(eventName, {
-              onElement: this.editorElement,
-              withCallback: (event) => {
-                return requestAnimationFrame(() => {
-                  return handler.call(this, event)
-                })
-              },
-            })
-          })(eventName, handler)
-        )
+    for (const eventName in this.events) {
+      const handler = this.events[eventName]
+      const callback = (event) => {
+        requestAnimationFrame(() => {
+          handler.call(this, event)
+        })
       }
-      return result
-    })()
+
+      handleEvent(eventName, { onElement: this.editorElement, withCallback: callback })
+    }
   }
 
   didToggle(event) {

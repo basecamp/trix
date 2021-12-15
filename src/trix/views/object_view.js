@@ -4,7 +4,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -133,15 +132,11 @@ export default class ObjectView extends BasicObject {
     if (cache) {
       const views = this.getAllChildViews().concat(this)
       const objectKeys = Array.from(views).map((view) => view.object.getCacheKey())
-      return (() => {
-        const result = []
-        for (const key in cache) {
-          if (!Array.from(objectKeys).includes(key)) {
-            result.push(delete cache[key])
-          }
+      for (const key in cache) {
+        if (!Array.from(objectKeys).includes(key)) {
+          delete cache[key]
         }
-        return result
-      })()
+      }
     }
   }
 }

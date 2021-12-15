@@ -9,7 +9,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -79,17 +78,7 @@ export default class SplittableList extends TrixObject {
   }
 
   selectSplittableList(test) {
-    const objects = (() => {
-      const result = []
-
-      Array.from(this.objects).forEach((object) => {
-        if (test(object)) {
-          result.push(object)
-        }
-      })
-
-      return result
-    })()
+    const objects = Array.from(this.objects).filter((object) => test(object))
     return new this.constructor(objects)
   }
 

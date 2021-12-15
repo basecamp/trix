@@ -8,7 +8,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -67,16 +66,11 @@ export default class Document extends TrixObject {
   }
 
   copyWithBaseBlockAttributes(blockAttributes = []) {
-    const blocks = (() => {
-      const result = []
+    const blocks = Array.from(this.getBlocks()).map((block) => {
+      const attributes = blockAttributes.concat(block.getAttributes())
+      return block.copyWithAttributes(attributes)
+    })
 
-      Array.from(this.getBlocks()).forEach((block) => {
-        const attributes = blockAttributes.concat(block.getAttributes())
-        result.push(block.copyWithAttributes(attributes))
-      })
-
-      return result
-    })()
     return new this.constructor(blocks)
   }
 
@@ -563,16 +557,9 @@ export default class Document extends TrixObject {
     const commonAttributes = attributesForBlock(block)
     const attributes = block.text.getAttributesAtPosition(offset)
     const attributesLeft = block.text.getAttributesAtPosition(offset - 1)
-    const inheritableAttributes = (() => {
-      const result = []
-      for (key in config.textAttributes) {
-        value = config.textAttributes[key]
-        if (value.inheritable) {
-          result.push(key)
-        }
-      }
-      return result
-    })()
+    const inheritableAttributes = Object.keys(config.textAttributes).filter((key) => {
+      return config.textAttributes[key].inheritable
+    })
 
     for (key in attributesLeft) {
       value = attributesLeft[key]
@@ -597,21 +584,13 @@ export default class Document extends TrixObject {
   getBaseBlockAttributes() {
     let baseBlockAttributes = this.getBlockAtIndex(0).getAttributes()
 
-    for (
-      let blockIndex = 1, end = this.getBlockCount(), asc = 1 <= end;
-      asc ? blockIndex < end : blockIndex > end;
-      asc ? blockIndex++ : blockIndex--
-    ) {
+    for (let blockIndex = 1; blockIndex < this.getBlockCount(); blockIndex++) {
       var blockAttributes = this.getBlockAtIndex(blockIndex).getAttributes()
       var lastAttributeIndex = Math.min(baseBlockAttributes.length, blockAttributes.length)
 
       baseBlockAttributes = (() => {
         const result = []
-        for (
-          let index = 0, end1 = lastAttributeIndex, asc1 = 0 <= end1;
-          asc1 ? index < end1 : index > end1;
-          asc1 ? index++ : index--
-        ) {
+        for (let index = 0; index < lastAttributeIndex; index++) {
           if (blockAttributes[index] !== baseBlockAttributes[index]) {
             break
           }

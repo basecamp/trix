@@ -11,7 +11,6 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * DS104: Avoid inline assignments
  * DS204: Change includes calls to have a more natural evaluation order
- * DS205: Consider reworking code to avoid use of IIFEs
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -116,17 +115,7 @@ export default class Block extends TrixObject {
   }
 
   getNestableAttributes() {
-    return (() => {
-      const result = []
-
-      Array.from(this.attributes).forEach((attribute) => {
-        if (getBlockConfig(attribute).nestable) {
-          result.push(attribute)
-        }
-      })
-
-      return result
-    })()
+    return Array.from(this.attributes).filter((attribute) => getBlockConfig(attribute).nestable)
   }
 
   getNestingLevel() {
@@ -154,17 +143,7 @@ export default class Block extends TrixObject {
   }
 
   getListItemAttributes() {
-    return (() => {
-      const result = []
-
-      Array.from(this.attributes).forEach((attribute) => {
-        if (getBlockConfig(attribute).listAttribute) {
-          result.push(attribute)
-        }
-      })
-
-      return result
-    })()
+    return Array.from(this.attributes).filter((attribute) => getBlockConfig(attribute).listAttribute)
   }
 
   isListItem() {
@@ -181,14 +160,14 @@ export default class Block extends TrixObject {
 
   findLineBreakInDirectionFromPosition(direction, position) {
     const string = this.toString()
-    const result = (() => {
-      switch (direction) {
-        case "forward":
-          return string.indexOf("\n", position)
-        case "backward":
-          return string.slice(0, position).lastIndexOf("\n")
-      }
-    })()
+    let result
+    switch (direction) {
+      case "forward":
+        result = string.indexOf("\n", position)
+        break
+      case "backward":
+        result = string.slice(0, position).lastIndexOf("\n")
+    }
 
     if (result !== -1) {
       return result

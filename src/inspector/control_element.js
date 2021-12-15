@@ -7,7 +7,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -49,23 +48,15 @@ export default class ControlElement {
   }
 
   logInputEvents() {
-    Array.from(KEY_EVENTS).forEach((eventName) => {
+    KEY_EVENTS.forEach((eventName) => {
       this.element.addEventListener(eventName, (event) => console.log(`${event.type}: keyCode = ${event.keyCode}`))
     })
 
-    return (() => {
-      const result = []
-
-      Array.from(COMPOSITION_EVENTS).forEach((eventName) => {
-        result.push(
-          this.element.addEventListener(eventName, (event) =>
-            console.log(`${event.type}: data = ${JSON.stringify(event.data)}`)
-          )
-        )
-      })
-
-      return result
-    })()
+    COMPOSITION_EVENTS.forEach((eventName) => {
+      this.element.addEventListener(eventName, (event) =>
+        console.log(`${event.type}: data = ${JSON.stringify(event.data)}`)
+      )
+    })
   }
 
   logMutations() {
@@ -75,42 +66,23 @@ export default class ControlElement {
 
   didMutate(mutations) {
     console.log(`Mutations (${mutations.length}):`)
-    return (() => {
-      const result = []
-      for (let index = 0; index < mutations.length; index++) {
-        var mutation = mutations[index]
-        console.log(` ${index + 1}. ${mutation.type}:`)
-        switch (mutation.type) {
-          case "characterData":
-            result.push(
-              console.log(
-                `  oldValue = ${JSON.stringify(mutation.oldValue)}, newValue = ${JSON.stringify(mutation.target.data)}`
-              )
-            )
-            break
-          case "childList":
-            Array.from(mutation.addedNodes).forEach((node) => {
-              console.log(`  node added ${inspectNode(node)}`)
-            })
+    for (let index = 0; index < mutations.length; index++) {
+      var mutation = mutations[index]
+      console.log(` ${index + 1}. ${mutation.type}:`)
+      switch (mutation.type) {
+        case "characterData":
+          console.log(`  oldValue = ${JSON.stringify(mutation.oldValue)}, newValue = ${JSON.stringify(mutation.target.data)}`)
+          break
+        case "childList":
+          Array.from(mutation.addedNodes).forEach((node) => {
+            console.log(`  node added ${inspectNode(node)}`)
+          })
 
-            result.push(
-              (() => {
-                const result1 = []
-
-                Array.from(mutation.removedNodes).forEach((node) => {
-                  result1.push(console.log(`  node removed ${inspectNode(node)}`))
-                })
-
-                return result1
-              })()
-            )
-            break
-          default:
-            result.push(undefined)
-        }
+          Array.from(mutation.removedNodes).forEach((node) => {
+            console.log(`  node removed ${inspectNode(node)}`)
+          })
       }
-      return result
-    })()
+    }
   }
 }
 

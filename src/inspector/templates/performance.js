@@ -6,7 +6,6 @@
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 if (!window.JST) {
@@ -14,14 +13,12 @@ if (!window.JST) {
 }
 
 window.JST["trix/inspector/templates/performance"] = function() {
-  const metrics = (() => {
-    const result = []
-    for (const name in this.data) {
+  const metrics = () => {
+    this.data.map((name) => {
       const data = this.data[name]
-      result.push(dataMetrics(name, data, this.round))
-    }
-    return result
-  })()
+      return dataMetrics(name, data, this.round)
+    })
+  }
 
   return metrics.join("\n")
 }
