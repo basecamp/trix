@@ -8,7 +8,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS202: Simplify dynamic range loops
  * DS205: Consider reworking code to avoid use of IIFEs
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
@@ -513,32 +512,22 @@ export default class Document extends TrixObject {
       textRange = [ startLocation.offset, endLocation.offset ]
       return callback(block, textRange, startLocation.index)
     } else {
-      return (() => {
-        const result = []
-        for (
-          var { index } = startLocation, end = endLocation.index, asc = startLocation.index <= end;
-          asc ? index <= end : index >= end;
-          asc ? index++ : index--
-        ) {
-          block = this.getBlockAtIndex(index)
-          if (block) {
-            textRange = (() => {
-              switch (index) {
-                case startLocation.index:
-                  return [ startLocation.offset, block.text.getLength() ]
-                case endLocation.index:
-                  return [ 0, endLocation.offset ]
-                default:
-                  return [ 0, block.text.getLength() ]
-              }
-            })()
-            result.push(callback(block, textRange, index))
-          } else {
-            result.push(undefined)
+      for (let index = startLocation.index; index <= endLocation.index; index++) {
+        block = this.getBlockAtIndex(index)
+        if (block) {
+          switch (index) {
+            case startLocation.index:
+              textRange = [ startLocation.offset, block.text.getLength() ]
+              break
+            case endLocation.index:
+              textRange = [ 0, endLocation.offset ]
+              break
+            default:
+              textRange = [ 0, block.text.getLength() ]
           }
+          callback(block, textRange, index)
         }
-        return result
-      })()
+      }
     }
   }
 
