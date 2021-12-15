@@ -20,16 +20,6 @@ import {
 } from "trix/core/helpers"
 
 export default class SelectionManager extends BasicObject {
-  static initClass() {
-    // Private
-
-    this.proxyMethod("locationMapper.findLocationFromContainerAndOffset")
-    this.proxyMethod("locationMapper.findContainerAndOffsetFromLocation")
-    this.proxyMethod("locationMapper.findNodeAndOffsetFromLocation")
-    this.proxyMethod("pointMapper.createDOMRangeFromPoint")
-    this.proxyMethod("pointMapper.getClientRectsForDOMRange")
-  }
-
   constructor(element) {
     super(...arguments)
     this.didMouseDown = this.didMouseDown.bind(this)
@@ -202,4 +192,9 @@ export default class SelectionManager extends BasicObject {
   }
 }
 
-SelectionManager.initClass()
+SelectionManager.proxyMethod("locationMapper.findLocationFromContainerAndOffset")
+SelectionManager.proxyMethod("locationMapper.findContainerAndOffsetFromLocation")
+SelectionManager.proxyMethod("locationMapper.findNodeAndOffsetFromLocation")
+SelectionManager.proxyMethod("pointMapper.createDOMRangeFromPoint")
+SelectionManager.proxyMethod("pointMapper.getClientRectsForDOMRange")
+

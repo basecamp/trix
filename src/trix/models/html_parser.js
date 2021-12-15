@@ -12,7 +12,6 @@
  * DS104: Avoid inline assignments
  * DS204: Change includes calls to have a more natural evaluation order
  * DS205: Consider reworking code to avoid use of IIFEs
- * DS206: Consider reworking classes to avoid initClass
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import config from "trix/config"

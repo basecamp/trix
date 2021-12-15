@@ -3,24 +3,21 @@
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
- * DS206: Consider reworking classes to avoid initClass
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import View from "inspector/view"
 import UTF16String from "trix/core/utilities/utf16_string"
 
 class SelectionView extends View {
-  static initClass() {
-    this.prototype.title = "Selection"
-    this.prototype.template = "selection"
-    this.prototype.events = {
-      "trix-selection-change"() {
-        return this.render()
-      },
-      "trix-render"() {
-        return this.render()
-      },
-    }
+  static title = "Selection"
+  static template = "selection"
+  static events = {
+    "trix-selection-change": function() {
+      return this.render()
+    },
+    "trix-render": function() {
+      return this.render()
+    },
   }
 
   render() {
@@ -52,6 +49,5 @@ class SelectionView extends View {
     return `${this.title} (${this.range.join()})`
   }
 }
-SelectionView.initClass()
 
 Trix.Inspector.registerView(SelectionView)

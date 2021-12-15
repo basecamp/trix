@@ -3,7 +3,6 @@
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
- * DS206: Consider reworking classes to avoid initClass
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import View from "inspector/view"
@@ -11,10 +10,8 @@ import View from "inspector/view"
 import { handleEvent } from "trix/core/helpers"
 
 class DebugView extends View {
-  static initClass() {
-    this.prototype.title = "Debug"
-    this.prototype.template = "debug"
-  }
+  static title = "Debug"
+  static template = "debug"
 
   constructor() {
     super(...arguments)
@@ -70,6 +67,5 @@ class DebugView extends View {
     }
   }
 }
-DebugView.initClass()
 
 Trix.Inspector.registerView(DebugView)

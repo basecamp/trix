@@ -24,7 +24,7 @@ export default class View {
     if (this.getSetting("open") === "true") {
       this.element.open = true
     }
-    this.element.classList.add(this.template)
+    this.element.classList.add(this.constructor.template)
 
     this.titleElement = document.createElement("summary")
     this.element.appendChild(this.titleElement)
@@ -76,13 +76,13 @@ export default class View {
   }
 
   getTitle() {
-    return this.title != null ? this.title : ""
+    return this.title || ""
   }
 
   render() {
     this.renderTitle()
     if (this.isOpen()) {
-      this.panelElement.innerHTML = JST[`trix/inspector/templates/${this.template}`].apply(this)
+      this.panelElement.innerHTML = JST[`trix/inspector/templates/${this.constructor.template}`].apply(this)
     }
   }
 
@@ -104,5 +104,17 @@ export default class View {
 
   getSettingsKey(key) {
     return `trix/inspector/${this.template}/${key}`
+  }
+
+  get title() {
+    return this.constructor.title
+  }
+
+  get template() {
+    return this.constructor.template
+  }
+
+  get events() {
+    return this.constructor.events
   }
 }

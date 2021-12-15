@@ -3,20 +3,17 @@
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
- * DS206: Consider reworking classes to avoid initClass
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import View from "inspector/view"
 
 class UndoView extends View {
-  static initClass() {
-    this.prototype.title = "Undo"
-    this.prototype.template = "undo"
-    this.prototype.events = {
-      "trix-change"() {
-        return this.render()
-      },
-    }
+  static title = "Undo"
+  static template = "undo"
+  static events = {
+    "trix-change": function() {
+      return this.render()
+    },
   }
 
   render() {
@@ -25,6 +22,5 @@ class UndoView extends View {
     return super.render(...arguments)
   }
 }
-UndoView.initClass()
 
 Trix.Inspector.registerView(UndoView)

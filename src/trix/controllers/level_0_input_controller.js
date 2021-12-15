@@ -9,7 +9,6 @@
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * DS205: Consider reworking code to avoid use of IIFEs
- * DS206: Consider reworking classes to avoid initClass
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -584,15 +583,6 @@ var pasteEventIsCrippledSafariHTMLPaste = function(event) {
 }
 
 class CompositionInput extends BasicObject {
-  static initClass() {
-    this.proxyMethod("inputController.setInputSummary")
-    this.proxyMethod("inputController.requestRender")
-    this.proxyMethod("inputController.requestReparse")
-    this.proxyMethod("responder?.selectionIsExpanded")
-    this.proxyMethod("responder?.insertPlaceholder")
-    this.proxyMethod("responder?.selectPlaceholder")
-    this.proxyMethod("responder?.forgetPlaceholder")
-  }
   constructor(inputController) {
     super(...arguments)
     this.inputController = inputController
@@ -675,4 +665,10 @@ class CompositionInput extends BasicObject {
   }
 }
 
-
+CompositionInput.proxyMethod("inputController.setInputSummary")
+CompositionInput.proxyMethod("inputController.requestRender")
+CompositionInput.proxyMethod("inputController.requestReparse")
+CompositionInput.proxyMethod("responder?.selectionIsExpanded")
+CompositionInput.proxyMethod("responder?.insertPlaceholder")
+CompositionInput.proxyMethod("responder?.selectPlaceholder")
+CompositionInput.proxyMethod("responder?.forgetPlaceholder")

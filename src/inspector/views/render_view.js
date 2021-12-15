@@ -3,26 +3,23 @@
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
- * DS206: Consider reworking classes to avoid initClass
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import View from "inspector/view"
 
 export default class RenderView extends View {
-  static initClass() {
-    this.prototype.title = "Renders"
-    this.prototype.template = "render"
-    this.prototype.events = {
-      "trix-render": function() {
-        this.renderCount++
-        return this.render()
-      },
+  static title = "Renders"
+  static template = "render"
+  static events = {
+    "trix-render": function() {
+      this.renderCount++
+      return this.render()
+    },
 
-      "trix-sync": function() {
-        this.syncCount++
-        return this.render()
-      },
-    }
+    "trix-sync": function() {
+      this.syncCount++
+      return this.render()
+    },
   }
 
   constructor() {
@@ -35,7 +32,5 @@ export default class RenderView extends View {
     return `${this.title} (${this.renderCount})`
   }
 }
-
-RenderView.initClass()
 
 Trix.Inspector.registerView(RenderView)

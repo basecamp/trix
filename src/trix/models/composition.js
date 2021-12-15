@@ -25,16 +25,6 @@ import {
 const PLACEHOLDER = " "
 
 export default class Composition extends BasicObject {
-  static initClass() {
-    // Selection
-
-    this.proxyMethod("getSelectionManager().getPointRange")
-    this.proxyMethod("getSelectionManager().setLocationRangeFromPointRange")
-    this.proxyMethod("getSelectionManager().createLocationRangeFromDOMRange")
-    this.proxyMethod("getSelectionManager().locationIsCursorTarget")
-    this.proxyMethod("getSelectionManager().selectionIsExpanded")
-    this.proxyMethod("delegate?.getSelectionManager")
-  }
   constructor() {
     super(...arguments)
     this.document = new Document()
@@ -797,4 +787,10 @@ export default class Composition extends BasicObject {
     return utf16string.offsetToUCS2Offset(utf16position + offset)
   }
 }
-Composition.initClass()
+
+Composition.proxyMethod("getSelectionManager().getPointRange")
+Composition.proxyMethod("getSelectionManager().setLocationRangeFromPointRange")
+Composition.proxyMethod("getSelectionManager().createLocationRangeFromDOMRange")
+Composition.proxyMethod("getSelectionManager().locationIsCursorTarget")
+Composition.proxyMethod("getSelectionManager().selectionIsExpanded")
+Composition.proxyMethod("delegate?.getSelectionManager")

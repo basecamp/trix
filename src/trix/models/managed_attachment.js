@@ -1,36 +1,7 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS206: Consider reworking classes to avoid initClass
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import "trix/models/attachment"
 import BasicObject from "trix/core/basic_object"
 
 export default class ManagedAttachment extends BasicObject {
-  static initClass() {
-    this.proxyMethod("attachment.getAttribute")
-    this.proxyMethod("attachment.hasAttribute")
-    this.proxyMethod("attachment.setAttribute")
-    this.proxyMethod("attachment.getAttributes")
-    this.proxyMethod("attachment.setAttributes")
-    this.proxyMethod("attachment.isPending")
-    this.proxyMethod("attachment.isPreviewable")
-    this.proxyMethod("attachment.getURL")
-    this.proxyMethod("attachment.getHref")
-    this.proxyMethod("attachment.getFilename")
-    this.proxyMethod("attachment.getFilesize")
-    this.proxyMethod("attachment.getFormattedFilesize")
-    this.proxyMethod("attachment.getExtension")
-    this.proxyMethod("attachment.getContentType")
-    this.proxyMethod("attachment.getFile")
-    this.proxyMethod("attachment.setFile")
-    this.proxyMethod("attachment.releaseFile")
-    this.proxyMethod("attachment.getUploadProgress")
-    this.proxyMethod("attachment.setUploadProgress")
-  }
   constructor(attachmentManager, attachment) {
     super(...arguments)
     this.attachmentManager = attachmentManager
@@ -44,4 +15,23 @@ export default class ManagedAttachment extends BasicObject {
   }
 }
 
-ManagedAttachment.initClass()
+ManagedAttachment.proxyMethod("attachment.getAttribute")
+ManagedAttachment.proxyMethod("attachment.hasAttribute")
+ManagedAttachment.proxyMethod("attachment.setAttribute")
+ManagedAttachment.proxyMethod("attachment.getAttributes")
+ManagedAttachment.proxyMethod("attachment.setAttributes")
+ManagedAttachment.proxyMethod("attachment.isPending")
+ManagedAttachment.proxyMethod("attachment.isPreviewable")
+ManagedAttachment.proxyMethod("attachment.getURL")
+ManagedAttachment.proxyMethod("attachment.getHref")
+ManagedAttachment.proxyMethod("attachment.getFilename")
+ManagedAttachment.proxyMethod("attachment.getFilesize")
+ManagedAttachment.proxyMethod("attachment.getFormattedFilesize")
+ManagedAttachment.proxyMethod("attachment.getExtension")
+ManagedAttachment.proxyMethod("attachment.getContentType")
+ManagedAttachment.proxyMethod("attachment.getFile")
+ManagedAttachment.proxyMethod("attachment.setFile")
+ManagedAttachment.proxyMethod("attachment.releaseFile")
+ManagedAttachment.proxyMethod("attachment.getUploadProgress")
+ManagedAttachment.proxyMethod("attachment.setUploadProgress")
+

@@ -8,7 +8,6 @@
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * DS104: Avoid inline assignments
- * DS206: Consider reworking classes to avoid initClass
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -32,59 +31,52 @@ import { selectionChangeObserver } from "trix/observers/selection_change_observe
 const snapshotsAreEqual = (a, b) => rangesAreEqual(a.selectedRange, b.selectedRange) && a.document.isEqualTo(b.document)
 
 export default class EditorController extends Controller {
-  static initClass() {
-    this.proxyMethod("getSelectionManager().setLocationRange")
-    this.proxyMethod("getSelectionManager().getLocationRange")
-
-    // Actions
-
-    this.prototype.actions = {
-      undo: {
-        test() {
-          return this.editor.canUndo()
-        },
-        perform() {
-          return this.editor.undo()
-        },
+  static actions = {
+    undo: {
+      test() {
+        return this.editor.canUndo()
       },
-      redo: {
-        test() {
-          return this.editor.canRedo()
-        },
-        perform() {
-          return this.editor.redo()
-        },
+      perform() {
+        return this.editor.undo()
       },
-      link: {
-        test() {
-          return this.editor.canActivateAttribute("href")
-        },
+    },
+    redo: {
+      test() {
+        return this.editor.canRedo()
       },
-      increaseNestingLevel: {
-        test() {
-          return this.editor.canIncreaseNestingLevel()
-        },
-        perform() {
-          return this.editor.increaseNestingLevel() && this.render()
-        },
+      perform() {
+        return this.editor.redo()
       },
-      decreaseNestingLevel: {
-        test() {
-          return this.editor.canDecreaseNestingLevel()
-        },
-        perform() {
-          return this.editor.decreaseNestingLevel() && this.render()
-        },
+    },
+    link: {
+      test() {
+        return this.editor.canActivateAttribute("href")
       },
-      attachFiles: {
-        test() {
-          return true
-        },
-        perform() {
-          return config.input.pickFiles(this.editor.insertFiles)
-        },
+    },
+    increaseNestingLevel: {
+      test() {
+        return this.editor.canIncreaseNestingLevel()
       },
-    }
+      perform() {
+        return this.editor.increaseNestingLevel() && this.render()
+      },
+    },
+    decreaseNestingLevel: {
+      test() {
+        return this.editor.canDecreaseNestingLevel()
+      },
+      perform() {
+        return this.editor.decreaseNestingLevel() && this.render()
+      },
+    },
+    attachFiles: {
+      test() {
+        return true
+      },
+      perform() {
+        return config.input.pickFiles(this.editor.insertFiles)
+      },
+    },
   }
 
   constructor({ editorElement, document, html }) {
@@ -602,6 +594,11 @@ export default class EditorController extends Controller {
   isFocusedInvisibly() {
     return this.isFocused() && !this.getLocationRange()
   }
+
+  get actions() {
+    return this.constructor.actions
+  }
 }
 
-EditorController.initClass()
+EditorController.proxyMethod("getSelectionManager().setLocationRange")
+EditorController.proxyMethod("getSelectionManager().getLocationRange")

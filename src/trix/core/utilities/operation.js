@@ -1,10 +1,6 @@
 import BasicObject from "trix/core/basic_object"
 
 export default class Operation extends BasicObject {
-  static initClass() {
-    this.proxyMethod("getPromise().then")
-    this.proxyMethod("getPromise().catch")
-  }
   isPerforming() {
     return this.performing === true
   }
@@ -55,4 +51,5 @@ export default class Operation extends BasicObject {
   }
 }
 
-Operation.initClass()
+Operation.proxyMethod("getPromise().then")
+Operation.proxyMethod("getPromise().catch")

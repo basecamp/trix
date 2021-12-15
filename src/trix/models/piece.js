@@ -6,7 +6,6 @@
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
- * DS206: Consider reworking classes to avoid initClass
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -14,9 +13,7 @@ import TrixObject from "trix/core/object" // Don't override window.Object
 import Hash from "trix/core/collections/hash"
 
 export default class Piece extends TrixObject {
-  static initClass() {
-    this.types = {}
-  }
+  static types = {}
 
   static registerType(type, constructor) {
     constructor.type = type
@@ -146,5 +143,3 @@ export default class Piece extends TrixObject {
     return false
   }
 }
-
-Piece.initClass()
