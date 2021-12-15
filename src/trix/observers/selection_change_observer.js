@@ -1,6 +1,5 @@
 /* eslint-disable
     id-length,
-    no-this-before-super,
     no-var,
 */
 // TODO: This file was created by bulk-decaffeinate.

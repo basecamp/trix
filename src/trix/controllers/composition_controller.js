@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-this-before-super,
     no-unused-vars,
 */
 // TODO: This file was created by bulk-decaffeinate.
