@@ -83,7 +83,7 @@ export default class HTMLSanitizer extends BasicObject {
       }
     }
 
-    [ ...Array.from(element.attributes) ].forEach(({ name }) => {
+    Array.from(element.attributes).forEach(({ name }) => {
       if (!Array.from(this.allowedAttributes).includes(name) && name.indexOf("data-trix") !== 0) {
         element.removeAttribute(name)
       }
@@ -93,7 +93,7 @@ export default class HTMLSanitizer extends BasicObject {
   }
 
   normalizeListElementNesting() {
-    [ ...Array.from(this.body.querySelectorAll("ul,ol")) ].forEach((listElement) => {
+    Array.from(this.body.querySelectorAll("ul,ol")).forEach((listElement) => {
       const previousElement = listElement.previousElementSibling
       if (previousElement) {
         if (tagName(previousElement) === "li") {
