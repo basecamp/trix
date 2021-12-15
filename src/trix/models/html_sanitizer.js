@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-undef,
     no-var,
 */
@@ -96,8 +95,8 @@ export default class HTMLSanitizer extends BasicObject {
 
   normalizeListElementNesting() {
     [ ...Array.from(this.body.querySelectorAll("ul,ol")) ].forEach((listElement) => {
-      let previousElement
-      if (previousElement = listElement.previousElementSibling) {
+      const previousElement = listElement.previousElementSibling
+      if (previousElement) {
         if (tagName(previousElement) === "li") {
           previousElement.appendChild(listElement)
         }

@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-this-before-super,
     no-var,
 */
@@ -130,9 +129,7 @@ export default class MutationObserver extends BasicObject {
   }
 
   getTextMutationSummary() {
-    let added, deleted
     const { additions, deletions } = this.getTextChangesFromCharacterData()
-
     const textChanges = this.getTextChangesFromChildList()
 
     Array.from(textChanges.additions).forEach((addition) => {
@@ -144,12 +141,17 @@ export default class MutationObserver extends BasicObject {
     deletions.push(...Array.from(textChanges.deletions || []))
 
     const summary = {}
-    if (added = additions.join("")) {
+
+    const added = additions.join("")
+    if (added) {
       summary.textAdded = added
     }
-    if (deleted = deletions.join("")) {
+
+    const deleted = deletions.join("")
+    if (deleted) {
       summary.textDeleted = deleted
     }
+
     return summary
   }
 

@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-var,
 */
 // TODO: This file was created by bulk-decaffeinate.
@@ -90,8 +89,8 @@ export default class DocumentView extends ObjectView {
     })
 
     Array.from(findStoredElements(fragment)).forEach((element) => {
-      let storedElement
-      if (storedElement = this.elementStore.remove(element)) {
+      const storedElement = this.elementStore.remove(element)
+      if (storedElement) {
         element.parentNode.replaceChild(storedElement, element)
       }
     })

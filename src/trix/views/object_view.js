@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-cond-assign,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -41,8 +38,8 @@ export default class ObjectView extends BasicObject {
   }
 
   findOrCreateCachedChildView(viewClass, object, options) {
-    let view
-    if (view = this.getCachedViewForObject(object)) {
+    let view = this.getCachedViewForObject(object)
+    if (view) {
       this.recordChildView(view)
     } else {
       view = this.createChildView(...arguments)
@@ -84,8 +81,8 @@ export default class ObjectView extends BasicObject {
   }
 
   findElementForObject(object) {
-    let id
-    if (id = object?.id) {
+    const id = object?.id
+    if (id) {
       return this.rootView.element.querySelector(`[data-trix-id='${id}']`)
     }
   }
@@ -125,15 +122,15 @@ export default class ObjectView extends BasicObject {
   }
 
   cacheViewForObject(view, object) {
-    let cache
-    if (cache = this.getViewCache()) {
+    const cache = this.getViewCache()
+    if (cache) {
       cache[object.getCacheKey()] = view
     }
   }
 
   garbageCollectCachedViews() {
-    let cache
-    if (cache = this.getViewCache()) {
+    const cache = this.getViewCache()
+    if (cache) {
       const views = this.getAllChildViews().concat(this)
       const objectKeys = Array.from(views).map((view) => view.object.getCacheKey())
       return (() => {

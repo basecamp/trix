@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-unused-vars,
 */
 // TODO: This file was created by bulk-decaffeinate.
@@ -215,8 +214,8 @@ export default class Text extends TrixObject {
   }
 
   updateAttributesForAttachment(attributes, attachment) {
-    let range
-    if (range = this.getRangeOfAttachment(attachment)) {
+    const range = this.getRangeOfAttachment(attachment)
+    if (range) {
       return this.addAttributesAtRange(attributes, range)
     } else {
       return this

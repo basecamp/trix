@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     prefer-const,
 */
 import BasicObject from "trix/core/basic_object"

@@ -1,6 +1,5 @@
 /* eslint-disable
     id-length,
-    no-cond-assign,
     no-this-before-super,
     no-var,
 */
@@ -97,8 +96,8 @@ export var getDOMSelection = function() {
 }
 
 export var getDOMRange = function() {
-  let domRange
-  if (domRange = getDOMSelection()?.getRangeAt(0)) {
+  const domRange = getDOMSelection()?.getRangeAt(0)
+  if (domRange) {
     if (!domRangeIsPrivate(domRange)) {
       return domRange
     }

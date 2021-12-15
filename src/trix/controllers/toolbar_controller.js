@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-this-before-super,
 */
 // TODO: This file was created by bulk-decaffeinate.
@@ -182,8 +181,8 @@ export default class ToolbarController extends BasicObject {
   // Dialogs
 
   dialogIsVisible(dialogName) {
-    let element
-    if (element = this.getDialog(dialogName)) {
+    const element = this.getDialog(dialogName)
+    if (element) {
       return element.hasAttribute("data-trix-active")
     }
   }
@@ -197,7 +196,6 @@ export default class ToolbarController extends BasicObject {
   }
 
   showDialog(dialogName) {
-    let attributeName
     this.hideDialog()
     this.delegate?.toolbarWillShowDialog()
 
@@ -209,9 +207,10 @@ export default class ToolbarController extends BasicObject {
       disabledInput.removeAttribute("disabled")
     })
 
-    if (attributeName = getAttributeName(element)) {
-      let input
-      if (input = getInputForDialog(element, dialogName)) {
+    const attributeName = getAttributeName(element)
+    if (attributeName) {
+      const input = getInputForDialog(element, dialogName)
+      if (input) {
         input.value = this.attributes[attributeName] != null ? this.attributes[attributeName] : ""
         input.select()
       }
@@ -240,8 +239,8 @@ export default class ToolbarController extends BasicObject {
   }
 
   hideDialog() {
-    let element
-    if (element = this.element.querySelector(activeDialogSelector)) {
+    const element = this.element.querySelector(activeDialogSelector)
+    if (element) {
       element.removeAttribute("data-trix-active")
       element.classList.remove("trix-active")
       this.resetDialogInputs()

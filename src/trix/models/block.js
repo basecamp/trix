@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-unused-vars,
     no-var,
     prefer-const,
@@ -65,8 +64,8 @@ export default class Block extends TrixObject {
   }
 
   copyUsingObjectMap(objectMap) {
-    let mappedText
-    if (mappedText = objectMap.find(this.text)) {
+    const mappedText = objectMap.find(this.text)
+    if (mappedText) {
       return this.copyWithText(mappedText)
     } else {
       return this.copyWithText(this.text.copyUsingObjectMap(objectMap))
@@ -135,8 +134,8 @@ export default class Block extends TrixObject {
   }
 
   decreaseNestingLevel() {
-    let attribute
-    if (attribute = this.getLastNestableAttribute()) {
+    const attribute = this.getLastNestableAttribute()
+    if (attribute) {
       return this.removeAttribute(attribute)
     } else {
       return this
@@ -144,8 +143,8 @@ export default class Block extends TrixObject {
   }
 
   increaseNestingLevel() {
-    let attribute
-    if (attribute = this.getLastNestableAttribute()) {
+    const attribute = this.getLastNestableAttribute()
+    if (attribute) {
       const index = this.attributes.lastIndexOf(attribute)
       const attributes = spliceArray(this.attributes, index + 1, 0, ...Array.from(expandAttribute(attribute)))
       return this.copyWithAttributes(attributes)

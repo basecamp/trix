@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-unused-vars,
     no-var,
 */
@@ -62,10 +61,10 @@ export default class Document extends TrixObject {
   }
 
   copyUsingObjectMap(objectMap) {
-    let mappedBlock
-    const blocks = Array.from(this.getBlocks()).map((block) =>
-      (mappedBlock = objectMap.find(block)) ? mappedBlock : block.copyUsingObjectMap(objectMap)
-    )
+    const blocks = Array.from(this.getBlocks()).map((block) => {
+      const mappedBlock = objectMap.find(block)
+      return mappedBlock || block.copyUsingObjectMap(objectMap)
+    })
     return new this.constructor(blocks)
   }
 
@@ -522,7 +521,8 @@ export default class Document extends TrixObject {
           asc ? index <= end : index >= end;
           asc ? index++ : index--
         ) {
-          if (block = this.getBlockAtIndex(index)) {
+          block = this.getBlockAtIndex(index)
+          if (block) {
             textRange = (() => {
               switch (index) {
                 case startLocation.index:
@@ -658,9 +658,9 @@ export default class Document extends TrixObject {
     let position = 0
     const iterable = this.blockList.toArray()
     for (let index = 0; index < iterable.length; index++) {
-      var textRange
       const { text } = iterable[index]
-      if (textRange = text.getRangeOfAttachment(attachment)) {
+      const textRange = text.getRangeOfAttachment(attachment)
+      if (textRange) {
         return normalizeRange([ position + textRange[0], position + textRange[1] ])
       }
       position += text.getLength()
@@ -803,9 +803,9 @@ export default class Document extends TrixObject {
 }
 
 var attributesForBlock = function(block) {
-  let attributeName
   const attributes = {}
-  if (attributeName = block.getLastAttribute()) {
+  const attributeName = block.getLastAttribute()
+  if (attributeName) {
     attributes[attributeName] = true
   }
   return attributes

@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-cond-assign,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -46,14 +43,15 @@ export default class PlayerController {
   }
 
   playerDidSeekToIndex(index) {
-    let events, snapshot
     this.view.setIndex(index)
 
-    if (snapshot = this.player.getSnapshot(index)) {
+    const snapshot = this.player.getSnapshot(index)
+    if (snapshot) {
       this.view.renderSnapshot(snapshot)
     }
 
-    if (events = this.player.getEvents(index)) {
+    const events = this.player.getEvents(index)
+    if (events) {
       return this.view.renderEvents(events)
     }
   }

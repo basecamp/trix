@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-unused-vars,
     no-var,
 */
@@ -86,29 +85,23 @@ const addAccessibilityRole = function(element) {
 }
 
 const ensureAriaLabel = function(element) {
-  let update
   if (element.hasAttribute("aria-label") || element.hasAttribute("aria-labelledby")) {
     return
   }
-  (update = function() {
-    let text
-    const texts = (() => {
-      const result = []
 
-      Array.from(element.labels).forEach((label) => {
-        if (!label.contains(element)) {
-          result.push(label.textContent)
-        }
-      })
+  const update = function() {
+    const texts = Array.from(element.labels).map((label) => {
+      if (!label.contains(element)) return label.textContent
+    }).filter(text => text)
 
-      return result
-    })()
-    if (text = texts.join(" ")) {
+    const text = texts.join(" ")
+    if (text) {
       return element.setAttribute("aria-label", text)
     } else {
       return element.removeAttribute("aria-label")
     }
-  })()
+  }
+  update()
   return handleEvent("focus", { onElement: element, withCallback: update })
 }
 
@@ -197,16 +190,18 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   get labels() {
-    let label
     const labels = []
     if (this.id && this.ownerDocument) {
       labels.push(...Array.from(this.ownerDocument.querySelectorAll(`label[for='${this.id}']`) || []))
     }
-    if (label = findClosestElementFromNode(this, { matchingSelector: "label" })) {
+
+    const label = findClosestElementFromNode(this, { matchingSelector: "label" })
+    if (label) {
       if ([ this, null ].includes(label.control)) {
         labels.push(label)
       }
     }
+
     return labels
   }
 

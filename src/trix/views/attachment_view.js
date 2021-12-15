@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-var,
 */
 // TODO: This file was created by bulk-decaffeinate.
@@ -31,7 +30,7 @@ export default class AttachmentView extends ObjectView {
   }
 
   createNodes() {
-    let href, innerElement
+    let innerElement
     const figure = innerElement = makeElement({
       tagName: "figure",
       className: this.getClassName(),
@@ -39,7 +38,8 @@ export default class AttachmentView extends ObjectView {
       editable: false,
     })
 
-    if (href = this.getHref()) {
+    const href = this.getHref()
+    if (href) {
       innerElement = makeElement({ tagName: "a", editable: false, attributes: { href, tabindex: -1 } })
       figure.appendChild(innerElement)
     }
@@ -75,10 +75,9 @@ export default class AttachmentView extends ObjectView {
   }
 
   createCaptionElement() {
-    let caption
     const figcaption = makeElement({ tagName: "figcaption", className: css.attachmentCaption })
-
-    if (caption = this.attachmentPiece.getCaption()) {
+    const caption = this.attachmentPiece.getCaption()
+    if (caption) {
       figcaption.classList.add(`${css.attachmentCaption}--edited`)
       figcaption.textContent = caption
     } else {
@@ -109,9 +108,9 @@ export default class AttachmentView extends ObjectView {
   }
 
   getClassName() {
-    let extension
     const names = [ css.attachment, `${css.attachment}--${this.attachment.getType()}` ]
-    if (extension = this.attachment.getExtension()) {
+    const extension = this.attachment.getExtension()
+    if (extension) {
       names.push(`${css.attachment}--${extension}`)
     }
     return names.join(" ")
@@ -158,9 +157,9 @@ export default class AttachmentView extends ObjectView {
   // Attachment delegate
 
   attachmentDidChangeUploadProgress() {
-    let progressElement
     const value = this.attachment.getUploadProgress()
-    if (progressElement = this.findProgressElement()) {
+    const progressElement = this.findProgressElement()
+    if (progressElement) {
       progressElement.value = value
     }
   }

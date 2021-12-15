@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-var,
 */
 // TODO: This file was created by bulk-decaffeinate.
@@ -30,8 +29,8 @@ export default class UndoManager extends BasicObject {
   }
 
   undo() {
-    let undoEntry
-    if (undoEntry = this.undoEntries.pop()) {
+    const undoEntry = this.undoEntries.pop()
+    if (undoEntry) {
       const redoEntry = this.createEntry(undoEntry)
       this.redoEntries.push(redoEntry)
       return this.composition.loadSnapshot(undoEntry.snapshot)
@@ -39,8 +38,8 @@ export default class UndoManager extends BasicObject {
   }
 
   redo() {
-    let redoEntry
-    if (redoEntry = this.redoEntries.pop()) {
+    const redoEntry = this.redoEntries.pop()
+    if (redoEntry) {
       const undoEntry = this.createEntry(redoEntry)
       this.undoEntries.push(undoEntry)
       return this.composition.loadSnapshot(redoEntry.snapshot)

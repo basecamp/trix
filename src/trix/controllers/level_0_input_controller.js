@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-unused-vars,
     no-var,
 */
@@ -41,13 +40,13 @@ export default class Level0InputController extends InputController {
 
   static events = {
     keydown(event) {
-      let keyName
       if (!this.isComposing()) {
         this.resetInputSummary()
       }
       this.inputSummary.didInput = true
 
-      if (keyName = keyNames[event.keyCode]) {
+      const keyName = keyNames[event.keyCode]
+      if (keyName) {
         let context = this.keys
 
         ;[ "ctrl", "alt", "shift", "meta" ].forEach((modifier) => {
@@ -67,8 +66,8 @@ export default class Level0InputController extends InputController {
       }
 
       if (keyEventIsKeyboardCommand(event)) {
-        let character
-        if (character = String.fromCharCode(event.keyCode).toLowerCase()) {
+        const character = String.fromCharCode(event.keyCode).toLowerCase()
+        if (character) {
           const keys = (() => {
             const result = []
 
@@ -89,7 +88,6 @@ export default class Level0InputController extends InputController {
     },
 
     keypress(event) {
-      let string
       if (this.inputSummary.eventName != null) {
         return
       }
@@ -100,7 +98,8 @@ export default class Level0InputController extends InputController {
         return
       }
 
-      if (string = stringFromKeyEvent(event)) {
+      const string = stringFromKeyEvent(event)
+      if (string) {
         this.delegate?.inputControllerWillPerformTyping()
         this.responder?.insertString(string)
         return this.setInputSummary({ textAdded: string, didDelete: this.selectionIsExpanded() })
@@ -149,9 +148,9 @@ export default class Level0InputController extends InputController {
     },
 
     drop(event) {
-      let documentJSON
       event.preventDefault()
       const files = event.dataTransfer?.files
+      const documentJSON = event.dataTransfer.getData("application/x-trix-document")
 
       const point = { x: event.clientX, y: event.clientY }
       this.responder?.setLocationRangeFromPointRange(point)
@@ -163,7 +162,7 @@ export default class Level0InputController extends InputController {
         this.responder?.moveTextFromRange(this.draggedRange)
         this.draggedRange = null
         this.requestRender()
-      } else if (documentJSON = event.dataTransfer.getData("application/x-trix-document")) {
+      } else if (documentJSON) {
         const document = Document.fromJSONString(documentJSON)
         this.responder?.insertDocument(document)
         this.requestRender()
@@ -196,7 +195,6 @@ export default class Level0InputController extends InputController {
     },
 
     paste(event) {
-      let href, html, name, string
       const clipboard = event.clipboardData != null ? event.clipboardData : event.testClipboardData
       const paste = { clipboard }
 
@@ -212,9 +210,14 @@ export default class Level0InputController extends InputController {
         return
       }
 
-      if (href = clipboard.getData("URL")) {
+      const href = clipboard.getData("URL")
+      const html = clipboard.getData("text/html")
+      const name = clipboard.getData("public.url-name")
+
+      if (href) {
+        let string
         paste.type = "text/html"
-        if (name = clipboard.getData("public.url-name")) {
+        if (name) {
           string = squishBreakableWhitespace(name).trim()
         } else {
           string = href
@@ -233,7 +236,7 @@ export default class Level0InputController extends InputController {
         this.responder?.insertString(paste.string)
         this.requestRender()
         this.delegate?.inputControllerDidPaste(paste)
-      } else if (html = clipboard.getData("text/html")) {
+      } else if (html) {
         paste.type = "text/html"
         paste.html = html
         this.delegate?.inputControllerWillPaste(paste)
@@ -241,8 +244,8 @@ export default class Level0InputController extends InputController {
         this.requestRender()
         this.delegate?.inputControllerDidPaste(paste)
       } else if (Array.from(clipboard.types).includes("Files")) {
-        let file
-        if (file = clipboard.items?.[0]?.getAsFile?.()) {
+        const file = clipboard.items?.[0]?.getAsFile?.()
+        if (file) {
           let extension
           if (!file.name && (extension = extensionForFile(file))) {
             file.name = `pasted-file-${++pastedFileCount}.${extension}`
@@ -444,8 +447,8 @@ export default class Level0InputController extends InputController {
       unexpectedNewlineDeletion && !unexpectedNewlineAddition
 
     if (singleUnexpectedNewline) {
-      let range
-      if (range = this.getSelectedRange()) {
+      const range = this.getSelectedRange()
+      if (range) {
         const offset = unexpectedNewlineAddition ? textAdded.replace(/\n$/, "").length || -1 : textAdded?.length || 1
         if (this.responder?.positionIsBlockBreak(range[1] + offset)) {
           return true
@@ -558,8 +561,8 @@ var stringFromKeyEvent = function(event) {
 }
 
 var pasteEventIsCrippledSafariHTMLPaste = function(event) {
-  let paste
-  if (paste = event.clipboardData) {
+  const paste = event.clipboardData
+  if (paste) {
     if (Array.from(paste.types).includes("text/html")) {
       // Answer is yes if there's any possibility of Paste and Match Style in Safari,
       // which is nearly impossible to detect confidently: https://bugs.webkit.org/show_bug.cgi?id=174165
@@ -620,8 +623,8 @@ class CompositionInput extends BasicObject {
     this.data.update = data
 
     if (this.isSignificant()) {
-      let range
-      if (range = this.selectPlaceholder()) {
+      const range = this.selectPlaceholder()
+      if (range) {
         this.forgetPlaceholder()
         this.range = range
       }

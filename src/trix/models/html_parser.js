@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-irregular-whitespace,
     no-unused-vars,
     no-var,
@@ -171,8 +170,8 @@ export default class HTMLParser extends BasicObject {
         }
       }
     } else if (this.currentBlockElement && !currentBlockContainsElement && !elementIsBlockElement) {
-      let parentBlockElement
-      if (parentBlockElement = this.findParentBlockElement(element)) {
+      const parentBlockElement = this.findParentBlockElement(element)
+      if (parentBlockElement) {
         return this.appendBlockForElement(parentBlockElement)
       } else {
         this.currentBlock = this.appendEmptyBlock()
@@ -311,7 +310,8 @@ export default class HTMLParser extends BasicObject {
       ) {
         attributes[attribute] = true
       } else if (configAttr.parser) {
-        if (value = configAttr.parser(element)) {
+        value = configAttr.parser(element)
+        if (value) {
           let attributeInheritedFromBlock = false
           for (const blockElement of Array.from(this.findBlockElementAncestors(element))) {
             if (configAttr.parser(blockElement) === value) {
@@ -324,7 +324,8 @@ export default class HTMLParser extends BasicObject {
           }
         }
       } else if (configAttr.styleProperty) {
-        if (value = element.style[configAttr.styleProperty]) {
+        value = element.style[configAttr.styleProperty]
+        if (value) {
           attributes[attribute] = value
         }
       }
@@ -423,30 +424,23 @@ export default class HTMLParser extends BasicObject {
   translateBlockElementMarginsToNewlines() {
     const defaultMargin = this.getMarginOfDefaultBlockElement()
 
-    return (() => {
-      const result = []
-      for (let index = 0; index < this.blocks.length; index++) {
-        var margin
-        const block = this.blocks[index]
-        if (margin = this.getMarginOfBlockElementAtIndex(index)) {
-          if (margin.top > defaultMargin.top * 2) {
-            this.prependStringToTextAtIndex("\n", index)
-          }
+    for (let index = 0; index < this.blocks.length; index++) {
+      const margin = this.getMarginOfBlockElementAtIndex(index)
+      if (margin) {
+        if (margin.top > defaultMargin.top * 2) {
+          this.prependStringToTextAtIndex("\n", index)
+        }
 
-          if (margin.bottom > defaultMargin.bottom * 2) {
-            result.push(this.appendStringToTextAtIndex("\n", index))
-          } else {
-            result.push(undefined)
-          }
+        if (margin.bottom > defaultMargin.bottom * 2) {
+          this.appendStringToTextAtIndex("\n", index)
         }
       }
-      return result
-    })()
+    }
   }
 
   getMarginOfBlockElementAtIndex(index) {
-    let element
-    if (element = this.blockElements[index]) {
+    const element = this.blockElements[index]
+    if (element) {
       if (element.textContent) {
         let needle
         if (

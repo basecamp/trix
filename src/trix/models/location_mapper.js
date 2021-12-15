@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-var,
     prefer-const,
 */
@@ -32,12 +31,12 @@ export default class LocationMapper {
   }
 
   findLocationFromContainerAndOffset(container, offset, { strict } = { strict: true }) {
-    let attachmentElement
     let childIndex = 0
     let foundBlock = false
     const location = { index: 0, offset: 0 }
+    const attachmentElement = this.findAttachmentElementParentForNode(container)
 
-    if (attachmentElement = this.findAttachmentElementParentForNode(container)) {
+    if (attachmentElement) {
       container = attachmentElement.parentNode
       offset = findChildIndexOfNode(attachmentElement)
     }

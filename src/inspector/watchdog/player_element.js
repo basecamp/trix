@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-cond-assign,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -24,8 +21,8 @@ class PlayerElement extends HTMLElement {
   static get observedAttributes() { return [ "src" ] }
 
   connectedCallback() {
-    let url
-    if (url = this.getAttribute("src")) {
+    const url = this.getAttribute("src")
+    if (url) {
       return this.fetchRecordingAtURL(url)
     }
   }

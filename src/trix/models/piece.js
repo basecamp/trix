@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-undef,
 */
 // TODO: This file was created by bulk-decaffeinate.
@@ -25,8 +24,8 @@ export default class Piece extends TrixObject {
   }
 
   static fromJSON(pieceJSON) {
-    let constructor
-    if (constructor = this.types[pieceJSON.type]) {
+    const constructor = this.types[pieceJSON.type]
+    if (constructor) {
       return constructor.fromJSON(pieceJSON)
     }
   }

@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-unused-vars,
     no-useless-escape,
     no-var,
@@ -37,10 +36,9 @@ export default class PieceView extends ObjectView {
   }
 
   createNodes() {
-    let element
     let nodes = this.attachment ? this.createAttachmentNodes() : this.createStringNodes()
-
-    if (element = this.createElement()) {
+    const element = this.createElement()
+    if (element) {
       const innerElement = findInnerElement(element)
       Array.from(nodes).forEach((node) => {
         innerElement.appendChild(node)
@@ -64,14 +62,13 @@ export default class PieceView extends ObjectView {
       const nodes = []
       const iterable = this.string.split("\n")
       for (let index = 0; index < iterable.length; index++) {
-        var length
         const substring = iterable[index]
         if (index > 0) {
           const element = makeElement("br")
           nodes.push(element)
         }
 
-        if (length = substring.length) {
+        if (substring.length) {
           const node = document.createTextNode(this.preserveSpaces(substring))
           nodes.push(node)
         }
@@ -85,9 +82,9 @@ export default class PieceView extends ObjectView {
     const styles = {}
 
     for (key in this.attributes) {
-      var config
       value = this.attributes[key]
-      if (config = getTextConfig(key)) {
+      const config = getTextConfig(key)
+      if (config) {
         if (config.tagName) {
           var innerElement
           const pendingElement = makeElement(config.tagName)
@@ -127,9 +124,9 @@ export default class PieceView extends ObjectView {
 
   createContainerElement() {
     for (const key in this.attributes) {
-      var config
       const value = this.attributes[key]
-      if (config = getTextConfig(key)) {
+      const config = getTextConfig(key)
+      if (config) {
         if (config.groupTagName) {
           const attributes = {}
           attributes[key] = value

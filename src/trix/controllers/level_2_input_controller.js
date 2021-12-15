@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-this-before-super,
     no-var,
 */
@@ -36,7 +35,6 @@ export default class Level2InputController extends InputController {
           return event.preventDefault()
         }
       } else {
-        let handler
         let name = event.key
         if (event.altKey) {
           name += "+Alt"
@@ -44,7 +42,8 @@ export default class Level2InputController extends InputController {
         if (event.shiftKey) {
           name += "+Shift"
         }
-        if (handler = this.constructor.keys[name]) {
+        const handler = this.constructor.keys[name]
+        if (handler) {
           return this.withEvent(event, handler)
         }
       }
@@ -54,7 +53,8 @@ export default class Level2InputController extends InputController {
     // Safe to remove each condition once fixed upstream.
     paste(event) {
       // https://bugs.webkit.org/show_bug.cgi?id=194921
-      let href, paste
+      let paste
+      const href = event.clipboardData?.getData("URL")
       if (pasteEventHasFilesOnly(event)) {
         event.preventDefault()
         return this.attachFiles(event.clipboardData.files)
@@ -72,7 +72,7 @@ export default class Level2InputController extends InputController {
         return this.delegate?.inputControllerDidPaste(paste)
 
         // https://bugs.webkit.org/show_bug.cgi?id=196702
-      } else if (href = event.clipboardData?.getData("URL")) {
+      } else if (href) {
         event.preventDefault()
         paste = {
           type: "text/html",
@@ -365,8 +365,8 @@ export default class Level2InputController extends InputController {
     },
 
     insertFromDrop() {
-      let range
-      if (range = this.deleteByDragRange) {
+      const range = this.deleteByDragRange
+      if (range) {
         this.deleteByDragRange = null
         this.delegate?.inputControllerWillMoveText()
         return this.withTargetDOMRange(function() {
@@ -376,15 +376,17 @@ export default class Level2InputController extends InputController {
     },
 
     insertFromPaste() {
-      let href, html, string
       const { dataTransfer } = this.event
       const paste = { dataTransfer }
+      const href = dataTransfer.getData("URL")
+      const html = dataTransfer.getData("text/html")
 
-      if (href = dataTransfer.getData("URL")) {
-        let name
+      if (href) {
+        let string
         this.event.preventDefault()
         paste.type = "text/html"
-        if (name = dataTransfer.getData("public.url-name")) {
+        const name = dataTransfer.getData("public.url-name")
+        if (name) {
           string = squishBreakableWhitespace(name).trim()
         } else {
           string = href
@@ -409,7 +411,7 @@ export default class Level2InputController extends InputController {
         this.afterRender = () => {
           return this.delegate?.inputControllerDidPaste(paste)
         }
-      } else if (html = dataTransfer.getData("text/html")) {
+      } else if (html) {
         this.event.preventDefault()
         paste.type = "text/html"
         paste.html = html
@@ -517,8 +519,7 @@ export default class Level2InputController extends InputController {
   }
 
   toggleAttributeIfSupported(attributeName) {
-    let needle
-    if (needle = attributeName, Array.from(getAllAttributeNames()).includes(needle)) {
+    if (getAllAttributeNames().includes(attributeName)) {
       this.delegate?.inputControllerWillPerformFormatting(attributeName)
       return this.withTargetDOMRange(function() {
         return this.responder?.toggleCurrentAttribute(attributeName)
@@ -527,8 +528,7 @@ export default class Level2InputController extends InputController {
   }
 
   activateAttributeIfSupported(attributeName, value) {
-    let needle
-    if (needle = attributeName, Array.from(getAllAttributeNames()).includes(needle)) {
+    if (getAllAttributeNames().includes(attributeName)) {
       this.delegate?.inputControllerWillPerformFormatting(attributeName)
       return this.withTargetDOMRange(function() {
         return this.responder?.setCurrentAttribute(attributeName, value)
@@ -537,12 +537,12 @@ export default class Level2InputController extends InputController {
   }
 
   deleteInDirection(direction, { recordUndoEntry } = { recordUndoEntry: true }) {
-    let domRange
     if (recordUndoEntry) {
       this.delegate?.inputControllerWillPerformTyping()
     }
     const perform = () => this.responder?.deleteInDirection(direction)
-    if (domRange = this.getTargetDOMRange({ minLength: 2 })) {
+    const domRange = this.getTargetDOMRange({ minLength: 2 })
+    if (domRange) {
       return this.withTargetDOMRange(domRange, perform)
     } else {
       return perform()
@@ -565,8 +565,8 @@ export default class Level2InputController extends InputController {
   }
 
   getTargetDOMRange({ minLength } = { minLength: 0 }) {
-    let targetRanges
-    if (targetRanges = this.event.getTargetRanges?.()) {
+    const targetRanges = this.event.getTargetRanges?.()
+    if (targetRanges) {
       if (targetRanges.length) {
         const domRange = staticRangeToRange(targetRanges[0])
         if (minLength === 0 || domRange.toString().length >= minLength) {
@@ -601,15 +601,15 @@ var dragEventHasFiles = (event) =>
   Array.from(event.dataTransfer?.types != null ? event.dataTransfer?.types : []).includes("Files")
 
 var pasteEventHasFilesOnly = function(event) {
-  let clipboard
-  if (clipboard = event.clipboardData) {
+  const clipboard = event.clipboardData
+  if (clipboard) {
     return Array.from(clipboard.types).includes("Files") && clipboard.types.length === 1 && clipboard.files.length >= 1
   }
 }
 
 var pasteEventHasPlainTextOnly = function(event) {
-  let clipboard
-  if (clipboard = event.clipboardData) {
+  const clipboard = event.clipboardData
+  if (clipboard) {
     return Array.from(clipboard.types).includes("text/plain") && clipboard.types.length === 1
   }
 }

@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-cond-assign,
     no-this-before-super,
 */
 // TODO: This file was created by bulk-decaffeinate.
@@ -190,10 +189,11 @@ export default class AttachmentEditorController extends BasicObject {
   }
 
   uninstall() {
-    let undo
+    let undo = this.undos.pop()
     this.savePendingCaption()
-    while (undo = this.undos.pop()) {
+    while (undo) {
       undo()
+      undo = this.undos.pop()
     }
     return this.delegate?.didUninstallAttachmentEditor(this)
   }
