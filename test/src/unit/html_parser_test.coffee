@@ -147,7 +147,7 @@ testGroup "Trix.HTMLParser", ->
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
   test "translates tables into plain text", ->
-    html = """<table><tr><td>a</td><td>b</td></tr><tr><td>1</td><td><p>2</p></td></tr><table>"""
+    html = """<table><tr>\r\n<td>a</td><td>b</td></tr><tr><td>1</td><td><p>2</p></td></tr><table>"""
     expectedHTML = """<div><!--block-->a | b<br>1 | 2</div>"""
     assert.documentHTMLEqual Trix.HTMLParser.parse(html).getDocument(), expectedHTML
 
