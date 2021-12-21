@@ -130,10 +130,10 @@ class Trix.HTMLParser extends Trix.BasicObject
           @appendAttachmentWithAttributes(attributes, @getTextAttributes(element))
           @processedElements.push(element)
         when "tr"
-          unless element.parentNode.firstChild is element
+          unless element.parentNode.firstElementChild is element
             @appendStringWithAttributes("\n")
         when "td"
-          unless element.parentNode.firstChild is element
+          unless element.parentNode.firstElementChild is element
             @appendStringWithAttributes(" | ")
 
   # Document construction
