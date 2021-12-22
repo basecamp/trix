@@ -43,14 +43,16 @@ if (process.env.CI) {
         args: [ "--lang=tr" ]
       }
     },
-    sl_firefox_72: {
+    sl_firefox_88: {
       base: "SauceLabs",
       browserName: "firefox",
-      version: "72.0"
+      platform: "Windows 10",
+      version: "88.0"
     },
     sl_firefox_latest: {
       base: "SauceLabs",
       browserName: "firefox",
+      platform: "Windows 10",
       version: "latest"
     },
     sl_safari_12_1: {

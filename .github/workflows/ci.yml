@@ -8,8 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        bundler-cache: true
     - uses: actions/setup-node@v2-beta
       with:
         node-version: 16
