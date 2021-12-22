@@ -5,7 +5,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -589,14 +588,14 @@ var dragEventHasFiles = (event) => Array.from(event.dataTransfer?.types || []).i
 var pasteEventHasFilesOnly = function(event) {
   const clipboard = event.clipboardData
   if (clipboard) {
-    return Array.from(clipboard.types).includes("Files") && clipboard.types.length === 1 && clipboard.files.length >= 1
+    return clipboard.types.includes("Files") && clipboard.types.length === 1 && clipboard.files.length >= 1
   }
 }
 
 var pasteEventHasPlainTextOnly = function(event) {
   const clipboard = event.clipboardData
   if (clipboard) {
-    return Array.from(clipboard.types).includes("text/plain") && clipboard.types.length === 1
+    return clipboard.types.includes("text/plain") && clipboard.types.length === 1
   }
 }
 

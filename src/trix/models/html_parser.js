@@ -7,7 +7,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -179,7 +178,7 @@ export default class HTMLParser extends BasicObject {
   findParentBlockElement(element) {
     let { parentElement } = element
     while (parentElement && parentElement !== this.containerElement) {
-      if (this.isBlockElement(parentElement) && Array.from(this.blockElements).includes(parentElement)) {
+      if (this.isBlockElement(parentElement) && this.blockElements.includes(parentElement)) {
         return parentElement
       } else {
         parentElement = parentElement.parentElement
@@ -309,7 +308,7 @@ export default class HTMLParser extends BasicObject {
         value = configAttr.parser(element)
         if (value) {
           let attributeInheritedFromBlock = false
-          for (const blockElement of Array.from(this.findBlockElementAncestors(element))) {
+          for (const blockElement of this.findBlockElementAncestors(element)) {
             if (configAttr.parser(blockElement) === value) {
               attributeInheritedFromBlock = true
               break

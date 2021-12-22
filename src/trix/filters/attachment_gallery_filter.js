@@ -5,7 +5,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -37,7 +36,7 @@ class Filter {
   // Private
 
   removeBlockAttribute() {
-    return Array.from(this.findRangesOfBlocks()).map(
+    return this.findRangesOfBlocks().map(
       (range) => this.document = this.document.removeAttributeAtRange(BLOCK_ATTRIBUTE_NAME, range)
     )
   }
@@ -45,7 +44,7 @@ class Filter {
   applyBlockAttribute() {
     let offset = 0
 
-    Array.from(this.findRangesOfPieces()).forEach((range) => {
+    this.findRangesOfPieces().forEach((range) => {
       if (range[1] - range[0] > 1) {
         range[0] += offset
         range[1] += offset

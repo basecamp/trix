@@ -7,7 +7,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -100,7 +99,7 @@ export default class Block extends TrixObject {
   }
 
   hasAttribute(attributeName) {
-    return Array.from(this.attributes).includes(attributeName)
+    return this.attributes.includes(attributeName)
   }
 
   hasAttributes() {
@@ -112,7 +111,7 @@ export default class Block extends TrixObject {
   }
 
   getNestableAttributes() {
-    return Array.from(this.attributes).filter((attribute) => getBlockConfig(attribute).nestable)
+    return this.attributes.filter((attribute) => getBlockConfig(attribute).nestable)
   }
 
   getNestingLevel() {
@@ -132,7 +131,7 @@ export default class Block extends TrixObject {
     const attribute = this.getLastNestableAttribute()
     if (attribute) {
       const index = this.attributes.lastIndexOf(attribute)
-      const attributes = spliceArray(this.attributes, index + 1, 0, ...Array.from(expandAttribute(attribute)))
+      const attributes = spliceArray(this.attributes, index + 1, 0, ...expandAttribute(attribute))
       return this.copyWithAttributes(attributes)
     } else {
       return this
@@ -140,7 +139,7 @@ export default class Block extends TrixObject {
   }
 
   getListItemAttributes() {
-    return Array.from(this.attributes).filter((attribute) => getBlockConfig(attribute).listAttribute)
+    return this.attributes.filter((attribute) => getBlockConfig(attribute).listAttribute)
   }
 
   isListItem() {

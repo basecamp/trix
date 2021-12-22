@@ -6,7 +6,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -57,7 +56,7 @@ export default class Document extends TrixObject {
   }
 
   copyUsingObjectMap(objectMap) {
-    const blocks = Array.from(this.getBlocks()).map((block) => {
+    const blocks = this.getBlocks().map((block) => {
       const mappedBlock = objectMap.find(block)
       return mappedBlock || block.copyUsingObjectMap(objectMap)
     })
@@ -65,7 +64,7 @@ export default class Document extends TrixObject {
   }
 
   copyWithBaseBlockAttributes(blockAttributes = []) {
-    const blocks = Array.from(this.getBlocks()).map((block) => {
+    const blocks = this.getBlocks().map((block) => {
       const attributes = blockAttributes.concat(block.getAttributes())
       return block.copyWithAttributes(attributes)
     })
@@ -213,7 +212,7 @@ export default class Document extends TrixObject {
       position -= document.getLength()
     }
 
-    const [ firstBlock, ...blocks ] = Array.from(document.getBlocks())
+    const [ firstBlock, ...blocks ] = document.getBlocks()
     if (blocks.length === 0) {
       text = firstBlock.getTextWithoutBlockBreak()
       if (movingRightward) {
@@ -572,7 +571,7 @@ export default class Document extends TrixObject {
 
     for (key in attributesLeft) {
       value = attributesLeft[key]
-      if (value === attributes[key] || Array.from(inheritableAttributes).includes(key)) {
+      if (value === attributes[key] || inheritableAttributes.includes(key)) {
         commonAttributes[key] = value
       }
     }
@@ -613,7 +612,7 @@ export default class Document extends TrixObject {
   }
 
   getAttachmentById(attachmentId) {
-    for (const attachment of Array.from(this.getAttachments())) {
+    for (const attachment of this.getAttachments()) {
       if (attachment.id === attachmentId) {
         return attachment
       }
@@ -627,7 +626,7 @@ export default class Document extends TrixObject {
   }
 
   getAttachments() {
-    return Array.from(this.getAttachmentPieces()).map((piece) => piece.attachment)
+    return this.getAttachmentPieces().map((piece) => piece.attachment)
   }
 
   getRangeOfAttachment(attachment) {
@@ -649,7 +648,7 @@ export default class Document extends TrixObject {
   }
 
   getAttachmentPieceForAttachment(attachment) {
-    for (const piece of Array.from(this.getAttachmentPieces())) {
+    for (const piece of this.getAttachmentPieces()) {
       if (piece.attachment === attachment) {
         return piece
       }
@@ -660,7 +659,7 @@ export default class Document extends TrixObject {
     let position = 0
     const ranges = []
 
-    Array.from(this.getBlocks()).forEach((block) => {
+    this.getBlocks().forEach((block) => {
       const length = block.getLength()
       if (block.hasAttribute(attributeName)) {
         ranges.push([ position, position + length ])
@@ -684,7 +683,7 @@ export default class Document extends TrixObject {
       }
     }
 
-    Array.from(this.getPieces()).forEach((piece) => {
+    this.getPieces().forEach((piece) => {
       const length = piece.getLength()
       if (match(piece)) {
         if (range[1] === position) {
@@ -742,7 +741,7 @@ export default class Document extends TrixObject {
   }
 
   getTexts() {
-    return Array.from(this.getBlocks()).map((block) => block.text)
+    return this.getBlocks().map((block) => block.text)
   }
 
   getPieces() {
@@ -774,7 +773,7 @@ export default class Document extends TrixObject {
   }
 
   toConsole() {
-    return JSON.stringify(Array.from(this.blockList.toArray()).map((block) => JSON.parse(block.text.toConsole())))
+    return JSON.stringify(this.blockList.toArray()).map((block) => JSON.parse(block.text.toConsole()))
   }
 }
 

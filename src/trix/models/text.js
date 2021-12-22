@@ -5,7 +5,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -51,7 +50,7 @@ export default class Text extends TrixObject {
   }
 
   copyUsingObjectMap(objectMap) {
-    const pieces = Array.from(this.getPieces()).map((piece) => objectMap.find(piece) || piece)
+    const pieces = this.getPieces().map((piece) => objectMap.find(piece) || piece)
     return new this.constructor(pieces)
   }
 
@@ -161,12 +160,12 @@ export default class Text extends TrixObject {
   }
 
   getAttachments() {
-    return Array.from(this.getAttachmentPieces()).map((piece) => piece.attachment)
+    return this.getAttachmentPieces().map((piece) => piece.attachment)
   }
 
   getAttachmentAndPositionById(attachmentId) {
     let position = 0
-    for (const piece of Array.from(this.pieceList.toArray())) {
+    for (const piece of this.pieceList.toArray()) {
       if (piece.attachment?.id === attachmentId) {
         return { attachment: piece.attachment, position }
       }
@@ -244,7 +243,7 @@ export default class Text extends TrixObject {
   }
 
   toConsole() {
-    return JSON.stringify(Array.from(this.pieceList.toArray()).map((piece) => JSON.parse(piece.toConsole())))
+    return JSON.stringify(this.pieceList.toArray().map((piece) => JSON.parse(piece.toConsole())))
   }
 
   // BIDI

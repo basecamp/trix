@@ -6,7 +6,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -68,22 +67,20 @@ export default class HTMLSanitizer extends BasicObject {
       }
     }
 
-    Array.from(nodesToRemove).forEach((node) => {
-      removeNode(node)
-    })
+    nodesToRemove.forEach((node) => removeNode(node))
 
     return this.body
   }
 
   sanitizeElement(element) {
     if (element.hasAttribute("href")) {
-      if (Array.from(this.forbiddenProtocols).includes(element.protocol)) {
+      if (this.forbiddenProtocols.includes(element.protocol)) {
         element.removeAttribute("href")
       }
     }
 
     Array.from(element.attributes).forEach(({ name }) => {
-      if (!Array.from(this.allowedAttributes).includes(name) && name.indexOf("data-trix") !== 0) {
+      if (!this.allowedAttributes.includes(name) && name.indexOf("data-trix") !== 0) {
         element.removeAttribute(name)
       }
     })
@@ -112,7 +109,7 @@ export default class HTMLSanitizer extends BasicObject {
   }
 
   elementIsForbidden(element) {
-    return Array.from(this.forbiddenElements).includes(tagName(element))
+    return this.forbiddenElements.includes(tagName(element))
   }
 
   elementIsntSerializable(element) {

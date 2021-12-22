@@ -6,7 +6,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -39,21 +38,21 @@ export default class SelectionChangeObserver extends BasicObject {
   }
 
   registerSelectionManager(selectionManager) {
-    if (!Array.from(this.selectionManagers).includes(selectionManager)) {
+    if (!this.selectionManagers.includes(selectionManager)) {
       this.selectionManagers.push(selectionManager)
       return this.start()
     }
   }
 
   unregisterSelectionManager(selectionManager) {
-    this.selectionManagers = Array.from(this.selectionManagers).filter((s) => s !== selectionManager)
+    this.selectionManagers = this.selectionManagers.filter((s) => s !== selectionManager)
     if (this.selectionManagers.length === 0) {
       return this.stop()
     }
   }
 
   notifySelectionManagersOfSelectionChange() {
-    return Array.from(this.selectionManagers).map((selectionManager) => selectionManager.selectionDidChange())
+    return this.selectionManagers.map((selectionManager) => selectionManager.selectionDidChange())
   }
 
   update() {

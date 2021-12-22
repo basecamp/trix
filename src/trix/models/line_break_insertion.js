@@ -2,7 +2,6 @@
 // Sanity-check the conversion and remove this comment.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -10,8 +9,10 @@ export default class LineBreakInsertion {
   constructor(composition) {
     this.composition = composition
     this.document = this.composition.document
+    const selectedRange = this.composition.getSelectedRange()
+    this.startPosition = selectedRange[0]
+    this.endPosition = selectedRange[1]
 
-    ;[ this.startPosition, this.endPosition ] = Array.from(this.composition.getSelectedRange())
     this.startLocation = this.document.locationFromPosition(this.startPosition)
     this.endLocation = this.document.locationFromPosition(this.endPosition)
 

@@ -5,7 +5,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -42,9 +41,7 @@ window.JST["trix/inspector/templates/document"] = function() {
 }
 
 var pieces = () =>
-  Array.from(pieces).map(
-    (piece, index) =>
-      `\
+  pieces.map((piece, index) =>`\
 <div class="piece">
 <div class="title">
   Piece ${piece.id}, Index: ${index}
@@ -56,5 +53,4 @@ var pieces = () =>
   ${JSON.stringify(piece.toString())}
 </div>
 </div>\
-`
-  )
+`)

@@ -5,7 +5,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -46,7 +45,7 @@ export default class AttachmentView extends ObjectView {
     if (this.attachment.hasContent()) {
       innerElement.innerHTML = this.attachment.getContent()
     } else {
-      Array.from(this.createContentNodes()).forEach((node) => {
+      this.createContentNodes().forEach((node) => {
         innerElement.appendChild(node)
       })
     }

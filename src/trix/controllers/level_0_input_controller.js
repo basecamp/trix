@@ -6,7 +6,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -548,10 +547,10 @@ var stringFromKeyEvent = function(event) {
 var pasteEventIsCrippledSafariHTMLPaste = function(event) {
   const paste = event.clipboardData
   if (paste) {
-    if (Array.from(paste.types).includes("text/html")) {
+    if (paste.types.includes("text/html")) {
       // Answer is yes if there's any possibility of Paste and Match Style in Safari,
       // which is nearly impossible to detect confidently: https://bugs.webkit.org/show_bug.cgi?id=174165
-      for (const type of Array.from(paste.types)) {
+      for (const type of paste.types) {
         const hasPasteboardFlavor = /^CorePasteboardFlavorType/.test(type)
         const hasReadableDynamicData = /^dyn\./.test(type) && paste.getData(type)
         const mightBePasteAndMatchStyle = hasPasteboardFlavor || hasReadableDynamicData
@@ -561,8 +560,8 @@ var pasteEventIsCrippledSafariHTMLPaste = function(event) {
       }
       return false
     } else {
-      const isExternalHTMLPaste = Array.from(paste.types).includes("com.apple.webarchive")
-      const isExternalRichTextPaste = Array.from(paste.types).includes("com.apple.flat-rtfd")
+      const isExternalHTMLPaste = paste.types.includes("com.apple.webarchive")
+      const isExternalRichTextPaste = paste.types.includes("com.apple.flat-rtfd")
       return isExternalHTMLPaste || isExternalRichTextPaste
     }
   }

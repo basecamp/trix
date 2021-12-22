@@ -7,7 +7,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -35,11 +34,11 @@ export default class SplittableList extends TrixObject {
   }
 
   splice(...args) {
-    return new this.constructor(spliceArray(this.objects, ...Array.from(args)))
+    return new this.constructor(spliceArray(this.objects, ...args))
   }
 
   eachObject(callback) {
-    return Array.from(this.objects).map((object, index) => callback(object, index))
+    return this.objects.map((object, index) => callback(object, index))
   }
 
   insertObjectAtIndex(object, index) {
@@ -47,11 +46,11 @@ export default class SplittableList extends TrixObject {
   }
 
   insertSplittableListAtIndex(splittableList, index) {
-    return this.splice(index, 0, ...Array.from(splittableList.objects))
+    return this.splice(index, 0, ...splittableList.objects)
   }
 
   insertSplittableListAtPosition(splittableList, position) {
-    const [ objects, index ] = Array.from(this.splitObjectAtPosition(position))
+    const [ objects, index ] = this.splitObjectAtPosition(position)
     return new this.constructor(objects).insertSplittableListAtIndex(splittableList, index)
   }
 
@@ -72,23 +71,23 @@ export default class SplittableList extends TrixObject {
   }
 
   getSplittableListInRange(range) {
-    const [ objects, leftIndex, rightIndex ] = Array.from(this.splitObjectsAtRange(range))
+    const [ objects, leftIndex, rightIndex ] = this.splitObjectsAtRange(range)
     return new this.constructor(objects.slice(leftIndex, rightIndex + 1))
   }
 
   selectSplittableList(test) {
-    const objects = Array.from(this.objects).filter((object) => test(object))
+    const objects = this.objects.filter((object) => test(object))
     return new this.constructor(objects)
   }
 
   removeObjectsInRange(range) {
-    const [ objects, leftIndex, rightIndex ] = Array.from(this.splitObjectsAtRange(range))
+    const [ objects, leftIndex, rightIndex ] = this.splitObjectsAtRange(range)
     return new this.constructor(objects).splice(leftIndex, rightIndex - leftIndex + 1)
   }
 
   transformObjectsInRange(range, transform) {
-    const [ objects, leftIndex, rightIndex ] = Array.from(this.splitObjectsAtRange(range))
-    const transformedObjects = Array.from(objects).map((object, index) =>
+    const [ objects, leftIndex, rightIndex ] = this.splitObjectsAtRange(range)
+    const transformedObjects = objects.map((object, index) =>
       leftIndex <= index && index <= rightIndex ? transform(object) : object
     )
     return new this.constructor(transformedObjects)
@@ -96,10 +95,9 @@ export default class SplittableList extends TrixObject {
 
   splitObjectsAtRange(range) {
     let rightOuterIndex
-    let [ objects, leftInnerIndex, offset ] = Array.from(this.splitObjectAtPosition(startOfRange(range)))
-    ;[ objects, rightOuterIndex ] = Array.from(
-      new this.constructor(objects).splitObjectAtPosition(endOfRange(range) + offset)
-    )
+    let [ objects, leftInnerIndex, offset ] = this.splitObjectAtPosition(startOfRange(range))
+    ;[ objects, rightOuterIndex ] = new this.constructor(objects).splitObjectAtPosition(endOfRange(range) + offset)
+
     return [ objects, leftInnerIndex, rightOuterIndex - 1 ]
   }
 
@@ -118,7 +116,7 @@ export default class SplittableList extends TrixObject {
         splitOffset = 0
       } else {
         const object = this.getObjectAtIndex(index)
-        const [ leftObject, rightObject ] = Array.from(object.splitAtOffset(offset))
+        const [ leftObject, rightObject ] = object.splitAtOffset(offset)
         objects.splice(index, 1, leftObject, rightObject)
         splitIndex = index + 1
         splitOffset = leftObject.getLength() - offset
@@ -135,7 +133,7 @@ export default class SplittableList extends TrixObject {
     const objects = []
     let pendingObject = this.objects[0]
 
-    Array.from(this.objects.slice(1)).forEach((object) => {
+    this.objects.slice(1).forEach((object) => {
       if (pendingObject.canBeConsolidatedWith?.(object)) {
         pendingObject = pendingObject.consolidateWith(object)
       } else {
@@ -155,7 +153,7 @@ export default class SplittableList extends TrixObject {
     const objects = this.objects.slice(0)
     const objectsInRange = objects.slice(startIndex, endIndex + 1)
     const consolidatedInRange = new this.constructor(objectsInRange).consolidate().toArray()
-    return this.splice(startIndex, objectsInRange.length, ...Array.from(consolidatedInRange))
+    return this.splice(startIndex, objectsInRange.length, ...consolidatedInRange)
   }
 
   findIndexAndOffsetAtPosition(position) {
@@ -189,7 +187,7 @@ export default class SplittableList extends TrixObject {
   getEndPosition() {
     if (this.endPosition == null) {
       this.endPosition = 0
-      Array.from(this.objects).forEach((object) => this.endPosition += object.getLength())
+      this.objects.forEach((object) => this.endPosition += object.getLength())
     }
 
     return this.endPosition
@@ -213,9 +211,7 @@ export default class SplittableList extends TrixObject {
 
   contentsForInspection() {
     return {
-      objects: `[${Array.from(this.objects)
-        .map((object) => object.inspect())
-        .join(", ")}]`,
+      objects: `[${this.objects.map((object) => object.inspect()).join(", ")}]`,
     }
   }
 }

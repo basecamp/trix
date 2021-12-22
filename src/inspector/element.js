@@ -5,7 +5,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -75,7 +74,7 @@ export default class TrixInspector extends HTMLElement {
     this.editorElement = document.querySelector(`trix-editor[trix-id='${this.dataset.trixId}']`)
     this.views = this.createViews()
 
-    Array.from(this.views).forEach((view) => {
+    this.views.forEach((view) => {
       view.render()
       this.appendChild(view.element)
     })
@@ -91,7 +90,7 @@ export default class TrixInspector extends HTMLElement {
   }
 
   createViews() {
-    const views = Array.from(Trix.Inspector.views).map((View) => new View(this.editorElement))
+    const views = Trix.Inspector.views.map((View) => new View(this.editorElement))
 
     return views.sort((a, b) => a.title.toLowerCase() > b.title.toLowerCase())
   }

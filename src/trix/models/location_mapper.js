@@ -6,7 +6,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -93,7 +92,7 @@ export default class LocationMapper {
       return [ container, offset ]
     }
 
-    let [ node, nodeOffset ] = Array.from(this.findNodeAndOffsetFromLocation(location))
+    let [ node, nodeOffset ] = this.findNodeAndOffsetFromLocation(location)
     if (!node) {
       return
     }
@@ -137,7 +136,7 @@ export default class LocationMapper {
     let node, nodeOffset
     let offset = 0
 
-    for (const currentNode of Array.from(this.getSignificantNodesForIndex(location.index))) {
+    for (const currentNode of this.getSignificantNodesForIndex(location.index)) {
       const length = nodeLength(currentNode)
 
       if (location.offset <= offset + length) {

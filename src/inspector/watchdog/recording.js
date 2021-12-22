@@ -2,7 +2,6 @@
 // Sanity-check the conversion and remove this comment.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -54,7 +53,7 @@ export default class Recording {
   }
 
   getEventsUpToFrameIndex(index) {
-    return Array.from(this.frames.slice(0, index + 1)).map((frame) => frame[2])
+    return this.frames.slice(0, index + 1).map((frame) => frame[2])
   }
 
   getFrameCount() {
@@ -72,7 +71,7 @@ export default class Recording {
     }
 
     const { frames } = this
-    this.frames = Array.from(frames).map(([ timestamp, index, event ]) => {
+    this.frames = frames.map(([ timestamp, index, event ]) => {
       if (index >= offset) {
         return [ timestamp, index - offset, event ]
       }

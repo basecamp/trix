@@ -7,7 +7,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -66,13 +65,13 @@ let errorListeners = []
 
 Trix.Debugger = {
   addErrorListener(listener) {
-    if (!Array.from(errorListeners).includes(listener)) {
+    if (!errorListeners.includes(listener)) {
       return errorListeners.push(listener)
     }
   },
 
   removeErrorListener(listener) {
-    errorListeners = Array.from(errorListeners).filter((l) => l !== listener)
+    errorListeners = errorListeners.filter((l) => l !== listener)
   },
 }
 
@@ -84,11 +83,11 @@ const installMethodDebugger = function(className, methodName) {
   methodName = parts[parts.length - 1]
 
   let object = this[objectName]
-  Array.from(constructorNames).forEach((constructorName) => {
+  constructorNames.forEach((constructorName) => {
     object = object[constructorName]
   })
   object = object.prototype
-  Array.from(propertyNames).forEach((propertyName) => {
+  propertyNames.forEach((propertyName) => {
     object = object[propertyName]
   })
 
@@ -128,7 +127,7 @@ var reportError = function(error) {
 }
 
 var notifyErrorListeners = (error, element) => {
-  Array.from(errorListeners).forEach((listener) => {
+  errorListeners.forEach((listener) => {
     try {
       listener(error, element)
     } catch (error1) {}
@@ -141,7 +140,7 @@ var notifyErrorListeners = (error, element) => {
   for (const className in DEBUG_METHODS) {
     const methodNames = DEBUG_METHODS[className]
 
-    Array.from(methodNames.split(/\s/)).forEach((methodName) => {
+    methodNames.split(/\s/).forEach((methodName) => {
       try {
         installMethodDebugger(className, methodName)
         console.log(`✓ ${className}#${methodName}`)

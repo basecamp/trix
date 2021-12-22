@@ -2,7 +2,6 @@
 // Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -20,7 +19,7 @@ export default class ObjectView extends BasicObject {
 
   getNodes() {
     if (!this.nodes) { this.nodes = this.createNodes() }
-    return Array.from(this.nodes).map((node) => node.cloneNode(true))
+    return this.nodes.map((node) => node.cloneNode(true))
   }
 
   invalidate() {
@@ -64,7 +63,7 @@ export default class ObjectView extends BasicObject {
   getAllChildViews() {
     let views = []
 
-    Array.from(this.childViews).forEach((childView) => {
+    this.childViews.forEach((childView) => {
       views.push(childView)
       views = views.concat(childView.getAllChildViews())
     })
@@ -84,7 +83,7 @@ export default class ObjectView extends BasicObject {
   }
 
   findViewForObject(object) {
-    for (const view of Array.from(this.getAllChildViews())) {
+    for (const view of this.getAllChildViews()) {
       if (view.object === object) {
         return view
       }
@@ -129,9 +128,9 @@ export default class ObjectView extends BasicObject {
     const cache = this.getViewCache()
     if (cache) {
       const views = this.getAllChildViews().concat(this)
-      const objectKeys = Array.from(views).map((view) => view.object.getCacheKey())
+      const objectKeys = views.map((view) => view.object.getCacheKey())
       for (const key in cache) {
-        if (!Array.from(objectKeys).includes(key)) {
+        if (!objectKeys.includes(key)) {
           delete cache[key]
         }
       }
@@ -159,7 +158,7 @@ export class ObjectGroupView extends ObjectView {
   createNodes() {
     const element = this.createContainerElement()
 
-    Array.from(this.getChildViews()).forEach((view) => {
+    this.getChildViews().forEach((view) => {
       Array.from(view.getNodes()).forEach((node) => {
         element.appendChild(node)
       })

@@ -2,7 +2,6 @@
 // Sanity-check the conversion and remove this comment.
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -44,9 +43,7 @@ export default class BlockView extends ObjectView {
       }
 
       const element = makeElement({ tagName, attributes })
-      Array.from(nodes).forEach((node) => {
-        element.appendChild(node)
-      })
+      nodes.forEach((node) => element.appendChild(node))
       return [ element ]
     }
   }
