@@ -7,49 +7,47 @@
 // should be explicitly required to enable the debugger.
 
 const DEBUG_METHODS = {
-  AttachmentEditorController: "\
-didClickRemoveButton \
-uninstall\
-",
+  AttachmentEditorController: [
+    "didClickRemoveButton",
+    "uninstall",
+  ],
 
-  "Trix.CompositionController": "\
-didClickAttachment\
-",
+  "Trix.CompositionController": [
+    "didClickAttachment"
+  ],
 
-  EditorController: "\
-setEditor \
-loadDocument\
-",
+  EditorController: [
+    "setEditor",
+    "loadDocument",
+  ],
 
-  "Trix.Level0InputController":
-    "\
-elementDidMutate \
-events.keydown \
-events.keypress \
-events.dragstart \
-events.dragover \
-events.dragend \
-events.drop \
-events.cut \
-events.paste \
-events.compositionstart \
-events.compositionend\
-",
+  "Trix.Level0InputController": [
+    "elementDidMutate",
+    "events.keydown",
+    "events.keypress",
+    "events.dragstart",
+    "events.dragover",
+    "events.dragend",
+    "events.drop",
+    "events.cut",
+    "events.paste",
+    "events.compositionstart",
+    "events.compositionend",
+  ],
 
-  "Trix.Level2InputController": "\
-elementDidMutate \
-events.beforeinput \
-events.input \
-events.compositionend\
-",
+  "Trix.Level2InputController": [
+    "elementDidMutate",
+    "events.beforeinput",
+    "events.input",
+    "events.compositionend",
+  ],
 
-  "Trix.ToolbarController":
-    "\
-didClickActionButton \
-didClickAttributeButton \
-didClickDialogButton \
-didKeyDownDialogInput\
-",
+  "Trix.ToolbarController": [
+    "didClickActionButton",
+    "didClickAttributeButton",
+    "didClickDialogButton",
+    "didKeyDownDialogInput",
+  ]
 }
 
 import { findClosestElementFromNode } from "trix/core/helpers"
@@ -133,7 +131,7 @@ const notifyErrorListeners = (error, element) => {
   for (const className in DEBUG_METHODS) {
     const methodNames = DEBUG_METHODS[className]
 
-    methodNames.split(/\s/).forEach((methodName) => {
+    methodNames.forEach((methodName) => {
       try {
         installMethodDebugger(className, methodName)
         console.log(`✓ ${className}#${methodName}`)
