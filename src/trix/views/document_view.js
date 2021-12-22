@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-var,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -92,9 +89,9 @@ export default class DocumentView extends ObjectView {
   }
 }
 
-var findStoredElements = (element) => element.querySelectorAll("[data-trix-store-key]")
+const findStoredElements = (element) => element.querySelectorAll("[data-trix-store-key]")
 
-var elementsHaveEqualHTML = (element, otherElement) =>
+const elementsHaveEqualHTML = (element, otherElement) =>
   ignoreSpaces(element.innerHTML) === ignoreSpaces(otherElement.innerHTML)
 
-var ignoreSpaces = (html) => html.replace(/&nbsp;/g, " ")
+const ignoreSpaces = (html) => html.replace(/&nbsp;/g, " ")

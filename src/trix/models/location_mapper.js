@@ -201,7 +201,7 @@ export default class LocationMapper {
   }
 }
 
-var nodeLength = function(node) {
+const nodeLength = function(node) {
   if (node.nodeType === Node.TEXT_NODE) {
     if (nodeIsCursorTarget(node)) {
       return 0
@@ -216,7 +216,7 @@ var nodeLength = function(node) {
   }
 }
 
-var acceptSignificantNodes = function(node) {
+const acceptSignificantNodes = function(node) {
   if (rejectEmptyTextNodes(node) === NodeFilter.FILTER_ACCEPT) {
     return rejectAttachmentContents(node)
   } else {
@@ -224,7 +224,7 @@ var acceptSignificantNodes = function(node) {
   }
 }
 
-var rejectEmptyTextNodes = function(node) {
+const rejectEmptyTextNodes = function(node) {
   if (nodeIsEmptyTextNode(node)) {
     return NodeFilter.FILTER_REJECT
   } else {
@@ -232,7 +232,7 @@ var rejectEmptyTextNodes = function(node) {
   }
 }
 
-var rejectAttachmentContents = function(node) {
+const rejectAttachmentContents = function(node) {
   if (nodeIsAttachmentElement(node.parentNode)) {
     return NodeFilter.FILTER_REJECT
   } else {

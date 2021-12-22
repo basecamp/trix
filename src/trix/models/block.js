@@ -1,6 +1,5 @@
 /* eslint-disable
     no-unused-vars,
-    no-var,
     prefer-const,
 */
 // TODO: This file was created by bulk-decaffeinate.
@@ -262,13 +261,13 @@ export default class Block extends TrixObject {
 
 // Block breaks
 
-var applyBlockBreakToText = function(text) {
+const applyBlockBreakToText = function(text) {
   text = unmarkExistingInnerBlockBreaksInText(text)
   text = addBlockBreakToText(text)
   return text
 }
 
-var unmarkExistingInnerBlockBreaksInText = function(text) {
+const unmarkExistingInnerBlockBreaksInText = function(text) {
   let modified = false
   const pieces = text.getPieces()
 
@@ -295,7 +294,7 @@ var unmarkExistingInnerBlockBreaksInText = function(text) {
 
 const blockBreakText = Text.textForStringWithAttributes("\n", { blockBreak: true })
 
-var addBlockBreakToText = function(text) {
+const addBlockBreakToText = function(text) {
   if (textEndsInBlockBreak(text)) {
     return text
   } else {
@@ -303,7 +302,7 @@ var addBlockBreakToText = function(text) {
   }
 }
 
-var textEndsInBlockBreak = function(text) {
+const textEndsInBlockBreak = function(text) {
   const length = text.getLength()
   if (length === 0) {
     return false
@@ -312,11 +311,11 @@ var textEndsInBlockBreak = function(text) {
   return endText.isBlockBreak()
 }
 
-var unmarkBlockBreakPiece = (piece) => piece.copyWithoutAttribute("blockBreak")
+const unmarkBlockBreakPiece = (piece) => piece.copyWithoutAttribute("blockBreak")
 
 // Attributes
 
-var expandAttribute = function(attribute) {
+const expandAttribute = function(attribute) {
   const { listAttribute } = getBlockConfig(attribute)
   if (listAttribute) {
     return [ listAttribute, attribute ]
@@ -327,9 +326,9 @@ var expandAttribute = function(attribute) {
 
 // Array helpers
 
-var getLastElement = (array) => array.slice(-1)[0]
+const getLastElement = (array) => array.slice(-1)[0]
 
-var removeLastValue = function(array, value) {
+const removeLastValue = function(array, value) {
   const index = array.lastIndexOf(value)
   if (index === -1) {
     return array

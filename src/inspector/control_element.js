@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-var,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -65,7 +62,7 @@ export default class ControlElement {
   didMutate(mutations) {
     console.log(`Mutations (${mutations.length}):`)
     for (let index = 0; index < mutations.length; index++) {
-      var mutation = mutations[index]
+      const mutation = mutations[index]
       console.log(` ${index + 1}. ${mutation.type}:`)
       switch (mutation.type) {
         case "characterData":
@@ -84,7 +81,7 @@ export default class ControlElement {
   }
 }
 
-var inspectNode = function(node) {
+const inspectNode = function(node) {
   if (node.data) {
     return JSON.stringify(node.data)
   } else {

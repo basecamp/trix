@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-var,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -121,7 +118,7 @@ export default class Recorder {
   }
 }
 
-var characterFromKeyboardEvent = function(event) {
+const characterFromKeyboardEvent = function(event) {
   if (event.which === null) {
     return String.fromCharCode(event.keyCode)
   } else if (event.which !== 0 && event.charCode !== 0) {

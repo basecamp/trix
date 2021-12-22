@@ -1,6 +1,5 @@
 /* eslint-disable
     id-length,
-    no-var,
 */
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
@@ -78,22 +77,22 @@ export default class SelectionChangeObserver extends BasicObject {
   }
 }
 
-var domRangesAreEqual = (left, right) =>
+const domRangesAreEqual = (left, right) =>
   left?.startContainer === right?.startContainer &&
   left?.startOffset === right?.startOffset &&
   left?.endContainer === right?.endContainer &&
   left?.endOffset === right?.endOffset
 
-export var selectionChangeObserver = new SelectionChangeObserver()
+export const selectionChangeObserver = new SelectionChangeObserver()
 
-export var getDOMSelection = function() {
+export const getDOMSelection = function() {
   const selection = window.getSelection()
   if (selection.rangeCount > 0) {
     return selection
   }
 }
 
-export var getDOMRange = function() {
+export const getDOMRange = function() {
   const domRange = getDOMSelection()?.getRangeAt(0)
   if (domRange) {
     if (!domRangeIsPrivate(domRange)) {
@@ -102,7 +101,7 @@ export var getDOMRange = function() {
   }
 }
 
-export var setDOMRange = function(domRange) {
+export const setDOMRange = function(domRange) {
   const selection = window.getSelection()
   selection.removeAllRanges()
   selection.addRange(domRange)
@@ -113,6 +112,6 @@ export var setDOMRange = function(domRange) {
 // private element used to draw its UI. Attempting to access properties of those
 // elements throws an error.
 // https://bugzilla.mozilla.org/show_bug.cgi?id=208427
-var domRangeIsPrivate = (domRange) => nodeIsPrivate(domRange.startContainer) || nodeIsPrivate(domRange.endContainer)
+const domRangeIsPrivate = (domRange) => nodeIsPrivate(domRange.startContainer) || nodeIsPrivate(domRange.endContainer)
 
-var nodeIsPrivate = (node) => !Object.getPrototypeOf(node)
+const nodeIsPrivate = (node) => !Object.getPrototypeOf(node)

@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-var,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -193,7 +190,7 @@ export default class MutationObserver extends BasicObject {
   }
 }
 
-var getTextForNodes = function(nodes = []) {
+const getTextForNodes = function(nodes = []) {
   const text = []
   for (const node of Array.from(nodes)) {
     switch (node.nodeType) {

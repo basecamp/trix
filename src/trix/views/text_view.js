@@ -50,4 +50,4 @@ export default class TextView extends ObjectView {
   }
 }
 
-var endsWithWhitespace = (piece) => /\s$/.test(piece?.toString())
+const endsWithWhitespace = (piece) => /\s$/.test(piece?.toString())

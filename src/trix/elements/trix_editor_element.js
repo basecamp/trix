@@ -1,6 +1,5 @@
 /* eslint-disable
     no-unused-vars,
-    no-var,
 */
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
@@ -51,19 +50,19 @@ const makeEditable = function(element) {
   })
 }
 
-var configureContentEditable = function(element) {
+const configureContentEditable = function(element) {
   disableObjectResizing(element)
   return setDefaultParagraphSeparator(element)
 }
 
-var disableObjectResizing = function(element) {
+const disableObjectResizing = function(element) {
   if (document.queryCommandSupported?.("enableObjectResizing")) {
     document.execCommand("enableObjectResizing", false, false)
     return handleEvent("mscontrolselect", { onElement: element, preventDefault: true })
   }
 }
 
-var setDefaultParagraphSeparator = function(element) {
+const setDefaultParagraphSeparator = function(element) {
   if (document.queryCommandSupported?.("DefaultParagraphSeparator")) {
     const { tagName } = config.blockAttributes.default
     if ([ "div", "p" ].includes(tagName)) {

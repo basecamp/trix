@@ -1,6 +1,5 @@
 /* eslint-disable
     no-unused-vars,
-    no-var,
 */
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
@@ -593,8 +592,8 @@ export default class Document extends TrixObject {
     let baseBlockAttributes = this.getBlockAtIndex(0).getAttributes()
 
     for (let blockIndex = 1; blockIndex < this.getBlockCount(); blockIndex++) {
-      var blockAttributes = this.getBlockAtIndex(blockIndex).getAttributes()
-      var lastAttributeIndex = Math.min(baseBlockAttributes.length, blockAttributes.length)
+      const blockAttributes = this.getBlockAtIndex(blockIndex).getAttributes()
+      const lastAttributeIndex = Math.min(baseBlockAttributes.length, blockAttributes.length)
 
       baseBlockAttributes = (() => {
         const result = []
@@ -777,7 +776,7 @@ export default class Document extends TrixObject {
   }
 }
 
-var attributesForBlock = function(block) {
+const attributesForBlock = function(block) {
   const attributes = {}
   const attributeName = block.getLastAttribute()
   if (attributeName) {

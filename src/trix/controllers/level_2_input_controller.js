@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-var,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -574,7 +571,7 @@ export default class Level2InputController extends InputController {
   }
 }
 
-var staticRangeToRange = function(staticRange) {
+const staticRangeToRange = function(staticRange) {
   const range = document.createRange()
   range.setStart(staticRange.startContainer, staticRange.startOffset)
   range.setEnd(staticRange.endContainer, staticRange.endOffset)
@@ -583,23 +580,23 @@ var staticRangeToRange = function(staticRange) {
 
 // Event helpers
 
-var dragEventHasFiles = (event) => Array.from(event.dataTransfer?.types || []).includes("Files")
+const dragEventHasFiles = (event) => Array.from(event.dataTransfer?.types || []).includes("Files")
 
-var pasteEventHasFilesOnly = function(event) {
+const pasteEventHasFilesOnly = function(event) {
   const clipboard = event.clipboardData
   if (clipboard) {
     return clipboard.types.includes("Files") && clipboard.types.length === 1 && clipboard.files.length >= 1
   }
 }
 
-var pasteEventHasPlainTextOnly = function(event) {
+const pasteEventHasPlainTextOnly = function(event) {
   const clipboard = event.clipboardData
   if (clipboard) {
     return clipboard.types.includes("text/plain") && clipboard.types.length === 1
   }
 }
 
-var keyboardCommandFromKeyEvent = function(event) {
+const keyboardCommandFromKeyEvent = function(event) {
   const command = []
   if (event.altKey) {
     command.push("alt")
@@ -611,7 +608,7 @@ var keyboardCommandFromKeyEvent = function(event) {
   return command
 }
 
-var pointFromEvent = (event) => ({
+const pointFromEvent = (event) => ({
   x: event.clientX,
   y: event.clientY,
 })

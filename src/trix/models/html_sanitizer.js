@@ -1,6 +1,5 @@
 /* eslint-disable
     no-undef,
-    no-var,
 */
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
@@ -117,7 +116,7 @@ export default class HTMLSanitizer extends BasicObject {
   }
 }
 
-var createBodyElementForHTML = function(html = "") {
+const createBodyElementForHTML = function(html = "") {
   // Remove everything after </html>
   html = html.replace(/<\/html[^>]*>[^]*$/i, "</html>")
   const doc = document.implementation.createHTMLDocument("")

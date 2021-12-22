@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-var,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -163,7 +160,7 @@ export default class AttachmentView extends ObjectView {
   }
 }
 
-var createCursorTarget = (name) =>
+const createCursorTarget = (name) =>
   makeElement({
     tagName: "span",
     textContent: ZERO_WIDTH_SPACE,
@@ -173,7 +170,7 @@ var createCursorTarget = (name) =>
     },
   })
 
-var htmlContainsTagName = function(html, tagName) {
+const htmlContainsTagName = function(html, tagName) {
   const div = makeElement("div")
   div.innerHTML = html || ""
   return div.querySelector(tagName)

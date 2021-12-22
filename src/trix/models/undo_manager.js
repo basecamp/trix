@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-var,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -65,5 +62,5 @@ export default class UndoManager extends BasicObject {
   }
 }
 
-var entryHasDescriptionAndContext = (entry, description, context) =>
+const entryHasDescriptionAndContext = (entry, description, context) =>
   entry?.description === description?.toString() && entry?.context === JSON.stringify(context)

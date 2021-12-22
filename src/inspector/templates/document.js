@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-var,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -40,7 +37,7 @@ window.JST["trix/inspector/templates/document"] = function() {
   return details.join("\n")
 }
 
-var pieces = () =>
+const pieces = () =>
   pieces.map((piece, index) =>`\
 <div class="piece">
 <div class="title">

@@ -1,6 +1,5 @@
 /* eslint-disable
     no-unused-vars,
-    no-var,
 */
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
@@ -523,11 +522,11 @@ Level0InputController.proxyMethod("responder?.expandSelectionInDirection")
 Level0InputController.proxyMethod("responder?.selectionIsInCursorTarget")
 Level0InputController.proxyMethod("responder?.selectionIsExpanded")
 
-var extensionForFile = (file) => file.type?.match(/\/(\w+)$/)?.[1]
+const extensionForFile = (file) => file.type?.match(/\/(\w+)$/)?.[1]
 
 const hasStringCodePointAt = !!" ".codePointAt?.(0)
 
-var stringFromKeyEvent = function(event) {
+const stringFromKeyEvent = function(event) {
   if (event.key && hasStringCodePointAt && event.key.codePointAt(0) === event.keyCode) {
     return event.key
   } else {
@@ -544,7 +543,7 @@ var stringFromKeyEvent = function(event) {
   }
 }
 
-var pasteEventIsCrippledSafariHTMLPaste = function(event) {
+const pasteEventIsCrippledSafariHTMLPaste = function(event) {
   const paste = event.clipboardData
   if (paste) {
     if (paste.types.includes("text/html")) {

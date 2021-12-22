@@ -1,7 +1,6 @@
 /* eslint-disable
     id-length,
     no-empty,
-    no-var,
 */
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
@@ -98,7 +97,7 @@ const installMethodDebugger = function(className, methodName) {
   }
 }
 
-var wrapFunctionWithErrorHandler = function(fn) {
+const wrapFunctionWithErrorHandler = function(fn) {
   const trixDebugWrapper = function() {
     try {
       return fn.apply(this, arguments)
@@ -110,7 +109,7 @@ var wrapFunctionWithErrorHandler = function(fn) {
   return trixDebugWrapper
 }
 
-var reportError = function(error) {
+const reportError = function(error) {
   Trix.Debugger.lastError = error
 
   console.error("Trix error!")
@@ -126,7 +125,7 @@ var reportError = function(error) {
   }
 }
 
-var notifyErrorListeners = (error, element) => {
+const notifyErrorListeners = (error, element) => {
   errorListeners.forEach((listener) => {
     try {
       listener(error, element)

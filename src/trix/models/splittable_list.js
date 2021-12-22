@@ -1,6 +1,5 @@
 /* eslint-disable
     no-unused-vars,
-    no-var,
     prefer-const,
 */
 // TODO: This file was created by bulk-decaffeinate.
@@ -216,7 +215,7 @@ export default class SplittableList extends TrixObject {
   }
 }
 
-var objectArraysAreEqual = function(left, right = []) {
+const objectArraysAreEqual = function(left, right = []) {
   if (left.length !== right.length) {
     return false
   }
@@ -230,6 +229,6 @@ var objectArraysAreEqual = function(left, right = []) {
   return result
 }
 
-var startOfRange = (range) => range[0]
+const startOfRange = (range) => range[0]
 
-var endOfRange = (range) => range[1]
+const endOfRange = (range) => range[1]

@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-var,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -23,7 +20,7 @@ window.JST["trix/inspector/templates/performance"] = function() {
   return metrics.join("\n")
 }
 
-var dataMetrics = function(name, data, round) {
+const dataMetrics = function(name, data, round) {
   let item = `<strong>${name}</strong> (${data.calls})<br>`
 
   if (data.calls > 0) {

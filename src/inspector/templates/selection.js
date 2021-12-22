@@ -1,6 +1,5 @@
 /* eslint-disable
     no-useless-escape,
-    no-var,
 */
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
@@ -23,7 +22,7 @@ ${charSpans(this.characters).join("\n")}\
 `
 }
 
-var charSpans = (characters) =>
+const charSpans = (characters) =>
   Array.from(characters).map(
     (char) => `<span class=\"character ${char.selected ? "selected" : undefined}\">${char.string}</span>`
   )

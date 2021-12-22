@@ -1,7 +1,7 @@
 /* eslint-disable
+    no-case-declarations,
     no-irregular-whitespace,
     no-unused-vars,
-    no-var,
 */
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
@@ -218,7 +218,7 @@ export default class HTMLParser extends BasicObject {
           return this.processedElements.push(element)
         case "img":
           attributes = { url: element.getAttribute("src"), contentType: "image" }
-          var object = getImageDimensions(element)
+          const object = getImageDimensions(element)
           for (const key in object) {
             const value = object[key]
             attributes[key] = value
@@ -447,21 +447,21 @@ export default class HTMLParser extends BasicObject {
 
 // Helpers
 
-var elementCanDisplayPreformattedText = function(element) {
+const elementCanDisplayPreformattedText = function(element) {
   const { whiteSpace } = window.getComputedStyle(element)
   return [ "pre", "pre-wrap", "pre-line" ].includes(whiteSpace)
 }
 
-var nodeEndsWithNonWhitespace = (node) => node && !stringEndsWithWhitespace(node.textContent)
+const nodeEndsWithNonWhitespace = (node) => node && !stringEndsWithWhitespace(node.textContent)
 
-var getBlockElementMargin = function(element) {
+const getBlockElementMargin = function(element) {
   const style = window.getComputedStyle(element)
   if (style.display === "block") {
     return { top: parseInt(style.marginTop), bottom: parseInt(style.marginBottom) }
   }
 }
 
-var nodeFilter = function(node) {
+const nodeFilter = function(node) {
   if (tagName(node) === "style") {
     return NodeFilter.FILTER_REJECT
   } else {
@@ -471,8 +471,8 @@ var nodeFilter = function(node) {
 
 // Whitespace
 
-var leftTrimBreakableWhitespace = (string) => string.replace(new RegExp(`^${breakableWhitespacePattern.source}+`), "")
+const leftTrimBreakableWhitespace = (string) => string.replace(new RegExp(`^${breakableWhitespacePattern.source}+`), "")
 
-var stringIsAllBreakableWhitespace = (string) => new RegExp(`^${breakableWhitespacePattern.source}*$`).test(string)
+const stringIsAllBreakableWhitespace = (string) => new RegExp(`^${breakableWhitespacePattern.source}*$`).test(string)
 
-var stringEndsWithWhitespace = (string) => /\s$/.test(string)
+const stringEndsWithWhitespace = (string) => /\s$/.test(string)
