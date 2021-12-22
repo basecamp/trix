@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-unused-vars,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -20,8 +17,6 @@ import {
 } from "trix/core/helpers"
 
 import { attachmentSelector } from "trix/config/attachments"
-
-import AttachmentView from "trix/views/attachment_view"
 import EditorController from "trix/controllers/editor_controller"
 import "trix/elements/trix_toolbar_element"
 

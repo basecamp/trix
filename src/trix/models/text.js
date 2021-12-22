@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-unused-vars,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -175,7 +172,7 @@ export default class Text extends TrixObject {
   }
 
   getAttachmentById(attachmentId) {
-    const { attachment, position } = this.getAttachmentAndPositionById(attachmentId)
+    const { attachment } = this.getAttachmentAndPositionById(attachmentId)
     return attachment
   }
 

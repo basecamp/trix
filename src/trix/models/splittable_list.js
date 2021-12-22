@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-unused-vars,
     prefer-const,
 */
 // TODO: This file was created by bulk-decaffeinate.
@@ -101,7 +100,7 @@ export default class SplittableList extends TrixObject {
   }
 
   getObjectAtPosition(position) {
-    const { index, offset } = this.findIndexAndOffsetAtPosition(position)
+    const { index } = this.findIndexAndOffsetAtPosition(position)
     return this.objects[index]
   }
 

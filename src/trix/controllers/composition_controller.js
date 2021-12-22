@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-unused-vars,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -9,7 +6,6 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import BasicObject from "trix/core/basic_object"
-import AttachmentView from "trix/views/attachment_view"
 import DocumentView from "trix/views/document_view"
 import AttachmentEditorController from "trix/controllers/attachment_editor_controller"
 

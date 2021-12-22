@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-unused-vars,
     no-useless-escape,
     no-var,
 */

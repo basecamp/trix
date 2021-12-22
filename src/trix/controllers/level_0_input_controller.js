@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-unused-vars,
-*/
 // TODO: This file was created by bulk-decaffeinate.
 // Fix any style issues and re-enable lint.
 /*
@@ -23,7 +20,6 @@ import {
   objectsAreEqual,
   removeNode,
   squishBreakableWhitespace,
-  tagName,
 } from "trix/core/helpers"
 
 import { selectionChangeObserver } from "trix/observers/selection_change_observer"
@@ -107,7 +103,6 @@ export default class Level0InputController extends InputController {
     },
 
     dragstart(event) {
-      const { target } = event
       this.serializeSelectionToDataTransfer(event.dataTransfer)
       this.draggedRange = this.getSelectedRange()
       return this.delegate?.inputControllerDidStartDrag?.()

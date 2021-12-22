@@ -1,5 +1,4 @@
 /* eslint-disable
-    no-unused-vars,
 */
 import Trix from "trix/trix"
 import config from "trix/config"
