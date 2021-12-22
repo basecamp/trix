@@ -1,5 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
 import attachments from "trix/config/attachments"
 import blockAttributes from "trix/config/block_attributes"
 import browser from "trix/config/browser"

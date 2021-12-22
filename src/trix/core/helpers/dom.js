@@ -19,7 +19,7 @@ export const handleEvent = function(eventName, { onElement, matchingSelector, wi
     if (target != null) {
       withCallback?.call(target, event, target)
       if (preventDefault) {
-        return event.preventDefault()
+        event.preventDefault()
       }
     }
   }

@@ -1,10 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import { removeNode } from "trix/core/helpers"
 
 import config from "trix/config"
@@ -20,7 +13,7 @@ const undoable = function(fn) {
     if (!this.undos) {
       this.undos = []
     }
-    return this.undos.push(commands.undo)
+    this.undos.push(commands.undo)
   }
 }
 
@@ -48,7 +41,7 @@ export default class AttachmentEditorController extends BasicObject {
     this.makeElementMutable()
     this.addToolbar()
     if (this.attachment.isPreviewable()) {
-      return this.installCaptionEditor()
+      this.installCaptionEditor()
     }
   }
 
@@ -59,7 +52,7 @@ export default class AttachmentEditorController extends BasicObject {
       undo()
       undo = this.undos.pop()
     }
-    return this.delegate?.didUninstallAttachmentEditor(this)
+    this.delegate?.didUninstallAttachmentEditor(this)
   }
 
   // Private
@@ -69,9 +62,9 @@ export default class AttachmentEditorController extends BasicObject {
       const caption = this.pendingCaption
       this.pendingCaption = null
       if (caption) {
-        return this.delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?.({ caption }, this.attachment)
+        this.delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?.({ caption }, this.attachment)
       } else {
-        return this.delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?.("caption", this.attachment)
+        this.delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?.("caption", this.attachment)
       }
     }
   }

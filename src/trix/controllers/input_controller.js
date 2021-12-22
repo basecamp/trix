@@ -1,10 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import BasicObject from "trix/core/basic_object"
 import MutationObserver from "trix/observers/mutation_observer"
 import FileVerificationOperation from "trix/operations/file_verification_operation"

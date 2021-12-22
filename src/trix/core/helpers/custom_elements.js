@@ -1,5 +1,4 @@
 /* eslint-disable
-    prefer-const,
 */
 export const installDefaultCSSForTagName = function(tagName, defaultCSS) {
   const styleElement = insertStyleElementForTagName(tagName)

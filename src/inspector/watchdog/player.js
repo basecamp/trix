@@ -1,19 +1,8 @@
-/* eslint-disable
-    constructor-super,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import "inspector/watchdog/recording"
 
 export default class Player {
   constructor(recording) {
     this.tick = this.tick.bind(this)
-    super(...arguments)
     this.recording = recording
     this.playing = false
     this.index = -1

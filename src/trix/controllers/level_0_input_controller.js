@@ -1,10 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import config from "trix/config"
 import UTF16String from "trix/core/utilities/utf16_string"
 import BasicObject from "trix/core/basic_object"
@@ -66,7 +59,7 @@ export default class Level0InputController extends InputController {
           }).filter(key => key)
           keys.push(character)
           if (this.delegate?.inputControllerDidReceiveKeyboardCommand(keys)) {
-            return event.preventDefault()
+            event.preventDefault()
           }
         }
       }
@@ -99,7 +92,7 @@ export default class Level0InputController extends InputController {
     },
 
     dragenter(event) {
-      return event.preventDefault()
+      event.preventDefault()
     },
 
     dragstart(event) {
@@ -167,7 +160,7 @@ export default class Level0InputController extends InputController {
     copy(event) {
       if (this.responder?.selectionIsExpanded()) {
         if (this.serializeSelectionToDataTransfer(event.clipboardData)) {
-          return event.preventDefault()
+          event.preventDefault()
         }
       }
     },
@@ -237,7 +230,7 @@ export default class Level0InputController extends InputController {
         }
       }
 
-      return event.preventDefault()
+      event.preventDefault()
     },
 
     compositionstart(event) {
@@ -283,7 +276,7 @@ export default class Level0InputController extends InputController {
       if (this.responder?.canIncreaseNestingLevel()) {
         this.responder?.increaseNestingLevel()
         this.requestRender()
-        return event.preventDefault()
+        event.preventDefault()
       }
     },
 
@@ -325,14 +318,14 @@ export default class Level0InputController extends InputController {
         this.delegate?.inputControllerWillPerformTyping()
         this.responder?.insertString("\n")
         this.requestRender()
-        return event.preventDefault()
+        event.preventDefault()
       },
 
       tab(event) {
         if (this.responder?.canDecreaseNestingLevel()) {
           this.responder?.decreaseNestingLevel()
           this.requestRender()
-          return event.preventDefault()
+          event.preventDefault()
         }
       },
 

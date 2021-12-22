@@ -1,10 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import Recording from "inspector/watchdog/recording"
 import Serializer from "inspector/watchdog/serializer"
 
@@ -18,9 +11,8 @@ export default class Recorder {
   }
 
   start() {
-    if (this.started) {
-      return
-    }
+    if (this.started) return
+
     this.installMutationObserver()
     this.installEventListeners()
     this.recordSnapshot()
@@ -28,9 +20,8 @@ export default class Recorder {
   }
 
   stop() {
-    if (!this.started) {
-      return
-    }
+    if (!this.started) return
+
     this.uninstallMutationObserver()
     this.uninstallEventListeners()
     this.started = false

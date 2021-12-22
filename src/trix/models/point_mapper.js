@@ -2,13 +2,6 @@
     id-length,
     no-empty,
 */
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import { getDOMRange, setDOMRange } from "trix/core/helpers"
 
 export default class PointMapper {

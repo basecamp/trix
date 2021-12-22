@@ -1,10 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const KEY_EVENTS = "keydown keypress input".split(" ")
 const COMPOSITION_EVENTS = "compositionstart compositionupdate compositionend textInput".split(" ")
 const OBSERVER_OPTIONS = {
@@ -25,12 +18,12 @@ export default class ControlElement {
   install() {
     this.createElement()
     this.logInputEvents()
-    return this.logMutations()
+    this.logMutations()
   }
 
   uninstall() {
     this.observer.disconnect()
-    return this.element.parentNode.removeChild(this.element)
+    this.element.parentNode.removeChild(this.element)
   }
 
   createElement() {
@@ -39,7 +32,7 @@ export default class ControlElement {
     this.element.style.width = getComputedStyle(this.editorElement).width
     this.element.style.minHeight = "50px"
     this.element.style.border = "1px solid green"
-    return this.editorElement.parentNode.insertBefore(this.element, this.editorElement.nextSibling)
+    this.editorElement.parentNode.insertBefore(this.element, this.editorElement.nextSibling)
   }
 
   logInputEvents() {
@@ -56,7 +49,7 @@ export default class ControlElement {
 
   logMutations() {
     this.observer = new window.MutationObserver(this.didMutate)
-    return this.observer.observe(this.element, OBSERVER_OPTIONS)
+    this.observer.observe(this.element, OBSERVER_OPTIONS)
   }
 
   didMutate(mutations) {

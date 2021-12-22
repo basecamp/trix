@@ -1,13 +1,6 @@
 /* eslint-disable
     no-var,
 */
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import ObjectView from "trix/views/object_view"
 import ObjectGroup from "trix/core/collections/object_group"
 import PieceView from "trix/views/piece_view"

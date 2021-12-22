@@ -2,13 +2,7 @@
     id-length,
     no-empty,
 */
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
+
 // This file is not included in the main Trix bundle and
 // should be explicitly required to enable the debugger.
 
@@ -65,7 +59,7 @@ let errorListeners = []
 Trix.Debugger = {
   addErrorListener(listener) {
     if (!errorListeners.includes(listener)) {
-      return errorListeners.push(listener)
+      errorListeners.push(listener)
     }
   },
 
@@ -119,9 +113,9 @@ const reportError = function(error) {
   const editorElement = findClosestElementFromNode(activeElement, { matchingSelector: "trix-editor" })
 
   if (editorElement) {
-    return notifyErrorListeners(error, editorElement)
+    notifyErrorListeners(error, editorElement)
   } else {
-    return console.warn("Can't find <trix-editor> element. document.activeElement =", activeElement)
+    console.warn("Can't find <trix-editor> element. document.activeElement =", activeElement)
   }
 }
 
@@ -149,5 +143,5 @@ const notifyErrorListeners = (error, element) => {
     })
   }
 
-  return console.groupEnd()
+  console.groupEnd()
 })()

@@ -1,10 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import { getAllAttributeNames, squishBreakableWhitespace } from "trix/core/helpers"
 import InputController from "trix/controllers/input_controller"
 
@@ -23,7 +16,7 @@ export default class Level2InputController extends InputController {
       if (keyEventIsKeyboardCommand(event)) {
         const command = keyboardCommandFromKeyEvent(event)
         if (this.delegate?.inputControllerDidReceiveKeyboardCommand(command)) {
-          return event.preventDefault()
+          event.preventDefault()
         }
       } else {
         let name = event.key
@@ -101,7 +94,7 @@ export default class Level2InputController extends InputController {
 
     dragenter(event) {
       if (dragEventHasFiles(event)) {
-        return event.preventDefault()
+        event.preventDefault()
       }
     },
 
@@ -114,7 +107,7 @@ export default class Level2InputController extends InputController {
           return this.responder?.setLocationRangeFromPointRange(point)
         }
       } else if (dragEventHasFiles(event)) {
-        return event.preventDefault()
+        event.preventDefault()
       }
     },
 

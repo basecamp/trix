@@ -1,10 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 export default class Deserializer {
   constructor(document, snapshot) {
     this.document = document
@@ -68,9 +61,8 @@ export default class Deserializer {
   }
 
   deserializeSelection() {
-    if (!this.selection) {
-      return
-    }
+    if (!this.selection) return
+
     const { start, end } = this.selection
     const startContainer = this.nodes[start.id]
     const endContainer = this.nodes[end.id]
