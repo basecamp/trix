@@ -3,27 +3,21 @@ if (!window.JST) {
 }
 
 window.JST["trix/inspector/templates/performance"] = function() {
-  const metrics = () => {
-    this.data.map((name) => {
+  return Object.keys(this.data).map((name) => {
       const data = this.data[name]
       return dataMetrics(name, data, this.round)
-    })
-  }
-
-  return metrics.join("\n")
+  }).join("\n")
 }
 
 const dataMetrics = function(name, data, round) {
   let item = `<strong>${name}</strong> (${data.calls})<br>`
 
   if (data.calls > 0) {
-    item += `\
-<div class="metrics">
-  Mean: ${round(data.mean)}ms<br>
-  Max: ${round(data.max)}ms<br>
-  Last: ${round(data.last)}ms
-</div>\
-`
+    item += `<div class="metrics">
+        Mean: ${round(data.mean)}ms<br>
+        Max: ${round(data.max)}ms<br>
+        Last: ${round(data.last)}ms
+      </div>`
 
     return item
   }
