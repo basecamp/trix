@@ -7,7 +7,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import config from "trix/config"
@@ -177,6 +176,6 @@ var createCursorTarget = (name) =>
 
 var htmlContainsTagName = function(html, tagName) {
   const div = makeElement("div")
-  div.innerHTML = html != null ? html : ""
+  div.innerHTML = html || ""
   return div.querySelector(tagName)
 }

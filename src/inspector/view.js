@@ -6,7 +6,6 @@
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import { handleEvent } from "trix/core/helpers"
@@ -87,7 +86,7 @@ export default class View {
 
   saveSetting(key, value) {
     key = this.getSettingsKey(key)
-    if (window.sessionStorage != null) {
+    if (window.sessionStorage) {
       window.sessionStorage[key] = value
     }
   }

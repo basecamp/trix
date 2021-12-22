@@ -3,7 +3,6 @@
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import Piece from "trix/models/piece"
@@ -42,7 +41,7 @@ export default class StringPiece extends Piece {
   // Splittable
 
   canBeConsolidatedWith(piece) {
-    return piece != null && this.hasSameConstructorAs(piece) && this.hasSameAttributesAsPiece(piece)
+    return piece && this.hasSameConstructorAs(piece) && this.hasSameAttributesAsPiece(piece)
   }
 
   consolidateWith(piece) {

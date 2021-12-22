@@ -4,7 +4,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import BasicObject from "trix/core/basic_object"
@@ -19,9 +18,7 @@ const activeDialogSelector = `${dialogSelector}[data-trix-active]`
 const dialogButtonSelector = `${dialogSelector} [data-trix-method]`
 const dialogInputSelector = `${dialogSelector} [data-trix-input]`
 const getInputForDialog = (element, attributeName) => {
-  if (attributeName == null) {
-    attributeName = getAttributeName(element)
-  }
+  if (!attributeName) { attributeName = getAttributeName(element) }
   return element.querySelector(`[data-trix-input][name='${attributeName}']`)
 }
 const getActionName = (element) => element.getAttribute("data-trix-action")
@@ -205,7 +202,7 @@ export default class ToolbarController extends BasicObject {
     if (attributeName) {
       const input = getInputForDialog(element, dialogName)
       if (input) {
-        input.value = this.attributes[attributeName] != null ? this.attributes[attributeName] : ""
+        input.value = this.attributes[attributeName] || ""
         input.select()
       }
     }

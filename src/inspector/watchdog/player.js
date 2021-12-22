@@ -6,7 +6,6 @@
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import "inspector/watchdog/recording"
@@ -88,7 +87,7 @@ export default class Player {
   getTimeToNextFrame() {
     const current = this.recording.getTimestampAtFrameIndex(this.index)
     const next = this.recording.getTimestampAtFrameIndex(this.index + 1)
-    const duration = current != null && next != null ? next - current : 0
+    const duration = current && next ? next - current : 0
     return Math.min(duration, 500)
   }
 }

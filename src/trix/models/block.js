@@ -10,7 +10,6 @@
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * DS204: Change includes calls to have a more natural evaluation order
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import TrixObject from "trix/core/object" // Don't override window.Object
@@ -321,7 +320,7 @@ var unmarkBlockBreakPiece = (piece) => piece.copyWithoutAttribute("blockBreak")
 
 var expandAttribute = function(attribute) {
   const { listAttribute } = getBlockConfig(attribute)
-  if (listAttribute != null) {
+  if (listAttribute) {
     return [ listAttribute, attribute ]
   } else {
     return [ attribute ]

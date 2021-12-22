@@ -8,7 +8,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import config from "trix/config"
@@ -384,9 +383,8 @@ export default class Document extends TrixObject {
     let document = this
 
     const startBlock = document.getBlockAtIndex(startLocation.index)
-    if (
-      (startLocation.offset = startBlock.findLineBreakInDirectionFromPosition("backward", startLocation.offset)) != null
-    ) {
+    startLocation.offset = startBlock.findLineBreakInDirectionFromPosition("backward", startLocation.offset)
+    if (startLocation.offset != null) {
       position = document.positionFromLocation(startLocation)
       document = document.insertBlockBreakAtRange([ position, position + 1 ])
       endLocation.index += 1
@@ -679,7 +677,7 @@ export default class Document extends TrixObject {
     const ranges = []
 
     const match = function(piece) {
-      if (withValue != null) {
+      if (withValue) {
         return piece.getAttribute(attributeName) === withValue
       } else {
         return piece.hasAttribute(attributeName)

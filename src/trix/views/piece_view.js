@@ -9,7 +9,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import { NON_BREAKING_SPACE } from "trix/constants"
@@ -111,9 +110,7 @@ export default class PieceView extends ObjectView {
     }
 
     if (Object.keys(styles).length) {
-      if (element == null) {
-        element = makeElement("span")
-      }
+      if (!element) { element = makeElement("span") }
       for (key in styles) {
         value = styles[key]
         element.style[key] = value

@@ -7,7 +7,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import config from "trix/config"
@@ -105,7 +104,7 @@ export default class EditorController extends Controller {
     this.toolbarController.delegate = this
 
     this.editor = new Editor(this.composition, this.selectionManager, this.editorElement)
-    if (document != null) {
+    if (document) {
       this.editor.loadDocument(document)
     } else {
       this.editor.loadHTML(html)
@@ -234,7 +233,7 @@ export default class EditorController extends Controller {
   }
 
   compositionControllerDidRender() {
-    if (this.requestedLocationRange != null) {
+    if (this.requestedLocationRange) {
       if (this.compositionRevisionWhenLocationRangeRequested === this.composition.revision) {
         this.selectionManager.setLocationRange(this.requestedLocationRange)
       }
@@ -269,10 +268,7 @@ export default class EditorController extends Controller {
   }
 
   compositionControllerDidRequestDeselectingAttachment(attachment) {
-    const locationRange =
-      this.attachmentLocationRange != null
-        ? this.attachmentLocationRange
-        : this.composition.document.getLocationRangeOfAttachment(attachment)
+    const locationRange = this.attachmentLocationRange || this.composition.document.getLocationRangeOfAttachment(attachment)
     return this.selectionManager.setLocationRange(locationRange[1])
   }
 
@@ -499,10 +495,10 @@ export default class EditorController extends Controller {
     Array.from(this.editor.filters).forEach((filter) => {
       const { document, selectedRange } = snapshot
       snapshot = filter.call(this.editor, snapshot) || {}
-      if (snapshot.document == null) {
+      if (!snapshot.document) {
         snapshot.document = document
       }
-      if (snapshot.selectedRange == null) {
+      if (!snapshot.selectedRange) {
         snapshot.selectedRange = selectedRange
       }
     })

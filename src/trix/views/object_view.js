@@ -4,7 +4,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import BasicObject from "trix/core/basic_object"
@@ -20,9 +19,7 @@ export default class ObjectView extends BasicObject {
   }
 
   getNodes() {
-    if (this.nodes == null) {
-      this.nodes = this.createNodes()
-    }
+    if (!this.nodes) { this.nodes = this.createNodes() }
     return Array.from(this.nodes).map((node) => node.cloneNode(true))
   }
 
@@ -97,7 +94,8 @@ export default class ObjectView extends BasicObject {
   getViewCache() {
     if (this.rootView === this) {
       if (this.isViewCachingEnabled()) {
-        return this.viewCache != null ? this.viewCache : this.viewCache = {}
+        if (!this.viewCache) { this.viewCache = {} }
+        return this.viewCache
       }
     } else {
       return this.rootView.getViewCache()

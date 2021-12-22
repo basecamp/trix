@@ -6,7 +6,6 @@
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import TrixObject from "trix/core/object" // Don't override window.Object
@@ -80,11 +79,11 @@ export default class Piece extends TrixObject {
   }
 
   hasSameStringValueAsPiece(piece) {
-    return piece != null && this.toString() === piece.toString()
+    return piece && this.toString() === piece.toString()
   }
 
   hasSameAttributesAsPiece(piece) {
-    return piece != null && (this.attributes === piece.attributes || this.attributes.isEqualTo(piece.attributes))
+    return piece && (this.attributes === piece.attributes || this.attributes.isEqualTo(piece.attributes))
   }
 
   isBlockBreak() {

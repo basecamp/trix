@@ -8,7 +8,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import config from "trix/config"
@@ -80,15 +79,9 @@ export default class Level0InputController extends InputController {
     },
 
     keypress(event) {
-      if (this.inputSummary.eventName != null) {
-        return
-      }
-      if (event.metaKey) {
-        return
-      }
-      if (event.ctrlKey && !event.altKey) {
-        return
-      }
+      if (this.inputSummary.eventName != null) return
+      if (event.metaKey) return
+      if (event.ctrlKey && !event.altKey) return
 
       const string = stringFromKeyEvent(event)
       if (string) {
@@ -187,10 +180,10 @@ export default class Level0InputController extends InputController {
     },
 
     paste(event) {
-      const clipboard = event.clipboardData != null ? event.clipboardData : event.testClipboardData
+      const clipboard = event.clipboardData || event.testClipboardData
       const paste = { clipboard }
 
-      if (clipboard == null || pasteEventIsCrippledSafariHTMLPaste(event)) {
+      if (!clipboard || pasteEventIsCrippledSafariHTMLPaste(event)) {
         this.getPastedHTMLUsingHiddenElement((html) => {
           paste.type = "text/html"
           paste.html = html
@@ -468,7 +461,7 @@ export default class Level0InputController extends InputController {
   }
 
   isComposing() {
-    return this.compositionInput != null && !this.compositionInput.isEnded()
+    return this.compositionInput && !this.compositionInput.isEnded()
   }
 
   deleteInDirection(direction, event) {
@@ -496,7 +489,7 @@ export default class Level0InputController extends InputController {
 
   canAcceptDataTransfer(dataTransfer) {
     const types = {}
-    Array.from(dataTransfer?.types != null ? dataTransfer?.types : []).forEach((type) => {
+    Array.from(dataTransfer?.types || []).forEach((type) => {
       types[type] = true
     })
     return types.Files || types["application/x-trix-document"] || types["text/html"] || types["text/plain"]
@@ -533,7 +526,7 @@ Level0InputController.proxyMethod("responder?.selectionIsExpanded")
 
 var extensionForFile = (file) => file.type?.match(/\/(\w+)$/)?.[1]
 
-const hasStringCodePointAt = " ".codePointAt?.(0) != null
+const hasStringCodePointAt = !!" ".codePointAt?.(0)
 
 var stringFromKeyEvent = function(event) {
   if (event.key && hasStringCodePointAt && event.key.codePointAt(0) === event.keyCode) {
@@ -654,7 +647,7 @@ class CompositionInput extends BasicObject {
   // Private
 
   canApplyToDocument() {
-    return this.data.start?.length === 0 && this.data.end?.length > 0 && this.range != null
+    return this.data.start?.length === 0 && this.data.end?.length > 0 && this.range
   }
 }
 

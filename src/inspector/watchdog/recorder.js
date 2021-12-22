@@ -6,7 +6,6 @@
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import Recording from "inspector/watchdog/recording"
@@ -60,12 +59,13 @@ export default class Recorder {
   }
 
   recordSnapshotDuringNextAnimationFrame() {
-    return this.animationFrameRequest != null
-      ? this.animationFrameRequest
-      : this.animationFrameRequest = requestAnimationFrame(() => {
-          this.animationFrameRequest = null
-          return this.recordSnapshot()
-        })
+    if (!this.animationFrameRequest) {
+      this.animationFrameRequest = requestAnimationFrame(() => {
+        this.animationFrameRequest = null
+        return this.recordSnapshot()
+      })
+    }
+    return this.animationFrameRequest
   }
 
   installEventListeners() {

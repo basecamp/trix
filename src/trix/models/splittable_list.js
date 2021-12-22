@@ -9,7 +9,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import TrixObject from "trix/core/object" // Don't override window.Object
@@ -145,7 +144,7 @@ export default class SplittableList extends TrixObject {
       }
     })
 
-    if (pendingObject != null) {
+    if (pendingObject) {
       objects.push(pendingObject)
     }
 

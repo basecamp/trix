@@ -8,7 +8,6 @@
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * DS204: Change includes calls to have a more natural evaluation order
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import { getAllAttributeNames, squishBreakableWhitespace } from "trix/core/helpers"
@@ -458,9 +457,7 @@ export default class Level2InputController extends InputController {
     },
 
     insertText() {
-      return this.insertString(
-        this.event.data != null ? this.event.data : this.event.dataTransfer?.getData("text/plain")
-      )
+      return this.insertString(this.event.data || this.event.dataTransfer?.getData("text/plain"))
     },
 
     insertTranspose() {
@@ -483,9 +480,7 @@ export default class Level2InputController extends InputController {
   }
 
   scheduleRender() {
-    return this.scheduledRender != null
-      ? this.scheduledRender
-      : this.scheduledRender = requestAnimationFrame(this.render)
+    return this.scheduledRender ? this.scheduledRender : this.scheduledRender = requestAnimationFrame(this.render)
   }
 
   render() {
@@ -590,8 +585,7 @@ var staticRangeToRange = function(staticRange) {
 
 // Event helpers
 
-var dragEventHasFiles = (event) =>
-  Array.from(event.dataTransfer?.types != null ? event.dataTransfer?.types : []).includes("Files")
+var dragEventHasFiles = (event) => Array.from(event.dataTransfer?.types || []).includes("Files")
 
 var pasteEventHasFilesOnly = function(event) {
   const clipboard = event.clipboardData

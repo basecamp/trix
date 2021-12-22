@@ -6,7 +6,6 @@
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import BasicObject from "trix/core/basic_object"
@@ -69,7 +68,7 @@ export default class CompositionController extends BasicObject {
 
   didClickAttachment(event, target) {
     const attachment = this.findAttachmentForElement(target)
-    const editCaption = findClosestElementFromNode(event.target, { matchingSelector: "figcaption" }) != null
+    const editCaption = !!findClosestElementFromNode(event.target, { matchingSelector: "figcaption" })
     return this.delegate?.compositionControllerDidSelectAttachment?.(attachment, { editCaption })
   }
 
@@ -125,7 +124,7 @@ export default class CompositionController extends BasicObject {
   // Attachment editor management
 
   isEditingAttachment() {
-    return this.attachmentEditor != null
+    return !!this.attachmentEditor
   }
 
   installAttachmentEditorForAttachment(attachment, options) {

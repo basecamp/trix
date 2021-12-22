@@ -7,7 +7,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 const KEY_EVENTS = "keydown keypress input".split(" ")
@@ -87,7 +86,7 @@ export default class ControlElement {
 }
 
 var inspectNode = function(node) {
-  if (node.data != null) {
+  if (node.data) {
     return JSON.stringify(node.data)
   } else {
     return JSON.stringify(node.outerHTML)

@@ -3,7 +3,6 @@
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 import { removeNode } from "trix/core/helpers"
@@ -18,7 +17,7 @@ const undoable = function(fn) {
   return function() {
     const commands = fn.apply(this, arguments)
     commands.do()
-    if (this.undos == null) {
+    if (!this.undos) {
       this.undos = []
     }
     return this.undos.push(commands.undo)
@@ -66,14 +65,11 @@ export default class AttachmentEditorController extends BasicObject {
   // Private
 
   savePendingCaption() {
-    if (this.pendingCaption != null) {
+    if (this.pendingCaption) {
       const caption = this.pendingCaption
       this.pendingCaption = null
       if (caption) {
-        return this.delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?.(
-          { caption },
-          this.attachment
-        )
+        return this.delegate?.attachmentEditorDidRequestUpdatingAttributesForAttachment?.({ caption }, this.attachment)
       } else {
         return this.delegate?.attachmentEditorDidRequestRemovingAttributeForAttachment?.("caption", this.attachment)
       }

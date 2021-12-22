@@ -4,7 +4,6 @@
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 export default class Deserializer {
@@ -49,14 +48,13 @@ export default class Deserializer {
   }
 
   deserializeChildren(serializedNode) {
-    return Array.from(serializedNode.children != null ? serializedNode.children : []).map((child) =>
-      this.deserializeNode(child)
-    )
+    const children = serializedNode.children ? Array.from(serializedNode.children) : []
+    return children.map((child) => this.deserializeNode(child))
   }
 
   deserializeElement(serializedNode) {
     const node = this.document.createElement(serializedNode.name)
-    const object = serializedNode.attributes != null ? serializedNode.attributes : {}
+    const object = serializedNode.attributes ? serializedNode.attributes : {}
     for (const name in object) {
       const value = object[name]
       node.setAttribute(name, value)
