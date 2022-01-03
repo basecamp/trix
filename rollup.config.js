@@ -1,5 +1,4 @@
 import json from "@rollup/plugin-json"
-import filesize from "rollup-plugin-filesize"
 import includePaths from "rollup-plugin-includepaths"
 import commonjs from "rollup-plugin-commonjs"
 import { babel } from "@rollup/plugin-babel"
@@ -34,7 +33,6 @@ export default [
         extensions: [ ".js" ]
       }),
       babel({ babelHelpers: "bundled" }),
-      filesize(),
     ],
     context: "window",
     treeshake: false,
