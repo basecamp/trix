@@ -4,6 +4,7 @@ import includePaths from "rollup-plugin-includepaths"
 import commonjs from "rollup-plugin-commonjs"
 import { babel } from "@rollup/plugin-babel"
 import nodeResolve from "rollup-plugin-node-resolve"
+import { terser } from "rollup-plugin-terser"
 
 import { version } from "./package.json"
 const year = new Date().getFullYear()
@@ -34,6 +35,35 @@ export default [
       }),
       babel({ babelHelpers: "bundled" }),
       filesize(),
+    ],
+    context: "window",
+    treeshake: false,
+    watch: {
+      include: "src/**"
+    }
+  },
+  {
+    input: "src/trix/trix.js",
+    output: [
+      {
+        file: "dist/trix.min.js",
+        format: "es",
+        banner,
+        sourcemap: true
+      }
+    ],
+    plugins: [
+      json(),
+      nodeResolve({ extensions: [ ".js" ] }),
+      includePaths({
+        paths: [ "src" ],
+        extensions: [ ".js" ]
+      }),
+      babel({ babelHelpers: "bundled" }),
+      terser({
+        mangle: true,
+        compress: true
+      })
     ],
     context: "window",
     treeshake: false,
