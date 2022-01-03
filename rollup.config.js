@@ -60,7 +60,17 @@ export default [
       babel({ babelHelpers: "bundled" }),
       terser({
         mangle: true,
-        compress: true
+        compress: true,
+        format: {
+          comments: function (node, comment) {
+            const text = comment.value
+            const type = comment.type
+            if (type == "comment2") {
+              // multiline comment
+              return /Copyright/.test(text)
+            }
+          },
+        },
       })
     ],
     context: "window",
