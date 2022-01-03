@@ -2,7 +2,8 @@
   "name": "trix",
   "version": "2.0.0-alpha",
   "description": "A rich text editor for everyday writing",
-  "main": "dist/trix.js",
+  "main": "dist/trix.umd.js",
+  "module": "dist/trix.js",
   "style": "dist/trix.css",
   "files": [
     "dist/*.css",
