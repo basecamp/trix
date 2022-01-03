@@ -43,6 +43,7 @@
     "rollup-plugin-filesize": "^9.1.1",
     "rollup-plugin-includepaths": "^0.2.4",
     "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^7.0.2",
     "svgo": "^2.8.0"
   },
   "scripts": {
