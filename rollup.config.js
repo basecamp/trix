@@ -1,9 +1,9 @@
 import json from "@rollup/plugin-json"
-import filesize from "rollup-plugin-filesize"
 import includePaths from "rollup-plugin-includepaths"
 import commonjs from "rollup-plugin-commonjs"
 import { babel } from "@rollup/plugin-babel"
 import nodeResolve from "rollup-plugin-node-resolve"
+import { terser } from "rollup-plugin-terser"
 
 import { version } from "./package.json"
 const year = new Date().getFullYear()
@@ -15,9 +15,13 @@ export default [
     output: [
       {
         name: "Trix",
-        file: "dist/trix.js",
+        file: "dist/trix.umd.js",
         format: "umd",
-        sourcemap: false,
+        banner
+      },
+      {
+        file: "dist/trix.js",
+        format: "es",
         banner
       }
     ],
@@ -29,7 +33,45 @@ export default [
         extensions: [ ".js" ]
       }),
       babel({ babelHelpers: "bundled" }),
-      filesize(),
+    ],
+    context: "window",
+    treeshake: false,
+    watch: {
+      include: "src/**"
+    }
+  },
+  {
+    input: "src/trix/trix.js",
+    output: [
+      {
+        file: "dist/trix.min.js",
+        format: "es",
+        banner,
+        sourcemap: true
+      }
+    ],
+    plugins: [
+      json(),
+      nodeResolve({ extensions: [ ".js" ] }),
+      includePaths({
+        paths: [ "src" ],
+        extensions: [ ".js" ]
+      }),
+      babel({ babelHelpers: "bundled" }),
+      terser({
+        mangle: true,
+        compress: true,
+        format: {
+          comments: function (node, comment) {
+            const text = comment.value
+            const type = comment.type
+            if (type == "comment2") {
+              // multiline comment
+              return /Copyright/.test(text)
+            }
+          },
+        },
+      })
     ],
     context: "window",
     treeshake: false,
@@ -43,8 +85,8 @@ export default [
       {
         name: "TrixTests",
         file: "dist/test.js",
-        format: "umd",
-        sourcemap: false,
+        format: "es",
+        sourcemap: true,
         banner
       }
     ],
@@ -71,9 +113,9 @@ export default [
     output: [
       {
         name: "TrixInspector",
-        file: "dist/trix/inspector.js",
-        format: "umd",
-        sourcemap: false,
+        file: "dist/inspector.js",
+        format: "es",
+        sourcemap: true,
         banner
       }
     ],
