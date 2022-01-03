@@ -15,9 +15,13 @@ export default [
     output: [
       {
         name: "Trix",
-        file: "dist/trix.js",
+        file: "dist/trix.umd.js",
         format: "umd",
-        sourcemap: false,
+        banner
+      },
+      {
+        file: "dist/trix.js",
+        format: "es",
         banner
       }
     ],
