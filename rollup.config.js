@@ -47,8 +47,8 @@ export default [
       {
         name: "TrixTests",
         file: "dist/test.js",
-        format: "umd",
-        sourcemap: false,
+        format: "es",
+        sourcemap: true,
         banner
       }
     ],
@@ -75,9 +75,9 @@ export default [
     output: [
       {
         name: "TrixInspector",
-        file: "dist/trix/inspector.js",
-        format: "umd",
-        sourcemap: false,
+        file: "dist/inspector.js",
+        format: "es",
+        sourcemap: true,
         banner
       }
     ],
