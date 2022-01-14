@@ -1,20 +1,14 @@
-if (!window.JST) {
-  window.JST = {}
-}
+if (!window.JST) window.JST = {}
 
-window.JST["trix/inspector/templates/undo"] = function() {
-  return `\
-<h4>Undo stack</h4>
-<ol class="undo-entries">
-   ${entryList(this.undoEntries)}
-</ol>
-
-<h4>Redo stack</h4>
-<ol class="redo-entries">
-  ${entryList(this.redoEntries)}
-</ol>\
-`
-}
+window.JST["trix/inspector/templates/undo"] = () =>
+  `<h4>Undo stack</h4>
+    <ol class="undo-entries">
+      ${entryList(this.undoEntries)}
+    </ol>
+    <h4>Redo stack</h4>
+    <ol class="redo-entries">
+      ${entryList(this.redoEntries)}
+    </ol>`
 
 const entryList = (entries) =>
   entries.map((entry) =>

@@ -1,10 +1,7 @@
-if (!window.JST) {
-  window.JST = {}
-}
+if (!window.JST) window.JST = {}
 
 window.JST["trix/inspector/templates/debug"] = function() {
-  return `\
-<p>
+  return `<p>
   <label>
     <input type="checkbox" name="viewCaching" checked="${this.compositionController.isViewCachingEnabled()}">
     Cache views between renders
@@ -20,6 +17,4 @@ window.JST["trix/inspector/templates/debug"] = function() {
     <input type="checkbox" name="controlElement">
     Show <code>contenteditable</code> control element
   </label>
-</p>\
-`
-}
+</p>` }

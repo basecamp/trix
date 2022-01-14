@@ -1,6 +1,4 @@
-if (!window.JST) {
-  window.JST = {}
-}
+if (!window.JST) window.JST = {}
 
 window.JST["trix/inspector/templates/performance"] = function() {
   return Object.keys(this.data).map((name) => {

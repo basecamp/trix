@@ -1,6 +1,4 @@
-if (!window.JST) {
-  window.JST = {}
-}
+if (!window.JST) window.JST = {}
 
 window.JST["trix/inspector/templates/document"] = function() {
   const details = this.document.getBlocks().map((block, index) => {
