@@ -20,7 +20,6 @@ testGroup("Basic input", { template: "editor_empty" }, () => {
 
   test("backspacing", (expectDocument) =>
     typeCharacters("abc\b", () => {
-      assert.locationRange({ index: 0, offset: 2 })
       expectDocument("ab\n")
     }))
 
