@@ -462,9 +462,7 @@ export default class Level0InputController extends InputController {
   }
 
   serializeSelectionToDataTransfer(dataTransfer) {
-    if (!dataTransferIsWritable(dataTransfer)) {
-      return
-    }
+    if (!dataTransferIsWritable(dataTransfer)) return
     const document = this.responder?.getSelectedDocument().toSerializableDocument()
 
     dataTransfer.setData("application/x-trix-document", JSON.stringify(document))

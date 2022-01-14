@@ -117,9 +117,7 @@ export default class CompositionController extends BasicObject {
   }
 
   installAttachmentEditorForAttachment(attachment, options) {
-    if (this.attachmentEditor?.attachment === attachment) {
-      return
-    }
+    if (this.attachmentEditor?.attachment === attachment) return
     const element = this.documentView.findElementForObject(attachment)
     if (!element) return
 

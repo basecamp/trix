@@ -62,9 +62,7 @@ export default class Serializer {
 
   serializeSelection() {
     const selection = window.getSelection()
-    if (selection.rangeCount <= 0) {
-      return
-    }
+    if (selection.rangeCount <= 0) return
 
     const range = selection.getRangeAt(0)
     const startId = this.ids.get(range?.startContainer)

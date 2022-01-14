@@ -179,9 +179,7 @@ export default class EditorController extends Controller {
   }
 
   compositionDidRequestChangingSelectionToLocationRange(locationRange) {
-    if (this.loadingSnapshot && !this.isFocused()) {
-      return
-    }
+    if (this.loadingSnapshot && !this.isFocused()) return
     this.requestedLocationRange = locationRange
     this.compositionRevisionWhenLocationRangeRequested = this.composition.revision
     if (!this.handlingInput) {

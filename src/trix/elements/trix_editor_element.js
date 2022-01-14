@@ -302,12 +302,8 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   resetBubbled(event) {
-    if (event.defaultPrevented) {
-      return
-    }
-    if (event.target !== this.form) {
-      return
-    }
+    if (event.defaultPrevented) return
+    if (event.target !== this.form) return
     return this.reset()
   }
 

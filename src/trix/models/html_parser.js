@@ -365,34 +365,20 @@ export default class HTMLParser extends BasicObject {
   // Element inspection
 
   isBlockElement(element) {
-    if (element?.nodeType !== Node.ELEMENT_NODE) {
-      return
-    }
-    if (nodeIsAttachmentElement(element)) {
-      return
-    }
-    if (findClosestElementFromNode(element, { matchingSelector: "td", untilNode: this.containerElement })) {
-      return
-    }
+    if (element?.nodeType !== Node.ELEMENT_NODE) return
+    if (nodeIsAttachmentElement(element)) return
+    if (findClosestElementFromNode(element, { matchingSelector: "td", untilNode: this.containerElement })) return
 
     return getBlockTagNames().includes(tagName(element)) ||
       window.getComputedStyle(element).display === "block"
   }
 
   isInsignificantTextNode(node) {
-    if (node?.nodeType !== Node.TEXT_NODE) {
-      return
-    }
-    if (!stringIsAllBreakableWhitespace(node.data)) {
-      return
-    }
+    if (node?.nodeType !== Node.TEXT_NODE) return
+    if (!stringIsAllBreakableWhitespace(node.data)) return
     const { parentNode, previousSibling, nextSibling } = node
-    if (nodeEndsWithNonWhitespace(parentNode.previousSibling) && !this.isBlockElement(parentNode.previousSibling)) {
-      return
-    }
-    if (elementCanDisplayPreformattedText(parentNode)) {
-      return
-    }
+    if (nodeEndsWithNonWhitespace(parentNode.previousSibling) && !this.isBlockElement(parentNode.previousSibling)) return
+    if (elementCanDisplayPreformattedText(parentNode)) return
     return !previousSibling || this.isBlockElement(previousSibling) || !nextSibling || this.isBlockElement(nextSibling)
   }
 

@@ -86,9 +86,7 @@ export default class LocationMapper {
     }
 
     let [ node, nodeOffset ] = this.findNodeAndOffsetFromLocation(location)
-    if (!node) {
-      return
-    }
+    if (!node) return
 
     if (nodeIsTextNode(node)) {
       if (nodeLength(node) === 0) {

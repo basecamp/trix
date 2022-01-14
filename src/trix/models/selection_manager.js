@@ -42,9 +42,7 @@ export default class SelectionManager extends BasicObject {
   }
 
   setLocationRange(locationRange) {
-    if (this.lockedLocationRange) {
-      return
-    }
+    if (this.lockedLocationRange) return
     locationRange = normalizeRange(locationRange)
 
     const domRange = this.createDOMRangeFromLocationRange(locationRange)

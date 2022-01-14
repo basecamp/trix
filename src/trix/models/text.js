@@ -61,9 +61,7 @@ export default class Text extends TrixObject {
   }
 
   moveTextFromRangeToPosition(range, position) {
-    if (range[0] <= position && position <= range[1]) {
-      return
-    }
+    if (range[0] <= position && position <= range[1]) return
     const text = this.getTextAtRange(range)
     const length = text.getLength()
     if (range[0] < position) {

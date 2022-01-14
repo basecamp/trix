@@ -691,18 +691,14 @@ export default class Composition extends BasicObject {
   // Attachment editing
 
   editAttachment(attachment, options) {
-    if (attachment === this.editingAttachment) {
-      return
-    }
+    if (attachment === this.editingAttachment) return
     this.stopEditingAttachment()
     this.editingAttachment = attachment
     return this.delegate?.compositionDidStartEditingAttachment?.(this.editingAttachment, options)
   }
 
   stopEditingAttachment() {
-    if (!this.editingAttachment) {
-      return
-    }
+    if (!this.editingAttachment) return
     this.delegate?.compositionDidStopEditingAttachment?.(this.editingAttachment)
     this.editingAttachment = null
   }

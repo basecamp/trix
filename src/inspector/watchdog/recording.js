@@ -59,9 +59,7 @@ export default class Recording {
 
   truncateToSnapshotCount(snapshotCount) {
     const offset = this.snapshots.length - snapshotCount
-    if (offset < 0) {
-      return
-    }
+    if (offset < 0) return
 
     const { frames } = this
     this.frames = frames.map(([ timestamp, index, event ]) => {
