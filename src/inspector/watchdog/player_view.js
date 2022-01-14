@@ -1,7 +1,5 @@
-/* eslint-disable
-    no-undef,
-*/
 import Deserializer from "inspector/watchdog/deserializer"
+import View from "../view"
 
 const clear = (element) => {
   while (element.lastChild) {
@@ -117,7 +115,7 @@ export default class PlayerView extends View {
     this.body.onkeydown = (event) => event.preventDefault()
 
     if (this.snapshot) {
-      this.renderSnapshot(snapshot)
+      this.renderSnapshot(this.snapshot)
       this.snapshot = null
     }
   }

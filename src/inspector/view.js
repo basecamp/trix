@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-undef,
-*/
 import { handleEvent } from "trix/core/helpers"
 
 export default class View {
@@ -64,7 +61,7 @@ export default class View {
   render() {
     this.renderTitle()
     if (this.isOpen()) {
-      this.panelElement.innerHTML = JST[`trix/inspector/templates/${this.constructor.template}`].apply(this)
+      this.panelElement.innerHTML = window.JST[`trix/inspector/templates/${this.constructor.template}`].apply(this)
     }
   }
 

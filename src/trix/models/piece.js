@@ -1,6 +1,3 @@
-/* eslint-disable
-    no-undef,
-*/
 import TrixObject from "trix/core/object" // Don't override window.Object
 import Hash from "trix/core/collections/hash"
 
@@ -50,21 +47,6 @@ export default class Piece extends TrixObject {
 
   getAttributes() {
     return this.attributes.toObject()
-  }
-
-  getCommonAttributes() {
-    const piece = pieceList.getPieceAtIndex(0)
-    if (!piece) return {}
-
-    let { attributes } = piece
-    let keys = attributes.getKeys()
-
-    pieceList.eachPiece(function(piece) {
-      keys = attributes.getKeysCommonToHash(piece.attributes)
-      attributes = attributes.slice(keys)
-    })
-
-    return attributes.toObject()
   }
 
   hasAttribute(attribute) {
