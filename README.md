@@ -347,6 +347,8 @@ The `<trix-editor>` element emits several events which you can use to observe an
 
 * `trix-change` fires whenever the editor’s contents have changed.
 
+* `trix-paste` fires whenever text is pasted into the editor. The `paste` property on the event contains the pasted `string` or `html`, and the `range` of the inserted text.
+
 * `trix-selection-change` fires any time the selected range changes in the editor.
 
 * `trix-focus` and `trix-blur` fire when the editor gains or loses focus, respectively.
