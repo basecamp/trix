@@ -1,4 +1,4 @@
-import config from "trix/config"
+import blockAttributes from "trix/config/block_attributes"
 import { ZERO_WIDTH_SPACE } from "trix/constants"
 import { extend } from "./extend"
 import { attachmentSelector } from "trix/config/attachments"
@@ -223,8 +223,8 @@ export const getBlockTagNames = function() {
   }
 
   blockTagNames = []
-  for (const key in config.blockAttributes) {
-    const attributes = config.blockAttributes[key]
+  for (const key in blockAttributes) {
+    const attributes = blockAttributes[key]
     if (attributes.tagName) {
       blockTagNames.push(attributes.tagName)
     }
