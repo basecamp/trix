@@ -48,6 +48,13 @@ export default [
         format: "es",
         banner,
         sourcemap: true
+      },
+      {
+        name: "Trix",
+        file: "dist/trix.umd.min.js",
+        format: "umd",
+        banner,
+        sourcemap: true
       }
     ],
     plugins: [
