@@ -515,44 +515,44 @@ export const fixtures = {
       [ "\nc\n", {}, [ "quote" ] ],
       [ "d", {}, [ "quote", "code" ] ]
     ),
-    html: removeWhitespace(`\
-<blockquote>
-  ${blockComment}
-  a
-  <br>
-  <br>
-  <pre>
-    ${blockComment}
-    b
-  </pre>
-  ${blockComment}
-  <br>
-  c
-  <br>
-  <br>
-  <pre>
-    ${blockComment}
-    d
-  </pre>
-</blockquote>\
-`),
-    serializedHTML: removeWhitespace(`\
-<blockquote>
-  a
-  <br>
-  <br>
-  <pre>
-    b
-  </pre>
-  <br>
-  c
-  <br>
-  <br>
-  <pre>
-    d
-  </pre>
-</blockquote>\
-`),
+    html: removeWhitespace(
+      `<blockquote>
+        ${blockComment}
+        a
+        <br>
+        <br>
+        <pre>
+          ${blockComment}
+          b
+        </pre>
+        ${blockComment}
+        <br>
+        c
+        <br>
+        <br>
+        <pre>
+          ${blockComment}
+          d
+        </pre>
+      </blockquote>`
+    ),
+    serializedHTML: removeWhitespace(
+      `<blockquote>
+        a
+        <br>
+        <br>
+        <pre>
+          b
+        </pre>
+        <br>
+        c
+        <br>
+        <br>
+        <pre>
+          d
+        </pre>
+      </blockquote>`
+    ),
   },
 
   "nested code, quote, and list in quote": {
@@ -564,64 +564,64 @@ export const fixtures = {
       [ "\ne\n", {}, [ "quote" ] ],
       [ "f", {}, [ "quote", "bulletList", "bullet" ] ]
     ),
-    html: removeWhitespace(`\
- <blockquote>
-  ${blockComment}
-  a
-  <br>
-  <br>
-  <pre>
-    ${blockComment}
-    b
-  </pre>
-  ${blockComment}
-  <br>
-  c
-  <br>
-  <br>
-  <blockquote>
-    ${blockComment}
-    d
-  </blockquote>
-  ${blockComment}
-  <br>
-  e
-  <br>
-  <br>
-  <ul>
-    <li>
-      ${blockComment}
-      f
-    </li>
-  </ul>
-</blockquote>\
-`),
-    serializedHTML: removeWhitespace(`\
-<blockquote>
-  a
-  <br>
-  <br>
-  <pre>
-    b
-  </pre>
-  <br>
-  c
-  <br>
-  <br>
-  <blockquote>
-    d
-  </blockquote>
-  <br>
-  e
-  <br>
-  <br>
-  <ul>
-    <li>
-      f
-    </li>
-  </ul>
-</blockquote>\
-`),
+    html: removeWhitespace(
+      `<blockquote>
+        ${blockComment}
+        a
+        <br>
+        <br>
+        <pre>
+          ${blockComment}
+          b
+        </pre>
+        ${blockComment}
+        <br>
+        c
+        <br>
+        <br>
+        <blockquote>
+          ${blockComment}
+          d
+        </blockquote>
+        ${blockComment}
+        <br>
+        e
+        <br>
+        <br>
+        <ul>
+          <li>
+            ${blockComment}
+            f
+          </li>
+        </ul>
+      </blockquote>`
+  ),
+    serializedHTML: removeWhitespace(
+      `<blockquote>
+        a
+        <br>
+        <br>
+        <pre>
+          b
+        </pre>
+        <br>
+        c
+        <br>
+        <br>
+        <blockquote>
+          d
+        </blockquote>
+        <br>
+        e
+        <br>
+        <br>
+        <ul>
+          <li>
+            f
+          </li>
+        </ul>
+      </blockquote>`
+    ),
   },
 
   "nested quotes at different nesting levels": {
@@ -631,38 +631,38 @@ export const fixtures = {
       [ "c", {}, [ "quote" ] ],
       [ "d", {}, [ "quote", "quote" ] ]
     ),
-    html: removeWhitespace(`\
-<blockquote>
-  <blockquote>
-    <blockquote>
-      ${blockComment}
-      a
-    </blockquote>
-    ${blockComment}
-    b
-  </blockquote>
-  ${blockComment}
-  c
-  <blockquote>
-    ${blockComment}
-    d
-  </blockquote>
-</blockquote>\
-`),
-    serializedHTML: removeWhitespace(`\
-<blockquote>
-  <blockquote>
-    <blockquote>
-      a
-    </blockquote>
-    b
-  </blockquote>
-  c
-  <blockquote>
-    d
-  </blockquote>
-</blockquote>\
-`),
+    html: removeWhitespace(
+      `<blockquote>
+        <blockquote>
+          <blockquote>
+            ${blockComment}
+            a
+          </blockquote>
+          ${blockComment}
+          b
+        </blockquote>
+        ${blockComment}
+        c
+        <blockquote>
+          ${blockComment}
+          d
+        </blockquote>
+      </blockquote>`
+    ),
+    serializedHTML: removeWhitespace(
+      `<blockquote>
+        <blockquote>
+          <blockquote>
+            a
+          </blockquote>
+          b
+        </blockquote>
+        c
+        <blockquote>
+          d
+        </blockquote>
+      </blockquote>`
+    ),
   },
 
   "nested quote and list": {
@@ -758,8 +758,7 @@ export const fixtures = {
       [ "cید" ],
       [ "\n گ" ]
     ),
-    html: `\
-<div>${blockComment}a</div>\
+    html: `<div>${blockComment}a</div>\
 <blockquote dir="rtl">${blockComment}ل</blockquote>\
 <ul><li>${blockComment}b</li></ul>\
 <ul dir="rtl"><li>${blockComment}ל</li><li>${blockComment}<br></li></ul>\

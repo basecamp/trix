@@ -21,8 +21,7 @@ installDefaultCSSForTagName("trix-toolbar", `\
 
 %t [data-trix-dialog] [data-trix-validate]:invalid {
   background-color: #ffdddd;
-}\
-`)
+}`)
 
 export default class TrixToolbarElement extends HTMLElement {
 

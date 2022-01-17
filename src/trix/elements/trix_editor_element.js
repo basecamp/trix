@@ -158,8 +158,7 @@ installDefaultCSSForTagName("trix-editor", `\
 %t [data-trix-cursor-target=right] {
     vertical-align: bottom !important;
     margin-right: -1px !important;
-}\
-`)
+}`)
 
 export default class TrixEditorElement extends HTMLElement {
 
