@@ -117,12 +117,12 @@ export const pressKey = function (keyName, callback) {
     return callback()
   }
 
-  return simulateKeypress(keyName, () =>
-    defer(function () {
+  return simulateKeypress(keyName, () => {
+    defer(() => {
       triggerEvent(element, "keyup", properties)
       defer(callback)
     })
-  )
+  })
 }
 
 export const startComposition = function (data, callback) {

@@ -69,14 +69,14 @@ testGroup("HTML loading", () => {
     })
   })
 
-  testGroup("in a table", { template: "editor_in_table" }, () =>
+  testGroup("in a table", { template: "editor_in_table" }, () => {
     test("block elements", (expectDocument) => {
       getEditor().loadHTML("<h1>a</h1><blockquote>b</blockquote>")
       assert.blockAttributes([ 0, 2 ], [ "heading1" ])
       assert.blockAttributes([ 2, 4 ], [ "quote" ])
       expectDocument("a\nb\n")
     })
-  )
+  })
 
   testGroup("images", { template: "editor_empty" }, () => {
     test("without dimensions", (expectDocument) => {
@@ -106,12 +106,12 @@ testGroup("HTML loading", () => {
     })
   })
 
-  testGroup("text after closing tag", { template: "editor_empty" }, () =>
+  testGroup("text after closing tag", { template: "editor_empty" }, () => {
     test("parses text as separate block", (expectDocument) => {
       getEditor().loadHTML("<h1>a</h1>b")
       assert.blockAttributes([ 0, 2 ], [ "heading1" ])
       assert.blockAttributes([ 2, 4 ], [])
       expectDocument("a\nb\n")
     })
-  )
+  })
 })

@@ -237,14 +237,14 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
 
     element.addEventListener("trix-toolbar-dialog-hide", (event) => events.push(event.type))
 
-    clickToolbarButton({ action: "link" }, () =>
-      typeInToolbarDialog("http://example.com", { attribute: "href" }, () =>
+    clickToolbarButton({ action: "link" }, () => {
+      typeInToolbarDialog("http://example.com", { attribute: "href" }, () => {
         defer(() => {
           assert.deepEqual(events, [ "trix-toolbar-dialog-show", "trix-toolbar-dialog-hide" ])
           done()
         })
-      )
-    )
+      })
+    })
   })
 
   test("element triggers before-paste event with paste data", (expectDocument) => {
@@ -257,14 +257,14 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
       paste = event.paste
     })
 
-    typeCharacters("", () =>
+    typeCharacters("", () => {
       pasteContent("text/html", "<strong>hello</strong>", () => {
         assert.equal(eventCount, 1)
         assert.equal(paste.type, "text/html")
         assert.equal(paste.html, "<strong>hello</strong>")
         expectDocument("hello\n")
       })
-    )
+    })
   })
 
   test("element triggers before-paste event with mutable paste data", (expectDocument) => {
@@ -278,13 +278,13 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
       paste.html = "<strong>greetings</strong>"
     })
 
-    typeCharacters("", () =>
+    typeCharacters("", () => {
       pasteContent("text/html", "<strong>hello</strong>", () => {
         assert.equal(eventCount, 1)
         assert.equal(paste.type, "text/html")
         expectDocument("greetings\n")
       })
-    )
+    })
   })
 
   test("element triggers paste event with position range", (done) => {
@@ -297,14 +297,14 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
       paste = event.paste
     })
 
-    typeCharacters("", () =>
+    typeCharacters("", () => {
       pasteContent("text/html", "<strong>hello</strong>", () => {
         assert.equal(eventCount, 1)
         assert.equal(paste.type, "text/html")
         assert.ok(rangesAreEqual([ 0, 5 ], paste.range))
         done()
       })
-    )
+    })
   })
 
   test("element triggers attribute change events", (done) => {
@@ -367,7 +367,7 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
         assert.equal(focusEventCount, 1)
 
         insertImageAttachment()
-        after(20, () =>
+        after(20, () => {
           clickElement(element.querySelector("figure"), () => {
             const textarea = element.querySelector("textarea")
             textarea.focus()
@@ -378,7 +378,7 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
               done()
             })
           })
-        )
+        })
       })
     })
   })

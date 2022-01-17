@@ -23,29 +23,29 @@ testGroup("Attachment galleries", { template: "editor_empty" }, () => {
     insertAttachments(createImageAttachments(2))
     assert.blockAttributes([ 0, 2 ], [ "attachmentGallery" ])
     getEditor().setSelectedRange([ 1, 2 ])
-    pressKey("backspace", () =>
+    pressKey("backspace", () => {
       requestAnimationFrame(() => {
         assert.blockAttributes([ 0, 2 ], [])
         expectDocument(`${ORC}\n`)
       })
-    )
+    })
   })
 
   test("typing in an attachment gallery block splits it", function (expectDocument) {
     insertAttachments(createImageAttachments(4))
     getEditor().setSelectedRange(2)
-    typeCharacters("a", () =>
+    typeCharacters("a", () => {
       requestAnimationFrame(() => {
         assert.blockAttributes([ 0, 2 ], [ "attachmentGallery" ])
         assert.blockAttributes([ 3, 4 ], [])
         assert.blockAttributes([ 5, 7 ], [ "attachmentGallery" ])
         expectDocument(`${ORC}${ORC}\na\n${ORC}${ORC}\n`)
       })
-    )
+    })
   })
 
-  test("inserting a gallery in a formatted block", (expectDocument) =>
-    clickToolbarButton({ attribute: "quote" }, () =>
+  test("inserting a gallery in a formatted block", (expectDocument) => {
+    clickToolbarButton({ attribute: "quote" }, () => {
       typeCharacters("abc", () => {
         insertAttachments(createImageAttachments(2))
         requestAnimationFrame(() => {
@@ -54,7 +54,8 @@ testGroup("Attachment galleries", { template: "editor_empty" }, () => {
           expectDocument(`abc\n${ORC}${ORC}\n`)
         })
       })
-    ))
+    })
+  })
 })
 
 const createImageAttachments = function (num) {

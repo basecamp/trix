@@ -31,7 +31,7 @@ testGroup("Mutation input", { template: "editor_empty" }, () => {
   test("typing a space in formatted text at the end of a block", function (expectDocument) {
     const element = getEditorElement()
 
-    clickToolbarButton({ attribute: "bold" }, () =>
+    clickToolbarButton({ attribute: "bold" }, () => {
       typeCharacters("a", () => {
         // Press space key
         triggerEvent(element, "keydown", { charCode: 0, keyCode: 32, which: 32 })
@@ -47,7 +47,7 @@ testGroup("Mutation input", { template: "editor_empty" }, () => {
           expectDocument("a \n")
         })
       })
-    )
+    })
   })
 
   test("typing formatted text after a newline at the end of block", function (expectDocument) {

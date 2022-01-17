@@ -24,7 +24,7 @@ testGroup("Undo/Redo", { template: "editor_empty" }, () => {
     const first = getDocument().copy()
     typeCharacters("abc", () => {
       const second = getDocument().copy()
-      clickToolbarButton({ attribute: "bold" }, () =>
+      clickToolbarButton({ attribute: "bold" }, () => {
         typeCharacters("def", () => {
           const third = getDocument().copy()
           clickToolbarButton({ action: "undo" }, () => {
@@ -41,19 +41,19 @@ testGroup("Undo/Redo", { template: "editor_empty" }, () => {
             })
           })
         })
-      )
+      })
     })
   })
 
-  test("formatting changes are batched by location range", (done) =>
+  test("formatting changes are batched by location range", (done) => {
     typeCharacters("abc", () => {
       const first = getDocument().copy()
-      expandSelection("left", () =>
-        clickToolbarButton({ attribute: "bold" }, () =>
+      expandSelection("left", () => {
+        clickToolbarButton({ attribute: "bold" }, () => {
           clickToolbarButton({ attribute: "italic" }, () => {
             const second = getDocument().copy()
-            moveCursor("left", () =>
-              expandSelection("left", () =>
+            moveCursor("left", () => {
+              expandSelection("left", () => {
                 clickToolbarButton({ attribute: "italic" }, () => {
                   const third = getDocument().copy()
                   clickToolbarButton({ action: "undo" }, () => {
@@ -70,12 +70,13 @@ testGroup("Undo/Redo", { template: "editor_empty" }, () => {
                     })
                   })
                 })
-              )
-            )
+              })
+            })
           })
-        )
-      )
-    }))
+        })
+      })
+    })
+  })
 
   test("block formatting are undoable", (done) => {
     typeCharacters("abc", () => {

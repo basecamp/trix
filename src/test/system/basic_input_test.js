@@ -75,8 +75,8 @@ testGroup("Basic input", { template: "editor_empty" }, () => {
       )
     ))
 
-  testIf(config.input.getLevel() === 0, "inserting newline after cursor (control + o)", (expectDocument) =>
-    typeCharacters("ab", () =>
+  testIf(config.input.getLevel() === 0, "inserting newline after cursor (control + o)", (expectDocument) => {
+    typeCharacters("ab", () => {
       moveCursor("left", () => {
         triggerEvent(document.activeElement, "keydown", { charCode: 0, keyCode: 79, which: 79, ctrlKey: true })
         defer(() => {
@@ -84,11 +84,11 @@ testGroup("Basic input", { template: "editor_empty" }, () => {
           expectDocument("a\nb\n")
         })
       })
-    )
-  )
+    })
+   })
 
-  testIf(config.input.getLevel() === 0, "inserting ó with control + alt + o (AltGr)", (expectDocument) =>
-    typeCharacters("ab", () =>
+  testIf(config.input.getLevel() === 0, "inserting ó with control + alt + o (AltGr)", (expectDocument) => {
+    typeCharacters("ab", () => {
       moveCursor("left", () => {
         if (triggerEvent(document.activeElement, "keydown", { charCode: 0, keyCode: 79, which: 79, altKey: true, ctrlKey: true })) {
           triggerEvent(document.activeElement, "keypress", { charCode: 243, keyCode: 243, which: 243, altKey: true, ctrlKey: true })
@@ -100,6 +100,6 @@ testGroup("Basic input", { template: "editor_empty" }, () => {
           expectDocument("aób\n")
         })
       })
-    )
-  )
+    })
+  })
 })

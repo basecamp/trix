@@ -29,51 +29,55 @@ testGroup("Composition input", { template: "editor_empty" }, () => {
       )
     ))
 
-  test("composition input is serialized", (expectDocument) =>
-    startComposition("´", () =>
+  test("composition input is serialized", (expectDocument) => {
+    startComposition("´", () => {
       endComposition("é", () => {
         assert.equal(getEditorElement().value, "<div>é</div>")
         expectDocument("é\n")
       })
-    ))
+    })
+  })
 
-  test("pressing after a canceled composition", (expectDocument) =>
+  test("pressing after a canceled composition", (expectDocument) => {
     typeCharacters("ab", () => {
       triggerEvent(document.activeElement, "compositionend", { data: "ab" })
       pressKey("return", () => expectDocument("ab\n\n"))
-    }))
+    })
+  })
 
-  test("composing formatted text", (expectDocument) =>
-    typeCharacters("abc", () =>
-      clickToolbarButton({ attribute: "bold" }, () =>
-        startComposition("d", () =>
-          updateComposition("de", () =>
+  test("composing formatted text", (expectDocument) => {
+    typeCharacters("abc", () => {
+      clickToolbarButton({ attribute: "bold" }, () => {
+        startComposition("d", () => {
+          updateComposition("de", () => {
             endComposition("def", () => {
               assert.textAttributes([ 0, 3 ], {})
               assert.textAttributes([ 3, 6 ], { bold: true })
               expectDocument("abcdef\n")
             })
-          )
-        )
-      )
-    ))
+          })
+        })
+      })
+    })
+  })
 
-  test("composing away from formatted text", (expectDocument) =>
-    clickToolbarButton({ attribute: "bold" }, () =>
-      typeCharacters("abc", () =>
-        clickToolbarButton({ attribute: "bold" }, () =>
-          startComposition("d", () =>
-            updateComposition("de", () =>
+  test("composing away from formatted text", (expectDocument) => {
+    clickToolbarButton({ attribute: "bold" }, () => {
+      typeCharacters("abc", () => {
+        clickToolbarButton({ attribute: "bold" }, () => {
+          startComposition("d", () => {
+            updateComposition("de", () => {
               endComposition("def", () => {
                 assert.textAttributes([ 0, 3 ], { bold: true })
                 assert.textAttributes([ 3, 6 ], {})
                 expectDocument("abcdef\n")
               })
-            )
-          )
-        )
-      )
-    ))
+            })
+          })
+        })
+      })
+    })
+  })
 
   test("composing another language using a QWERTY keyboard", (expectDocument) => {
     const element = getEditorElement()

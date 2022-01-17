@@ -26,22 +26,23 @@ import {
 } from "test/test_helper"
 
 testGroup("Text formatting", { template: "editor_empty" }, () => {
-  test("applying attributes to text", (done) =>
-    typeCharacters("abc", () =>
-      expandSelection("left", () =>
+  test("applying attributes to text", (done) => {
+    typeCharacters("abc", () => {
+      expandSelection("left", () => {
         clickToolbarButton({ attribute: "bold" }, () => {
           assert.textAttributes([ 0, 2 ], {})
           assert.textAttributes([ 2, 3 ], { bold: true })
           assert.textAttributes([ 3, 4 ], { blockBreak: true })
           done()
         })
-      )
-    ))
+      })
+    })
+  })
 
-  test("applying a link to text", (done) =>
-    typeCharacters("abc", () =>
-      moveCursor("left", () =>
-        expandSelection("left", () =>
+  test("applying a link to text", (done) => {
+    typeCharacters("abc", () => {
+      moveCursor("left", () => {
+        expandSelection("left", () => {
           clickToolbarButton({ attribute: "href" }, () => {
             assert.ok(isToolbarDialogActive({ attribute: "href" }))
             typeInToolbarDialog("http://example.com", { attribute: "href" }, () => {
@@ -51,12 +52,13 @@ testGroup("Text formatting", { template: "editor_empty" }, () => {
               done()
             })
           })
-        )
-      )
-    ))
+        })
+      })
+    })
+  })
 
-  test("inserting a link", (expectDocument) =>
-    typeCharacters("a", () =>
+  test("inserting a link", (expectDocument) => {
+    typeCharacters("a", () => {
       clickToolbarButton({ attribute: "href" }, () => {
         assert.ok(isToolbarDialogActive({ attribute: "href" }))
         typeInToolbarDialog("http://example.com", { attribute: "href" }, () => {
@@ -65,14 +67,15 @@ testGroup("Text formatting", { template: "editor_empty" }, () => {
           expectDocument("ahttp://example.com\n")
         })
       })
-    ))
+    })
+  })
 
   test("editing a link", (done) => {
     insertString("a")
     const text = Text.textForStringWithAttributes("bc", { href: "http://example.com" })
     insertText(text)
     insertString("d")
-    moveCursor({ direction: "left", times: 2 }, () =>
+    moveCursor({ direction: "left", times: 2 }, () => {
       clickToolbarButton({ attribute: "href" }, () => {
         assert.ok(isToolbarDialogActive({ attribute: "href" }))
         assert.locationRange({ index: 0, offset: 1 }, { index: 0, offset: 3 })
@@ -83,21 +86,21 @@ testGroup("Text formatting", { template: "editor_empty" }, () => {
           done()
         })
       })
-    )
+    })
   })
 
   test("removing a link", (done) => {
     const text = Text.textForStringWithAttributes("ab", { href: "http://example.com" })
     insertText(text)
     assert.textAttributes([ 0, 2 ], { href: "http://example.com" })
-    expandSelection({ direction: "left", times: 2 }, () =>
-      clickToolbarButton({ attribute: "href" }, () =>
+    expandSelection({ direction: "left", times: 2 }, () => {
+      clickToolbarButton({ attribute: "href" }, () => {
         clickToolbarDialogButton({ method: "removeAttribute" }, () => {
           assert.textAttributes([ 0, 2 ], {})
           done()
         })
-      )
-    )
+      })
+    })
   })
 
   test("selecting an attachment disables text formatting", (done) => {
@@ -155,11 +158,11 @@ testGroup("Text formatting", { template: "editor_empty" }, () => {
     })
   })
 
-  test("typing after a link", (done) =>
-    typeCharacters("ab", () =>
-      expandSelection({ direction: "left", times: 2 }, () =>
-        clickToolbarButton({ attribute: "href" }, () =>
-          typeInToolbarDialog("http://example.com", { attribute: "href" }, () =>
+  test("typing after a link", (done) => {
+    typeCharacters("ab", () => {
+      expandSelection({ direction: "left", times: 2 }, () => {
+        clickToolbarButton({ attribute: "href" }, () => {
+          typeInToolbarDialog("http://example.com", { attribute: "href" }, () => {
             collapseSelection("right", () => {
               assert.locationRange({ index: 0, offset: 2 })
               typeCharacters("c", () => {
@@ -174,29 +177,31 @@ testGroup("Text formatting", { template: "editor_empty" }, () => {
                 })
               })
             })
-          )
-        )
-      )
-    ))
+          })
+        })
+      })
+    })
+  })
 
-  test("applying formatting and then typing", (done) =>
-    typeCharacters("a", () =>
-      clickToolbarButton({ attribute: "bold" }, () =>
-        typeCharacters("bcd", () =>
-          clickToolbarButton({ attribute: "bold" }, () =>
+  test("applying formatting and then typing", (done) => {
+    typeCharacters("a", () => {
+      clickToolbarButton({ attribute: "bold" }, () => {
+        typeCharacters("bcd", () => {
+          clickToolbarButton({ attribute: "bold" }, () => {
             typeCharacters("e", () => {
               assert.textAttributes([ 0, 1 ], {})
               assert.textAttributes([ 1, 4 ], { bold: true })
               assert.textAttributes([ 4, 5 ], {})
               done()
             })
-          )
-        )
-      )
-    ))
+          })
+        })
+      })
+    })
+  })
 
-  test("applying formatting and then moving the cursor away", (done) =>
-    typeCharacters("abc", () =>
+  test("applying formatting and then moving the cursor away", (done) => {
+    typeCharacters("abc", () => {
       moveCursor("left", () => {
         assert.notOk(isToolbarButtonActive({ attribute: "bold" }))
         clickToolbarButton({ attribute: "bold" }, () => {
@@ -212,26 +217,27 @@ testGroup("Text formatting", { template: "editor_empty" }, () => {
           })
         })
       })
-    ))
+    })
+  })
 
   test("applying formatting to an unfocused editor", (done) => {
     const input = makeElement("input", { type: "text" })
     document.body.appendChild(input)
     input.focus()
 
-    clickToolbarButton({ attribute: "bold" }, () =>
+    clickToolbarButton({ attribute: "bold" }, () => {
       typeCharacters("a", () => {
         assert.textAttributes([ 0, 1 ], { bold: true })
         document.body.removeChild(input)
         done()
       })
-    )
+    })
   })
 
-  test("editing formatted text", (done) =>
-    clickToolbarButton({ attribute: "bold" }, () =>
-      typeCharacters("ab", () =>
-        clickToolbarButton({ attribute: "bold" }, () =>
+  test("editing formatted text", (done) => {
+    clickToolbarButton({ attribute: "bold" }, () => {
+      typeCharacters("ab", () => {
+        clickToolbarButton({ attribute: "bold" }, () => {
           typeCharacters("c", () => {
             assert.notOk(isToolbarButtonActive({ attribute: "bold" }))
             moveCursor("left", () => {
@@ -254,16 +260,17 @@ testGroup("Text formatting", { template: "editor_empty" }, () => {
               })
             })
           })
-        )
-      )
-    ))
+        })
+      })
+    })
+  })
 
-  testIf(config.input.getLevel() === 0, "key command activates toolbar button", (done) =>
+  testIf(config.input.getLevel() === 0, "key command activates toolbar button", (done) => {
     typeToolbarKeyCommand({ attribute: "bold" }, () => {
       assert.ok(isToolbarButtonActive({ attribute: "bold" }))
       done()
     })
-  )
+  })
 
   test("backspacing newline after text", (expectDocument) =>
     typeCharacters("a\n", () => pressKey("backspace", () => expectDocument("a\n"))))

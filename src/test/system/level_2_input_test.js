@@ -86,28 +86,30 @@ testGroup("Level 2 Input", testOptions, () => {
     })
   })
 
-  test("insertLineBreak", (expectDocument) =>
+  test("insertLineBreak", (expectDocument) => {
     clickToolbarButton({ attribute: "quote" }, () => {
       insertString("abc")
-      performInputTypeUsingExecCommand("insertLineBreak", { inputType: "insertLineBreak" }, () =>
+      performInputTypeUsingExecCommand("insertLineBreak", { inputType: "insertLineBreak" }, () => {
         performInputTypeUsingExecCommand("insertLineBreak", { inputType: "insertLineBreak" }, () => {
           assert.blockAttributes([ 0, 6 ], [ "quote" ])
           expectDocument("abc\n\n\n")
         })
-      )
-    }))
+      })
+    })
+  })
 
-  test("insertParagraph", (expectDocument) =>
+  test("insertParagraph", (expectDocument) => {
     clickToolbarButton({ attribute: "quote" }, () => {
       insertString("abc")
-      performInputTypeUsingExecCommand("insertParagraph", { inputType: "insertParagraph" }, () =>
+      performInputTypeUsingExecCommand("insertParagraph", { inputType: "insertParagraph" }, () => {
         performInputTypeUsingExecCommand("insertParagraph", { inputType: "insertParagraph" }, () => {
           assert.blockAttributes([ 0, 4 ], [ "quote" ])
           assert.blockAttributes([ 4, 5 ], [])
           expectDocument("abc\n\n")
         })
-      )
-    }))
+      })
+    })
+  })
 
   test("formatBold", (expectDocument) => {
     insertString("abc")

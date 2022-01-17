@@ -19,8 +19,8 @@ import {
 } from "test/test_helper"
 
 testGroup("Block formatting", { template: "editor_empty" }, () => {
-  test("applying block attributes", (done) =>
-    typeCharacters("abc", () =>
+  test("applying block attributes", (done) => {
+    typeCharacters("abc", () => {
       clickToolbarButton({ attribute: "quote" }, () => {
         assert.blockAttributes([ 0, 4 ], [ "quote" ])
         assert.ok(isToolbarButtonActive({ attribute: "quote" }))
@@ -35,7 +35,8 @@ testGroup("Block formatting", { template: "editor_empty" }, () => {
           })
         })
       })
-    ))
+    })
+  })
 
   test("applying block attributes to text after newline", (done) => {
     typeCharacters("a\nbc", () => {
@@ -160,17 +161,18 @@ testGroup("Block formatting", { template: "editor_empty" }, () => {
     })
   })
 
-  test("breaking out of the middle of a block before newline", (done) => // * = cursor
+  test("breaking out of the middle of a block before newline", (done) => {
+    // * = cursor
     //
     // ab
     // *
     // c
     //
-    typeCharacters("abc", () =>
-      clickToolbarButton({ attribute: "quote" }, () =>
-        moveCursor("left", () =>
-          typeCharacters("\n", () =>
-            moveCursor("left", () =>
+    typeCharacters("abc", () => {
+      clickToolbarButton({ attribute: "quote" }, () => {
+        moveCursor("left", () => {
+          typeCharacters("\n", () => {
+            moveCursor("left", () => {
               typeCharacters("\n\n", () => {
                 const document = getDocument()
                 assert.equal(document.getBlockCount(), 3)
@@ -189,11 +191,12 @@ testGroup("Block formatting", { template: "editor_empty" }, () => {
 
                 done()
               })
-            )
-          )
-        )
-      )
-    ))
+            })
+          })
+        })
+      })
+    })
+  })
 
   test("breaking out of a formatted block with adjacent non-formatted blocks", (expectDocument) => {
     // * = cursor
@@ -409,25 +412,27 @@ testGroup("Block formatting", { template: "editor_empty" }, () => {
       })
     }))
 
-  test("adding bullet to heading block", (done) =>
-    clickToolbarButton({ attribute: "heading1" }, () =>
+  test("adding bullet to heading block", (done) => {
+    clickToolbarButton({ attribute: "heading1" }, () => {
       clickToolbarButton({ attribute: "bullet" }, () => {
         assert.ok(isToolbarButtonActive({ attribute: "heading1" }))
         assert.blockAttributes([ 1, 2 ], [])
         done()
       })
-    ))
+    })
+  })
 
-  test("removing bullet from heading block", (done) =>
-    clickToolbarButton({ attribute: "bullet" }, () =>
+  test("removing bullet from heading block", (done) => {
+    clickToolbarButton({ attribute: "bullet" }, () => {
       clickToolbarButton({ attribute: "heading1" }, () => {
         assert.ok(isToolbarButtonDisabled({ attribute: "bullet" }))
         done()
       })
-    ))
+    })
+  })
 
-  test("breaking out of heading in list", (expectDocument) =>
-    clickToolbarButton({ attribute: "bullet" }, () =>
+  test("breaking out of heading in list", (expectDocument) => {
+    clickToolbarButton({ attribute: "bullet" }, () => {
       clickToolbarButton({ attribute: "heading1" }, () => {
         assert.ok(isToolbarButtonActive({ attribute: "heading1" }))
         typeCharacters("abc", () => {
@@ -441,10 +446,11 @@ testGroup("Block formatting", { template: "editor_empty" }, () => {
           })
         })
       })
-    ))
+    })
+  })
 
-  test("breaking out of middle of heading block", (expectDocument) =>
-    clickToolbarButton({ attribute: "heading1" }, () =>
+  test("breaking out of middle of heading block", (expectDocument) => {
+    clickToolbarButton({ attribute: "heading1" }, () => {
       typeCharacters("abc", () => {
         assert.ok(isToolbarButtonActive({ attribute: "heading1" }))
         moveCursor({ direction: "left", times: 1 }, () => {
@@ -457,7 +463,8 @@ testGroup("Block formatting", { template: "editor_empty" }, () => {
           })
         })
       })
-    ))
+    })
+  })
 
   test("breaking out of middle of heading block with preceding blocks", (expectDocument) => {
     let document = new Document([
@@ -628,17 +635,18 @@ testGroup("Block formatting", { template: "editor_empty" }, () => {
     })
   })
 
-  test("inserting newline after single character header", (expectDocument) =>
-    clickToolbarButton({ attribute: "heading1" }, () =>
-      typeCharacters("a", () =>
+  test("inserting newline after single character header", (expectDocument) => {
+    clickToolbarButton({ attribute: "heading1" }, () => {
+      typeCharacters("a", () => {
         typeCharacters("\n", () => {
           const document = getDocument()
           assert.equal(document.getBlockCount(), 2)
           assert.blockAttributes([ 0, 1 ], [ "heading1" ])
           expectDocument("a\n\n")
         })
-      )
-    ))
+      })
+    })
+  })
 
   test("terminal attributes are only added once", (expectDocument) => {
     replaceDocument(
@@ -649,7 +657,7 @@ testGroup("Block formatting", { template: "editor_empty" }, () => {
       ])
     )
 
-    selectAll(() =>
+    selectAll(() => {
       clickToolbarButton({ attribute: "heading1" }, () => {
         assert.equal(getDocument().getBlockCount(), 3)
         assert.blockAttributes([ 0, 1 ], [ "heading1" ])
@@ -657,7 +665,7 @@ testGroup("Block formatting", { template: "editor_empty" }, () => {
         assert.blockAttributes([ 4, 5 ], [ "heading1" ])
         expectDocument("a\nb\nc\n")
       })
-    )
+    })
   })
 
   test("terminal attributes replace existing terminal attributes", (expectDocument) => {
@@ -669,7 +677,7 @@ testGroup("Block formatting", { template: "editor_empty" }, () => {
       ])
     )
 
-    selectAll(() =>
+    selectAll(() => {
       clickToolbarButton({ attribute: "code" }, () => {
         assert.equal(getDocument().getBlockCount(), 3)
         assert.blockAttributes([ 0, 1 ], [ "code" ])
@@ -677,27 +685,29 @@ testGroup("Block formatting", { template: "editor_empty" }, () => {
         assert.blockAttributes([ 4, 5 ], [ "code" ])
         expectDocument("a\nb\nc\n")
       })
-    )
+    })
   })
 
-  test("code blocks preserve newlines", (expectDocument) =>
-    typeCharacters("a\nb", () =>
-      selectAll(() =>
+  test("code blocks preserve newlines", (expectDocument) => {
+    typeCharacters("a\nb", () => {
+      selectAll(() => {
         clickToolbarButton({ attribute: "code" }, () => {
           assert.equal(getDocument().getBlockCount(), 1)
           assert.blockAttributes([ 0, 3 ], [ "code" ])
           expectDocument("a\nb\n")
         })
-      )
-    ))
+      })
+    })
+  })
 
-  test("code blocks are not indentable", (done) =>
+  test("code blocks are not indentable", (done) => {
     clickToolbarButton({ attribute: "code" }, () => {
       assert.notOk(isToolbarButtonActive({ action: "increaseNestingLevel" }))
       done()
-    }))
+    })
+  })
 
-  test("code blocks are terminal", (done) =>
+  test("code blocks are terminal", (done) => {
     clickToolbarButton({ attribute: "code" }, () => {
       assert.ok(isToolbarButtonDisabled({ attribute: "quote" }))
       assert.ok(isToolbarButtonDisabled({ attribute: "heading1" }))
@@ -707,28 +717,30 @@ testGroup("Block formatting", { template: "editor_empty" }, () => {
       assert.notOk(isToolbarButtonDisabled({ attribute: "bold" }))
       assert.notOk(isToolbarButtonDisabled({ attribute: "italic" }))
       done()
-    }))
+    })
+  })
 
-  test("unindenting a code block inside a bullet", (expectDocument) =>
-    clickToolbarButton({ attribute: "bullet" }, () =>
-      clickToolbarButton({ attribute: "code" }, () =>
-        typeCharacters("a", () =>
+  test("unindenting a code block inside a bullet", (expectDocument) => {
+    clickToolbarButton({ attribute: "bullet" }, () => {
+      clickToolbarButton({ attribute: "code" }, () => {
+        typeCharacters("a", () => {
           clickToolbarButton({ action: "decreaseNestingLevel" }, () => {
             const document = getDocument()
             assert.equal(document.getBlockCount(), 1)
             assert.blockAttributes([ 0, 1 ], [ "code" ])
             expectDocument("a\n")
           })
-        )
-      )
-    ))
+        })
+      })
+    })
+  })
 
-  test("indenting a heading inside a bullet", (expectDocument) =>
-    clickToolbarButton({ attribute: "bullet" }, () =>
-      typeCharacters("a", () =>
-        typeCharacters("\n", () =>
-          clickToolbarButton({ attribute: "heading1" }, () =>
-            typeCharacters("b", () =>
+  test("indenting a heading inside a bullet", (expectDocument) => {
+    clickToolbarButton({ attribute: "bullet" }, () => {
+      typeCharacters("a", () => {
+        typeCharacters("\n", () => {
+          clickToolbarButton({ attribute: "heading1" }, () => {
+            typeCharacters("b", () => {
               clickToolbarButton({ action: "increaseNestingLevel" }, () => {
                 const document = getDocument()
                 assert.equal(document.getBlockCount(), 2)
@@ -736,28 +748,30 @@ testGroup("Block formatting", { template: "editor_empty" }, () => {
                 assert.blockAttributes([ 2, 3 ], [ "bulletList", "bullet", "bulletList", "bullet", "heading1" ])
                 expectDocument("a\nb\n")
               })
-            )
-          )
-        )
-      )
-    ))
+            })
+          })
+        })
+      })
+    })
+  })
 
-  test("indenting a quote inside a bullet", (expectDocument) =>
-    clickToolbarButton({ attribute: "bullet" }, () =>
-      clickToolbarButton({ attribute: "quote" }, () =>
+  test("indenting a quote inside a bullet", (expectDocument) => {
+    clickToolbarButton({ attribute: "bullet" }, () => {
+      clickToolbarButton({ attribute: "quote" }, () => {
         clickToolbarButton({ action: "increaseNestingLevel" }, () => {
           const document = getDocument()
           assert.equal(document.getBlockCount(), 1)
           assert.blockAttributes([ 0, 1 ], [ "bulletList", "bullet", "quote", "quote" ])
           expectDocument("\n")
         })
-      )
-    ))
+      })
+    })
+  })
 
-  test("list indentation constraints consider the list type", (expectDocument) =>
-    clickToolbarButton({ attribute: "bullet" }, () =>
-      typeCharacters("a\n\n", () =>
-        clickToolbarButton({ attribute: "number" }, () =>
+  test("list indentation constraints consider the list type", (expectDocument) => {
+    clickToolbarButton({ attribute: "bullet" }, () => {
+      typeCharacters("a\n\n", () => {
+        clickToolbarButton({ attribute: "number" }, () => {
           clickToolbarButton({ action: "increaseNestingLevel" }, () => {
             const document = getDocument()
             assert.equal(document.getBlockCount(), 2)
@@ -765,7 +779,8 @@ testGroup("Block formatting", { template: "editor_empty" }, () => {
             assert.blockAttributes([ 2, 3 ], [ "numberList", "number" ])
             expectDocument("a\n\n")
           })
-        )
-      )
-    ))
+        })
+      })
+    })
+  })
 })
