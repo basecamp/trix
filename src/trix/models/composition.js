@@ -523,11 +523,11 @@ export default class Composition extends BasicObject {
   }
 
   getLocationRange(options) {
-    return (
-      (this.targetLocationRange != null
-        ? this.targetLocationRange
-        : this.getSelectionManager().getLocationRange(options)) || normalizeRange({ index: 0, offset: 0 })
-    )
+    if (this.targetLocationRange) {
+      return this.targetLocationRange
+    } else {
+      return this.getSelectionManager().getLocationRange(options) || normalizeRange({ index: 0, offset: 0 })
+    }
   }
 
   withTargetLocationRange(locationRange, fn) {
