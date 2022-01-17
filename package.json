@@ -54,7 +54,9 @@
     "watch": "rollup -c -w",
     "lint": "eslint .",
     "pretest": "yarn run lint && yarn run build-js",
-    "test": "karma start"
+    "test": "karma start",
+    "postversion": "git push && git push --tags",
+    "release": "yarn test && npm adduser && yarn version && npm publish"
   },
   "dependencies": {}
 }
