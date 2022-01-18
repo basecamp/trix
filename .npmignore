@@ -1,0 +1,8 @@
+.DS_Store
+/node_modules
+/.github
+/bin
+/assets
+/src
+yarn-error.log
+yarn.lock
