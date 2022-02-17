@@ -5,8 +5,8 @@ import Block from "./models/block"
 import Composition from "./models/composition"
 import Cocument from "./models/document"
 import Editor from "./models/editor"
-import HtmlParser from "./models/html_parser"
-import HtmlSanitizer from "./models/html_sanitizer"
+import HTMLParser from "./models/html_parser"
+import HTMLSanitizer from "./models/html_sanitizer"
 import LineBreakInsertion from "./models/line_break_insertion"
 import LocationMapper from "./models/location_mapper"
 import ManagedAttachment from "./models/managed_attachment"
@@ -26,8 +26,8 @@ export default {
   Composition,
   Cocument,
   Editor,
-  HtmlParser,
-  HtmlSanitizer,
+  HTMLParser,
+  HTMLSanitizer,
   LineBreakInsertion,
   LocationMapper,
   ManagedAttachment,
