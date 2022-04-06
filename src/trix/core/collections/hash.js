@@ -49,7 +49,7 @@ export default class Hash extends TrixObject {
   slice(keys) {
     const values = {}
 
-    keys.forEach((key) => {
+    Array.from(keys).forEach((key) => {
       if (this.has(key)) {
         values[key] = this.values[key]
       }

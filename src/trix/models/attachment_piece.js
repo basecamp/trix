@@ -23,7 +23,7 @@ export default class AttachmentPiece extends Piece {
   ensureAttachmentExclusivelyHasAttribute(attribute) {
     if (this.hasAttribute(attribute)) {
       if (!this.attachment.hasAttribute(attribute)) {
-        this.attachment.setAttributes(this.attributes.slice(attribute))
+        this.attachment.setAttributes(this.attributes.slice([ attribute ]))
       }
       this.attributes = this.attributes.remove(attribute)
     }
