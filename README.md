@@ -334,7 +334,7 @@ Serialize an editor’s state with `JSON.stringify` and restore saved state with
 localStorage["editorState"] = JSON.stringify(element.editor)
 
 // Restore editor state from local storage
-element.editor.loadJSON(JSON.parse(localStorage["editorState"]))
+element.editor.loadJSON({document: JSON.parse(localStorage["editorState"])})
 ```
 
 ## Observing Editor Changes
