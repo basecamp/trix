@@ -78,7 +78,8 @@ registerElement = do ->
       Object.setPrototypeOf(constructor.prototype, HTMLElement.prototype)
       Object.setPrototypeOf(constructor, HTMLElement)
       Object.defineProperties(constructor.prototype, properties)
-      window.customElements.define(tagName, constructor)
+      unless window.customElements.get(tagName)
+        window.customElements.define(tagName, constructor)
       constructor
   else
     (tagName, properties) ->
