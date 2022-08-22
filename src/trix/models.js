@@ -3,7 +3,7 @@ import AttachmentManager from "./models/attachment_manager"
 import AttachmentPiece from "./models/attachment_piece"
 import Block from "./models/block"
 import Composition from "./models/composition"
-import Cocument from "./models/document"
+import Document from "./models/document"
 import Editor from "./models/editor"
 import HTMLParser from "./models/html_parser"
 import HTMLSanitizer from "./models/html_sanitizer"
@@ -24,7 +24,7 @@ export default {
   AttachmentPiece,
   Block,
   Composition,
-  Cocument,
+  Document,
   Editor,
   HTMLParser,
   HTMLSanitizer,
