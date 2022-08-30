@@ -1,4 +1,4 @@
-import config from "trix/config"
+import Trix from "trix/trix"
 
 export * from "trix/core/helpers/functions"
 export * from "trix/core/helpers/global"
@@ -14,7 +14,8 @@ export * from "./test_helpers/editor_helpers"
 export * from "./test_helpers/toolbar_helpers"
 export * from "./test_helpers/selection_helpers"
 
-config.undoInterval = 0
+window.Trix = Trix
+Trix.config.undoInterval = 0
 
 QUnit.config.hidepassed = true
 QUnit.config.testTimeout = 20000

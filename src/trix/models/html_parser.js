@@ -2,7 +2,7 @@
     no-case-declarations,
     no-irregular-whitespace,
 */
-import config from "trix/config"
+import * as config from "trix/config"
 import BasicObject from "trix/core/basic_object"
 import Document from "trix/models/document"
 import HTMLSanitizer from "trix/models/html_sanitizer"

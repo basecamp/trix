@@ -1,4 +1,4 @@
-import config from "trix/config"
+import * as config from "trix/config"
 import UTF16String from "trix/core/utilities/utf16_string"
 import BasicObject from "trix/core/basic_object"
 import InputController from "trix/controllers/input_controller"

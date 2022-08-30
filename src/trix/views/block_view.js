@@ -1,4 +1,4 @@
-import config from "trix/config"
+import * as config from "trix/config"
 import ObjectView from "trix/views/object_view"
 import TextView from "trix/views/text_view"
 

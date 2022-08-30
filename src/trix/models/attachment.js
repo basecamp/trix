@@ -1,4 +1,4 @@
-import config from "trix/config"
+import * as config from "trix/config"
 import TrixObject from "trix/core/object" // Don't override window.Object
 import Hash from "trix/core/collections/hash"
 import ImagePreloadOperation from "trix/operations/image_preload_operation"

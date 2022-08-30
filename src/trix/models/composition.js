@@ -1,4 +1,4 @@
-import config from "trix/config"
+import * as config from "trix/config"
 import { OBJECT_REPLACEMENT_CHARACTER } from "trix/constants"
 
 import BasicObject from "trix/core/basic_object"

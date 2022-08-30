@@ -1,4 +1,4 @@
-import config from "trix/config"
+import * as config from "trix/config"
 import { assert, insertImageAttachment, test, testGroup } from "test/test_helper"
 
 testGroup("Attachment captions", { template: "editor_empty" }, () => {

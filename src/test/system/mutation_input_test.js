@@ -1,4 +1,4 @@
-import config from "trix/config"
+import * as config from "trix/config"
 
 import {
   TEST_IMAGE_URL,

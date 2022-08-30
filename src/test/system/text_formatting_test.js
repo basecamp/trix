@@ -1,4 +1,4 @@
-import config from "trix/config"
+import * as config from "trix/config"
 import { makeElement } from "trix/core/helpers"
 import Text from "trix/models/text"
 

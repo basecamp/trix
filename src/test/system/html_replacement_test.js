@@ -1,4 +1,4 @@
-import config from "trix/config"
+import * as config from "trix/config"
 
 import { assert, testGroup, testIf, triggerEvent } from "test/test_helper"
 

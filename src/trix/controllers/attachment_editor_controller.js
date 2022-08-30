@@ -1,6 +1,6 @@
 import { removeNode } from "trix/core/helpers"
 
-import config from "trix/config"
+import * as config from "trix/config"
 import BasicObject from "trix/core/basic_object"
 
 import { defer, handleEvent, makeElement, tagName } from "trix/core/helpers"

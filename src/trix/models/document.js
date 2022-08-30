@@ -1,4 +1,4 @@
-import config from "trix/config"
+import * as config from "trix/config"
 import TrixObject from "trix/core/object" // Don't override window.Object
 
 import Text from "trix/models/text"

@@ -1,4 +1,4 @@
-import config from "trix/config"
+import * as config from "trix/config"
 
 import { triggerEvent } from "event_helpers"
 import { defer } from "trix/core/helpers"

@@ -1,4 +1,4 @@
-import config from "trix/config"
+import * as config from "trix/config"
 import { ZERO_WIDTH_SPACE } from "trix/constants"
 import { copyObject, makeElement } from "trix/core/helpers"
 import ObjectView from "trix/views/object_view"

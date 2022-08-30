@@ -1,7 +1,7 @@
 /* eslint-disable
     id-length,
 */
-import config from "trix/config"
+import * as config from "trix/config"
 
 import { serializeToContentType } from "trix/core/serialization"
 

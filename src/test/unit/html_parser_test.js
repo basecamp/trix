@@ -10,7 +10,7 @@ import {
   testGroup,
 } from "test/test_helper"
 
-import config from "trix/config"
+import * as config from "trix/config"
 import HTMLParser from "trix/models/html_parser"
 
 const cursorTargetLeft = createCursorTarget("left").outerHTML
