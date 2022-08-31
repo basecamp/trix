@@ -1,7 +1,6 @@
 import { version } from "../../package.json"
 
 import * as config from "trix/config"
-
 import * as core from "trix/core"
 import * as models from "trix/models"
 import * as views from "trix/views"
@@ -23,5 +22,7 @@ const Trix = {
   elements,
   filters
 }
+
+window.Trix = Trix
 
 export default Trix
