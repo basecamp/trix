@@ -6,8 +6,48 @@ import nodeResolve from "rollup-plugin-node-resolve"
 import { terser } from "rollup-plugin-terser"
 
 import { version } from "./package.json"
+
 const year = new Date().getFullYear()
 const banner = `/*\nTrix ${version}\nCopyright © ${year} Basecamp, LLC\n */`
+
+const plugins = [
+  json(),
+  includePaths({
+    paths: [ "src" ],
+    extensions: [ ".js" ]
+  }),
+  nodeResolve({ extensions: [ ".js" ] }),
+  commonjs({
+    extensions: [ ".js" ]
+  }),
+  babel({ babelHelpers: "bundled" }),
+]
+
+const defaultConfig = {
+  context: "window",
+  treeshake: false,
+  plugins: plugins,
+  watch: {
+    include: "src/**"
+  }
+}
+
+const terserConfig = terser({
+  mangle: true,
+  compress: true,
+  format: {
+    comments: function (node, comment) {
+      const text = comment.value
+      const type = comment.type
+      if (type == "comment2") {
+        // multiline comment
+        return /Copyright/.test(text)
+      }
+    },
+  },
+})
+
+const compressedConfig = Object.assign({}, defaultConfig, { plugins: plugins.concat(terserConfig) })
 
 export default [
   {
@@ -20,128 +60,52 @@ export default [
         banner
       },
       {
-        file: "dist/trix.js",
+        file: "dist/trix.esm.js",
         format: "es",
         banner
       }
     ],
-    plugins: [
-      json(),
-      nodeResolve({ extensions: [ ".js" ] }),
-      includePaths({
-        paths: [ "src" ],
-        extensions: [ ".js" ]
-      }),
-      babel({ babelHelpers: "bundled" }),
-    ],
-    context: "window",
-    treeshake: false,
-    watch: {
-      include: "src/**"
-    }
+    ...defaultConfig,
   },
   {
     input: "src/trix/trix.js",
     output: [
-      {
-        file: "dist/trix.min.js",
-        format: "es",
-        banner,
-        sourcemap: true
-      },
       {
         name: "Trix",
         file: "dist/trix.umd.min.js",
         format: "umd",
         banner,
         sourcemap: true
+      },
+      {
+        file: "dist/trix.esm.min.js",
+        format: "es",
+        banner,
+        sourcemap: true
       }
     ],
-    plugins: [
-      json(),
-      nodeResolve({ extensions: [ ".js" ] }),
-      includePaths({
-        paths: [ "src" ],
-        extensions: [ ".js" ]
-      }),
-      babel({ babelHelpers: "bundled" }),
-      terser({
-        mangle: true,
-        compress: true,
-        format: {
-          comments: function (node, comment) {
-            const text = comment.value
-            const type = comment.type
-            if (type == "comment2") {
-              // multiline comment
-              return /Copyright/.test(text)
-            }
-          },
-        },
-      })
-    ],
-    context: "window",
-    treeshake: false,
-    watch: {
-      include: "src/**"
-    }
+    ...compressedConfig,
   },
   {
     input: "src/test/test.js",
-    output: [
-      {
-        name: "TrixTests",
-        file: "dist/test.js",
-        format: "es",
-        sourcemap: true,
-        banner
-      }
-    ],
-    plugins: [
-      json(),
-      includePaths({
-        paths: [ "src" ],
-        extensions: [ ".js" ]
-      }),
-      nodeResolve({ extensions: [ ".js" ] }),
-      commonjs({
-        extensions: [ ".js" ]
-      }),
-      babel({ babelHelpers: "bundled" }),
-    ],
-    context: "window",
-    treeshake: false,
-    watch: {
-      include: "src/**"
-    }
+    output: {
+      name: "TrixTests",
+      file: "dist/test.js",
+      format: "es",
+      sourcemap: true,
+      banner
+    },
+    ...defaultConfig,
   },
   {
     input: "src/inspector/inspector.js",
-    output: [
-      {
-        name: "TrixInspector",
-        file: "dist/inspector.js",
-        format: "es",
-        sourcemap: true,
-        banner
-      }
-    ],
-    plugins: [
-      json(),
-      includePaths({
-        paths: [ "src" ],
-        extensions: [ ".js" ]
-      }),
-      nodeResolve({ extensions: [ ".js" ] }),
-      commonjs({
-        extensions: [ ".js" ]
-      }),
-      babel({ babelHelpers: "bundled" }),
-    ],
-    context: "window",
-    treeshake: false,
-    watch: {
-      include: "src/**"
-    }
+    output: {
+      name: "TrixInspector",
+      file: "dist/inspector.js",
+      format: "es",
+      sourcemap: true,
+      banner
+    },
+    ...defaultConfig,
   }
 ]
