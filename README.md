@@ -23,7 +23,7 @@ Trix is built with established web standards, notably [Custom Elements](https://
 
 Trix comes bundled in ESM and UMD formats and works with any asset packaging system.
 
-The easiest way to start with Trix is including it from an npm CDN in the `<head>` of your page:
+The easiest way to start with Trix is including it from an npm CDN in the `<head>` of your page and then calling `Trix.start()` to initialize the library:
 
 ```html
 <head>
