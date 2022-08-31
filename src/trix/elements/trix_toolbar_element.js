@@ -33,5 +33,3 @@ export default class TrixToolbarElement extends HTMLElement {
     }
   }
 }
-
-window.customElements.define("trix-toolbar", TrixToolbarElement)

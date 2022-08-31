@@ -23,6 +23,11 @@ const Trix = {
   filters
 }
 
+Trix.start = () => {
+  customElements.define("trix-toolbar", elements.TrixToolbarElement)
+  customElements.define("trix-editor", elements.TrixEditorElement)
+}
+
 window.Trix = Trix
 
 export default Trix
