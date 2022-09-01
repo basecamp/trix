@@ -20,7 +20,11 @@ const Trix = {
   observers,
   operations,
   elements,
-  filters
+  filters,
+  start: () => {
+    customElements.define("trix-toolbar", elements.TrixToolbarElement)
+    customElements.define("trix-editor", elements.TrixEditorElement)
+  }
 }
 
 window.Trix = Trix

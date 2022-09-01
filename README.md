@@ -21,19 +21,32 @@ Trix is built with established web standards, notably [Custom Elements](https://
 
 # Getting Started
 
-Include the bundled `trix.css` and `trix.js` files in the `<head>` of your page.
+Trix comes bundled in ESM and UMD formats and works with any asset packaging system.
+
+The easiest way to start with Trix is including it from an npm CDN in the `<head>` of your page and then calling `Trix.start()` to initialize the library:
 
 ```html
 <head>
   …
-  <link rel="stylesheet" type="text/css" href="trix.css">
-  <script type="text/javascript" src="trix.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.0-beta.0/dist/trix.css">
+  <script type="text/javascript" src="https://unpkg.com/trix@2.0.0-beta.0/dist/trix.umd.min.js"></script>
+  <script type="text/javascript">
+    Trix.start()
+  </script>
 </head>
 ```
 
 `trix.css` includes default styles for the Trix toolbar, editor, and attachments. Skip this file if you prefer to define these styles yourself.
 
-To use your own polyfills, or to target only browsers that support all of the required standards, include `trix-core.js` instead.
+Alternatively, you can install the npm package and import it in your application:
+
+```js
+import Trix from "trix"
+
+// Change Trix.config if you need
+
+Trix.start()
+```
 
 ## Creating an Editor
 

@@ -30,3 +30,5 @@ document.head.insertAdjacentHTML(
     trix-toolbar button:disabled { color: #ccc; }
   </style>`
 )
+
+Trix.start()

@@ -323,5 +323,3 @@ export default class TrixEditorElement extends HTMLElement {
     this.value = this.defaultValue
   }
 }
-
-window.customElements.define("trix-editor", TrixEditorElement)
