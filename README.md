@@ -404,14 +404,19 @@ You can run a watch process to automatically generate distribution files when yo
 $ yarn watch
 ```
 
-When the watch process is running you can run a web server on the `/dist` directory to serve the compiled assets. For example:
+When the watch process is running you can run a web server to serve the compiled assets:
 
 ```
-$ cd dist/
-$ python3 -m http.server
+$ yarn dev
 ```
 
 With the development server running, you can visit `/index.html` to see a Trix debugger inspector, or `/test.html` to run the tests on a browser.
+
+For easier development, you can watch for changes to the JavaScript and style files, and serve the results in a browser, with a single command:
+
+```
+$ yarn start
+```
 
 ### Running Tests
 
