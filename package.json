@@ -31,7 +31,9 @@
     "@rollup/plugin-commonjs": "^22.0.2",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
+    "@web/dev-server": "^0.1.34",
     "babel-eslint": "^10.1.0",
+    "concurrently": "^7.4.0",
     "eslint": "^7.32.0",
     "esm": "^3.2.25",
     "karma": "6.4.0",
@@ -56,7 +58,9 @@
     "pretest": "yarn run lint && yarn run build",
     "test": "karma start",
     "postversion": "git push && git push --tags",
-    "release": "yarn test && npm adduser && yarn version && npm publish"
+    "release": "yarn test && npm adduser && yarn version && npm publish",
+    "dev": "web-dev-server --app-index index.html  --root-dir dist --node-resolve --open",
+    "start": "concurrently --kill-others --names js,css,dev-server 'yarn watch' 'yarn build-css --watch' 'yarn dev'"
   },
   "dependencies": {}
 }
