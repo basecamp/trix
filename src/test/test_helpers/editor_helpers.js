@@ -56,4 +56,5 @@ export const replaceDocument = function (document) {
   render()
 }
 
+
 const render = () => getEditorController().render()

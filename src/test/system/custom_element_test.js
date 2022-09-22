@@ -2,12 +2,11 @@ import { rangesAreEqual } from "trix/core/helpers"
 
 import {
   TEST_IMAGE_URL,
-  after,
   assert,
   clickElement,
   clickToolbarButton,
   createFile,
-  defer,
+  expectDocument,
   insertImageAttachment,
   moveCursor,
   pasteContent,
@@ -18,9 +17,10 @@ import {
   typeCharacters,
   typeInToolbarDialog,
 } from "test/test_helper"
+import { delay, nextFrame } from "../test_helpers/timing_helpers"
 
 testGroup("Custom element API", { template: "editor_empty" }, () => {
-  test("element triggers trix-initialize on first connect", (done) => {
+  test("element triggers trix-initialize on first connect", async () => {
     const container = document.getElementById("trix-container")
     container.innerHTML = ""
 
@@ -29,16 +29,15 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
     element.addEventListener("trix-initialize", () => initializeEventCount++)
 
     container.appendChild(element)
-    requestAnimationFrame(() => {
-      container.removeChild(element)
-      requestAnimationFrame(() => {
-        container.appendChild(element)
-        after(60, () => {
-          assert.equal(initializeEventCount, 1)
-          done()
-        })
-      })
-    })
+    await nextFrame()
+
+    container.removeChild(element)
+    await nextFrame()
+
+    container.appendChild(element)
+    await delay(60)
+
+    assert.equal(initializeEventCount, 1)
   })
 
   test("files are accepted by default", () => {
@@ -116,138 +115,132 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
     assert.equal(eventCount, 1)
   })
 
-  test("element triggers trix-change events when the document changes", (done) => {
+  test("element triggers trix-change events when the document changes", async () => {
     const element = getEditorElement()
     let eventCount = 0
     element.addEventListener("trix-change", (event) => eventCount++)
 
-    typeCharacters("a", () => {
-      assert.equal(eventCount, 1)
-      moveCursor("left", () => {
-        assert.equal(eventCount, 1)
-        typeCharacters("bcd", () => {
-          assert.equal(eventCount, 4)
-          clickToolbarButton({ action: "undo" }, () => {
-            assert.equal(eventCount, 5)
-            done()
-          })
-        })
-      })
-    })
+    await typeCharacters("a")
+    assert.equal(eventCount, 1)
+
+    await moveCursor("left")
+    assert.equal(eventCount, 1)
+
+    await typeCharacters("bcd")
+    assert.equal(eventCount, 4)
+
+    await clickToolbarButton({ action: "undo" })
+    assert.equal(eventCount, 5)
   })
 
-  test("element triggers trix-change event after toggling attributes", (done) => {
+  test("element triggers trix-change event after toggling attributes", async () => {
     const element = getEditorElement()
     const { editor } = element
 
-    const afterChangeEvent = function (edit, callback) {
-      let handler
-      element.addEventListener(
-        "trix-change",
-        handler = function (event) {
-          element.removeEventListener("trix-change", handler)
-          callback(event)
-        }
-      )
-      edit()
+    const afterChangeEvent = (edit) => {
+      return new Promise((resolve) => {
+        let handler
+        element.addEventListener(
+          "trix-change",
+          handler = function (event) {
+            element.removeEventListener("trix-change", handler)
+            resolve(event)
+          }
+        )
+        edit()
+      })
     }
 
-    typeCharacters("hello", () => {
-      let edit = () => editor.activateAttribute("quote")
-      afterChangeEvent(edit, () => {
-        assert.ok(editor.attributeIsActive("quote"))
+    await typeCharacters("hello")
 
-        edit = () => editor.deactivateAttribute("quote")
-        afterChangeEvent(edit, () => {
-          assert.notOk(editor.attributeIsActive("quote"))
+    let edit = () => editor.activateAttribute("quote")
+    await afterChangeEvent(edit)
+    assert.ok(editor.attributeIsActive("quote"))
 
-          editor.setSelectedRange([ 0, 5 ])
-          edit = () => editor.activateAttribute("bold")
-          afterChangeEvent(edit, () => {
-            assert.ok(editor.attributeIsActive("bold"))
+    edit = () => editor.deactivateAttribute("quote")
+    await afterChangeEvent(edit)
+    assert.notOk(editor.attributeIsActive("quote"))
 
-            edit = () => editor.deactivateAttribute("bold")
-            afterChangeEvent(edit, () => {
-              assert.notOk(editor.attributeIsActive("bold"))
-              done()
-            })
-          })
-        })
-      })
-    })
+    editor.setSelectedRange([ 0, 5 ])
+
+    edit = () => editor.activateAttribute("bold")
+    await afterChangeEvent(edit)
+    assert.ok(editor.attributeIsActive("bold"))
+
+    edit = () => editor.deactivateAttribute("bold")
+    await afterChangeEvent(edit)
+    assert.notOk(editor.attributeIsActive("bold"))
   })
 
-  test("disabled attributes aren't considered active", (done) => {
+  test("disabled attributes aren't considered active", async () => {
     const { editor } = getEditorElement()
     editor.activateAttribute("heading1")
     assert.notOk(editor.attributeIsActive("code"))
     assert.notOk(editor.attributeIsActive("quote"))
-    done()
   })
 
-  test("element triggers trix-selection-change events when the location range changes", (done) => {
+  test("element triggers trix-selection-change events when the location range changes", async () => {
     const element = getEditorElement()
     let eventCount = 0
-    element.addEventListener("trix-selection-change", (event) => eventCount++)
 
-    typeCharacters("a", () => {
-      assert.equal(eventCount, 1)
-      moveCursor("left", () => {
-        assert.equal(eventCount, 2)
-        done()
-      })
-    })
+    element.addEventListener("trix-selection-change", (event) => eventCount++)
+    await nextFrame()
+
+    await typeCharacters("a")
+    assert.equal(eventCount, 1)
+
+    await moveCursor("left")
+    assert.equal(eventCount, 2)
   })
 
-  test("only triggers trix-selection-change events on the active element", (done) => {
+  test("only triggers trix-selection-change events on the active element", () => {
     const elementA = getEditorElement()
     const elementB = document.createElement("trix-editor")
     elementA.parentNode.insertBefore(elementB, elementA.nextSibling)
 
-    elementB.addEventListener("trix-initialize", () => {
-      elementA.editor.insertString("a")
-      elementB.editor.insertString("b")
-      rangy.getSelection().removeAllRanges()
+    return new Promise((resolve) => {
+      elementB.addEventListener("trix-initialize", () => {
+        elementA.editor.insertString("a")
+        elementB.editor.insertString("b")
+        rangy.getSelection().removeAllRanges()
 
-      let eventCountA = 0
-      let eventCountB = 0
-      elementA.addEventListener("trix-selection-change", (event) => eventCountA++)
-      elementB.addEventListener("trix-selection-change", (event) => eventCountB++)
+        let eventCountA = 0
+        let eventCountB = 0
+        elementA.addEventListener("trix-selection-change", (event) => eventCountA++)
+        elementB.addEventListener("trix-selection-change", (event) => eventCountB++)
 
-      elementA.editor.setSelectedRange(0)
-      assert.equal(eventCountA, 1)
-      assert.equal(eventCountB, 0)
+        elementA.editor.setSelectedRange(0)
+        assert.equal(eventCountA, 1)
+        assert.equal(eventCountB, 0)
 
-      elementB.editor.setSelectedRange(0)
-      assert.equal(eventCountA, 1)
-      assert.equal(eventCountB, 1)
+        elementB.editor.setSelectedRange(0)
+        assert.equal(eventCountA, 1)
+        assert.equal(eventCountB, 1)
 
-      elementA.editor.setSelectedRange(1)
-      assert.equal(eventCountA, 2)
-      assert.equal(eventCountB, 1)
-      done()
-    })
-  })
-
-  test("element triggers toolbar dialog events", (done) => {
-    const element = getEditorElement()
-    const events = []
-
-    element.addEventListener("trix-toolbar-dialog-show", (event) => events.push(event.type))
-
-    element.addEventListener("trix-toolbar-dialog-hide", (event) => events.push(event.type))
-
-    clickToolbarButton({ action: "link" }, () => {
-      typeInToolbarDialog("http://example.com", { attribute: "href" }, () => {
-        defer(() => {
-          assert.deepEqual(events, [ "trix-toolbar-dialog-show", "trix-toolbar-dialog-hide" ])
-          done()
-        })
+        elementA.editor.setSelectedRange(1)
+        assert.equal(eventCountA, 2)
+        assert.equal(eventCountB, 1)
+        resolve()
       })
     })
   })
 
-  test("element triggers before-paste event with paste data", (expectDocument) => {
+  test("element triggers toolbar dialog events", async () => {
+    const element = getEditorElement()
+    const events = []
+
+    element.addEventListener("trix-toolbar-dialog-show", (event) => events.push(event.type))
+    element.addEventListener("trix-toolbar-dialog-hide", (event) => events.push(event.type))
+    await nextFrame()
+
+    await clickToolbarButton({ action: "link" })
+    await typeInToolbarDialog("http://example.com", { attribute: "href" })
+    await nextFrame()
+
+    assert.deepEqual(events, [ "trix-toolbar-dialog-show", "trix-toolbar-dialog-hide" ])
+  })
+
+  test("element triggers before-paste event with paste data", async () => {
     const element = getEditorElement()
     let eventCount = 0
     let paste = null
@@ -257,17 +250,17 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
       paste = event.paste
     })
 
-    typeCharacters("", () => {
-      pasteContent("text/html", "<strong>hello</strong>", () => {
-        assert.equal(eventCount, 1)
-        assert.equal(paste.type, "text/html")
-        assert.equal(paste.html, "<strong>hello</strong>")
-        expectDocument("hello\n")
-      })
-    })
+    await typeCharacters("")
+    await pasteContent("text/html", "<strong>hello</strong>")
+
+    assert.equal(eventCount, 1)
+    assert.equal(paste.type, "text/html")
+    assert.equal(paste.html, "<strong>hello</strong>")
+
+    expectDocument("hello\n")
   })
 
-  test("element triggers before-paste event with mutable paste data", (expectDocument) => {
+  test("element triggers before-paste event with mutable paste data", async () => {
     const element = getEditorElement()
     let eventCount = 0
     let paste = null
@@ -278,16 +271,15 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
       paste.html = "<strong>greetings</strong>"
     })
 
-    typeCharacters("", () => {
-      pasteContent("text/html", "<strong>hello</strong>", () => {
-        assert.equal(eventCount, 1)
-        assert.equal(paste.type, "text/html")
-        expectDocument("greetings\n")
-      })
-    })
+    await typeCharacters("")
+    await pasteContent("text/html", "<strong>hello</strong>")
+
+    assert.equal(eventCount, 1)
+    assert.equal(paste.type, "text/html")
+    expectDocument("greetings\n")
   })
 
-  test("element triggers paste event with position range", (done) => {
+  test("element triggers paste event with position range", async () => {
     const element = getEditorElement()
     let eventCount = 0
     let paste = null
@@ -297,17 +289,15 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
       paste = event.paste
     })
 
-    typeCharacters("", () => {
-      pasteContent("text/html", "<strong>hello</strong>", () => {
-        assert.equal(eventCount, 1)
-        assert.equal(paste.type, "text/html")
-        assert.ok(rangesAreEqual([ 0, 5 ], paste.range))
-        done()
-      })
-    })
+    await typeCharacters("")
+    await pasteContent("text/html", "<strong>hello</strong>")
+
+    assert.equal(eventCount, 1)
+    assert.equal(paste.type, "text/html")
+    assert.ok(rangesAreEqual([ 0, 5 ], paste.range))
   })
 
-  test("element triggers attribute change events", (done) => {
+  test("element triggers attribute change events", async () => {
     const element = getEditorElement()
     let eventCount = 0
     let attributes = null
@@ -317,17 +307,16 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
       attributes = event.attributes
     })
 
-    typeCharacters("", () => {
-      assert.equal(eventCount, 0)
-      clickToolbarButton({ attribute: "bold" }, () => {
-        assert.equal(eventCount, 1)
-        assert.deepEqual({ bold: true }, attributes)
-        done()
-      })
-    })
+    await typeCharacters("")
+    assert.equal(eventCount, 0)
+
+    await clickToolbarButton({ attribute: "bold" })
+
+    assert.equal(eventCount, 1)
+    assert.deepEqual({ bold: true }, attributes)
   })
 
-  test("element triggers action change events", (done) => {
+  test("element triggers action change events", async () => {
     const element = getEditorElement()
     let eventCount = 0
     let actions = null
@@ -337,18 +326,17 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
       actions = event.actions
     })
 
-    typeCharacters("", () => {
-      assert.equal(eventCount, 0)
-      clickToolbarButton({ attribute: "bullet" }, () => {
-        assert.equal(eventCount, 1)
-        assert.equal(actions.decreaseNestingLevel, true)
-        assert.equal(actions.increaseNestingLevel, false)
-        done()
-      })
-    })
+    await typeCharacters("")
+    assert.equal(eventCount, 0)
+
+    await clickToolbarButton({ attribute: "bullet" })
+
+    assert.equal(eventCount, 1)
+    assert.equal(actions.decreaseNestingLevel, true)
+    assert.equal(actions.increaseNestingLevel, false)
   })
 
-  test("element triggers custom focus and blur events", (done) => {
+  test("element triggers custom focus and blur events", async () => {
     const element = getEditorElement()
 
     let focusEventCount = 0
@@ -357,30 +345,32 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
     element.addEventListener("trix-blur", () => blurEventCount++)
 
     triggerEvent(element, "blur")
-    defer(() => {
-      assert.equal(blurEventCount, 1)
-      assert.equal(focusEventCount, 0)
+    await nextFrame()
 
-      triggerEvent(element, "focus")
-      defer(() => {
-        assert.equal(blurEventCount, 1)
-        assert.equal(focusEventCount, 1)
+    assert.equal(blurEventCount, 1)
+    assert.equal(focusEventCount, 0)
 
-        insertImageAttachment()
-        after(20, () => {
-          clickElement(element.querySelector("figure"), () => {
-            const textarea = element.querySelector("textarea")
-            textarea.focus()
-            defer(() => {
-              assert.equal(document.activeElement, textarea)
-              assert.equal(blurEventCount, 1)
-              assert.equal(focusEventCount, 1)
-              done()
-            })
-          })
-        })
-      })
-    })
+    triggerEvent(element, "focus")
+
+    await nextFrame()
+
+    assert.equal(blurEventCount, 1)
+    assert.equal(focusEventCount, 1)
+
+    insertImageAttachment()
+
+    await delay(20)
+
+    await clickElement(element.querySelector("figure"))
+
+    const textarea = element.querySelector("textarea")
+    textarea.focus()
+
+    await nextFrame()
+
+    assert.equal(document.activeElement, textarea)
+    assert.equal(blurEventCount, 1)
+    assert.equal(focusEventCount, 1)
   })
 
   // Selenium doesn't seem to focus windows properly in some browsers (FF 47 on OS X)
@@ -402,33 +392,31 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
     })
   })
 
-  test("element serializes HTML after attribute changes", (done) => {
+  test("element serializes HTML after attribute changes", async () => {
     const element = getEditorElement()
     let serializedHTML = element.value
 
-    typeCharacters("a", () => {
-      assert.notEqual(serializedHTML, element.value)
-      serializedHTML = element.value
+    await typeCharacters("a")
+    assert.notEqual(serializedHTML, element.value)
+    serializedHTML = element.value
 
-      clickToolbarButton({ attribute: "quote" }, () => {
-        assert.notEqual(serializedHTML, element.value)
-        serializedHTML = element.value
+    await clickToolbarButton({ attribute: "quote" })
+    assert.notEqual(serializedHTML, element.value)
+    serializedHTML = element.value
 
-        clickToolbarButton({ attribute: "quote" }, () => {
-          assert.notEqual(serializedHTML, element.value)
-          done()
-        })
-      })
-    })
+    await clickToolbarButton({ attribute: "quote" })
+    assert.notEqual(serializedHTML, element.value)
   })
 
-  test("element serializes HTML after attachment attribute changes", (done) => {
+  test("element serializes HTML after attachment attribute changes", async () => {
     const element = getEditorElement()
     const attributes = { url: "test_helpers/fixtures/logo.png", contentType: "image/png" }
 
-    element.addEventListener("trix-attachment-add", function (event) {
-      const { attachment } = event
-      requestAnimationFrame(() => {
+    const promise = new Promise((resolve) => {
+      element.addEventListener("trix-attachment-add", async (event) => {
+        const { attachment } = event
+        await nextFrame()
+
         let serializedHTML = element.value
         attachment.setAttributes(attributes)
         assert.notEqual(serializedHTML, element.value)
@@ -441,94 +429,90 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
         )
 
         attachment.remove()
-        requestAnimationFrame(() => done())
+        await nextFrame()
+        resolve()
       })
     })
 
-    requestAnimationFrame(() => insertImageAttachment())
+
+    await nextFrame()
+    insertImageAttachment()
+
+    return promise
   })
 
-  test("editor resets to its original value on form reset", (expectDocument) => {
+  test("editor resets to its original value on form reset", async () => {
     const element = getEditorElement()
     const { form } = element.inputElement
 
-    typeCharacters("hello", () => {
-      form.reset()
-      expectDocument("\n")
-    })
+    await typeCharacters("hello")
+    form.reset()
+    expectDocument("\n")
   })
 
-  test("editor resets to last-set value on form reset", (expectDocument) => {
+  test("editor resets to last-set value on form reset", async () => {
     const element = getEditorElement()
     const { form } = element.inputElement
 
     element.value = "hi"
-    typeCharacters("hello", () => {
-      form.reset()
-      expectDocument("hi\n")
-    })
+    await typeCharacters("hello")
+    form.reset()
+    expectDocument("hi\n")
   })
 
-  test("editor respects preventDefault on form reset", (expectDocument) => {
+  test("editor respects preventDefault on form reset", async () => {
     const element = getEditorElement()
     const { form } = element.inputElement
     const preventDefault = (event) => event.preventDefault()
 
-    typeCharacters("hello", () => {
-      form.addEventListener("reset", preventDefault, false)
-      form.reset()
-      form.removeEventListener("reset", preventDefault, false)
-      expectDocument("hello\n")
-    })
+    await typeCharacters("hello")
+
+    form.addEventListener("reset", preventDefault, false)
+    form.reset()
+    form.removeEventListener("reset", preventDefault, false)
+    expectDocument("hello\n")
   })
 })
 
 testGroup("<label> support", { template: "editor_with_labels" }, () => {
-  test("associates all label elements", (done) => {
+  test("associates all label elements", () => {
     const labels = [ document.getElementById("label-1"), document.getElementById("label-3") ]
     assert.deepEqual(getEditorElement().labels, labels)
-    done()
   })
 
-  test("focuses when <label> clicked", (done) => {
+  test("focuses when <label> clicked", () => {
     document.getElementById("label-1").click()
     assert.equal(getEditorElement(), document.activeElement)
-    done()
   })
 
-  test("focuses when <label> descendant clicked", (done) => {
+  test("focuses when <label> descendant clicked", () => {
     document.getElementById("label-1").querySelector("span").click()
     assert.equal(getEditorElement(), document.activeElement)
-    done()
   })
 
-  test("does not focus when <label> controls another element", (done) => {
+  test("does not focus when <label> controls another element", () => {
     const label = document.getElementById("label-2")
     assert.notEqual(getEditorElement(), label.control)
     label.click()
     assert.notEqual(getEditorElement(), document.activeElement)
-    done()
   })
 })
 
 testGroup("form property references its <form>", { template: "editors_with_forms", container: "div" }, () => {
-  test("accesses its ancestor form", (done) => {
+  test("accesses its ancestor form", () => {
     const form = document.getElementById("ancestor-form")
     const editor = document.getElementById("editor-with-ancestor-form")
     assert.equal(editor.form, form)
-    done()
   })
 
-  test("transitively accesses its related <input> element's <form>", (done) => {
+  test("transitively accesses its related <input> element's <form>", () => {
     const form = document.getElementById("input-form")
     const editor = document.getElementById("editor-with-input-form")
     assert.equal(editor.form, form)
-    done()
   })
 
-  test("returns null when there is no associated <form>", (done) => {
+  test("returns null when there is no associated <form>", () => {
     const editor = document.getElementById("editor-with-no-form")
     assert.equal(editor.form, null)
-    done()
   })
 })

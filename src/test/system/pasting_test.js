@@ -3,12 +3,11 @@ import { OBJECT_REPLACEMENT_CHARACTER } from "trix/constants"
 
 import {
   TEST_IMAGE_URL,
-  after,
   assert,
   clickToolbarButton,
   createFile,
-  defer,
   expandSelection,
+  expectDocument,
   moveCursor,
   pasteContent,
   pressKey,
@@ -18,52 +17,50 @@ import {
   triggerEvent,
   typeCharacters,
 } from "test/test_helper"
+import { delay, nextFrame } from "../test_helpers/timing_helpers"
 
 testGroup("Pasting", { template: "editor_empty" }, () => {
-  test("paste plain text", (expectDocument) =>
-    typeCharacters("abc", () =>
-      moveCursor("left", () => pasteContent("text/plain", "!", () => expectDocument("ab!c\n")))
-    ))
-
-  test("paste simple html", (expectDocument) => {
-    typeCharacters("abc", () => {
-      moveCursor("left", () => pasteContent("text/html", "&lt;", () => expectDocument("ab<c\n")))
-    })
+  test("paste plain text", async () => {
+    await typeCharacters("abc")
+    await moveCursor("left")
+    await pasteContent("text/plain", "!")
+    expectDocument("ab!c\n")
   })
 
-  test("paste complex html", (expectDocument) => {
-    typeCharacters("abc", () => {
-      moveCursor("left", () => {
-        pasteContent("text/html", "<div>Hello world<br></div><div>This is a test</div>", () => {
-          expectDocument("abHello world\nThis is a test\nc\n")
-        })
-      })
-    })
+  test("paste simple html", async () => {
+    await typeCharacters("abc")
+    await moveCursor("left")
+    await pasteContent("text/html", "&lt;")
+    expectDocument("ab<c\n")
   })
 
-  test("paste html in expanded selection", (expectDocument) => {
-    typeCharacters("abc", () => {
-      moveCursor("left", () => {
-        expandSelection({ direction: "left", times: 2 }, () => {
-          pasteContent("text/html", "<strong>x</strong>", () => {
-            assert.selectedRange(1)
-            expectDocument("xc\n")
-          })
-        })
-      })
-    })
+  test("paste complex html", async () => {
+    await typeCharacters("abc")
+    await moveCursor("left")
+    await pasteContent("text/html", "<div>Hello world<br></div><div>This is a test</div>")
+    expectDocument("abHello world\nThis is a test\nc\n")
   })
 
-  test("paste plain text with CRLF ", (expectDocument) =>
-    pasteContent("text/plain", "a\r\nb\r\nc", () => expectDocument("a\nb\nc\n")))
-
-  test("paste html with CRLF ", (expectDocument) => {
-    pasteContent("text/html", "<div>a<br></div>\r\n<div>b<br></div>\r\n<div>c<br></div>", () => {
-      expectDocument("a\nb\nc\n")
-    })
+  test("paste html in expanded selection", async () => {
+    await typeCharacters("abc")
+    await moveCursor("left")
+    await expandSelection({ direction: "left", times: 2 })
+    await pasteContent("text/html", "<strong>x</strong>")
+    assert.selectedRange(1)
+    expectDocument("xc\n")
   })
 
-  test("paste unsafe html", (done) => {
+  test("paste plain text with CRLF ", async () => {
+    await pasteContent("text/plain", "a\r\nb\r\nc")
+    expectDocument("a\nb\nc\n")
+  })
+
+  test("paste html with CRLF ", async () => {
+    await pasteContent("text/html", "<div>a<br></div>\r\n<div>b<br></div>\r\n<div>c<br></div>")
+    expectDocument("a\nb\nc\n")
+  })
+
+  test("paste unsafe html", async () => {
     window.unsanitized = []
     const pasteData = {
       "text/plain": "x",
@@ -75,271 +72,234 @@ testGroup("Pasting", { template: "editor_empty" }, () => {
         </script>`,
     }
 
-    pasteContent(pasteData, () => {
-      after(20, () => {
-        assert.deepEqual(window.unsanitized, [])
-        delete window.unsanitized
-        done()
-      })
-    })
+    await pasteContent(pasteData)
+    await delay(20)
+    assert.deepEqual(window.unsanitized, [])
+    delete window.unsanitized
   })
 
-  test("prefers plain text when html lacks formatting", function (expectDocument) {
+  test("prefers plain text when html lacks formatting", async () => {
     const pasteData = {
       "text/html": "<meta charset='utf-8'>a\nb",
       "text/plain": "a\nb",
     }
 
-    pasteContent(pasteData, () => expectDocument("a\nb\n"))
+    await pasteContent(pasteData)
+    expectDocument("a\nb\n")
   })
 
-  test("prefers formatted html", function (expectDocument) {
+  test("prefers formatted html", async () => {
     const pasteData = {
       "text/html": "<meta charset='utf-8'>a\n<strong>b</strong>",
       "text/plain": "a\nb",
     }
 
-    pasteContent(pasteData, () => expectDocument("a b\n"))
+    await pasteContent(pasteData)
+    expectDocument("a b\n")
   })
 
-  test("paste URL", (expectDocument) => {
-    typeCharacters("a", () => {
-      pasteContent("URL", "http://example.com", () => {
-        assert.textAttributes([ 1, 18 ], { href: "http://example.com" })
-        expectDocument("ahttp://example.com\n")
-      })
-    })
+  test("paste URL", async () => {
+    await typeCharacters("a")
+    await pasteContent("URL", "http://example.com")
+    assert.textAttributes([ 1, 18 ], { href: "http://example.com" })
+    expectDocument("ahttp://example.com\n")
   })
 
-  test("paste URL with name", (expectDocument) => {
+  test("paste URL with name", async () => {
     const pasteData = {
       URL: "http://example.com",
       "public.url-name": "Example",
       "text/plain": "http://example.com",
     }
 
-    pasteContent(pasteData, () => {
-      assert.textAttributes([ 0, 7 ], { href: "http://example.com" })
-      expectDocument("Example\n")
-    })
+    await pasteContent(pasteData)
+    assert.textAttributes([ 0, 7 ], { href: "http://example.com" })
+    expectDocument("Example\n")
   })
 
-  test("paste JavaScript URL", function (expectDocument) {
+  test("paste JavaScript URL", async () => {
     const pasteData = { URL: "javascript:alert('XSS')" }
-    pasteContent(pasteData, () => {
-      assert.textAttributes([ 0, 23 ], {})
-      expectDocument("javascript:alert('XSS')\n")
-    })
+    await pasteContent(pasteData)
+    assert.textAttributes([ 0, 23 ], {})
+    expectDocument("javascript:alert('XSS')\n")
   })
 
-  test("paste URL with name containing extraneous whitespace", function (expectDocument) {
+  test("paste URL with name containing extraneous whitespace", async () => {
     const pasteData = {
       URL: "http://example.com",
       "public.url-name": "   Example from \n link  around\n\nnested \nelements ",
       "text/plain": "http://example.com",
     }
 
-    pasteContent(pasteData, () => {
-      assert.textAttributes([ 0, 40 ], { href: "http://example.com" })
-      expectDocument("Example from link around nested elements\n")
-    })
+    await pasteContent(pasteData)
+    assert.textAttributes([ 0, 40 ], { href: "http://example.com" })
+    expectDocument("Example from link around nested elements\n")
   })
 
-  test("paste complex html into formatted block", (done) => {
-    typeCharacters("abc", () => {
-      clickToolbarButton({ attribute: "quote" }, () => {
-        pasteContent("text/html", "<div>Hello world<br></div><pre>This is a test</pre>", () => {
-          const document = getDocument()
-          assert.equal(document.getBlockCount(), 2)
+  test("paste complex html into formatted block", async () => {
+    await typeCharacters("abc")
+    await clickToolbarButton({ attribute: "quote" })
+    await pasteContent("text/html", "<div>Hello world<br></div><pre>This is a test</pre>")
+    const document = getDocument()
+    assert.equal(document.getBlockCount(), 2)
 
-          let block = document.getBlockAtIndex(0)
-          assert.deepEqual(block.getAttributes(), [ "quote" ], assert.equal(block.toString(), "abcHello world\n"))
+    let block = document.getBlockAtIndex(0)
+    assert.deepEqual(block.getAttributes(), [ "quote" ], assert.equal(block.toString(), "abcHello world\n"))
 
-          block = document.getBlockAtIndex(1)
-          assert.deepEqual(block.getAttributes(), [ "quote", "code" ])
-          assert.equal(block.toString(), "This is a test\n")
-
-          done()
-        })
-      })
-    })
+    block = document.getBlockAtIndex(1)
+    assert.deepEqual(block.getAttributes(), [ "quote", "code" ])
+    assert.equal(block.toString(), "This is a test\n")
   })
 
-  test("paste list into list", (done) => {
-    clickToolbarButton({ attribute: "bullet" }, () => {
-      typeCharacters("abc\n", () => {
-        pasteContent("text/html", "<ul><li>one</li><li>two</li></ul>", () => {
-          const document = getDocument()
-          assert.equal(document.getBlockCount(), 3)
+  test("paste list into list", async () => {
+    await clickToolbarButton({ attribute: "bullet" })
+    await typeCharacters("abc\n")
+    await pasteContent("text/html", "<ul><li>one</li><li>two</li></ul>")
 
-          let block = document.getBlockAtIndex(0)
-          assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
-          assert.equal(block.toString(), "abc\n")
+    const document = getDocument()
+    assert.equal(document.getBlockCount(), 3)
 
-          block = document.getBlockAtIndex(1)
-          assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
-          assert.equal(block.toString(), "one\n")
+    let block = document.getBlockAtIndex(0)
+    assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
+    assert.equal(block.toString(), "abc\n")
 
-          block = document.getBlockAtIndex(2)
-          assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
-          assert.equal(block.toString(), "two\n")
+    block = document.getBlockAtIndex(1)
+    assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
+    assert.equal(block.toString(), "one\n")
 
-          done()
-        })
-      })
-    })
+    block = document.getBlockAtIndex(2)
+    assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
+    assert.equal(block.toString(), "two\n")
   })
 
-  test("paste list into quote", (done) => {
-    clickToolbarButton({ attribute: "quote" }, () => {
-      typeCharacters("abc", () => {
-        pasteContent("text/html", "<ul><li>one</li><li>two</li></ul>", () => {
-          const document = getDocument()
-          assert.equal(document.getBlockCount(), 3)
+  test("paste list into quote", async () => {
+    await clickToolbarButton({ attribute: "quote" })
+    await typeCharacters("abc")
+    await pasteContent("text/html", "<ul><li>one</li><li>two</li></ul>")
 
-          let block = document.getBlockAtIndex(0)
-          assert.deepEqual(block.getAttributes(), [ "quote" ])
-          assert.equal(block.toString(), "abc\n")
+    const document = getDocument()
+    assert.equal(document.getBlockCount(), 3)
 
-          block = document.getBlockAtIndex(1)
-          assert.deepEqual(block.getAttributes(), [ "quote", "bulletList", "bullet" ])
-          assert.equal(block.toString(), "one\n")
+    let block = document.getBlockAtIndex(0)
+    assert.deepEqual(block.getAttributes(), [ "quote" ])
+    assert.equal(block.toString(), "abc\n")
 
-          block = document.getBlockAtIndex(2)
-          assert.deepEqual(block.getAttributes(), [ "quote", "bulletList", "bullet" ])
-          assert.equal(block.toString(), "two\n")
+    block = document.getBlockAtIndex(1)
+    assert.deepEqual(block.getAttributes(), [ "quote", "bulletList", "bullet" ])
+    assert.equal(block.toString(), "one\n")
 
-          done()
-        })
-      })
-    })
+    block = document.getBlockAtIndex(2)
+    assert.deepEqual(block.getAttributes(), [ "quote", "bulletList", "bullet" ])
+    assert.equal(block.toString(), "two\n")
   })
 
-  test("paste list into quoted list", (done) => {
-    clickToolbarButton({ attribute: "quote" }, () => {
-      clickToolbarButton({ attribute: "bullet" }, () => {
-        typeCharacters("abc\n", () => {
-          pasteContent("text/html", "<ul><li>one</li><li>two</li></ul>", () => {
-            const document = getDocument()
-            assert.equal(document.getBlockCount(), 3)
+  test("paste list into quoted list", async () => {
+    await clickToolbarButton({ attribute: "quote" })
+    await clickToolbarButton({ attribute: "bullet" })
+    await typeCharacters("abc\n")
+    await pasteContent("text/html", "<ul><li>one</li><li>two</li></ul>")
+    const document = getDocument()
+    assert.equal(document.getBlockCount(), 3)
 
-            let block = document.getBlockAtIndex(0)
-            assert.deepEqual(block.getAttributes(), [ "quote", "bulletList", "bullet" ])
-            assert.equal(block.toString(), "abc\n")
+    let block = document.getBlockAtIndex(0)
+    assert.deepEqual(block.getAttributes(), [ "quote", "bulletList", "bullet" ])
+    assert.equal(block.toString(), "abc\n")
 
-            block = document.getBlockAtIndex(1)
-            assert.deepEqual(block.getAttributes(), [ "quote", "bulletList", "bullet" ])
-            assert.equal(block.toString(), "one\n")
+    block = document.getBlockAtIndex(1)
+    assert.deepEqual(block.getAttributes(), [ "quote", "bulletList", "bullet" ])
+    assert.equal(block.toString(), "one\n")
 
-            block = document.getBlockAtIndex(2)
-            assert.deepEqual(block.getAttributes(), [ "quote", "bulletList", "bullet" ])
-            assert.equal(block.toString(), "two\n")
-
-            done()
-          })
-        })
-      })
-    })
+    block = document.getBlockAtIndex(2)
+    assert.deepEqual(block.getAttributes(), [ "quote", "bulletList", "bullet" ])
+    assert.equal(block.toString(), "two\n")
   })
 
-  test("paste nested list into empty list item", (done) => {
-    clickToolbarButton({ attribute: "bullet" }, () => {
-      typeCharacters("y\nzz", () => {
-        getSelectionManager().setLocationRange({ index: 0, offset: 1 })
-        defer(() => {
-          pressKey("backspace", () => {
-            pasteContent("text/html", "<ul><li>a<ul><li>b</li></ul></li></ul>", () => {})
-            const document = getDocument()
-            assert.equal(document.getBlockCount(), 3)
+  test("paste nested list into empty list item", async () => {
+    await clickToolbarButton({ attribute: "bullet" })
+    await typeCharacters("y\nzz")
 
-            let block = document.getBlockAtIndex(0)
-            assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
-            assert.equal(block.toString(), "a\n")
+    getSelectionManager().setLocationRange({ index: 0, offset: 1 })
 
-            block = document.getBlockAtIndex(1)
-            assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet", "bulletList", "bullet" ])
-            assert.equal(block.toString(), "b\n")
+    await nextFrame()
 
-            block = document.getBlockAtIndex(2)
-            assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
-            assert.equal(block.toString(), "zz\n")
-            done()
-          })
-        })
-      })
-    })
+    await pressKey("backspace")
+    await pasteContent("text/html", "<ul><li>a<ul><li>b</li></ul></li></ul>")
+
+    const document = getDocument()
+    assert.equal(document.getBlockCount(), 3)
+
+    let block = document.getBlockAtIndex(0)
+    assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
+    assert.equal(block.toString(), "a\n")
+
+    block = document.getBlockAtIndex(1)
+    assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet", "bulletList", "bullet" ])
+    assert.equal(block.toString(), "b\n")
+
+    block = document.getBlockAtIndex(2)
+    assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
+    assert.equal(block.toString(), "zz\n")
   })
 
-  test("paste nested list over list item contents", (done) => {
-    clickToolbarButton({ attribute: "bullet" }, () => {
-      typeCharacters("y\nzz", () => {
-        getSelectionManager().setLocationRange({ index: 0, offset: 1 })
-        defer(() => {
-          expandSelection("left", () => {
-            pasteContent("text/html", "<ul><li>a<ul><li>b</li></ul></li></ul>", () => {})
-            const document = getDocument()
-            assert.equal(document.getBlockCount(), 3)
+  test("paste nested list over list item contents", async () => {
+    await clickToolbarButton({ attribute: "bullet" })
+    await typeCharacters("y\nzz")
+    getSelectionManager().setLocationRange({ index: 0, offset: 1 })
+    await nextFrame()
+    await expandSelection("left")
+    await pasteContent("text/html", "<ul><li>a<ul><li>b</li></ul></li></ul>")
+    const document = getDocument()
+    assert.equal(document.getBlockCount(), 3)
 
-            let block = document.getBlockAtIndex(0)
-            assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
-            assert.equal(block.toString(), "a\n")
+    let block = document.getBlockAtIndex(0)
+    assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
+    assert.equal(block.toString(), "a\n")
 
-            block = document.getBlockAtIndex(1)
-            assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet", "bulletList", "bullet" ])
-            assert.equal(block.toString(), "b\n")
+    block = document.getBlockAtIndex(1)
+    assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet", "bulletList", "bullet" ])
+    assert.equal(block.toString(), "b\n")
 
-            block = document.getBlockAtIndex(2)
-            assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
-            assert.equal(block.toString(), "zz\n")
-            done()
-          })
-        })
-      })
-    })
+    block = document.getBlockAtIndex(2)
+    assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
+    assert.equal(block.toString(), "zz\n")
   })
 
-  test("paste list into empty block before list", (done) => {
-    clickToolbarButton({ attribute: "bullet" }, () => {
-      typeCharacters("c", () => {
-        moveCursor("left", () => {
-          pressKey("return", () => {
-            getSelectionManager().setLocationRange({ index: 0, offset: 0 })
-            defer(() => {
-              pasteContent("text/html", "<ul><li>a</li><li>b</li></ul>", () => {
-                const document = getDocument()
-                assert.equal(document.getBlockCount(), 3)
+  test("paste list into empty block before list", async () => {
+    await clickToolbarButton({ attribute: "bullet" })
+    await typeCharacters("c")
+    await moveCursor("left")
+    await pressKey("return")
+    getSelectionManager().setLocationRange({ index: 0, offset: 0 })
 
-                let block = document.getBlockAtIndex(0)
-                assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
-                assert.equal(block.toString(), "a\n")
+    await nextFrame()
+    await pasteContent("text/html", "<ul><li>a</li><li>b</li></ul>")
+    const document = getDocument()
+    assert.equal(document.getBlockCount(), 3)
 
-                block = document.getBlockAtIndex(1)
-                assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
-                assert.equal(block.toString(), "b\n")
+    let block = document.getBlockAtIndex(0)
+    assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
+    assert.equal(block.toString(), "a\n")
 
-                block = document.getBlockAtIndex(2)
-                assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
-                assert.equal(block.toString(), "c\n")
-                done()
-              })
-            })
-          })
-        })
-      })
-    })
+    block = document.getBlockAtIndex(1)
+    assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
+    assert.equal(block.toString(), "b\n")
+
+    block = document.getBlockAtIndex(2)
+    assert.deepEqual(block.getAttributes(), [ "bulletList", "bullet" ])
+    assert.equal(block.toString(), "c\n")
   })
 
-  test("paste file", (expectDocument) => {
-    typeCharacters("a", () => {
-      pasteContent("Files", createFile(), () => expectDocument(`a${OBJECT_REPLACEMENT_CHARACTER}\n`))
-    })
+  test("paste file", async () => {
+    await typeCharacters("a")
+    await pasteContent("Files", createFile())
+    await expectDocument(`a${OBJECT_REPLACEMENT_CHARACTER}\n`)
   })
 
-  testIf(config.input.getLevel() === 0, "paste event with no clipboardData", (expectDocument) => {
-    typeCharacters("a", () => {
-      triggerEvent(document.activeElement, "paste")
-      document.activeElement.insertAdjacentHTML("beforeend", "<span>bc</span>")
-      requestAnimationFrame(() => expectDocument("abc\n"))
-    })
+  testIf(config.input.getLevel() === 0, "paste event with no clipboardData", async () => {
+    await typeCharacters("a")
+    triggerEvent(document.activeElement, "paste")
+    document.activeElement.insertAdjacentHTML("beforeend", "<span>bc</span>")
+    await nextFrame()
+    expectDocument("abc\n")
   })
 })

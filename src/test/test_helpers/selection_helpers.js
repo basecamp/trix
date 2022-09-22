@@ -1,11 +1,11 @@
 import * as config from "trix/config"
 
 import { triggerEvent } from "event_helpers"
-import { defer } from "trix/core/helpers"
 import { selectionChangeObserver } from "trix/observers/selection_change_observer"
 
 import rangy from "rangy"
 import "rangy/lib/rangy-textrange"
+import { nextFrame } from "./timing_helpers"
 
 window.rangy = rangy
 
@@ -20,8 +20,8 @@ const keys = {
   right: "ArrowRight",
 }
 
-export const moveCursor = function (options, callback) {
-  let direction, move, times
+export const moveCursor = async (options) => {
+  let direction, times
   if (typeof options === "string") {
     direction = options
   } else {
@@ -31,49 +31,56 @@ export const moveCursor = function (options, callback) {
 
   if (!times) times = 1
 
-  return (move = () =>
-    defer(() => {
-      if (triggerEvent(document.activeElement, "keydown", { keyCode: keyCodes[direction], key: keys[direction] })) {
-        const selection = rangy.getSelection()
-        selection.move("character", direction === "right" ? 1 : -1)
-        selectionChangeObserver.update()
-      }
+  const move = async () => {
+    await nextFrame()
 
-      if (--times === 0) {
-        defer(() => callback(getCursorCoordinates()))
-      } else {
-        return move()
-      }
-    }))()
-}
-
-export const expandSelection = (options, callback) =>
-  defer(() => {
-    let direction, expand, times
-    if (typeof options === "string") {
-      direction = options
-    } else {
-      ({ direction } = options)
-      times = options.times
+    if (triggerEvent(document.activeElement, "keydown", { keyCode: keyCodes[direction], key: keys[direction] })) {
+      const selection = rangy.getSelection()
+      selection.move("character", direction === "right" ? 1 : -1)
+      selectionChangeObserver.update()
     }
 
-    if (!times) times = 1
+    if (--times === 0) {
+      await nextFrame()
+      return getCursorCoordinates()
+    } else {
+      return move()
+    }
+  }
+  return await move()
+}
 
-    return (expand = () =>
-      defer(() => {
-        if (triggerEvent(document.activeElement, "keydown", { keyCode: keyCodes[direction], key: keys[direction], shiftKey: true })) {
-          getComposition().expandSelectionInDirection(direction === "left" ? "backward" : "forward")
-        }
+export const expandSelection = async (options) => {
+  await nextFrame()
 
-        if (--times === 0) {
-          defer(callback)
-        } else {
-          return expand()
-        }
-      }))()
-  })
+  let direction, times
+  if (typeof options === "string") {
+    direction = options
+  } else {
+    ({ direction } = options)
+    times = options.times
+  }
 
-export const collapseSelection = function (direction, callback) {
+  if (!times) times = 1
+
+  const expand = async () => {
+    await nextFrame()
+
+    if (triggerEvent(document.activeElement, "keydown", { keyCode: keyCodes[direction], key: keys[direction], shiftKey: true })) {
+      getComposition().expandSelectionInDirection(direction === "left" ? "backward" : "forward")
+    }
+
+    if (--times === 0) {
+      await nextFrame()
+    } else {
+      return await expand()
+    }
+  }
+
+  return await expand()
+}
+
+export const collapseSelection = async (direction) => {
   const selection = rangy.getSelection()
   if (direction === "left") {
     selection.collapseToStart()
@@ -81,13 +88,13 @@ export const collapseSelection = function (direction, callback) {
     selection.collapseToEnd()
   }
   selectionChangeObserver.update()
-  defer(callback)
+  await nextFrame()
 }
 
-export const selectAll = function (callback) {
+export const selectAll = async () => {
   rangy.getSelection().selectAllChildren(document.activeElement)
   selectionChangeObserver.update()
-  defer(callback)
+  await nextFrame()
 }
 
 export const deleteSelection = () => {
@@ -98,7 +105,7 @@ export const deleteSelection = () => {
 
 export const selectionIsCollapsed = () => rangy.getSelection().isCollapsed
 
-export const insertNode = function (node, callback) {
+export const insertNode = async (node) => {
   const selection = rangy.getSelection()
   const range = selection.getRangeAt(0)
   range.splitBoundaries()
@@ -107,16 +114,14 @@ export const insertNode = function (node, callback) {
   range.deleteContents()
   selection.setSingleRange(range)
   selectionChangeObserver.update()
-  if (callback) {
-    requestAnimationFrame(callback)
-  }
+
+  await nextFrame()
 }
 
-export const selectNode = function (node, callback) {
+export const selectNode = async (node) => {
   const selection = rangy.getSelection()
   selection.selectAllChildren(node)
   selectionChangeObserver.update()
-  if (callback) callback()
 }
 
 export const createDOMRangeFromPoint = function (px, py) {

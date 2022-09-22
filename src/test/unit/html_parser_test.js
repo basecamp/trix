@@ -1,6 +1,5 @@
 import {
   TEST_IMAGE_URL,
-  after,
   assert,
   createCursorTarget,
   eachFixture,
@@ -12,6 +11,7 @@ import {
 
 import * as config from "trix/config"
 import HTMLParser from "trix/models/html_parser"
+import { delay } from "../test_helpers/timing_helpers"
 
 const cursorTargetLeft = createCursorTarget("left").outerHTML
 const cursorTargetRight = createCursorTarget("right").outerHTML
@@ -229,7 +229,7 @@ testGroup("HTMLParser", () => {
     assert.documentHTMLEqual(HTMLParser.parse(html).getDocument(), expectedHTML)
   })
 
-  test("sanitizes unsafe html", (done) => {
+  test("sanitizes unsafe html", async () => {
     window.unsanitized = []
     HTMLParser.parse(`
       <img onload="window.unsanitized.push('img.onload');" src="${TEST_IMAGE_URL}">
@@ -238,11 +238,9 @@ testGroup("HTMLParser", () => {
         window.unsanitized.push('script tag');
       </script>`)
 
-    after(20, () => {
-      assert.deepEqual(window.unsanitized, [])
-      delete window.unsanitized
-      done()
-    })
+    await delay(20)
+    assert.deepEqual(window.unsanitized, [])
+    delete window.unsanitized
   })
 
   test("forbids href attributes with javascript: protocol", () => {
@@ -262,7 +260,7 @@ testGroup("HTMLParser", () => {
     assert.documentHTMLEqual(HTMLParser.parse(html).getDocument(), expectedHTML)
   })
 
-  test("parses attachment caption from large html string", (done) => {
+  test("parses attachment caption from large html string", () => {
     let { html } = fixtures["image attachment with edited caption"]
 
     for (let i = 1; i <= 30; i++) {
@@ -273,8 +271,6 @@ testGroup("HTMLParser", () => {
       const attachmentPiece = HTMLParser.parse(html).getDocument().getAttachmentPieces()[0]
       assert.equal(attachmentPiece.getCaption(), "Example")
     }
-
-    done()
   })
 
   test("parses foreground color when configured", () => {

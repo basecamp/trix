@@ -3,9 +3,7 @@ import { removeNode } from "trix/core/helpers"
 
 const setFixtureHTML = function (html, container = "form") {
   let element = document.getElementById("trix-container")
-  if (element != null) {
-    removeNode(element)
-  }
+  if (element != null) removeNode(element)
 
   element = document.createElement(container)
   element.id = "trix-container"
@@ -13,8 +11,6 @@ const setFixtureHTML = function (html, container = "form") {
 
   return document.body.insertAdjacentElement("afterbegin", element)
 }
-
-let ready = null
 
 export const testGroup = function (name, options, callback) {
   let container, setup, teardown, template
@@ -24,36 +20,20 @@ export const testGroup = function (name, options, callback) {
     callback = options
   }
 
-  const beforeEach = () => {
+  const beforeEach = async () => {
     // Ensure window is active on CI so focus and blur events are natively dispatched
     window.focus()
 
-    ready = function (callback) {
-      if (template != null) {
-        let handler
-        addEventListener(
-          "trix-initialize",
-          handler = function ({ target }) {
-            removeEventListener("trix-initialize", handler)
-            if (target.hasAttribute("autofocus")) {
-              target.editor.setSelectedRange(0)
-            }
-            callback(target)
-          }
-        )
-
-        return setFixtureHTML(fixtureTemplates[template](), container)
-      } else {
-        callback()
-      }
+    if (template != null) {
+      setFixtureHTML(fixtureTemplates[template](), container)
+      await waitForTrixInit()
     }
+
     if (setup) setup()
   }
 
   const afterEach = () => {
-    if (template != null) {
-      setFixtureHTML("")
-    }
+    if (template != null) setFixtureHTML("")
     return teardown?.()
   }
 
@@ -68,31 +48,6 @@ export const testGroup = function (name, options, callback) {
   }
 }
 
-export const test = (name, callback) =>
-  QUnit.test(name, function (assert) {
-    const doneAsync = assert.async()
-
-    return ready(function (element) {
-      const done = function (expectedDocumentValue) {
-        if (element != null) {
-          if (expectedDocumentValue) {
-            assert.equal(element.editor.getDocument().toString(), expectedDocumentValue)
-          }
-          requestAnimationFrame(doneAsync)
-        } else {
-          return doneAsync()
-        }
-      }
-
-      if (callback.length === 0) {
-        callback()
-        return done()
-      } else {
-        callback(done)
-      }
-    })
-  })
-
 export const testIf = function (condition, ...args) {
   if (condition) {
     test(...Array.from(args || []))
@@ -101,4 +56,16 @@ export const testIf = function (condition, ...args) {
   }
 }
 
-export const { skip } = QUnit
+export const { skip, test } = QUnit
+
+const waitForTrixInit = async () => {
+  return new Promise((resolve) => {
+    addEventListener("trix-initialize", ({ target }) => {
+      if (target.hasAttribute("autofocus")) target.editor.setSelectedRange(0)
+      resolve(target)
+    }, { once: true })
+  })
+}
+
+
+// const isAsync = (func) => func.constructor.name === "AsyncFunction"
