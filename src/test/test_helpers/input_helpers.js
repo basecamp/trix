@@ -1,5 +1,5 @@
 import * as config from "trix/config"
-import { defer } from "trix/core/helpers"
+import { delay, nextFrame } from "./timing_helpers"
 import { triggerEvent } from "./event_helpers"
 import {
   collapseSelection,
@@ -37,12 +37,11 @@ export const triggerInputEvent = function (element, type, properties = {}) {
   }
 }
 
-export const pasteContent = function (contentType, value, callback) {
+export const pasteContent = async (contentType, value) => {
   let data
 
   if (typeof contentType === "object") {
     data = contentType
-    callback = value
   } else {
     data = { [contentType]: value }
   }
@@ -64,9 +63,7 @@ export const pasteContent = function (contentType, value, callback) {
 
   triggerEvent(document.activeElement, "paste", { testClipboardData })
 
-  if (callback) {
-    requestAnimationFrame (callback)
-  }
+  await nextFrame()
 }
 
 export const createFile = function (properties = {}) {
@@ -82,50 +79,48 @@ export const createFile = function (properties = {}) {
   return file
 }
 
-export const typeCharacters = function (string, callback) {
-  let characters, typeNextCharacter
-  if (Array.isArray(string)) {
-    characters = string
-  } else {
-    characters = string.split("")
+export const typeCharacters = async (string) => {
+  const characters = Array.isArray(string) ? string : string.split("")
+
+  const typeNextCharacter = async () => {
+    await delay(10)
+    const character = characters.shift()
+    if (character == null) return
+
+    switch (character) {
+      case "\n":
+        await pressKey("return")
+        await typeNextCharacter()
+        break
+      case "\b":
+        await pressKey("backspace")
+        await typeNextCharacter()
+        break
+      default:
+        await typeCharacterInElement(character, document.activeElement)
+        await typeNextCharacter()
+    }
   }
 
-  return (typeNextCharacter = () =>
-    defer(function () {
-      const character = characters.shift()
-      if (character != null) {
-        switch (character) {
-          case "\n":
-            return pressKey("return", typeNextCharacter)
-          case "\b":
-            return pressKey("backspace", typeNextCharacter)
-          default:
-            return typeCharacterInElement(character, document.activeElement, typeNextCharacter)
-        }
-      } else {
-        return callback()
-      }
-    }))()
+  await typeNextCharacter()
+  await delay(10)
 }
 
-export const pressKey = function (keyName, callback) {
+export const pressKey = async (keyName) => {
   const element = document.activeElement
   const code = keyCodes[keyName]
   const properties = { which: code, keyCode: code, charCode: 0, key: capitalize(keyName) }
 
-  if (!triggerEvent(element, "keydown", properties)) {
-    return callback()
-  }
+  if (!triggerEvent(element, "keydown", properties)) return
 
-  return simulateKeypress(keyName, () => {
-    defer(() => {
-      triggerEvent(element, "keyup", properties)
-      defer(callback)
-    })
-  })
+  await simulateKeypress(keyName)
+  await nextFrame()
+
+  triggerEvent(element, "keyup", properties)
+  await nextFrame()
 }
 
-export const startComposition = function (data, callback) {
+export const startComposition = async (data) => {
   const element = document.activeElement
   triggerEvent(element, "compositionstart", { data: "" })
   triggerInputEvent(element, "beforeinput", { inputType: "insertCompositionText", data })
@@ -134,10 +129,10 @@ export const startComposition = function (data, callback) {
 
   const node = document.createTextNode(data)
   insertNode(node)
-  selectNode(node, callback)
+  await selectNode(node)
 }
 
-export const updateComposition = function (data, callback) {
+export const updateComposition = async (data) => {
   const element = document.activeElement
   triggerInputEvent(element, "beforeinput", { inputType: "insertCompositionText", data })
   triggerEvent(element, "compositionupdate", { data })
@@ -145,10 +140,10 @@ export const updateComposition = function (data, callback) {
 
   const node = document.createTextNode(data)
   insertNode(node)
-  selectNode(node, callback)
+  await selectNode(node)
 }
 
-export const endComposition = function (data, callback) {
+export const endComposition = async (data) => {
   const element = document.activeElement
   triggerInputEvent(element, "beforeinput", { inputType: "insertCompositionText", data })
   triggerEvent(element, "compositionupdate", { data })
@@ -156,27 +151,27 @@ export const endComposition = function (data, callback) {
   const node = document.createTextNode(data)
   insertNode(node)
   selectNode(node)
-  collapseSelection("right", function () {
-    triggerEvent(element, "input")
-    triggerEvent(element, "compositionend", { data })
-    requestAnimationFrame (callback)
-  })
+  await collapseSelection("right")
+
+  triggerEvent(element, "input")
+  triggerEvent(element, "compositionend", { data })
+
+  await nextFrame()
 }
 
-export const clickElement = function (element, callback) {
+export const clickElement = async (element) => {
   if (triggerEvent(element, "mousedown")) {
-    defer(function () {
-      if (triggerEvent(element, "mouseup")) {
-        defer(function () {
-          triggerEvent(element, "click")
-          defer(callback)
-        })
-      }
-    })
+    await nextFrame()
+
+    if (triggerEvent(element, "mouseup")) {
+      await nextFrame()
+      triggerEvent(element, "click")
+      await nextFrame()
+    }
   }
 }
 
-export const dragToCoordinates = function (coordinates, callback) {
+export const dragToCoordinates = async (coordinates) => {
   const element = document.activeElement
 
   // IE only allows writing "text" to DataTransfer
@@ -218,10 +213,10 @@ export const dragToCoordinates = function (coordinates, callback) {
   const domRange = createDOMRangeFromPoint(clientX, clientY)
   triggerInputEvent(element, "beforeinput", { inputType: "insertFromDrop", ranges: [ domRange ] })
 
-  defer(callback)
+  await nextFrame()
 }
 
-export const mouseDownOnElementAndMove = function (element, distance, callback) {
+export const mouseDownOnElementAndMove = async (element, distance) => {
   const coordinates = getElementCoordinates(element)
   triggerEvent(element, "mousedown", coordinates)
 
@@ -231,81 +226,75 @@ export const mouseDownOnElementAndMove = function (element, distance, callback) 
   })
 
   const dragSpeed = 20
+  await delay(dragSpeed)
 
-  return after(dragSpeed, function () {
-    let drag
-    let offset = 0
-    return (drag = () => {
-      if (++offset <= distance) {
-        triggerEvent(element, "mousemove", destination(offset))
-        return after(dragSpeed, drag)
-      } else {
-        triggerEvent(element, "mouseup", destination(distance))
-        return after(dragSpeed, callback)
-      }
-    })()
-  })
+  let offset = 0
+  const drag = async () => {
+    if (++offset <= distance) {
+      triggerEvent(element, "mousemove", destination(offset))
+      await delay(dragSpeed)
+      drag()
+    } else {
+      triggerEvent(element, "mouseup", destination(distance))
+      await delay(dragSpeed)
+    }
+  }
+
+  drag()
 }
 
-const typeCharacterInElement = function (character, element, callback) {
+const typeCharacterInElement = async (character, element) => {
   const charCode = character.charCodeAt(0)
   const keyCode = character.toUpperCase().charCodeAt(0)
 
-  if (!triggerEvent(element, "keydown", { keyCode, charCode: 0 })) {
-    return callback()
-  }
+  if (!triggerEvent(element, "keydown", { keyCode, charCode: 0 })) return
 
-  defer(function () {
-    if (!triggerEvent(element, "keypress", { keyCode: charCode, charCode })) {
-      return callback()
-    }
-    triggerInputEvent(element, "beforeinput", { inputType: "insertText", data: character })
-    return insertCharacter(character, function () {
-      triggerEvent(element, "input")
+  await nextFrame()
 
-      defer(function () {
-        triggerEvent(element, "keyup", { keyCode, charCode: 0 })
-        return callback()
-      })
-    })
-  })
+  if (!triggerEvent(element, "keypress", { keyCode: charCode, charCode })) return
+
+  triggerInputEvent(element, "beforeinput", { inputType: "insertText", data: character })
+
+  await insertCharacter(character)
+  triggerEvent(element, "input")
+  await nextFrame()
+
+  triggerEvent(element, "keyup", { keyCode, charCode: 0 })
 }
 
-const insertCharacter = function (character, callback) {
+const insertCharacter = async (character) => {
   const node = document.createTextNode(character)
-  return insertNode(node, callback)
+  await insertNode(node)
 }
 
-const simulateKeypress = function (keyName, callback) {
+const simulateKeypress = async (keyName) => {
   switch (keyName) {
     case "backspace":
-      return deleteInDirection("left", callback)
+      await deleteInDirection("left")
+      break
     case "delete":
-      return deleteInDirection("right", callback)
+      await deleteInDirection("right")
+      break
     case "return":
-      defer(function () {
-        triggerInputEvent(document.activeElement, "beforeinput", { inputType: "insertParagraph" })
-        const node = document.createElement("br")
-        return insertNode(node, callback)
-      })
+      await nextFrame()
+      triggerInputEvent(document.activeElement, "beforeinput", { inputType: "insertParagraph" })
+      await insertNode(document.createElement("br"))
   }
 }
 
-const deleteInDirection = function (direction, callback) {
+const deleteInDirection = async (direction) => {
   if (selectionIsCollapsed()) {
     getComposition().expandSelectionInDirection(direction === "left" ? "backward" : "forward")
-    defer(function () {
-      const inputType = direction === "left" ? "deleteContentBackward" : "deleteContentForward"
-      triggerInputEvent(document.activeElement, "beforeinput", { inputType })
-      defer(function () {
-        deleteSelection()
-        return callback()
-      })
-    })
+    await nextFrame()
+
+    const inputType = direction === "left" ? "deleteContentBackward" : "deleteContentForward"
+    triggerInputEvent(document.activeElement, "beforeinput", { inputType })
+
+    await nextFrame()
+    deleteSelection()
   } else {
     triggerInputEvent(document.activeElement, "beforeinput", { inputType: "deleteContentBackward" })
     deleteSelection()
-    return callback()
   }
 }
 

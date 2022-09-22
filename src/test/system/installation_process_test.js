@@ -1,6 +1,7 @@
 import EditorController from "trix/controllers/editor_controller"
 
-import { assert, defer, test, testGroup } from "test/test_helper"
+import { assert, test, testGroup } from "test/test_helper"
+import { nextFrame } from "../test_helpers/timing_helpers"
 
 testGroup("Installation process", { template: "editor_html" }, () => {
   test("element.editorController", () => {
@@ -13,15 +14,14 @@ testGroup("Installation process", { template: "editor_html" }, () => {
     assert.equal(getEditorElement().textContent, "Hello world")
   })
 
-  test("sets value property", (done) =>
-    defer(() => {
-      assert.equal(getEditorElement().value, "<div>Hello world</div>")
-      done()
-    }))
+  test("sets value property", async () => {
+    await nextFrame()
+    assert.equal(getEditorElement().value, "<div>Hello world</div>")
+  })
 })
 
 testGroup("Installation process without specified elements", { template: "editor_empty" }, () =>
-  test("creates identified toolbar and input elements", (done) => {
+  test("creates identified toolbar and input elements", () => {
     const editorElement = getEditorElement()
 
     const toolbarId = editorElement.getAttribute("toolbar")
@@ -35,21 +35,18 @@ testGroup("Installation process without specified elements", { template: "editor
     const inputElement = document.getElementById(inputId)
     assert.ok(inputElement, "input element not assert.ok")
     assert.equal(editorElement.inputElement, inputElement)
-
-    done()
   })
 )
 
 testGroup("Installation process with specified elements", { template: "editor_with_toolbar_and_input" }, () => {
-  test("uses specified elements", (done) => {
+  test("uses specified elements", () => {
     const editorElement = getEditorElement()
     assert.equal(editorElement.toolbarElement, document.getElementById("my_toolbar"))
     assert.equal(editorElement.inputElement, document.getElementById("my_input"))
     assert.equal(editorElement.value, "<div>Hello world</div>")
-    done()
   })
 
-  test("can be cloned", (done) => {
+  test("can be cloned", async () => {
     const originalElement = document.getElementById("my_editor")
     const clonedElement = originalElement.cloneNode(true)
 
@@ -57,12 +54,11 @@ testGroup("Installation process with specified elements", { template: "editor_wi
     parentElement.removeChild(originalElement)
     parentElement.appendChild(clonedElement)
 
-    defer(() => {
-      const editorElement = getEditorElement()
-      assert.equal(editorElement.toolbarElement, document.getElementById("my_toolbar"))
-      assert.equal(editorElement.inputElement, document.getElementById("my_input"))
-      assert.equal(editorElement.value, "<div>Hello world</div>")
-      done()
-    })
+    await nextFrame()
+
+    const editorElement = getEditorElement()
+    assert.equal(editorElement.toolbarElement, document.getElementById("my_toolbar"))
+    assert.equal(editorElement.inputElement, document.getElementById("my_input"))
+    assert.equal(editorElement.value, "<div>Hello world</div>")
   })
 })

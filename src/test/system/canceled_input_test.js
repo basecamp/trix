@@ -1,4 +1,4 @@
-import { pressKey, test, testGroup, typeCharacters } from "test/test_helper"
+import { expectDocument, pressKey, test, testGroup, typeCharacters } from "test/test_helper"
 
 const testOptions = {
   template: "editor_empty",
@@ -37,27 +37,24 @@ const cancel = (event) => {
 }
 
 testGroup("Canceled input", testOptions, () => {
-  test("ignoring canceled input events in capturing phase", (expectDocument) => {
-    typeCharacters("a", () => {
-      cancelingInCapturingPhase = true
-      pressKey("backspace", () => {
-        pressKey("return", () => {
-          cancelingInCapturingPhase = false
-          typeCharacters("b", () => expectDocument("ab\n"))
-        })
-      })
-    })
+  test("ignoring canceled input events in capturing phase", async () => {
+    await typeCharacters("a")
+    cancelingInCapturingPhase = true
+    await pressKey("backspace")
+    await pressKey("return")
+    cancelingInCapturingPhase = false
+    await typeCharacters("b")
+
+    expectDocument("ab\n")
   })
 
-  test("ignoring canceled input events at target", (expectDocument) => {
-    typeCharacters("a", () => {
-      cancelingAtTarget = true
-      pressKey("backspace", () => {
-        pressKey("return", () => {
-          cancelingAtTarget = false
-          typeCharacters("b", () => expectDocument("ab\n"))
-        })
-      })
-    })
+  test("ignoring canceled input events at target", async () => {
+    await typeCharacters("a")
+    cancelingAtTarget = true
+    await pressKey("backspace")
+    await pressKey("return")
+    cancelingAtTarget = false
+    await typeCharacters("b")
+    expectDocument("ab\n")
   })
 })

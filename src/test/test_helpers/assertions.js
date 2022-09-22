@@ -52,4 +52,9 @@ assert.documentHTMLEqual = function (trixDocument, html) {
 
 const getHTML = (trixDocument) => DocumentView.render(trixDocument).innerHTML
 
+export const expectDocument = (expectedDocumentValue, element) => {
+  if (!element) element = getEditorElement()
+  assert.equal(element.editor.getDocument().toString(), expectedDocumentValue)
+}
+
 export { assert, getHTML }

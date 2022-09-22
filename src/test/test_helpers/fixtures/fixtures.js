@@ -40,17 +40,12 @@ export { TEST_IMAGE_URL }
 const { css } = config
 
 const createDocument = function (...parts) {
-  const blocks = (() => {
-    const result = []
+  const blocks = parts.map((part) => {
+    const [ string, textAttributes, blockAttributes ] = Array.from(part)
+    const text = Text.textForStringWithAttributes(string, textAttributes)
+    return new Block(text, blockAttributes)
+  })
 
-    Array.from(parts).forEach((part) => {
-      const [ string, textAttributes, blockAttributes ] = Array.from(part)
-      const text = Text.textForStringWithAttributes(string, textAttributes)
-      result.push(new Block(text, blockAttributes))
-    })
-
-    return result
-  })()
   return new Document(blocks)
 }
 
