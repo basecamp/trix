@@ -1,12 +1,12 @@
 import { triggerEvent } from "./event_helpers"
 import { selectionChangeObserver } from "trix/observers/selection_change_observer"
-import { nextFrame } from "./timing_helpers"
+import { delay, nextFrame } from "./timing_helpers"
 
 export const clickToolbarButton = async (selector) => {
   selectionChangeObserver.update()
   const button = getToolbarButton(selector)
   triggerEvent(button, "mousedown")
-  await nextFrame()
+  await delay(5)
 }
 
 export const typeToolbarKeyCommand = async (selector) => {

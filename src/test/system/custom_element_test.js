@@ -345,27 +345,24 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
     element.addEventListener("trix-blur", () => blurEventCount++)
 
     triggerEvent(element, "blur")
-    await nextFrame()
+    await delay(10)
 
     assert.equal(blurEventCount, 1)
     assert.equal(focusEventCount, 0)
 
     triggerEvent(element, "focus")
-
-    await nextFrame()
+    await delay(10)
 
     assert.equal(blurEventCount, 1)
     assert.equal(focusEventCount, 1)
 
     insertImageAttachment()
-
     await delay(20)
 
     await clickElement(element.querySelector("figure"))
 
     const textarea = element.querySelector("textarea")
     textarea.focus()
-
     await nextFrame()
 
     assert.equal(document.activeElement, textarea)
