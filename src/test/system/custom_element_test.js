@@ -372,7 +372,7 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
 
   // Selenium doesn't seem to focus windows properly in some browsers (FF 47 on OS X)
   // so skip this test when unfocused pending a better solution.
-  testIf(document.hasFocus(), "element triggers custom focus event when autofocusing", (done) => {
+  testIf(document.hasFocus(), "element triggers custom focus event when autofocusing", () => {
     const element = document.createElement("trix-editor")
     element.setAttribute("autofocus", "")
 
@@ -383,9 +383,11 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
     container.innerHTML = ""
     container.appendChild(element)
 
-    element.addEventListener("trix-initialize", () => {
-      assert.equal(focusEventCount, 1)
-      done()
+    return new Promise((resolve) => {
+      element.addEventListener("trix-initialize", () => {
+        assert.equal(focusEventCount, 1)
+        resolve()
+      })
     })
   })
 
