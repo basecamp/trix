@@ -28,6 +28,7 @@ document.head.insertAdjacentHTML(
     trix-toolbar button { border: 1px solid #ccc; background: #fff; }
     trix-toolbar button.active { background: #d3e6fd; }
     trix-toolbar button:disabled { color: #ccc; }
+    #qunit { position: relative !important; }
   </style>`
 )
 
