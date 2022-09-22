@@ -15,7 +15,7 @@ export * from "./test_helpers/toolbar_helpers"
 export * from "./test_helpers/selection_helpers"
 
 window.Trix = Trix
-Trix.config.undoInterval = 0
+Trix.config.undo.interval = 0
 
 QUnit.config.hidepassed = true
 QUnit.config.testTimeout = 20000
@@ -28,6 +28,7 @@ document.head.insertAdjacentHTML(
     trix-toolbar button { border: 1px solid #ccc; background: #fff; }
     trix-toolbar button.active { background: #d3e6fd; }
     trix-toolbar button:disabled { color: #ccc; }
+    #qunit { position: relative !important; }
   </style>`
 )
 
