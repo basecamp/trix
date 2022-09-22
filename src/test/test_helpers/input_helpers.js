@@ -83,7 +83,7 @@ export const typeCharacters = async (string) => {
   const characters = Array.isArray(string) ? string : string.split("")
 
   const typeNextCharacter = async () => {
-    await nextFrame()
+    await delay(10)
     const character = characters.shift()
     if (character == null) return
 
@@ -103,6 +103,7 @@ export const typeCharacters = async (string) => {
   }
 
   await typeNextCharacter()
+  await delay(10)
 }
 
 export const pressKey = async (keyName) => {
