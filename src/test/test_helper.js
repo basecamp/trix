@@ -15,7 +15,7 @@ export * from "./test_helpers/toolbar_helpers"
 export * from "./test_helpers/selection_helpers"
 
 window.Trix = Trix
-Trix.config.undoInterval = 0
+Trix.config.undo.interval = 0
 
 QUnit.config.hidepassed = true
 QUnit.config.testTimeout = 20000

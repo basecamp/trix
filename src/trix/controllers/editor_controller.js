@@ -563,8 +563,8 @@ export default class EditorController extends Controller {
   }
 
   getTimeContext() {
-    if (config.undoInterval > 0) {
-      return Math.floor(new Date().getTime() / config.undoInterval)
+    if (config.undo.interval > 0) {
+      return Math.floor(new Date().getTime() / config.undo.interval)
     } else {
       return 0
     }
