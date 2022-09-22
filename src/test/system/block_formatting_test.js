@@ -225,7 +225,7 @@ testGroup("Block formatting", { template: "editor_empty" }, () => {
   test("deleting the only non-block-break character in a block", async () => {
     await typeCharacters("ab")
     await clickToolbarButton({ attribute: "quote" })
-    typeCharacters("\b\b")
+    await typeCharacters("\b\b")
     assert.blockAttributes([ 0, 1 ], [ "quote" ])
   })
 
