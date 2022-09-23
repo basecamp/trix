@@ -19,14 +19,15 @@ const test = function() {
 }
 
 testGroup("Mutation input", { template: "editor_empty" }, () => {
-  test("deleting a newline", function (expectDocument) {
+  test("deleting a newline", async () => {
     const element = getEditorElement()
     element.editor.insertString("a\n\nb")
 
     triggerEvent(element, "keydown", { charCode: 0, keyCode: 229, which: 229 })
     const br = element.querySelectorAll("br")[1]
     br.parentNode.removeChild(br)
-    requestAnimationFrame(() => expectDocument("a\nb\n"))
+    await nextFrame()
+    expectDocument("a\nb\n")
   })
 
   test("typing a space in formatted text at the end of a block", async () => {
@@ -42,11 +43,11 @@ testGroup("Mutation input", { template: "editor_empty" }, () => {
     boldElement.appendChild(document.createTextNode(" "))
     boldElement.appendChild(document.createElement("br"))
 
-    requestAnimationFrame(() => {
-      assert.ok(isToolbarButtonActive({ attribute: "bold" }))
-      assert.textAttributes([ 0, 2 ], { bold: true })
-      expectDocument("a \n")
-    })
+    await nextFrame()
+
+    assert.ok(isToolbarButtonActive({ attribute: "bold" }))
+    assert.textAttributes([ 0, 2 ], { bold: true })
+    expectDocument("a \n")
   })
 
   test("typing formatted text after a newline at the end of block", async () => {

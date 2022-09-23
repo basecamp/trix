@@ -206,7 +206,7 @@ let mapper = null
 const setDocument = (json) => {
   document = Document.fromJSON(json)
   element = DocumentView.render(document)
-  return mapper = new LocationMapper(element)
+  mapper = new LocationMapper(element)
 }
 
 const findContainer = (path) => {
