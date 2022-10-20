@@ -419,7 +419,7 @@ class Trix.Level2InputController extends Trix.InputController
     if clipboard = event.clipboardData
       "Files" in clipboard.types and
         clipboard.types.length <= 2 and
-        clipboard.files.length == 1
+        clipboard.files.length >= 1
 
   pasteEventHasPlainTextOnly = (event) ->
     if clipboard = event.clipboardData
