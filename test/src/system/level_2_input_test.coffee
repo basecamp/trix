@@ -171,6 +171,19 @@ testGroup "Level 2 Input", testOptions, ->
         assert.textAttributes([0, url.length], href: url)
         expectDocument "#{url}\n"
 
+  # Pastes from Google Chrome include text/html + a file, we want the file!
+  # https://input-inspector.javan.us/profiles/r1s8c7DqbOQXXjz76mj0
+  test "pasting image copied from Google Chrome", (expectDocument) ->
+    createFile (file) ->
+      clipboardData = dataTransfer = createDataTransfer
+        "text/html": """<meta charset='utf-8'><img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_272x92dp.png" alt="Google"/>"""
+        "Files": [file]
+
+      paste {dataTransfer}, ->
+        attachments = getDocument().getAttachments()
+        assert.equal attachments.length, 1
+        expectDocument ""
+
   # Pastes from MS Word include an image of the copied text 🙃
   # https://input-inspector.now.sh/profiles/QWDITsV60dpEVl1SOZg8
   test "pasting text from MS Word", (expectDocument) ->
@@ -183,7 +196,7 @@ testGroup "Level 2 Input", testOptions, ->
       paste {dataTransfer}, ->
         attachments = getDocument().getAttachments()
         assert.equal attachments.length, 0
-        expectDocument "abc\n"
+        expectDocument "abc\n" 
 
   # "beforeinput" event is not fired for Paste and Match Style operations
   # - https://bugs.chromium.org/p/chromium/issues/detail?id=934448

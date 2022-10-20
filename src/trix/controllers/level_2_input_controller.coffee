@@ -39,7 +39,7 @@ class Trix.Level2InputController extends Trix.InputController
     # Safe to remove each condition once fixed upstream.
     paste: (event) ->
       # https://bugs.webkit.org/show_bug.cgi?id=194921
-      if pasteEventHasAtLeastOneFile(event)
+      if pasteEventHasAFile(event)
         event.preventDefault()
         @attachFiles(event.clipboardData.files)
 
@@ -415,10 +415,11 @@ class Trix.Level2InputController extends Trix.InputController
   dragEventHasFiles = (event) ->
     "Files" in (event.dataTransfer?.types ? [])
 
-  pasteEventHasAtLeastOneFile = (event) ->
+  pasteEventHasAFile = (event) ->
     if clipboard = event.clipboardData
       "Files" in clipboard.types and
-        clipboard.files.length >= 1
+        clipboard.types.length <= 2 and
+        clipboard.files.length == 1
 
   pasteEventHasPlainTextOnly = (event) ->
     if clipboard = event.clipboardData
