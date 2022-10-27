@@ -201,6 +201,28 @@ testGroup("HTMLParser", () => {
     assert.documentHTMLEqual(HTMLParser.parse(html).getDocument(), expectedHTML)
   })
 
+  test("allows customizing table separater", () => {
+    withParserConfig({ tableCellSeparator: "*", tableRowSeparator: "-" }, () => {
+      const html = "<table><tr><td>a</td><td>b</td></tr><tr><td>1</td><td><p>2</p></td></tr><table>"
+      const expectedHTML = "<div><!--block-->a*b-1*2</div>"
+      assert.documentHTMLEqual(HTMLParser.parse(html).getDocument(), expectedHTML)
+    })
+  })
+
+  test("includes empty cells when translating tables into plain text", () => {
+    const html = "<table><tr><td> </td><td></td></tr><tr><td>1</td><td><p>2</p></td></tr><table>"
+    const expectedHTML = "<div><!--block-->&nbsp;|&nbsp;<br>1 | 2</div>"
+    assert.documentHTMLEqual(HTMLParser.parse(html).getDocument(), expectedHTML)
+  })
+
+  test("allows removing empty table cells from translated tables", () => {
+    withParserConfig({ removeBlankTableCells: true }, () => {
+      const html = "<table><tr><td> </td><td>\n</td></tr><tr><td>1</td><td><p>2</p></td></tr><table>"
+      const expectedHTML = "<div><!--block-->1 | 2</div>"
+      assert.documentHTMLEqual(HTMLParser.parse(html).getDocument(), expectedHTML)
+    })
+  })
+
   test("translates block element margins to newlines", () => {
     const html =
       "<p style=\"margin: 0 0 1em 0\">a</p><p style=\"margin: 0\">b</p><article style=\"margin: 1em 0 0 0\">c</article>"
@@ -328,24 +350,31 @@ testGroup("HTMLParser", () => {
   })
 })
 
-const withTextAttributeConfig = (attrConfig = {}, fn) => {
-  const originalConfig = {}
+const withParserConfig = (attrConfig = {}, fn) => {
+  withConfig("parser", attrConfig, fn)
+}
 
-  for (const [ key, value ] of Object.entries(attrConfig)) {
-    originalConfig[key] = config.textAttributes[key]
-    config.textAttributes[key] = value
+const withTextAttributeConfig = (attrConfig = {}, fn) => {
+  withConfig("textAttributes", attrConfig, fn)
+}
+
+const withConfig = (section, newConfig = {}, fn) => {
+  const originalConfig = Object.assign({}, config[section])
+  const copy = (section, properties) => {
+    for (const [ key, value ] of Object.entries(properties)) {
+      if (value) {
+        config[section][key] = value
+      } else {
+        delete config[section][key]
+      }
+    }
   }
 
   try {
+    copy(section, newConfig)
     fn()
   } finally {
-    for (const [ key, value ] of Object.entries(originalConfig)) {
-      if (value) {
-        config.textAttributes[key] = value
-      } else {
-        delete config.textAttributes[key]
-      }
-    }
+    copy(section, originalConfig)
   }
 }
 
