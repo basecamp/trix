@@ -41,6 +41,23 @@ testGroup("Attachments", { template: "editor_with_image" }, () => {
     expectDocument("ab\n")
   })
 
+  test("intercepting attachment toolbar creation", async () => {
+    function insertToolbarButton(event) {
+      const { toolbar, attachment } = event
+
+      assert.ok(toolbar.matches(".attachment__toolbar"))
+      assert.equal(attachment.getContentType(), "image")
+
+      toolbar.querySelector(".trix-button-group").insertAdjacentHTML("beforeend", "<button class=\"new-button\">👍</button>")
+    }
+
+    getEditorElement().addEventListener("trix-attachment-before-toolbar", insertToolbarButton, { once: true })
+
+    await clickElement(getFigure())
+
+    assert.ok(getEditorElement().querySelector(".trix-button-group .new-button"))
+  })
+
   test("editing an image caption", async () => {
     await delay(20)
 
