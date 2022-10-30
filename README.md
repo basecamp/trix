@@ -382,7 +382,7 @@ Trix was created by [Javan Makhmali](https://twitter.com/javan) and [Sam Stephen
 
 ### Building From Source
 
-Trix uses [Yarn](https://yarnpkg.com/) to manage dependencies and Rollup[https://rollupjs.org/guide/en/] to bundle its source.
+Trix uses [Yarn](https://yarnpkg.com/) to manage dependencies and [Rollup](https://rollupjs.org/guide/en/) to bundle its source.
 
 Install development dependencies with:
 
