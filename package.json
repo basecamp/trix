@@ -60,7 +60,7 @@
     "postversion": "git push && git push --tags",
     "release": "yarn test && npm adduser && yarn version && npm publish",
     "dev": "web-dev-server --app-index index.html  --root-dir dist --node-resolve --open",
-    "start": "concurrently --kill-others --names js,css,dev-server 'yarn watch' 'yarn build-css --watch' 'yarn dev'"
+    "start": "yarn build-assets && concurrently --kill-others --names js,css,dev-server 'yarn watch' 'yarn build-css --watch' 'yarn dev'"
   },
   "dependencies": {}
 }
