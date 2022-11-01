@@ -3,7 +3,7 @@ import { removeNode } from "trix/core/helpers"
 import * as config from "trix/config"
 import BasicObject from "trix/core/basic_object"
 
-import { defer, handleEvent, makeElement, tagName } from "trix/core/helpers"
+import { defer, handleEvent, makeElement, tagName, triggerEvent } from "trix/core/helpers"
 const { lang, css, keyNames } = config
 
 const undoable = function(fn) {
@@ -147,6 +147,8 @@ export default class AttachmentEditorController extends BasicObject {
       matchingSelector: "[data-trix-action]",
       withCallback: this.didClickActionButton,
     })
+
+    triggerEvent("trix-attachment-before-toolbar", { onElement: this.element, attributes: { toolbar: element, attachment: this.attachment } })
 
     return {
       do: () => this.element.appendChild(element),
