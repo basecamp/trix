@@ -31,5 +31,3 @@ document.head.insertAdjacentHTML(
     #qunit { position: relative !important; }
   </style>`
 )
-
-Trix.start()
