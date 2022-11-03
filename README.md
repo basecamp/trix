@@ -23,16 +23,13 @@ Trix is built with established web standards, notably [Custom Elements](https://
 
 Trix comes bundled in ESM and UMD formats and works with any asset packaging system.
 
-The easiest way to start with Trix is including it from an npm CDN in the `<head>` of your page and then calling `Trix.start()` to initialize the library:
+The easiest way to start with Trix is including it from an npm CDN in the `<head>` of your page:
 
 ```html
 <head>
   …
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.0-beta.0/dist/trix.css">
   <script type="text/javascript" src="https://unpkg.com/trix@2.0.0-beta.0/dist/trix.umd.min.js"></script>
-  <script type="text/javascript">
-    Trix.start()
-  </script>
 </head>
 ```
 
@@ -43,9 +40,9 @@ Alternatively, you can install the npm package and import it in your application
 ```js
 import Trix from "trix"
 
-// Change Trix.config if you need
-
-Trix.start()
+document.addEventListener("trix-before-initialize", () => {
+  // Change Trix.config if you need
+})
 ```
 
 ## Creating an Editor
@@ -354,7 +351,7 @@ element.editor.loadJSON(JSON.parse(localStorage["editorState"]))
 
 The `<trix-editor>` element emits several events which you can use to observe and respond to changes in editor state.
 
-* `trix-before-initialize` fires when the `<trix-editor>` element is attached to the DOM just before Trix installs its `editor` object.
+* `trix-before-initialize` fires when the `<trix-editor>` element is attached to the DOM just before Trix installs its `editor` object. If you need to use a custom Trix configuration you can change `Trix.config` here.
 
 * `trix-initialize` fires when the `<trix-editor>` element is attached to the DOM and its `editor` object is ready for use.
 

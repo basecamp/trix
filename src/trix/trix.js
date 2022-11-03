@@ -10,16 +10,6 @@ import * as operations from "trix/operations"
 import * as elements from "trix/elements"
 import * as filters from "trix/filters"
 
-let started = false
-
-function start() {
-  if (!started) {
-    customElements.define("trix-toolbar", elements.TrixToolbarElement)
-    customElements.define("trix-editor", elements.TrixEditorElement)
-    started = true
-  }
-}
-
 const Trix = {
   VERSION: version,
   config,
@@ -30,10 +20,20 @@ const Trix = {
   observers,
   operations,
   elements,
-  filters,
-  start
+  filters
+}
+
+function start() {
+  if (!customElements.get("trix-toolbar")) {
+    customElements.define("trix-toolbar", elements.TrixToolbarElement)
+  }
+
+  if (!customElements.get("trix-editor")) {
+    customElements.define("trix-editor", elements.TrixEditorElement)
+  }
 }
 
 window.Trix = Trix
+setTimeout(start, 0)
 
 export default Trix
