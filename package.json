@@ -57,8 +57,9 @@
     "lint": "eslint .",
     "pretest": "yarn run lint && yarn run build",
     "test": "karma start",
-    "postversion": "git push && git push --tags",
-    "release": "yarn test && npm adduser && yarn version",
+    "prerelease": "yarn version && yarn test",
+    "release": "npm adduser && npm publish",
+    "postrelease": "git push && git push --tags",
     "dev": "web-dev-server --app-index index.html  --root-dir dist --node-resolve --open",
     "start": "yarn build-assets && concurrently --kill-others --names js,css,dev-server 'yarn watch' 'yarn build-css --watch' 'yarn dev'"
   },
