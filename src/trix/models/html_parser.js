@@ -218,13 +218,13 @@ export default class HTMLParser extends BasicObject {
           this.appendAttachmentWithAttributes(attributes, this.getTextAttributes(element))
           return this.processedElements.push(element)
         case "tr":
-          if (element.parentNode.firstChild !== element) {
-            return this.appendStringWithAttributes("\n")
+          if (this.needsTableSeparator(element)) {
+            return this.appendStringWithAttributes(config.parser.tableRowSeparator)
           }
           break
         case "td":
-          if (element.parentNode.firstChild !== element) {
-            return this.appendStringWithAttributes(" | ")
+          if (this.needsTableSeparator(element)) {
+            return this.appendStringWithAttributes(config.parser.tableCellSeparator)
           }
           break
       }
@@ -384,6 +384,15 @@ export default class HTMLParser extends BasicObject {
 
   isExtraBR(element) {
     return tagName(element) === "br" && this.isBlockElement(element.parentNode) && element.parentNode.lastChild === element
+  }
+
+  needsTableSeparator(element) {
+    if (config.parser.removeBlankTableCells) {
+      const content = element.previousSibling?.textContent
+      return content && /\S/.test(content)
+    } else {
+      return element.previousSibling
+    }
   }
 
   // Margin translation
