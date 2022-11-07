@@ -49,15 +49,6 @@ if (process.env.CI) {
       platform: "Windows 10",
       version: "88.0"
     },
-    sl_firefox_latest: {
-      base: "SauceLabs",
-      browserName: "firefox",
-      platform: "Windows 10",
-      version: "latest",
-      "sauce:options": {
-        geckodriverVersion: "0.30.0" // reason: https://github.com/karma-runner/karma-sauce-launcher/issues/275
-      }
-    },
     sl_safari_12_1: {
       base: "SauceLabs",
       browserName: "safari",
