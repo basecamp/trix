@@ -13,27 +13,37 @@ Because these APIs were never fully specified or documented, and because WYSIWYG
 
 Trix sidesteps these inconsistencies by treating `contenteditable` as an I/O device: when input makes its way to the editor, Trix converts that input into an editing operation on its internal document model, then re-renders that document back into the editor. This gives Trix complete control over what happens after every keystroke, and avoids the need to use `execCommand` at all.
 
-### Built for the Modern Web
+### Built on Web standards
 
 <details><summary>Trix supports all evergreen, self-updating desktop and mobile browsers.</summary><img src="https://app.saucelabs.com/browser-matrix/basecamp_trix.svg"></details>
 
-Trix is built with emerging web standards, notably [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements), [Mutation Observer](https://dom.spec.whatwg.org/#mutation-observers), and [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Eventually we expect all browsers to implement these standards. In the meantime, Trix includes [polyfills](https://en.wikipedia.org/wiki/Polyfill_(programming)) for missing functionality.
+Trix is built with established web standards, notably [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements), [Mutation Observer](https://dom.spec.whatwg.org/#mutation-observers), and [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 
 # Getting Started
 
-Include the bundled `trix.css` and `trix.js` files in the `<head>` of your page.
+Trix comes bundled in ESM and UMD formats and works with any asset packaging system.
+
+The easiest way to start with Trix is including it from an npm CDN in the `<head>` of your page:
 
 ```html
 <head>
   …
-  <link rel="stylesheet" type="text/css" href="trix.css">
-  <script type="text/javascript" src="trix.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.0-beta.0/dist/trix.css">
+  <script type="text/javascript" src="https://unpkg.com/trix@2.0.0-beta.0/dist/trix.umd.min.js"></script>
 </head>
 ```
 
 `trix.css` includes default styles for the Trix toolbar, editor, and attachments. Skip this file if you prefer to define these styles yourself.
 
-To use your own polyfills, or to target only browsers that support all of the required standards, include `trix-core.js` instead.
+Alternatively, you can install the npm package and import it in your application:
+
+```js
+import Trix from "trix"
+
+document.addEventListener("trix-before-initialize", () => {
+  // Change Trix.config if you need
+})
+```
 
 ## Creating an Editor
 
@@ -341,7 +351,7 @@ element.editor.loadJSON(JSON.parse(localStorage["editorState"]))
 
 The `<trix-editor>` element emits several events which you can use to observe and respond to changes in editor state.
 
-* `trix-before-initialize` fires when the `<trix-editor>` element is attached to the DOM just before Trix installs its `editor` object.
+* `trix-before-initialize` fires when the `<trix-editor>` element is attached to the DOM just before Trix installs its `editor` object. If you need to use a custom Trix configuration you can change `Trix.config` here.
 
 * `trix-initialize` fires when the `<trix-editor>` element is attached to the DOM and its `editor` object is ready for use.
 
@@ -369,29 +379,50 @@ Trix was created by [Javan Makhmali](https://twitter.com/javan) and [Sam Stephen
 
 ### Building From Source
 
-Trix is written in [CoffeeScript](https://github.com/jashkenas/coffeescript) and compiled to JavaScript with [Blade](https://github.com/javan/blade).
+Trix uses [Yarn](https://yarnpkg.com/) to manage dependencies and [Rollup](https://rollupjs.org/guide/en/) to bundle its source.
 
-From inside a checkout of the Trix Git repository, issue the following commands to build the distributable files in `dist/`:
+Install development dependencies with:
 
 ```
-$ bin/setup
-$ bin/blade build
+$ yarn install
+```
+
+To generate distribution files run:
+
+```
+$ yarn build
 ```
 
 ### Developing In-Browser
 
-You can spawn a development web server to work on Trix in a more convenient fashion. Instead of manually rebuilding the source each time, just reload a page in your browser to see your changes.
+You can run a watch process to automatically generate distribution files when your source file change:
 
-To develop in-browser, run `bin/setup` and follow the displayed instructions.
+```
+$ yarn watch
+```
+
+When the watch process is running you can run a web server to serve the compiled assets:
+
+```
+$ yarn dev
+```
+
+With the development server running, you can visit `/index.html` to see a Trix debugger inspector, or `/test.html` to run the tests on a browser.
+
+For easier development, you can watch for changes to the JavaScript and style files, and serve the results in a browser, with a single command:
+
+```
+$ yarn start
+```
 
 ### Running Tests
 
-Make sure you’re set up to build from source using the instructions above. Then run `bin/blade runner` and visit the displayed URL to run the Trix test suite.
+You can also run the test in a headless mode with:
 
-### Pull Requests
-
-Only commit changes to Trix’s source (everything except the compiled files in `/dist`) and leave the [VERSION](src/trix/VERSION) unchanged. We update both when publishing new [releases](https://github.com/basecamp/trix/releases). :heart:
+```
+$ yarn test
+```
 
 ---
 
-© 2020 Basecamp, LLC.
+© 2022 Basecamp, LLC.

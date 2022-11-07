@@ -1,6 +1,12 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
 
 jobs:
   build:
@@ -8,16 +14,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: ruby/setup-ruby@v1
-      with:
-        bundler-cache: true
     - uses: actions/setup-node@v2-beta
       with:
-        node-version: 11
+        node-version: 16
     - uses: actions/cache@v2
       with:
         path: test/node_modules
         key: ${{ runner.os }}-${{ hashFiles('test/yarn.lock') }}
+    - uses: saucelabs/sauce-connect-action@v2
+      with:
+        username: ${{ secrets.SAUCE_USERNAME }}
+        accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+        tunnelName: Basecamp-CI_tunnel_name
+        region: us-west
 
-    - run: cd test && yarn install
+    - run: yarn install
     - run: bin/ci
+
+env:
+  SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+  SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}

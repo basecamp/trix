@@ -13,12 +13,4 @@ if [ -n "$CI" ]; then
   echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
 fi
 
-if [ -n "$CI" ] && [ "$GITHUB_REF" == "refs/heads/main" ] && [ -z "$GITHUB_HEAD_REF" ]; then
-  $(base64 --decode <<< ZXhwb3J0IFNBVUNFX1VTRVJOQU1FPWJhc2VjYW1wX3RyaXgK)
-  $(base64 --decode <<< ZXhwb3J0IFNBVUNFX0FDQ0VTU19LRVk9MjY3OGE4NzMtNzJmNC00NzU2LTkzYjUtZjFhOGUyZTc3ODIxCg==)
-else
-  $(base64 --decode <<< ZXhwb3J0IFNBVUNFX1VTRVJOQU1FPWJhc2VjYW1wX3RyaXhfZGV2Cg==)
-  $(base64 --decode <<< ZXhwb3J0IFNBVUNFX0FDQ0VTU19LRVk9NTIzODNlNTItZTM4NC00MzZjLWFkMmUtMGZmNTcyNjIyNjc5Cg==)
-fi
-
-cd test && yarn test
+yarn test
