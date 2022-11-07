@@ -53,7 +53,10 @@ if (process.env.CI) {
       base: "SauceLabs",
       browserName: "firefox",
       platform: "Windows 10",
-      version: "latest"
+      version: "latest",
+      "sauce:options": {
+        geckodriverVersion: "0.30.0" // reason: https://github.com/karma-runner/karma-sauce-launcher/issues/275
+      }
     },
     sl_safari_12_1: {
       base: "SauceLabs",
