@@ -61,24 +61,6 @@ if (process.env.CI) {
       platform: "macOS 10.13",
       version: "12.1"
     },
-    sl_safari_latest_catalina: {
-      base: "SauceLabs",
-      browserName: "safari",
-      platform: "macOS 10.15",
-      version: "latest"
-    },
-    sl_safari_latest_big_sur: {
-      base: "SauceLabs",
-      browserName: "safari",
-      platform: "macOS 11",
-      version: "latest"
-    },
-    sl_edge_80: {
-      base: "SauceLabs",
-      browserName: "microsoftedge",
-      platform: "Windows 10",
-      version: "80.0"
-    },
     sl_edge_latest: {
       base: "SauceLabs",
       browserName: "microsoftedge",
