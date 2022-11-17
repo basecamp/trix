@@ -20,6 +20,7 @@ const config = {
   singleRun: true,
   autoWatch: false,
 
+  concurrency: 4,
   captureTimeout: 240000,
   browserDisconnectTimeout: 240000,
   browserDisconnectTolerance: 3,
@@ -43,11 +44,14 @@ if (process.env.CI) {
         args: [ "--lang=tr" ]
       }
     },
-    sl_firefox_88: {
+    // Context:
+    // https://github.com/karma-runner/karma-sauce-launcher/issues/275
+    // https://saucelabs.com/blog/update-firefox-tests-before-oct-4-2022
+    sl_firefox_latest: {
       base: "SauceLabs",
       browserName: "firefox",
-      platform: "Windows 10",
-      version: "88.0"
+      browserVersion: "latest",
+      "moz:debuggerAddress": true
     },
     sl_safari_12_1: {
       base: "SauceLabs",
@@ -68,12 +72,19 @@ if (process.env.CI) {
       device: "iPhone X Simulator",
       version: "13.0"
     },
+    sl_android_9: {
+      base: "SauceLabs",
+      browserName: "chrome",
+      platform: "android",
+      device: "Android GoogleAPI Emulator",
+      version: "9.0"
+    },
     sl_android_latest: {
       base: "SauceLabs",
       browserName: "chrome",
       platform: "android",
       device: "Android GoogleAPI Emulator",
-      version: "10.0"
+      version: "12.0"
     }
   }
 
