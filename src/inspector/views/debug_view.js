@@ -1,4 +1,5 @@
 import View from "inspector/view"
+import ControlElement from "../control_element"
 
 import { handleEvent } from "trix/core/helpers"
 
@@ -53,7 +54,7 @@ class DebugView extends View {
 
   didToggleControlElement({ target }) {
     if (target.checked) {
-      this.control = new Trix.Inspector.ControlElement(this.editorElement)
+      this.control = new ControlElement(this.editorElement)
     } else {
       this.control?.uninstall()
       this.control = null
