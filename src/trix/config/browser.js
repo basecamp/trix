@@ -5,10 +5,8 @@ export default {
 
   // On Android 13 Samsung keyboards emit a composition event when moving the cursor
   composesOnCursorMove: (function() {
-    const samsungAndroid = /Android.*SM-.*Chrome/.test(navigator.userAgent)
-    const androidVersionMatch = navigator.userAgent.match(/android\s([0-9]+)/i)
-
-    return samsungAndroid && androidVersionMatch && parseInt(androidVersionMatch[1]) > 12
+    const androidVersionMatch = navigator.userAgent.match(/android\s([0-9]+.*Chrome)/i)
+    return androidVersionMatch && parseInt(androidVersionMatch[1]) > 12
   })(),
 
   // IE 11 activates resizing handles on editable elements that have "layout"
