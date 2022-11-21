@@ -1,5 +1,6 @@
 import { getAllAttributeNames, squishBreakableWhitespace } from "trix/core/helpers"
 import InputController from "trix/controllers/input_controller"
+import * as config from "trix/config"
 
 import { dataTransferIsPlainText, keyEventIsKeyboardCommand, objectsAreEqual } from "trix/core/helpers"
 
@@ -136,7 +137,7 @@ export default class Level2InputController extends InputController {
     compositionend(event) {
       if (this.composing) {
         this.composing = false
-        return this.scheduleRender()
+        if (!config.browser.composesOnCursorMove) this.scheduleRender()
       }
     },
   }
