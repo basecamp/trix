@@ -3,8 +3,10 @@ export default {
   // Introduced in Chrome 65: https://bugs.chromium.org/p/chromium/issues/detail?id=764439#c9
   composesExistingText: /Android.*Chrome/.test(navigator.userAgent),
 
-  // On Android 13 Samsung keyboards emit a composition event when moving the cursor
-  composesOnCursorMove: (function() {
+  // Android 13, especially on Samsung keyboards, emits extra compositionend and beforeinput events
+  // that can make the input handler lose the the current selection or enter an infinite input -> render -> input
+  // loop.
+  recentAndroid: (function() {
     const androidVersionMatch = navigator.userAgent.match(/android\s([0-9]+.*Chrome)/i)
     return androidVersionMatch && parseInt(androidVersionMatch[1]) > 12
   })(),

@@ -71,10 +71,13 @@ export default class Level2InputController extends InputController {
     },
 
     beforeinput(event) {
+      if (guardAgainstSpuriousAndroidEvents(event)) return
+
       const handler = this.constructor.inputTypes[event.inputType]
+
       if (handler) {
         this.withEvent(event, handler)
-        return this.scheduleRender()
+        this.scheduleRender()
       }
     },
 
@@ -137,7 +140,7 @@ export default class Level2InputController extends InputController {
     compositionend(event) {
       if (this.composing) {
         this.composing = false
-        if (!config.browser.composesOnCursorMove) this.scheduleRender()
+        if (!config.browser.recentAndroid) this.scheduleRender()
       }
     },
   }
@@ -606,3 +609,11 @@ const pointFromEvent = (event) => ({
   x: event.clientX,
   y: event.clientY,
 })
+
+// Samsung keyboard running in a webview emits insertText events
+// with composed true, in addition to composition events, let's ignore those
+const guardAgainstSpuriousAndroidEvents = (event) => {
+  return config.browser.recentAndroid &&
+    event.inputType === "insertText" &&
+    event.composed && event.data !== ". "
+}
