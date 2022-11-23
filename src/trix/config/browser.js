@@ -15,15 +15,6 @@ export default {
   // IE 11 activates resizing handles on editable elements that have "layout"
   forcesObjectResizing: /Trident.*rv:11/.test(navigator.userAgent),
   // https://www.w3.org/TR/input-events-1/ + https://www.w3.org/TR/input-events-2/
-  supportsInputEvents: (function() {
-    if (typeof InputEvent === "undefined") {
-      return false
-    }
-    for (const property of [ "data", "getTargetRanges", "inputType" ]) {
-      if (!(property in InputEvent.prototype)) {
-        return false
-      }
-    }
-    return true
-  })(),
+  supportsInputEvents: typeof InputEvent !== "undefined" &&
+    [ "data", "getTargetRanges", "inputType" ].every(prop => prop in InputEvent.prototype),
 }
