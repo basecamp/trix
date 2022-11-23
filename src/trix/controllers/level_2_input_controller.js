@@ -82,7 +82,7 @@ export default class Level2InputController extends InputController {
     },
 
     input(event) {
-      return selectionChangeObserver.reset()
+      if (!emittedBySamsungKeyboard(event)) selectionChangeObserver.reset()
     },
 
     dragstart(event) {
@@ -613,7 +613,9 @@ const pointFromEvent = (event) => ({
 // Samsung keyboard running in a webview emits insertText events
 // with composed true, in addition to composition events, let's ignore those
 const guardAgainstSpuriousAndroidEvents = (event) => {
-  return config.browser.recentAndroid &&
-    event.inputType === "insertText" &&
-    event.composed && event.data !== ". "
+  return emittedBySamsungKeyboard(event) && event.data !== ". "
+}
+
+const emittedBySamsungKeyboard = (event) => {
+  return config.browser.samsungAndroid && event.inputType === "insertText" && !event.sourceCapabilities
 }
