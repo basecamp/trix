@@ -1,5 +1,6 @@
 import { getAllAttributeNames, squishBreakableWhitespace } from "trix/core/helpers"
 import InputController from "trix/controllers/input_controller"
+import * as config from "trix/config"
 
 import { dataTransferIsPlainText, keyEventIsKeyboardCommand, objectsAreEqual } from "trix/core/helpers"
 
@@ -70,15 +71,18 @@ export default class Level2InputController extends InputController {
     },
 
     beforeinput(event) {
+      if (guardAgainstSpuriousAndroidEvents(event)) return
+
       const handler = this.constructor.inputTypes[event.inputType]
+
       if (handler) {
         this.withEvent(event, handler)
-        return this.scheduleRender()
+        this.scheduleRender()
       }
     },
 
     input(event) {
-      return selectionChangeObserver.reset()
+      if (!emittedBySamsungKeyboard(event)) selectionChangeObserver.reset()
     },
 
     dragstart(event) {
@@ -136,7 +140,7 @@ export default class Level2InputController extends InputController {
     compositionend(event) {
       if (this.composing) {
         this.composing = false
-        return this.scheduleRender()
+        if (!config.browser.recentAndroid) this.scheduleRender()
       }
     },
   }
@@ -605,3 +609,13 @@ const pointFromEvent = (event) => ({
   x: event.clientX,
   y: event.clientY,
 })
+
+// Samsung keyboard running in a webview emits insertText events
+// with composed true, in addition to composition events, let's ignore those
+const guardAgainstSpuriousAndroidEvents = (event) => {
+  return emittedBySamsungKeyboard(event) && event.data !== ". "
+}
+
+const emittedBySamsungKeyboard = (event) => {
+  return config.browser.samsungAndroid && event.inputType === "insertText" && !event.sourceCapabilities
+}
