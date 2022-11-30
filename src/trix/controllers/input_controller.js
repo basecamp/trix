@@ -1,6 +1,7 @@
 import BasicObject from "trix/core/basic_object"
 import MutationObserver from "trix/observers/mutation_observer"
 import FileVerificationOperation from "trix/operations/file_verification_operation"
+import FlakyAndroidKeyboardDetector from "../models/flaky_android_keyboard_detector"
 
 import { handleEvent, innerElementIsActive } from "trix/core/helpers"
 
@@ -13,6 +14,7 @@ export default class InputController extends BasicObject {
     this.element = element
     this.mutationObserver = new MutationObserver(this.element)
     this.mutationObserver.delegate = this
+    this.flakyKeyboardDetector = new FlakyAndroidKeyboardDetector(this.element)
     for (const eventName in this.constructor.events) {
       handleEvent(eventName, { onElement: this.element, withCallback: this.handlerFor(eventName) })
     }
@@ -55,6 +57,8 @@ export default class InputController extends BasicObject {
       if (!event.defaultPrevented) {
         this.handleInput(() => {
           if (!innerElementIsActive(this.element)) {
+            if (this.flakyKeyboardDetector.shouldIgnore(event)) return
+
             this.eventName = eventName
             this.constructor.events[eventName].call(this, event)
           }
