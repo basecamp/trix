@@ -27,7 +27,7 @@ export default class FlakyAndroidKeyboardDetector {
   // keydown event with for an "Unidentified" key, with the same text as the editor element, except for an
   // extra new line after the cursor.
   checkSamsungKeyboardBuggyModeStart() {
-    if (this.insertTextAfterUnidentifiedChar() && differsInOneSpace(this.element.innerText, this.event.data)) {
+    if (this.insertingLongTextAfterUnidentifiedChar() && differsInWhitespace(this.element.innerText, this.event.data)) {
       this.buggyMode = true
       this.event.preventDefault()
     }
@@ -40,12 +40,12 @@ export default class FlakyAndroidKeyboardDetector {
     }
   }
 
-  insertTextAfterUnidentifiedChar() {
-    return this.isBeforeInputInsertText() && this.previousEventWasUnidentifiedKeydown()
+  insertingLongTextAfterUnidentifiedChar() {
+    return this.isBeforeInputInsertText() && this.previousEventWasUnidentifiedKeydown() && this.event.data?.length > 100
   }
 
   isBeforeInputInsertText() {
-    return this.event.type === "beforeinput" && this.event.inputType === "insertText" && this.event.data
+    return this.event.type === "beforeinput" && this.event.inputType === "insertText"
   }
 
   previousEventWasUnidentifiedKeydown() {
@@ -53,5 +53,8 @@ export default class FlakyAndroidKeyboardDetector {
   }
 }
 
-const differsInOneSpace = (text1, text2) => Math.abs(text1.length - text2.length) === 1 && normalize(text1) === normalize(text2)
-const normalize = (text) => text.replace(/\s+/g, " ")
+const differsInWhitespace = (text1, text2) => {
+  return normalize(text1) === normalize(text2)
+}
+
+const normalize = (text) => text.replace(/\s+/g, " ").trim()
