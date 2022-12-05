@@ -3,33 +3,22 @@ name: CI
 on:
   push:
     branches:
-    - main
+      - main
   pull_request:
-    branches:
-    - main
 
 jobs:
   build:
     name: Browser tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2-beta
-      with:
-        node-version: 16
-    - uses: actions/cache@v2
-      with:
-        path: test/node_modules
-        key: ${{ runner.os }}-${{ hashFiles('test/yarn.lock') }}
-    - uses: saucelabs/sauce-connect-action@v2
-      with:
-        username: ${{ secrets.SAUCE_USERNAME }}
-        accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-        tunnelName: Basecamp-CI_tunnel_name
-        region: us-west
-
-    - run: yarn install
-    - run: bin/ci
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "yarn"
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+      - run: bin/ci
 
 env:
   SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
