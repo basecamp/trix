@@ -229,7 +229,7 @@ Content attachments are self-contained units of HTML that behave like files in t
 To insert HTML as an attachment, create a `Trix.Attachment` with a `content` attribute and call the `editor.insertAttachment` method. The HTML inside a content attachment is not subject to Trix’s document conversion rules and will be rendered as-is.
 
 ```js
-var attachment = new Trix.Attachment({ content: '<span class="mention">@trix</span>' })
+var attachment = new Trix.models.Attachment({ content: '<span class="mention">@trix</span>' })
 element.editor.insertAttachment(attachment)
 ```
 
