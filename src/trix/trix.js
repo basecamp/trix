@@ -23,6 +23,9 @@ const Trix = {
   filters
 }
 
+// Expose models under the Trix constant for compatibility with v1
+Object.assign(Trix, models)
+
 function start() {
   if (!customElements.get("trix-toolbar")) {
     customElements.define("trix-toolbar", elements.TrixToolbarElement)
