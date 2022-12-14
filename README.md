@@ -425,4 +425,4 @@ $ yarn test
 
 ---
 
-© 2022 Basecamp, LLC.
+© 2022 37signals, LLC.

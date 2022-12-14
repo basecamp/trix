@@ -8,7 +8,7 @@ import { terser } from "rollup-plugin-terser"
 import { version } from "./package.json"
 
 const year = new Date().getFullYear()
-const banner = `/*\nTrix ${version}\nCopyright © ${year} Basecamp, LLC\n */`
+const banner = `/*\nTrix ${version}\nCopyright © ${year} 37signals, LLC\n */`
 
 const plugins = [
   json(),
