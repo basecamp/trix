@@ -18,7 +18,7 @@
     "wysiwyg",
     "editor"
   ],
-  "author": "Basecamp, LLC",
+  "author": "37signals, LLC",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/basecamp/trix/issues"
