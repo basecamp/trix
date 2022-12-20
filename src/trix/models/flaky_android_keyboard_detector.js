@@ -1,4 +1,5 @@
 import * as config from "trix/config"
+import { NON_BREAKING_SPACE, OBJECT_REPLACEMENT_CHARACTER, ZERO_WIDTH_SPACE } from "trix/constants"
 
 // Each software keyboard on Android emmits its own set of events and some of them can be buggy.
 // This class detects when some buggy events are being emmitted and lets know the input controller
@@ -24,8 +25,8 @@ export default class FlakyAndroidKeyboardDetector {
 
   // The Samsung keyboard on Android can enter a buggy state in which it emmits a flurry of confused events that,
   // if processed, corrupts the editor. The buggy mode always starts with an insertText event, right after a
-  // keydown event with for an "Unidentified" key, with the same text as the editor element, except for an
-  // extra new line after the cursor.
+  // keydown event with for an "Unidentified" key, with the same text as the editor element, except for a few
+  // extra whitespace, or exotic utf8, characters.
   checkSamsungKeyboardBuggyModeStart() {
     if (this.insertingLongTextAfterUnidentifiedChar() && differsInWhitespace(this.element.innerText, this.event.data)) {
       this.buggyMode = true
@@ -41,7 +42,7 @@ export default class FlakyAndroidKeyboardDetector {
   }
 
   insertingLongTextAfterUnidentifiedChar() {
-    return this.isBeforeInputInsertText() && this.previousEventWasUnidentifiedKeydown() && this.event.data?.length > 100
+    return this.isBeforeInputInsertText() && this.previousEventWasUnidentifiedKeydown() && this.event.data?.length > 50
   }
 
   isBeforeInputInsertText() {
@@ -57,4 +58,5 @@ const differsInWhitespace = (text1, text2) => {
   return normalize(text1) === normalize(text2)
 }
 
-const normalize = (text) => text.replace(/\s+/g, " ").trim()
+const whiteSpaceNormalizerRegexp = new RegExp(`(${OBJECT_REPLACEMENT_CHARACTER}|${ZERO_WIDTH_SPACE}|${NON_BREAKING_SPACE}|\\s)+`, "g")
+const normalize = (text) => text.replace(whiteSpaceNormalizerRegexp, " ").trim()
