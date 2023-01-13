@@ -762,7 +762,7 @@ export default class Document extends TrixObject {
   }
 
   toConsole() {
-    return JSON.stringify(this.blockList.toArray()).map((block) => JSON.parse(block.text.toConsole()))
+    return JSON.stringify(this.blockList.toArray().map((block) => JSON.parse(block.text.toConsole())))
   }
 }
 
