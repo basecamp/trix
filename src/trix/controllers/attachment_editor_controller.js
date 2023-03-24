@@ -58,7 +58,7 @@ export default class AttachmentEditorController extends BasicObject {
   // Private
 
   savePendingCaption() {
-    if (this.pendingCaption) {
+    if (this.pendingCaption != null) {
       const caption = this.pendingCaption
       this.pendingCaption = null
       if (caption) {
