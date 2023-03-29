@@ -16,6 +16,21 @@ $quote-padding-start: 0.6em;
     line-height: 1.2;
   }
 
+  h2 {
+    font-size: 1.1em;
+    line-height: 1.1;
+  }
+
+  h3 {
+    font-size: 1.05em;
+    line-height: 1.05;
+  }
+
+  h4 {
+    font-size: 1.00em;
+    line-height: 1.00;
+  }
+
   blockquote {
     border: 0 solid #ccc;
     border-left-width: $quote-border-width;
