@@ -4,7 +4,7 @@ import { nodeIsAttachmentElement, removeNode, tagName, walkTree } from "trix/cor
 
 const DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height class".split(" ")
 const DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
-const DEFAULT_FORBIDDEN_ELEMENTS = "script iframe".split(" ")
+const DEFAULT_FORBIDDEN_ELEMENTS = "script iframe form".split(" ")
 
 export default class HTMLSanitizer extends BasicObject {
   static sanitize(html, options) {
