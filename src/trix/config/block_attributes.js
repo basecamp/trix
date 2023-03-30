@@ -9,6 +9,7 @@ const attributes = {
   },
   heading1: {
     tagName: "h1",
+    className: "centered",
     terminal: true,
     breakOnReturn: true,
     group: false,

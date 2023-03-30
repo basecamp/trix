@@ -42,10 +42,12 @@ export default class BlockView extends ObjectView {
   }
 
   createContainerElement(depth) {
-    let attributes, className
+    let attributes
     const attributeName = this.attributes[depth]
 
     const { tagName } = getBlockConfig(attributeName)
+    let { className } = getBlockConfig(attributeName)
+
     if (depth === 0 && this.block.isRTL()) {
       attributes = { dir: "rtl" }
     }
