@@ -37,7 +37,7 @@
     "eslint": "^7.32.0",
     "esm": "^3.2.25",
     "karma": "6.4.1",
-    "karma-chrome-launcher": "3.1.1",
+    "karma-chrome-launcher": "3.2.0",
     "karma-qunit": "^4.1.2",
     "karma-sauce-launcher": "^4.3.6",
     "node-sass": "^7.0.1",
