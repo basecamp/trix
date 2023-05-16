@@ -13,7 +13,7 @@ export const getDirection = (function() {
 
   const supportsDirName = (function() {
     try {
-      return new FormData(form).has(input.dirName)
+      return new FormData(form).has(textArea.dirName)
     } catch (error) {
       return false
     }
@@ -29,7 +29,7 @@ export const getDirection = (function() {
 
   if (supportsDirName) {
     return function(string) {
-      input.value = textArea.value = string
+      textArea.value = string
       return new FormData(form).get(textArea.dirName)
     }
   } else if (supportsDirSelector) {
