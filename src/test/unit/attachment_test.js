@@ -2,7 +2,7 @@ import { assert, test, testGroup } from "test/test_helper"
 import Attachment from "trix/models/attachment"
 
 testGroup("Attachment", () => {
-  const previewableTypes = "image image/gif image/png image/jpg".split(" ")
+  const previewableTypes = "image image/gif image/png image/jpg image/webp".split(" ")
   const nonPreviewableTypes = "image/tiff application/foo".split(" ")
 
   const createAttachment = (attributes) => new Attachment(attributes)
