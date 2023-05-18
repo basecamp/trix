@@ -4,7 +4,7 @@ import Hash from "trix/core/collections/hash"
 import ImagePreloadOperation from "trix/operations/image_preload_operation"
 
 export default class Attachment extends TrixObject {
-  static previewablePattern = /^image(\/(gif|png|jpe?g)|$)/
+  static previewablePattern = /^image(\/(gif|png|webp|jpe?g)|$)/
 
   static attachmentForFile(file) {
     const attributes = this.attributesForFile(file)

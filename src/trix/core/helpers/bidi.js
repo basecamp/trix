@@ -6,12 +6,14 @@ const RTL_PATTERN =
 
 export const getDirection = (function() {
   const input = makeElement("input", { dir: "auto", name: "x", dirName: "x.dir" })
+  const textArea = makeElement("textarea", { dir: "auto", name: "y", dirName: "y.dir" })
   const form = makeElement("form")
   form.appendChild(input)
+  form.appendChild(textArea)
 
   const supportsDirName = (function() {
     try {
-      return new FormData(form).has(input.dirName)
+      return new FormData(form).has(textArea.dirName)
     } catch (error) {
       return false
     }
@@ -27,8 +29,8 @@ export const getDirection = (function() {
 
   if (supportsDirName) {
     return function(string) {
-      input.value = string
-      return new FormData(form).get(input.dirName)
+      textArea.value = string
+      return new FormData(form).get(textArea.dirName)
     }
   } else if (supportsDirSelector) {
     return function(string) {

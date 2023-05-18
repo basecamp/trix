@@ -67,6 +67,7 @@ testGroup("Pasting", { template: "editor_empty" }, () => {
       "text/html": `\
         <img onload="window.unsanitized.push('img.onload');" src="${TEST_IMAGE_URL}">
         <img onerror="window.unsanitized.push('img.onerror');" src="data:image/gif;base64,TOTALLYBOGUS">
+        <form><math><mtext></form><form><mglyph><style></math><img src onerror="window.unsanitized.push('img.onerror');">
         <script>
           window.unsanitized.push('script tag');
         </script>`,
