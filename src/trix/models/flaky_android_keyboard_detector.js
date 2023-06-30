@@ -1,8 +1,8 @@
 import * as config from "trix/config"
 import { NON_BREAKING_SPACE, OBJECT_REPLACEMENT_CHARACTER, ZERO_WIDTH_SPACE } from "trix/constants"
 
-// Each software keyboard on Android emmits its own set of events and some of them can be buggy.
-// This class detects when some buggy events are being emmitted and lets know the input controller
+// Each software keyboard on Android emits its own set of events and some of them can be buggy.
+// This class detects when some buggy events are being emitted and lets know the input controller
 // that they should be ignored.
 export default class FlakyAndroidKeyboardDetector {
   constructor(element) {
@@ -23,7 +23,7 @@ export default class FlakyAndroidKeyboardDetector {
 
   // private
 
-  // The Samsung keyboard on Android can enter a buggy state in which it emmits a flurry of confused events that,
+  // The Samsung keyboard on Android can enter a buggy state in which it emits a flurry of confused events that,
   // if processed, corrupts the editor. The buggy mode always starts with an insertText event, right after a
   // keydown event with for an "Unidentified" key, with the same text as the editor element, except for a few
   // extra whitespace, or exotic utf8, characters.
