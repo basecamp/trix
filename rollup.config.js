@@ -34,7 +34,9 @@ const defaultConfig = {
 
 const terserConfig = terser({
   mangle: true,
-  compress: true,
+  compress: {
+    reduce_vars: false // eslint-disable-line
+  },
   format: {
     comments: function (node, comment) {
       const text = comment.value
