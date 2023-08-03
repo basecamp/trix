@@ -70,14 +70,14 @@ if (process.env.CI) {
       browserName: "safari",
       platform: "ios",
       device: "iPhone X Simulator",
-      version: "13.0"
+      version: "16.0"
     },
-    sl_android_9: {
+    sl_android_11: {
       base: "SauceLabs",
       browserName: "chrome",
       platform: "android",
       device: "Android GoogleAPI Emulator",
-      version: "9.0"
+      version: "11.0"
     },
     sl_android_latest: {
       base: "SauceLabs",
