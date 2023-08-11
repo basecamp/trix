@@ -219,6 +219,21 @@ testGroup("Level 2 Input", testOptions, () => {
     expectDocument(`${url}\n`)
   })
 
+  // Pastes from Google Chrome include text/html + a file, we want the file!
+  // https://input-inspector.javan.us/profiles/r1s8c7DqbOQXXjz76mj0
+  test("pasting image copied from Google Chrome", async () => {
+    const file = await createFile()
+    const clipboardData = createDataTransfer({
+      "text/html": "<meta charset=\"utf-8\"><img src=\"https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_272x92dp.png\" alt=\"Google\"/>",
+      Files: [ file ],
+    })
+
+    await paste({ clipboardData })
+    const attachments = getDocument().getAttachments()
+    assert.equal(attachments.length, 1)
+    expectDocument(`${OBJECT_REPLACEMENT_CHARACTER}\n`)
+  })
+
   // Pastes from MS Word include an image of the copied text 🙃
   // https://input-inspector.now.sh/profiles/QWDITsV60dpEVl1SOZg8
   test("pasting text from MS Word", async () => {
