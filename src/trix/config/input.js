@@ -3,6 +3,7 @@ import { makeElement, removeNode } from "trix/core/helpers/dom"
 
 const input = {
   level2Enabled: true,
+  fileInputId: `trix-file-input-${Date.now().toString(16)}`,
 
   getLevel() {
     if (this.level2Enabled && browser.supportsInputEvents) {
