@@ -49,7 +49,9 @@ export default class SelectionChangeObserver extends BasicObject {
 
   update() {
     const domRange = getDOMRange()
-    if (!domRangesAreEqual(domRange, this.domRange)) {
+    const caretMove = window.getSelection().type === "Caret"
+
+    if (!domRangesAreEqual(domRange, this.domRange) || caretMove) {
       this.domRange = domRange
       return this.notifySelectionManagersOfSelectionChange()
     }
