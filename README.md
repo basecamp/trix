@@ -7,11 +7,13 @@ Trix is an open-source project from [Basecamp](https://basecamp.com/), the creat
 
 ### Different By Design
 
-Most WYSIWYG editors are wrappers around HTML’s `contenteditable` and `execCommand` APIs, designed by Microsoft to support live editing of web pages in Internet Explorer 5.5, and [eventually reverse-engineered](https://blog.whatwg.org/the-road-to-html-5-contenteditable#history) and copied by other browsers.
+When Trix was designed in 2014, most WYSIWYG editors were wrappers around HTML’s `contenteditable` and `execCommand` APIs, designed by Microsoft to support live editing of web pages in Internet Explorer 5.5, and [eventually reverse-engineered](https://blog.whatwg.org/the-road-to-html-5-contenteditable#history) and copied by other browsers.
 
-Because these APIs were never fully specified or documented, and because WYSIWYG HTML editors are enormous in scope, each browser’s implementation has its own set of bugs and quirks, and JavaScript developers are left to resolve the inconsistencies.
+Because these APIs were not fully specified or documented, and because WYSIWYG HTML editors are enormous in scope, each browser’s implementation has its own set of bugs and quirks, and JavaScript developers are left to resolve the inconsistencies.
 
-Trix sidesteps these inconsistencies by treating `contenteditable` as an I/O device: when input makes its way to the editor, Trix converts that input into an editing operation on its internal document model, then re-renders that document back into the editor. This gives Trix complete control over what happens after every keystroke, and avoids the need to use `execCommand` at all.
+Trix sidestepped these inconsistencies by treating `contenteditable` as an I/O device: when input makes its way to the editor, Trix converts that input into an editing operation on its internal document model, then re-renders that document back into the editor. This gives Trix complete control over what happens after every keystroke, and avoids the need to use `execCommand` at all.
+
+This is the approach that all modern, production ready, WYSIWYG editors now take.
 
 ### Built on Web standards
 
