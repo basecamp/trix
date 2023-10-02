@@ -43,26 +43,13 @@ export default class SelectionChangeObserver extends BasicObject {
   }
 
   update() {
-    const domRange = getDOMRange()
-    const caretMove = window.getSelection().type === "Caret"
-
-    if (!domRangesAreEqual(domRange, this.domRange) || caretMove) {
-      this.domRange = domRange
-      return this.notifySelectionManagersOfSelectionChange()
-    }
+    this.notifySelectionManagersOfSelectionChange()
   }
 
   reset() {
-    this.domRange = null
-    return this.update()
+    this.update()
   }
 }
-
-const domRangesAreEqual = (left, right) =>
-  left?.startContainer === right?.startContainer &&
-  left?.startOffset === right?.startOffset &&
-  left?.endContainer === right?.endContainer &&
-  left?.endOffset === right?.endOffset
 
 export const selectionChangeObserver = new SelectionChangeObserver()
 
