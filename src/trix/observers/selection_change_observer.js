@@ -7,18 +7,13 @@ export default class SelectionChangeObserver extends BasicObject {
   constructor() {
     super(...arguments)
     this.update = this.update.bind(this)
-    this.run = this.run.bind(this)
     this.selectionManagers = []
   }
 
   start() {
     if (!this.started) {
       this.started = true
-      if ("onselectionchange" in document) {
-        return document.addEventListener("selectionchange", this.update, true)
-      } else {
-        return this.run()
-      }
+      document.addEventListener("selectionchange", this.update, true)
     }
   }
 
@@ -60,15 +55,6 @@ export default class SelectionChangeObserver extends BasicObject {
   reset() {
     this.domRange = null
     return this.update()
-  }
-
-  // Private
-
-  run() {
-    if (this.started) {
-      this.update()
-      return requestAnimationFrame(this.run)
-    }
   }
 }
 
