@@ -1,6 +1,3 @@
-/* eslint-disable
-    id-length,
-*/
 import BasicObject from "trix/core/basic_object"
 
 export default class SelectionChangeObserver extends BasicObject {
@@ -32,7 +29,7 @@ export default class SelectionChangeObserver extends BasicObject {
   }
 
   unregisterSelectionManager(selectionManager) {
-    this.selectionManagers = this.selectionManagers.filter((s) => s !== selectionManager)
+    this.selectionManagers = this.selectionManagers.filter((sm) => sm !== selectionManager)
     if (this.selectionManagers.length === 0) {
       return this.stop()
     }
