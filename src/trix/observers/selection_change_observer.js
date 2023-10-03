@@ -1,24 +1,16 @@
-/* eslint-disable
-    id-length,
-*/
 import BasicObject from "trix/core/basic_object"
 
 export default class SelectionChangeObserver extends BasicObject {
   constructor() {
     super(...arguments)
     this.update = this.update.bind(this)
-    this.run = this.run.bind(this)
     this.selectionManagers = []
   }
 
   start() {
     if (!this.started) {
       this.started = true
-      if ("onselectionchange" in document) {
-        return document.addEventListener("selectionchange", this.update, true)
-      } else {
-        return this.run()
-      }
+      document.addEventListener("selectionchange", this.update, true)
     }
   }
 
@@ -37,7 +29,7 @@ export default class SelectionChangeObserver extends BasicObject {
   }
 
   unregisterSelectionManager(selectionManager) {
-    this.selectionManagers = this.selectionManagers.filter((s) => s !== selectionManager)
+    this.selectionManagers = this.selectionManagers.filter((sm) => sm !== selectionManager)
     if (this.selectionManagers.length === 0) {
       return this.stop()
     }
@@ -48,35 +40,13 @@ export default class SelectionChangeObserver extends BasicObject {
   }
 
   update() {
-    const domRange = getDOMRange()
-    const caretMove = window.getSelection().type === "Caret"
-
-    if (!domRangesAreEqual(domRange, this.domRange) || caretMove) {
-      this.domRange = domRange
-      return this.notifySelectionManagersOfSelectionChange()
-    }
+    this.notifySelectionManagersOfSelectionChange()
   }
 
   reset() {
-    this.domRange = null
-    return this.update()
-  }
-
-  // Private
-
-  run() {
-    if (this.started) {
-      this.update()
-      return requestAnimationFrame(this.run)
-    }
+    this.update()
   }
 }
-
-const domRangesAreEqual = (left, right) =>
-  left?.startContainer === right?.startContainer &&
-  left?.startOffset === right?.startOffset &&
-  left?.endContainer === right?.endContainer &&
-  left?.endOffset === right?.endOffset
 
 export const selectionChangeObserver = new SelectionChangeObserver()
 
