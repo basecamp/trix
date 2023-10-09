@@ -60,6 +60,16 @@ testGroup("Pasting", { template: "editor_empty" }, () => {
     expectDocument("a\nb\nc\n")
   })
 
+  test("paste plain text with CR", async () => {
+    await pasteContent("text/plain", "a\rb\rc")
+    expectDocument("a\nb\nc\n")
+  })
+
+  test("paste html with CR", async () => {
+    await pasteContent("text/html", "<div>a<br></div>\r<div>b<br></div>\r<div>c<br></div>")
+    expectDocument("a\nb\nc\n")
+  })
+
   test("paste unsafe html", async () => {
     window.unsanitized = []
     const pasteData = {
