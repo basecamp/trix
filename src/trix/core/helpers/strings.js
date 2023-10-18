@@ -8,7 +8,7 @@ import UTF16String from "trix/core/utilities/utf16_string"
 export const normalizeSpaces = (string) =>
   string.replace(new RegExp(`${ZERO_WIDTH_SPACE}`, "g"), "").replace(new RegExp(`${NON_BREAKING_SPACE}`, "g"), " ")
 
-export const normalizeNewlines = (string) => string.replace(/\r\n/g, "\n")
+export const normalizeNewlines = (string) => string.replace(/\r\n?/g, "\n")
 
 export const breakableWhitespacePattern = new RegExp(`[^\\S${NON_BREAKING_SPACE}]`)
 
