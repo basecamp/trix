@@ -1,10 +1,13 @@
 import BasicObject from "trix/core/basic_object"
 
 import { nodeIsAttachmentElement, removeNode, tagName, walkTree } from "trix/core/helpers"
-
-const DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height class".split(" ")
-const DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
-const DEFAULT_FORBIDDEN_ELEMENTS = "script iframe form".split(" ")
+import {
+  htmlSanitizerAllowedAttributes,
+  htmlSanitizerAllowedElements,
+  htmlSanitizerAllowedProtocols,
+  htmlSanitizerForbiddenElements,
+  htmlSanitizerForbiddenProtocols
+} from "../config"
 
 export default class HTMLSanitizer extends BasicObject {
   static sanitize(html, options) {
@@ -13,11 +16,13 @@ export default class HTMLSanitizer extends BasicObject {
     return sanitizer
   }
 
-  constructor(html, { allowedAttributes, forbiddenProtocols, forbiddenElements } = {}) {
+  constructor(html, { allowedAttributes, allowedElements, allowedProtocols, forbiddenProtocols, forbiddenElements } = {}) {
     super(...arguments)
-    this.allowedAttributes = allowedAttributes || DEFAULT_ALLOWED_ATTRIBUTES
-    this.forbiddenProtocols = forbiddenProtocols || DEFAULT_FORBIDDEN_PROTOCOLS
-    this.forbiddenElements = forbiddenElements || DEFAULT_FORBIDDEN_ELEMENTS
+    this.allowedAttributes = allowedAttributes || htmlSanitizerAllowedAttributes
+    this.allowedElements = allowedElements || htmlSanitizerAllowedElements
+    this.allowedProtocols = allowedProtocols || htmlSanitizerAllowedProtocols
+    this.forbiddenElements = forbiddenElements || htmlSanitizerForbiddenElements
+    this.forbiddenProtocols = forbiddenProtocols || htmlSanitizerForbiddenProtocols
     this.body = createBodyElementForHTML(html)
   }
 
@@ -63,7 +68,7 @@ export default class HTMLSanitizer extends BasicObject {
 
   sanitizeElement(element) {
     if (element.hasAttribute("href")) {
-      if (this.forbiddenProtocols.includes(element.protocol)) {
+      if (this.forbiddenProtocols.includes(element.protocol) || this.allowedProtocols.length > 0 && !this.allowedProtocols.includes(element.protocol)) {
         element.removeAttribute("href")
       }
     }
@@ -96,7 +101,7 @@ export default class HTMLSanitizer extends BasicObject {
   }
 
   elementIsForbidden(element) {
-    return this.forbiddenElements.includes(tagName(element))
+    return this.forbiddenElements.includes(tagName(element)) || this.allowedElements.length > 0 && !this.allowedElements.includes(tagName(element))
   }
 
   elementIsntSerializable(element) {
