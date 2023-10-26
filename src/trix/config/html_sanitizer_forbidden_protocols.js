@@ -1,5 +1,5 @@
 const forbiddenProtocols = [
-  "javascript:"
+  "javascript:",
 ]
 
 export default forbiddenProtocols

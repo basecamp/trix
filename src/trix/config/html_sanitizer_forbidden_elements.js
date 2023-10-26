@@ -1,7 +1,7 @@
 const forbiddenElements = [
   "script",
   "iframe",
-  "form"
+  "form",
 ]
 
 export default forbiddenElements

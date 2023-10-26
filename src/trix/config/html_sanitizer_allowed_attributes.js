@@ -4,7 +4,7 @@ const attributes = [
   "src",
   "width",
   "height",
-  "class"
+  "class",
 ]
 
 export default attributes
