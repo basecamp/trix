@@ -64,7 +64,7 @@ export default class ToolbarController extends BasicObject {
     if (this.getDialog(actionName)) {
       return this.toggleDialog(actionName)
     } else {
-      return this.delegate?.toolbarDidInvokeAction(actionName)
+      return this.delegate?.toolbarDidInvokeAction(actionName, element)
     }
   }
 

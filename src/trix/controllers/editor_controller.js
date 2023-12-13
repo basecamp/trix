@@ -374,8 +374,8 @@ export default class EditorController extends Controller {
     }
   }
 
-  toolbarDidInvokeAction(actionName) {
-    return this.invokeAction(actionName)
+  toolbarDidInvokeAction(actionName, invokingElement) {
+    return this.invokeAction(actionName, invokingElement)
   }
 
   toolbarDidToggleAttribute(attributeName) {
@@ -448,9 +448,9 @@ export default class EditorController extends Controller {
     }
   }
 
-  invokeAction(actionName) {
+  invokeAction(actionName, invokingElement) {
     if (this.actionIsExternal(actionName)) {
-      return this.notifyEditorElement("action-invoke", { actionName })
+      return this.notifyEditorElement("action-invoke", { actionName, invokingElement })
     } else {
       return this.actions[actionName]?.perform?.call(this)
     }
