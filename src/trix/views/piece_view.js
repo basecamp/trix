@@ -110,7 +110,7 @@ export default class PieceView extends ObjectView {
 
     if (this.attributes.classList) {
       if (!element) { element = makeElement("span") }
-      element.classList.add(...this.attributes.classList)
+      element.classList.add(...this.attributes.classList.split(" "))
     }
 
     return element
