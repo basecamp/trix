@@ -442,7 +442,7 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
 
   test("editor resets to its original value on form reset", async () => {
     const element = getEditorElement()
-    const { form } = element.inputElement
+    const { form } = element
 
     await typeCharacters("hello")
     form.reset()
@@ -451,7 +451,7 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
 
   test("editor resets to last-set value on form reset", async () => {
     const element = getEditorElement()
-    const { form } = element.inputElement
+    const { form } = element
 
     element.value = "hi"
     await typeCharacters("hello")
@@ -461,7 +461,7 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
 
   test("editor respects preventDefault on form reset", async () => {
     const element = getEditorElement()
-    const { form } = element.inputElement
+    const { form } = element
     const preventDefault = (event) => event.preventDefault()
 
     await typeCharacters("hello")
@@ -473,27 +473,24 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
   })
 })
 
+testGroup("HTML sanitization", { template: "editor_unsafe_html" }, () => {
+  test("editor sanitizes initial value", async () => {
+    const element = getEditorElement()
+
+    expectDocument("safe\n")
+
+    assert.equal(element.innerHTML, "<div><!--block-->safe</div>")
+  })
+})
+
 testGroup("<label> support", { template: "editor_with_labels" }, () => {
   test("associates all label elements", () => {
-    const labels = [ document.getElementById("label-1"), document.getElementById("label-3") ]
-    assert.deepEqual(getEditorElement().labels, labels)
-  })
+    const element = getEditorElement()
+    const labels = Array.from(element.labels)
+    const controls = labels.map((label) => label.control)
 
-  test("focuses when <label> clicked", () => {
-    document.getElementById("label-1").click()
-    assert.equal(getEditorElement(), document.activeElement)
-  })
-
-  test("focuses when <label> descendant clicked", () => {
-    document.getElementById("label-1").querySelector("span").click()
-    assert.equal(getEditorElement(), document.activeElement)
-  })
-
-  test("does not focus when <label> controls another element", () => {
-    const label = document.getElementById("label-2")
-    assert.notEqual(getEditorElement(), label.control)
-    label.click()
-    assert.notEqual(getEditorElement(), document.activeElement)
+    assert.deepEqual(labels, [ document.getElementById("label-1"), document.getElementById("label-3") ])
+    assert.deepEqual(controls, [ element, element ])
   })
 })
 
@@ -505,8 +502,8 @@ testGroup("form property references its <form>", { template: "editors_with_forms
   })
 
   test("transitively accesses its related <input> element's <form>", () => {
-    const form = document.getElementById("input-form")
-    const editor = document.getElementById("editor-with-input-form")
+    const form = document.getElementById("attribute-form")
+    const editor = document.getElementById("editor-with-attribute-form")
     assert.equal(editor.form, form)
   })
 

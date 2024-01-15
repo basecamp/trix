@@ -55,29 +55,37 @@ Like an HTML `<textarea>`, `<trix-editor>` accepts `autofocus` and `placeholder`
 
 ## Integrating With Forms
 
-To submit the contents of a `<trix-editor>` with a form, first define a hidden input field in the form and assign it an `id`. Then reference that `id` in the editor’s `input` attribute.
+To label a `<trix-editor>` element, render the element with an `[id]` attribute, then render a `<label>` element with a `[for]` attribute that corresponds to the `[id]`:
+
+```html
+<label for="editor">Editor</label>
+<trix-editor id="editor"></trix-editor>
+```
+
+To submit the contents of a `<trix-editor>` with a `<form>`, render the element with a `[name]` attribute and its initial value as its inner HTML.
 
 ```html
 <form …>
-  <input id="x" type="hidden" name="content">
-  <trix-editor input="x"></trix-editor>
+  <trix-editor name="content"></trix-editor>
 </form>
 ```
 
-Trix will automatically update the value of the hidden input field with each change to the editor.
+To associate the element with a `<form>` that isn't an ancestor, render the element with a `[form]` attribute that references the `<form>` element by its `[id]`:
+
+```html
+<form id="a-form-element" …></form>
+<trix-editor name="content" form="a-form-element"></trix-editor>
+```
 
 ## Populating With Stored Content
 
-To populate a `<trix-editor>` with stored content, include that content in the associated input element’s `value` attribute.
+To populate a `<trix-editor>` with stored content, include that content as HTML inside the element’s inner HTML.
 
 ```html
 <form …>
-  <input id="x" value="Editor content goes here" type="hidden" name="content">
-  <trix-editor input="x"></trix-editor>
+  <trix-editor input="x">Editor content goes here</trix-editor>
 </form>
 ```
-
-Always use an associated input element to safely populate an editor. Trix won’t load any HTML content inside a `<trix-editor>…</trix-editor>` tag.
 
 ## Styling Formatted Content
 

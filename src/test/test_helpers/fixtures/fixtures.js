@@ -11,6 +11,7 @@ import StringPiece from "trix/models/string_piece"
 import editorDefaultAriaLabel from "./editor_default_aria_label"
 import editorEmpty from "./editor_empty"
 import editorHtml from "./editor_html"
+import editorUnsafeHtml from "./editor_unsafe_html"
 import editorInTable from "./editor_in_table"
 import editorWithBlockStyles from "./editor_with_block_styles"
 import editorWithBoldStyles from "./editor_with_bold_styles"
@@ -25,6 +26,7 @@ export const fixtureTemplates = {
   "editor_default_aria_label": editorDefaultAriaLabel,
   "editor_empty": editorEmpty,
   "editor_html": editorHtml,
+  "editor_unsafe_html": editorUnsafeHtml,
   "editor_in_table": editorInTable,
   "editor_with_block_styles": editorWithBlockStyles,
   "editor_with_bold_styles": editorWithBoldStyles,

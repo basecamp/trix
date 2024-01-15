@@ -1,7 +1,6 @@
 import * as config from "trix/config"
 
 import {
-  findClosestElementFromNode,
   handleEvent,
   handleEventOnce,
   installDefaultCSSForTagName,
@@ -161,6 +160,15 @@ installDefaultCSSForTagName("trix-editor", `\
 }`)
 
 export default class TrixEditorElement extends HTMLElement {
+  static formAssociated = true
+
+  #internals
+  #value
+
+  constructor() {
+    super()
+    this.#internals = this.attachInternals()
+  }
 
   // Properties
 
@@ -174,19 +182,7 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   get labels() {
-    const labels = []
-    if (this.id && this.ownerDocument) {
-      labels.push(...Array.from(this.ownerDocument.querySelectorAll(`label[for='${this.id}']`) || []))
-    }
-
-    const label = findClosestElementFromNode(this, { matchingSelector: "label" })
-    if (label) {
-      if ([ this, null ].includes(label.control)) {
-        labels.push(label)
-      }
-    }
-
-    return labels
+    return this.#internals.labels
   }
 
   get toolbarElement() {
@@ -204,33 +200,23 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   get form() {
-    return this.inputElement?.form
-  }
-
-  get inputElement() {
-    if (this.hasAttribute("input")) {
-      return this.ownerDocument?.getElementById(this.getAttribute("input"))
-    } else if (this.parentNode) {
-      const inputId = `trix-input-${this.trixId}`
-      this.setAttribute("input", inputId)
-      const element = makeElement("input", { type: "hidden", id: inputId })
-      this.parentNode.insertBefore(element, this.nextElementSibling)
-      return element
-    } else {
-      return undefined
-    }
+    return this.#internals.form
   }
 
   get editor() {
     return this.editorController?.editor
   }
 
+  get type() {
+    return this.localName
+  }
+
   get name() {
-    return this.inputElement?.name
+    return this.getAttribute("name")
   }
 
   get value() {
-    return this.inputElement?.value
+    return this.#value
   }
 
   set value(defaultValue) {
@@ -246,10 +232,9 @@ export default class TrixEditorElement extends HTMLElement {
     }
   }
 
-  setInputElementValue(value) {
-    if (this.inputElement) {
-      this.inputElement.value = value
-    }
+  setFormValue(value) {
+    this.#value = value
+    this.#internals.setFormValue(value)
   }
 
   // Element lifecycle
@@ -264,62 +249,34 @@ export default class TrixEditorElement extends HTMLElement {
         triggerEvent("trix-before-initialize", { onElement: this })
         this.editorController = new EditorController({
           editorElement: this,
-          html: this.defaultValue = this.value,
+          html: this.defaultValue = this.innerHTML,
         })
         requestAnimationFrame(() => triggerEvent("trix-initialize", { onElement: this }))
       }
       this.editorController.registerSelectionManager()
-      this.registerResetListener()
-      this.registerClickListener()
       autofocus(this)
     }
   }
 
   disconnectedCallback() {
     this.editorController?.unregisterSelectionManager()
-    this.unregisterResetListener()
-    return this.unregisterClickListener()
   }
 
-  // Form support
+  // ElementInternals lifecycle
 
-  registerResetListener() {
-    this.resetListener = this.resetBubbled.bind(this)
-    return window.addEventListener("reset", this.resetListener, false)
+  formAssociatedCallback(form) {
+
   }
 
-  unregisterResetListener() {
-    return window.removeEventListener("reset", this.resetListener, false)
+  formDisabledCallback(disabled) {
+
   }
 
-  registerClickListener() {
-    this.clickListener = this.clickBubbled.bind(this)
-    return window.addEventListener("click", this.clickListener, false)
-  }
-
-  unregisterClickListener() {
-    return window.removeEventListener("click", this.clickListener, false)
-  }
-
-  resetBubbled(event) {
-    if (event.defaultPrevented) return
-    if (event.target !== this.form) return
-    return this.reset()
-  }
-
-  clickBubbled(event) {
-    if (event.defaultPrevented) return
-    if (this.contains(event.target)) return
-
-    const label = findClosestElementFromNode(event.target, { matchingSelector: "label" })
-    if (!label) return
-
-    if (!Array.from(this.labels).includes(label)) return
-
-    return this.focus()
-  }
-
-  reset() {
+  formResetCallback() {
     this.value = this.defaultValue
+  }
+
+  formStateRestoreCallback(state, mode) {
+
   }
 }
