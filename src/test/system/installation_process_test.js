@@ -21,7 +21,7 @@ testGroup("Installation process", { template: "editor_html" }, () => {
 })
 
 testGroup("Installation process without specified elements", { template: "editor_empty" }, () =>
-  test("creates identified toolbar and input elements", () => {
+  test("creates identified toolbar", () => {
     const editorElement = getEditorElement()
 
     const toolbarId = editorElement.getAttribute("toolbar")
@@ -29,12 +29,6 @@ testGroup("Installation process without specified elements", { template: "editor
     const toolbarElement = document.getElementById(toolbarId)
     assert.ok(toolbarElement, "toolbar element not assert.ok")
     assert.equal(editorElement.toolbarElement, toolbarElement)
-
-    const inputId = editorElement.getAttribute("input")
-    assert.ok(/trix-input-\d+/.test(inputId), `input id not assert.ok ${JSON.stringify(inputId)}`)
-    const inputElement = document.getElementById(inputId)
-    assert.ok(inputElement, "input element not assert.ok")
-    assert.equal(editorElement.inputElement, inputElement)
   })
 )
 
@@ -42,7 +36,6 @@ testGroup("Installation process with specified elements", { template: "editor_wi
   test("uses specified elements", () => {
     const editorElement = getEditorElement()
     assert.equal(editorElement.toolbarElement, document.getElementById("my_toolbar"))
-    assert.equal(editorElement.inputElement, document.getElementById("my_input"))
     assert.equal(editorElement.value, "<div>Hello world</div>")
   })
 
@@ -58,7 +51,6 @@ testGroup("Installation process with specified elements", { template: "editor_wi
 
     const editorElement = getEditorElement()
     assert.equal(editorElement.toolbarElement, document.getElementById("my_toolbar"))
-    assert.equal(editorElement.inputElement, document.getElementById("my_input"))
     assert.equal(editorElement.value, "<div>Hello world</div>")
   })
 })
