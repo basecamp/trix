@@ -3,7 +3,7 @@
 
 **Compose beautifully formatted text in your web application.** Trix is a WYSIWYG editor for writing messages, comments, articles, and lists—the simple documents most web apps are made of. It features a sophisticated document model, support for embedded attachments, and outputs terse and consistent HTML.
 
-Trix is an open-source project from [Basecamp](https://basecamp.com/), the creators of [Ruby on Rails](http://rubyonrails.org/). Millions of people trust their text to Basecamp, and we built Trix to give them the best possible editing experience. See Trix in action in the [all-new Basecamp 3](https://basecamp.com/3-is-coming).
+Trix is an open-source project from [37signals](https://37signals.com), the creators of [Ruby on Rails](http://rubyonrails.org/). Millions of people trust their text to us, and we built Trix to give them the best possible editing experience. See Trix in action in [Basecamp 3](https://basecamp.com).
 
 ### Different By Design
 
@@ -377,7 +377,7 @@ Trix is open-source software, freely distributable under the terms of an [MIT-st
 
 We welcome contributions in the form of bug reports, pull requests, or thoughtful discussions in the [GitHub issue tracker](https://github.com/basecamp/trix/issues). Please see the [Code of Conduct](CODE_OF_CONDUCT.md) for our pledge to contributors.
 
-Trix was created by [Javan Makhmali](https://twitter.com/javan) and [Sam Stephenson](https://twitter.com/sstephenson), with development sponsored by [Basecamp](https://basecamp.com/).
+Trix was created by [Javan Makhmali](https://twitter.com/javan) and [Sam Stephenson](https://twitter.com/sstephenson), with development sponsored by [37signals](https://37signals.com).
 
 ### Building From Source
 
@@ -427,4 +427,4 @@ $ yarn test
 
 ---
 
-© 2022 37signals, LLC.
+© 37signals, LLC.
