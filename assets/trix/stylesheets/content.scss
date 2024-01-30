@@ -4,6 +4,8 @@ $quote-padding-start: 0.6em;
 
 .trix-content {
   line-height: 1.5;
+  overflow-wrap: break-word;
+  word-break: break-word;
 
   * {
     box-sizing: border-box;
