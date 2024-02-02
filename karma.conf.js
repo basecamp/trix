@@ -29,7 +29,7 @@ const config = {
 
 /* eslint camelcase: "off",  */
 
-if (process.env.CI) {
+if (process.env.SAUCE_ACCESS_KEY) {
   config.customLaunchers = {
     sl_chrome_latest: {
       base: "SauceLabs",
