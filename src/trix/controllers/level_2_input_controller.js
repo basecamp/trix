@@ -443,7 +443,8 @@ export default class Level2InputController extends InputController {
     },
 
     insertReplacementText() {
-      return this.insertString(this.event.dataTransfer.getData("text/plain"), { updatePosition: false })
+      this.insertString(this.event.dataTransfer.getData("text/plain"), { updatePosition: false })
+      this.requestRender()
     },
 
     insertText() {
