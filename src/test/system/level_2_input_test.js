@@ -139,15 +139,22 @@ testGroup("Level 2 Input", testOptions, () => {
   })
 
   // https://input-inspector.now.sh/profiles/hVXS1cHYFvc2EfdRyTWQ
-  test("correcting a misspelled word in Chrome", async () => {
+  test("correcting a misspelled word", async () => {
     insertString("onr")
     getComposition().setSelectedRange([ 0, 3 ])
     await nextFrame()
 
     const inputType = "insertReplacementText"
     const dataTransfer = createDataTransfer({ "text/plain": "one" })
-    const event = createEvent("beforeinput", { inputType, dataTransfer })
+
+    const targetRange = document.createRange()
+    const textNode = getEditorElement().firstElementChild.lastChild
+    targetRange.setStart(textNode, 0)
+    targetRange.setEnd(textNode, 3)
+
+    const event = createEvent("beforeinput", { inputType, dataTransfer, getTargetRanges: () => [ targetRange ] })
     document.activeElement.dispatchEvent(event)
+
     await nextFrame()
     expectDocument("one\n")
   })

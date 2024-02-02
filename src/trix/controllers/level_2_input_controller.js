@@ -443,8 +443,12 @@ export default class Level2InputController extends InputController {
     },
 
     insertReplacementText() {
-      this.insertString(this.event.dataTransfer.getData("text/plain"), { updatePosition: false })
-      this.requestRender()
+      const replacement = this.event.dataTransfer.getData("text/plain")
+      const domRange = this.event.getTargetRanges()[0]
+
+      this.withTargetDOMRange(domRange, () => {
+        this.insertString(replacement, { updatePosition: false })
+      })
     },
 
     insertText() {

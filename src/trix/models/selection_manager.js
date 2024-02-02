@@ -29,6 +29,7 @@ export default class SelectionManager extends BasicObject {
     this.lockCount = 0
     handleEvent("mousedown", { onElement: this.element, withCallback: this.didMouseDown })
   }
+
   getLocationRange(options = {}) {
     if (options.strict === false) {
       return this.createLocationRangeFromDOMRange(getDOMRange())
