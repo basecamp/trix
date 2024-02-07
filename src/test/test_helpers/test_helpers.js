@@ -13,11 +13,15 @@ const setFixtureHTML = function (html, container = "form") {
 }
 
 export const testGroup = function (name, options, callback) {
-  let container, setup, teardown, template
+  let container, beforeSetup, setup, teardown, afterTeardown, template
   if (callback != null) {
-    ({ container, template, setup, teardown } = options)
+    ({ container, template, beforeSetup, setup, teardown, afterTeardown } = options)
   } else {
     callback = options
+  }
+
+  const before = () => {
+    if (beforeSetup) beforeSetup()
   }
 
   const beforeEach = async () => {
@@ -37,14 +41,20 @@ export const testGroup = function (name, options, callback) {
     return teardown?.()
   }
 
+  const after = () => {
+    if (afterTeardown) afterTeardown()
+  }
+
   if (callback != null) {
     return QUnit.module(name, function (hooks) {
+      hooks.before(before)
       hooks.beforeEach(beforeEach)
       hooks.afterEach(afterEach)
+      hooks.after(after)
       callback()
     })
   } else {
-    return QUnit.module(name, { beforeEach, afterEach })
+    return QUnit.module(name, { before, beforeEach, afterEach, after })
   }
 }
 

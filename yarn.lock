@@ -3645,6 +3645,11 @@ iconv-lite@0.4.24:
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
+idiomorph@^0.7.3:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/idiomorph/-/idiomorph-0.7.3.tgz#50f9a30ce5bdb4a2937153b3cbca24b8a0361b95"
+  integrity sha512-YI/L1QQkBRDtiaGZN+/KolIkNoZuIsCgus1ciueosiqdyWz/weeP+ghFgDQpk2vzA3BkX6/M/kY5SCM03LBDkA==
+
 ieee754@^1.1.13:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.2.1.tgz#8eb7a10a63fff25d15a57b001586d177d1b0d352"

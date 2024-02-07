@@ -48,6 +48,7 @@ Copyright © 2025 37signals, LLC
   	concurrently: "^7.4.0",
   	eslint: "^7.32.0",
   	esm: "^3.2.25",
+  	idiomorph: "^0.7.3",
   	karma: "6.4.1",
   	"karma-chrome-launcher": "3.2.0",
   	"karma-qunit": "^4.1.2",
@@ -326,6 +327,21 @@ Copyright © 2025 37signals, LLC
     options.times = 1;
     return handleEvent(eventName, options);
   };
+  const createEvent = function (eventName) {
+    let {
+      bubbles,
+      cancelable,
+      attributes
+    } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    bubbles = bubbles !== false;
+    cancelable = cancelable !== false;
+    const event = document.createEvent("Events");
+    event.initEvent(eventName, bubbles, cancelable);
+    if (attributes != null) {
+      extend.call(event, attributes);
+    }
+    return event;
+  };
   const triggerEvent = function (eventName) {
     let {
       onElement,
@@ -334,13 +350,11 @@ Copyright © 2025 37signals, LLC
       attributes
     } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     const element = onElement != null ? onElement : html$2;
-    bubbles = bubbles !== false;
-    cancelable = cancelable !== false;
-    const event = document.createEvent("Events");
-    event.initEvent(eventName, bubbles, cancelable);
-    if (attributes != null) {
-      extend.call(event, attributes);
-    }
+    const event = createEvent(eventName, {
+      bubbles,
+      cancelable,
+      attributes
+    });
     return element.dispatchEvent(event);
   };
   const elementMatchesSelector = function (element, selector) {
@@ -3719,11 +3733,21 @@ $\
       return elementsHaveEqualHTML(this.shadowElement, this.element);
     }
     sync() {
+      const render = (element, documentFragment) => {
+        while (element.lastChild) {
+          element.removeChild(element.lastChild);
+        }
+        element.appendChild(documentFragment);
+      };
+      const event = createEvent("trix-before-render", {
+        cancelable: false,
+        attributes: {
+          render
+        }
+      });
+      this.element.dispatchEvent(event);
       const fragment = this.createDocumentFragmentForSync();
-      while (this.element.lastChild) {
-        this.element.removeChild(this.element.lastChild);
-      }
-      this.element.appendChild(fragment);
+      event.render(this.element, fragment);
       return this.didSync();
     }
 
