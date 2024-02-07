@@ -160,9 +160,116 @@ installDefaultCSSForTagName("trix-editor", `\
     margin-right: -1px !important;
 }`)
 
-export default class TrixEditorElement extends HTMLElement {
+class InputElementDelegate {
+  #element
+
+  constructor(element) {
+    this.#element = element
+  }
 
   // Properties
+
+  get labels() {
+    const labels = []
+    if (this.#element.id && this.#element.ownerDocument) {
+      labels.push(...Array.from(this.#element.ownerDocument.querySelectorAll(`label[for='${this.#element.id}']`) || []))
+    }
+
+    const label = findClosestElementFromNode(this.#element, { matchingSelector: "label" })
+    if (label) {
+      if ([ this.#element, null ].includes(label.control)) {
+        labels.push(label)
+      }
+    }
+
+    return labels
+  }
+
+  get form() {
+    return this.inputElement?.form
+  }
+
+  get inputElement() {
+    if (this.#element.hasAttribute("input")) {
+      return this.#element.ownerDocument?.getElementById(this.#element.getAttribute("input"))
+    } else if (this.#element.parentNode) {
+      const inputId = `trix-input-${this.#element.trixId}`
+      this.#element.setAttribute("input", inputId)
+      const element = makeElement("input", { type: "hidden", id: inputId })
+      this.#element.parentNode.insertBefore(element, this.#element.nextElementSibling)
+      return element
+    } else {
+      return undefined
+    }
+  }
+
+  get name() {
+    return this.inputElement?.name
+  }
+
+  get value() {
+    return this.inputElement?.value
+  }
+
+  get defaultValue() {
+    return this.value
+  }
+
+  // Element lifecycle
+
+  connectedCallback() {
+    ensureAriaLabel(this.#element)
+    window.addEventListener("reset", this.#resetBubbled, false)
+    window.addEventListener("click", this.#clickBubbled, false)
+  }
+
+  disconnectedCallback() {
+    window.removeEventListener("reset", this.#resetBubbled, false)
+    window.removeEventListener("click", this.#clickBubbled, false)
+  }
+
+  setFormValue(value) {
+    if (this.inputElement) {
+      this.inputElement.value = value
+    }
+  }
+
+  // Form support
+
+  #resetBubbled = (event) => {
+    if (event.defaultPrevented) return
+    if (event.target !== this.form) return
+    return this.#element.formResetCallback()
+  }
+
+  #clickBubbled = (event) => {
+    if (event.defaultPrevented) return
+    if (this.#element.contains(event.target)) return
+
+    const label = findClosestElementFromNode(event.target, { matchingSelector: "label" })
+    if (!label) return
+
+    if (!Array.from(this.labels).includes(label)) return
+
+    return this.#element.focus()
+  }
+}
+
+export default class TrixEditorElement extends HTMLElement {
+  static formAssociated = false
+
+  #delegate
+
+  constructor() {
+    super()
+    this.#delegate = new InputElementDelegate(this)
+  }
+
+  // Properties
+
+  get type() {
+    return this.localName
+  }
 
   get trixId() {
     if (this.hasAttribute("trix-id")) {
@@ -174,19 +281,7 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   get labels() {
-    const labels = []
-    if (this.id && this.ownerDocument) {
-      labels.push(...Array.from(this.ownerDocument.querySelectorAll(`label[for='${this.id}']`) || []))
-    }
-
-    const label = findClosestElementFromNode(this, { matchingSelector: "label" })
-    if (label) {
-      if ([ this, null ].includes(label.control)) {
-        labels.push(label)
-      }
-    }
-
-    return labels
+    return this.#delegate.labels
   }
 
   get toolbarElement() {
@@ -204,21 +299,11 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   get form() {
-    return this.inputElement?.form
+    return this.#delegate.form
   }
 
   get inputElement() {
-    if (this.hasAttribute("input")) {
-      return this.ownerDocument?.getElementById(this.getAttribute("input"))
-    } else if (this.parentNode) {
-      const inputId = `trix-input-${this.trixId}`
-      this.setAttribute("input", inputId)
-      const element = makeElement("input", { type: "hidden", id: inputId })
-      this.parentNode.insertBefore(element, this.nextElementSibling)
-      return element
-    } else {
-      return undefined
-    }
+    return this.#delegate.inputElement
   }
 
   get editor() {
@@ -226,11 +311,11 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   get name() {
-    return this.inputElement?.name
+    return this.#delegate.name
   }
 
   get value() {
-    return this.inputElement?.value
+    return this.#delegate.value
   }
 
   set value(defaultValue) {
@@ -246,10 +331,8 @@ export default class TrixEditorElement extends HTMLElement {
     }
   }
 
-  setInputElementValue(value) {
-    if (this.inputElement) {
-      this.inputElement.value = value
-    }
+  setFormValue(value) {
+    this.#delegate.setFormValue(value)
   }
 
   // Element lifecycle
@@ -258,65 +341,39 @@ export default class TrixEditorElement extends HTMLElement {
     if (!this.hasAttribute("data-trix-internal")) {
       makeEditable(this)
       addAccessibilityRole(this)
-      ensureAriaLabel(this)
+      this.#delegate.connectedCallback()
 
       if (!this.editorController) {
         triggerEvent("trix-before-initialize", { onElement: this })
         this.editorController = new EditorController({
           editorElement: this,
-          html: this.defaultValue = this.value,
+          html: this.defaultValue = this.#delegate.defaultValue,
         })
         requestAnimationFrame(() => triggerEvent("trix-initialize", { onElement: this }))
       }
       this.editorController.registerSelectionManager()
-      this.registerResetListener()
-      this.registerClickListener()
       autofocus(this)
     }
   }
 
   disconnectedCallback() {
     this.editorController?.unregisterSelectionManager()
-    this.unregisterResetListener()
-    return this.unregisterClickListener()
+    this.#delegate.disconnectedCallback()
   }
 
   // Form support
 
-  registerResetListener() {
-    this.resetListener = this.resetBubbled.bind(this)
-    return window.addEventListener("reset", this.resetListener, false)
+  formAssociatedCallback(form) {
   }
 
-  unregisterResetListener() {
-    return window.removeEventListener("reset", this.resetListener, false)
+  formDisabledCallback(disabled) {
   }
 
-  registerClickListener() {
-    this.clickListener = this.clickBubbled.bind(this)
-    return window.addEventListener("click", this.clickListener, false)
+  formStateRestoreCallback(state, mode) {
   }
 
-  unregisterClickListener() {
-    return window.removeEventListener("click", this.clickListener, false)
-  }
-
-  resetBubbled(event) {
-    if (event.defaultPrevented) return
-    if (event.target !== this.form) return
-    return this.reset()
-  }
-
-  clickBubbled(event) {
-    if (event.defaultPrevented) return
-    if (this.contains(event.target)) return
-
-    const label = findClosestElementFromNode(event.target, { matchingSelector: "label" })
-    if (!label) return
-
-    if (!Array.from(this.labels).includes(label)) return
-
-    return this.focus()
+  formResetCallback() {
+    this.reset()
   }
 
   reset() {

@@ -466,7 +466,7 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
 
   test("editor resets to its original value on form reset", async () => {
     const element = getEditorElement()
-    const { form } = element.inputElement
+    const { form } = element
 
     await typeCharacters("hello")
     form.reset()
@@ -475,7 +475,7 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
 
   test("editor resets to last-set value on form reset", async () => {
     const element = getEditorElement()
-    const { form } = element.inputElement
+    const { form } = element
 
     element.value = "hi"
     await typeCharacters("hello")
@@ -485,7 +485,7 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
 
   test("editor respects preventDefault on form reset", async () => {
     const element = getEditorElement()
-    const { form } = element.inputElement
+    const { form } = element
     const preventDefault = (event) => event.preventDefault()
 
     await typeCharacters("hello")
@@ -495,12 +495,43 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
     form.removeEventListener("reset", preventDefault, false)
     expectDocument("hello\n")
   })
+
+  test("element returns empty string when value is missing", async () => {
+    const element = getEditorElement()
+
+    assert.equal(element.value, "")
+  })
+
+  test("editor resets to its original value on element reset", async () => {
+    const element = getEditorElement()
+
+    await typeCharacters("hello")
+    element.reset()
+    expectDocument("\n")
+  })
+
+  test("editor returns its type", async() => {
+    const element = getEditorElement()
+
+    assert.equal("trix-editor", element.type)
+  })
+})
+
+testGroup("HTML sanitization", { template: "editor_html" }, () => {
+  test("ignores text nodes in script elements", () => {
+    const element = getEditorElement()
+    element.value = "<div>safe</div><script>alert(\"unsafe\")</script>"
+
+    expectDocument("safe\n")
+    assert.equal(element.innerHTML, "<div><!--block-->safe</div>")
+    assert.equal(element.value, "<div>safe</div>")
+  })
 })
 
 testGroup("<label> support", { template: "editor_with_labels" }, () => {
   test("associates all label elements", () => {
     const labels = [ document.getElementById("label-1"), document.getElementById("label-3") ]
-    assert.deepEqual(getEditorElement().labels, labels)
+    assert.deepEqual(Array.from(getEditorElement().labels), labels)
   })
 
   test("focuses when <label> clicked", () => {
@@ -528,7 +559,7 @@ testGroup("form property references its <form>", { template: "editors_with_forms
     assert.equal(editor.form, form)
   })
 
-  test("transitively accesses its related <input> element's <form>", () => {
+  test("transitively accesses its related <form>", () => {
     const form = document.getElementById("input-form")
     const editor = document.getElementById("editor-with-input-form")
     assert.equal(editor.form, form)

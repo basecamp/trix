@@ -148,6 +148,33 @@ To populate a `<trix-editor>` with stored content, include that content in the a
 
 Always use an associated input element to safely populate an editor. Trix won’t load any HTML content inside a `<trix-editor>…</trix-editor>` tag.
 
+## Providing an Accessible Name
+
+Like other form controls, `<trix-editor>` elements should have an accessible name. The `<trix-editor>` element integrates with `<label>` elements and The `<trix-editor>` supports two styles of integrating with `<label>` elements:
+
+1. render the `<trix-editor>` element with an `[id]` attribute that the `<label>` element references through its `[for]` attribute:
+
+```html
+<label for="editor">Editor</label>
+<trix-editor id="editor"></trix-editor>
+```
+
+2. render the `<trix-editor>` element as a child of the `<label>` element:
+
+```html
+<trix-toolbar id="editor-toolbar"></trix-toolbar>
+<label>
+  Editor
+
+  <trix-editor toolbar="editor-toolbar"></trix-editor>
+</label>
+```
+
+> [!WARNING]
+> When rendering the `<trix-editor>` element as a child of the `<label>` element, [explicitly render](#creating-an-editor) the corresponding `<trix-toolbar>` element outside of the `<label>` element.
+
+In addition to integrating with `<label>` elements, `<trix-editor>` elements support `[aria-label]` and `[aria-labelledby]` attributes.
+
 ## Styling Formatted Content
 
 To ensure what you see when you edit is what you see when you save, use a CSS class name to scope styles for Trix formatted content. Apply this class name to your `<trix-editor>` element, and to a containing element when you render stored Trix content for display in your application.
