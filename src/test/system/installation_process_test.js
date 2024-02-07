@@ -1,6 +1,6 @@
 import EditorController from "trix/controllers/editor_controller"
 
-import { assert, test, testGroup } from "test/test_helper"
+import { assert, setFixtureHTML, test, testGroup } from "test/test_helper"
 import { nextFrame } from "../test_helpers/timing_helpers"
 
 testGroup("Installation process", { template: "editor_html" }, () => {
@@ -60,5 +60,40 @@ testGroup("Installation process with specified elements", { template: "editor_wi
     assert.equal(editorElement.toolbarElement, document.getElementById("my_toolbar"))
     assert.equal(editorElement.inputElement, document.getElementById("my_input"))
     assert.equal(editorElement.value, "<div>Hello world</div>")
+  })
+})
+
+testGroup("Installation process with content and without specified elements", () => {
+  test("loads the trix-editor element's innerHTML on boot", async () => {
+    await setFixtureHTML("<trix-editor><div>Hello world</div></trix-editor>")
+
+    const editorElement = getEditorElement()
+
+    assert.equal(1, editorElement.childElementCount, "sanitzes HTML")
+    assert.equal(editorElement.value, "<div>Hello world</div>")
+    assert.equal(editorElement.value, editorElement.inputElement.value)
+  })
+
+  test("sanitizes the trix-editor element's innerHTML on boot", async () => {
+    await setFixtureHTML("<trix-editor><script>alert('xss')</script></trix-editor>")
+
+    const editorElement = getEditorElement()
+
+    assert.equal(0, editorElement.querySelectorAll("script").length, "sanitzes HTML")
+    assert.equal(editorElement.value, "")
+    assert.equal(editorElement.value, editorElement.inputElement.value)
+  })
+})
+
+testGroup("Installation process with content and input", () => {
+  test("prioritzes loading its initial state from the input over the content", async () => {
+    await setFixtureHTML(`
+      <trix-editor input="input"><div>from editor</div></trix-editor>
+      <textarea id="input"><div>from input</div></textarea>
+    `)
+
+    const editorElement = getEditorElement()
+
+    assert.equal(editorElement.value, "<div>from input</div>")
   })
 })
