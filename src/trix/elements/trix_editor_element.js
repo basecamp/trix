@@ -161,11 +161,14 @@ installDefaultCSSForTagName("trix-editor", `\
 }`)
 
 class ElementInternalsDelegate {
+  value = ""
   #internals
+  #formDisabled
 
   constructor(element) {
     this.element = element
     this.#internals = element.attachInternals()
+    this.#formDisabled = false
   }
 
   connectedCallback() {
@@ -175,12 +178,24 @@ class ElementInternalsDelegate {
   disconnectedCallback() {
   }
 
+  get form() {
+    return this.#internals.form
+  }
+
+  get name() {
+    return this.element.getAttribute("name")
+  }
+
+  set name(value) {
+    this.element.setAttribute("name", value)
+  }
+
   get labels() {
     return this.#internals.labels
   }
 
   get disabled() {
-    return this.element.inputElement?.disabled
+    return this.#formDisabled || this.element.hasAttribute("disabled")
   }
 
   set disabled(value) {
@@ -208,8 +223,14 @@ class ElementInternalsDelegate {
     return this.#internals.willValidate
   }
 
+  formDisabledCallback(disabled) {
+    this.#formDisabled = disabled
+  }
+
   setFormValue(value) {
+    this.value = value
     this.#validate()
+    this.#internals.setFormValue(this.element.disabled ? undefined : this.value)
   }
 
   checkValidity() {
@@ -270,6 +291,22 @@ class LegacyDelegate {
     return labels
   }
 
+  get form() {
+    console.warn("This browser does not support the .form property for trix-editor elements.")
+
+    return null
+  }
+
+  get name() {
+    console.warn("This browser does not support the .name property for trix-editor elements.")
+
+    return null
+  }
+
+  set name(value) {
+    console.warn("This browser does not support the .name property for trix-editor elements.")
+  }
+
   get disabled() {
     console.warn("This browser does not support the [disabled] attribute for trix-editor elements.")
 
@@ -305,6 +342,9 @@ class LegacyDelegate {
     console.warn("This browser does not support the willValidate property for trix-editor elements.")
 
     return false
+  }
+
+  formDisabledCallback(value) {
   }
 
   setFormValue(value) {
@@ -354,6 +394,7 @@ export default class TrixEditorElement extends HTMLElement {
 
   constructor() {
     super()
+    this.willCreateInput = true
     this.#delegate = this.constructor.formAssociated ?
       new ElementInternalsDelegate(this) :
       new LegacyDelegate(this)
@@ -375,10 +416,21 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   get disabled() {
-    return this.#delegate.disabled
+    const { inputElement } = this
+
+    if (inputElement) {
+      return inputElement.disabled
+    } else {
+      return this.#delegate.disabled
+    }
   }
 
   set disabled(value) {
+    const { inputElement } = this
+
+    if (inputElement) {
+      inputElement.disabled = value
+    }
     this.#delegate.disabled = value
   }
 
@@ -421,13 +473,19 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   get form() {
-    return this.inputElement?.form
+    const { inputElement } = this
+
+    if (inputElement) {
+      return inputElement.form
+    } else {
+      return this.#delegate.form
+    }
   }
 
   get inputElement() {
     if (this.hasAttribute("input")) {
       return this.ownerDocument?.getElementById(this.getAttribute("input"))
-    } else if (this.parentNode) {
+    } else if (this.parentNode && this.willCreateInput) {
       const inputId = `trix-input-${this.trixId}`
       this.setAttribute("input", inputId)
       const element = makeElement("input", { type: "hidden", id: inputId })
@@ -443,11 +501,33 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   get name() {
-    return this.inputElement?.name
+    const { inputElement } = this
+
+    if (inputElement) {
+      return inputElement.name
+    } else {
+      return this.#delegate.name
+    }
+  }
+
+  set name(value) {
+    const { inputElement } = this
+
+    if (inputElement) {
+      inputElement.name = value
+    } else {
+      this.#delegate.name = value
+    }
   }
 
   get value() {
-    return this.inputElement?.value
+    const { inputElement } = this
+
+    if (inputElement) {
+      return inputElement.value
+    } else {
+      return this.#delegate.value
+    }
   }
 
   set value(defaultValue) {
@@ -472,10 +552,12 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   setFormValue(value) {
-    if (this.inputElement) {
-      this.inputElement.value = value
-      this.#delegate.setFormValue(value)
+    const { inputElement } = this
+
+    if (inputElement) {
+      inputElement.value = value
     }
+    this.#delegate.setFormValue(value)
   }
 
   // Element lifecycle
@@ -533,10 +615,13 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   formDisabledCallback(disabled) {
-    if (this.inputElement) {
-      this.inputElement.disabled = disabled
+    const { inputElement } = this
+
+    if (inputElement) {
+      inputElement.disabled = disabled
     }
     this.toggleAttribute("contenteditable", !disabled)
+    this.#delegate.formDisabledCallback(disabled)
   }
 
   formResetCallback() {
