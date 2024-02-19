@@ -101,6 +101,22 @@ To store attachments, listen for the `trix-attachment-add` event. Upload the att
 
 If you don’t want to accept dropped or pasted files, call `preventDefault()` on the `trix-file-accept` event, which Trix dispatches just before the `trix-attachment-add` event.
 
+## Limiting Accept Attachment File Types
+
+Trix automatically aceept all file types as an attachment. You can configure it with the `trix-attachment-accept` attribute, which takes a comma-separated list of allowed file extensions or MIME types.
+
+```html
+<trix-editor trix-attachment-accept="image/png, image/jpg, image/jpeg"></trix-editor>
+```
+
+```html
+<trix-editor trix-attachment-accept=".png, .jpg, .jpeg"></trix-editor>
+```
+
+```html
+<trix-editor trix-attachment-accept="image/*"></trix-editor>
+```
+
 # Editing Text Programmatically
 
 You can manipulate a Trix editor programmatically through the `Trix.Editor` interface, available on each `<trix-editor>` element through its `editor` property.
