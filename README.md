@@ -103,7 +103,7 @@ If you don’t want to accept dropped or pasted files, call `preventDefault()` o
 
 ## Limiting Accept Attachment File Types
 
-Trix automatically aceept all file types as an attachment. You can configure it with the `trix-attachment-accept` attribute, which takes a comma-separated list of allowed file extensions or MIME types.
+Trix accepts all file types as an attachment by default. You can configure it with the `trix-attachment-accept` attribute, which takes a comma-separated list of allowed file extensions or MIME types.
 
 ```html
 <trix-editor trix-attachment-accept="image/png, image/jpg, image/jpeg"></trix-editor>
