@@ -24,7 +24,7 @@ const input = {
     })
 
     removeNode(document.getElementById(this.fileInputId))
-    document.body.appendChild(input)
+    editorElement.parentNode.appendChild(input)
     input.click()
   }
 }
