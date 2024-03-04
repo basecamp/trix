@@ -17,7 +17,7 @@ const cursorTargetLeft = createCursorTarget("left").outerHTML
 const cursorTargetRight = createCursorTarget("right").outerHTML
 
 testGroup("HTMLParser", () => {
-  eachFixture((name, { html, serializedHTML, document }) => {
+  eachFixture((name, { html, document }) => {
     test(name, () => {
       const parsedDocument = HTMLParser.parse(html).getDocument()
       assert.documentHTMLEqual(parsedDocument.copyUsingObjectsFromDocument(document), html)

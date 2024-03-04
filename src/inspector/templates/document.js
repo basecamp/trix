@@ -13,6 +13,10 @@ window.JST["trix/inspector/templates/document"] = function() {
         Attributes: ${JSON.stringify(block.attributes)}
       </div>
 
+      <div class="htmlAttributes">
+        HTML Attributes: ${JSON.stringify(block.htmlAttributes)}
+      </div>
+
       <div class="text">
         <div class="title">
           Text: ${text.id}, Pieces: ${pieces.length}, Length: ${text.getLength()}
