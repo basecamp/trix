@@ -46,7 +46,8 @@ export default class BlockView extends ObjectView {
     let className
     const attributeName = this.attributes[depth]
 
-    const { tagName, htmlAttributes } = getBlockConfig(attributeName)
+    const { tagName, htmlAttributes = [] } = getBlockConfig(attributeName)
+
     if (depth === 0 && this.block.isRTL()) {
       Object.assign(attributes, { dir: "rtl" })
     }
