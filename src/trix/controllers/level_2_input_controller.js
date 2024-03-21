@@ -53,7 +53,7 @@ export default class Level2InputController extends InputController {
         }
         this.delegate?.inputControllerWillPaste(paste)
         this.responder?.insertString(paste.string)
-        this.render()
+        this.requestRender()
         return this.delegate?.inputControllerDidPaste(paste)
 
         // https://bugs.webkit.org/show_bug.cgi?id=196702
@@ -65,7 +65,7 @@ export default class Level2InputController extends InputController {
         }
         this.delegate?.inputControllerWillPaste(paste)
         this.responder?.insertHTML(paste.html)
-        this.render()
+        this.requestRender()
         return this.delegate?.inputControllerDidPaste(paste)
       }
     },
