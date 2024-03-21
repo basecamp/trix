@@ -3,7 +3,7 @@ const config = {
   frameworks: [ "qunit" ],
   files: [
     { pattern: "dist/test.js", watched: false },
-    { pattern: "src/test_helpers/fixtures/*.png", watched: false, included: false, served: true }
+    { pattern: "src/test/test_helpers/fixtures/*.png", watched: false, included: false, served: true }
   ],
   proxies: {
     "/test_helpers/fixtures/": "/base/src/test_helpers/fixtures/"
@@ -99,6 +99,10 @@ if (process.env.SAUCE_ACCESS_KEY) {
     maxDuration: 900,
     build: buildId(),
   }
+}
+
+if (process.env.EDITOR_FORM_ASSOCIATED === "true") {
+  config.files.unshift({ pattern: "src/test/test_helpers/fixtures/form_associated.js", watched: false, included: true })
 }
 
 function buildId() {
