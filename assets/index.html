@@ -17,6 +17,18 @@
         max-width: 700px;
       }
 
+      div {
+        margin-bottom: 1rem;
+
+        label {
+          display: block;
+        }
+
+        textarea {
+          width: 100%;
+        }
+      }
+
       #output {
         margin: 1rem 0 0;
       }
@@ -72,7 +84,21 @@
   </head>
   <body>
     <main>
-      <trix-editor autofocus class="trix-content" input="input"></trix-editor>
+      <form>
+        <h1>Form with required textarea field</h1>
+        <div>
+          <trix-editor autofocus required class="trix-content" input="input"></trix-editor>
+        </div>
+
+        <div>
+          <label for="comments">Your comments</label>
+          <textarea id="comments" required></textarea>
+        </div>
+
+        <div>
+          <input type="submit" />
+        </div>
+      </form>
       <details id="output">
         <summary>Output</summary>
         <textarea readonly id="input"></textarea>

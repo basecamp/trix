@@ -25,6 +25,14 @@ const autofocus = function(element) {
   }
 }
 
+const makeRequired = function(element) {
+  if (element.hasAttribute("required")) {
+    // element.inputElement.removeAttribute("readonly")
+    element.inputElement.required = true
+    console.log("input", element.inputElement)
+  }
+}
+
 const makeEditable = function(element) {
   if (element.hasAttribute("contenteditable")) {
     return
@@ -257,6 +265,7 @@ export default class TrixEditorElement extends HTMLElement {
   connectedCallback() {
     if (!this.hasAttribute("data-trix-internal")) {
       makeEditable(this)
+      makeRequired(this)
       addAccessibilityRole(this)
       ensureAriaLabel(this)
 
