@@ -341,6 +341,16 @@ export default class Composition extends BasicObject {
     }
   }
 
+  setHTMLAtributeAtPosition(position, attributeName, value) {
+    const block = this.document.getBlockAtPosition(position)
+    const allowedHTMLAttributes = getBlockConfig(block.getLastAttribute())?.htmlAttributes
+
+    if (block && allowedHTMLAttributes?.includes(attributeName)) {
+      const newDocument = this.document.setHTMLAttributeAtPosition(position, attributeName, value)
+      this.setDocument(newDocument)
+    }
+  }
+
   setTextAttribute(attributeName, value) {
     const selectedRange = this.getSelectedRange()
     if (!selectedRange) return

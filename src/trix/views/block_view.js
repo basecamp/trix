@@ -42,18 +42,26 @@ export default class BlockView extends ObjectView {
   }
 
   createContainerElement(depth) {
-    let attributes, className
+    const attributes = {}
+    let className
     const attributeName = this.attributes[depth]
 
-    const { tagName } = getBlockConfig(attributeName)
+    const { tagName, htmlAttributes = [] } = getBlockConfig(attributeName)
+
     if (depth === 0 && this.block.isRTL()) {
-      attributes = { dir: "rtl" }
+      Object.assign(attributes, { dir: "rtl" })
     }
 
     if (attributeName === "attachmentGallery") {
       const size = this.block.getBlockBreakPosition()
       className = `${css.attachmentGallery} ${css.attachmentGallery}--${size}`
     }
+
+    Object.entries(this.block.htmlAttributes).forEach(([ name, value ]) => {
+      if (htmlAttributes.includes(name)) {
+        attributes[name] = value
+      }
+    })
 
     return makeElement({ tagName, className, attributes })
   }

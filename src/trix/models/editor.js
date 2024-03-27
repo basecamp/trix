@@ -137,6 +137,11 @@ export default class Editor {
     return this.composition.removeCurrentAttribute(name)
   }
 
+  // HTML attributes
+  setHTMLAtributeAtPosition(position, name, value) {
+    this.composition.setHTMLAtributeAtPosition(position, name, value)
+  }
+
   // Nesting level
 
   canDecreaseNestingLevel() {

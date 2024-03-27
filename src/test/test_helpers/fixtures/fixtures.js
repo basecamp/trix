@@ -41,9 +41,9 @@ const { css } = config
 
 const createDocument = function (...parts) {
   const blocks = parts.map((part) => {
-    const [ string, textAttributes, blockAttributes ] = Array.from(part)
+    const [ string, textAttributes, blockAttributes, htmlAttributes = {} ] = Array.from(part)
     const text = Text.textForStringWithAttributes(string, textAttributes)
-    return new Block(text, blockAttributes)
+    return new Block(text, blockAttributes, htmlAttributes)
   })
 
   return new Document(blocks)
@@ -190,6 +190,12 @@ export const fixtures = {
   "code with newline": {
     document: createDocument([ "12\n3", {}, [ "code" ] ]),
     html: `<pre>${blockComment}12\n3</pre>`,
+  },
+
+  "code with custom language": {
+    document: createDocument([ "puts \"Hello world!\"", {}, [ "code" ], { "language": "ruby" } ]),
+    html: `<pre language="ruby">${blockComment}puts "Hello world!"</pre>`,
+    serializedHTML: "<pre language=\"ruby\">puts \"Hello world!\"</pre>"
   },
 
   "multiple blocks with block comments in their text": {

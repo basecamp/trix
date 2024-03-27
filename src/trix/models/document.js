@@ -282,6 +282,12 @@ export default class Document extends TrixObject {
     return this.removeAttributeAtRange(attribute, range)
   }
 
+  setHTMLAttributeAtPosition(position, name, value) {
+    const block = this.getBlockAtPosition(position)
+    const updatedBlock = block.addHTMLAttribute(name, value)
+    return this.replaceBlock(block, updatedBlock)
+  }
+
   insertBlockBreakAtRange(range) {
     let blocks
     range = normalizeRange(range)

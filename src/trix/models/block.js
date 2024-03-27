@@ -5,19 +5,21 @@ import {
   arraysAreEqual,
   getBlockConfig,
   getListAttributeNames,
+  objectsAreEqual,
   spliceArray,
 } from "trix/core/helpers"
 
 export default class Block extends TrixObject {
   static fromJSON(blockJSON) {
     const text = Text.fromJSON(blockJSON.text)
-    return new this(text, blockJSON.attributes)
+    return new this(text, blockJSON.attributes, blockJSON.htmlAttributes)
   }
 
-  constructor(text, attributes) {
+  constructor(text, attributes, htmlAttributes) {
     super(...arguments)
     this.text = applyBlockBreakToText(text || new Text())
     this.attributes = attributes || []
+    this.htmlAttributes = htmlAttributes || {}
   }
 
   isEmpty() {
@@ -27,11 +29,11 @@ export default class Block extends TrixObject {
   isEqualTo(block) {
     if (super.isEqualTo(block)) return true
 
-    return this.text.isEqualTo(block?.text) && arraysAreEqual(this.attributes, block?.attributes)
+    return this.text.isEqualTo(block?.text) && arraysAreEqual(this.attributes, block?.attributes) && objectsAreEqual(this.htmlAttributes, block?.htmlAttributes)
   }
 
   copyWithText(text) {
-    return new Block(text, this.attributes)
+    return new Block(text, this.attributes, this.htmlAttributes)
   }
 
   copyWithoutText() {
@@ -39,7 +41,7 @@ export default class Block extends TrixObject {
   }
 
   copyWithAttributes(attributes) {
-    return new Block(this.text, attributes)
+    return new Block(this.text, attributes, this.htmlAttributes)
   }
 
   copyWithoutAttributes() {
@@ -58,6 +60,11 @@ export default class Block extends TrixObject {
   addAttribute(attribute) {
     const attributes = this.attributes.concat(expandAttribute(attribute))
     return this.copyWithAttributes(attributes)
+  }
+
+  addHTMLAttribute(attribute, value) {
+    const htmlAttributes = Object.assign({}, this.htmlAttributes, { [attribute]: value })
+    return new Block(this.text, this.attributes, htmlAttributes)
   }
 
   removeAttribute(attribute) {
@@ -173,6 +180,7 @@ export default class Block extends TrixObject {
     return {
       text: this.text,
       attributes: this.attributes,
+      htmlAttributes: this.htmlAttributes,
     }
   }
 
