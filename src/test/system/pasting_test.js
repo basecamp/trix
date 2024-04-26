@@ -89,6 +89,21 @@ testGroup("Pasting", { template: "editor_empty" }, () => {
     delete window.unsanitized
   })
 
+  test("paste unsafe html with noscript", async () => {
+    window.unsanitized = []
+    const pasteData = {
+      "text/plain": "x",
+      "text/html": `\
+        <div><noscript><div class="123</noscript>456<img src=1 onerror=window.unsanitized.push(1)//"></div></noscript></div>
+      `
+    }
+
+    await pasteContent(pasteData)
+    await delay(20)
+    assert.deepEqual(window.unsanitized, [])
+    delete window.unsanitized
+  })
+
   test("prefers plain text when html lacks formatting", async () => {
     const pasteData = {
       "text/html": "<meta charset='utf-8'>a\nb",
