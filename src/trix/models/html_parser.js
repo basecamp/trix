@@ -40,7 +40,13 @@ const blockForAttributes = (attributes = {}, htmlAttributes = {}) => {
 
 const parseTrixDataAttribute = (element, name) => {
   try {
-    return JSON.parse(element.getAttribute(`data-trix-${name}`))
+    const data = JSON.parse(element.getAttribute(`data-trix-${name}`))
+
+    if (data.contentType === "text/html" && data.content) {
+      data.content = HTMLSanitizer.sanitize(data.content).getHTML()
+    }
+
+    return data
   } catch (error) {
     return {}
   }
