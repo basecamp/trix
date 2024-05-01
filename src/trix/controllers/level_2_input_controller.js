@@ -2,7 +2,7 @@ import { getAllAttributeNames, squishBreakableWhitespace } from "trix/core/helpe
 import InputController from "trix/controllers/input_controller"
 import * as config from "trix/config"
 
-import { dataTransferIsPlainText, keyEventIsKeyboardCommand, objectsAreEqual } from "trix/core/helpers"
+import { dataTransferIsMsOfficePaste, dataTransferIsPlainText, keyEventIsKeyboardCommand, objectsAreEqual } from "trix/core/helpers"
 
 import { selectionChangeObserver } from "trix/observers/selection_change_observer"
 
@@ -360,8 +360,10 @@ export default class Level2InputController extends InputController {
     insertFromPaste() {
       const { dataTransfer } = this.event
       const paste = { dataTransfer }
+
       const href = dataTransfer.getData("URL")
       const html = dataTransfer.getData("text/html")
+      const file = dataTransfer.files?.[0]
 
       if (href) {
         let string
@@ -378,7 +380,6 @@ export default class Level2InputController extends InputController {
         this.withTargetDOMRange(function() {
           return this.responder?.insertHTML(paste.html)
         })
-
         this.afterRender = () => {
           return this.delegate?.inputControllerDidPaste(paste)
         }
@@ -393,6 +394,17 @@ export default class Level2InputController extends InputController {
         this.afterRender = () => {
           return this.delegate?.inputControllerDidPaste(paste)
         }
+      } else if (file && !dataTransferIsMsOfficePaste(dataTransfer)) {
+        paste.type = "File"
+        paste.file = file
+        this.delegate?.inputControllerWillPaste(paste)
+        this.withTargetDOMRange(function() {
+          return this.responder?.insertFile(paste.file)
+        })
+
+        this.afterRender = () => {
+          return this.delegate?.inputControllerDidPaste(paste)
+        }
       } else if (html) {
         this.event.preventDefault()
         paste.type = "text/html"
@@ -401,18 +413,6 @@ export default class Level2InputController extends InputController {
         this.withTargetDOMRange(function() {
           return this.responder?.insertHTML(paste.html)
         })
-
-        this.afterRender = () => {
-          return this.delegate?.inputControllerDidPaste(paste)
-        }
-      } else if (dataTransfer.files?.length) {
-        paste.type = "File"
-        paste.file = dataTransfer.files[0]
-        this.delegate?.inputControllerWillPaste(paste)
-        this.withTargetDOMRange(function() {
-          return this.responder?.insertFile(paste.file)
-        })
-
         this.afterRender = () => {
           return this.delegate?.inputControllerDidPaste(paste)
         }
