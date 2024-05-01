@@ -14,7 +14,7 @@ export const dataTransferIsPlainText = function(dataTransfer) {
   }
 }
 
-export const dataTransferIsMsOfficePaste = function(dataTransfer) {
+export const dataTransferIsMsOfficePaste = ({ dataTransfer }) => {
   return dataTransfer.types.includes("Files") &&
     dataTransfer.types.includes("text/html") &&
     dataTransfer.getData("text/html").includes("urn:schemas-microsoft-com:office:office")
