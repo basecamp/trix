@@ -231,7 +231,14 @@ testGroup("Level 2 Input", testOptions, () => {
   test("pasting text from MS Word", async () => {
     const file = await createFile()
     const dataTransfer = createDataTransfer({
-      "text/html": "<span class=\"MsoNormal\">abc</span>",
+      "text/html": `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+        xmlns:w="urn:schemas-microsoft-com:office:word"
+        xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+        xmlns="http://www.w3.org/TR/REC-html40">
+        <body>
+          <span class="MsoNormal">abc</span>
+        </body>
+      </html>`,
       "text/plain": "abc",
       Files: [ file ],
     })

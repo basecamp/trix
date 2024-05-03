@@ -2,7 +2,7 @@ import { getAllAttributeNames, squishBreakableWhitespace } from "trix/core/helpe
 import InputController from "trix/controllers/input_controller"
 import * as config from "trix/config"
 
-import { dataTransferIsPlainText, keyEventIsKeyboardCommand, objectsAreEqual } from "trix/core/helpers"
+import { dataTransferIsMsOfficePaste, dataTransferIsPlainText, keyEventIsKeyboardCommand, objectsAreEqual } from "trix/core/helpers"
 
 import { selectionChangeObserver } from "trix/observers/selection_change_observer"
 
@@ -360,6 +360,7 @@ export default class Level2InputController extends InputController {
     insertFromPaste() {
       const { dataTransfer } = this.event
       const paste = { dataTransfer }
+
       const href = dataTransfer.getData("URL")
       const html = dataTransfer.getData("text/html")
 
@@ -378,7 +379,6 @@ export default class Level2InputController extends InputController {
         this.withTargetDOMRange(function() {
           return this.responder?.insertHTML(paste.html)
         })
-
         this.afterRender = () => {
           return this.delegate?.inputControllerDidPaste(paste)
         }
@@ -393,6 +393,17 @@ export default class Level2InputController extends InputController {
         this.afterRender = () => {
           return this.delegate?.inputControllerDidPaste(paste)
         }
+      } else if (processableFilePaste(this.event)) {
+        paste.type = "File"
+        paste.file = dataTransfer.files[0]
+        this.delegate?.inputControllerWillPaste(paste)
+        this.withTargetDOMRange(function() {
+          return this.responder?.insertFile(paste.file)
+        })
+
+        this.afterRender = () => {
+          return this.delegate?.inputControllerDidPaste(paste)
+        }
       } else if (html) {
         this.event.preventDefault()
         paste.type = "text/html"
@@ -401,18 +412,6 @@ export default class Level2InputController extends InputController {
         this.withTargetDOMRange(function() {
           return this.responder?.insertHTML(paste.html)
         })
-
-        this.afterRender = () => {
-          return this.delegate?.inputControllerDidPaste(paste)
-        }
-      } else if (dataTransfer.files?.length) {
-        paste.type = "File"
-        paste.file = dataTransfer.files[0]
-        this.delegate?.inputControllerWillPaste(paste)
-        this.withTargetDOMRange(function() {
-          return this.responder?.insertFile(paste.file)
-        })
-
         this.afterRender = () => {
           return this.delegate?.inputControllerDidPaste(paste)
         }
@@ -582,10 +581,20 @@ const staticRangeToRange = function(staticRange) {
 
 const dragEventHasFiles = (event) => Array.from(event.dataTransfer?.types || []).includes("Files")
 
+const processableFilePaste = (event) => {
+  // Paste events that only have files are handled by the paste event handler,
+  // to work around Safari not supporting beforeinput.insertFromPaste for files.
+
+  // MS Office text pastes include a file with a screenshot of the text, but we should
+  // handle them as text pastes.
+  return event.dataTransfer.files?.[0] && !pasteEventHasFilesOnly(event) && !dataTransferIsMsOfficePaste(event)
+}
+
 const pasteEventHasFilesOnly = function(event) {
   const clipboard = event.clipboardData
   if (clipboard) {
-    return clipboard.types.includes("Files") && clipboard.types.length === 1 && clipboard.files.length >= 1
+    const fileTypes = Array.from(clipboard.types).filter((type) => type.match(/file/i)) // "Files", "application/x-moz-file"
+    return fileTypes.length === clipboard.types.length && clipboard.files.length >= 1
   }
 }
 
