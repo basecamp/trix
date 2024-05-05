@@ -26,6 +26,14 @@ const Trix = {
 // Expose models under the Trix constant for compatibility with v1
 Object.assign(Trix, models)
 
+for (const element of document.getElementsByName("trix-editor-formAssociated")) {
+  if (element instanceof HTMLMetaElement) {
+    config.editor.formAssociated = element.content === "true"
+  }
+}
+
+elements.TrixEditorElement.formAssociated = config.editor.formAssociated
+
 function start() {
   if (!customElements.get("trix-toolbar")) {
     customElements.define("trix-toolbar", elements.TrixToolbarElement)

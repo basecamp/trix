@@ -8,8 +8,13 @@ on:
 
 jobs:
   build:
-    name: Browser tests
+    name: "Browser tests (formAssociated: ${{ matrix.formAssociated }})"
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        elementInternals: [false, true]
+    env:
+      EDITOR_FORM_ASSOCIATED: "${{ matrix.formAssociated }}"
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
