@@ -40,7 +40,7 @@ export default class Level2InputController extends InputController {
       // https://bugs.webkit.org/show_bug.cgi?id=194921
       let paste
       const href = event.clipboardData?.getData("URL")
-      if (pasteEventHasFilesOnly(event)) {
+      if (pasteEventHasAFile(event)) {
         event.preventDefault()
         return this.attachFiles(event.clipboardData.files)
 
@@ -582,10 +582,10 @@ const staticRangeToRange = function(staticRange) {
 
 const dragEventHasFiles = (event) => Array.from(event.dataTransfer?.types || []).includes("Files")
 
-const pasteEventHasFilesOnly = function(event) {
+const pasteEventHasAFile = function(event) {
   const clipboard = event.clipboardData
   if (clipboard) {
-    return clipboard.types.includes("Files") && clipboard.types.length === 1 && clipboard.files.length >= 1
+    return clipboard.types.includes("Files") && clipboard.types.length <= 2 && clipboard.files.length >= 1
   }
 }
 
