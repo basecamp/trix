@@ -17,10 +17,11 @@ const insertStyleElementForTagName = function(tagName) {
   return element
 }
 
-const getCSPNonce = function() {
+const getCSPNonce = function () {
   const element = getMetaElement("trix-csp-nonce") || getMetaElement("csp-nonce")
   if (element) {
-    return element.getAttribute("content")
+    const { nonce, content } = element
+    return nonce == "" ? content : nonce
   }
 }
 
