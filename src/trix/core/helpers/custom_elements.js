@@ -17,7 +17,7 @@ const insertStyleElementForTagName = function(tagName) {
   return element
 }
 
-const getCSPNonce = function () {
+const getCSPNonce = function() {
   const element = getMetaElement("trix-csp-nonce") || getMetaElement("csp-nonce")
   if (element) {
     const { nonce, content } = element
