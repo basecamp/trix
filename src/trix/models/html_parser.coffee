@@ -238,7 +238,12 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   parseTrixDataAttribute = (element, name) ->
     try
-     JSON.parse(element.getAttribute("data-trix-#{name}"))
+      data = JSON.parse(element.getAttribute("data-trix-#{name}"))
+
+      if data.contentType == "text/html" and data.content
+        data.content = HTMLSanitizer.sanitize(data.content).getHTML()
+
+      data
     catch
       {}
 

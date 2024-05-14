@@ -3,7 +3,7 @@
 class Trix.HTMLSanitizer extends Trix.BasicObject
   DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height class".split(" ")
   DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
-  DEFAULT_FORBIDDEN_ELEMENTS = "script iframe".split(" ")
+  DEFAULT_FORBIDDEN_ELEMENTS = "script iframe noscript".split(" ")
 
   @sanitize: (html, options) ->
     sanitizer = new this html, options

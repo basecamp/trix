@@ -53,6 +53,30 @@ testGroup "Pasting", template: "editor_empty", ->
         delete window.unsanitized
         done()
 
+  test "paste unsafe html with noscript", (done) ->
+    window.unsanitized = []
+    pasteData =
+      "text/plain": "x",
+      "text/html": "<div><noscript><div class=\"123</noscript>456<img src=1 onerror=window.unsanitized.push(1)//\"></div></noscript></div>"
+
+    pasteContent pasteData, () ->
+      after 20, () ->
+        assert.deepEqual(window.unsanitized, [])
+        delete window.unsanitized
+        done()
+
+  test "paste data-trix-attachment unsafe html", (done) ->
+    window.unsanitized = []
+    pasteData =
+      "text/plain": "x",
+      "text/html": "copy<div data-trix-attachment=\"{&quot;contentType&quot;:&quot;text/html&quot;,&quot;content&quot;:&quot;&lt;img src=1 onerror=window.unsanitized.push(1)&gt;HELLO123&quot;}\"></div>me"
+
+    pasteContent pasteData, ->
+      after 20, ->
+        assert.deepEqual window.unsanitized, []
+        delete window.unsanitized
+        done()
+
   test "prefers plain text when html lacks formatting", (expectDocument) ->
     pasteData =
       "text/html": "<meta charset='utf-8'>a\nb"
