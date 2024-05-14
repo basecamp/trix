@@ -32,72 +32,41 @@ if (process.env.CI) {
     sl_chrome_latest: {
       base: "SauceLabs",
       browserName: "chrome",
-      platform: "Windows 10",
       version: "latest"
     },
-    sl_firefox_latest: {
+    sl_chrome_latest_i8n: {
       base: "SauceLabs",
-      browserName: "firefox",
-      platform: "Windows 10",
-      version: "latest"
+      browserName: "chrome",
+      version: "latest",
+      chromeOptions: {
+        args: [ "--lang=tr" ]
+      }
     },
-    sl_safari_previous: {
+    sl_safari_12_1: {
       base: "SauceLabs",
       browserName: "safari",
       platform: "macOS 10.13",
-      version: "latest-1"
-    },
-    sl_safari_latest: {
-      base: "SauceLabs",
-      browserName: "safari",
-      platform: "macOS 10.13",
-      version: "latest"
-    },
-    sl_edge_previous: {
-      base: "SauceLabs",
-      browserName: "microsoftedge",
-      platform: "Windows 10",
-      version: "17.17134"
+      version: "12.1"
     },
     sl_edge_latest: {
       base: "SauceLabs",
       browserName: "microsoftedge",
       platform: "Windows 10",
-      version: "18.17763"
+      version: "latest"
     },
-    sl_ie_11: {
-      base: "SauceLabs",
-      browserName: "internet explorer",
-      platform: "Windows 8.1",
-      version: "11"
-    },
-    sl_ios_previous: {
-      base: "SauceLabs",
-      browserName: "safari",
-      platform: "ios",
-      device: "iPhone Simulator",
-      version: "11.3"
-    },
-    sl_ios_latest: {
-      base: "SauceLabs",
-      browserName: "safari",
-      platform: "ios",
-      device: "iPhone Simulator",
-      version: "12.0"
-    },
-    sl_android_previous: {
+    sl_android_9: {
       base: "SauceLabs",
       browserName: "chrome",
       platform: "android",
       device: "Android GoogleAPI Emulator",
-      version: "7.1"
+      version: "9.0"
     },
     sl_android_latest: {
       base: "SauceLabs",
       browserName: "chrome",
       platform: "android",
       device: "Android GoogleAPI Emulator",
-      version: "8.1"
+      version: "12.0"
     }
   }
 
