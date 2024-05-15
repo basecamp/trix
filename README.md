@@ -392,4 +392,4 @@ Only commit changes to Trix’s source (everything except the compiled files in 
 
 ---
 
-© 2020 Basecamp, LLC.
+© 2024 Basecamp, LLC.
