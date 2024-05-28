@@ -470,7 +470,7 @@ export const fixtures = {
 
   "content attachment": (() => {
     const content =
-      "<blockquote class=\"twitter-tweet\" data-cards=\"hidden\"><p>ruby-build 20150413 is out, with definitions for 2.2.2, 2.1.6, and 2.0.0-p645 to address recent security issues: <a href=\"https://t.co/YEwV6NtRD8\">https://t.co/YEwV6NtRD8</a></p>&mdash; Sam Stephenson (@sstephenson) <a href=\"https://twitter.com/sstephenson/status/587715996783218688\">April 13, 2015</a></blockquote>"
+      "<blockquote class=\"twitter-tweet\"><p>ruby-build 20150413 is out, with definitions for 2.2.2, 2.1.6, and 2.0.0-p645 to address recent security issues: <a href=\"https://t.co/YEwV6NtRD8\">https://t.co/YEwV6NtRD8</a></p>&mdash; Sam Stephenson (@sstephenson) <a href=\"https://twitter.com/sstephenson/status/587715996783218688\">April 13, 2015</a></blockquote>"
     const href = "https://twitter.com/sstephenson/status/587715996783218688"
     const contentType = "embed/twitter"
 

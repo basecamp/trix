@@ -2,6 +2,7 @@ import * as config from "trix/config"
 import { ZERO_WIDTH_SPACE } from "trix/constants"
 import { copyObject, makeElement } from "trix/core/helpers"
 import ObjectView from "trix/views/object_view"
+import HTMLSanitizer from "trix/models/html_sanitizer"
 
 const { css } = config
 
@@ -33,7 +34,7 @@ export default class AttachmentView extends ObjectView {
     }
 
     if (this.attachment.hasContent()) {
-      innerElement.innerHTML = this.attachment.getContent()
+      HTMLSanitizer.setHTML(innerElement, this.attachment.getContent())
     } else {
       this.createContentNodes().forEach((node) => {
         innerElement.appendChild(node)
@@ -165,6 +166,6 @@ const createCursorTarget = (name) =>
 
 const htmlContainsTagName = function(html, tagName) {
   const div = makeElement("div")
-  div.innerHTML = html || ""
+  HTMLSanitizer.setHTML(div, html || "")
   return div.querySelector(tagName)
 }

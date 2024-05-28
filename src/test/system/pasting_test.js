@@ -109,7 +109,7 @@ testGroup("Pasting", { template: "editor_empty" }, () => {
     const pasteData = {
       "text/plain": "x",
       "text/html": `\
-      copy<div data-trix-attachment="{&quot;contentType&quot;:&quot;text/html&quot;,&quot;content&quot;:&quot;&lt;img src=1 onerror=window.unsanitized.push(1)&gt;HELLO123&quot;}"></div>me
+      copy<div data-trix-attachment="{&quot;contentType&quot;:&quot;text/anything&quot;,&quot;content&quot;:&quot;&lt;img src=1 onerror=window.unsanitized.push(1)&gt;HELLO123&quot;}"></div>me
       `,
     }
 
