@@ -4,233 +4,233 @@
 {browser, makeElement, triggerEvent, handleEvent, handleEventOnce, findClosestElementFromNode} = Trix
 
 {attachmentSelector} = Trix.AttachmentView
+if not customElements.get("trix-toolbar")
+  Trix.registerElement "trix-editor", do ->
+    id = 0
 
-Trix.registerElement "trix-editor", do ->
-  id = 0
+    # Contenteditable support helpers
 
-  # Contenteditable support helpers
+    autofocus = (element) ->
+      unless document.querySelector(":focus")
+        if element.hasAttribute("autofocus") and document.querySelector("[autofocus]") is element
+          element.focus()
 
-  autofocus = (element) ->
-    unless document.querySelector(":focus")
-      if element.hasAttribute("autofocus") and document.querySelector("[autofocus]") is element
-        element.focus()
+    makeEditable = (element) ->
+      return if element.hasAttribute("contenteditable")
+      element.setAttribute("contenteditable", "")
+      handleEventOnce("focus", onElement: element, withCallback: -> configureContentEditable(element))
 
-  makeEditable = (element) ->
-    return if element.hasAttribute("contenteditable")
-    element.setAttribute("contenteditable", "")
-    handleEventOnce("focus", onElement: element, withCallback: -> configureContentEditable(element))
+    configureContentEditable = (element) ->
+      disableObjectResizing(element)
+      setDefaultParagraphSeparator(element)
 
-  configureContentEditable = (element) ->
-    disableObjectResizing(element)
-    setDefaultParagraphSeparator(element)
+    disableObjectResizing = (element) ->
+      if document.queryCommandSupported?("enableObjectResizing")
+        document.execCommand("enableObjectResizing", false, false)
+        handleEvent("mscontrolselect", onElement: element, preventDefault: true)
 
-  disableObjectResizing = (element) ->
-    if document.queryCommandSupported?("enableObjectResizing")
-      document.execCommand("enableObjectResizing", false, false)
-      handleEvent("mscontrolselect", onElement: element, preventDefault: true)
+    setDefaultParagraphSeparator = (element) ->
+      if document.queryCommandSupported?("DefaultParagraphSeparator")
+        {tagName} = Trix.config.blockAttributes.default
+        if tagName in ["div", "p"]
+          document.execCommand("DefaultParagraphSeparator", false, tagName)
 
-  setDefaultParagraphSeparator = (element) ->
-    if document.queryCommandSupported?("DefaultParagraphSeparator")
-      {tagName} = Trix.config.blockAttributes.default
-      if tagName in ["div", "p"]
-        document.execCommand("DefaultParagraphSeparator", false, tagName)
+    # Accessibility helpers
 
-  # Accessibility helpers
+    addAccessibilityRole = (element) ->
+      return if element.hasAttribute("role")
+      element.setAttribute("role", "textbox")
 
-  addAccessibilityRole = (element) ->
-    return if element.hasAttribute("role")
-    element.setAttribute("role", "textbox")
+    ensureAriaLabel = (element) ->
+      return if element.hasAttribute("aria-label") or element.hasAttribute("aria-labelledby")
+      do update = ->
+        texts = (label.textContent for label in element.labels when not label.contains(element))
+        if text = texts.join(" ")
+          element.setAttribute("aria-label", text)
+        else
+          element.removeAttribute("aria-label")
+      handleEvent("focus", onElement: element, withCallback: update)
 
-  ensureAriaLabel = (element) ->
-    return if element.hasAttribute("aria-label") or element.hasAttribute("aria-labelledby")
-    do update = ->
-      texts = (label.textContent for label in element.labels when not label.contains(element))
-      if text = texts.join(" ")
-        element.setAttribute("aria-label", text)
+    # Style
+
+    cursorTargetStyles = do ->
+      if browser.forcesObjectResizing
+        display: "inline"
+        width: "auto"
       else
-        element.removeAttribute("aria-label")
-    handleEvent("focus", onElement: element, withCallback: update)
+        display: "inline-block"
+        width: "1px"
 
-  # Style
+    defaultCSS: """
+      %t {
+        display: block;
+      }
 
-  cursorTargetStyles = do ->
-    if browser.forcesObjectResizing
-      display: "inline"
-      width: "auto"
-    else
-      display: "inline-block"
-      width: "1px"
+      %t:empty:not(:focus)::before {
+        content: attr(placeholder);
+        color: graytext;
+        cursor: text;
+        pointer-events: none;
+      }
 
-  defaultCSS: """
-    %t {
-      display: block;
-    }
+      %t a[contenteditable=false] {
+        cursor: text;
+      }
 
-    %t:empty:not(:focus)::before {
-      content: attr(placeholder);
-      color: graytext;
-      cursor: text;
-      pointer-events: none;
-    }
+      %t img {
+        max-width: 100%;
+        height: auto;
+      }
 
-    %t a[contenteditable=false] {
-      cursor: text;
-    }
+      %t #{attachmentSelector} figcaption textarea {
+        resize: none;
+      }
 
-    %t img {
-      max-width: 100%;
-      height: auto;
-    }
+      %t #{attachmentSelector} figcaption textarea.trix-autoresize-clone {
+        position: absolute;
+        left: -9999px;
+        max-height: 0px;
+      }
 
-    %t #{attachmentSelector} figcaption textarea {
-      resize: none;
-    }
+      %t #{attachmentSelector} figcaption[data-trix-placeholder]:empty::before {
+        content: attr(data-trix-placeholder);
+        color: graytext;
+      }
 
-    %t #{attachmentSelector} figcaption textarea.trix-autoresize-clone {
-      position: absolute;
-      left: -9999px;
-      max-height: 0px;
-    }
+      %t [data-trix-cursor-target] {
+        display: #{cursorTargetStyles.display} !important;
+        width: #{cursorTargetStyles.width} !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+      }
 
-    %t #{attachmentSelector} figcaption[data-trix-placeholder]:empty::before {
-      content: attr(data-trix-placeholder);
-      color: graytext;
-    }
+      %t [data-trix-cursor-target=left] {
+        vertical-align: top !important;
+        margin-left: -1px !important;
+      }
 
-    %t [data-trix-cursor-target] {
-      display: #{cursorTargetStyles.display} !important;
-      width: #{cursorTargetStyles.width} !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      border: none !important;
-    }
+      %t [data-trix-cursor-target=right] {
+        vertical-align: bottom !important;
+        margin-right: -1px !important;
+      }
+    """
 
-    %t [data-trix-cursor-target=left] {
-      vertical-align: top !important;
-      margin-left: -1px !important;
-    }
+    # Properties
 
-    %t [data-trix-cursor-target=right] {
-      vertical-align: bottom !important;
-      margin-right: -1px !important;
-    }
-  """
+    trixId:
+      get: ->
+        if @hasAttribute("trix-id")
+          @getAttribute("trix-id")
+        else
+          @setAttribute("trix-id", ++id)
+          @trixId
 
-  # Properties
+    labels:
+      get: ->
+        labels = []
+        if @id and @ownerDocument
+          labels.push(@ownerDocument.querySelectorAll("label[for='#{@id}']")...)
+        if label = findClosestElementFromNode(this, matchingSelector: "label")
+          labels.push(label) if label.control in [this, null]
+        labels
 
-  trixId:
-    get: ->
-      if @hasAttribute("trix-id")
-        @getAttribute("trix-id")
-      else
-        @setAttribute("trix-id", ++id)
-        @trixId
+    toolbarElement:
+      get: ->
+        if @hasAttribute("toolbar")
+          @ownerDocument?.getElementById(@getAttribute("toolbar"))
+        else if @parentNode
+          toolbarId = "trix-toolbar-#{@trixId}"
+          @setAttribute("toolbar", toolbarId)
+          element = makeElement("trix-toolbar", id: toolbarId)
+          @parentNode.insertBefore(element, this)
+          element
 
-  labels:
-    get: ->
-      labels = []
-      if @id and @ownerDocument
-        labels.push(@ownerDocument.querySelectorAll("label[for='#{@id}']")...)
-      if label = findClosestElementFromNode(this, matchingSelector: "label")
-        labels.push(label) if label.control in [this, null]
-      labels
+    inputElement:
+      get: ->
+        if @hasAttribute("input")
+          @ownerDocument?.getElementById(@getAttribute("input"))
+        else if @parentNode
+          inputId = "trix-input-#{@trixId}"
+          @setAttribute("input", inputId)
+          element = makeElement("input", type: "hidden", id: inputId)
+          @parentNode.insertBefore(element, @nextElementSibling)
+          element
 
-  toolbarElement:
-    get: ->
-      if @hasAttribute("toolbar")
-        @ownerDocument?.getElementById(@getAttribute("toolbar"))
-      else if @parentNode
-        toolbarId = "trix-toolbar-#{@trixId}"
-        @setAttribute("toolbar", toolbarId)
-        element = makeElement("trix-toolbar", id: toolbarId)
-        @parentNode.insertBefore(element, this)
-        element
+    editor:
+      get: ->
+        @editorController?.editor
 
-  inputElement:
-    get: ->
-      if @hasAttribute("input")
-        @ownerDocument?.getElementById(@getAttribute("input"))
-      else if @parentNode
-        inputId = "trix-input-#{@trixId}"
-        @setAttribute("input", inputId)
-        element = makeElement("input", type: "hidden", id: inputId)
-        @parentNode.insertBefore(element, @nextElementSibling)
-        element
+    name:
+      get: ->
+        @inputElement?.name
 
-  editor:
-    get: ->
-      @editorController?.editor
+    value:
+      get: ->
+        @inputElement?.value
+      set: (@defaultValue) ->
+        @editor?.loadHTML(@defaultValue)
 
-  name:
-    get: ->
-      @inputElement?.name
+    # Controller delegate methods
 
-  value:
-    get: ->
-      @inputElement?.value
-    set: (@defaultValue) ->
-      @editor?.loadHTML(@defaultValue)
+    notify: (message, data) ->
+      if @editorController
+        triggerEvent("trix-#{message}", onElement: this, attributes: data)
 
-  # Controller delegate methods
+    setInputElementValue: (value) ->
+      @inputElement?.value = value
 
-  notify: (message, data) ->
-    if @editorController
-      triggerEvent("trix-#{message}", onElement: this, attributes: data)
+    # Element lifecycle
 
-  setInputElementValue: (value) ->
-    @inputElement?.value = value
+    initialize: ->
+      unless @hasAttribute("data-trix-internal")
+        makeEditable(this)
+        addAccessibilityRole(this)
+        ensureAriaLabel(this)
 
-  # Element lifecycle
+    connect: ->
+      unless @hasAttribute("data-trix-internal")
+        unless @editorController
+          triggerEvent("trix-before-initialize", onElement: this)
+          @editorController = new Trix.EditorController(editorElement: this, html: @defaultValue = @value)
+          requestAnimationFrame => triggerEvent("trix-initialize", onElement: this)
+        @editorController.registerSelectionManager()
+        @registerResetListener()
+        @registerClickListener()
+        autofocus(this)
 
-  initialize: ->
-    unless @hasAttribute("data-trix-internal")
-      makeEditable(this)
-      addAccessibilityRole(this)
-      ensureAriaLabel(this)
+    disconnect: ->
+      @editorController?.unregisterSelectionManager()
+      @unregisterResetListener()
+      @unregisterClickListener()
 
-  connect: ->
-    unless @hasAttribute("data-trix-internal")
-      unless @editorController
-        triggerEvent("trix-before-initialize", onElement: this)
-        @editorController = new Trix.EditorController(editorElement: this, html: @defaultValue = @value)
-        requestAnimationFrame => triggerEvent("trix-initialize", onElement: this)
-      @editorController.registerSelectionManager()
-      @registerResetListener()
-      @registerClickListener()
-      autofocus(this)
+    # Form support
 
-  disconnect: ->
-    @editorController?.unregisterSelectionManager()
-    @unregisterResetListener()
-    @unregisterClickListener()
+    registerResetListener: ->
+      @resetListener = @resetBubbled.bind(this)
+      window.addEventListener("reset", @resetListener, false)
 
-  # Form support
+    unregisterResetListener: ->
+      window.removeEventListener("reset", @resetListener, false)
 
-  registerResetListener: ->
-    @resetListener = @resetBubbled.bind(this)
-    window.addEventListener("reset", @resetListener, false)
+    registerClickListener: ->
+      @clickListener = @clickBubbled.bind(this)
+      window.addEventListener("click", @clickListener, false)
 
-  unregisterResetListener: ->
-    window.removeEventListener("reset", @resetListener, false)
+    unregisterClickListener: ->
+      window.removeEventListener("click", @clickListener, false)
 
-  registerClickListener: ->
-    @clickListener = @clickBubbled.bind(this)
-    window.addEventListener("click", @clickListener, false)
+    resetBubbled: (event) ->
+      return if event.defaultPrevented
+      return unless event.target is @inputElement?.form
+      @reset()
 
-  unregisterClickListener: ->
-    window.removeEventListener("click", @clickListener, false)
+    clickBubbled: (event) ->
+      return if event.defaultPrevented
+      return if @contains(event.target)
+      return unless label = findClosestElementFromNode(event.target, matchingSelector: "label")
+      return unless label in @labels
+      @focus()
 
-  resetBubbled: (event) ->
-    return if event.defaultPrevented
-    return unless event.target is @inputElement?.form
-    @reset()
-
-  clickBubbled: (event) ->
-    return if event.defaultPrevented
-    return if @contains(event.target)
-    return unless label = findClosestElementFromNode(event.target, matchingSelector: "label")
-    return unless label in @labels
-    @focus()
-
-  reset: ->
-    @value = @defaultValue
+    reset: ->
+      @value = @defaultValue
