@@ -359,6 +359,8 @@ The `<trix-editor>` element emits several events which you can use to observe an
 
 * `trix-change` fires whenever the editor’s contents have changed.
 
+* `trix-before-paste` fires just before text is pasted into the editor. You can use this to modify the content being pasted or prevent the paste event from happening at all. The `paste` property on the event contains the pasted `string` or `html`, and the `range` of the inserted text.
+* 
 * `trix-paste` fires whenever text is pasted into the editor. The `paste` property on the event contains the pasted `string` or `html`, and the `range` of the inserted text.
 
 * `trix-selection-change` fires any time the selected range changes in the editor.
