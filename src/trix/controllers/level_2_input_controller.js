@@ -524,7 +524,7 @@ export default class Level2InputController extends InputController {
       this.delegate?.inputControllerWillPerformTyping()
     }
     const perform = () => this.responder?.deleteInDirection(direction)
-    const domRange = this.getTargetDOMRange({ minLength: 2 })
+    const domRange = this.getTargetDOMRange({ minLength: this.composing ? 1 : 2 })
     if (domRange) {
       return this.withTargetDOMRange(domRange, perform)
     } else {
