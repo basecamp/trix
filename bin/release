@@ -53,7 +53,7 @@ class Release
   end
 
   def dist_pathnames
-    Pathname.new("dist").children
+    Pathname.new("dist").glob("trix.*")
   end
 
   def content_type(pathname)
