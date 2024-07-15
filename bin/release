@@ -2,7 +2,7 @@
 require "bundler/inline"
 gemfile(true, quiet: true) do
   source "https://rubygems.org"
-  gem "github_api", "~> 0.13.1"
+  gem "github_api"
 end
 
 require "github_api"
