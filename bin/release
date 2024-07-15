@@ -83,7 +83,7 @@ class Release
   end
 
   def pathspecs
-    %w( dist/ src/ package.json LICENSE README.md )
+    %w( src/ package.json LICENSE README.md )
   end
 
   def dist_pathnames
