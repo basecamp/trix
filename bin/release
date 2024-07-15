@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
+require "bundler/inline"
+gemfile(true, quiet: true) do
+  source "https://rubygems.org"
+  gem "github_api", "~> 0.13.1"
+end
 
-require "bundler/setup"
 require "github_api"
 require "pathname"
 require "json"
@@ -16,7 +20,6 @@ class Release
     check_npm
 
     build
-    update_package_json
     update_copyright_year
     commit_changes
     create_release
@@ -24,7 +27,7 @@ class Release
   end
 
   def version
-    @version ||= Pathname.new("src/trix/VERSION").read.chomp
+    @version ||= JSON.load_file("package.json")["version"]
   end
 
   def confirm_version
@@ -33,16 +36,7 @@ class Release
 
   def build
     puts "Building…"
-    system("rm -rf tmp/ && bin/blade build") || abort("Build failed")
-  end
-
-  def update_package_json
-    puts "Updating package.json…"
-
-    pathname = Pathname.new("package.json")
-    data = JSON.parse(pathname.read)
-    data["version"] = version
-    pathname.write(JSON.pretty_generate(data) + "\n")
+    system("yarn install && yarn build") || abort("Build failed")
   end
 
   def update_copyright_year
@@ -111,16 +105,7 @@ class Release
   end
 
   def github
-    @github ||= begin
-      username = `git config --global --get github.user`.chomp
-      password = `git config --global --get github.token`.chomp
-
-      if username.nil? || username == "" || password.nil? || password == ""
-        abort "Must set github.user and github.token in your global gitconfig"
-      end
-
-      Github.new basic_auth: "#{username}:#{password}"
-    end
+    @github ||= Github.new(oauth_token: ENV.fetch("GITHUB_TOKEN"))
   end
 
   def check_npm
