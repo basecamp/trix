@@ -20,8 +20,7 @@ class Release
     check_npm
 
     build
-    update_copyright_year
-    commit_changes
+    push_git_tag
     create_release
     npm_publish
   end
@@ -39,37 +38,8 @@ class Release
     system("yarn install && yarn build") || abort("Build failed")
   end
 
-  def update_copyright_year
-    puts "Updating copyright year…"
-
-    %w( LICENSE README.md ).each do |filename|
-      pathname = Pathname.new(filename)
-      contents = pathname.read
-      year = Time.now.year
-
-      (year - 1).downto(year - 3) do |previous_year|
-        pattern = / #{previous_year} /
-        if contents =~ pattern
-          pathname.write(contents.gsub!(pattern, " #{year} "))
-          break
-        end
-      end
-    end
-  end
-
-  def commit_changes
-    puts `git status #{pathspecs.join(' ')}`
-
-    if confirm "Commit changes?"
-      abort("Failed to commit") unless \
-        system("git add #{pathspecs.join(' ')}") &&
-        system("git commit -m '#{NAME} #{version}'") &&
-        system("git push") &&
-        system("git tag #{version}") &&
-        system("git push --tags")
-    else
-      abort
-    end
+  def push_git_tag
+    system("git tag #{version}") && system("git push --tags")
   end
 
   def create_release
@@ -80,10 +50,6 @@ class Release
     dist_pathnames.each do |pathname|
       github.repos.releases.assets.upload OWNER, REPO, release.id, pathname.to_s, name: pathname.basename.to_s, content_type: content_type(pathname)
     end
-  end
-
-  def pathspecs
-    %w( src/ package.json LICENSE README.md )
   end
 
   def dist_pathnames
