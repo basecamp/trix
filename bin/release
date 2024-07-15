@@ -58,8 +58,9 @@ class Release
 
   def content_type(pathname)
     case pathname.extname
-    when ".js"  then "application/javascript"
     when ".css" then "text/css"
+    when ".js"  then "application/javascript"
+    when ".map" then "application/json"
     end
   end
 
