@@ -12,7 +12,7 @@
         box-sizing: border-box;
       }
 
-      main {
+      main, nav {
         margin: 20px auto;
         max-width: 700px;
       }
@@ -69,10 +69,30 @@
         }
       });
     </script>
+    <script>
+      const searchParams = new URLSearchParams(location.search)
+
+      if (searchParams.get("editor") === "formAssociated") {
+        document.head.insertAdjacentHTML(
+          "beforeend",
+          `<meta name="trix-editor-formAssociated" content="true">`
+        )
+
+        document.addEventListener("trix-change", function(event) {
+          var input = document.getElementById("input")
+          input.value = event.target.value
+        })
+      }
+    </script>
   </head>
   <body>
+    <nav>
+      <a href="/">Legacy support</a>
+      <a href="/?editor=formAssociated">ElementInternals support</a>
+    </nav>
     <main>
-      <trix-editor autofocus class="trix-content" input="input"></trix-editor>
+      <label for="editor">Input</label>
+      <trix-editor autofocus class="trix-content" input="input" id="editor"></trix-editor>
       <details id="output">
         <summary>Output</summary>
         <textarea readonly id="input"></textarea>
