@@ -7,6 +7,12 @@ const DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
 const DEFAULT_FORBIDDEN_ELEMENTS = "script iframe form noscript".split(" ")
 
 export default class HTMLSanitizer extends BasicObject {
+  static setHTML(element, html) {
+    const sanitizedElement = new this(html).sanitize()
+    const sanitizedHtml = sanitizedElement.getHTML ? sanitizedElement.getHTML() : sanitizedElement.outerHTML
+    element.innerHTML = sanitizedHtml
+  }
+
   static sanitize(html, options) {
     const sanitizer = new this(html, options)
     sanitizer.sanitize()
