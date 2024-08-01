@@ -1,6 +1,6 @@
 {
   "name": "trix",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "A rich text editor for everyday writing",
   "main": "dist/trix.umd.min.js",
   "module": "dist/trix.esm.min.js",
