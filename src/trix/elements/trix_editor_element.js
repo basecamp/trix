@@ -110,7 +110,7 @@ installDefaultCSSForTagName("trix-editor", `\
     display: block;
 }
 
-%t:empty:not(:focus)::before {
+%t:empty::before {
     content: attr(placeholder);
     color: graytext;
     cursor: text;
