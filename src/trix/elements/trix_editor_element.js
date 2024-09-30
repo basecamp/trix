@@ -242,7 +242,7 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   get type() {
-    return "trix-editor"
+    return this.localName
   }
 
   // Controller delegate methods
