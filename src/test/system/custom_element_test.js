@@ -133,6 +133,30 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
     assert.equal(eventCount, 5)
   })
 
+  test("invoking internal actions does not dispatch a trix-action-invoke event", async () => {
+    let event = null
+
+    addEventListener("trix-action-invoke", (ev) => event = ev, { once: true })
+    await clickToolbarButton({ action: "link" })
+
+    assert.equal(null, event)
+  })
+
+  test("invoking external actions dispatches a trix-action-invoke event", async () => {
+    let event = null
+    const editor = getEditorElement()
+    editor.toolbarElement.insertAdjacentHTML("beforeend", `
+      <button id="test-action" type="button" data-trix-action="x-test"></button>
+    `)
+
+    addEventListener("trix-action-invoke", (ev) => event = ev, { once: true })
+    await clickToolbarButton({ action: "x-test" })
+
+    assert.equal(editor, event.target)
+    assert.equal("x-test", event.actionName)
+    assert.equal(document.getElementById("test-action"), event.invokingElement)
+  })
+
   test("element triggers trix-change event after toggling attributes", async () => {
     const element = getEditorElement()
     const { editor } = element
