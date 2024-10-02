@@ -1,3 +1,4 @@
+import * as config from "trix/config"
 import { rangesAreEqual } from "trix/core/helpers"
 
 import {
@@ -500,7 +501,7 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
 testGroup("<label> support", { template: "editor_with_labels" }, () => {
   test("associates all label elements", () => {
     const labels = [ document.getElementById("label-1"), document.getElementById("label-3") ]
-    assert.deepEqual(getEditorElement().labels, labels)
+    assert.deepEqual(Array.from(getEditorElement().labels), labels)
   })
 
   test("focuses when <label> clicked", () => {
@@ -538,4 +539,161 @@ testGroup("form property references its <form>", { template: "editors_with_forms
     const editor = document.getElementById("editor-with-no-form")
     assert.equal(editor.form, null)
   })
+
+  test("editor resets to its original value on element reset", async () => {
+    const element = getEditorElement()
+
+    await typeCharacters("hello")
+    element.reset()
+    expectDocument("\n")
+  })
+
+  test("element returns empty string when value is missing", () => {
+    const element = getEditorElement()
+
+    assert.equal(element.value, "")
+  })
+
+  test("editor returns its type", () => {
+    const element = getEditorElement()
+
+    assert.equal("trix-editor", element.type)
+  })
+
+  testIfFormAssociated("adds [disabled] attribute based on .disabled property", () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+
+    editor.disabled = true
+
+    assert.equal(editor.hasAttribute("disabled"), true, "adds [disabled] attribute")
+
+    editor.disabled = false
+
+    assert.equal(editor.hasAttribute("disabled"), false, "removes [disabled] attribute")
+  })
+
+  testIfFormAssociated("removes [contenteditable] and disables input when editor element has [disabled]", () => {
+    const editor = document.getElementById("editor-with-no-form")
+
+    editor.setAttribute("disabled", "")
+
+    assert.equal(editor.matches(":disabled"), true, "sets :disabled CSS pseudostate")
+    assert.equal(editor.inputElement.disabled, true, "disables input")
+    assert.equal(editor.disabled, true, "exposes [disabled] attribute as .disabled property")
+    assert.equal(editor.hasAttribute("contenteditable"), false, "removes [contenteditable] attribute")
+
+    editor.removeAttribute("disabled")
+
+    assert.equal(editor.matches(":disabled"), false, "removes sets :disabled pseudostate")
+    assert.equal(editor.inputElement.disabled, false, "enabled input")
+    assert.equal(editor.disabled, false, "updates .disabled property")
+    assert.equal(editor.hasAttribute("contenteditable"), true, "adds [contenteditable] attribute")
+  })
+
+  testIfFormAssociated("removes [contenteditable] and disables input when editor element is :disabled", () => {
+    const editor = document.getElementById("editor-within-fieldset")
+    const fieldset = document.getElementById("fieldset")
+
+    fieldset.disabled = true
+
+    assert.equal(editor.matches(":disabled"), true, "sets :disabled CSS pseudostate")
+    assert.equal(editor.inputElement.disabled, true, "disables input")
+    assert.equal(editor.disabled, true, "infers disabled state from ancestor")
+    assert.equal(editor.hasAttribute("disabled"), false, "does not set [disabled] attribute")
+    assert.equal(editor.hasAttribute("contenteditable"), false, "removes [contenteditable] attribute")
+
+    fieldset.disabled = false
+
+    assert.equal(editor.matches(":disabled"), false, "removes sets :disabled pseudostate")
+    assert.equal(editor.inputElement.disabled, false, "enabled input")
+    assert.equal(editor.disabled, false, "updates .disabled property")
+    assert.equal(editor.hasAttribute("disabled"), false, "does not set [disabled] attribute")
+    assert.equal(editor.hasAttribute("contenteditable"), true, "adds [contenteditable] attribute")
+  })
+
+  testIfFormAssociated("does not receive focus when :disabled", () => {
+    const activeEditor = document.getElementById("editor-with-input-form")
+    const editor = document.getElementById("editor-within-fieldset")
+
+    activeEditor.focus()
+    editor.disabled = true
+    editor.focus()
+
+    assert.equal(activeEditor, document.activeElement, "disabled editor does not receive focus")
+  })
+
+  testIfFormAssociated("disabled editor does not encode its value when the form is submitted", () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+    const form = editor.form
+
+    editor.inputElement.value = "Hello world"
+    editor.disabled = true
+
+    assert.deepEqual({}, Object.fromEntries(new FormData(form).entries()), "does not write to FormData")
+  })
+
+  testIfFormAssociated("validates with [required] attribute as invalid", () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+    const form = editor.form
+    let invalidEvent, submitEvent = null
+
+    editor.addEventListener("invalid", event => invalidEvent = event, { once: true })
+    form.addEventListener("submit", event => submitEvent = event, { once: true })
+
+    editor.required = true
+    form.requestSubmit()
+
+    // assert.equal(document.activeElement, editor, "editor receives focus")
+    assert.equal(editor.required, true, ".required property retrurns true")
+    assert.equal(editor.validity.valid, false, "validity.valid is false")
+    assert.equal(editor.validationMessage, "Please fill out this field.", "sets .validationMessage")
+    assert.equal(invalidEvent.target, editor, "dispatches 'invalid' event on editor")
+    assert.equal(submitEvent, null, "does not dispatch a 'submit' event")
+  })
+
+  testIfFormAssociated("does not validate with [disabled] attribute", () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+    let invalidEvent = null
+
+    editor.disabled = true
+    editor.required = true
+    editor.addEventListener("invalid", event => invalidEvent = event, { once: true })
+    editor.reportValidity()
+
+    assert.equal(invalidEvent, null, "does not dispatch an 'invalid' event")
+  })
+
+  testIfFormAssociated("re-validates when the value changes", async () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+    editor.required = true
+    editor.focus()
+
+    assert.equal(editor.validity.valid, false, "validity.valid is initially false")
+
+    await typeCharacters("a")
+
+    assert.equal(editor.validity.valid, true, "validity.valid is true after re-validating")
+    assert.equal(editor.validity.valueMissing, false, "validity.valueMissing is false")
+    assert.equal(editor.validationMessage, "", "clears the validationMessage")
+  })
+
+  testIfFormAssociated("accepts a customError validation message", () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+
+    editor.setCustomValidity("A custom validation message")
+
+    assert.equal(editor.validity.valid, false)
+    assert.equal(editor.validity.customError, true)
+    assert.equal(editor.validationMessage, "A custom validation message")
+  })
 })
+
+function testIfFormAssociated(name, callback) {
+  test(name, async () => {
+    if (config.editor.formAssociated) {
+      await callback()
+    } else {
+      assert.equal(config.editor.formAssociated, false, "skipping test that requires ElementInternals")
+    }
+  })
+}

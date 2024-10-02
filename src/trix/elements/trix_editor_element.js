@@ -161,6 +161,19 @@ installDefaultCSSForTagName("trix-editor", `\
 }`)
 
 export default class TrixEditorElement extends HTMLElement {
+  static get formAssociated() {
+    return config.editor.formAssociated
+  }
+
+  #customValidationMessage
+  #internals
+
+  constructor() {
+    super()
+    this.#internals = this.constructor.formAssociated ?
+      this.attachInternals() :
+      null
+  }
 
   // Properties
 
@@ -174,6 +187,8 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   get labels() {
+    if (this.#internals) return this.#internals.labels
+
     const labels = []
     if (this.id && this.ownerDocument) {
       labels.push(...Array.from(this.ownerDocument.querySelectorAll(`label[for='${this.id}']`) || []))
@@ -238,6 +253,76 @@ export default class TrixEditorElement extends HTMLElement {
     this.editor?.loadHTML(this.defaultValue)
   }
 
+  get type() {
+    return this.localName
+  }
+
+  get disabled() {
+    if (this.#internals) {
+      return this.inputElement.disabled
+    } else {
+      console.warn("Trix is not configured to support the [disabled] attribute. Set Trix.config.editor.formAssociated = true")
+
+      return false
+    }
+  }
+
+  set disabled(value) {
+    if (this.#internals) {
+      this.toggleAttribute("disabled", value)
+    } else {
+      console.warn("Trix is not configured to support the [disabled] attribute. Set Trix.config.editor.formAssociated = true")
+    }
+  }
+
+  get required() {
+    if (this.#internals) {
+      return this.hasAttribute("required")
+    } else {
+      console.warn("Trix is not configured to support the [required] attribute. Set Trix.config.editor.formAssociated = true")
+
+      return false
+    }
+  }
+
+  set required(value) {
+    if (this.#internals) {
+      this.toggleAttribute("required", value)
+      this.#synchronizeValidation()
+    } else {
+      console.warn("Trix is not configured to support the [required] attribute. Set Trix.config.editor.formAssociated = true")
+    }
+  }
+
+  get validity() {
+    if (this.#internals) {
+      return this.#internals.validity
+    } else {
+      console.warn("Trix is not configured to support the validity property. Set Trix.config.editor.formAssociated = true")
+      return null
+    }
+  }
+
+  get validationMessage() {
+    if (this.#internals) {
+      return this.#internals.validationMessage
+    } else {
+      console.warn("Trix is not configured to support the validationMessage property. Set Trix.config.editor.formAssociated = true")
+
+      return ""
+    }
+  }
+
+  get willValidate() {
+    if (this.#internals) {
+      return this.#internals.willValidate
+    } else {
+      console.warn("Trix is not configured to support the willValidate property. Set Trix.config.editor.formAssociated = true")
+
+      return false
+    }
+  }
+
   // Controller delegate methods
 
   notify(message, data) {
@@ -246,9 +331,13 @@ export default class TrixEditorElement extends HTMLElement {
     }
   }
 
-  setInputElementValue(value) {
+  setFormValue(value) {
     if (this.inputElement) {
       this.inputElement.value = value
+    }
+
+    if (this.#internals) {
+      this.#synchronizeValidation()
     }
   }
 
@@ -269,16 +358,25 @@ export default class TrixEditorElement extends HTMLElement {
         requestAnimationFrame(() => triggerEvent("trix-initialize", { onElement: this }))
       }
       this.editorController.registerSelectionManager()
-      this.registerResetListener()
-      this.registerClickListener()
+      if (this.#internals) {
+        this.#synchronizeValidation()
+      } else {
+        this.registerResetListener()
+        this.registerClickListener()
+      }
       autofocus(this)
     }
   }
 
   disconnectedCallback() {
     this.editorController?.unregisterSelectionManager()
-    this.unregisterResetListener()
-    return this.unregisterClickListener()
+    if (this.#internals) {
+      // no-op
+    } else {
+      this.unregisterResetListener()
+      return this.unregisterClickListener()
+    }
+
   }
 
   // Form support
@@ -321,5 +419,54 @@ export default class TrixEditorElement extends HTMLElement {
 
   reset() {
     this.value = this.defaultValue
+  }
+
+  checkValidity() {
+    if (this.#internals) {
+      return this.#internals.checkValidity()
+    } else {
+      console.warn("Trix is not configured to support checkValidity(). Set Trix.config.editor.formAssociated = true")
+
+      return true
+    }
+  }
+
+  reportValidity() {
+    if (this.#internals) {
+      return this.#internals.reportValidity()
+    } else {
+      console.warn("Trix is not configured to support reportValidity(). Set Trix.config.editor.formAssociated = true")
+
+      return true
+    }
+  }
+
+  setCustomValidity(validationMessage) {
+    if (this.#internals) {
+      this.#customValidationMessage = validationMessage
+
+      this.#synchronizeValidation()
+    } else {
+      console.warn("Trix is not configured to support setCustomValidity(validationMessage). Set Trix.config.editor.formAssociated = true")
+    }
+  }
+
+  formDisabledCallback(disabled) {
+    this.inputElement.disabled = disabled
+    this.toggleAttribute("contenteditable", !disabled)
+  }
+
+  formResetCallback() {
+    this.reset()
+  }
+
+  #synchronizeValidation() {
+    const { required, value } = this
+    const valueMissing = required && !value
+    const customError = !!this.#customValidationMessage
+    const input = Object.assign(document.createElement("input"), { required })
+    const validationMessage = this.#customValidationMessage || input.validationMessage
+
+    this.#internals.setValidity({ valueMissing, customError }, validationMessage)
   }
 }

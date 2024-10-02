@@ -3,7 +3,7 @@ const config = {
   frameworks: [ "qunit" ],
   files: [
     { pattern: "dist/test.js", watched: false },
-    { pattern: "src/test_helpers/fixtures/*.png", watched: false, included: false, served: true }
+    { pattern: "src/test/test_helpers/fixtures/*.png", watched: false, included: false, served: true }
   ],
   proxies: {
     "/test_helpers/fixtures/": "/base/src/test_helpers/fixtures/"
@@ -28,6 +28,14 @@ const config = {
 }
 
 /* eslint camelcase: "off",  */
+
+if (process.env.FORM_ASSOCIATED === "false") {
+  config.files.push({
+    pattern: "src/test/test_helpers/fixtures/form_associated_false.js",
+    watched: false,
+    included: true
+  })
+}
 
 if (process.env.SAUCE_ACCESS_KEY) {
   config.customLaunchers = {
