@@ -8,12 +8,7 @@ on:
 
 jobs:
   build:
-    name: "Browser tests (Trix.config.editor.formAssociated = ${{ matrix.formAssociated }})"
-    strategy:
-      matrix:
-        formAssociated: [true, false]
-    env:
-      FORM_ASSOCIATED: "${{ matrix.formAssociated }}"
+    name: Browser tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

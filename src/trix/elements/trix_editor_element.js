@@ -161,9 +161,7 @@ installDefaultCSSForTagName("trix-editor", `\
 }`)
 
 export default class TrixEditorElement extends HTMLElement {
-  static get formAssociated() {
-    return config.editor.formAssociated
-  }
+  static formAssociated = "ElementInternals" in window
 
   #customValidationMessage
   #internals
@@ -261,7 +259,7 @@ export default class TrixEditorElement extends HTMLElement {
     if (this.#internals) {
       return this.inputElement.disabled
     } else {
-      console.warn("Trix is not configured to support the [disabled] attribute. Set Trix.config.editor.formAssociated = true")
+      console.warn("This browser does not support the [disabled] attribute for trix-editor elements.")
 
       return false
     }
@@ -271,7 +269,7 @@ export default class TrixEditorElement extends HTMLElement {
     if (this.#internals) {
       this.toggleAttribute("disabled", value)
     } else {
-      console.warn("Trix is not configured to support the [disabled] attribute. Set Trix.config.editor.formAssociated = true")
+      console.warn("This browser does not support the [disabled] attribute for trix-editor elements.")
     }
   }
 
@@ -279,7 +277,7 @@ export default class TrixEditorElement extends HTMLElement {
     if (this.#internals) {
       return this.hasAttribute("required")
     } else {
-      console.warn("Trix is not configured to support the [required] attribute. Set Trix.config.editor.formAssociated = true")
+      console.warn("This browser does not support the [required] attribute for trix-editor elements.")
 
       return false
     }
@@ -290,7 +288,7 @@ export default class TrixEditorElement extends HTMLElement {
       this.toggleAttribute("required", value)
       this.#synchronizeValidation()
     } else {
-      console.warn("Trix is not configured to support the [required] attribute. Set Trix.config.editor.formAssociated = true")
+      console.warn("This browser does not support the [required] attribute for trix-editor elements.")
     }
   }
 
@@ -298,7 +296,7 @@ export default class TrixEditorElement extends HTMLElement {
     if (this.#internals) {
       return this.#internals.validity
     } else {
-      console.warn("Trix is not configured to support the validity property. Set Trix.config.editor.formAssociated = true")
+      console.warn("This browser does not support the validity property for trix-editor elements.")
       return null
     }
   }
@@ -307,7 +305,7 @@ export default class TrixEditorElement extends HTMLElement {
     if (this.#internals) {
       return this.#internals.validationMessage
     } else {
-      console.warn("Trix is not configured to support the validationMessage property. Set Trix.config.editor.formAssociated = true")
+      console.warn("This browser does not support the validationMessage property for trix-editor elements.")
 
       return ""
     }
@@ -317,7 +315,7 @@ export default class TrixEditorElement extends HTMLElement {
     if (this.#internals) {
       return this.#internals.willValidate
     } else {
-      console.warn("Trix is not configured to support the willValidate property. Set Trix.config.editor.formAssociated = true")
+      console.warn("This browser does not support the willValidate property for trix-editor elements.")
 
       return false
     }
@@ -425,7 +423,7 @@ export default class TrixEditorElement extends HTMLElement {
     if (this.#internals) {
       return this.#internals.checkValidity()
     } else {
-      console.warn("Trix is not configured to support checkValidity(). Set Trix.config.editor.formAssociated = true")
+      console.warn("This browser does not support checkValidity() for trix-editor elements.")
 
       return true
     }
@@ -435,7 +433,7 @@ export default class TrixEditorElement extends HTMLElement {
     if (this.#internals) {
       return this.#internals.reportValidity()
     } else {
-      console.warn("Trix is not configured to support reportValidity(). Set Trix.config.editor.formAssociated = true")
+      console.warn("This browser does not support reportValidity() for trix-editor elements.")
 
       return true
     }
@@ -447,7 +445,7 @@ export default class TrixEditorElement extends HTMLElement {
 
       this.#synchronizeValidation()
     } else {
-      console.warn("Trix is not configured to support setCustomValidity(validationMessage). Set Trix.config.editor.formAssociated = true")
+      console.warn("This browser does not support setCustomValidity(validationMessage) for trix-editor elements.")
     }
   }
 

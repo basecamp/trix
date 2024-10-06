@@ -90,12 +90,12 @@ Clicking the quote button toggles whether the block should be rendered with `<bl
 
 ## Integrating with Element Internals
 
-Trix will integrate `<trix-editor>` elements with forms depending on the browser's support for [Element Internals](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals). By default, Trix will enable support for `ElementInternals` when the feature is enabled in the browser. If there is a need to disable support for `ElementInternals`, set `Trix.config.editor.formAssociated = false`:
+Trix will integrate `<trix-editor>` elements with forms depending on the browser's support for [Element Internals](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals). If there is a need to disable support for `ElementInternals`, set `Trix.elements.TrixEditorElement.formAssociated = false`:
 
 ```js
 import Trix from "trix"
 
-Trix.config.editor.formAssociated = false
+Trix.elements.TrixEditorElement.formAssociated = false
 ```
 
 ## Invoking Internal Trix Actions

@@ -1,5 +1,5 @@
-import * as config from "trix/config"
 import { rangesAreEqual } from "trix/core/helpers"
+import TrixEditorElement from "trix/elements/trix_editor_element"
 
 import {
   TEST_IMAGE_URL,
@@ -560,7 +560,7 @@ testGroup("form property references its <form>", { template: "editors_with_forms
     assert.equal("trix-editor", element.type)
   })
 
-  testIfFormAssociated("adds [disabled] attribute based on .disabled property", () => {
+  testIf(TrixEditorElement.formAssociated, "adds [disabled] attribute based on .disabled property", () => {
     const editor = document.getElementById("editor-with-ancestor-form")
 
     editor.disabled = true
@@ -572,7 +572,7 @@ testGroup("form property references its <form>", { template: "editors_with_forms
     assert.equal(editor.hasAttribute("disabled"), false, "removes [disabled] attribute")
   })
 
-  testIfFormAssociated("removes [contenteditable] and disables input when editor element has [disabled]", () => {
+  testIf(TrixEditorElement.formAssociated, "removes [contenteditable] and disables input when editor element has [disabled]", () => {
     const editor = document.getElementById("editor-with-no-form")
 
     editor.setAttribute("disabled", "")
@@ -590,7 +590,7 @@ testGroup("form property references its <form>", { template: "editors_with_forms
     assert.equal(editor.hasAttribute("contenteditable"), true, "adds [contenteditable] attribute")
   })
 
-  testIfFormAssociated("removes [contenteditable] and disables input when editor element is :disabled", () => {
+  testIf(TrixEditorElement.formAssociated, "removes [contenteditable] and disables input when editor element is :disabled", () => {
     const editor = document.getElementById("editor-within-fieldset")
     const fieldset = document.getElementById("fieldset")
 
@@ -611,7 +611,7 @@ testGroup("form property references its <form>", { template: "editors_with_forms
     assert.equal(editor.hasAttribute("contenteditable"), true, "adds [contenteditable] attribute")
   })
 
-  testIfFormAssociated("does not receive focus when :disabled", () => {
+  testIf(TrixEditorElement.formAssociated, "does not receive focus when :disabled", () => {
     const activeEditor = document.getElementById("editor-with-input-form")
     const editor = document.getElementById("editor-within-fieldset")
 
@@ -622,7 +622,7 @@ testGroup("form property references its <form>", { template: "editors_with_forms
     assert.equal(activeEditor, document.activeElement, "disabled editor does not receive focus")
   })
 
-  testIfFormAssociated("disabled editor does not encode its value when the form is submitted", () => {
+  testIf(TrixEditorElement.formAssociated, "disabled editor does not encode its value when the form is submitted", () => {
     const editor = document.getElementById("editor-with-ancestor-form")
     const form = editor.form
 
@@ -632,7 +632,7 @@ testGroup("form property references its <form>", { template: "editors_with_forms
     assert.deepEqual({}, Object.fromEntries(new FormData(form).entries()), "does not write to FormData")
   })
 
-  testIfFormAssociated("validates with [required] attribute as invalid", () => {
+  testIf(TrixEditorElement.formAssociated, "validates with [required] attribute as invalid", () => {
     const editor = document.getElementById("editor-with-ancestor-form")
     const form = editor.form
     let invalidEvent, submitEvent = null
@@ -651,7 +651,7 @@ testGroup("form property references its <form>", { template: "editors_with_forms
     assert.equal(submitEvent, null, "does not dispatch a 'submit' event")
   })
 
-  testIfFormAssociated("does not validate with [disabled] attribute", () => {
+  testIf(TrixEditorElement.formAssociated, "does not validate with [disabled] attribute", () => {
     const editor = document.getElementById("editor-with-ancestor-form")
     let invalidEvent = null
 
@@ -663,7 +663,7 @@ testGroup("form property references its <form>", { template: "editors_with_forms
     assert.equal(invalidEvent, null, "does not dispatch an 'invalid' event")
   })
 
-  testIfFormAssociated("re-validates when the value changes", async () => {
+  testIf(TrixEditorElement.formAssociated, "re-validates when the value changes", async () => {
     const editor = document.getElementById("editor-with-ancestor-form")
     editor.required = true
     editor.focus()
@@ -677,7 +677,7 @@ testGroup("form property references its <form>", { template: "editors_with_forms
     assert.equal(editor.validationMessage, "", "clears the validationMessage")
   })
 
-  testIfFormAssociated("accepts a customError validation message", () => {
+  testIf(TrixEditorElement.formAssociated, "accepts a customError validation message", () => {
     const editor = document.getElementById("editor-with-ancestor-form")
 
     editor.setCustomValidity("A custom validation message")
@@ -687,13 +687,3 @@ testGroup("form property references its <form>", { template: "editors_with_forms
     assert.equal(editor.validationMessage, "A custom validation message")
   })
 })
-
-function testIfFormAssociated(name, callback) {
-  test(name, async () => {
-    if (config.editor.formAssociated) {
-      await callback()
-    } else {
-      assert.equal(config.editor.formAssociated, false, "skipping test that requires ElementInternals")
-    }
-  })
-}
