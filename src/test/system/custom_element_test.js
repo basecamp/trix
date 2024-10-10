@@ -1,4 +1,5 @@
 import { rangesAreEqual } from "trix/core/helpers"
+import TrixEditorElement from "trix/elements/trix_editor_element"
 
 import {
   TEST_IMAGE_URL,
@@ -500,7 +501,7 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
 testGroup("<label> support", { template: "editor_with_labels" }, () => {
   test("associates all label elements", () => {
     const labels = [ document.getElementById("label-1"), document.getElementById("label-3") ]
-    assert.deepEqual(getEditorElement().labels, labels)
+    assert.deepEqual(Array.from(getEditorElement().labels), labels)
   })
 
   test("focuses when <label> clicked", () => {
@@ -537,5 +538,152 @@ testGroup("form property references its <form>", { template: "editors_with_forms
   test("returns null when there is no associated <form>", () => {
     const editor = document.getElementById("editor-with-no-form")
     assert.equal(editor.form, null)
+  })
+
+  test("editor resets to its original value on element reset", async () => {
+    const element = getEditorElement()
+
+    await typeCharacters("hello")
+    element.reset()
+    expectDocument("\n")
+  })
+
+  test("element returns empty string when value is missing", () => {
+    const element = getEditorElement()
+
+    assert.equal(element.value, "")
+  })
+
+  test("editor returns its type", () => {
+    const element = getEditorElement()
+
+    assert.equal("trix-editor", element.type)
+  })
+
+  testIf(TrixEditorElement.formAssociated, "adds [disabled] attribute based on .disabled property", () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+
+    editor.disabled = true
+
+    assert.equal(editor.hasAttribute("disabled"), true, "adds [disabled] attribute")
+
+    editor.disabled = false
+
+    assert.equal(editor.hasAttribute("disabled"), false, "removes [disabled] attribute")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "removes [contenteditable] and disables input when editor element has [disabled]", () => {
+    const editor = document.getElementById("editor-with-no-form")
+
+    editor.setAttribute("disabled", "")
+
+    assert.equal(editor.matches(":disabled"), true, "sets :disabled CSS pseudostate")
+    assert.equal(editor.inputElement.disabled, true, "disables input")
+    assert.equal(editor.disabled, true, "exposes [disabled] attribute as .disabled property")
+    assert.equal(editor.hasAttribute("contenteditable"), false, "removes [contenteditable] attribute")
+
+    editor.removeAttribute("disabled")
+
+    assert.equal(editor.matches(":disabled"), false, "removes sets :disabled pseudostate")
+    assert.equal(editor.inputElement.disabled, false, "enabled input")
+    assert.equal(editor.disabled, false, "updates .disabled property")
+    assert.equal(editor.hasAttribute("contenteditable"), true, "adds [contenteditable] attribute")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "removes [contenteditable] and disables input when editor element is :disabled", () => {
+    const editor = document.getElementById("editor-within-fieldset")
+    const fieldset = document.getElementById("fieldset")
+
+    fieldset.disabled = true
+
+    assert.equal(editor.matches(":disabled"), true, "sets :disabled CSS pseudostate")
+    assert.equal(editor.inputElement.disabled, true, "disables input")
+    assert.equal(editor.disabled, true, "infers disabled state from ancestor")
+    assert.equal(editor.hasAttribute("disabled"), false, "does not set [disabled] attribute")
+    assert.equal(editor.hasAttribute("contenteditable"), false, "removes [contenteditable] attribute")
+
+    fieldset.disabled = false
+
+    assert.equal(editor.matches(":disabled"), false, "removes sets :disabled pseudostate")
+    assert.equal(editor.inputElement.disabled, false, "enabled input")
+    assert.equal(editor.disabled, false, "updates .disabled property")
+    assert.equal(editor.hasAttribute("disabled"), false, "does not set [disabled] attribute")
+    assert.equal(editor.hasAttribute("contenteditable"), true, "adds [contenteditable] attribute")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "does not receive focus when :disabled", () => {
+    const activeEditor = document.getElementById("editor-with-input-form")
+    const editor = document.getElementById("editor-within-fieldset")
+
+    activeEditor.focus()
+    editor.disabled = true
+    editor.focus()
+
+    assert.equal(activeEditor, document.activeElement, "disabled editor does not receive focus")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "disabled editor does not encode its value when the form is submitted", () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+    const form = editor.form
+
+    editor.inputElement.value = "Hello world"
+    editor.disabled = true
+
+    assert.deepEqual({}, Object.fromEntries(new FormData(form).entries()), "does not write to FormData")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "validates with [required] attribute as invalid", () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+    const form = editor.form
+    let invalidEvent, submitEvent = null
+
+    editor.addEventListener("invalid", event => invalidEvent = event, { once: true })
+    form.addEventListener("submit", event => submitEvent = event, { once: true })
+
+    editor.required = true
+    form.requestSubmit()
+
+    // assert.equal(document.activeElement, editor, "editor receives focus")
+    assert.equal(editor.required, true, ".required property retrurns true")
+    assert.equal(editor.validity.valid, false, "validity.valid is false")
+    assert.equal(editor.validationMessage, "Please fill out this field.", "sets .validationMessage")
+    assert.equal(invalidEvent.target, editor, "dispatches 'invalid' event on editor")
+    assert.equal(submitEvent, null, "does not dispatch a 'submit' event")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "does not validate with [disabled] attribute", () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+    let invalidEvent = null
+
+    editor.disabled = true
+    editor.required = true
+    editor.addEventListener("invalid", event => invalidEvent = event, { once: true })
+    editor.reportValidity()
+
+    assert.equal(invalidEvent, null, "does not dispatch an 'invalid' event")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "re-validates when the value changes", async () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+    editor.required = true
+    editor.focus()
+
+    assert.equal(editor.validity.valid, false, "validity.valid is initially false")
+
+    await typeCharacters("a")
+
+    assert.equal(editor.validity.valid, true, "validity.valid is true after re-validating")
+    assert.equal(editor.validity.valueMissing, false, "validity.valueMissing is false")
+    assert.equal(editor.validationMessage, "", "clears the validationMessage")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "accepts a customError validation message", () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+
+    editor.setCustomValidity("A custom validation message")
+
+    assert.equal(editor.validity.valid, false)
+    assert.equal(editor.validity.customError, true)
+    assert.equal(editor.validationMessage, "A custom validation message")
   })
 })
