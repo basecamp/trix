@@ -1,6 +1,7 @@
+import * as config from "trix/config"
 import EditorController from "trix/controllers/editor_controller"
 
-import { assert, test, testGroup } from "test/test_helper"
+import { assert, test, testGroup, testUnless } from "test/test_helper"
 import { nextFrame } from "../test_helpers/timing_helpers"
 
 testGroup("Installation process", { template: "editor_html" }, () => {
@@ -20,8 +21,8 @@ testGroup("Installation process", { template: "editor_html" }, () => {
   })
 })
 
-testGroup("Installation process without specified elements", { template: "editor_empty" }, () =>
-  test("creates identified toolbar and input elements", () => {
+testGroup("Installation process without specified elements", { template: "editor_empty" }, () => {
+  test("creates identified toolbar elements", () => {
     const editorElement = getEditorElement()
 
     const toolbarId = editorElement.getAttribute("toolbar")
@@ -29,6 +30,10 @@ testGroup("Installation process without specified elements", { template: "editor
     const toolbarElement = document.getElementById(toolbarId)
     assert.ok(toolbarElement, "toolbar element not assert.ok")
     assert.equal(editorElement.toolbarElement, toolbarElement)
+  })
+
+  testUnless(config.editor.formAssociated, "creates identified input elements", () => {
+    const editorElement = getEditorElement()
 
     const inputId = editorElement.getAttribute("input")
     assert.ok(/trix-input-\d+/.test(inputId), `input id not assert.ok ${JSON.stringify(inputId)}`)
@@ -36,7 +41,7 @@ testGroup("Installation process without specified elements", { template: "editor
     assert.ok(inputElement, "input element not assert.ok")
     assert.equal(editorElement.inputElement, inputElement)
   })
-)
+})
 
 testGroup("Installation process with specified elements", { template: "editor_with_toolbar_and_input" }, () => {
   test("uses specified elements", () => {

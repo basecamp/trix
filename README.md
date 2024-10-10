@@ -19,7 +19,7 @@ This is the approach that all modern, production ready, WYSIWYG editors now take
 
 <details><summary>Trix supports all evergreen, self-updating desktop and mobile browsers.</summary><img src="https://app.saucelabs.com/browser-matrix/basecamp_trix.svg"></details>
 
-Trix is built with established web standards, notably [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements), [Mutation Observer](https://dom.spec.whatwg.org/#mutation-observers), and [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+Trix is built with established web standards, notably [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements), [Element Internals](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals), [Mutation Observer](https://dom.spec.whatwg.org/#mutation-observers), and [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 
 # Getting Started
 
@@ -49,7 +49,15 @@ document.addEventListener("trix-before-initialize", () => {
 
 ## Creating an Editor
 
-Place an empty `<trix-editor></trix-editor>` tag on the page. Trix will automatically insert a separate `<trix-toolbar>` before the editor.
+Place an empty `<trix-editor></trix-editor>` tag on the page. If the `<trix-editor>` element is rendered with a `[toolbar]` attribute that references the element by its `[id]`, it will treat that element as its toolbar:
+
+```html
+<trix-toolbar id="editor_toolbar"></trix-toolbar>
+
+<trix-editor toolbar="editor_toolbar"></trix-editor>
+```
+
+Otherwise, Trix will automatically insert a separate `<trix-toolbar>` before the editor.
 
 Like an HTML `<textarea>`, `<trix-editor>` accepts `autofocus` and `placeholder` attributes. Unlike a `<textarea>`, `<trix-editor>` automatically expands vertically to fit its contents.
 
@@ -124,6 +132,12 @@ document.addEventListener("trix-action-invoke", function(event) {
 
 ## Integrating With Forms
 
+There are two styles of integrating with `<form>` element submissions.
+
+### Legacy integration with `<input type="hidden">`
+
+Legacy support is provided through an `<input type="hidden">` element paired with an `[input]` attribute on the `<trix-editor>` element.
+
 To submit the contents of a `<trix-editor>` with a form, first define a hidden input field in the form and assign it an `id`. Then reference that `id` in the editor’s `input` attribute.
 
 ```html
@@ -135,7 +149,7 @@ To submit the contents of a `<trix-editor>` with a form, first define a hidden i
 
 Trix will automatically update the value of the hidden input field with each change to the editor.
 
-## Populating With Stored Content
+#### Populating With Stored Content
 
 To populate a `<trix-editor>` with stored content, include that content in the associated input element’s `value` attribute.
 
@@ -147,6 +161,71 @@ To populate a `<trix-editor>` with stored content, include that content in the a
 ```
 
 Always use an associated input element to safely populate an editor. Trix won’t load any HTML content inside a `<trix-editor>…</trix-editor>` tag.
+
+### Integration with Element Internals
+
+Trix can also be configured to integrate with forms through the `<trix-editor>` element's `ElementInternals` instance.
+
+First, configure Trix to opt-into its Element Internals support by rendering a `<meta>` element into the document's `<head>`:
+
+```html
+<head>
+  <!-- … -->
+  <meta name="trix-editor-formAssociated" content="true">
+</head>
+```
+
+Then, to submit the contents of a `<trix-editor>` with a `<form>`, render the element with a `[name]` attribute and its initial value as its inner HTML.
+
+```html
+<form …>
+  <trix-editor name="content"></trix-editor>
+</form>
+```
+
+To associate the element with a `<form>` that isn't an ancestor, render the element with a `[form]` attribute that references the `<form>` element by its `[id]`:
+
+```html
+<form id="a-form-element" …></form>
+<trix-editor name="content" form="a-form-element"></trix-editor>
+```
+
+#### Populating With Stored Content
+
+To populate a `<trix-editor>` with stored content, include that content as HTML inside the element’s inner HTML.
+
+```html
+<form …>
+  <trix-editor>Editor content goes here</trix-editor>
+</form>
+```
+
+## Providing an Accessible Name
+
+Like other form controls, `<trix-editor>` elements should have an accessible name. The `<trix-editor>` element integrates with `<label>` elements and The `<trix-editor>` supports two styles of integrating with `<label>` elements:
+
+1. render the `<trix-editor>` element with an `[id]` attribute that the `<label>` element references through its `[for]` attribute:
+
+```html
+<label for="editor">Editor</label>
+<trix-editor id="editor"></trix-editor>
+```
+
+2. render the `<trix-editor>` element as a child of the `<label>` element:
+
+```html
+<trix-toolbar id="editor-toolbar"></trix-toolbar>
+<label>
+  Editor
+
+  <trix-editor toolbar="editor-toolbar"></trix-editor>
+</label>
+```
+
+> [!WARNING]
+> When rendering the `<trix-editor>` element as a child of the `<label>` element, [explicitly render](#creating-an-editor) the corresponding `<trix-toolbar>` element outside of the `<label>` element.
+
+In addition to integrating with `<label>` elements, `<trix-editor>` elements support `[aria-label]` and `[aria-labelledby]` attributes.
 
 ## Styling Formatted Content
 

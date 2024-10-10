@@ -56,6 +56,10 @@ export const testIf = function (condition, ...args) {
   }
 }
 
+export const testUnless = function(condition, ...args) {
+  testIf(!condition, ...args)
+}
+
 export const { skip, test } = QUnit
 
 const waitForTrixInit = async () => {

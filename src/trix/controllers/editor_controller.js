@@ -503,7 +503,7 @@ export default class EditorController extends Controller {
   updateInputElement() {
     const element = this.compositionController.getSerializableElement()
     const value = serializeToContentType(element, "text/html")
-    return this.editorElement.setInputElementValue(value)
+    return this.editorElement.setFormValue(value)
   }
 
   notifyEditorElement(message, data) {
