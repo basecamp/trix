@@ -48,6 +48,10 @@ export const testGroup = function (name, options, callback) {
   }
 }
 
+export const skipIf = function (condition, ...args) {
+  testIf(!condition, ...args)
+}
+
 export const testIf = function (condition, ...args) {
   if (condition) {
     test(...Array.from(args || []))
