@@ -27,12 +27,12 @@ const Trix = {
 Object.assign(Trix, models)
 
 function start() {
-  if (!customElements.get("trix-toolbar")) {
-    customElements.define("trix-toolbar", elements.TrixToolbarElement)
-  }
-
   if (!customElements.get("trix-editor")) {
     customElements.define("trix-editor", elements.TrixEditorElement)
+  }
+
+  if (!customElements.get("trix-toolbar")) {
+    customElements.define("trix-toolbar", elements.TrixToolbarElement)
   }
 }
 
