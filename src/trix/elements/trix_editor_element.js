@@ -160,7 +160,202 @@ installDefaultCSSForTagName("trix-editor", `\
     margin-right: -1px !important;
 }`)
 
+class ElementInternalsDelegate {
+  #internals
+
+  constructor(element) {
+    this.element = element
+    this.#internals = element.attachInternals()
+  }
+
+  connectedCallback() {
+    this.#validate()
+  }
+
+  disconnectedCallback() {
+  }
+
+  get labels() {
+    return this.#internals.labels
+  }
+
+  get disabled() {
+    return this.element.inputElement?.disabled
+  }
+
+  set disabled(value) {
+    this.element.toggleAttribute("disabled", value)
+  }
+
+  get required() {
+    return this.element.hasAttribute("required")
+  }
+
+  set required(value) {
+    this.element.toggleAttribute("required", value)
+    this.#validate()
+  }
+
+  get validity() {
+    return this.#internals.validity
+  }
+
+  get validationMessage() {
+    return this.#internals.validationMessage
+  }
+
+  get willValidate() {
+    return this.#internals.willValidate
+  }
+
+  setFormValue(value) {
+    this.#validate()
+  }
+
+  checkValidity() {
+    return this.#internals.checkValidity()
+  }
+
+  reportValidity() {
+    return this.#internals.reportValidity()
+  }
+
+  setCustomValidity(validationMessage) {
+    this.#validate(validationMessage)
+  }
+
+  #validate(customValidationMessage = "") {
+    const { required, value } = this.element
+    const valueMissing = required && !value
+    const customError = !!customValidationMessage
+    const input = Object.assign(document.createElement("input"), { required })
+    const validationMessage = customValidationMessage || input.validationMessage
+
+    this.#internals.setValidity({ valueMissing, customError }, validationMessage)
+  }
+}
+
+class LegacyDelegate {
+  #focusHandler
+
+  constructor(element) {
+    this.element = element
+  }
+
+  connectedCallback() {
+    this.#focusHandler = ensureAriaLabel(this.element)
+    window.addEventListener("reset", this.#resetBubbled, false)
+    window.addEventListener("click", this.#clickBubbled, false)
+  }
+
+  disconnectedCallback() {
+    this.#focusHandler?.destroy()
+    window.removeEventListener("reset", this.#resetBubbled, false)
+    window.removeEventListener("click", this.#clickBubbled, false)
+  }
+
+  get labels() {
+    const labels = []
+    if (this.element.id && this.element.ownerDocument) {
+      labels.push(...Array.from(this.element.ownerDocument.querySelectorAll(`label[for='${this.element.id}']`) || []))
+    }
+
+    const label = findClosestElementFromNode(this.element, { matchingSelector: "label" })
+    if (label) {
+      if ([ this.element, null ].includes(label.control)) {
+        labels.push(label)
+      }
+    }
+
+    return labels
+  }
+
+  get disabled() {
+    console.warn("This browser does not support the [disabled] attribute for trix-editor elements.")
+
+    return false
+  }
+
+  set disabled(value) {
+    console.warn("This browser does not support the [disabled] attribute for trix-editor elements.")
+  }
+
+  get required() {
+    console.warn("This browser does not support the [required] attribute for trix-editor elements.")
+
+    return false
+  }
+
+  set required(value) {
+    console.warn("This browser does not support the [required] attribute for trix-editor elements.")
+  }
+
+  get validity() {
+    console.warn("This browser does not support the validity property for trix-editor elements.")
+    return null
+  }
+
+  get validationMessage() {
+    console.warn("This browser does not support the validationMessage property for trix-editor elements.")
+
+    return ""
+  }
+
+  get willValidate() {
+    console.warn("This browser does not support the willValidate property for trix-editor elements.")
+
+    return false
+  }
+
+  setFormValue(value) {
+  }
+
+  checkValidity() {
+    console.warn("This browser does not support checkValidity() for trix-editor elements.")
+
+    return true
+  }
+
+  reportValidity() {
+    console.warn("This browser does not support reportValidity() for trix-editor elements.")
+
+    return true
+  }
+
+  setCustomValidity(validationMessage) {
+    console.warn("This browser does not support setCustomValidity(validationMessage) for trix-editor elements.")
+  }
+
+  #resetBubbled = (event) => {
+    if (event.defaultPrevented) return
+    if (event.target !== this.element.form) return
+    this.element.reset()
+  }
+
+  #clickBubbled = (event) => {
+    if (event.defaultPrevented) return
+    if (this.element.contains(event.target)) return
+
+    const label = findClosestElementFromNode(event.target, { matchingSelector: "label" })
+    if (!label) return
+
+    if (!Array.from(this.labels).includes(label)) return
+
+    this.element.focus()
+  }
+}
+
 export default class TrixEditorElement extends HTMLElement {
+  static formAssociated = "ElementInternals" in window
+
+  #delegate
+
+  constructor() {
+    super()
+    this.#delegate = this.constructor.formAssociated ?
+      new ElementInternalsDelegate(this) :
+      new LegacyDelegate(this)
+  }
 
   // Properties
 
@@ -174,19 +369,39 @@ export default class TrixEditorElement extends HTMLElement {
   }
 
   get labels() {
-    const labels = []
-    if (this.id && this.ownerDocument) {
-      labels.push(...Array.from(this.ownerDocument.querySelectorAll(`label[for='${this.id}']`) || []))
-    }
+    return this.#delegate.labels
+  }
 
-    const label = findClosestElementFromNode(this, { matchingSelector: "label" })
-    if (label) {
-      if ([ this, null ].includes(label.control)) {
-        labels.push(label)
-      }
-    }
+  get disabled() {
+    return this.#delegate.disabled
+  }
 
-    return labels
+  set disabled(value) {
+    this.#delegate.disabled = value
+  }
+
+  get required() {
+    return this.#delegate.required
+  }
+
+  set required(value) {
+    this.#delegate.required = value
+  }
+
+  get validity() {
+    return this.#delegate.validity
+  }
+
+  get validationMessage() {
+    return this.#delegate.validationMessage
+  }
+
+  get willValidate() {
+    return this.#delegate.willValidate
+  }
+
+  get type() {
+    return this.localName
   }
 
   get toolbarElement() {
@@ -246,9 +461,10 @@ export default class TrixEditorElement extends HTMLElement {
     }
   }
 
-  setInputElementValue(value) {
+  setFormValue(value) {
     if (this.inputElement) {
       this.inputElement.value = value
+      this.#delegate.setFormValue(value)
     }
   }
 
@@ -258,7 +474,6 @@ export default class TrixEditorElement extends HTMLElement {
     if (!this.hasAttribute("data-trix-internal")) {
       makeEditable(this)
       addAccessibilityRole(this)
-      ensureAriaLabel(this)
 
       if (!this.editorController) {
         triggerEvent("trix-before-initialize", { onElement: this })
@@ -269,54 +484,39 @@ export default class TrixEditorElement extends HTMLElement {
         requestAnimationFrame(() => triggerEvent("trix-initialize", { onElement: this }))
       }
       this.editorController.registerSelectionManager()
-      this.registerResetListener()
-      this.registerClickListener()
+      this.#delegate.connectedCallback()
       autofocus(this)
     }
   }
 
   disconnectedCallback() {
     this.editorController?.unregisterSelectionManager()
-    this.unregisterResetListener()
-    return this.unregisterClickListener()
+    this.#delegate.disconnectedCallback()
   }
 
   // Form support
 
-  registerResetListener() {
-    this.resetListener = this.resetBubbled.bind(this)
-    return window.addEventListener("reset", this.resetListener, false)
+  checkValidity() {
+    return this.#delegate.checkValidity()
   }
 
-  unregisterResetListener() {
-    return window.removeEventListener("reset", this.resetListener, false)
+  reportValidity() {
+    return this.#delegate.reportValidity()
   }
 
-  registerClickListener() {
-    this.clickListener = this.clickBubbled.bind(this)
-    return window.addEventListener("click", this.clickListener, false)
+  setCustomValidity(validationMessage) {
+    this.#delegate.setCustomValidity(validationMessage)
   }
 
-  unregisterClickListener() {
-    return window.removeEventListener("click", this.clickListener, false)
+  formDisabledCallback(disabled) {
+    if (this.inputElement) {
+      this.inputElement.disabled = disabled
+    }
+    this.toggleAttribute("contenteditable", !disabled)
   }
 
-  resetBubbled(event) {
-    if (event.defaultPrevented) return
-    if (event.target !== this.form) return
-    return this.reset()
-  }
-
-  clickBubbled(event) {
-    if (event.defaultPrevented) return
-    if (this.contains(event.target)) return
-
-    const label = findClosestElementFromNode(event.target, { matchingSelector: "label" })
-    if (!label) return
-
-    if (!Array.from(this.labels).includes(label)) return
-
-    return this.focus()
+  formResetCallback() {
+    this.reset()
   }
 
   reset() {

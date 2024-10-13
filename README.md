@@ -19,7 +19,7 @@ This is the approach that all modern, production ready, WYSIWYG editors now take
 
 <details><summary>Trix supports all evergreen, self-updating desktop and mobile browsers.</summary><img src="https://app.saucelabs.com/browser-matrix/basecamp_trix.svg"></details>
 
-Trix is built with established web standards, notably [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements), [Mutation Observer](https://dom.spec.whatwg.org/#mutation-observers), and [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+Trix is built with established web standards, notably [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements), [Element Internals](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals), [Mutation Observer](https://dom.spec.whatwg.org/#mutation-observers), and [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 
 # Getting Started
 
@@ -88,6 +88,16 @@ If the attribute is defined in `Trix.config.blockAttributes`, Trix will apply th
 
 Clicking the quote button toggles whether the block should be rendered with `<blockquote>`.
 
+## Integrating with Element Internals
+
+Trix will integrate `<trix-editor>` elements with forms depending on the browser's support for [Element Internals](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals). If there is a need to disable support for `ElementInternals`, set `Trix.elements.TrixEditorElement.formAssociated = false`:
+
+```js
+import Trix from "trix"
+
+Trix.elements.TrixEditorElement.formAssociated = false
+```
+
 ## Invoking Internal Trix Actions
 
 Internal actions are defined in `controllers/editor_controller.js` and consist of:
@@ -147,6 +157,126 @@ To populate a `<trix-editor>` with stored content, include that content in the a
 ```
 
 Always use an associated input element to safely populate an editor. Trix won’t load any HTML content inside a `<trix-editor>…</trix-editor>` tag.
+
+## Validating the Editor
+
+Out of the box, `<trix-editor>` elements support browsers' built-in [Constraint
+validation][]. When rendered with the [required][] attribute, editors will be
+invalid when they're completely empty. For example, consider the following HTML:
+
+```html
+<input id="x" value="" type="hidden" name="content">
+<trix-editor input="x" required></trix-editor>
+```
+
+Since the `<trix-editor>` element is `[required]`, it is invalid when its value
+is empty:
+
+```js
+const editor = document.querySelector("trix-editor")
+
+editor.validity.valid        // => false
+editor.validity.valueMissing // => true
+editor.matches(":valid")     // => false
+editor.matches(":invalid")   // => true
+
+editor.value = "A value that isn't empty"
+
+editor.validity.valid         // => true
+editor.validity.valueMissing  // => false
+editor.matches(":valid")      // => true
+editor.matches(":invalid")    // => false
+```
+
+In addition to the built-in `[required]` attribute, `<trix-editor>`
+elements support custom validation through their [setCustomValidity][] method.
+For example, consider the following HTML:
+
+```js
+<input id="x" value="" type="hidden" name="content">
+<trix-editor input="x"></trix-editor>
+```
+
+Custom validation can occur at any time. For example, validation can occur after
+a `trix-change` event fired after the editor's contents change:
+
+```js
+addEventListener("trix-change", (event) => {
+  const editorElement = event.target
+  const trixDocument = editorElement.editor.getDocument()
+  const isValid = (trixDocument) => {
+    // determine the validity based on your custom criteria
+    return true
+  }
+
+  if (isValid(trixDocument)) {
+    editorElement.setCustomValidity("")
+  } else {
+    editorElement.setCustomValidity("The document is not valid.")
+  }
+}
+```
+
+[Constraint validation]: https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation
+[required]: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/required
+[setCustomValidity]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLObjectElement/setCustomValidity
+
+## Disabling the Editor
+
+To disable the `<trix-editor>`, render it with the `[disabled]` attribute:
+
+```html
+<trix-editor disabled></trix-editor>
+```
+
+Disabled editors are not editable, cannot receive focus, and their values will
+be ignored when their related `<form>` element is submitted.
+
+To change whether or not an editor is disabled, either toggle the `[disabled]`
+attribute or assign a boolean to the `.disabled` property:
+
+```html
+<trix-editor id="editor" disabled></trix-editor>
+
+<script>
+  const editor = document.getElementById("editor")
+
+  editor.toggleAttribute("disabled", false)
+  editor.disabled = true
+</script>
+```
+
+When disabled, the editor will match the [:disabled CSS
+pseudo-class][:disabled].
+
+[:disabled]: https://developer.mozilla.org/en-US/docs/Web/CSS/:disabled
+
+## Providing an Accessible Name
+
+Like other form controls, `<trix-editor>` elements should have an accessible name. The `<trix-editor>` element integrates with `<label>` elements and The `<trix-editor>` supports two styles of integrating with `<label>` elements:
+
+1. render the `<trix-editor>` element with an `[id]` attribute that the `<label>` element references through its `[for]` attribute:
+
+```html
+<label for="editor">Editor</label>
+<trix-editor id="editor"></trix-editor>
+```
+
+2. render the `<trix-editor>` element as a child of the `<label>` element:
+
+```html
+<trix-toolbar id="editor-toolbar"></trix-toolbar>
+<label>
+  Editor
+
+  <trix-editor toolbar="editor-toolbar"></trix-editor>
+</label>
+```
+
+> [!WARNING]
+> When rendering the `<trix-editor>` element as a child of the `<label>` element, [explicitly render](#creating-an-editor) the corresponding `<trix-toolbar>` element outside of the `<label>` element.
+
+In addition to integrating with `<label>` elements, `<trix-editor>` elements support `[aria-label]` and `[aria-labelledby]` attributes.
 
 ## Styling Formatted Content
 
