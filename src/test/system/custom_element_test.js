@@ -1,4 +1,4 @@
-import { rangesAreEqual } from "trix/core/helpers"
+import { makeElement, rangesAreEqual } from "trix/core/helpers"
 import TrixEditorElement from "trix/elements/trix_editor_element"
 
 import {
@@ -635,6 +635,7 @@ testGroup("form property references its <form>", { template: "editors_with_forms
   testIf(TrixEditorElement.formAssociated, "validates with [required] attribute as invalid", () => {
     const editor = document.getElementById("editor-with-ancestor-form")
     const form = editor.form
+    const invalidInput = makeElement("input", { required: true })
     let invalidEvent, submitEvent = null
 
     editor.addEventListener("invalid", event => invalidEvent = event, { once: true })
@@ -646,7 +647,7 @@ testGroup("form property references its <form>", { template: "editors_with_forms
     // assert.equal(document.activeElement, editor, "editor receives focus")
     assert.equal(editor.required, true, ".required property retrurns true")
     assert.equal(editor.validity.valid, false, "validity.valid is false")
-    assert.equal(editor.validationMessage, "Please fill out this field.", "sets .validationMessage")
+    assert.equal(editor.validationMessage, invalidInput.validationMessage, "sets .validationMessage")
     assert.equal(invalidEvent.target, editor, "dispatches 'invalid' event on editor")
     assert.equal(submitEvent, null, "does not dispatch a 'submit' event")
   })
