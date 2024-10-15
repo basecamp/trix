@@ -228,7 +228,7 @@ class ElementInternalsDelegate {
     const { required, value } = this.element
     const valueMissing = required && !value
     const customError = !!customValidationMessage
-    const input = Object.assign(document.createElement("input"), { required })
+    const input = makeElement("input", { required })
     const validationMessage = customValidationMessage || input.validationMessage
 
     this.#internals.setValidity({ valueMissing, customError }, validationMessage)
