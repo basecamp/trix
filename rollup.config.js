@@ -13,12 +13,12 @@ const banner = `/*\nTrix ${version}\nCopyright © ${year} 37signals, LLC\n */`
 const plugins = [
   json(),
   includePaths({
-    paths: [ "src" ],
-    extensions: [ ".js" ]
+    paths: ["src"],
+    extensions: [".js"]
   }),
-  nodeResolve({ extensions: [ ".js" ] }),
+  nodeResolve({ extensions: [".js"] }),
   commonjs({
-    extensions: [ ".js" ]
+    extensions: [".js"]
   }),
   babel({ babelHelpers: "bundled" }),
 ]
@@ -54,13 +54,7 @@ export default [
     input: "src/trix/trix.js",
     output: [
       {
-        name: "Trix",
-        file: "dist/trix.umd.js",
-        format: "umd",
-        banner
-      },
-      {
-        file: "dist/trix.esm.js",
+        dir: "dist/trix.esm",
         format: "es",
         banner
       }
@@ -71,14 +65,7 @@ export default [
     input: "src/trix/trix.js",
     output: [
       {
-        name: "Trix",
-        file: "dist/trix.umd.min.js",
-        format: "umd",
-        banner,
-        sourcemap: true
-      },
-      {
-        file: "dist/trix.esm.min.js",
+        dir: "dist/trix.esm.min",
         format: "es",
         banner,
         sourcemap: true
@@ -92,6 +79,7 @@ export default [
       name: "TrixTests",
       file: "dist/test.js",
       format: "es",
+      inlineDynamicImports: true,
       sourcemap: true,
       banner
     },

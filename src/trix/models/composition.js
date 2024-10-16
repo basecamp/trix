@@ -54,7 +54,7 @@ export default class Composition extends BasicObject {
   loadSnapshot({ document, selectedRange }) {
     this.delegate?.compositionWillLoadSnapshot?.()
     this.setDocument(document != null ? document : new Document())
-    this.setSelection(selectedRange != null ? selectedRange : [ 0, 0 ])
+    this.setSelection(selectedRange != null ? selectedRange : [0, 0])
     return this.delegate?.compositionDidLoadSnapshot?.()
   }
 
@@ -70,11 +70,11 @@ export default class Composition extends BasicObject {
     if (updatePosition) {
       this.setSelection(endPosition)
     }
-    return this.notifyDelegateOfInsertionAtRange([ startPosition, endPosition ])
+    return this.notifyDelegateOfInsertionAtRange([startPosition, endPosition])
   }
 
   insertBlock(block = new Block()) {
-    const document = new Document([ block ])
+    const document = new Document([block])
     return this.insertDocument(document)
   }
 
@@ -86,7 +86,7 @@ export default class Composition extends BasicObject {
     const endPosition = startPosition + document.getLength()
 
     this.setSelection(endPosition)
-    return this.notifyDelegateOfInsertionAtRange([ startPosition, endPosition ])
+    return this.notifyDelegateOfInsertionAtRange([startPosition, endPosition])
   }
 
   insertString(string, options) {
@@ -103,7 +103,7 @@ export default class Composition extends BasicObject {
     const endPosition = startPosition + 1
 
     this.setSelection(endPosition)
-    return this.notifyDelegateOfInsertionAtRange([ startPosition, endPosition ])
+    return this.notifyDelegateOfInsertionAtRange([startPosition, endPosition])
   }
 
   insertLineBreak() {
@@ -113,7 +113,7 @@ export default class Composition extends BasicObject {
       this.decreaseListLevel()
       return this.setSelection(insertion.startPosition)
     } else if (insertion.shouldPrependListItem()) {
-      const document = new Document([ insertion.block.copyWithoutText() ])
+      const document = new Document([insertion.block.copyWithoutText()])
       return this.insertDocument(document)
     } else if (insertion.shouldInsertBlockBreak()) {
       return this.insertBlockBreak()
@@ -136,7 +136,7 @@ export default class Composition extends BasicObject {
     const endPosition = startPosition + document.getLength() - 1
 
     this.setSelection(endPosition)
-    return this.notifyDelegateOfInsertionAtRange([ startPosition, endPosition ])
+    return this.notifyDelegateOfInsertionAtRange([startPosition, endPosition])
   }
 
   replaceHTML(html) {
@@ -148,7 +148,7 @@ export default class Composition extends BasicObject {
   }
 
   insertFile(file) {
-    return this.insertFiles([ file ])
+    return this.insertFiles([file])
   }
 
   insertFiles(files) {
@@ -165,7 +165,7 @@ export default class Composition extends BasicObject {
   }
 
   insertAttachment(attachment) {
-    return this.insertAttachments([ attachment ])
+    return this.insertAttachments([attachment])
   }
 
   insertAttachments(attachments) {
@@ -253,7 +253,7 @@ export default class Composition extends BasicObject {
   }
 
   moveTextFromRange(range) {
-    const [ position ] = Array.from(this.getSelectedRange())
+    const [position] = Array.from(this.getSelectedRange())
     this.setDocument(this.document.moveTextFromRangeToPosition(range, position))
     return this.setSelection(position)
   }
@@ -268,7 +268,7 @@ export default class Composition extends BasicObject {
   }
 
   removeLastBlockAttribute() {
-    const [ startPosition, endPosition ] = Array.from(this.getSelectedRange())
+    const [startPosition, endPosition] = Array.from(this.getSelectedRange())
     const block = this.document.getBlockAtPosition(endPosition)
     this.removeCurrentAttribute(block.getLastAttribute())
     return this.setSelection(startPosition)
@@ -281,7 +281,7 @@ export default class Composition extends BasicObject {
 
   selectPlaceholder() {
     if (this.placeholderPosition != null) {
-      this.setSelectedRange([ this.placeholderPosition, this.placeholderPosition + PLACEHOLDER.length ])
+      this.setSelectedRange([this.placeholderPosition, this.placeholderPosition + PLACEHOLDER.length])
       return this.getSelectedRange()
     }
   }
@@ -355,10 +355,12 @@ export default class Composition extends BasicObject {
     const selectedRange = this.getSelectedRange()
     if (!selectedRange) return
 
-    const [ startPosition, endPosition ] = Array.from(selectedRange)
+    const [startPosition, endPosition] = Array.from(selectedRange)
     if (startPosition === endPosition) {
       if (attributeName === "href") {
-        const text = Text.textForStringWithAttributes(value, { href: value })
+        const withoutHttp = value.replace(/^https?:\/\//, "");
+        const withoutMailto = withoutHttp.replace(/^mailto:/, "");
+        const text = Text.textForStringWithAttributes(withoutMailto, { href: value })
         return this.insertText(text)
       }
     } else {
@@ -438,7 +440,7 @@ export default class Composition extends BasicObject {
   }
 
   decreaseListLevel() {
-    let [ startPosition ] = Array.from(this.getSelectedRange())
+    let [startPosition] = Array.from(this.getSelectedRange())
     const { index } = this.document.locationFromPosition(startPosition)
     let endIndex = index
     const attributeLevel = this.getBlock().getAttributeLevel()
@@ -454,7 +456,7 @@ export default class Composition extends BasicObject {
 
     startPosition = this.document.positionFromLocation({ index, offset: 0 })
     const endPosition = this.document.positionFromLocation({ index: endIndex, offset: 0 })
-    return this.setDocument(this.document.removeLastListAttributeAtRange([ startPosition, endPosition ]))
+    return this.setDocument(this.document.removeLastListAttributeAtRange([startPosition, endPosition]))
   }
 
   updateCurrentAttributes() {
@@ -562,7 +564,7 @@ export default class Composition extends BasicObject {
   }
 
   getExpandedRangeInDirection(direction, { length } = {}) {
-    let [ startPosition, endPosition ] = Array.from(this.getSelectedRange())
+    let [startPosition, endPosition] = Array.from(this.getSelectedRange())
     if (direction === "backward") {
       if (length) {
         startPosition -= length
@@ -576,7 +578,7 @@ export default class Composition extends BasicObject {
         endPosition = this.translateUTF16PositionFromOffset(endPosition, 1)
       }
     }
-    return normalizeRange([ startPosition, endPosition ])
+    return normalizeRange([startPosition, endPosition])
   }
 
   shouldManageMovingCursorInDirection(direction) {
@@ -727,7 +729,7 @@ export default class Composition extends BasicObject {
     let { document } = insertion
     const { block } = insertion
     let position = insertion.startPosition
-    let range = [ position - 1, position ]
+    let range = [position - 1, position]
 
     if (block.getBlockBreakPosition() === insertion.startLocation.offset) {
       if (block.breaksOnReturn() && insertion.nextCharacter === "\n") {
@@ -735,19 +737,19 @@ export default class Composition extends BasicObject {
       } else {
         document = document.removeTextAtRange(range)
       }
-      range = [ position, position ]
+      range = [position, position]
     } else if (insertion.nextCharacter === "\n") {
       if (insertion.previousCharacter === "\n") {
-        range = [ position - 1, position + 1 ]
+        range = [position - 1, position + 1]
       } else {
-        range = [ position, position + 1 ]
+        range = [position, position + 1]
         position += 1
       }
     } else if (insertion.startLocation.offset - 1 !== 0) {
       position += 1
     }
 
-    const newDocument = new Document([ block.removeLastAttribute().copyWithoutText() ])
+    const newDocument = new Document([block.removeLastAttribute().copyWithoutText()])
     this.setDocument(document.insertDocumentAtRange(newDocument, range))
     return this.setSelection(position)
   }

@@ -33,7 +33,7 @@ export default class PieceView extends ObjectView {
       Array.from(nodes).forEach((node) => {
         innerElement.appendChild(node)
       })
-      nodes = [ element ]
+      nodes = [element]
     }
     return nodes
   }
@@ -47,7 +47,7 @@ export default class PieceView extends ObjectView {
 
   createStringNodes() {
     if (this.textConfig?.plaintext) {
-      return [ document.createTextNode(this.string) ]
+      return [document.createTextNode(this.string)]
     } else {
       const nodes = []
       const iterable = this.string.split("\n")
@@ -118,6 +118,10 @@ export default class PieceView extends ObjectView {
         if (config.groupTagName) {
           const attributes = {}
           attributes[key] = value
+
+          if (config.attributes) {
+            Object.assign(attributes, config.attributes)
+          }
           return makeElement(config.groupTagName, attributes)
         }
       }

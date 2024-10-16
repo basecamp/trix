@@ -1,5 +1,4 @@
-import Trix from "trix/trix"
-
+import TrixInit from "trix/trix"
 export * from "trix/core/helpers/functions"
 export * from "trix/core/helpers/global"
 export * from "./test_helpers/event_helpers"
@@ -14,15 +13,15 @@ export * from "./test_helpers/editor_helpers"
 export * from "./test_helpers/toolbar_helpers"
 export * from "./test_helpers/selection_helpers"
 
-window.Trix = Trix
-Trix.config.undo.interval = 0
+(async () => {
+  await TrixInit.init();
+  Trix.config.undo.interval = 0
+  QUnit.config.hidepassed = true
+  QUnit.config.testTimeout = 20000
 
-QUnit.config.hidepassed = true
-QUnit.config.testTimeout = 20000
-
-document.head.insertAdjacentHTML(
-  "beforeend",
-  `<style type="text/css">
+  document.head.insertAdjacentHTML(
+    "beforeend",
+    `<style type="text/css">
     #trix-container { height: 150px; }
     trix-toolbar { margin-bottom: 10px; }
     trix-toolbar button { border: 1px solid #ccc; background: #fff; }
@@ -30,4 +29,6 @@ document.head.insertAdjacentHTML(
     trix-toolbar button:disabled { color: #ccc; }
     #qunit { position: relative !important; }
   </style>`
-)
+  )
+})();
+

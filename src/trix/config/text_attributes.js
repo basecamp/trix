@@ -19,6 +19,7 @@ export default {
   },
   href: {
     groupTagName: "a",
+    attributes: { target: "_blank" },
     parser(element) {
       const matchingSelector = `a:not(${attachmentSelector})`
       const link = element.closest(matchingSelector)

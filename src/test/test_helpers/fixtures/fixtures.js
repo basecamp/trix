@@ -41,7 +41,7 @@ const { css } = config
 
 const createDocument = function (...parts) {
   const blocks = parts.map((part) => {
-    const [ string, textAttributes, blockAttributes, htmlAttributes = {} ] = Array.from(part)
+    const [string, textAttributes, blockAttributes, htmlAttributes = {}] = Array.from(part)
     const text = Text.textForStringWithAttributes(string, textAttributes)
     return new Block(text, blockAttributes, htmlAttributes)
   })
@@ -68,29 +68,29 @@ const removeWhitespace = (string) => string.replace(/\s/g, "")
 
 export const fixtures = {
   "bold text": {
-    document: createDocument([ "abc", { bold: true } ]),
+    document: createDocument(["abc", { bold: true }]),
     html: `<div>${blockComment}<strong>abc</strong></div>`,
     serializedHTML: "<div><strong>abc</strong></div>",
   },
 
   "bold, italic text": {
-    document: createDocument([ "abc", { bold: true, italic: true } ]),
+    document: createDocument(["abc", { bold: true, italic: true }]),
     html: `<div>${blockComment}<strong><em>abc</em></strong></div>`,
   },
 
   "text with newline": {
-    document: createDocument([ "ab\nc" ]),
+    document: createDocument(["ab\nc"]),
     html: `<div>${blockComment}ab<br>c</div>`,
   },
 
   "text with link": {
-    document: createDocument([ "abc", { href: "http://example.com" } ]),
-    html: `<div>${blockComment}<a href="http://example.com">abc</a></div>`,
+    document: createDocument(["abc", { href: "http://example.com" }]),
+    html: `<div>${blockComment}<a href="http://example.com" target="_blank">abc</a></div>`,
   },
 
   "text with link and formatting": {
-    document: createDocument([ "abc", { italic: true, href: "http://example.com" } ]),
-    html: `<div>${blockComment}<a href="http://example.com"><em>abc</em></a></div>`,
+    document: createDocument(["abc", { italic: true, href: "http://example.com" }]),
+    html: `<div>${blockComment}<a href="http://example.com" target="_blank"><em>abc</em></a></div>`,
   },
 
   "partially formatted link": {
@@ -102,61 +102,61 @@ export const fixtures = {
         ])
       ),
     ]),
-    html: `<div>${blockComment}<a href="http://example.com">ab<em>c</em></a></div>`,
+    html: `<div>${blockComment}<a href="http://example.com" target="_blank">ab<em>c</em></a></div>`,
   },
 
   "spaces 1": {
-    document: createDocument([ " a" ]),
+    document: createDocument([" a"]),
     html: `<div>${blockComment}&nbsp;a</div>`,
   },
 
   "spaces 2": {
-    document: createDocument([ "  a" ]),
+    document: createDocument(["  a"]),
     html: `<div>${blockComment}&nbsp; a</div>`,
   },
 
   "spaces 3": {
-    document: createDocument([ "   a" ]),
+    document: createDocument(["   a"]),
     html: `<div>${blockComment}&nbsp; &nbsp;a</div>`,
   },
 
   "spaces 4": {
-    document: createDocument([ " a " ]),
+    document: createDocument([" a "]),
     html: `<div>${blockComment}&nbsp;a&nbsp;</div>`,
   },
 
   "spaces 5": {
-    document: createDocument([ "a  b" ]),
+    document: createDocument(["a  b"]),
     html: `<div>${blockComment}a&nbsp; b</div>`,
   },
 
   "spaces 6": {
-    document: createDocument([ "a   b" ]),
+    document: createDocument(["a   b"]),
     html: `<div>${blockComment}a &nbsp; b</div>`,
   },
 
   "spaces 7": {
-    document: createDocument([ "a    b" ]),
+    document: createDocument(["a    b"]),
     html: `<div>${blockComment}a&nbsp; &nbsp; b</div>`,
   },
 
   "spaces 8": {
-    document: createDocument([ "a b " ]),
+    document: createDocument(["a b "]),
     html: `<div>${blockComment}a b&nbsp;</div>`,
   },
 
   "spaces 9": {
-    document: createDocument([ "a b c" ]),
+    document: createDocument(["a b c"]),
     html: `<div>${blockComment}a b c</div>`,
   },
 
   "spaces 10": {
-    document: createDocument([ "a " ]),
+    document: createDocument(["a "]),
     html: `<div>${blockComment}a&nbsp;</div>`,
   },
 
   "spaces 11": {
-    document: createDocument([ "a  " ]),
+    document: createDocument(["a  "]),
     html: `<div>${blockComment}a &nbsp;</div>`,
   },
 
@@ -174,75 +174,75 @@ export const fixtures = {
         ])
       ),
     ]),
-    html: `<div>${blockComment}&nbsp;a <a href="http://b.com">b</a> <strong>c</strong> d<em> e </em>&nbsp;f &nbsp;</div>`,
+    html: `<div>${blockComment}&nbsp;a <a href="http://b.com" target="_blank">b</a> <strong>c</strong> d<em> e </em>&nbsp;f &nbsp;</div>`,
   },
 
   "quote formatted block": {
-    document: createDocument([ "abc", {}, [ "quote" ] ]),
+    document: createDocument(["abc", {}, ["quote"]]),
     html: `<blockquote>${blockComment}abc</blockquote>`,
   },
 
   "code formatted block": {
-    document: createDocument([ "123", {}, [ "code" ] ]),
+    document: createDocument(["123", {}, ["code"]]),
     html: `<pre>${blockComment}123</pre>`,
   },
 
   "code with newline": {
-    document: createDocument([ "12\n3", {}, [ "code" ] ]),
+    document: createDocument(["12\n3", {}, ["code"]]),
     html: `<pre>${blockComment}12\n3</pre>`,
   },
 
   "code with custom language": {
-    document: createDocument([ "puts \"Hello world!\"", {}, [ "code" ], { "language": "ruby" } ]),
+    document: createDocument(["puts \"Hello world!\"", {}, ["code"], { "language": "ruby" }]),
     html: `<pre language="ruby">${blockComment}puts "Hello world!"</pre>`,
     serializedHTML: "<pre language=\"ruby\">puts \"Hello world!\"</pre>"
   },
 
   "multiple blocks with block comments in their text": {
-    document: createDocument([ `a${blockComment}b`, {}, [ "quote" ] ], [ `${blockComment}c`, {}, [ "code" ] ]),
+    document: createDocument([`a${blockComment}b`, {}, ["quote"]], [`${blockComment}c`, {}, ["code"]]),
     html: `<blockquote>${blockComment}a&lt;!--block--&gt;b</blockquote><pre>${blockComment}&lt;!--block--&gt;c</pre>`,
     serializedHTML: "<blockquote>a&lt;!--block--&gt;b</blockquote><pre>&lt;!--block--&gt;c</pre>",
   },
 
   "unordered list with one item": {
-    document: createDocument([ "a", {}, [ "bulletList", "bullet" ] ]),
+    document: createDocument(["a", {}, ["bulletList", "bullet"]]),
     html: `<ul><li>${blockComment}a</li></ul>`,
   },
 
   "unordered list with bold text": {
-    document: createDocument([ "a", { bold: true }, [ "bulletList", "bullet" ] ]),
+    document: createDocument(["a", { bold: true }, ["bulletList", "bullet"]]),
     html: `<ul><li>${blockComment}<strong>a</strong></li></ul>`,
   },
 
   "unordered list with partially formatted text": {
     document: new Document([
-      new Block(new Text([ new StringPiece("a"), new StringPiece("b", { italic: true }) ]), [ "bulletList", "bullet" ]),
+      new Block(new Text([new StringPiece("a"), new StringPiece("b", { italic: true })]), ["bulletList", "bullet"]),
     ]),
     html: `<ul><li>${blockComment}a<em>b</em></li></ul>`,
   },
 
   "unordered list with two items": {
-    document: createDocument([ "a", {}, [ "bulletList", "bullet" ] ], [ "b", {}, [ "bulletList", "bullet" ] ]),
+    document: createDocument(["a", {}, ["bulletList", "bullet"]], ["b", {}, ["bulletList", "bullet"]]),
     html: `<ul><li>${blockComment}a</li><li>${blockComment}b</li></ul>`,
   },
 
   "unordered list surrounded by unformatted blocks": {
-    document: createDocument([ "a" ], [ "b", {}, [ "bulletList", "bullet" ] ], [ "c" ]),
+    document: createDocument(["a"], ["b", {}, ["bulletList", "bullet"]], ["c"]),
     html: `<div>${blockComment}a</div><ul><li>${blockComment}b</li></ul><div>${blockComment}c</div>`,
   },
 
   "ordered list": {
-    document: createDocument([ "a", {}, [ "numberList", "number" ] ]),
+    document: createDocument(["a", {}, ["numberList", "number"]]),
     html: `<ol><li>${blockComment}a</li></ol>`,
   },
 
   "ordered list and an unordered list": {
-    document: createDocument([ "a", {}, [ "bulletList", "bullet" ] ], [ "b", {}, [ "numberList", "number" ] ]),
+    document: createDocument(["a", {}, ["bulletList", "bullet"]], ["b", {}, ["numberList", "number"]]),
     html: `<ul><li>${blockComment}a</li></ul><ol><li>${blockComment}b</li></ol>`,
   },
 
   "empty block with attributes": {
-    document: createDocument([ "", {}, [ "quote" ] ]),
+    document: createDocument(["", {}, ["quote"]]),
     html: `<blockquote>${blockComment}<br></blockquote>`,
   },
 
@@ -259,7 +259,7 @@ export const fixtures = {
     const text = Text.textForAttachmentWithAttributes(attachment)
 
     const image = makeElement("img", { src: attrs.url, "data-trix-mutable": true, width: 1, height: 1 })
-    image.dataset.trixStoreKey = [ "imageElement", attachment.id, image.src, image.width, image.height ].join("/")
+    image.dataset.trixStoreKey = ["imageElement", attachment.id, image.src, image.width, image.height].join("/")
 
     const caption = makeElement({ tagName: "figcaption", className: css.attachmentCaption })
     caption.innerHTML = `<span class="${css.attachmentName}">${attrs.filename}</span> <span class="${css.attachmentSize}">95.9 KB</span>`
@@ -281,18 +281,18 @@ export const fixtures = {
 
     const serializedFigure = figure.cloneNode(true)
 
-    ;[ "data-trix-id", "data-trix-mutable", "data-trix-store-key", "contenteditable" ].forEach((attribute) => {
-      serializedFigure.removeAttribute(attribute)
+      ;["data-trix-id", "data-trix-mutable", "data-trix-store-key", "contenteditable"].forEach((attribute) => {
+        serializedFigure.removeAttribute(attribute)
 
-      Array.from(serializedFigure.querySelectorAll(`[${attribute}]`)).forEach((element) => {
-        element.removeAttribute(attribute)
+        Array.from(serializedFigure.querySelectorAll(`[${attribute}]`)).forEach((element) => {
+          element.removeAttribute(attribute)
+        })
       })
-    })
 
     return {
       html: `<div>${blockComment}${cursorTargetLeft}${figure.outerHTML}${cursorTargetRight}</div>`,
       serializedHTML: `<div>${serializedFigure.outerHTML}</div>`,
-      document: new Document([ new Block(text) ]),
+      document: new Document([new Block(text)]),
     }
   })(),
 
@@ -311,7 +311,7 @@ export const fixtures = {
     const attachmentText = Text.textForAttachmentWithAttributes(attachment)
 
     const image = makeElement("img", { src: attrs.url, "data-trix-mutable": true, width: 1, height: 1 })
-    image.dataset.trixStoreKey = [ "imageElement", attachment.id, image.src, image.width, image.height ].join("/")
+    image.dataset.trixStoreKey = ["imageElement", attachment.id, image.src, image.width, image.height].join("/")
 
     const caption = makeElement({ tagName: "figcaption", className: css.attachmentCaption })
     caption.innerHTML = `<span class="${css.attachmentName}">${attrs.filename}</span> <span class="${css.attachmentSize}">95.9 KB</span>`
@@ -332,20 +332,20 @@ export const fixtures = {
 
     const serializedFigure = figure.cloneNode(true)
 
-    ;[ "data-trix-id", "data-trix-mutable", "data-trix-store-key", "contenteditable" ].forEach((attribute) => {
-      serializedFigure.removeAttribute(attribute)
+      ;["data-trix-id", "data-trix-mutable", "data-trix-store-key", "contenteditable"].forEach((attribute) => {
+        serializedFigure.removeAttribute(attribute)
 
-      Array.from(serializedFigure.querySelectorAll(`[${attribute}]`)).forEach((element) => {
-        element.removeAttribute(attribute)
+        Array.from(serializedFigure.querySelectorAll(`[${attribute}]`)).forEach((element) => {
+          element.removeAttribute(attribute)
+        })
       })
-    })
 
     const text = stringText.appendText(attachmentText)
 
     return {
       html: `<div>${blockComment}a<br>b${cursorTargetLeft}${figure.outerHTML}${cursorTargetRight}</div>`,
       serializedHTML: `<div>a<br>b${serializedFigure.outerHTML}</div>`,
-      document: new Document([ new Block(text) ]),
+      document: new Document([new Block(text)]),
     }
   })(),
 
@@ -363,7 +363,7 @@ export const fixtures = {
     const text = Text.textForAttachmentWithAttributes(attachment, textAttrs)
 
     const image = makeElement("img", { src: attrs.url, "data-trix-mutable": true, width: 1, height: 1 })
-    image.dataset.trixStoreKey = [ "imageElement", attachment.id, image.src, image.width, image.height ].join("/")
+    image.dataset.trixStoreKey = ["imageElement", attachment.id, image.src, image.width, image.height].join("/")
 
     const caption = makeElement({
       tagName: "figcaption",
@@ -388,7 +388,7 @@ export const fixtures = {
 
     return {
       html: `<div>${blockComment}${cursorTargetLeft}${figure.outerHTML}${cursorTargetRight}</div>`,
-      document: new Document([ new Block(text) ]),
+      document: new Document([new Block(text)]),
     }
   })(),
 
@@ -424,7 +424,7 @@ export const fixtures = {
 
     return {
       html: `<div>${blockComment}${cursorTargetLeft}${figure.outerHTML}${cursorTargetRight}</div>`,
-      document: new Document([ new Block(text) ]),
+      document: new Document([new Block(text)]),
     }
   })(),
 
@@ -455,7 +455,7 @@ export const fixtures = {
       },
       data: {
         trixMutable: true,
-        trixStoreKey: [ "progressElement", attachment.id ].join("/"),
+        trixStoreKey: ["progressElement", attachment.id].join("/"),
       },
     })
 
@@ -464,7 +464,7 @@ export const fixtures = {
 
     return {
       html: `<div>${blockComment}${cursorTargetLeft}${figure.outerHTML}${cursorTargetRight}</div>`,
-      document: new Document([ new Block(text) ]),
+      document: new Document([new Block(text)]),
     }
   })(),
 
@@ -495,26 +495,26 @@ export const fixtures = {
 
     return {
       html: `<div>${blockComment}${cursorTargetLeft}${figure.outerHTML}${cursorTargetRight}</div>`,
-      document: new Document([ new Block(text) ]),
+      document: new Document([new Block(text)]),
     }
   })(),
 
   "nested quote and code formatted block": {
-    document: createDocument([ "ab3", {}, [ "quote", "code" ] ]),
+    document: createDocument(["ab3", {}, ["quote", "code"]]),
     html: `<blockquote><pre>${blockComment}ab3</pre></blockquote>`,
   },
 
   "nested code and quote formatted block": {
-    document: createDocument([ "ab3", {}, [ "code", "quote" ] ]),
+    document: createDocument(["ab3", {}, ["code", "quote"]]),
     html: `<pre><blockquote>${blockComment}ab3</blockquote></pre>`,
   },
 
   "nested code blocks in quote": {
     document: createDocument(
-      [ "a\n", {}, [ "quote" ] ],
-      [ "b", {}, [ "quote", "code" ] ],
-      [ "\nc\n", {}, [ "quote" ] ],
-      [ "d", {}, [ "quote", "code" ] ]
+      ["a\n", {}, ["quote"]],
+      ["b", {}, ["quote", "code"]],
+      ["\nc\n", {}, ["quote"]],
+      ["d", {}, ["quote", "code"]]
     ),
     html: removeWhitespace(
       `<blockquote>
@@ -558,12 +558,12 @@ export const fixtures = {
 
   "nested code, quote, and list in quote": {
     document: createDocument(
-      [ "a\n", {}, [ "quote" ] ],
-      [ "b", {}, [ "quote", "code" ] ],
-      [ "\nc\n", {}, [ "quote" ] ],
-      [ "d", {}, [ "quote", "quote" ] ],
-      [ "\ne\n", {}, [ "quote" ] ],
-      [ "f", {}, [ "quote", "bulletList", "bullet" ] ]
+      ["a\n", {}, ["quote"]],
+      ["b", {}, ["quote", "code"]],
+      ["\nc\n", {}, ["quote"]],
+      ["d", {}, ["quote", "quote"]],
+      ["\ne\n", {}, ["quote"]],
+      ["f", {}, ["quote", "bulletList", "bullet"]]
     ),
     html: removeWhitespace(
       `<blockquote>
@@ -596,7 +596,7 @@ export const fixtures = {
           </li>
         </ul>
       </blockquote>`
-  ),
+    ),
     serializedHTML: removeWhitespace(
       `<blockquote>
         a
@@ -627,10 +627,10 @@ export const fixtures = {
 
   "nested quotes at different nesting levels": {
     document: createDocument(
-      [ "a", {}, [ "quote", "quote", "quote" ] ],
-      [ "b", {}, [ "quote", "quote" ] ],
-      [ "c", {}, [ "quote" ] ],
-      [ "d", {}, [ "quote", "quote" ] ]
+      ["a", {}, ["quote", "quote", "quote"]],
+      ["b", {}, ["quote", "quote"]],
+      ["c", {}, ["quote"]],
+      ["d", {}, ["quote", "quote"]]
     ),
     html: removeWhitespace(
       `<blockquote>
@@ -667,97 +667,97 @@ export const fixtures = {
   },
 
   "nested quote and list": {
-    document: createDocument([ "ab3", {}, [ "quote", "bulletList", "bullet" ] ]),
+    document: createDocument(["ab3", {}, ["quote", "bulletList", "bullet"]]),
     html: `<blockquote><ul><li>${blockComment}ab3</li></ul></blockquote>`,
   },
 
   "nested list and quote": {
-    document: createDocument([ "ab3", {}, [ "bulletList", "bullet", "quote" ] ]),
+    document: createDocument(["ab3", {}, ["bulletList", "bullet", "quote"]]),
     html: `<ul><li><blockquote>${blockComment}ab3</blockquote></li></ul>`,
   },
 
   "nested lists and quotes": {
     document: createDocument(
-      [ "a", {}, [ "bulletList", "bullet", "quote" ] ],
-      [ "b", {}, [ "bulletList", "bullet", "quote" ] ]
+      ["a", {}, ["bulletList", "bullet", "quote"]],
+      ["b", {}, ["bulletList", "bullet", "quote"]]
     ),
     html: `<ul><li><blockquote>${blockComment}a</blockquote></li><li><blockquote>${blockComment}b</blockquote></li></ul>`,
   },
 
   "nested quote and list with two items": {
     document: createDocument(
-      [ "a", {}, [ "quote", "bulletList", "bullet" ] ],
-      [ "b", {}, [ "quote", "bulletList", "bullet" ] ]
+      ["a", {}, ["quote", "bulletList", "bullet"]],
+      ["b", {}, ["quote", "bulletList", "bullet"]]
     ),
     html: `<blockquote><ul><li>${blockComment}a</li><li>${blockComment}b</li></ul></blockquote>`,
   },
 
   "nested unordered lists": {
     document: createDocument(
-      [ "a", {}, [ "bulletList", "bullet" ] ],
-      [ "b", {}, [ "bulletList", "bullet", "bulletList", "bullet" ] ],
-      [ "c", {}, [ "bulletList", "bullet", "bulletList", "bullet" ] ]
+      ["a", {}, ["bulletList", "bullet"]],
+      ["b", {}, ["bulletList", "bullet", "bulletList", "bullet"]],
+      ["c", {}, ["bulletList", "bullet", "bulletList", "bullet"]]
     ),
     html: `<ul><li>${blockComment}a<ul><li>${blockComment}b</li><li>${blockComment}c</li></ul></li></ul>`,
   },
 
   "nested lists": {
     document: createDocument(
-      [ "a", {}, [ "numberList", "number" ] ],
-      [ "b", {}, [ "numberList", "number", "bulletList", "bullet" ] ],
-      [ "c", {}, [ "numberList", "number", "bulletList", "bullet" ] ]
+      ["a", {}, ["numberList", "number"]],
+      ["b", {}, ["numberList", "number", "bulletList", "bullet"]],
+      ["c", {}, ["numberList", "number", "bulletList", "bullet"]]
     ),
     html: `<ol><li>${blockComment}a<ul><li>${blockComment}b</li><li>${blockComment}c</li></ul></li></ol>`,
   },
 
   "blocks beginning with newlines": {
-    document: createDocument([ "\na", {}, [ "quote" ] ], [ "\nb", {}, [] ], [ "\nc", {}, [ "quote" ] ]),
+    document: createDocument(["\na", {}, ["quote"]], ["\nb", {}, []], ["\nc", {}, ["quote"]]),
     html: `<blockquote>${blockComment}<br>a</blockquote><div>${blockComment}<br>b</div><blockquote>${blockComment}<br>c</blockquote>`,
   },
 
   "blocks beginning with formatted text": {
     document: createDocument(
-      [ "a", { bold: true }, [ "quote" ] ],
-      [ "b", { italic: true }, [] ],
-      [ "c", { bold: true }, [ "quote" ] ]
+      ["a", { bold: true }, ["quote"]],
+      ["b", { italic: true }, []],
+      ["c", { bold: true }, ["quote"]]
     ),
     html: `<blockquote>${blockComment}<strong>a</strong></blockquote><div>${blockComment}<em>b</em></div><blockquote>${blockComment}<strong>c</strong></blockquote>`,
   },
 
   "text with newlines before block": {
-    document: createDocument([ "a\nb" ], [ "c", {}, [ "quote" ] ]),
+    document: createDocument(["a\nb"], ["c", {}, ["quote"]]),
     html: `<div>${blockComment}a<br>b</div><blockquote>${blockComment}c</blockquote>`,
   },
 
   "empty heading block": {
-    document: createDocument([ "", {}, [ "heading1" ] ]),
+    document: createDocument(["", {}, ["heading1"]]),
     html: `<h1>${blockComment}<br></h1>`,
   },
 
   "two adjacent headings": {
-    document: createDocument([ "a", {}, [ "heading1" ] ], [ "b", {}, [ "heading1" ] ]),
+    document: createDocument(["a", {}, ["heading1"]], ["b", {}, ["heading1"]]),
     html: `<h1>${blockComment}a</h1><h1>${blockComment}b</h1>`,
   },
 
   "heading in ordered list": {
-    document: createDocument([ "a", {}, [ "numberList", "number", "heading1" ] ]),
+    document: createDocument(["a", {}, ["numberList", "number", "heading1"]]),
     html: `<ol><li><h1>${blockComment}a</h1></li></ol>`,
   },
 
   "headings with formatted text": {
-    document: createDocument([ "a", { bold: true }, [ "heading1" ] ], [ "b", { italic: true, bold: true }, [ "heading1" ] ]),
+    document: createDocument(["a", { bold: true }, ["heading1"]], ["b", { italic: true, bold: true }, ["heading1"]]),
     html: `<h1>${blockComment}<strong>a</strong></h1><h1>${blockComment}<strong><em>b</em></strong></h1>`,
   },
 
   "bidrectional text": {
     document: createDocument(
-      [ "a" ],
-      [ "ل", {}, [ "quote" ] ],
-      [ "b", {}, [ "bulletList", "bullet" ] ],
-      [ "ל", {}, [ "bulletList", "bullet" ] ],
-      [ "", {}, [ "bulletList", "bullet" ] ],
-      [ "cید" ],
-      [ "\n گ" ]
+      ["a"],
+      ["ل", {}, ["quote"]],
+      ["b", {}, ["bulletList", "bullet"]],
+      ["ל", {}, ["bulletList", "bullet"]],
+      ["", {}, ["bulletList", "bullet"]],
+      ["cید"],
+      ["\n گ"]
     ),
     html: `<div>${blockComment}a</div>\
 <blockquote dir="rtl">${blockComment}ل</blockquote>\

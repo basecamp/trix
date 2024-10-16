@@ -205,6 +205,19 @@ export default class ToolbarController extends BasicObject {
   setAttribute(dialogElement) {
     const attributeName = getAttributeName(dialogElement)
     const input = getInputForDialog(dialogElement, attributeName)
+
+    if (attributeName === 'href') {
+      const value = input.value.trim()
+      if (this.isValidUrlOrEmail(value)) {
+        this.delegate?.toolbarDidUpdateAttribute(attributeName, this.normalizeUrl(value))
+        return this.hideDialog()
+      } else {
+        input.setAttribute("data-trix-validate", "")
+        input.classList.add("trix-validate")
+        return input.focus()
+      }
+    }
+
     if (input.willValidate && !input.checkValidity()) {
       input.setAttribute("data-trix-validate", "")
       input.classList.add("trix-validate")
@@ -213,6 +226,26 @@ export default class ToolbarController extends BasicObject {
       this.delegate?.toolbarDidUpdateAttribute(attributeName, input.value)
       return this.hideDialog()
     }
+  }
+
+  isValidUrlOrEmail(value) {
+    // Regex for URL validation (including IDNs)
+    const urlRegex = /^(https?:\/\/)?(([a-zA-Z0-9\u00a1-\uffff][-a-zA-Z0-9\u00a1-\uffff]*\.)+[a-zA-Z\u00a1-\uffff]{2,})([\/\w \.\u00a1-\uffff-]*)*\/?$/i
+
+    // Regex for email validation (RFC 5322 Official Standard)
+    const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9\u00a1-\uffff]+\.)+[a-zA-Z\u00a1-\uffff]{2,}))$/i
+
+    return urlRegex.test(value) || emailRegex.test(value) || value.startsWith('mailto:')
+  }
+
+  normalizeUrl(value) {
+    if (value.includes('@') && !value.startsWith('mailto:')) {
+      return `mailto:${value}`
+    }
+    if (!value.startsWith('http://') && !value.startsWith('https://') && !value.startsWith('mailto:')) {
+      return `https://${value}`
+    }
+    return value
   }
 
   removeAttribute(dialogElement) {
