@@ -276,9 +276,8 @@ const simulateKeypress = async (keyName) => {
       await deleteInDirection("right")
       break
     case "return":
-      await nextFrame()
       triggerInputEvent(document.activeElement, "beforeinput", { inputType: "insertParagraph" })
-      await insertNode(document.createElement("br"))
+      break
   }
 }
 

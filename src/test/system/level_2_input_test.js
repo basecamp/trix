@@ -52,11 +52,18 @@ const performInputTypeUsingExecCommand = async (command, { inputType, data }) =>
 
   await nextFrame()
 
+  const isInsertParagraph = inputType === "insertParagraph"
+
   triggerInputEvent(document.activeElement, "beforeinput", { inputType, data })
-  document.execCommand(command, false, data)
-  assert.equal(inputEvents.length, 2)
+
+  // See `shouldRenderInmmediatelyToDealWithIOSDictation` to deal with iOS 18+ dictation bug.
+  if (!isInsertParagraph) {
+    document.execCommand(command, false, data)
+    assert.equal(inputEvents[1].type, "input")
+  }
+
+  assert.equal(inputEvents.length, isInsertParagraph ? 1 : 2)
   assert.equal(inputEvents[0].type, "beforeinput")
-  assert.equal(inputEvents[1].type, "input")
   assert.equal(inputEvents[0].inputType, inputType)
   assert.equal(inputEvents[0].data, data)
 

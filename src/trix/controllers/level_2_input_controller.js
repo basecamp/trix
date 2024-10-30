@@ -1,4 +1,4 @@
-import { getAllAttributeNames, squishBreakableWhitespace } from "trix/core/helpers"
+import { getAllAttributeNames, shouldRenderInmmediatelyToDealWithIOSDictation, squishBreakableWhitespace } from "trix/core/helpers"
 import InputController from "trix/controllers/input_controller"
 import * as config from "trix/config"
 
@@ -73,14 +73,18 @@ export default class Level2InputController extends InputController {
     beforeinput(event) {
       const handler = this.constructor.inputTypes[event.inputType]
 
-      // Handles bug with Siri dictation on iOS 18+.
-      if (!event.inputType) {
-        this.render()
-      }
+      const immmediateRender = shouldRenderInmmediatelyToDealWithIOSDictation(event)
 
       if (handler) {
         this.withEvent(event, handler)
-        this.scheduleRender()
+
+        if (!immmediateRender) {
+          this.scheduleRender()
+        }
+      }
+
+      if (immmediateRender) {
+        this.render()
       }
     },
 
