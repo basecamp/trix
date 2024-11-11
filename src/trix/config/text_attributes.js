@@ -27,6 +27,16 @@ export default {
       }
     },
   },
+  target: {
+    groupTagName: "a",
+    parser(element) {
+      const matchingSelector = `a:not(${attachmentSelector})`
+      const link = element.closest(matchingSelector)
+      if (link) {
+        return link.getAttribute("target")
+      }
+    },
+  },
   strike: {
     tagName: "del",
     inheritable: true,
