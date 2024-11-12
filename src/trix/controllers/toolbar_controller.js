@@ -197,7 +197,7 @@ export default class ToolbarController extends BasicObject {
     })
 
     const attributeNames = getDialogAttributeNames(element)
-    for (let attributeName of attributeNames) {
+    for (const attributeName of attributeNames) {
       const input = getInputForDialog(element, dialogName, attributeName)
       if (input) {
         switch (input.type) {
@@ -218,7 +218,7 @@ export default class ToolbarController extends BasicObject {
     const dialogName = getDialogName(dialogElement)
     const attributeNames = getDialogAttributeNames(dialogElement)
 
-    for (let attributeName of attributeNames) {
+    for (const attributeName of attributeNames) {
       const input = getInputForDialog(dialogElement, dialogName, attributeName)
 
       if (input.willValidate && !input.checkValidity()) {
@@ -248,7 +248,7 @@ export default class ToolbarController extends BasicObject {
   removeAttributes(dialogElement) {
     const attributeNames = getDialogAttributeNames(dialogElement)
 
-    for (let attributeName of attributeNames) {
+    for (const attributeName of attributeNames) {
       this.delegate?.toolbarDidRemoveAttribute(attributeName)
     }
 
