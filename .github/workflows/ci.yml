@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - target-blank
   pull_request:
 
 jobs:
