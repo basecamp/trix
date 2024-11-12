@@ -21,6 +21,8 @@ export const testGroup = function (name, options, callback) {
   }
 
   const beforeEach = async () => {
+    window.onbeforeunload = () => {} // Inhibit Chrome page reload errors in testing
+
     // Ensure window is active on CI so focus and blur events are natively dispatched
     window.focus()
 
@@ -33,6 +35,8 @@ export const testGroup = function (name, options, callback) {
   }
 
   const afterEach = () => {
+    window.onbeforeunload = null
+
     if (template != null) setFixtureHTML("")
     return teardown?.()
   }

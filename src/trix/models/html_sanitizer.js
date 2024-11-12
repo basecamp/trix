@@ -2,7 +2,7 @@ import BasicObject from "trix/core/basic_object"
 
 import { nodeIsAttachmentElement, removeNode, tagName, walkTree } from "trix/core/helpers"
 
-const DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height language class".split(" ")
+const DEFAULT_ALLOWED_ATTRIBUTES = "style href target src width height language class".split(" ")
 const DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
 const DEFAULT_FORBIDDEN_ELEMENTS = "script iframe form noscript".split(" ")
 
