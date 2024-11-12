@@ -230,6 +230,8 @@ export default class ToolbarController extends BasicObject {
           case "checkbox":
             if (input.checked) {
               this.delegate?.toolbarDidUpdateAttribute(attributeName, input.value)
+            } else {
+              this.delegate?.toolbarDidRemoveAttribute(attributeName)
             }
             break
           default:
