@@ -19,10 +19,8 @@ const getAttributeName = (element) => {
 }
 const getDialogName = (element) => element.getAttribute("data-trix-dialog")
 const getDialogAttributeNames = (element) => {
-  return Array.from(
-    element.getAttribute("data-trix-dialog-attribute") ||
-    element.getAttribute("data-trix-dialog-attributes").split(" ")
-  )
+  return (element.getAttribute("data-trix-dialog-attribute") ||
+    element.getAttribute("data-trix-dialog-attributes")).split(" ")
 }
 
 export default class ToolbarController extends BasicObject {
