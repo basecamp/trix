@@ -33,12 +33,12 @@ export default class ToolbarController extends BasicObject {
     this.actions = {}
     this.resetDialogInputs()
 
-    handleEvent("mousedown", {
+    handleEvent("click", {
       onElement: this.element,
       matchingSelector: actionButtonSelector,
       withCallback: this.didClickActionButton,
     })
-    handleEvent("mousedown", {
+    handleEvent("click", {
       onElement: this.element,
       matchingSelector: attributeButtonSelector,
       withCallback: this.didClickAttributeButton,
