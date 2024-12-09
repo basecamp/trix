@@ -41,7 +41,7 @@ const terserConfig = terser({
       const type = comment.type
       if (type == "comment2") {
         // multiline comment
-        return /Copyright/.test(text)
+        return /@license|Copyright/.test(text)
       }
     },
   },

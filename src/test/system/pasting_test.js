@@ -119,6 +119,36 @@ testGroup("Pasting", { template: "editor_empty" }, () => {
     delete window.unsanitized
   })
 
+  test("paste data-trix-attachment encoded mathml", async () => {
+    window.unsanitized = []
+    const pasteData = {
+      "text/plain": "x",
+      "text/html": `\
+      copy<div data-trix-attachment="{&quot;contentType&quot;:&quot;text/html5&quot;,&quot;content&quot;:&quot;&lt;math&gt;&lt;mtext&gt;&lt;table&gt;&lt;mglyph&gt;&lt;style&gt;&lt;img src=x onerror=alert()&gt;&lt;/style&gt;XSS POC&quot;}"></div>me
+      `,
+    }
+
+    await pasteContent(pasteData)
+    await delay(20)
+    assert.deepEqual(window.unsanitized, [])
+    delete window.unsanitized
+  })
+
+  test("paste data-trix-attachment encoded embed", async () => {
+    window.unsanitized = []
+    const pasteData = {
+      "text/plain": "x",
+      "text/html": `\
+      copy<div data-trix-attachment="{&quot;contentType&quot;:&quot;text/html5&quot;,&quot;content&quot;:&quot;&lt;embed src='javascript:alert(1)'&gt;XSS POC&quot;}"></div>me
+      `,
+    }
+
+    await pasteContent(pasteData)
+    await delay(20)
+    assert.deepEqual(window.unsanitized, [])
+    delete window.unsanitized
+  })
+
   test("prefers plain text when html lacks formatting", async () => {
     const pasteData = {
       "text/html": "<meta charset='utf-8'>a\nb",
