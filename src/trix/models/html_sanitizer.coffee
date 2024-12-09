@@ -25,6 +25,7 @@ class Trix.HTMLSanitizer extends Trix.BasicObject
   sanitize: ->
     @sanitizeElements()
     @normalizeListElementNesting()
+    DOMPurify.sanitize @body, ADD_ATTR: ["language"], RETURN_DOM: true
 
   getHTML: ->
     @body.innerHTML

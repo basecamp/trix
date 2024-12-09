@@ -4,6 +4,7 @@
 #= require ./control_element
 #= require_tree ./templates
 #= require_tree ./views
+#= require_tree ./vendor
 
 Trix.Inspector =
   views: []

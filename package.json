@@ -23,7 +23,11 @@
     "url": "https://github.com/basecamp/trix/issues"
   },
   "homepage": "https://trix-editor.org/",
+  "dependencies": {
+    "dompurify": "^3.2.0"
+  },
   "devDependencies": {
+    "@babel/preset-env": "^7.26.0",
     "svgo": "^0.6.1"
   }
 }
