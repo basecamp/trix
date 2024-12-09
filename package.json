@@ -24,9 +24,10 @@
   },
   "homepage": "https://trix-editor.org/",
   "dependencies": {
-    "dompurify": "^3.2.0"
+    "dompurify": "^3.2.3"
   },
   "devDependencies": {
+    "@babel/core": "^7.17.8",
     "@babel/preset-env": "^7.26.0",
     "svgo": "^0.6.1"
   }
