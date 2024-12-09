@@ -23,8 +23,7 @@ class Trix.HTMLParser extends Trix.BasicObject
   parse: ->
     try
       @createHiddenContainer()
-      html = Trix.HTMLSanitizer.sanitize(@html).getHTML()
-      @containerElement.innerHTML = html
+      Trix.HTMLSanitizer.setHTML @containerElement, @html
       walker = walkTree(@containerElement, usingFilter: nodeFilter)
       @processNode(walker.currentNode) while walker.nextNode()
       @translateBlockElementMarginsToNewlines()
@@ -238,12 +237,7 @@ class Trix.HTMLParser extends Trix.BasicObject
 
   parseTrixDataAttribute = (element, name) ->
     try
-      data = JSON.parse(element.getAttribute("data-trix-#{name}"))
-
-      if data.contentType == "text/html" and data.content
-        data.content = HTMLSanitizer.sanitize(data.content).getHTML()
-
-      data
+      JSON.parse element.getAttribute("data-trix-#{name}")
     catch
       {}
 

@@ -3,6 +3,7 @@ load_paths:
   - vendor
   - ../assets
   - ../polyfills
+  - ../vendor
   - ../src
 
 build:

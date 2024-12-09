@@ -23,6 +23,7 @@
     "assets",
     "bin",
     "polyfills",
+    "vendor",
     "src",
     "test",
     "*.md",
