@@ -1,11 +1,8 @@
+import * as config from "trix/config"
 import BasicObject from "trix/core/basic_object"
 
 import { nodeIsAttachmentElement, removeNode, tagName, walkTree } from "trix/core/helpers"
 import DOMPurify from "dompurify"
-
-const DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height language class".split(" ")
-const DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
-const DEFAULT_FORBIDDEN_ELEMENTS = "script iframe form noscript".split(" ")
 
 export default class HTMLSanitizer extends BasicObject {
   static setHTML(element, html) {
@@ -14,17 +11,11 @@ export default class HTMLSanitizer extends BasicObject {
     element.innerHTML = sanitizedHtml
   }
 
-  static sanitize(html, options) {
-    const sanitizer = new this(html, options)
-    sanitizer.sanitize()
-    return sanitizer
-  }
-
-  constructor(html, { allowedAttributes, forbiddenProtocols, forbiddenElements } = {}) {
+  constructor(html) {
     super(...arguments)
-    this.allowedAttributes = allowedAttributes || DEFAULT_ALLOWED_ATTRIBUTES
-    this.forbiddenProtocols = forbiddenProtocols || DEFAULT_FORBIDDEN_PROTOCOLS
-    this.forbiddenElements = forbiddenElements || DEFAULT_FORBIDDEN_ELEMENTS
+    this.allowedAttributes = config.parser.allowedAttributes
+    this.forbiddenProtocols = config.parser.forbiddenProtocols
+    this.forbiddenElements = config.parser.forbiddenElements
     this.body = createBodyElementForHTML(html)
   }
 
