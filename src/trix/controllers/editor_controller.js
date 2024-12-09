@@ -64,7 +64,7 @@ export default class EditorController extends Controller {
         return true
       },
       perform() {
-        return config.input.pickFiles(this.editor.insertFiles)
+        return config.input.pickFiles(this.editor)
       },
     },
   }
