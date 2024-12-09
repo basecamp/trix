@@ -1,6 +1,7 @@
 import BasicObject from "trix/core/basic_object"
 
 import { nodeIsAttachmentElement, removeNode, tagName, walkTree } from "trix/core/helpers"
+import DOMPurify from "dompurify"
 
 const DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height language class".split(" ")
 const DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
@@ -29,7 +30,8 @@ export default class HTMLSanitizer extends BasicObject {
 
   sanitize() {
     this.sanitizeElements()
-    return this.normalizeListElementNesting()
+    this.normalizeListElementNesting()
+    return DOMPurify.sanitize(this.body, { ADD_ATTR: [ "language" ], RETURN_DOM: true } )
   }
 
   getHTML() {
