@@ -25,7 +25,7 @@ class Trix.AttachmentView extends Trix.ObjectView
       figure.appendChild(innerElement)
 
     if @attachment.hasContent()
-      innerElement.innerHTML = @attachment.getContent()
+      Trix.HTMLSanitizer.setHTML innerElement, @attachment.getContent()
     else
       innerElement.appendChild(node) for node in @createContentNodes()
 
@@ -118,5 +118,5 @@ class Trix.AttachmentView extends Trix.ObjectView
 
 htmlContainsTagName = (html, tagName) ->
   div = makeElement("div")
-  div.innerHTML = html ? ""
+  Trix.HTMLSanitizer.setHTML div, html or ""
   div.querySelector(tagName)

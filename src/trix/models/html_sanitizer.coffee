@@ -5,6 +5,12 @@ class Trix.HTMLSanitizer extends Trix.BasicObject
   DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
   DEFAULT_FORBIDDEN_ELEMENTS = "script iframe noscript".split(" ")
 
+  @setHTML = (element, html) ->
+    sanitizer = new this html
+    sanitizedElement = sanitizer.sanitize()
+    sanitizedHtml = if sanitizedElement.getHTML? then sanitizedElement.getHTML() else sanitizedElement.outerHTML
+    element.innerHTML = sanitizedHtml
+
   @sanitize: (html, options) ->
     sanitizer = new this html, options
     sanitizer.sanitize()
