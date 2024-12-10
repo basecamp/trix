@@ -548,6 +548,16 @@ localStorage["editorState"] = JSON.stringify(element.editor)
 element.editor.loadJSON(JSON.parse(localStorage["editorState"]))
 ```
 
+## HTML Sanitization
+
+Trix uses [DOMPurify](https://github.com/cure53/DOMPurify/) to sanitize the editor content. You can set the DOMPurify config via `Trix.config.dompurify`.
+
+For example if you want to keep a custom tag, you can access do that with:
+
+```js
+Trix.config.dompurify.ADD_TAGS = [ "my-custom-tag" ]
+```
+
 ## Observing Editor Changes
 
 The `<trix-editor>` element emits several events which you can use to observe and respond to changes in editor state.
