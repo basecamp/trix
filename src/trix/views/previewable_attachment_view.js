@@ -53,12 +53,16 @@ export default class PreviewableAttachmentView extends AttachmentView {
 
     const width = this.attachment.getWidth()
     const height = this.attachment.getHeight()
+    const alt = this.attachment.getAttribute("alt")
 
     if (width != null) {
       image.width = width
     }
     if (height != null) {
       image.height = height
+    }
+    if (alt != null) {
+      image.alt = alt
     }
 
     const storeKey = [ "imageElement", this.attachment.id, image.src, image.width, image.height ].join("/")
