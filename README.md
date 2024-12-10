@@ -336,6 +336,27 @@ To store attachments, listen for the `trix-attachment-add` event. Upload the att
 
 If you don’t want to accept dropped or pasted files, call `preventDefault()` on the `trix-file-accept` event, which Trix dispatches just before the `trix-attachment-add` event.
 
+## Previewing Attached Files
+
+Trix automatically previews attached image files. To determine whether or not to preview an attached file, Trix compares the file's content type against the [Trix.Attachment.previewablePattern](./src/trix/models/attachment.js#L7). By default, Trix will preview the following content types:
+
+* `image/gif`
+* `image/png`
+* `image/webp`
+* `image/jpg`
+* `image/jpeg`
+
+To customize an attachment's preview, listen for the `trix-attachment-add` event. When handling the event, set the attachment's `previewable` attribute, then change its preview URL by calling `setPreviewURL`:
+
+```js
+addEventListener("trix-attachment-add", (event) => {
+  if (event.attachment.file instanceof File) {
+    event.attachment.setAttribute("previewable", true)
+    event.attachment.setPreviewURL("...")
+  }
+})
+```
+
 # Editing Text Programmatically
 
 You can manipulate a Trix editor programmatically through the `Trix.Editor` interface, available on each `<trix-editor>` element through its `editor` property.

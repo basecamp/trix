@@ -156,6 +156,29 @@ testGroup("Attachments", { template: "editor_with_image" }, () => {
       assert.textAttributes([ 1, 2 ], {})
       expectDocument(`${OBJECT_REPLACEMENT_CHARACTER}${OBJECT_REPLACEMENT_CHARACTER}\n`)
     })
+
+    test("setting previewURL makes an Attachment previewable", async () => {
+      getEditorElement().addEventListener("trix-attachment-add", async ({ attachment }) => {
+        attachment.setAttribute("previewable", true)
+        attachment.setPreviewURL("/loading.png")
+
+        await delay(50)
+
+        attachment.setPreviewURL("/loaded.png")
+      }, { once: true })
+
+      getComposition().insertFile(createFile())
+
+      const loadingImg = getEditorElement().querySelector("img")
+
+      assert.ok(/loading.png$/.test(loadingImg.src), "sets previewURL to loading image")
+
+      await delay(50)
+
+      const loadedImg = getEditorElement().querySelector("img")
+
+      assert.ok(/loaded.png$/.test(loadedImg.src), "sets previewURL to loaded image")
+    })
   })
 })
 
