@@ -111,17 +111,24 @@ export default class PieceView extends ObjectView {
   }
 
   createContainerElement() {
+    const attributes = {}
+    let groupTagName
+
     for (const key in this.attributes) {
       const value = this.attributes[key]
       const config = getTextConfig(key)
       if (config) {
         if (config.groupTagName) {
-          const attributes = {}
-          attributes[key] = value
-          return makeElement(config.groupTagName, attributes)
+          groupTagName = groupTagName || config.groupTagName
+
+          if (config.groupTagName === groupTagName) {
+            attributes[key] = value
+          }
         }
       }
     }
+
+    if (groupTagName) { return makeElement(groupTagName, attributes) }
   }
 
   preserveSpaces(string) {

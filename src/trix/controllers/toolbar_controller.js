@@ -9,15 +9,19 @@ const dialogSelector = "[data-trix-dialog]"
 const activeDialogSelector = `${dialogSelector}[data-trix-active]`
 const dialogButtonSelector = `${dialogSelector} [data-trix-method]`
 const dialogInputSelector = `${dialogSelector} [data-trix-input]`
-const getInputForDialog = (element, attributeName) => {
-  if (!attributeName) { attributeName = getAttributeName(element) }
-  return element.querySelector(`[data-trix-input][name='${attributeName}']`)
+const getInputForDialog = (element, dialogName, attributeName) => {
+  const name = dialogName === attributeName ? dialogName : `${dialogName}[${attributeName}]`
+  return element.querySelector(`[data-trix-input][name='${name}']`)
 }
 const getActionName = (element) => element.getAttribute("data-trix-action")
 const getAttributeName = (element) => {
-  return element.getAttribute("data-trix-attribute") || element.getAttribute("data-trix-dialog-attribute")
+  return element.getAttribute("data-trix-attribute")
 }
 const getDialogName = (element) => element.getAttribute("data-trix-dialog")
+const getDialogAttributeNames = (element) => {
+  return (element.getAttribute("data-trix-dialog-attribute") ||
+    element.getAttribute("data-trix-dialog-attributes")).split(" ")
+}
 
 export default class ToolbarController extends BasicObject {
   constructor(element) {
@@ -94,7 +98,7 @@ export default class ToolbarController extends BasicObject {
       event.preventDefault()
       const attribute = element.getAttribute("name")
       const dialog = this.getDialog(attribute)
-      this.setAttribute(dialog)
+      this.setAttributes(dialog)
     }
     if (event.keyCode === 27) {
       // Escape key
@@ -190,36 +194,66 @@ export default class ToolbarController extends BasicObject {
       disabledInput.removeAttribute("disabled")
     })
 
-    const attributeName = getAttributeName(element)
-    if (attributeName) {
-      const input = getInputForDialog(element, dialogName)
+    const attributeNames = getDialogAttributeNames(element)
+    for (const attributeName of attributeNames) {
+      const input = getInputForDialog(element, dialogName, attributeName)
       if (input) {
-        input.value = this.attributes[attributeName] || ""
-        input.select()
+        switch (input.type) {
+          case "checkbox":
+            input.checked = this.attributes[attributeName] === input.value
+            break
+          default:
+            input.value = this.attributes[attributeName] || ""
+            input.select()
+        }
       }
     }
 
     return this.delegate?.toolbarDidShowDialog(dialogName)
   }
 
-  setAttribute(dialogElement) {
-    const attributeName = getAttributeName(dialogElement)
-    const input = getInputForDialog(dialogElement, attributeName)
-    if (input.willValidate && !input.checkValidity()) {
-      input.setAttribute("data-trix-validate", "")
-      input.classList.add("trix-validate")
-      return input.focus()
-    } else {
-      this.delegate?.toolbarDidUpdateAttribute(attributeName, input.value)
-      return this.hideDialog()
+  setAttributes(dialogElement) {
+    const dialogName = getDialogName(dialogElement)
+    const attributeNames = getDialogAttributeNames(dialogElement)
+
+    for (const attributeName of attributeNames) {
+      const input = getInputForDialog(dialogElement, dialogName, attributeName)
+
+      if (input.willValidate && !input.checkValidity()) {
+        input.setAttribute("data-trix-validate", "")
+        input.classList.add("trix-validate")
+        input.focus()
+      } else {
+        switch (input.type) {
+          case "checkbox":
+            if (input.checked) {
+              this.delegate?.toolbarDidUpdateAttribute(attributeName, input.value)
+            } else {
+              this.delegate?.toolbarDidRemoveAttribute(attributeName)
+            }
+            break
+          default:
+            this.delegate?.toolbarDidUpdateAttribute(attributeName, input.value)
+        }
+      }
     }
+
+    this.hideDialog()
   }
 
-  removeAttribute(dialogElement) {
-    const attributeName = getAttributeName(dialogElement)
-    this.delegate?.toolbarDidRemoveAttribute(attributeName)
+  setAttribute(dialogElement) { this.setAttributes(dialogElement) }
+
+  removeAttributes(dialogElement) {
+    const attributeNames = getDialogAttributeNames(dialogElement)
+
+    for (const attributeName of attributeNames) {
+      this.delegate?.toolbarDidRemoveAttribute(attributeName)
+    }
+
     return this.hideDialog()
   }
+
+  removeAttribute(dialogElement) { this.removeAttributes(dialogElement) }
 
   hideDialog() {
     const element = this.element.querySelector(activeDialogSelector)
