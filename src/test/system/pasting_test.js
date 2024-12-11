@@ -124,7 +124,7 @@ testGroup("Pasting", { template: "editor_empty" }, () => {
     const pasteData = {
       "text/plain": "x",
       "text/html": `\
-      copy<div data-trix-attachment="{&quot;contentType&quot;:&quot;text/html5&quot;,&quot;content&quot;:&quot;&lt;math&gt;&lt;mtext&gt;&lt;table&gt;&lt;mglyph&gt;&lt;style&gt;&lt;img src=x onerror=alert()&gt;&lt;/style&gt;XSS POC&quot;}"></div>me
+      copy<div data-trix-attachment="{&quot;contentType&quot;:&quot;text/html5&quot;,&quot;content&quot;:&quot;&lt;math&gt;&lt;mtext&gt;&lt;table&gt;&lt;mglyph&gt;&lt;style&gt;&lt;img src=x onerror=window.unsanitized.push(1)&gt;&lt;/style&gt;XSS POC&quot;}"></div>me
       `,
     }
 
@@ -139,7 +139,7 @@ testGroup("Pasting", { template: "editor_empty" }, () => {
     const pasteData = {
       "text/plain": "x",
       "text/html": `\
-      copy<div data-trix-attachment="{&quot;contentType&quot;:&quot;text/html5&quot;,&quot;content&quot;:&quot;&lt;embed src='javascript:alert(1)'&gt;XSS POC&quot;}"></div>me
+      copy<div data-trix-attachment="{&quot;contentType&quot;:&quot;text/html5&quot;,&quot;content&quot;:&quot;&lt;embed src='window.unsanitized.push(1)'&gt;XSS POC&quot;}"></div>me
       `,
     }
 
