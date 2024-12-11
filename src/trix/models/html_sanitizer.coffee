@@ -3,7 +3,7 @@
 class Trix.HTMLSanitizer extends Trix.BasicObject
   DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height class".split(" ")
   DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
-  DEFAULT_FORBIDDEN_ELEMENTS = "script iframe noscript".split(" ")
+  DEFAULT_FORBIDDEN_ELEMENTS = "script iframe form noscript embed math".split(" ")
 
   @setHTML = (element, html) ->
     sanitizer = new this html
@@ -25,7 +25,6 @@ class Trix.HTMLSanitizer extends Trix.BasicObject
   sanitize: ->
     @sanitizeElements()
     @normalizeListElementNesting()
-    DOMPurify.sanitize @body, ADD_ATTR: ["language"], RETURN_DOM: true
 
   getHTML: ->
     @body.innerHTML
