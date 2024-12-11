@@ -3,7 +3,6 @@ load_paths:
   - test/vendor
   - assets
   - polyfills
-  - vendor
   - src
 
 logical_paths:
