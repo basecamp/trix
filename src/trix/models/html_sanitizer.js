@@ -69,9 +69,6 @@ export default class HTMLSanitizer extends BasicObject {
             this.sanitizeElement(node)
           }
           break
-        case Node.COMMENT_NODE:
-          nodesToRemove.push(node)
-          break
       }
     }
 
@@ -124,8 +121,8 @@ export default class HTMLSanitizer extends BasicObject {
 }
 
 const createBodyElementForHTML = function(html = "") {
-  // Remove everything after </html>
-  html = html.replace(/<\/html[^>]*>[^]*$/i, "</html>")
+  // Remove everything after </html> and HTML comments
+  html = html.replace(/<\/html[^>]*>[^]*$/i, "</html>").replace(/(<!--.*?-->)/g, "")
   const doc = document.implementation.createHTMLDocument("")
   doc.documentElement.innerHTML = html
 

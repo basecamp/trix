@@ -27,6 +27,20 @@ testGroup("HTMLSanitizer", () => {
       assert.equal(document, expectedHTML)
     })
   })
+
+  test("strips HTML comments", () => {
+    const html = "<div><!-- --></div>"
+    const expectedHTML = "<div></div>"
+    const document = HTMLSanitizer.sanitize(html).body.innerHTML
+    assert.equal(document, expectedHTML)
+  })
+
+  test("strips HTML comments in attributes", () => {
+    const html = "<div data-trix-attachment=\"<!-- -->\"></div>"
+    const expectedHTML = "<div data-trix-attachment=\"\"></div>"
+    const document = HTMLSanitizer.sanitize(html).body.innerHTML
+    assert.equal(document, expectedHTML)
+  })
 })
 
 const withDOMPurifyConfig = (attrConfig = {}, fn) => {
