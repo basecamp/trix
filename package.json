@@ -35,6 +35,7 @@
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@web/dev-server": "^0.1.34",
     "babel-eslint": "^10.1.0",
+    "chokidar": "^4.0.2",
     "concurrently": "^7.4.0",
     "eslint": "^7.32.0",
     "esm": "^3.2.25",
