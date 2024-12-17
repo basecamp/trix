@@ -16,26 +16,24 @@ const outputFile = path.resolve(args[1])
 const basePath = path.dirname(inputFile)
 
 const functions = {
-  "svg($file)": (svgFileName) => {
-    const filename = path.resolve(basePath, svgFileName.getValue())
+  "svg($file)": (args) => {
+    const fileName = args[0].assertString().text
+    const filePath = path.resolve(basePath, fileName)
 
-    let svgContent = fs.readFileSync(filename, "utf8")
-    svgContent = optimize(svgContent, { multipass: true, datauri: "enc" })
+    let svgContent = fs.readFileSync(filePath, "utf8");
+    svgContent = optimize(svgContent, { multipass: true, datauri: "enc" });
 
     return new sass.SassString(`url("${svgContent.data}")`, { quotes: false })
-  },
+  }
 }
 
-sass.render(
-  {
-    file: inputFile,
-    functions
-  },
-  (err, result) => {
-    if (err) {
-      console.error("Error compiling SCSS:", err)
-    } else {
-      fs.writeFileSync(outputFile, result.css, "utf8")
-    }
-  }
-)
+try {
+  const result = sass.compile(inputFile, {
+    functions,
+  })
+
+  fs.writeFileSync(outputFile, result.css, "utf8")
+} catch (error) {
+  console.error("Error compiling SCSS:", error.message)
+  process.exit(1)
+}
