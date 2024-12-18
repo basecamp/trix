@@ -11,7 +11,7 @@ DOMPurify.addHook("uponSanitizeAttribute", function (node, data) {
   }
 })
 
-const DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height language class".split(" ")
+const DEFAULT_ALLOWED_ATTRIBUTES = "style href target src width height language class".split(" ")
 const DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
 const DEFAULT_FORBIDDEN_ELEMENTS = "script iframe form noscript".split(" ")
 
