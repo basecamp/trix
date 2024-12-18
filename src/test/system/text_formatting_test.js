@@ -58,6 +58,18 @@ testGroup("Text formatting", { template: "editor_empty" }, () => {
     expectDocument("ahttp://example.com\n")
   })
 
+  test("inserting a javascript: link is forbidden", async () => {
+    await typeCharacters("XSS")
+    await moveCursor("left")
+    await expandSelection("left")
+    await clickToolbarButton({ attribute: "href" })
+    assert.ok(isToolbarDialogActive({ attribute: "href" }))
+    await typeInToolbarDialog("javascript:alert('XSS')", { attribute: "href" })
+    assert.textAttributes([ 0, 1 ], {})
+    assert.textAttributes([ 1, 2 ], { frozen: true })
+    assert.textAttributes([ 2, 3 ], {})
+  })
+
   test("editing a link", async () => {
     insertString("a")
     const text = Text.textForStringWithAttributes("bc", { href: "http://example.com" })
