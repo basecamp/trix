@@ -32,6 +32,10 @@ export default class Attachment extends TrixObject {
     this.didChangeAttributes()
   }
 
+  setAttribute(attribute, value) {
+    this.setAttributes({ [attribute]: value })
+  }
+
   getAttribute(attribute) {
     return this.attributes.get(attribute)
   }
