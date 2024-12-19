@@ -35,7 +35,7 @@ export default {
     <div class="trix-dialogs" data-trix-dialogs>
       <div class="trix-dialog trix-dialog--link" data-trix-dialog="href" data-trix-dialog-attribute="href">
         <div class="trix-dialog__link-fields">
-          <input type="url" name="href" class="trix-input trix-input--dialog" placeholder="${lang.urlPlaceholder}" aria-label="${lang.url}" pattern="^(?!(javascript:|data:)).*" required data-trix-input>
+          <input type="url" name="href" class="trix-input trix-input--dialog" placeholder="${lang.urlPlaceholder}" aria-label="${lang.url}" data-trix-validate-href required data-trix-input>
           <div class="trix-button-group">
             <input type="button" class="trix-button trix-button--dialog" value="${lang.link}" data-trix-method="setAttribute">
             <input type="button" class="trix-button trix-button--dialog" value="${lang.unlink}" data-trix-method="removeAttribute">
