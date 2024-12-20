@@ -208,19 +208,20 @@ export default class ToolbarController extends BasicObject {
     const attributeName = getAttributeName(dialogElement)
     const input = getInputForDialog(dialogElement, attributeName)
 
-    input.willValidate && input.setCustomValidity("")
-    if (input.willValidate && !input.checkValidity() || !this.safeAttribute(input)) {
-      input.setCustomValidity("Invalid value")
-      input.setAttribute("data-trix-validate", "")
-      input.classList.add("trix-validate")
-      return input.focus()
-    } else {
-      this.delegate?.toolbarDidUpdateAttribute(attributeName, input.value)
-      return this.hideDialog()
+    if (input.willValidate) {
+      input.setCustomValidity("")
+      if (!input.checkValidity() || !this.isSafeAttribute(input)) {
+        input.setCustomValidity("Invalid value")
+        input.setAttribute("data-trix-validate", "")
+        input.classList.add("trix-validate")
+        return input.focus()
+      }
     }
+    this.delegate?.toolbarDidUpdateAttribute(attributeName, input.value)
+    return this.hideDialog()
   }
 
-  safeAttribute(input) {
+  isSafeAttribute(input) {
     if (input.hasAttribute("data-trix-validate-href")) {
       return DOMPurify.isValidAttribute("a", "href", input.value)
     } else {
