@@ -70,7 +70,7 @@ if (process.env.SAUCE_ACCESS_KEY) {
       browserName: "safari",
       platform: "ios",
       device: "iPhone X Simulator",
-      version: "13.0"
+      version: "latest"
     },
     sl_android_9: {
       base: "SauceLabs",
