@@ -78,7 +78,7 @@ For example, to apply bold styling to the selected text the button is:
 
 Trix will determine that a range of text is selected and will apply the formatting defined in `Trix.config.textAttributes` (found in `config/text_attributes.js`).
 
-`data-trix-key="b"` tells Trix that this attribute should be applied when you use <kbd>meta</kbd>+<kbd>b</kdb>
+`data-trix-key="b"` tells Trix that this attribute should be applied when you use <kbd>meta</kbd>+<kbd>b</kdb>.
 
 If the attribute is defined in `Trix.config.blockAttributes`, Trix will apply the attribute to the current block of text.
 
@@ -253,7 +253,7 @@ pseudo-class][:disabled].
 
 ## Providing an Accessible Name
 
-Like other form controls, `<trix-editor>` elements should have an accessible name. The `<trix-editor>` element integrates with `<label>` elements and The `<trix-editor>` supports two styles of integrating with `<label>` elements:
+Like other form controls, `<trix-editor>` elements should have an accessible name. The `<trix-editor>` element integrates with `<label>` elements. It supports two styles of integrating with `<label>` elements:
 
 1. render the `<trix-editor>` element with an `[id]` attribute that the `<label>` element references through its `[for]` attribute:
 
