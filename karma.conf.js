@@ -53,23 +53,10 @@ if (process.env.SAUCE_ACCESS_KEY) {
       browserVersion: "latest",
       "moz:debuggerAddress": true
     },
-    sl_safari_12_1: {
-      base: "SauceLabs",
-      browserName: "safari",
-      platform: "macOS 10.13",
-      version: "12.1"
-    },
     sl_edge_latest: {
       base: "SauceLabs",
       browserName: "microsoftedge",
       platform: "Windows 10",
-      version: "latest"
-    },
-    sl_ios_latest: {
-      base: "SauceLabs",
-      browserName: "safari",
-      platform: "ios",
-      device: "iPhone X Simulator",
       version: "latest"
     },
     sl_android_9: {
