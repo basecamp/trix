@@ -348,6 +348,8 @@ class LegacyDelegate {
 export default class TrixEditorElement extends HTMLElement {
   static formAssociated = "ElementInternals" in window
 
+  static observedAttributes = [ "connected" ]
+
   #delegate
 
   constructor() {
@@ -410,9 +412,9 @@ export default class TrixEditorElement extends HTMLElement {
     } else if (this.parentNode) {
       const toolbarId = `trix-toolbar-${this.trixId}`
       this.setAttribute("toolbar", toolbarId)
-      const element = makeElement("trix-toolbar", { id: toolbarId })
-      this.parentNode.insertBefore(element, this)
-      return element
+      this.internalToolbar = makeElement("trix-toolbar", { id: toolbarId })
+      this.parentNode.insertBefore(this.internalToolbar, this)
+      return this.internalToolbar
     } else {
       return undefined
     }
@@ -453,6 +455,14 @@ export default class TrixEditorElement extends HTMLElement {
     this.editor?.loadHTML(this.defaultValue)
   }
 
+  // Element callbacks
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === "connected" && this.isConnected && oldValue != null && oldValue !== newValue) {
+      requestAnimationFrame(() => this.reconnect())
+    }
+  }
+
   // Controller delegate methods
 
   notify(message, data) {
@@ -485,6 +495,8 @@ export default class TrixEditorElement extends HTMLElement {
       }
       this.editorController.registerSelectionManager()
       this.#delegate.connectedCallback()
+
+      this.toggleAttribute("connected", true)
       autofocus(this)
     }
   }
@@ -492,6 +504,18 @@ export default class TrixEditorElement extends HTMLElement {
   disconnectedCallback() {
     this.editorController?.unregisterSelectionManager()
     this.#delegate.disconnectedCallback()
+    this.toggleAttribute("connected", false)
+  }
+
+  reconnect() {
+    this.removeInternalToolbar()
+    this.disconnectedCallback()
+    this.connectedCallback()
+  }
+
+  removeInternalToolbar() {
+    this.internalToolbar?.remove()
+    this.internalToolbar = null
   }
 
   // Form support
