@@ -71,6 +71,6 @@
     "start": "yarn build-assets && concurrently --kill-others --names js,css,dev-server 'yarn watch' 'yarn build-css --watch' 'yarn dev'"
   },
   "dependencies": {
-    "dompurify": "^3.2.3"
+    "dompurify": "^3.2.5"
   }
 }
