@@ -66,10 +66,11 @@ export default class HTMLParser extends BasicObject {
     return parser
   }
 
-  constructor(html, { referenceElement } = {}) {
+  constructor(html, { referenceElement, purifyOptions } = {}) {
     super(...arguments)
     this.html = html
     this.referenceElement = referenceElement
+    this.purifyOptions = purifyOptions
     this.blocks = []
     this.blockElements = []
     this.processedElements = []
@@ -84,7 +85,7 @@ export default class HTMLParser extends BasicObject {
   parse() {
     try {
       this.createHiddenContainer()
-      HTMLSanitizer.setHTML(this.containerElement, this.html)
+      HTMLSanitizer.setHTML(this.containerElement, this.html, { purifyOptions: this.purifyOptions })
       const walker = walkTree(this.containerElement, { usingFilter: nodeFilter })
       while (walker.nextNode()) {
         this.processNode(walker.currentNode)
