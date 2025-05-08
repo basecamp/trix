@@ -16,8 +16,8 @@ const DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
 const DEFAULT_FORBIDDEN_ELEMENTS = "script iframe form noscript".split(" ")
 
 export default class HTMLSanitizer extends BasicObject {
-  static setHTML(element, html) {
-    const sanitizedElement = new this(html).sanitize()
+  static setHTML(element, html, options) {
+    const sanitizedElement = new this(html, options).sanitize()
     const sanitizedHtml = sanitizedElement.getHTML ? sanitizedElement.getHTML() : sanitizedElement.outerHTML
     element.innerHTML = sanitizedHtml
   }
@@ -28,18 +28,20 @@ export default class HTMLSanitizer extends BasicObject {
     return sanitizer
   }
 
-  constructor(html, { allowedAttributes, forbiddenProtocols, forbiddenElements } = {}) {
+  constructor(html, { allowedAttributes, forbiddenProtocols, forbiddenElements, purifyOptions } = {}) {
     super(...arguments)
     this.allowedAttributes = allowedAttributes || DEFAULT_ALLOWED_ATTRIBUTES
     this.forbiddenProtocols = forbiddenProtocols || DEFAULT_FORBIDDEN_PROTOCOLS
     this.forbiddenElements = forbiddenElements || DEFAULT_FORBIDDEN_ELEMENTS
+    this.purifyOptions = purifyOptions || {}
     this.body = createBodyElementForHTML(html)
   }
 
   sanitize() {
     this.sanitizeElements()
     this.normalizeListElementNesting()
-    DOMPurify.setConfig(config.dompurify)
+    const purifyConfig = Object.assign({}, config.dompurify, this.purifyOptions)
+    DOMPurify.setConfig(purifyConfig)
     this.body = DOMPurify.sanitize(this.body)
 
     return this.body
