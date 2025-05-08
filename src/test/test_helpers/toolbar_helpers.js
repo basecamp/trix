@@ -5,7 +5,7 @@ import { delay, nextFrame } from "./timing_helpers"
 export const clickToolbarButton = async (selector) => {
   selectionChangeObserver.update()
   const button = getToolbarButton(selector)
-  triggerEvent(button, "mousedown")
+  triggerEvent(button, "click")
   await delay(5)
 }
 
