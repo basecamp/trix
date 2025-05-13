@@ -76,7 +76,7 @@ Copyright © 2025 37signals, LLC
   	test: "karma start",
   	prerelease: "yarn version && yarn test",
   	"release-npm": "npm adduser && npm publish",
-  	"release-ruby": "rake -C action_text-trix publish",
+  	"release-ruby": "rake -C action_text-trix release",
   	release: "yarn run release-npm && yarn run release-ruby",
   	postrelease: "git push && git push --tags",
   	dev: "web-dev-server --app-index index.html  --root-dir dist --node-resolve --open",
