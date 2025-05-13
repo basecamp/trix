@@ -1,17 +1,22 @@
 name: CI
 
+concurrency:
+  group: "${{github.workflow}}-${{github.ref}}"
+  cancel-in-progress: true
+
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
+    types: [opened, synchronize]
+    branches: [ '*' ]
 
 jobs:
   build:
     name: Browser tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -19,6 +24,35 @@ jobs:
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
       - run: bin/ci
+  rails-tests:
+    name: Downstream Rails integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "yarn"
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+      - name: Packaging
+        run: yarn build
+      - name: Clone Rails
+        run: git clone --depth=1 https://github.com/rails/rails
+      - name: Configure Rails
+        run: |
+          sudo apt install libvips-tools
+          cd rails
+          yarn install --frozen-lockfile
+          bundle add action_text-trix --path ".."
+          bundle show --paths action_text-trix
+      - name: Action Text tests
+        run: |
+          cd rails/actiontext
+          bundle exec rake test test:system
 
 env:
   SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
