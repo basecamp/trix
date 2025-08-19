@@ -16,9 +16,13 @@ export const handleEvent = function(eventName, { onElement, matchingSelector, wi
       handler.destroy()
     }
     const target = findClosestElementFromNode(event.target, { matchingSelector: selector })
+    
     if (target != null) {
       withCallback?.call(target, event, target)
-      if (preventDefault) {
+
+      const preventDefaultInputTypes = [ 'insertParagraph' ];
+
+      if (preventDefault || preventDefaultInputTypes.includes(event.inputType)) {
         event.preventDefault()
       }
     }
