@@ -39,6 +39,7 @@
     "concurrently": "^7.4.0",
     "eslint": "^7.32.0",
     "esm": "^3.2.25",
+    "idiomorph": "^0.7.3",
     "karma": "6.4.1",
     "karma-chrome-launcher": "3.2.0",
     "karma-qunit": "^4.1.2",

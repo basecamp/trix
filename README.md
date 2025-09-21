@@ -558,6 +558,36 @@ For example if you want to keep a custom tag, you can access do that with:
 Trix.config.dompurify.ADD_TAGS = [ "my-custom-tag" ]
 ```
 
+## HTML Rendering
+
+Trix renders changes to editor content by replacing existing nodes with new nodes.
+
+To customize how Trix renders changes, set the `<trix-editor>` element's
+`render` property to a function that accepts a `<trix-editor>` instance and a
+[DocumentFragment][]:
+
+```js
+document.addEventListener("trix-before-render", (event) => {
+  const defaultRender = event.render
+
+  event.render = function(editorElement, documentFragment) {
+    // modify the documentFragment…
+    customize(documentFragment)
+
+    // render it with the default rendering function
+    defaultRender(editorElement, documentFragment)
+  }
+})
+```
+
+> [!CAUTION]
+> By the time that `render(editorElement, documentFragment)` is
+> invoked, Trix will have finalized modifications to the HTML content (like HTML
+> sanitization, for example). If you make further modifications to the content,
+> be sure that they are safe.
+
+[DocumentFragment]: https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment
+
 ## Observing Editor Changes
 
 The `<trix-editor>` element emits several events which you can use to observe and respond to changes in editor state.
@@ -567,6 +597,8 @@ The `<trix-editor>` element emits several events which you can use to observe an
 * `trix-initialize` fires when the `<trix-editor>` element is attached to the DOM and its `editor` object is ready for use.
 
 * `trix-change` fires whenever the editor’s contents have changed.
+
+* `trix-before-render` fires before the editor’s new contents are rendered. You can override the function used to render the content through the `render` property on the event. The `render` function expects two positional arguments: the `<trix-editor>` element that will render and a [DocumentFragment](https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment) instance that contains the new content. Read [HTML Rendering](#html-rendering) to learn more.
 
 * `trix-paste` fires whenever text is pasted into the editor. The `paste` property on the event contains the pasted `string` or `html`, and the `range` of the inserted text.
 

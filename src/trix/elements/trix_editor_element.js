@@ -489,7 +489,7 @@ export default class TrixEditorElement extends HTMLElement {
         triggerEvent("trix-before-initialize", { onElement: this })
         this.editorController = new EditorController({
           editorElement: this,
-          html: this.defaultValue = this.value,
+          html: this.defaultValue = this.value
         })
         requestAnimationFrame(() => triggerEvent("trix-initialize", { onElement: this }))
       }
