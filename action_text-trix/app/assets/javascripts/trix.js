@@ -13404,27 +13404,42 @@ $\
   }();
   installDefaultCSSForTagName("trix-editor", "%t {\n    display: block;\n}\n\n%t:empty::before {\n    content: attr(placeholder);\n    color: graytext;\n    cursor: text;\n    pointer-events: none;\n    white-space: pre-line;\n}\n\n%t a[contenteditable=false] {\n    cursor: text;\n}\n\n%t img {\n    max-width: 100%;\n    height: auto;\n}\n\n%t ".concat(attachmentSelector, " figcaption textarea {\n    resize: none;\n}\n\n%t ").concat(attachmentSelector, " figcaption textarea.trix-autoresize-clone {\n    position: absolute;\n    left: -9999px;\n    max-height: 0px;\n}\n\n%t ").concat(attachmentSelector, " figcaption[data-trix-placeholder]:empty::before {\n    content: attr(data-trix-placeholder);\n    color: graytext;\n}\n\n%t [data-trix-cursor-target] {\n    display: ").concat(cursorTargetStyles.display, " !important;\n    width: ").concat(cursorTargetStyles.width, " !important;\n    padding: 0 !important;\n    margin: 0 !important;\n    border: none !important;\n}\n\n%t [data-trix-cursor-target=left] {\n    vertical-align: top !important;\n    margin-left: -1px !important;\n}\n\n%t [data-trix-cursor-target=right] {\n    vertical-align: bottom !important;\n    margin-right: -1px !important;\n}"));
   var _internals = /*#__PURE__*/new WeakMap();
+  var _formDisabled = /*#__PURE__*/new WeakMap();
   var _validate = /*#__PURE__*/new WeakSet();
   class ElementInternalsDelegate {
     constructor(element) {
       _classPrivateMethodInitSpec(this, _validate);
+      _defineProperty(this, "value", "");
       _classPrivateFieldInitSpec(this, _internals, {
+        writable: true,
+        value: void 0
+      });
+      _classPrivateFieldInitSpec(this, _formDisabled, {
         writable: true,
         value: void 0
       });
       this.element = element;
       _classPrivateFieldSet(this, _internals, element.attachInternals());
+      _classPrivateFieldSet(this, _formDisabled, false);
     }
     connectedCallback() {
       _classPrivateMethodGet(this, _validate, _validate2).call(this);
     }
     disconnectedCallback() {}
+    get form() {
+      return _classPrivateFieldGet(this, _internals).form;
+    }
+    get name() {
+      return this.element.getAttribute("name");
+    }
+    set name(value) {
+      this.element.setAttribute("name", value);
+    }
     get labels() {
       return _classPrivateFieldGet(this, _internals).labels;
     }
     get disabled() {
-      var _this$element$inputEl;
-      return (_this$element$inputEl = this.element.inputElement) === null || _this$element$inputEl === void 0 ? void 0 : _this$element$inputEl.disabled;
+      return _classPrivateFieldGet(this, _formDisabled) || this.element.hasAttribute("disabled");
     }
     set disabled(value) {
       this.element.toggleAttribute("disabled", value);
@@ -13445,8 +13460,13 @@ $\
     get willValidate() {
       return _classPrivateFieldGet(this, _internals).willValidate;
     }
+    formDisabledCallback(disabled) {
+      _classPrivateFieldSet(this, _formDisabled, disabled);
+    }
     setFormValue(value) {
+      this.value = value;
       _classPrivateMethodGet(this, _validate, _validate2).call(this);
+      _classPrivateFieldGet(this, _internals).setFormValue(this.element.disabled ? undefined : this.value);
     }
     checkValidity() {
       return _classPrivateFieldGet(this, _internals).checkValidity();
@@ -13533,6 +13553,17 @@ $\
       }
       return labels;
     }
+    get form() {
+      console.warn("This browser does not support the .form property for trix-editor elements.");
+      return null;
+    }
+    get name() {
+      console.warn("This browser does not support the .name property for trix-editor elements.");
+      return null;
+    }
+    set name(value) {
+      console.warn("This browser does not support the .name property for trix-editor elements.");
+    }
     get disabled() {
       console.warn("This browser does not support the [disabled] attribute for trix-editor elements.");
       return false;
@@ -13559,6 +13590,7 @@ $\
       console.warn("This browser does not support the willValidate property for trix-editor elements.");
       return false;
     }
+    formDisabledCallback(value) {}
     setFormValue(value) {}
     checkValidity() {
       console.warn("This browser does not support checkValidity() for trix-editor elements.");
@@ -13580,6 +13612,7 @@ $\
         writable: true,
         value: void 0
       });
+      this.willCreateInput = true;
       _classPrivateFieldSet(this, _delegate, this.constructor.formAssociated ? new ElementInternalsDelegate(this) : new LegacyDelegate(this));
     }
 
@@ -13597,9 +13630,22 @@ $\
       return _classPrivateFieldGet(this, _delegate).labels;
     }
     get disabled() {
-      return _classPrivateFieldGet(this, _delegate).disabled;
+      const {
+        inputElement
+      } = this;
+      if (inputElement) {
+        return inputElement.disabled;
+      } else {
+        return _classPrivateFieldGet(this, _delegate).disabled;
+      }
     }
     set disabled(value) {
+      const {
+        inputElement
+      } = this;
+      if (inputElement) {
+        inputElement.disabled = value;
+      }
       _classPrivateFieldGet(this, _delegate).disabled = value;
     }
     get required() {
@@ -13637,14 +13683,20 @@ $\
       }
     }
     get form() {
-      var _this$inputElement;
-      return (_this$inputElement = this.inputElement) === null || _this$inputElement === void 0 ? void 0 : _this$inputElement.form;
+      const {
+        inputElement
+      } = this;
+      if (inputElement) {
+        return inputElement.form;
+      } else {
+        return _classPrivateFieldGet(this, _delegate).form;
+      }
     }
     get inputElement() {
       if (this.hasAttribute("input")) {
         var _this$ownerDocument2;
         return (_this$ownerDocument2 = this.ownerDocument) === null || _this$ownerDocument2 === void 0 ? void 0 : _this$ownerDocument2.getElementById(this.getAttribute("input"));
-      } else if (this.parentNode) {
+      } else if (this.parentNode && this.willCreateInput) {
         const inputId = "trix-input-".concat(this.trixId);
         this.setAttribute("input", inputId);
         const element = makeElement("input", {
@@ -13662,12 +13714,34 @@ $\
       return (_this$editorControlle = this.editorController) === null || _this$editorControlle === void 0 ? void 0 : _this$editorControlle.editor;
     }
     get name() {
-      var _this$inputElement2;
-      return (_this$inputElement2 = this.inputElement) === null || _this$inputElement2 === void 0 ? void 0 : _this$inputElement2.name;
+      const {
+        inputElement
+      } = this;
+      if (inputElement) {
+        return inputElement.name;
+      } else {
+        return _classPrivateFieldGet(this, _delegate).name;
+      }
+    }
+    set name(value) {
+      const {
+        inputElement
+      } = this;
+      if (inputElement) {
+        inputElement.name = value;
+      } else {
+        _classPrivateFieldGet(this, _delegate).name = value;
+      }
     }
     get value() {
-      var _this$inputElement3;
-      return (_this$inputElement3 = this.inputElement) === null || _this$inputElement3 === void 0 ? void 0 : _this$inputElement3.value;
+      const {
+        inputElement
+      } = this;
+      if (inputElement) {
+        return inputElement.value;
+      } else {
+        return _classPrivateFieldGet(this, _delegate).value;
+      }
     }
     set value(defaultValue) {
       var _this$editor;
@@ -13694,10 +13768,13 @@ $\
       }
     }
     setFormValue(value) {
-      if (this.inputElement) {
-        this.inputElement.value = value;
-        _classPrivateFieldGet(this, _delegate).setFormValue(value);
+      const {
+        inputElement
+      } = this;
+      if (inputElement) {
+        inputElement.value = value;
       }
+      _classPrivateFieldGet(this, _delegate).setFormValue(value);
     }
 
     // Element lifecycle
@@ -13753,10 +13830,14 @@ $\
       _classPrivateFieldGet(this, _delegate).setCustomValidity(validationMessage);
     }
     formDisabledCallback(disabled) {
-      if (this.inputElement) {
-        this.inputElement.disabled = disabled;
+      const {
+        inputElement
+      } = this;
+      if (inputElement) {
+        inputElement.disabled = disabled;
       }
       this.toggleAttribute("contenteditable", !disabled);
+      _classPrivateFieldGet(this, _delegate).formDisabledCallback(disabled);
     }
     formResetCallback() {
       this.reset();

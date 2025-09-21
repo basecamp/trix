@@ -1,7 +1,7 @@
 import { fixtureTemplates } from "test/test_helpers/fixtures/fixtures"
 import { removeNode } from "trix/core/helpers"
 
-const setFixtureHTML = function (html, container = "form") {
+export const setFixtureHTML = function (html, container = "form") {
   let element = document.getElementById("trix-container")
   if (element != null) removeNode(element)
 
@@ -9,7 +9,9 @@ const setFixtureHTML = function (html, container = "form") {
   element.id = "trix-container"
   element.innerHTML = html
 
-  return document.body.insertAdjacentElement("afterbegin", element)
+  document.body.insertAdjacentElement("afterbegin", element)
+
+  return waitForTrixInit()
 }
 
 export const testGroup = function (name, options, callback) {
@@ -29,8 +31,7 @@ export const testGroup = function (name, options, callback) {
     window.focus()
 
     if (template != null) {
-      setFixtureHTML(fixtureTemplates[template](), container)
-      await waitForTrixInit()
+      await setFixtureHTML(fixtureTemplates[template](), container)
     }
 
     if (setup) setup()

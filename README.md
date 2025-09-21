@@ -98,6 +98,31 @@ import Trix from "trix"
 Trix.elements.TrixEditorElement.formAssociated = false
 ```
 
+When Trix is configured to be compatible with `ElementInternals`, it is also
+capable of functioning without an `<input type="hidden">` element. To configure
+a `<trix-editor>` element to skip creating its `<input type="hidden">`, set the
+element's `willCreateInput = false`:
+
+```js
+addEventListener("before-trix-initialize", (event) => {
+  const trixEditor = event.target
+
+  trixEditor.willCreateInput = false
+})
+```
+
+> [!NOTE]
+> Trix will *always* use an associated `<input type="hidden">` element when the
+> `[input]` attribute is set. To migrate to `<input>`-free support, set
+> `willCreateInput = false`, then render the `<trix-editor>` without the
+> `[input]` attribute.
+
+> [!WARNING]
+> In the absence of an `<input type="hidden">` element, the `<trix-editor>`
+> element's value will not be included in `<form>` element submissions unless it
+> is rendered with a `[name]` attribute. Set the `[name]` attribute to the same
+> value that the `<input type="hidden">` element would have.
+
 ## Invoking Internal Trix Actions
 
 Internal actions are defined in `controllers/editor_controller.js` and consist of:
