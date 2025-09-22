@@ -13323,7 +13323,7 @@ $\
     if (element.hasAttribute("contenteditable")) {
       return;
     }
-    element.setAttribute("contenteditable", "");
+    element.toggleAttribute("contenteditable", !element.disabled);
     return handleEventOnce("focus", {
       onElement: element,
       withCallback() {
@@ -13696,15 +13696,6 @@ $\
       if (this.hasAttribute("input")) {
         var _this$ownerDocument2;
         return (_this$ownerDocument2 = this.ownerDocument) === null || _this$ownerDocument2 === void 0 ? void 0 : _this$ownerDocument2.getElementById(this.getAttribute("input"));
-      } else if (this.parentNode && this.willCreateInput) {
-        const inputId = "trix-input-".concat(this.trixId);
-        this.setAttribute("input", inputId);
-        const element = makeElement("input", {
-          type: "hidden",
-          id: inputId
-        });
-        this.parentNode.insertBefore(element, this.nextElementSibling);
-        return element;
       } else {
         return undefined;
       }
@@ -13787,6 +13778,15 @@ $\
           triggerEvent("trix-before-initialize", {
             onElement: this
           });
+          if (!this.hasAttribute("input") && this.parentNode && this.willCreateInput) {
+            const inputId = "trix-input-".concat(this.trixId);
+            this.setAttribute("input", inputId);
+            const element = makeElement("input", {
+              type: "hidden",
+              id: inputId
+            });
+            this.parentNode.insertBefore(element, this.nextElementSibling);
+          }
           this.editorController = new EditorController({
             editorElement: this,
             html: this.defaultValue = this.value
