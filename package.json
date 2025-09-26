@@ -1,6 +1,6 @@
 {
   "name": "trix",
-  "version": "2.1.1",
+  "version": "2.1.15",
   "description": "A rich text editor for everyday writing",
   "main": "dist/trix.umd.min.js",
   "module": "dist/trix.esm.min.js",
@@ -35,19 +35,21 @@
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@web/dev-server": "^0.1.34",
     "babel-eslint": "^10.1.0",
+    "chokidar": "^4.0.2",
     "concurrently": "^7.4.0",
     "eslint": "^7.32.0",
     "esm": "^3.2.25",
+    "idiomorph": "^0.7.3",
     "karma": "6.4.1",
     "karma-chrome-launcher": "3.2.0",
     "karma-qunit": "^4.1.2",
     "karma-sauce-launcher": "^4.3.6",
-    "node-sass": "^7.0.1",
     "qunit": "2.19.1",
     "rangy": "^1.3.0",
     "rollup": "^2.56.3",
     "rollup-plugin-includepaths": "^0.2.4",
     "rollup-plugin-terser": "^7.0.2",
+    "sass": "^1.83.0",
     "svgo": "^2.8.0",
     "webdriverio": "^7.19.5"
   },
@@ -55,18 +57,27 @@
     "webdriverio": "^7.19.5"
   },
   "scripts": {
-    "build-css": "node-sass --functions=./assets/trix/stylesheets/functions assets/trix.scss dist/trix.css",
+    "build-css": "bin/sass-build assets/trix.scss dist/trix.css action_text-trix/app/assets/stylesheets/trix.css",
     "build-js": "rollup -c",
     "build-assets": "cp -f assets/*.html dist/",
-    "build": "yarn run build-js && yarn run build-css && yarn run build-assets",
+    "build-ruby": "rake -C action_text-trix sync",
+    "build": "yarn run build-js && yarn run build-css && yarn run build-assets && yarn run build-ruby",
     "watch": "rollup -c -w",
     "lint": "eslint .",
     "pretest": "yarn run lint && yarn run build",
     "test": "karma start",
     "prerelease": "yarn version && yarn test",
-    "release": "npm adduser && npm publish",
+    "release-npm": "npm adduser && npm publish",
+    "release-ruby": "rake -C action_text-trix release",
+    "release": "yarn run release-npm && yarn run release-ruby",
     "postrelease": "git push && git push --tags",
     "dev": "web-dev-server --app-index index.html  --root-dir dist --node-resolve --open",
     "start": "yarn build-assets && concurrently --kill-others --names js,css,dev-server 'yarn watch' 'yarn build-css --watch' 'yarn dev'"
+  },
+  "dependencies": {
+    "dompurify": "^3.2.5"
+  },
+  "engines": {
+    "node": ">= 18"
   }
 }

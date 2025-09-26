@@ -1,0 +1,20 @@
+require "bundler/gem_tasks"
+require "rake/clean"
+
+task :sync do
+  require "json"
+
+  FileUtils.cp File.expand_path("../LICENSE", __dir__), __dir__, verbose: true
+
+  package_json = JSON.load(File.read(File.join(__dir__, "../package.json")))
+  version = package_json["version"]
+  File.write(File.join(__dir__, "lib", "action_text", "trix", "version.rb"), <<~RUBY)
+    module Trix
+      VERSION = "#{version}"
+    end
+  RUBY
+  puts "Updated gem version to #{version}"
+end
+
+CLEAN.add "pkg"
+CLOBBER.add "app/assets/javascripts/trix.js", "app/assets/stylesheets/trix.css"

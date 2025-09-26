@@ -109,7 +109,52 @@ testGroup("Pasting", { template: "editor_empty" }, () => {
     const pasteData = {
       "text/plain": "x",
       "text/html": `\
-      copy<div data-trix-attachment="{&quot;contentType&quot;:&quot;text/html&quot;,&quot;content&quot;:&quot;&lt;img src=1 onerror=window.unsanitized.push(1)&gt;HELLO123&quot;}"></div>me
+      copy<div data-trix-attachment="{&quot;contentType&quot;:&quot;text/anything&quot;,&quot;content&quot;:&quot;&lt;img src=1 onerror=window.unsanitized.push(1)&gt;HELLO123&quot;}"></div>me
+      `,
+    }
+
+    await pasteContent(pasteData)
+    await delay(20)
+    assert.deepEqual(window.unsanitized, [])
+    delete window.unsanitized
+  })
+
+  test("paste data-trix-attachment unsafe html div overload", async () => {
+    window.unsanitized = []
+    const pasteData = {
+      "text/plain": "x",
+      "text/html": `\
+      <div data-trix-attachment="{&quot;contentType&quot;:&quot;text/html5&quot;,&quot;content&quot;:&quot;<div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><div><a><svg><desc><svg><image><a><desc><svg><image></image></svg></desc></a></image><style><a data-trix-caca='</style><img src=x onerror=window.unsanitized.push(1)>'></a></style></svg></desc></svg></a>&quot;}"></div>
+      `,
+    }
+
+    await pasteContent(pasteData)
+    await delay(20)
+    assert.deepEqual(window.unsanitized, [])
+    delete window.unsanitized
+  })
+
+  test("paste data-trix-attachment encoded mathml", async () => {
+    window.unsanitized = []
+    const pasteData = {
+      "text/plain": "x",
+      "text/html": `\
+      copy<div data-trix-attachment="{&quot;contentType&quot;:&quot;text/html5&quot;,&quot;content&quot;:&quot;&lt;math&gt;&lt;mtext&gt;&lt;table&gt;&lt;mglyph&gt;&lt;style&gt;&lt;img src=x onerror=window.unsanitized.push(1)&gt;&lt;/style&gt;XSS POC&quot;}"></div>me
+      `,
+    }
+
+    await pasteContent(pasteData)
+    await delay(20)
+    assert.deepEqual(window.unsanitized, [])
+    delete window.unsanitized
+  })
+
+  test("paste data-trix-attachment encoded embed", async () => {
+    window.unsanitized = []
+    const pasteData = {
+      "text/plain": "x",
+      "text/html": `\
+      copy<div data-trix-attachment="{&quot;contentType&quot;:&quot;text/html5&quot;,&quot;content&quot;:&quot;&lt;embed src='window.unsanitized.push(1)'&gt;XSS POC&quot;}"></div>me
       `,
     }
 

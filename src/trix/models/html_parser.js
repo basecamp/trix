@@ -40,13 +40,7 @@ const blockForAttributes = (attributes = {}, htmlAttributes = {}) => {
 
 const parseTrixDataAttribute = (element, name) => {
   try {
-    const data = JSON.parse(element.getAttribute(`data-trix-${name}`))
-
-    if (data.contentType === "text/html" && data.content) {
-      data.content = HTMLSanitizer.sanitize(data.content).getHTML()
-    }
-
-    return data
+    return JSON.parse(element.getAttribute(`data-trix-${name}`))
   } catch (error) {
     return {}
   }
@@ -72,10 +66,11 @@ export default class HTMLParser extends BasicObject {
     return parser
   }
 
-  constructor(html, { referenceElement } = {}) {
+  constructor(html, { referenceElement, purifyOptions } = {}) {
     super(...arguments)
     this.html = html
     this.referenceElement = referenceElement
+    this.purifyOptions = purifyOptions
     this.blocks = []
     this.blockElements = []
     this.processedElements = []
@@ -90,8 +85,7 @@ export default class HTMLParser extends BasicObject {
   parse() {
     try {
       this.createHiddenContainer()
-      const html = HTMLSanitizer.sanitize(this.html).getHTML()
-      this.containerElement.innerHTML = html
+      HTMLSanitizer.setHTML(this.containerElement, this.html, { purifyOptions: this.purifyOptions })
       const walker = walkTree(this.containerElement, { usingFilter: nodeFilter })
       while (walker.nextNode()) {
         this.processNode(walker.currentNode)

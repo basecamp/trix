@@ -1,4 +1,5 @@
-import { rangesAreEqual } from "trix/core/helpers"
+import { makeElement, rangesAreEqual } from "trix/core/helpers"
+import TrixEditorElement from "trix/elements/trix_editor_element"
 
 import {
   TEST_IMAGE_URL,
@@ -10,6 +11,7 @@ import {
   insertImageAttachment,
   moveCursor,
   pasteContent,
+  setFixtureHTML,
   test,
   testGroup,
   testIf,
@@ -131,6 +133,30 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
 
     await clickToolbarButton({ action: "undo" })
     assert.equal(eventCount, 5)
+  })
+
+  test("invoking internal actions does not dispatch a trix-action-invoke event", async () => {
+    let event = null
+
+    addEventListener("trix-action-invoke", (ev) => event = ev, { once: true })
+    await clickToolbarButton({ action: "link" })
+
+    assert.equal(null, event)
+  })
+
+  test("invoking external actions dispatches a trix-action-invoke event", async () => {
+    let event = null
+    const editor = getEditorElement()
+    editor.toolbarElement.insertAdjacentHTML("beforeend", `
+      <button id="test-action" type="button" data-trix-action="x-test"></button>
+    `)
+
+    addEventListener("trix-action-invoke", (ev) => event = ev, { once: true })
+    await clickToolbarButton({ action: "x-test" })
+
+    assert.equal(editor, event.target)
+    assert.equal("x-test", event.actionName)
+    assert.equal(document.getElementById("test-action"), event.invokingElement)
   })
 
   test("element triggers trix-change event after toggling attributes", async () => {
@@ -476,7 +502,7 @@ testGroup("Custom element API", { template: "editor_empty" }, () => {
 testGroup("<label> support", { template: "editor_with_labels" }, () => {
   test("associates all label elements", () => {
     const labels = [ document.getElementById("label-1"), document.getElementById("label-3") ]
-    assert.deepEqual(getEditorElement().labels, labels)
+    assert.deepEqual(Array.from(getEditorElement().labels), labels)
   })
 
   test("focuses when <label> clicked", () => {
@@ -513,5 +539,345 @@ testGroup("form property references its <form>", { template: "editors_with_forms
   test("returns null when there is no associated <form>", () => {
     const editor = document.getElementById("editor-with-no-form")
     assert.equal(editor.form, null)
+  })
+
+  test("editor resets to its original value on element reset", async () => {
+    const element = getEditorElement()
+
+    await typeCharacters("hello")
+    element.reset()
+    expectDocument("\n")
+  })
+
+  test("element returns empty string when value is missing", () => {
+    const element = getEditorElement()
+
+    assert.equal(element.value, "")
+  })
+
+  test("editor returns its type", () => {
+    const element = getEditorElement()
+
+    assert.equal("trix-editor", element.type)
+  })
+
+  testIf(TrixEditorElement.formAssociated, "adds [disabled] attribute based on .disabled property", () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+
+    editor.disabled = true
+
+    assert.equal(editor.hasAttribute("disabled"), true, "adds [disabled] attribute")
+
+    editor.disabled = false
+
+    assert.equal(editor.hasAttribute("disabled"), false, "removes [disabled] attribute")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "removes [contenteditable] and disables input when editor element has [disabled]", () => {
+    const editor = document.getElementById("editor-with-no-form")
+
+    editor.setAttribute("disabled", "")
+
+    assert.equal(editor.matches(":disabled"), true, "sets :disabled CSS pseudostate")
+    assert.equal(editor.inputElement.disabled, true, "disables input")
+    assert.equal(editor.disabled, true, "exposes [disabled] attribute as .disabled property")
+    assert.equal(editor.hasAttribute("contenteditable"), false, "removes [contenteditable] attribute")
+
+    editor.removeAttribute("disabled")
+
+    assert.equal(editor.matches(":disabled"), false, "removes sets :disabled pseudostate")
+    assert.equal(editor.inputElement.disabled, false, "enabled input")
+    assert.equal(editor.disabled, false, "updates .disabled property")
+    assert.equal(editor.hasAttribute("contenteditable"), true, "adds [contenteditable] attribute")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "removes [contenteditable] and disables input when editor element is :disabled", () => {
+    const editor = document.getElementById("editor-within-fieldset")
+    const fieldset = document.getElementById("fieldset")
+
+    fieldset.disabled = true
+
+    assert.equal(editor.matches(":disabled"), true, "sets :disabled CSS pseudostate")
+    assert.equal(editor.inputElement.disabled, true, "disables input")
+    assert.equal(editor.disabled, true, "infers disabled state from ancestor")
+    assert.equal(editor.hasAttribute("disabled"), false, "does not set [disabled] attribute")
+    assert.equal(editor.hasAttribute("contenteditable"), false, "removes [contenteditable] attribute")
+
+    fieldset.disabled = false
+
+    assert.equal(editor.matches(":disabled"), false, "removes sets :disabled pseudostate")
+    assert.equal(editor.inputElement.disabled, false, "enabled input")
+    assert.equal(editor.disabled, false, "updates .disabled property")
+    assert.equal(editor.hasAttribute("disabled"), false, "does not set [disabled] attribute")
+    assert.equal(editor.hasAttribute("contenteditable"), true, "adds [contenteditable] attribute")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "does not receive focus when :disabled", () => {
+    const activeEditor = document.getElementById("editor-with-input-form")
+    const editor = document.getElementById("editor-within-fieldset")
+
+    activeEditor.focus()
+    editor.disabled = true
+    editor.focus()
+
+    assert.equal(activeEditor, document.activeElement, "disabled editor does not receive focus")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "disabled editor does not encode its value when the form is submitted", () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+    const form = editor.form
+
+    editor.inputElement.value = "Hello world"
+    editor.disabled = true
+
+    assert.deepEqual({}, Object.fromEntries(new FormData(form).entries()), "does not write to FormData")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "validates with [required] attribute as invalid", () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+    const form = editor.form
+    const invalidInput = makeElement("input", { required: true })
+    let invalidEvent, submitEvent = null
+
+    editor.addEventListener("invalid", event => invalidEvent = event, { once: true })
+    form.addEventListener("submit", event => submitEvent = event, { once: true })
+
+    editor.required = true
+    form.requestSubmit()
+
+    // assert.equal(document.activeElement, editor, "editor receives focus")
+    assert.equal(editor.required, true, ".required property retrurns true")
+    assert.equal(editor.validity.valid, false, "validity.valid is false")
+    assert.equal(editor.validationMessage, invalidInput.validationMessage, "sets .validationMessage")
+    assert.equal(invalidEvent.target, editor, "dispatches 'invalid' event on editor")
+    assert.equal(submitEvent, null, "does not dispatch a 'submit' event")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "does not validate with [disabled] attribute", () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+    let invalidEvent = null
+
+    editor.disabled = true
+    editor.required = true
+    editor.addEventListener("invalid", event => invalidEvent = event, { once: true })
+    editor.reportValidity()
+
+    assert.equal(invalidEvent, null, "does not dispatch an 'invalid' event")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "re-validates when the value changes", async () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+    editor.required = true
+    editor.focus()
+
+    assert.equal(editor.validity.valid, false, "validity.valid is initially false")
+
+    await typeCharacters("a")
+
+    assert.equal(editor.validity.valid, true, "validity.valid is true after re-validating")
+    assert.equal(editor.validity.valueMissing, false, "validity.valueMissing is false")
+    assert.equal(editor.validationMessage, "", "clears the validationMessage")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "accepts a customError validation message", () => {
+    const editor = document.getElementById("editor-with-ancestor-form")
+
+    editor.setCustomValidity("A custom validation message")
+
+    assert.equal(editor.validity.valid, false)
+    assert.equal(editor.validity.customError, true)
+    assert.equal(editor.validationMessage, "A custom validation message")
+  })
+})
+
+const configureInputAssociated = ({ target }) => target.willCreateInput = false
+
+testGroup("TrixEditorElement.willCreateInput = false", {
+  setup: () => addEventListener("trix-before-initialize", configureInputAssociated),
+  teardown: () => removeEventListener("trix-before-initialize", configureInputAssociated)
+}, () => {
+  testIf(TrixEditorElement.formAssociated, "does not create an <input> on connect", async () => {
+    await setFixtureHTML("<trix-editor></trix-editor>")
+
+    const container = document.getElementById("trix-container")
+    const editor = getEditorElement()
+
+    assert.equal(container.querySelectorAll("input[type=hidden]").length, 0)
+    assert.equal(editor.hasAttribute("input"), false)
+    assert.equal(editor.inputElement, null)
+  })
+
+  testIf(TrixEditorElement.formAssociated, "associates an <input> element when [input] attribute is set", async () => {
+    await setFixtureHTML(`
+      <trix-editor input="input"></trix-editor>
+      <input id="input">
+    `)
+
+    const editor = getEditorElement()
+    const inputElement = document.getElementById("input")
+
+    assert.equal(editor.getAttribute("input"), inputElement.id)
+    assert.strictEqual(editor.inputElement, inputElement)
+  })
+
+  testIf(TrixEditorElement.formAssociated, "accesses its ancestor form", async () => {
+    await setFixtureHTML("<form><trix-editor></trix-editor></form>", "div")
+
+    const form = document.querySelector("form")
+    const editor = getEditorElement()
+
+    assert.equal(editor.form, form)
+  })
+
+  testIf(TrixEditorElement.formAssociated, "accesses its related <form> through the [form] attribute", async () => {
+    await setFixtureHTML(`
+      <form id="form"></form>
+      <trix-editor form="form"></trix-editor>
+    `, "div")
+
+    const form = document.getElementById("form")
+    const editor = getEditorElement()
+
+    assert.equal(editor.form, form)
+  })
+
+  testIf(TrixEditorElement.formAssociated, "returns null when there is no associated <form>", async () => {
+    await setFixtureHTML("<trix-editor></trix-editor>", "div")
+
+    const editor = getEditorElement()
+
+    assert.equal(editor.form, null)
+  })
+
+  testIf(TrixEditorElement.formAssociated, "reads and writes [name] attribute through .name property", async () => {
+    await setFixtureHTML("<trix-editor></trix-editor>")
+
+    const editor = getEditorElement()
+
+    assert.equal(editor.name, null)
+    assert.equal(editor.hasAttribute("name"), false, "has no [name] when .name is null")
+
+    editor.name = "content"
+
+    assert.equal(editor.name, "content")
+    assert.equal(editor.getAttribute("name"), "content")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "makes its sanitized value available to its <form>", async () => {
+    await setFixtureHTML("<trix-editor></trix-editor>")
+
+    const editor = getEditorElement()
+    const empty = new FormData(editor.form)
+
+    assert.deepEqual(Array.from(empty.values()), [], "does not serialize to FormData without [name]")
+
+    editor.name = "content"
+    editor.value = "<div>hello</div><script>alert('hacked!')</script>"
+
+    const formData = new FormData(editor.form)
+
+    assert.deepEqual(formData.get("content"), "<div>hello</div>", "serializes sanitized value to FormData")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "editor resets to its original value on element reset", async () => {
+    await setFixtureHTML("<trix-editor></trix-editor>")
+
+    const element = getEditorElement()
+
+    element.editor.loadHTML("<div>hello</div")
+    element.reset()
+
+    assert.equal(element.value, "")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "element returns empty string when value is missing", async () => {
+    await setFixtureHTML("<trix-editor></trix-editor>")
+
+    const element = getEditorElement()
+
+    assert.equal(element.value, "")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "adds [disabled] attribute based on .disabled property", async () => {
+    await setFixtureHTML("<trix-editor></trix-editor>")
+
+    const editor = getEditorElement()
+
+    editor.disabled = true
+
+    assert.equal(editor.hasAttribute("disabled"), true, "adds [disabled] attribute")
+
+    editor.disabled = false
+
+    assert.equal(editor.hasAttribute("disabled"), false, "removes [disabled] attribute")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "removes [contenteditable] and when editor element has [disabled]", async () => {
+    await setFixtureHTML("<trix-editor></trix-editor>")
+
+    const editor = getEditorElement()
+
+    editor.setAttribute("disabled", "")
+
+    assert.equal(editor.matches(":disabled"), true, "sets :disabled CSS pseudostate")
+    assert.equal(editor.disabled, true, "exposes [disabled] attribute as .disabled property")
+    assert.equal(editor.hasAttribute("contenteditable"), false, "removes [contenteditable] attribute")
+
+    editor.removeAttribute("disabled")
+
+    assert.equal(editor.matches(":disabled"), false, "removes sets :disabled pseudostate")
+    assert.equal(editor.disabled, false, "updates .disabled property")
+    assert.equal(editor.hasAttribute("contenteditable"), true, "adds [contenteditable] attribute")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "removes [contenteditable] when editor element is :disabled", async () => {
+    await setFixtureHTML("<trix-editor></trix-editor>", "fieldset")
+
+    const editor = getEditorElement()
+    const fieldset = editor.closest("fieldset")
+
+    fieldset.disabled = true
+
+    assert.equal(editor.matches(":disabled"), true, "sets :disabled CSS pseudostate")
+    assert.equal(editor.disabled, true, "infers disabled state from ancestor")
+    assert.equal(editor.hasAttribute("disabled"), false, "does not set [disabled] attribute")
+    assert.equal(editor.hasAttribute("contenteditable"), false, "removes [contenteditable] attribute")
+
+    fieldset.disabled = false
+
+    assert.equal(editor.matches(":disabled"), false, "removes sets :disabled pseudostate")
+    assert.equal(editor.disabled, false, "updates .disabled property")
+    assert.equal(editor.hasAttribute("disabled"), false, "does not set [disabled] attribute")
+    assert.equal(editor.hasAttribute("contenteditable"), true, "adds [contenteditable] attribute")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "does not receive focus when :disabled", async () => {
+    await setFixtureHTML(`
+      <trix-editor id="active"></trix-editor>
+      <trix-editor id="disabled" disabled></trix-editor>
+    `)
+
+    const activeEditor = document.getElementById("active")
+    const disabledEditor = document.getElementById("disabled")
+
+    activeEditor.focus()
+
+    assert.equal(activeEditor, document.activeElement)
+
+    disabledEditor.focus()
+
+    assert.equal(activeEditor, document.activeElement, "disabled editor does not receive focus")
+  })
+
+  testIf(TrixEditorElement.formAssociated, "disabled editor does not encode its value when the form is submitted", async () => {
+    await setFixtureHTML(`
+      <trix-editor name="ignored" disabled></trix-editor>
+    `)
+
+    const editor = getEditorElement()
+
+    editor.value = "Hello world"
+
+    assert.deepEqual(Array.from(new FormData(editor.form).values()), [], "does not write to FormData")
   })
 })

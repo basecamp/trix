@@ -1,0 +1,50 @@
+#!/usr/bin/env node
+
+const path = require("path")
+const fs = require("fs")
+const sass = require("sass")
+const { optimize } = require("svgo")
+const chokidar = require("chokidar")
+
+const args = process.argv.slice(2)
+if (args.length < 2) {
+  console.error("Usage: bin/sass-build <inputFile> <outputFile> (--watch)")
+  process.exit(1)
+}
+const inputFile = path.resolve(args[0])
+const outputFiles = args.slice(1).map(outputPath => path.resolve(outputPath))
+const watchMode = args.includes("--watch")
+
+const basePath = path.dirname(inputFile)
+
+const functions = {
+  "svg($file)": (args) => {
+    const fileName = args[0].assertString().text
+    const filePath = path.resolve(basePath, fileName)
+
+    let svgContent = fs.readFileSync(filePath, "utf8")
+    svgContent = optimize(svgContent, { multipass: true, datauri: "enc" })
+
+    return new sass.SassString(`url("${svgContent.data}")`, { quotes: false })
+  }
+}
+
+function compile() {
+  try {
+    const result = sass.compile(inputFile, { functions })
+
+    outputFiles.forEach(outputFile => fs.writeFileSync(outputFile, result.css, "utf8"))
+  } catch (error) {
+    console.error("Error compiling SCSS:", error.message)
+  }
+}
+compile()
+
+if (watchMode) {
+  console.log(`Watching for SASS file changes under ${basePath}...`)
+  chokidar.watch(basePath).on("change", (filePath) => {
+    if (!filePath.endsWith(".scss")) return
+    console.log(`[${new Date().toLocaleTimeString()}] ${filePath} changed. Recompiling...`)
+    compile()
+  })
+}

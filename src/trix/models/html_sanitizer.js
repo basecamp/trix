@@ -1,29 +1,50 @@
 import BasicObject from "trix/core/basic_object"
 
 import { nodeIsAttachmentElement, removeNode, tagName, walkTree } from "trix/core/helpers"
+import DOMPurify from "dompurify"
+import * as config from "trix/config"
+
+DOMPurify.addHook("uponSanitizeAttribute", function (node, data) {
+  const allowedAttributePattern = /^data-trix-/
+  if (allowedAttributePattern.test(data.attrName)) {
+    data.forceKeepAttr = true
+  }
+})
 
 const DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height language class".split(" ")
 const DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
 const DEFAULT_FORBIDDEN_ELEMENTS = "script iframe form noscript".split(" ")
 
 export default class HTMLSanitizer extends BasicObject {
+  static setHTML(element, html, options) {
+    const sanitizedElement = new this(html, options).sanitize()
+    const sanitizedHtml = sanitizedElement.getHTML ? sanitizedElement.getHTML() : sanitizedElement.outerHTML
+    element.innerHTML = sanitizedHtml
+  }
+
   static sanitize(html, options) {
     const sanitizer = new this(html, options)
     sanitizer.sanitize()
     return sanitizer
   }
 
-  constructor(html, { allowedAttributes, forbiddenProtocols, forbiddenElements } = {}) {
+  constructor(html, { allowedAttributes, forbiddenProtocols, forbiddenElements, purifyOptions } = {}) {
     super(...arguments)
     this.allowedAttributes = allowedAttributes || DEFAULT_ALLOWED_ATTRIBUTES
     this.forbiddenProtocols = forbiddenProtocols || DEFAULT_FORBIDDEN_PROTOCOLS
     this.forbiddenElements = forbiddenElements || DEFAULT_FORBIDDEN_ELEMENTS
+    this.purifyOptions = purifyOptions || {}
     this.body = createBodyElementForHTML(html)
   }
 
   sanitize() {
     this.sanitizeElements()
-    return this.normalizeListElementNesting()
+    this.normalizeListElementNesting()
+    const purifyConfig = Object.assign({}, config.dompurify, this.purifyOptions)
+    DOMPurify.setConfig(purifyConfig)
+    this.body = DOMPurify.sanitize(this.body)
+
+    return this.body
   }
 
   getHTML() {

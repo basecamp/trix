@@ -2,6 +2,8 @@ import BasicObject from "trix/core/basic_object"
 
 import { findClosestElementFromNode, handleEvent, triggerEvent } from "trix/core/helpers"
 
+import DOMPurify from "dompurify"
+
 const attributeButtonSelector = "[data-trix-attribute]"
 const actionButtonSelector = "[data-trix-action]"
 const toolbarButtonSelector = `${attributeButtonSelector}, ${actionButtonSelector}`
@@ -205,13 +207,25 @@ export default class ToolbarController extends BasicObject {
   setAttribute(dialogElement) {
     const attributeName = getAttributeName(dialogElement)
     const input = getInputForDialog(dialogElement, attributeName)
-    if (input.willValidate && !input.checkValidity()) {
-      input.setAttribute("data-trix-validate", "")
-      input.classList.add("trix-validate")
-      return input.focus()
+
+    if (input.willValidate) {
+      input.setCustomValidity("")
+      if (!input.checkValidity() || !this.isSafeAttribute(input)) {
+        input.setCustomValidity("Invalid value")
+        input.setAttribute("data-trix-validate", "")
+        input.classList.add("trix-validate")
+        return input.focus()
+      }
+    }
+    this.delegate?.toolbarDidUpdateAttribute(attributeName, input.value)
+    return this.hideDialog()
+  }
+
+  isSafeAttribute(input) {
+    if (input.hasAttribute("data-trix-validate-href")) {
+      return DOMPurify.isValidAttribute("a", "href", input.value)
     } else {
-      this.delegate?.toolbarDidUpdateAttribute(attributeName, input.value)
-      return this.hideDialog()
+      return true
     }
   }
 

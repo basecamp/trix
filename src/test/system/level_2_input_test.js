@@ -52,11 +52,18 @@ const performInputTypeUsingExecCommand = async (command, { inputType, data }) =>
 
   await nextFrame()
 
+  const isInsertParagraph = inputType === "insertParagraph"
+
   triggerInputEvent(document.activeElement, "beforeinput", { inputType, data })
-  document.execCommand(command, false, data)
-  assert.equal(inputEvents.length, 2)
+
+  // See `shouldRenderInmmediatelyToDealWithIOSDictation` to deal with iOS 18+ dictation bug.
+  if (!isInsertParagraph) {
+    document.execCommand(command, false, data)
+    assert.equal(inputEvents[1].type, "input")
+  }
+
+  assert.equal(inputEvents.length, isInsertParagraph ? 1 : 2)
   assert.equal(inputEvents[0].type, "beforeinput")
-  assert.equal(inputEvents[1].type, "input")
   assert.equal(inputEvents[0].inputType, inputType)
   assert.equal(inputEvents[0].data, data)
 
@@ -231,7 +238,14 @@ testGroup("Level 2 Input", testOptions, () => {
   test("pasting text from MS Word", async () => {
     const file = await createFile()
     const dataTransfer = createDataTransfer({
-      "text/html": "<span class=\"MsoNormal\">abc</span>",
+      "text/html": `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+        xmlns:w="urn:schemas-microsoft-com:office:word"
+        xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+        xmlns="http://www.w3.org/TR/REC-html40">
+        <body>
+          <span class="MsoNormal">abc</span>
+        </body>
+      </html>`,
       "text/plain": "abc",
       Files: [ file ],
     })
