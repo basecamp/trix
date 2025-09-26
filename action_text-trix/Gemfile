@@ -5,6 +5,7 @@ gemspec
 
 branch = ENV.fetch("RAILS_BRANCH", "main")
 gem "rails", github: "rails/rails", branch: branch
+gem "image_processing"
 gem "importmap-rails"
 gem "propshaft"
 gem "puma"

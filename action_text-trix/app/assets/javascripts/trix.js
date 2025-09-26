@@ -91,6 +91,9 @@ Copyright © 2026 37signals, LLC
   var engines = {
   	node: ">= 18"
   };
+  var peerDependencies = {
+  	"@rails/actiontext": "^8.1.100"
+  };
   var _package = {
   	name: name,
   	version: version,
@@ -109,7 +112,8 @@ Copyright © 2026 37signals, LLC
   	resolutions: resolutions,
   	scripts: scripts,
   	dependencies: dependencies,
-  	engines: engines
+  	engines: engines,
+  	peerDependencies: peerDependencies
   };
 
   const attachmentSelector = "[data-trix-attachment]";

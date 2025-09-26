@@ -122,6 +122,10 @@ jobs:
             rails_branch: main
             experimental: true
     steps:
+      - uses: ruby/setup-ruby-pkgs@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          apt-get: libvips-tools
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
