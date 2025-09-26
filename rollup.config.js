@@ -9,6 +9,7 @@ import { version } from "./package.json"
 
 const year = new Date().getFullYear()
 const banner = `/*\nTrix ${version}\nCopyright © ${year} 37signals, LLC\n */`
+const actionTextBanner = `/*\ntrix/actiontext ${version}\nCopyright © ${year} 37signals, LLC\n */`
 
 const plugins = [
   json(),
@@ -88,6 +89,38 @@ export default [
         format: "es",
         banner,
         sourcemap: true
+      }
+    ],
+    ...compressedConfig,
+  },
+  {
+    input: "src/trix/actiontext.js",
+    output: [
+      {
+        file: "dist/trix/actiontext.esm.js",
+        format: "es",
+        banner: actionTextBanner
+      },
+      {
+        file: "action_text-trix/app/assets/javascripts/trix/actiontext.esm.js",
+        format: "es",
+        banner: actionTextBanner
+      }
+    ],
+    ...defaultConfig,
+  },
+  {
+    input: "src/trix/actiontext.js",
+    output: [
+      {
+        file: "dist/trix/actiontext.esm.js",
+        format: "es",
+        banner: actionTextBanner
+      },
+      {
+        file: "action_text-trix/app/assets/javascripts/trix/actiontext.esm.min.js",
+        format: "es",
+        banner: actionTextBanner
       }
     ],
     ...compressedConfig,
