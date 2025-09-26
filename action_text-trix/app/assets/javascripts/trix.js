@@ -66,7 +66,7 @@ Copyright © 2025 37signals, LLC
   	webdriverio: "^7.19.5"
   };
   var scripts = {
-  	"build-css": "bin/sass-build assets/trix.scss dist/trix.css",
+  	"build-css": "bin/sass-build assets/trix.scss dist/trix.css action_text-trix/app/assets/stylesheets/trix.css",
   	"build-js": "rollup -c",
   	"build-assets": "cp -f assets/*.html dist/",
   	"build-ruby": "rake -C action_text-trix sync",
