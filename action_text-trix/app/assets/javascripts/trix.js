@@ -86,6 +86,9 @@ Copyright © 2025 37signals, LLC
   var dependencies = {
   	dompurify: "^3.2.5"
   };
+  var engines = {
+  	node: ">= 18"
+  };
   var _package = {
   	name: name,
   	version: version,
@@ -103,7 +106,8 @@ Copyright © 2025 37signals, LLC
   	devDependencies: devDependencies,
   	resolutions: resolutions,
   	scripts: scripts,
-  	dependencies: dependencies
+  	dependencies: dependencies,
+  	engines: engines
   };
 
   const attachmentSelector = "[data-trix-attachment]";
@@ -1759,7 +1763,7 @@ $\
     }
   }
 
-  /*! @license DOMPurify 3.2.5 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.2.5/LICENSE */
+  /*! @license DOMPurify 3.2.7 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.2.7/LICENSE */
 
   const {
     entries,
@@ -1788,12 +1792,18 @@ $\
     };
   }
   if (!apply) {
-    apply = function apply(fun, thisValue, args) {
-      return fun.apply(thisValue, args);
+    apply = function apply(func, thisArg) {
+      for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+        args[_key - 2] = arguments[_key];
+      }
+      return func.apply(thisArg, args);
     };
   }
   if (!construct) {
-    construct = function construct(Func, args) {
+    construct = function construct(Func) {
+      for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+        args[_key2 - 1] = arguments[_key2];
+      }
       return new Func(...args);
     };
   }
@@ -1822,8 +1832,8 @@ $\
       if (thisArg instanceof RegExp) {
         thisArg.lastIndex = 0;
       }
-      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
+      for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+        args[_key3 - 1] = arguments[_key3];
       }
       return apply(func, thisArg, args);
     };
@@ -1834,12 +1844,12 @@ $\
    * @param func - The constructor function to be wrapped and called.
    * @returns A new function that constructs an instance of the given constructor function with the provided arguments.
    */
-  function unconstruct(func) {
+  function unconstruct(Func) {
     return function () {
-      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        args[_key2] = arguments[_key2];
+      for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        args[_key4] = arguments[_key4];
       }
-      return construct(func, args);
+      return construct(Func, args);
     };
   }
   /**
@@ -1937,8 +1947,8 @@ $\
     }
     return fallbackValue;
   }
-  const html$1 = freeze(['a', 'abbr', 'acronym', 'address', 'area', 'article', 'aside', 'audio', 'b', 'bdi', 'bdo', 'big', 'blink', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'content', 'data', 'datalist', 'dd', 'decorator', 'del', 'details', 'dfn', 'dialog', 'dir', 'div', 'dl', 'dt', 'element', 'em', 'fieldset', 'figcaption', 'figure', 'font', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'img', 'input', 'ins', 'kbd', 'label', 'legend', 'li', 'main', 'map', 'mark', 'marquee', 'menu', 'menuitem', 'meter', 'nav', 'nobr', 'ol', 'optgroup', 'option', 'output', 'p', 'picture', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'section', 'select', 'shadow', 'small', 'source', 'spacer', 'span', 'strike', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'tr', 'track', 'tt', 'u', 'ul', 'var', 'video', 'wbr']);
-  const svg$1 = freeze(['svg', 'a', 'altglyph', 'altglyphdef', 'altglyphitem', 'animatecolor', 'animatemotion', 'animatetransform', 'circle', 'clippath', 'defs', 'desc', 'ellipse', 'filter', 'font', 'g', 'glyph', 'glyphref', 'hkern', 'image', 'line', 'lineargradient', 'marker', 'mask', 'metadata', 'mpath', 'path', 'pattern', 'polygon', 'polyline', 'radialgradient', 'rect', 'stop', 'style', 'switch', 'symbol', 'text', 'textpath', 'title', 'tref', 'tspan', 'view', 'vkern']);
+  const html$1 = freeze(['a', 'abbr', 'acronym', 'address', 'area', 'article', 'aside', 'audio', 'b', 'bdi', 'bdo', 'big', 'blink', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'content', 'data', 'datalist', 'dd', 'decorator', 'del', 'details', 'dfn', 'dialog', 'dir', 'div', 'dl', 'dt', 'element', 'em', 'fieldset', 'figcaption', 'figure', 'font', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'img', 'input', 'ins', 'kbd', 'label', 'legend', 'li', 'main', 'map', 'mark', 'marquee', 'menu', 'menuitem', 'meter', 'nav', 'nobr', 'ol', 'optgroup', 'option', 'output', 'p', 'picture', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'search', 'section', 'select', 'shadow', 'slot', 'small', 'source', 'spacer', 'span', 'strike', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'tr', 'track', 'tt', 'u', 'ul', 'var', 'video', 'wbr']);
+  const svg$1 = freeze(['svg', 'a', 'altglyph', 'altglyphdef', 'altglyphitem', 'animatecolor', 'animatemotion', 'animatetransform', 'circle', 'clippath', 'defs', 'desc', 'ellipse', 'enterkeyhint', 'exportparts', 'filter', 'font', 'g', 'glyph', 'glyphref', 'hkern', 'image', 'inputmode', 'line', 'lineargradient', 'marker', 'mask', 'metadata', 'mpath', 'part', 'path', 'pattern', 'polygon', 'polyline', 'radialgradient', 'rect', 'slot', 'stop', 'style', 'switch', 'symbol', 'text', 'textpath', 'title', 'tref', 'tspan', 'view', 'vkern']);
   const svgFilters = freeze(['feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite', 'feConvolveMatrix', 'feDiffuseLighting', 'feDisplacementMap', 'feDistantLight', 'feDropShadow', 'feFlood', 'feFuncA', 'feFuncB', 'feFuncG', 'feFuncR', 'feGaussianBlur', 'feImage', 'feMerge', 'feMergeNode', 'feMorphology', 'feOffset', 'fePointLight', 'feSpecularLighting', 'feSpotLight', 'feTile', 'feTurbulence']);
   // List of SVG elements that are disallowed by default.
   // We still need to know them so that we can do namespace
@@ -1950,7 +1960,7 @@ $\
   // even those that we disallow by default.
   const mathMlDisallowed = freeze(['maction', 'maligngroup', 'malignmark', 'mlongdiv', 'mscarries', 'mscarry', 'msgroup', 'mstack', 'msline', 'msrow', 'semantics', 'annotation', 'annotation-xml', 'mprescripts', 'none']);
   const text = freeze(['#text']);
-  const html = freeze(['accept', 'action', 'align', 'alt', 'autocapitalize', 'autocomplete', 'autopictureinpicture', 'autoplay', 'background', 'bgcolor', 'border', 'capture', 'cellpadding', 'cellspacing', 'checked', 'cite', 'class', 'clear', 'color', 'cols', 'colspan', 'controls', 'controlslist', 'coords', 'crossorigin', 'datetime', 'decoding', 'default', 'dir', 'disabled', 'disablepictureinpicture', 'disableremoteplayback', 'download', 'draggable', 'enctype', 'enterkeyhint', 'face', 'for', 'headers', 'height', 'hidden', 'high', 'href', 'hreflang', 'id', 'inputmode', 'integrity', 'ismap', 'kind', 'label', 'lang', 'list', 'loading', 'loop', 'low', 'max', 'maxlength', 'media', 'method', 'min', 'minlength', 'multiple', 'muted', 'name', 'nonce', 'noshade', 'novalidate', 'nowrap', 'open', 'optimum', 'pattern', 'placeholder', 'playsinline', 'popover', 'popovertarget', 'popovertargetaction', 'poster', 'preload', 'pubdate', 'radiogroup', 'readonly', 'rel', 'required', 'rev', 'reversed', 'role', 'rows', 'rowspan', 'spellcheck', 'scope', 'selected', 'shape', 'size', 'sizes', 'span', 'srclang', 'start', 'src', 'srcset', 'step', 'style', 'summary', 'tabindex', 'title', 'translate', 'type', 'usemap', 'valign', 'value', 'width', 'wrap', 'xmlns', 'slot']);
+  const html = freeze(['accept', 'action', 'align', 'alt', 'autocapitalize', 'autocomplete', 'autopictureinpicture', 'autoplay', 'background', 'bgcolor', 'border', 'capture', 'cellpadding', 'cellspacing', 'checked', 'cite', 'class', 'clear', 'color', 'cols', 'colspan', 'controls', 'controlslist', 'coords', 'crossorigin', 'datetime', 'decoding', 'default', 'dir', 'disabled', 'disablepictureinpicture', 'disableremoteplayback', 'download', 'draggable', 'enctype', 'enterkeyhint', 'exportparts', 'face', 'for', 'headers', 'height', 'hidden', 'high', 'href', 'hreflang', 'id', 'inert', 'inputmode', 'integrity', 'ismap', 'kind', 'label', 'lang', 'list', 'loading', 'loop', 'low', 'max', 'maxlength', 'media', 'method', 'min', 'minlength', 'multiple', 'muted', 'name', 'nonce', 'noshade', 'novalidate', 'nowrap', 'open', 'optimum', 'part', 'pattern', 'placeholder', 'playsinline', 'popover', 'popovertarget', 'popovertargetaction', 'poster', 'preload', 'pubdate', 'radiogroup', 'readonly', 'rel', 'required', 'rev', 'reversed', 'role', 'rows', 'rowspan', 'spellcheck', 'scope', 'selected', 'shape', 'size', 'sizes', 'slot', 'span', 'srclang', 'start', 'src', 'srcset', 'step', 'style', 'summary', 'tabindex', 'title', 'translate', 'type', 'usemap', 'valign', 'value', 'width', 'wrap', 'xmlns', 'slot']);
   const svg = freeze(['accent-height', 'accumulate', 'additive', 'alignment-baseline', 'amplitude', 'ascent', 'attributename', 'attributetype', 'azimuth', 'basefrequency', 'baseline-shift', 'begin', 'bias', 'by', 'class', 'clip', 'clippathunits', 'clip-path', 'clip-rule', 'color', 'color-interpolation', 'color-interpolation-filters', 'color-profile', 'color-rendering', 'cx', 'cy', 'd', 'dx', 'dy', 'diffuseconstant', 'direction', 'display', 'divisor', 'dur', 'edgemode', 'elevation', 'end', 'exponent', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'filterunits', 'flood-color', 'flood-opacity', 'font-family', 'font-size', 'font-size-adjust', 'font-stretch', 'font-style', 'font-variant', 'font-weight', 'fx', 'fy', 'g1', 'g2', 'glyph-name', 'glyphref', 'gradientunits', 'gradienttransform', 'height', 'href', 'id', 'image-rendering', 'in', 'in2', 'intercept', 'k', 'k1', 'k2', 'k3', 'k4', 'kerning', 'keypoints', 'keysplines', 'keytimes', 'lang', 'lengthadjust', 'letter-spacing', 'kernelmatrix', 'kernelunitlength', 'lighting-color', 'local', 'marker-end', 'marker-mid', 'marker-start', 'markerheight', 'markerunits', 'markerwidth', 'maskcontentunits', 'maskunits', 'max', 'mask', 'media', 'method', 'mode', 'min', 'name', 'numoctaves', 'offset', 'operator', 'opacity', 'order', 'orient', 'orientation', 'origin', 'overflow', 'paint-order', 'path', 'pathlength', 'patterncontentunits', 'patterntransform', 'patternunits', 'points', 'preservealpha', 'preserveaspectratio', 'primitiveunits', 'r', 'rx', 'ry', 'radius', 'refx', 'refy', 'repeatcount', 'repeatdur', 'restart', 'result', 'rotate', 'scale', 'seed', 'shape-rendering', 'slope', 'specularconstant', 'specularexponent', 'spreadmethod', 'startoffset', 'stddeviation', 'stitchtiles', 'stop-color', 'stop-opacity', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke', 'stroke-width', 'style', 'surfacescale', 'systemlanguage', 'tabindex', 'tablevalues', 'targetx', 'targety', 'transform', 'transform-origin', 'text-anchor', 'text-decoration', 'text-rendering', 'textlength', 'type', 'u1', 'u2', 'unicode', 'values', 'viewbox', 'visibility', 'version', 'vert-adv-y', 'vert-origin-x', 'vert-origin-y', 'width', 'word-spacing', 'wrap', 'writing-mode', 'xchannelselector', 'ychannelselector', 'x', 'x1', 'x2', 'xmlns', 'y', 'y1', 'y2', 'z', 'zoomandpan']);
   const mathMl = freeze(['accent', 'accentunder', 'align', 'bevelled', 'close', 'columnsalign', 'columnlines', 'columnspan', 'denomalign', 'depth', 'dir', 'display', 'displaystyle', 'encoding', 'fence', 'frame', 'height', 'href', 'id', 'largeop', 'length', 'linethickness', 'lspace', 'lquote', 'mathbackground', 'mathcolor', 'mathsize', 'mathvariant', 'maxsize', 'minsize', 'movablelimits', 'notation', 'numalign', 'open', 'rowalign', 'rowlines', 'rowspacing', 'rowspan', 'rspace', 'rquote', 'scriptlevel', 'scriptminsize', 'scriptsizemultiplier', 'selection', 'separator', 'separators', 'stretchy', 'subscriptshift', 'supscriptshift', 'symmetric', 'voffset', 'width', 'xmlns']);
   const xml = freeze(['xlink:href', 'xml:id', 'xlink:title', 'xml:space', 'xmlns:xlink']);
@@ -1961,13 +1971,11 @@ $\
   const TMPLIT_EXPR = seal(/\$\{[\w\W]*/gm); // eslint-disable-line unicorn/better-regex
   const DATA_ATTR = seal(/^data-[\-\w.\u00B7-\uFFFF]+$/); // eslint-disable-line no-useless-escape
   const ARIA_ATTR = seal(/^aria-[\-\w]+$/); // eslint-disable-line no-useless-escape
-  const IS_ALLOWED_URI = seal(/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i // eslint-disable-line no-useless-escape
+  const IS_ALLOWED_URI = seal(/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp|matrix):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i // eslint-disable-line no-useless-escape
   );
-
   const IS_SCRIPT_OR_DATA = seal(/^(?:\w+script|data):/i);
   const ATTR_WHITESPACE = seal(/[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g // eslint-disable-line no-control-regex
   );
-
   const DOCTYPE_NAME = seal(/^html$/i);
   const CUSTOM_ELEMENT = seal(/^[a-z][.\w]*(-[.\w]+)+$/i);
   var EXPRESSIONS = /*#__PURE__*/Object.freeze({
@@ -2002,7 +2010,6 @@ $\
     documentFragment: 11,
     notation: 12 // Deprecated
   };
-
   const getGlobal = function getGlobal() {
     return typeof window === 'undefined' ? null : window;
   };
@@ -2060,7 +2067,7 @@ $\
   function createDOMPurify() {
     let window = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : getGlobal();
     const DOMPurify = root => createDOMPurify(root);
-    DOMPurify.version = '3.2.5';
+    DOMPurify.version = '3.2.7';
     DOMPurify.removed = [];
     if (!window || !window.document || window.document.nodeType !== NODE_TYPE.document || !window.Element) {
       // Not running in a browser, provide a factory function
@@ -2299,8 +2306,8 @@ $\
       URI_SAFE_ATTRIBUTES = objectHasOwnProperty(cfg, 'ADD_URI_SAFE_ATTR') ? addToSet(clone(DEFAULT_URI_SAFE_ATTRIBUTES), cfg.ADD_URI_SAFE_ATTR, transformCaseFunc) : DEFAULT_URI_SAFE_ATTRIBUTES;
       DATA_URI_TAGS = objectHasOwnProperty(cfg, 'ADD_DATA_URI_TAGS') ? addToSet(clone(DEFAULT_DATA_URI_TAGS), cfg.ADD_DATA_URI_TAGS, transformCaseFunc) : DEFAULT_DATA_URI_TAGS;
       FORBID_CONTENTS = objectHasOwnProperty(cfg, 'FORBID_CONTENTS') ? addToSet({}, cfg.FORBID_CONTENTS, transformCaseFunc) : DEFAULT_FORBID_CONTENTS;
-      FORBID_TAGS = objectHasOwnProperty(cfg, 'FORBID_TAGS') ? addToSet({}, cfg.FORBID_TAGS, transformCaseFunc) : {};
-      FORBID_ATTR = objectHasOwnProperty(cfg, 'FORBID_ATTR') ? addToSet({}, cfg.FORBID_ATTR, transformCaseFunc) : {};
+      FORBID_TAGS = objectHasOwnProperty(cfg, 'FORBID_TAGS') ? addToSet({}, cfg.FORBID_TAGS, transformCaseFunc) : clone({});
+      FORBID_ATTR = objectHasOwnProperty(cfg, 'FORBID_ATTR') ? addToSet({}, cfg.FORBID_ATTR, transformCaseFunc) : clone({});
       USE_PROFILES = objectHasOwnProperty(cfg, 'USE_PROFILES') ? cfg.USE_PROFILES : false;
       ALLOW_ARIA_ATTR = cfg.ALLOW_ARIA_ATTR !== false; // Default true
       ALLOW_DATA_ATTR = cfg.ALLOW_DATA_ATTR !== false; // Default true
@@ -2665,7 +2672,7 @@ $\
         allowedTags: ALLOWED_TAGS
       });
       /* Detect mXSS attempts abusing namespace confusion */
-      if (currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(/<[/\w!]/g, currentNode.innerHTML) && regExpTest(/<[/\w!]/g, currentNode.textContent)) {
+      if (SAFE_FOR_XML && currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(/<[/\w!]/g, currentNode.innerHTML) && regExpTest(/<[/\w!]/g, currentNode.textContent)) {
         _forceRemove(currentNode);
         return true;
       }
@@ -2757,7 +2764,7 @@ $\
         // First condition does a very basic check if a) it's basically a valid custom element tagname AND
         // b) if the tagName passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.tagNameCheck
         // and c) if the attribute name passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.attributeNameCheck
-        _isBasicCustomElement(lcTag) && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(lcTag)) && (CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName) || CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.attributeNameCheck(lcName)) ||
+        _isBasicCustomElement(lcTag) && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(lcTag)) && (CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName) || CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.attributeNameCheck(lcName, lcTag)) ||
         // Alternative, second condition checks if it's an `is`-attribute, AND
         // the value passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.tagNameCheck
         lcName === 'is' && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(value))) ;else {
@@ -2817,7 +2824,8 @@ $\
           value: attrValue
         } = attr;
         const lcName = transformCaseFunc(name);
-        let value = name === 'value' ? attrValue : stringTrim(attrValue);
+        const initValue = attrValue;
+        let value = name === 'value' ? initValue : stringTrim(initValue);
         /* Execute a hook if present */
         hookEvent.attrName = lcName;
         hookEvent.attrValue = value;
@@ -2835,7 +2843,12 @@ $\
           value = SANITIZE_NAMED_PROPS_PREFIX + value;
         }
         /* Work around a security issue with comments inside attributes */
-        if (SAFE_FOR_XML && regExpTest(/((--!?|])>)|<\/(style|title)/i, value)) {
+        if (SAFE_FOR_XML && regExpTest(/((--!?|])>)|<\/(style|title|textarea)/i, value)) {
+          _removeAttribute(name, currentNode);
+          continue;
+        }
+        /* Make sure we cannot easily use animated hrefs, even if animations are allowed */
+        if (lcName === 'attributename' && stringMatch(value, 'href')) {
           _removeAttribute(name, currentNode);
           continue;
         }
@@ -2843,10 +2856,9 @@ $\
         if (hookEvent.forceKeepAttr) {
           continue;
         }
-        /* Remove attribute */
-        _removeAttribute(name, currentNode);
         /* Did the hooks approve of the attribute? */
         if (!hookEvent.keepAttr) {
+          _removeAttribute(name, currentNode);
           continue;
         }
         /* Work around a security issue in jQuery 3.0 */
@@ -2863,6 +2875,7 @@ $\
         /* Is `value` valid for this attribute? */
         const lcTag = transformCaseFunc(currentNode.nodeName);
         if (!_isValidAttribute(lcTag, lcName, value)) {
+          _removeAttribute(name, currentNode);
           continue;
         }
         /* Handle attributes that require Trusted Types */
@@ -2883,19 +2896,23 @@ $\
           }
         }
         /* Handle invalid data-* attribute set by try-catching it */
-        try {
-          if (namespaceURI) {
-            currentNode.setAttributeNS(namespaceURI, name, value);
-          } else {
-            /* Fallback to setAttribute() for browser-unrecognized namespaces e.g. "x-schema". */
-            currentNode.setAttribute(name, value);
+        if (value !== initValue) {
+          try {
+            if (namespaceURI) {
+              currentNode.setAttributeNS(namespaceURI, name, value);
+            } else {
+              /* Fallback to setAttribute() for browser-unrecognized namespaces e.g. "x-schema". */
+              currentNode.setAttribute(name, value);
+            }
+            if (_isClobbered(currentNode)) {
+              _forceRemove(currentNode);
+            } else {
+              arrayPop(DOMPurify.removed);
+            }
+          } catch (_) {
+            _removeAttribute(name, currentNode);
           }
-          if (_isClobbered(currentNode)) {
-            _forceRemove(currentNode);
-          } else {
-            arrayPop(DOMPurify.removed);
-          }
-        } catch (_) {}
+        }
       }
       /* Execute a hook if present */
       _executeHooks(hooks.afterSanitizeAttributes, currentNode, null);
@@ -3915,7 +3932,7 @@ $\
       u,
       f = {
         kind: c,
-        name: l ? "#" + t : t,
+        name: l ? "#" + t : _toPropertyKey(t),
         isStatic: n,
         isPrivate: l
       },
@@ -3953,10 +3970,7 @@ $\
     if (1 === e) {
       if ("object" !== a || null === t) throw new TypeError("accessor decorators must return an object with get, set, or init properties or void 0");
       void 0 !== t.get && old_assertCallable(t.get, "accessor.get"), void 0 !== t.set && old_assertCallable(t.set, "accessor.set"), void 0 !== t.init && old_assertCallable(t.init, "accessor.init"), void 0 !== t.initializer && old_assertCallable(t.initializer, "accessor.initializer");
-    } else if ("function" !== a) {
-      var r;
-      throw r = 0 === e ? "field" : 10 === e ? "class" : "method", new TypeError(r + " decorators must return a function or void 0");
-    }
+    } else if ("function" !== a) throw new TypeError((0 === e ? "field" : 10 === e ? "class" : "method") + " decorators must return a function or void 0");
   }
   function old_getInit(e) {
     var t;
@@ -3969,28 +3983,29 @@ $\
       f,
       p,
       v,
+      y,
       h = a[0];
-    if (n ? c = 0 === o || 1 === o ? {
+    if (n ? (0 === o || 1 === o ? (c = {
       get: a[3],
       set: a[4]
-    } : 3 === o ? {
+    }, u = "get") : 3 === o ? (c = {
       get: a[3]
-    } : 4 === o ? {
+    }, u = "get") : 4 === o ? (c = {
       set: a[3]
-    } : {
+    }, u = "set") : c = {
       value: a[3]
-    } : 0 !== o && (c = Object.getOwnPropertyDescriptor(t, r)), 1 === o ? u = {
+    }, 0 !== o && (1 === o && _setFunctionName(a[4], "#" + r, "set"), _setFunctionName(a[3], "#" + r, u))) : 0 !== o && (c = Object.getOwnPropertyDescriptor(t, r)), 1 === o ? f = {
       get: c.get,
       set: c.set
-    } : 2 === o ? u = c.value : 3 === o ? u = c.get : 4 === o && (u = c.set), "function" == typeof h) void 0 !== (f = old_memberDec(h, r, c, l, s, o, i, n, u)) && (old_assertValidReturnValue(o, f), 0 === o ? d = f : 1 === o ? (d = old_getInit(f), p = f.get || u.get, v = f.set || u.set, u = {
-      get: p,
-      set: v
-    }) : u = f);else for (var y = h.length - 1; y >= 0; y--) {
+    } : 2 === o ? f = c.value : 3 === o ? f = c.get : 4 === o && (f = c.set), "function" == typeof h) void 0 !== (p = old_memberDec(h, r, c, l, s, o, i, n, f)) && (old_assertValidReturnValue(o, p), 0 === o ? d = p : 1 === o ? (d = old_getInit(p), v = p.get || f.get, y = p.set || f.set, f = {
+      get: v,
+      set: y
+    }) : f = p);else for (var m = h.length - 1; m >= 0; m--) {
       var b;
-      if (void 0 !== (f = old_memberDec(h[y], r, c, l, s, o, i, n, u))) old_assertValidReturnValue(o, f), 0 === o ? b = f : 1 === o ? (b = old_getInit(f), p = f.get || u.get, v = f.set || u.set, u = {
-        get: p,
-        set: v
-      }) : u = f, void 0 !== b && (void 0 === d ? d = b : "function" == typeof d ? d = [d, b] : d.push(b));
+      void 0 !== (p = old_memberDec(h[m], r, c, l, s, o, i, n, f)) && (old_assertValidReturnValue(o, p), 0 === o ? b = p : 1 === o ? (b = old_getInit(p), v = p.get || f.get, y = p.set || f.set, f = {
+        get: v,
+        set: y
+      }) : f = p, void 0 !== b && (void 0 === d ? d = b : "function" == typeof d ? d = [d, b] : d.push(b)));
     }
     if (0 === o || 1 === o) {
       if (void 0 === d) d = function (e, t) {
@@ -4002,19 +4017,19 @@ $\
           return a;
         };
       } else {
-        var m = d;
+        var _ = d;
         d = function (e, t) {
-          return m.call(e, t);
+          return _.call(e, t);
         };
       }
       e.push(d);
     }
-    0 !== o && (1 === o ? (c.get = u.get, c.set = u.set) : 2 === o ? c.value = u : 3 === o ? c.get = u : 4 === o && (c.set = u), n ? 1 === o ? (e.push(function (e, t) {
-      return u.get.call(e, t);
+    0 !== o && (1 === o ? (c.get = f.get, c.set = f.set) : 2 === o ? c.value = f : 3 === o ? c.get = f : 4 === o && (c.set = f), n ? 1 === o ? (e.push(function (e, t) {
+      return f.get.call(e, t);
     }), e.push(function (e, t) {
-      return u.set.call(e, t);
-    })) : 2 === o ? e.push(u) : e.push(function (e, t) {
-      return u.call(e, t);
+      return f.set.call(e, t);
+    })) : 2 === o ? e.push(f) : e.push(function (e, t) {
+      return f.call(e, t);
     }) : Object.defineProperty(t, r, c));
   }
   function old_applyMemberDecs(e, t, a, r, o) {
@@ -4025,16 +4040,16 @@ $\
           f,
           p,
           v = d[1],
-          h = d[2],
-          y = d.length > 3,
-          b = v >= 5;
-        if (b ? (u = t, f = r, 0 !== (v -= 5) && (p = n = n || [])) : (u = t.prototype, f = a, 0 !== v && (p = i = i || [])), 0 !== v && !y) {
-          var g = b ? s : l,
-            m = g.get(h) || 0;
-          if (!0 === m || 3 === m && 4 !== v || 4 === m && 3 !== v) throw new Error("Attempted to decorate a public method/accessor that has the same name as a previously decorated public method/accessor. This is not currently supported by the decorators plugin. Property name was: " + h);
-          !m && v > 2 ? g.set(h, v) : g.set(h, !0);
+          y = d[2],
+          h = d.length > 3,
+          m = v >= 5;
+        if (m ? (u = t, f = r, 0 != (v -= 5) && (p = n = n || [])) : (u = t.prototype, f = a, 0 !== v && (p = i = i || [])), 0 !== v && !h) {
+          var b = m ? s : l,
+            g = b.get(y) || 0;
+          if (!0 === g || 3 === g && 4 !== v || 4 === g && 3 !== v) throw new Error("Attempted to decorate a public method/accessor that has the same name as a previously decorated public method/accessor. This is not currently supported by the decorators plugin. Property name was: " + y);
+          !g && v > 2 ? b.set(y, v) : b.set(y, !0);
         }
-        old_applyMemberDec(e, u, d, h, v, b, y, f, p);
+        old_applyMemberDec(e, u, d, y, v, m, h, f, p);
       }
     }
     old_pushInitializers(e, i), old_pushInitializers(e, n);
@@ -4078,8 +4093,8 @@ $\
     function createAddInitializerMethod(e, t) {
       return function (r) {
         !function (e, t) {
-          if (e.v) throw new Error("attempted to call " + t + " after decoration was finished");
-        }(t, "addInitializer"), assertCallable(r, "An initializer"), e.push(r);
+          if (e.v) throw new Error("attempted to call addInitializer after decoration was finished");
+        }(t), assertCallable(r, "An initializer"), e.push(r);
       };
     }
     function memberDec(e, t, r, a, n, i, s, o) {
@@ -4143,10 +4158,7 @@ $\
       if (1 === e) {
         if ("object" !== r || null === t) throw new TypeError("accessor decorators must return an object with get, set, or init properties or void 0");
         void 0 !== t.get && assertCallable(t.get, "accessor.get"), void 0 !== t.set && assertCallable(t.set, "accessor.set"), void 0 !== t.init && assertCallable(t.init, "accessor.init");
-      } else if ("function" !== r) {
-        var a;
-        throw a = 0 === e ? "field" : 10 === e ? "class" : "method", new TypeError(a + " decorators must return a function or void 0");
-      }
+      } else if ("function" !== r) throw new TypeError((0 === e ? "field" : 10 === e ? "class" : "method") + " decorators must return a function or void 0");
     }
     function applyMemberDec(e, t, r, a, n, i, s, o) {
       var c,
@@ -4173,10 +4185,10 @@ $\
         set: d
       }) : u = f);else for (var v = h.length - 1; v >= 0; v--) {
         var g;
-        if (void 0 !== (f = memberDec(h[v], a, c, o, n, i, s, u))) assertValidReturnValue(n, f), 0 === n ? g = f : 1 === n ? (g = f.init, p = f.get || u.get, d = f.set || u.set, u = {
+        void 0 !== (f = memberDec(h[v], a, c, o, n, i, s, u)) && (assertValidReturnValue(n, f), 0 === n ? g = f : 1 === n ? (g = f.init, p = f.get || u.get, d = f.set || u.set, u = {
           get: p,
           set: d
-        }) : u = f, void 0 !== g && (void 0 === l ? l = g : "function" == typeof l ? l = [l, g] : l.push(g));
+        }) : u = f, void 0 !== g && (void 0 === l ? l = g : "function" == typeof l ? l = [l, g] : l.push(g)));
       }
       if (0 === n || 1 === n) {
         if (void 0 === l) l = function (e, t) {
@@ -4263,11 +4275,11 @@ $\
     function createAddInitializerMethod(e, t) {
       return function (r) {
         !function (e, t) {
-          if (e.v) throw new Error("attempted to call " + t + " after decoration was finished");
-        }(t, "addInitializer"), assertCallable(r, "An initializer"), e.push(r);
+          if (e.v) throw new Error("attempted to call addInitializer after decoration was finished");
+        }(t), assertCallable(r, "An initializer"), e.push(r);
       };
     }
-    function memberDec(e, t, r, n, a, i, s, o) {
+    function memberDec(e, t, r, n, a, i, o, s) {
       var c;
       switch (a) {
         case 1:
@@ -4289,14 +4301,14 @@ $\
         u,
         f = {
           kind: c,
-          name: s ? "#" + t : t,
+          name: o ? "#" + t : _toPropertyKey(t),
           static: i,
-          private: s
+          private: o
         },
         p = {
           v: !1
         };
-      0 !== a && (f.addInitializer = createAddInitializerMethod(n, p)), 0 === a ? s ? (l = r.get, u = r.set) : (l = function () {
+      0 !== a && (f.addInitializer = createAddInitializerMethod(n, p)), 0 === a ? o ? (l = r.get, u = r.set) : (l = function () {
         return this[t];
       }, u = function (e) {
         this[t] = e;
@@ -4315,7 +4327,7 @@ $\
         set: u
       };
       try {
-        return e(o, f);
+        return e(s, f);
       } finally {
         p.v = !0;
       }
@@ -4328,69 +4340,67 @@ $\
       if (1 === e) {
         if ("object" !== r || null === t) throw new TypeError("accessor decorators must return an object with get, set, or init properties or void 0");
         void 0 !== t.get && assertCallable(t.get, "accessor.get"), void 0 !== t.set && assertCallable(t.set, "accessor.set"), void 0 !== t.init && assertCallable(t.init, "accessor.init");
-      } else if ("function" !== r) {
-        var n;
-        throw n = 0 === e ? "field" : 10 === e ? "class" : "method", new TypeError(n + " decorators must return a function or void 0");
-      }
+      } else if ("function" !== r) throw new TypeError((0 === e ? "field" : 10 === e ? "class" : "method") + " decorators must return a function or void 0");
     }
-    function applyMemberDec(e, t, r, n, a, i, s, o) {
+    function applyMemberDec(e, t, r, n, a, i, o, s) {
       var c,
         l,
         u,
         f,
         p,
         d,
-        h = r[0];
-      if (s ? c = 0 === a || 1 === a ? {
+        h,
+        v = r[0];
+      if (o ? (0 === a || 1 === a ? (c = {
         get: r[3],
         set: r[4]
-      } : 3 === a ? {
+      }, u = "get") : 3 === a ? (c = {
         get: r[3]
-      } : 4 === a ? {
+      }, u = "get") : 4 === a ? (c = {
         set: r[3]
-      } : {
+      }, u = "set") : c = {
         value: r[3]
-      } : 0 !== a && (c = Object.getOwnPropertyDescriptor(t, n)), 1 === a ? u = {
+      }, 0 !== a && (1 === a && _setFunctionName(r[4], "#" + n, "set"), _setFunctionName(r[3], "#" + n, u))) : 0 !== a && (c = Object.getOwnPropertyDescriptor(t, n)), 1 === a ? f = {
         get: c.get,
         set: c.set
-      } : 2 === a ? u = c.value : 3 === a ? u = c.get : 4 === a && (u = c.set), "function" == typeof h) void 0 !== (f = memberDec(h, n, c, o, a, i, s, u)) && (assertValidReturnValue(a, f), 0 === a ? l = f : 1 === a ? (l = f.init, p = f.get || u.get, d = f.set || u.set, u = {
-        get: p,
-        set: d
-      }) : u = f);else for (var v = h.length - 1; v >= 0; v--) {
-        var g;
-        if (void 0 !== (f = memberDec(h[v], n, c, o, a, i, s, u))) assertValidReturnValue(a, f), 0 === a ? g = f : 1 === a ? (g = f.init, p = f.get || u.get, d = f.set || u.set, u = {
-          get: p,
-          set: d
-        }) : u = f, void 0 !== g && (void 0 === l ? l = g : "function" == typeof l ? l = [l, g] : l.push(g));
+      } : 2 === a ? f = c.value : 3 === a ? f = c.get : 4 === a && (f = c.set), "function" == typeof v) void 0 !== (p = memberDec(v, n, c, s, a, i, o, f)) && (assertValidReturnValue(a, p), 0 === a ? l = p : 1 === a ? (l = p.init, d = p.get || f.get, h = p.set || f.set, f = {
+        get: d,
+        set: h
+      }) : f = p);else for (var g = v.length - 1; g >= 0; g--) {
+        var y;
+        void 0 !== (p = memberDec(v[g], n, c, s, a, i, o, f)) && (assertValidReturnValue(a, p), 0 === a ? y = p : 1 === a ? (y = p.init, d = p.get || f.get, h = p.set || f.set, f = {
+          get: d,
+          set: h
+        }) : f = p, void 0 !== y && (void 0 === l ? l = y : "function" == typeof l ? l = [l, y] : l.push(y)));
       }
       if (0 === a || 1 === a) {
         if (void 0 === l) l = function (e, t) {
           return t;
         };else if ("function" != typeof l) {
-          var y = l;
+          var m = l;
           l = function (e, t) {
-            for (var r = t, n = 0; n < y.length; n++) r = y[n].call(e, r);
+            for (var r = t, n = 0; n < m.length; n++) r = m[n].call(e, r);
             return r;
           };
         } else {
-          var m = l;
+          var b = l;
           l = function (e, t) {
-            return m.call(e, t);
+            return b.call(e, t);
           };
         }
         e.push(l);
       }
-      0 !== a && (1 === a ? (c.get = u.get, c.set = u.set) : 2 === a ? c.value = u : 3 === a ? c.get = u : 4 === a && (c.set = u), s ? 1 === a ? (e.push(function (e, t) {
-        return u.get.call(e, t);
+      0 !== a && (1 === a ? (c.get = f.get, c.set = f.set) : 2 === a ? c.value = f : 3 === a ? c.get = f : 4 === a && (c.set = f), o ? 1 === a ? (e.push(function (e, t) {
+        return f.get.call(e, t);
       }), e.push(function (e, t) {
-        return u.set.call(e, t);
-      })) : 2 === a ? e.push(u) : e.push(function (e, t) {
-        return u.call(e, t);
+        return f.set.call(e, t);
+      })) : 2 === a ? e.push(f) : e.push(function (e, t) {
+        return f.call(e, t);
       }) : Object.defineProperty(t, n, c));
     }
     function applyMemberDecs(e, t) {
-      for (var r, n, a = [], i = new Map(), s = new Map(), o = 0; o < t.length; o++) {
-        var c = t[o];
+      for (var r, n, a = [], i = new Map(), o = new Map(), s = 0; s < t.length; s++) {
+        var c = t[s];
         if (Array.isArray(c)) {
           var l,
             u,
@@ -4398,8 +4408,8 @@ $\
             p = c[2],
             d = c.length > 3,
             h = f >= 5;
-          if (h ? (l = e, 0 !== (f -= 5) && (u = n = n || [])) : (l = e.prototype, 0 !== f && (u = r = r || [])), 0 !== f && !d) {
-            var v = h ? s : i,
+          if (h ? (l = e, 0 != (f -= 5) && (u = n = n || [])) : (l = e.prototype, 0 !== f && (u = r = r || [])), 0 !== f && !d) {
+            var v = h ? o : i,
               g = v.get(p) || 0;
             if (!0 === g || 3 === g && 4 !== f || 4 === g && 3 !== f) throw new Error("Attempted to decorate a public method/accessor that has the same name as a previously decorated public method/accessor. This is not currently supported by the decorators plugin. Property name was: " + p);
             !g && f > 2 ? v.set(p, f) : v.set(p, !0);
@@ -4422,19 +4432,19 @@ $\
           return function (e, t) {
             if (t.length > 0) {
               for (var r = [], n = e, a = e.name, i = t.length - 1; i >= 0; i--) {
-                var s = {
+                var o = {
                   v: !1
                 };
                 try {
-                  var o = t[i](n, {
+                  var s = t[i](n, {
                     kind: "class",
                     name: a,
-                    addInitializer: createAddInitializerMethod(r, s)
+                    addInitializer: createAddInitializerMethod(r, o)
                   });
                 } finally {
-                  s.v = !0;
+                  o.v = !0;
                 }
-                void 0 !== o && (assertValidReturnValue(10, o), n = o);
+                void 0 !== s && (assertValidReturnValue(10, s), n = s);
               }
               return [n, function () {
                 for (var e = 0; e < r.length; e++) r[e].call(n);
@@ -4452,8 +4462,8 @@ $\
     function createAddInitializerMethod(e, t) {
       return function (r) {
         !function (e, t) {
-          if (e.v) throw new Error("attempted to call " + t + " after decoration was finished");
-        }(t, "addInitializer"), assertCallable(r, "An initializer"), e.push(r);
+          if (e.v) throw new Error("attempted to call addInitializer after decoration was finished");
+        }(t), assertCallable(r, "An initializer"), e.push(r);
       };
     }
     function assertInstanceIfPrivate(e, t) {
@@ -4481,7 +4491,7 @@ $\
         f,
         p = {
           kind: u,
-          name: s ? "#" + t : t,
+          name: s ? "#" + t : _toPropertyKey(t),
           static: i,
           private: s
         },
@@ -4536,10 +4546,7 @@ $\
       if (1 === e) {
         if ("object" !== r || null === t) throw new TypeError("accessor decorators must return an object with get, set, or init properties or void 0");
         void 0 !== t.get && assertCallable(t.get, "accessor.get"), void 0 !== t.set && assertCallable(t.set, "accessor.set"), void 0 !== t.init && assertCallable(t.init, "accessor.init");
-      } else if ("function" !== r) {
-        var n;
-        throw n = 0 === e ? "field" : 10 === e ? "class" : "method", new TypeError(n + " decorators must return a function or void 0");
-      }
+      } else if ("function" !== r) throw new TypeError((0 === e ? "field" : 10 === e ? "class" : "method") + " decorators must return a function or void 0");
     }
     function curryThis2(e) {
       return function (t) {
@@ -4554,54 +4561,55 @@ $\
         d,
         h,
         v,
+        y,
         g = r[0];
-      if (s ? u = 0 === a || 1 === a ? {
-        get: (p = r[3], function () {
-          return p(this);
+      if (s ? (0 === a || 1 === a ? (u = {
+        get: (d = r[3], function () {
+          return d(this);
         }),
         set: curryThis2(r[4])
-      } : 3 === a ? {
+      }, f = "get") : 3 === a ? (u = {
         get: r[3]
-      } : 4 === a ? {
+      }, f = "get") : 4 === a ? (u = {
         set: r[3]
-      } : {
+      }, f = "set") : u = {
         value: r[3]
-      } : 0 !== a && (u = Object.getOwnPropertyDescriptor(t, n)), 1 === a ? f = {
+      }, 0 !== a && (1 === a && _setFunctionName(u.set, "#" + n, "set"), _setFunctionName(u[f || "value"], "#" + n, f))) : 0 !== a && (u = Object.getOwnPropertyDescriptor(t, n)), 1 === a ? p = {
         get: u.get,
         set: u.set
-      } : 2 === a ? f = u.value : 3 === a ? f = u.get : 4 === a && (f = u.set), "function" == typeof g) void 0 !== (d = memberDec(g, n, u, o, a, i, s, f, c)) && (assertValidReturnValue(a, d), 0 === a ? l = d : 1 === a ? (l = d.init, h = d.get || f.get, v = d.set || f.set, f = {
-        get: h,
-        set: v
-      }) : f = d);else for (var y = g.length - 1; y >= 0; y--) {
-        var m;
-        if (void 0 !== (d = memberDec(g[y], n, u, o, a, i, s, f, c))) assertValidReturnValue(a, d), 0 === a ? m = d : 1 === a ? (m = d.init, h = d.get || f.get, v = d.set || f.set, f = {
-          get: h,
-          set: v
-        }) : f = d, void 0 !== m && (void 0 === l ? l = m : "function" == typeof l ? l = [l, m] : l.push(m));
+      } : 2 === a ? p = u.value : 3 === a ? p = u.get : 4 === a && (p = u.set), "function" == typeof g) void 0 !== (h = memberDec(g, n, u, o, a, i, s, p, c)) && (assertValidReturnValue(a, h), 0 === a ? l = h : 1 === a ? (l = h.init, v = h.get || p.get, y = h.set || p.set, p = {
+        get: v,
+        set: y
+      }) : p = h);else for (var m = g.length - 1; m >= 0; m--) {
+        var b;
+        void 0 !== (h = memberDec(g[m], n, u, o, a, i, s, p, c)) && (assertValidReturnValue(a, h), 0 === a ? b = h : 1 === a ? (b = h.init, v = h.get || p.get, y = h.set || p.set, p = {
+          get: v,
+          set: y
+        }) : p = h, void 0 !== b && (void 0 === l ? l = b : "function" == typeof l ? l = [l, b] : l.push(b)));
       }
       if (0 === a || 1 === a) {
         if (void 0 === l) l = function (e, t) {
           return t;
         };else if ("function" != typeof l) {
-          var b = l;
+          var I = l;
           l = function (e, t) {
-            for (var r = t, n = 0; n < b.length; n++) r = b[n].call(e, r);
+            for (var r = t, n = 0; n < I.length; n++) r = I[n].call(e, r);
             return r;
           };
         } else {
-          var I = l;
+          var w = l;
           l = function (e, t) {
-            return I.call(e, t);
+            return w.call(e, t);
           };
         }
         e.push(l);
       }
-      0 !== a && (1 === a ? (u.get = f.get, u.set = f.set) : 2 === a ? u.value = f : 3 === a ? u.get = f : 4 === a && (u.set = f), s ? 1 === a ? (e.push(function (e, t) {
-        return f.get.call(e, t);
+      0 !== a && (1 === a ? (u.get = p.get, u.set = p.set) : 2 === a ? u.value = p : 3 === a ? u.get = p : 4 === a && (u.set = p), s ? 1 === a ? (e.push(function (e, t) {
+        return p.get.call(e, t);
       }), e.push(function (e, t) {
-        return f.set.call(e, t);
-      })) : 2 === a ? e.push(f) : e.push(function (e, t) {
-        return f.call(e, t);
+        return p.set.call(e, t);
+      })) : 2 === a ? e.push(p) : e.push(function (e, t) {
+        return p.call(e, t);
       }) : Object.defineProperty(t, n, u));
     }
     function applyMemberDecs(e, t, r) {
@@ -4613,17 +4621,17 @@ $\
             d = l[1],
             h = l[2],
             v = l.length > 3,
-            g = d >= 5,
-            y = r;
-          if (g ? (f = e, 0 !== (d -= 5) && (p = a = a || []), v && !i && (i = function (t) {
+            y = d >= 5,
+            g = r;
+          if (y ? (f = e, 0 != (d -= 5) && (p = a = a || []), v && !i && (i = function (t) {
             return _checkInRHS(t) === e;
-          }), y = i) : (f = e.prototype, 0 !== d && (p = n = n || [])), 0 !== d && !v) {
-            var m = g ? c : o,
+          }), g = i) : (f = e.prototype, 0 !== d && (p = n = n || [])), 0 !== d && !v) {
+            var m = y ? c : o,
               b = m.get(h) || 0;
             if (!0 === b || 3 === b && 4 !== d || 4 === b && 3 !== d) throw new Error("Attempted to decorate a public method/accessor that has the same name as a previously decorated public method/accessor. This is not currently supported by the decorators plugin. Property name was: " + h);
             !b && d > 2 ? m.set(h, d) : m.set(h, !0);
           }
-          applyMemberDec(s, f, l, h, d, g, v, p, y);
+          applyMemberDec(s, f, l, h, d, y, v, p, g);
         }
       }
       return pushInitializers(s, n), pushInitializers(s, a), s;
@@ -4667,232 +4675,131 @@ $\
   function _applyDecs2301(e, t, r, n) {
     return (_applyDecs2301 = applyDecs2301Factory())(e, t, r, n);
   }
-  function createAddInitializerMethod(e, t) {
-    return function (r) {
-      assertNotFinished(t, "addInitializer"), assertCallable(r, "An initializer"), e.push(r);
-    };
-  }
-  function assertInstanceIfPrivate(e, t) {
-    if (!e(t)) throw new TypeError("Attempted to access private element on non-instance");
-  }
-  function memberDec(e, t, r, a, n, i, s, o, c, l, u) {
-    var f;
-    switch (i) {
-      case 1:
-        f = "accessor";
-        break;
-      case 2:
-        f = "method";
-        break;
-      case 3:
-        f = "getter";
-        break;
-      case 4:
-        f = "setter";
-        break;
-      default:
-        f = "field";
-    }
-    var d,
-      p,
-      h = {
-        kind: f,
-        name: o ? "#" + r : r,
-        static: s,
-        private: o,
-        metadata: u
-      },
-      v = {
-        v: !1
+  function _applyDecs2305(e, t, r, n, o, a) {
+    function i(e, t, r) {
+      return function (n, o) {
+        return r && r(n), e[t].call(n, o);
       };
-    if (0 !== i && (h.addInitializer = createAddInitializerMethod(n, v)), o || 0 !== i && 2 !== i) {
-      if (2 === i) d = function (e) {
-        return assertInstanceIfPrivate(l, e), a.value;
-      };else {
-        var y = 0 === i || 1 === i;
-        (y || 3 === i) && (d = o ? function (e) {
-          return assertInstanceIfPrivate(l, e), a.get.call(e);
-        } : function (e) {
-          return a.get.call(e);
-        }), (y || 4 === i) && (p = o ? function (e, t) {
-          assertInstanceIfPrivate(l, e), a.set.call(e, t);
-        } : function (e, t) {
-          a.set.call(e, t);
-        });
-      }
-    } else d = function (e) {
-      return e[r];
-    }, 0 === i && (p = function (e, t) {
-      e[r] = t;
-    });
-    var m = o ? l.bind() : function (e) {
-      return r in e;
-    };
-    h.access = d && p ? {
-      get: d,
-      set: p,
-      has: m
-    } : d ? {
-      get: d,
-      has: m
-    } : {
-      set: p,
-      has: m
-    };
-    try {
-      return e.call(t, c, h);
-    } finally {
-      v.v = !0;
     }
-  }
-  function assertNotFinished(e, t) {
-    if (e.v) throw new Error("attempted to call " + t + " after decoration was finished");
-  }
-  function assertCallable(e, t) {
-    if ("function" != typeof e) throw new TypeError(t + " must be a function");
-  }
-  function assertValidReturnValue(e, t) {
-    var r = typeof t;
-    if (1 === e) {
-      if ("object" !== r || null === t) throw new TypeError("accessor decorators must return an object with get, set, or init properties or void 0");
-      void 0 !== t.get && assertCallable(t.get, "accessor.get"), void 0 !== t.set && assertCallable(t.set, "accessor.set"), void 0 !== t.init && assertCallable(t.init, "accessor.init");
-    } else if ("function" !== r) {
-      var a;
-      throw a = 0 === e ? "field" : 5 === e ? "class" : "method", new TypeError(a + " decorators must return a function or void 0");
+    function c(e, t) {
+      for (var r = 0; r < e.length; r++) e[r].call(t);
+      return t;
     }
-  }
-  function curryThis1(e) {
-    return function () {
-      return e(this);
-    };
-  }
-  function curryThis2(e) {
-    return function (t) {
-      e(this, t);
-    };
-  }
-  function applyMemberDec(e, t, r, a, n, i, s, o, c, l, u) {
-    var f,
-      d,
-      p,
-      h,
-      v,
-      y,
-      m = r[0];
-    a || Array.isArray(m) || (m = [m]), o ? f = 0 === i || 1 === i ? {
-      get: curryThis1(r[3]),
-      set: curryThis2(r[4])
-    } : 3 === i ? {
-      get: r[3]
-    } : 4 === i ? {
-      set: r[3]
-    } : {
-      value: r[3]
-    } : 0 !== i && (f = Object.getOwnPropertyDescriptor(t, n)), 1 === i ? p = {
-      get: f.get,
-      set: f.set
-    } : 2 === i ? p = f.value : 3 === i ? p = f.get : 4 === i && (p = f.set);
-    for (var g = a ? 2 : 1, b = m.length - 1; b >= 0; b -= g) {
-      var I;
-      if (void 0 !== (h = memberDec(m[b], a ? m[b - 1] : void 0, n, f, c, i, s, o, p, l, u))) assertValidReturnValue(i, h), 0 === i ? I = h : 1 === i ? (I = h.init, v = h.get || p.get, y = h.set || p.set, p = {
-        get: v,
-        set: y
-      }) : p = h, void 0 !== I && (void 0 === d ? d = I : "function" == typeof d ? d = [d, I] : d.push(I));
-    }
-    if (0 === i || 1 === i) {
-      if (void 0 === d) d = function (e, t) {
-        return t;
-      };else if ("function" != typeof d) {
-        var w = d;
-        d = function (e, t) {
-          for (var r = t, a = w.length - 1; a >= 0; a--) r = w[a].call(e, r);
-          return r;
-        };
-      } else {
-        var M = d;
-        d = function (e, t) {
-          return M.call(e, t);
-        };
-      }
-      e.push(d);
-    }
-    0 !== i && (1 === i ? (f.get = p.get, f.set = p.set) : 2 === i ? f.value = p : 3 === i ? f.get = p : 4 === i && (f.set = p), o ? 1 === i ? (e.push(function (e, t) {
-      return p.get.call(e, t);
-    }), e.push(function (e, t) {
-      return p.set.call(e, t);
-    })) : 2 === i ? e.push(p) : e.push(function (e, t) {
-      return p.call(e, t);
-    }) : Object.defineProperty(t, n, f));
-  }
-  function applyMemberDecs(e, t, r, a) {
-    for (var n, i, s, o = [], c = new Map(), l = new Map(), u = 0; u < t.length; u++) {
-      var f = t[u];
-      if (Array.isArray(f)) {
-        var d,
-          p,
-          h = f[1],
-          v = f[2],
-          y = f.length > 3,
-          m = 16 & h,
-          g = !!(8 & h),
-          b = r;
-        if (h &= 7, g ? (d = e, 0 !== h && (p = i = i || []), y && !s && (s = function (t) {
-          return _checkInRHS(t) === e;
-        }), b = s) : (d = e.prototype, 0 !== h && (p = n = n || [])), 0 !== h && !y) {
-          var I = g ? l : c,
-            w = I.get(v) || 0;
-          if (!0 === w || 3 === w && 4 !== h || 4 === w && 3 !== h) throw new Error("Attempted to decorate a public method/accessor that has the same name as a previously decorated public method/accessor. This is not currently supported by the decorators plugin. Property name was: " + v);
-          I.set(v, !(!w && h > 2) || h);
-        }
-        applyMemberDec(o, d, f, m, v, h, g, y, p, b, a);
-      }
-    }
-    return pushInitializers(o, n), pushInitializers(o, i), o;
-  }
-  function pushInitializers(e, t) {
-    t && e.push(function (e) {
-      for (var r = 0; r < t.length; r++) t[r].call(e);
+    function s(e, t, r, n) {
+      if ("function" != typeof e && (n || void 0 !== e)) throw new TypeError(t + " must " + (r || "be") + " a function" + (n ? "" : " or undefined"));
       return e;
-    });
-  }
-  function applyClassDecs(e, t, r, a) {
-    if (t.length) {
-      for (var n = [], i = e, s = e.name, o = r ? 2 : 1, c = t.length - 1; c >= 0; c -= o) {
-        var l = {
-          v: !1
-        };
-        try {
-          var u = t[c].call(r ? t[c - 1] : void 0, i, {
-            kind: "class",
-            name: s,
-            addInitializer: createAddInitializerMethod(n, l),
-            metadata: a
-          });
-        } finally {
-          l.v = !0;
-        }
-        void 0 !== u && (assertValidReturnValue(5, u), i = u);
-      }
-      return [defineMetadata(i, a), function () {
-        for (var e = 0; e < n.length; e++) n[e].call(i);
-      }];
     }
-  }
-  function defineMetadata(e, t) {
-    return Object.defineProperty(e, Symbol.metadata || Symbol.for("Symbol.metadata"), {
-      configurable: !0,
-      enumerable: !0,
-      value: t
-    });
-  }
-  function _applyDecs2305(e, t, r, a, n, i) {
-    if (arguments.length >= 6) var s = i[Symbol.metadata || Symbol.for("Symbol.metadata")];
-    var o = Object.create(void 0 === s ? null : s),
-      c = applyMemberDecs(e, t, n, o);
-    return r.length || defineMetadata(e, o), {
-      e: c,
+    function applyDec(e, t, r, n, o, a, c, u, l, f, p, d, h) {
+      function m(e) {
+        if (!h(e)) throw new TypeError("Attempted to access private element on non-instance");
+      }
+      var y,
+        v = t[0],
+        g = t[3],
+        b = !u;
+      if (!b) {
+        r || Array.isArray(v) || (v = [v]);
+        var w = {},
+          S = [],
+          A = 3 === o ? "get" : 4 === o || d ? "set" : "value";
+        f ? (p || d ? w = {
+          get: _setFunctionName(function () {
+            return g(this);
+          }, n, "get"),
+          set: function (e) {
+            t[4](this, e);
+          }
+        } : w[A] = g, p || _setFunctionName(w[A], n, 2 === o ? "" : A)) : p || (w = Object.getOwnPropertyDescriptor(e, n));
+      }
+      for (var P = e, j = v.length - 1; j >= 0; j -= r ? 2 : 1) {
+        var D = v[j],
+          E = r ? v[j - 1] : void 0,
+          I = {},
+          O = {
+            kind: ["field", "accessor", "method", "getter", "setter", "class"][o],
+            name: n,
+            metadata: a,
+            addInitializer: function (e, t) {
+              if (e.v) throw new Error("attempted to call addInitializer after decoration was finished");
+              s(t, "An initializer", "be", !0), c.push(t);
+            }.bind(null, I)
+          };
+        try {
+          if (b) (y = s(D.call(E, P, O), "class decorators", "return")) && (P = y);else {
+            var k, F;
+            O.static = l, O.private = f, f ? 2 === o ? k = function (e) {
+              return m(e), w.value;
+            } : (o < 4 && (k = i(w, "get", m)), 3 !== o && (F = i(w, "set", m))) : (k = function (e) {
+              return e[n];
+            }, (o < 2 || 4 === o) && (F = function (e, t) {
+              e[n] = t;
+            }));
+            var N = O.access = {
+              has: f ? h.bind() : function (e) {
+                return n in e;
+              }
+            };
+            if (k && (N.get = k), F && (N.set = F), P = D.call(E, d ? {
+              get: w.get,
+              set: w.set
+            } : w[A], O), d) {
+              if ("object" == typeof P && P) (y = s(P.get, "accessor.get")) && (w.get = y), (y = s(P.set, "accessor.set")) && (w.set = y), (y = s(P.init, "accessor.init")) && S.push(y);else if (void 0 !== P) throw new TypeError("accessor decorators must return an object with get, set, or init properties or void 0");
+            } else s(P, (p ? "field" : "method") + " decorators", "return") && (p ? S.push(P) : w[A] = P);
+          }
+        } finally {
+          I.v = !0;
+        }
+      }
+      return (p || d) && u.push(function (e, t) {
+        for (var r = S.length - 1; r >= 0; r--) t = S[r].call(e, t);
+        return t;
+      }), p || b || (f ? d ? u.push(i(w, "get"), i(w, "set")) : u.push(2 === o ? w[A] : i.call.bind(w[A])) : Object.defineProperty(e, n, w)), P;
+    }
+    function u(e, t) {
+      return Object.defineProperty(e, Symbol.metadata || Symbol.for("Symbol.metadata"), {
+        configurable: !0,
+        enumerable: !0,
+        value: t
+      });
+    }
+    if (arguments.length >= 6) var l = a[Symbol.metadata || Symbol.for("Symbol.metadata")];
+    var f = Object.create(null == l ? null : l),
+      p = function (e, t, r, n) {
+        var o,
+          a,
+          i = [],
+          s = function (t) {
+            return _checkInRHS(t) === e;
+          },
+          u = new Map();
+        function l(e) {
+          e && i.push(c.bind(null, e));
+        }
+        for (var f = 0; f < t.length; f++) {
+          var p = t[f];
+          if (Array.isArray(p)) {
+            var d = p[1],
+              h = p[2],
+              m = p.length > 3,
+              y = 16 & d,
+              v = !!(8 & d),
+              g = 0 == (d &= 7),
+              b = h + "/" + v;
+            if (!g && !m) {
+              var w = u.get(b);
+              if (!0 === w || 3 === w && 4 !== d || 4 === w && 3 !== d) throw new Error("Attempted to decorate a public method/accessor that has the same name as a previously decorated public method/accessor. This is not currently supported by the decorators plugin. Property name was: " + h);
+              u.set(b, !(d > 2) || d);
+            }
+            applyDec(v ? e : e.prototype, p, y, m ? "#" + h : _toPropertyKey(h), d, n, v ? a = a || [] : o = o || [], i, v, m, g, 1 === d, v && m ? s : r);
+          }
+        }
+        return l(o), l(a), i;
+      }(e, t, o, f);
+    return r.length || u(e, f), {
+      e: p,
       get c() {
-        return applyClassDecs(e, r, a, o);
+        var t = [];
+        return r.length && [u(applyDec(e, [r], n, e.name, 5, f, t), f), c.bind(null, t, e)];
       }
     };
   }
@@ -4965,9 +4872,19 @@ $\
   function _awaitAsyncGenerator(e) {
     return new _OverloadYield(e, 0);
   }
+  function _callSuper(t, o, e) {
+    return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e));
+  }
   function _checkInRHS(e) {
     if (Object(e) !== e) throw TypeError("right-hand side of 'in' should be an object, got " + (null !== e ? typeof e : "null"));
     return e;
+  }
+  function _construct(t, e, r) {
+    if (_isNativeReflectConstruct()) return Reflect.construct.apply(null, arguments);
+    var o = [null];
+    o.push.apply(o, e);
+    var p = new (t.bind.apply(t, o))();
+    return r && _setPrototypeOf(p, r.prototype), p;
   }
   function _defineAccessor(e, r, n, t) {
     var c = {
@@ -4978,7 +4895,7 @@ $\
   }
   function dispose_SuppressedError(r, e) {
     return "undefined" != typeof SuppressedError ? dispose_SuppressedError = SuppressedError : (dispose_SuppressedError = function (r, e) {
-      this.suppressed = r, this.error = e, this.stack = new Error().stack;
+      this.suppressed = e, this.error = r, this.stack = new Error().stack;
     }, dispose_SuppressedError.prototype = Object.create(Error.prototype, {
       constructor: {
         value: dispose_SuppressedError,
@@ -4999,7 +4916,7 @@ $\
       if (s) throw e;
     }
     function err(r) {
-      return e = s ? new dispose_SuppressedError(r, e) : r, s = !0, next();
+      return e = s ? new dispose_SuppressedError(e, r) : r, s = !0, next();
     }
     return next();
   }
@@ -5028,6 +4945,39 @@ $\
       set: constValue(!1),
       setPrototypeOf: constValue(!1)
     });
+  }
+  function _getRequireWildcardCache(e) {
+    if ("function" != typeof WeakMap) return null;
+    var r = new WeakMap(),
+      t = new WeakMap();
+    return (_getRequireWildcardCache = function (e) {
+      return e ? t : r;
+    })(e);
+  }
+  function _interopRequireWildcard(e, r) {
+    if (!r && e && e.__esModule) return e;
+    if (null === e || "object" != typeof e && "function" != typeof e) return {
+      default: e
+    };
+    var t = _getRequireWildcardCache(r);
+    if (t && t.has(e)) return t.get(e);
+    var n = {
+        __proto__: null
+      },
+      a = Object.defineProperty && Object.getOwnPropertyDescriptor;
+    for (var u in e) if ("default" !== u && Object.prototype.hasOwnProperty.call(e, u)) {
+      var i = a ? Object.getOwnPropertyDescriptor(e, u) : null;
+      i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u];
+    }
+    return n.default = e, t && t.set(e, n), n;
+  }
+  function _isNativeReflectConstruct() {
+    try {
+      var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+    } catch (t) {}
+    return (_isNativeReflectConstruct = function () {
+      return !!t;
+    })();
   }
   function _iterableToArrayLimit(r, l) {
     var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
@@ -5409,6 +5359,30 @@ $\
       }
     }, e;
   }
+  function _setFunctionName(e, t, n) {
+    "symbol" == typeof t && (t = (t = t.description) ? "[" + t + "]" : "");
+    try {
+      Object.defineProperty(e, "name", {
+        configurable: !0,
+        value: n ? n + " " + t : t
+      });
+    } catch (e) {}
+    return e;
+  }
+  function _toPrimitive(t, r) {
+    if ("object" != typeof t || !t) return t;
+    var e = t[Symbol.toPrimitive];
+    if (void 0 !== e) {
+      var i = e.call(t, r || "default");
+      if ("object" != typeof i) return i;
+      throw new TypeError("@@toPrimitive must return a primitive value.");
+    }
+    return ("string" === r ? String : Number)(t);
+  }
+  function _toPropertyKey(t) {
+    var i = _toPrimitive(t, "string");
+    return "symbol" == typeof i ? i : String(i);
+  }
   function _typeof(o) {
     "@babel/helpers - typeof";
 
@@ -5418,16 +5392,59 @@ $\
       return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
     }, _typeof(o);
   }
-  function _using(o, e, n) {
-    if (null == e) return e;
-    if ("object" != typeof e) throw new TypeError("using declarations can only be used with objects, null, or undefined.");
-    if (n) var r = e[Symbol.asyncDispose || Symbol.for("Symbol.asyncDispose")];
-    if (null == r && (r = e[Symbol.dispose || Symbol.for("Symbol.dispose")]), "function" != typeof r) throw new TypeError("Property [Symbol.dispose] is not a function.");
+  function _using(o, n, e) {
+    if (null == n) return n;
+    if (Object(n) !== n) throw new TypeError("using declarations can only be used with objects, functions, null, or undefined.");
+    if (e) var r = n[Symbol.asyncDispose || Symbol.for("Symbol.asyncDispose")];
+    if (null == r && (r = n[Symbol.dispose || Symbol.for("Symbol.dispose")]), "function" != typeof r) throw new TypeError("Property [Symbol.dispose] is not a function.");
     return o.push({
-      v: e,
+      v: n,
       d: r,
-      a: n
-    }), e;
+      a: e
+    }), n;
+  }
+  function _usingCtx() {
+    var r = "function" == typeof SuppressedError ? SuppressedError : function (r, n) {
+        var e = new Error();
+        return e.name = "SuppressedError", e.suppressed = n, e.error = r, e;
+      },
+      n = {},
+      e = [];
+    function using(r, n) {
+      if (null != n) {
+        if (Object(n) !== n) throw new TypeError("using declarations can only be used with objects, functions, null, or undefined.");
+        if (r) var o = n[Symbol.asyncDispose || Symbol.for("Symbol.asyncDispose")];
+        if (null == o && (o = n[Symbol.dispose || Symbol.for("Symbol.dispose")]), "function" != typeof o) throw new TypeError("Property [Symbol.dispose] is not a function.");
+        e.push({
+          v: n,
+          d: o,
+          a: r
+        });
+      }
+      return n;
+    }
+    return {
+      e: n,
+      u: using.bind(null, !1),
+      a: using.bind(null, !0),
+      d: function () {
+        var o = this.e;
+        function next() {
+          for (; r = e.pop();) try {
+            var r,
+              t = r.d.call(r.v);
+            if (r.a) return Promise.resolve(t).then(next, err);
+          } catch (r) {
+            return err(r);
+          }
+          if (o !== n) throw o;
+        }
+        function err(e) {
+          return o = o !== n ? new r(o, e) : e, next();
+        }
+        return next();
+      }
+    };
   }
   function _wrapRegExp() {
     _wrapRegExp = function (e, r) {
@@ -5643,34 +5660,12 @@ $\
     };
     return _setPrototypeOf(o, p);
   }
-  function _isNativeReflectConstruct() {
-    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-    if (Reflect.construct.sham) return false;
-    if (typeof Proxy === "function") return true;
-    try {
-      Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-  function _construct(Parent, args, Class) {
-    if (_isNativeReflectConstruct()) {
-      _construct = Reflect.construct.bind();
-    } else {
-      _construct = function _construct(Parent, args, Class) {
-        var a = [null];
-        a.push.apply(a, args);
-        var Constructor = Function.bind.apply(Parent, a);
-        var instance = new Constructor();
-        if (Class) _setPrototypeOf(instance, Class.prototype);
-        return instance;
-      };
-    }
-    return _construct.apply(null, arguments);
-  }
   function _isNativeFunction(fn) {
-    return Function.toString.call(fn).indexOf("[native code]") !== -1;
+    try {
+      return Function.toString.call(fn).indexOf("[native code]") !== -1;
+    } catch (e) {
+      return typeof fn === "function";
+    }
   }
   function _wrapNativeSuper(Class) {
     var _cache = typeof Map === "function" ? new Map() : undefined;
@@ -5709,45 +5704,6 @@ $\
     return obj && obj.__esModule ? obj : {
       default: obj
     };
-  }
-  function _getRequireWildcardCache(nodeInterop) {
-    if (typeof WeakMap !== "function") return null;
-    var cacheBabelInterop = new WeakMap();
-    var cacheNodeInterop = new WeakMap();
-    return (_getRequireWildcardCache = function (nodeInterop) {
-      return nodeInterop ? cacheNodeInterop : cacheBabelInterop;
-    })(nodeInterop);
-  }
-  function _interopRequireWildcard(obj, nodeInterop) {
-    if (!nodeInterop && obj && obj.__esModule) {
-      return obj;
-    }
-    if (obj === null || typeof obj !== "object" && typeof obj !== "function") {
-      return {
-        default: obj
-      };
-    }
-    var cache = _getRequireWildcardCache(nodeInterop);
-    if (cache && cache.has(obj)) {
-      return cache.get(obj);
-    }
-    var newObj = {};
-    var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
-    for (var key in obj) {
-      if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) {
-        var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
-        if (desc && (desc.get || desc.set)) {
-          Object.defineProperty(newObj, key, desc);
-        } else {
-          newObj[key] = obj[key];
-        }
-      }
-    }
-    newObj.default = obj;
-    if (cache) {
-      cache.set(obj, newObj);
-    }
-    return newObj;
   }
   function _newArrowCheck(innerThis, boundThis) {
     if (innerThis !== boundThis) {
@@ -6028,20 +5984,6 @@ $\
       it.next();
       return it;
     };
-  }
-  function _toPrimitive(input, hint) {
-    if (typeof input !== "object" || input === null) return input;
-    var prim = input[Symbol.toPrimitive];
-    if (prim !== undefined) {
-      var res = prim.call(input, hint || "default");
-      if (typeof res !== "object") return res;
-      throw new TypeError("@@toPrimitive must return a primitive value.");
-    }
-    return (hint === "string" ? String : Number)(input);
-  }
-  function _toPropertyKey(arg) {
-    var key = _toPrimitive(arg, "string");
-    return typeof key === "symbol" ? key : String(key);
   }
   function _initializerWarningHelper(descriptor, context) {
     throw new Error('Decorating class property failed. Please ensure that ' + 'transform-class-properties is enabled and runs after the decorators transform.');

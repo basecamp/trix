@@ -76,5 +76,8 @@
   },
   "dependencies": {
     "dompurify": "^3.2.5"
+  },
+  "engines": {
+    "node": ">= 18"
   }
 }
