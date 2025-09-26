@@ -32,4 +32,22 @@ export default class TrixToolbarElement extends HTMLElement {
       this.innerHTML = config.toolbar.getDefaultHTML()
     }
   }
+
+  // Properties
+
+  get editorElements() {
+    if (this.id) {
+      const nodeList = this.ownerDocument?.querySelectorAll(`trix-editor[toolbar="${this.id}"]`)
+
+      return Array.from(nodeList)
+    } else {
+      return []
+    }
+  }
+
+  get editorElement() {
+    const [ editorElement ] = this.editorElements
+
+    return editorElement
+  }
 }
