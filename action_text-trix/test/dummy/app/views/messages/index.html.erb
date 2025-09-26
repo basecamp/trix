@@ -1,0 +1,19 @@
+<h1>Messages</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Subject</th>
+      <th>Content</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @messages.each do |message| %>
+      <tr>
+        <td><%= message.subject %></td>
+        <td><%= message.content %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

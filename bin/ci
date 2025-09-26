@@ -14,3 +14,6 @@ if [ -n "$CI" ]; then
 fi
 
 yarn test
+
+git update-index --refresh
+git diff-index --quiet HEAD --

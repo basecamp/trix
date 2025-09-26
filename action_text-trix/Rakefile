@@ -1,6 +1,13 @@
 require "bundler/gem_tasks"
 require "rake/clean"
 
+begin
+  APP_RAKEFILE = File.expand_path("test/dummy/Rakefile", __dir__)
+  load "rails/tasks/engine.rake" rescue nil
+rescue LoadError
+  # do nothing
+end
+
 task :sync do
   require "json"
 

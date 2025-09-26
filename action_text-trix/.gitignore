@@ -1,2 +1,6 @@
 Gemfile.lock
 pkg
+tmp/
+log/
+storage/
+vendor/
