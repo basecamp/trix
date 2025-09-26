@@ -181,7 +181,18 @@ To populate a `<trix-editor>` with stored content, include that content in the a
 </form>
 ```
 
-Always use an associated input element to safely populate an editor. Trix won’t load any HTML content inside a `<trix-editor>…</trix-editor>` tag.
+Use an associated input element to initially populate an editor. When an associated input element is absent, Trix will safely sanitize then load any HTML content inside a `<trix-editor>…</trix-editor>` tag.
+
+```html
+<form …>
+  <trix-editor>Editor content goes here</trix-editor>
+</form>
+```
+
+> [!WARNING]
+> When a `<trix-editor>` element initially connects with both HTML content *and*
+> an associated input element, Trix will *always* disregard the HTML content and
+> load its initial content from the associated input element.
 
 ## Validating the Editor
 

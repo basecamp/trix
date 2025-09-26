@@ -563,6 +563,7 @@ export default class TrixEditorElement extends HTMLElement {
 
       if (!this.editorController) {
         triggerEvent("trix-before-initialize", { onElement: this })
+        this.defaultValue = this.inputElement ? this.inputElement.value : this.innerHTML
         if (!this.hasAttribute("input") && this.parentNode && this.willCreateInput) {
           const inputId = `trix-input-${this.trixId}`
           this.setAttribute("input", inputId)
@@ -571,7 +572,7 @@ export default class TrixEditorElement extends HTMLElement {
         }
         this.editorController = new EditorController({
           editorElement: this,
-          html: this.defaultValue = this.value
+          html: this.defaultValue
         })
         requestAnimationFrame(() => triggerEvent("trix-initialize", { onElement: this }))
       }
