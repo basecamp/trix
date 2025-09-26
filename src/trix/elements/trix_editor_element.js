@@ -29,7 +29,7 @@ const makeEditable = function(element) {
   if (element.hasAttribute("contenteditable")) {
     return
   }
-  element.setAttribute("contenteditable", "")
+  element.toggleAttribute("contenteditable", !element.disabled)
   return handleEventOnce("focus", {
     onElement: element,
     withCallback() {
@@ -485,12 +485,6 @@ export default class TrixEditorElement extends HTMLElement {
   get inputElement() {
     if (this.hasAttribute("input")) {
       return this.ownerDocument?.getElementById(this.getAttribute("input"))
-    } else if (this.parentNode && this.willCreateInput) {
-      const inputId = `trix-input-${this.trixId}`
-      this.setAttribute("input", inputId)
-      const element = makeElement("input", { type: "hidden", id: inputId })
-      this.parentNode.insertBefore(element, this.nextElementSibling)
-      return element
     } else {
       return undefined
     }
@@ -569,6 +563,12 @@ export default class TrixEditorElement extends HTMLElement {
 
       if (!this.editorController) {
         triggerEvent("trix-before-initialize", { onElement: this })
+        if (!this.hasAttribute("input") && this.parentNode && this.willCreateInput) {
+          const inputId = `trix-input-${this.trixId}`
+          this.setAttribute("input", inputId)
+          const element = makeElement("input", { type: "hidden", id: inputId })
+          this.parentNode.insertBefore(element, this.nextElementSibling)
+        }
         this.editorController = new EditorController({
           editorElement: this,
           html: this.defaultValue = this.value
