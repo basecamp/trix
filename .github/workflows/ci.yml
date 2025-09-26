@@ -53,6 +53,59 @@ jobs:
         run: |
           cd rails/actiontext
           bundle exec rake test test:system
+  action_text-trix:
+    name: Action Text tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ruby: "3.2"
+            rails_branch: 7-2-stable
+          - ruby: "3.3"
+            rails_branch: 7-2-stable
+          - ruby: "3.4"
+            rails_branch: 7-2-stable
+
+          - ruby: "3.2"
+            rails_branch: 8-0-stable
+          - ruby: "3.3"
+            rails_branch: 8-0-stable
+          - ruby: "3.4"
+            rails_branch: 8-0-stable
+
+          - ruby: "3.2"
+            rails_branch: main
+            experimental: true
+          - ruby: "3.3"
+            rails_branch: main
+            experimental: true
+          - ruby: "3.4"
+            rails_branch: main
+            experimental: true
+
+          - ruby: head
+            rails_branch: main
+            experimental: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "yarn"
+      - uses: ruby/setup-ruby@v1
+        env:
+          RAILS_BRANCH: ${{ matrix.rails_branch }}
+        with:
+          working-directory: "./action_text-trix"
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Run tests
+        env:
+          RAILS_BRANCH: ${{ matrix.rails_branch }}
+        continue-on-error: ${{ matrix.experimental }}
+        working-directory: "./action_text-trix"
+        run: bin/rails test:all
 
 env:
   SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
