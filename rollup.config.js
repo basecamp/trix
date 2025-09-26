@@ -63,7 +63,13 @@ export default [
         file: "dist/trix.esm.js",
         format: "es",
         banner
-      }
+      },
+      {
+        name: "Trix",
+        file: "action_text-trix/app/assets/javascripts/trix.js",
+        format: "umd",
+        banner
+      },
     ],
     ...defaultConfig,
   },
