@@ -636,6 +636,8 @@ The `<trix-editor>` element emits several events which you can use to observe an
 
 * `trix-before-render` fires before the editor’s new contents are rendered. You can override the function used to render the content through the `render` property on the event. The `render` function expects two positional arguments: the `<trix-editor>` element that will render and a [DocumentFragment](https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment) instance that contains the new content. Read [HTML Rendering](#html-rendering) to learn more.
 
+* `trix-before-paste` fires just before text is pasted into the editor. You can use this to modify the content being pasted or prevent the paste event from happening at all. The `paste` property on the event contains the pasted `string` or `html`, and the `range` of the inserted text.
+
 * `trix-paste` fires whenever text is pasted into the editor. The `paste` property on the event contains the pasted `string` or `html`, and the `range` of the inserted text.
 
 * `trix-selection-change` fires any time the selected range changes in the editor.
