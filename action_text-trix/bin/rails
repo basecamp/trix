@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+# This command will automatically be run when you run "rails" with Rails gems
+# installed from the root of your application.
+
+ENGINE_ROOT = File.expand_path('..', __dir__)
+ENGINE_PATH = File.expand_path('../lib/action_text/trix/engine.rb', __dir__)
+APP_PATH = File.expand_path('../test/dummy/config/application', __dir__)
+
+# Set up gems listed in the Gemfile.
+ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../Gemfile', __dir__)
+require "bundler/setup" if File.exist?(ENV["BUNDLE_GEMFILE"])
+
+require "rails/all"
+require "rails/test_unit/railtie"
+require "rails/engine/commands"

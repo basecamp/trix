@@ -1,0 +1,9 @@
+<%= form_with(model: message) do |form| %>
+  <%= form.label :subject %> <br>
+  <%= form.text_field :subject %> <br>
+
+  <%= form.label :content %> <br>
+  <%= form.rich_text_area :content %>
+
+  <%= form.submit %>
+<% end %>
