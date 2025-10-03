@@ -648,6 +648,8 @@ The `<trix-editor>` element emits several events which you can use to observe an
 
 * `trix-attachment-add` fires after an attachment is added to the document. You can access the Trix attachment object through the `attachment` property on the event. If the `attachment` object has a `file` property, you should store this file remotely and set the attachment’s URL attribute. See the [attachment example](http://trix-editor.org/js/attachments.js) for detailed information.
 
+* `trix-attachment-edit` fires after an attachment is edited in the document. You can access the Trix attachment object through the `attachment` property on the event.
+
 * `trix-attachment-remove` fires when an attachment is removed from the document. You can access the Trix attachment object through the `attachment` property on the event. You may wish to use this event to clean up remotely stored files.
 
 * `trix-action-invoke` fires when a Trix action is invoked. You can access the `<trix-editor>` element through the event's `target` property, the element responsible for invoking the action through the `invokingElement` property, and the action's name through the `actionName` property. The `trix-action-invoke` event will only fire for [custom](#invoking-external-custom-actions) actions and not for [built-in](#invoking-internal-trix-actions).
