@@ -46,6 +46,15 @@ testGroup("Installation process with specified elements", { template: "editor_wi
     assert.equal(editorElement.value, "<div>Hello world</div>")
   })
 
+  test("trix-toolbar can reference editorElements and editorElement", () => {
+    const editorElement = getEditorElement()
+    const toolbarElement = editorElement.toolbarElement
+
+    assert.equal(toolbarElement, document.getElementById("my_toolbar"))
+    assert.deepEqual(Array.from(toolbarElement.editorElements), [ editorElement ])
+    assert.equal(toolbarElement.editorElement, editorElement)
+  })
+
   test("can be cloned", async () => {
     const originalElement = document.getElementById("my_editor")
     const clonedElement = originalElement.cloneNode(true)
