@@ -98,6 +98,31 @@ import Trix from "trix"
 Trix.elements.TrixEditorElement.formAssociated = false
 ```
 
+When Trix is configured to be compatible with `ElementInternals`, it is also
+capable of functioning without an `<input type="hidden">` element. To configure
+a `<trix-editor>` element to skip creating its `<input type="hidden">`, set the
+element's `willCreateInput = false`:
+
+```js
+addEventListener("before-trix-initialize", (event) => {
+  const trixEditor = event.target
+
+  trixEditor.willCreateInput = false
+})
+```
+
+> [!NOTE]
+> Trix will *always* use an associated `<input type="hidden">` element when the
+> `[input]` attribute is set. To migrate to `<input>`-free support, set
+> `willCreateInput = false`, then render the `<trix-editor>` without the
+> `[input]` attribute.
+
+> [!WARNING]
+> In the absence of an `<input type="hidden">` element, the `<trix-editor>`
+> element's value will not be included in `<form>` element submissions unless it
+> is rendered with a `[name]` attribute. Set the `[name]` attribute to the same
+> value that the `<input type="hidden">` element would have.
+
 ## Invoking Internal Trix Actions
 
 Internal actions are defined in `controllers/editor_controller.js` and consist of:
@@ -156,7 +181,18 @@ To populate a `<trix-editor>` with stored content, include that content in the a
 </form>
 ```
 
-Always use an associated input element to safely populate an editor. Trix won’t load any HTML content inside a `<trix-editor>…</trix-editor>` tag.
+Use an associated input element to initially populate an editor. When an associated input element is absent, Trix will safely sanitize then load any HTML content inside a `<trix-editor>…</trix-editor>` tag.
+
+```html
+<form …>
+  <trix-editor>Editor content goes here</trix-editor>
+</form>
+```
+
+> [!WARNING]
+> When a `<trix-editor>` element initially connects with both HTML content *and*
+> an associated input element, Trix will *always* disregard the HTML content and
+> load its initial content from the associated input element.
 
 ## Validating the Editor
 
@@ -299,6 +335,27 @@ Trix automatically accepts files dragged or pasted into an editor and inserts th
 To store attachments, listen for the `trix-attachment-add` event. Upload the attached files with XMLHttpRequest yourself and set the attachment’s URL attribute upon completion. See the [attachment example](https://trix-editor.org/js/attachments.js) for detailed information.
 
 If you don’t want to accept dropped or pasted files, call `preventDefault()` on the `trix-file-accept` event, which Trix dispatches just before the `trix-attachment-add` event.
+
+## Previewing Attached Files
+
+Trix automatically previews attached image files. To determine whether or not to preview an attached file, Trix compares the file's content type against the [Trix.Attachment.previewablePattern](./src/trix/models/attachment.js#L7). By default, Trix will preview the following content types:
+
+* `image/gif`
+* `image/png`
+* `image/webp`
+* `image/jpg`
+* `image/jpeg`
+
+To customize an attachment's preview, listen for the `trix-attachment-add` event. When handling the event, set the attachment's `previewable` attribute, then change its preview URL by calling `setPreviewURL`:
+
+```js
+addEventListener("trix-attachment-add", (event) => {
+  if (event.attachment.file instanceof File) {
+    event.attachment.setAttribute("previewable", true)
+    event.attachment.setPreviewURL("...")
+  }
+})
+```
 
 # Editing Text Programmatically
 
@@ -558,6 +615,36 @@ For example if you want to keep a custom tag, you can access do that with:
 Trix.config.dompurify.ADD_TAGS = [ "my-custom-tag" ]
 ```
 
+## HTML Rendering
+
+Trix renders changes to editor content by replacing existing nodes with new nodes.
+
+To customize how Trix renders changes, set the `<trix-editor>` element's
+`render` property to a function that accepts a `<trix-editor>` instance and a
+[DocumentFragment][]:
+
+```js
+document.addEventListener("trix-before-render", (event) => {
+  const defaultRender = event.render
+
+  event.render = function(editorElement, documentFragment) {
+    // modify the documentFragment…
+    customize(documentFragment)
+
+    // render it with the default rendering function
+    defaultRender(editorElement, documentFragment)
+  }
+})
+```
+
+> [!CAUTION]
+> By the time that `render(editorElement, documentFragment)` is
+> invoked, Trix will have finalized modifications to the HTML content (like HTML
+> sanitization, for example). If you make further modifications to the content,
+> be sure that they are safe.
+
+[DocumentFragment]: https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment
+
 ## Observing Editor Changes
 
 The `<trix-editor>` element emits several events which you can use to observe and respond to changes in editor state.
@@ -568,6 +655,10 @@ The `<trix-editor>` element emits several events which you can use to observe an
 
 * `trix-change` fires whenever the editor’s contents have changed.
 
+* `trix-before-render` fires before the editor’s new contents are rendered. You can override the function used to render the content through the `render` property on the event. The `render` function expects two positional arguments: the `<trix-editor>` element that will render and a [DocumentFragment](https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment) instance that contains the new content. Read [HTML Rendering](#html-rendering) to learn more.
+
+* `trix-before-paste` fires just before text is pasted into the editor. You can use this to modify the content being pasted or prevent the paste event from happening at all. The `paste` property on the event contains the pasted `string` or `html`, and the `range` of the inserted text.
+
 * `trix-paste` fires whenever text is pasted into the editor. The `paste` property on the event contains the pasted `string` or `html`, and the `range` of the inserted text.
 
 * `trix-selection-change` fires any time the selected range changes in the editor.
@@ -577,6 +668,8 @@ The `<trix-editor>` element emits several events which you can use to observe an
 * `trix-file-accept` fires when a file is dropped or inserted into the editor. You can access the DOM `File` object through the `file` property on the event. Call `preventDefault` on the event to prevent attaching the file to the document.
 
 * `trix-attachment-add` fires after an attachment is added to the document. You can access the Trix attachment object through the `attachment` property on the event. If the `attachment` object has a `file` property, you should store this file remotely and set the attachment’s URL attribute. See the [attachment example](http://trix-editor.org/js/attachments.js) for detailed information.
+
+* `trix-attachment-edit` fires after an attachment is edited in the document. You can access the Trix attachment object through the `attachment` property on the event.
 
 * `trix-attachment-remove` fires when an attachment is removed from the document. You can access the Trix attachment object through the `attachment` property on the event. You may wish to use this event to clean up remotely stored files.
 

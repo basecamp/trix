@@ -12,7 +12,7 @@ if (args.length < 2) {
   process.exit(1)
 }
 const inputFile = path.resolve(args[0])
-const outputFile = path.resolve(args[1])
+const outputFiles = args.slice(1).map(outputPath => path.resolve(outputPath))
 const watchMode = args.includes("--watch")
 
 const basePath = path.dirname(inputFile)
@@ -33,7 +33,7 @@ function compile() {
   try {
     const result = sass.compile(inputFile, { functions })
 
-    fs.writeFileSync(outputFile, result.css, "utf8")
+    outputFiles.forEach(outputFile => fs.writeFileSync(outputFile, result.css, "utf8"))
   } catch (error) {
     console.error("Error compiling SCSS:", error.message)
   }

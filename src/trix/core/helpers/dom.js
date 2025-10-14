@@ -35,8 +35,7 @@ export const handleEventOnce = function(eventName, options = {}) {
   return handleEvent(eventName, options)
 }
 
-export const triggerEvent = function(eventName, { onElement, bubbles, cancelable, attributes } = {}) {
-  const element = onElement != null ? onElement : html
+export const createEvent = function(eventName, { bubbles, cancelable, attributes } = {}) {
   bubbles = bubbles !== false
   cancelable = cancelable !== false
 
@@ -45,6 +44,12 @@ export const triggerEvent = function(eventName, { onElement, bubbles, cancelable
   if (attributes != null) {
     extend.call(event, attributes)
   }
+  return event
+}
+
+export const triggerEvent = function(eventName, { onElement, bubbles, cancelable, attributes } = {}) {
+  const element = onElement != null ? onElement : html
+  const event = createEvent(eventName, { bubbles, cancelable, attributes })
   return element.dispatchEvent(event)
 }
 

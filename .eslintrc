@@ -25,7 +25,7 @@
     "semi": ["error", "never"],
     "sort-imports": ["error", { "ignoreDeclarationSort": true }]
   },
-  "ignorePatterns": ["dist/**/*.js", "**/vendor/**/*.js"],
+  "ignorePatterns": ["dist/**/*.js", "**/vendor/**/*.js", "action_text-trix/**/*.js"],
   "globals": {
     "after": true,
     "getComposition": true,

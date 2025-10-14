@@ -1,4 +1,4 @@
-import { makeElement } from "trix/core/helpers"
+import { createEvent, makeElement } from "trix/core/helpers"
 
 import ElementStore from "trix/core/collections/element_store"
 import ObjectGroup from "trix/core/collections/object_group"
@@ -49,11 +49,18 @@ export default class DocumentView extends ObjectView {
   }
 
   sync() {
-    const fragment = this.createDocumentFragmentForSync()
-    while (this.element.lastChild) {
-      this.element.removeChild(this.element.lastChild)
+    const render = (element, documentFragment) => {
+      while (element.lastChild) {
+        element.removeChild(element.lastChild)
+      }
+      element.appendChild(documentFragment)
     }
-    this.element.appendChild(fragment)
+
+    const event = createEvent("trix-before-render", { cancelable: false, attributes: { render } })
+    this.element.dispatchEvent(event)
+
+    const fragment = this.createDocumentFragmentForSync()
+    event.render(this.element, fragment)
     return this.didSync()
   }
 
