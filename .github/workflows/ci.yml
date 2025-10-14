@@ -103,7 +103,7 @@ jobs:
       - name: Run tests
         env:
           RAILS_BRANCH: ${{ matrix.rails_branch }}
-        continue-on-error: ${{ matrix.experimental }}
+        continue-on-error: ${{ matrix.experimental || false }}
         working-directory: "./action_text-trix"
         run: bin/rails test:all
 
