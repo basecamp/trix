@@ -33,9 +33,10 @@ jobs:
         with:
           node-version: 18
           cache: "yarn"
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby-pkgs@v1
         with:
           ruby-version: "3.4"
+          apt-get: libvips-tools
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
       - name: Packaging
@@ -44,7 +45,6 @@ jobs:
         run: git clone --depth=1 https://github.com/rails/rails
       - name: Configure Rails
         run: |
-          sudo apt install libvips-tools
           cd rails
           yarn install --frozen-lockfile
           bundle add action_text-trix --path ".."
