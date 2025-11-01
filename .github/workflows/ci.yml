@@ -24,6 +24,10 @@ jobs:
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
       - run: bin/ci
+      - name: Fail when generated npm changes are not checked-in
+        run: |
+          git update-index --refresh && git diff-index --quiet HEAD --
+
   rails-tests:
     name: Downstream Rails integration tests
     runs-on: ubuntu-latest
