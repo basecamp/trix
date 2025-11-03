@@ -3451,11 +3451,15 @@ $\
       }
       const width = this.attachment.getWidth();
       const height = this.attachment.getHeight();
+      const alt = this.attachment.getAttribute("alt");
       if (width != null) {
         image.width = width;
       }
       if (height != null) {
         image.height = height;
+      }
+      if (alt != null) {
+        image.alt = alt;
       }
       const storeKey = ["imageElement", this.attachment.id, image.src, image.width, image.height].join("/");
       image.dataset.trixStoreKey = storeKey;
@@ -6616,6 +6620,11 @@ $\
       this.attributes = Hash.box(attributes);
       this.didChangeAttributes();
     }
+    setAttribute(attribute, value) {
+      this.setAttributes({
+        [attribute]: value
+      });
+    }
     getAttribute(attribute) {
       return this.attributes.get(attribute);
     }
@@ -8855,6 +8864,8 @@ $\
   ManagedAttachment.proxyMethod("attachment.isPending");
   ManagedAttachment.proxyMethod("attachment.isPreviewable");
   ManagedAttachment.proxyMethod("attachment.getURL");
+  ManagedAttachment.proxyMethod("attachment.getPreviewURL");
+  ManagedAttachment.proxyMethod("attachment.setPreviewURL");
   ManagedAttachment.proxyMethod("attachment.getHref");
   ManagedAttachment.proxyMethod("attachment.getFilename");
   ManagedAttachment.proxyMethod("attachment.getFilesize");
@@ -12465,12 +12476,12 @@ $\
       this.attributes = {};
       this.actions = {};
       this.resetDialogInputs();
-      handleEvent("mousedown", {
+      handleEvent("click", {
         onElement: this.element,
         matchingSelector: actionButtonSelector,
         withCallback: this.didClickActionButton
       });
-      handleEvent("mousedown", {
+      handleEvent("click", {
         onElement: this.element,
         matchingSelector: attributeButtonSelector,
         withCallback: this.didClickAttributeButton
@@ -13247,6 +13258,22 @@ $\
       if (this.innerHTML === "") {
         this.innerHTML = toolbar.getDefaultHTML();
       }
+    }
+
+    // Properties
+
+    get editorElements() {
+      if (this.id) {
+        var _this$ownerDocument;
+        const nodeList = (_this$ownerDocument = this.ownerDocument) === null || _this$ownerDocument === void 0 ? void 0 : _this$ownerDocument.querySelectorAll("trix-editor[toolbar=\"".concat(this.id, "\"]"));
+        return Array.from(nodeList);
+      } else {
+        return [];
+      }
+    }
+    get editorElement() {
+      const [editorElement] = this.editorElements;
+      return editorElement;
     }
   }
 
