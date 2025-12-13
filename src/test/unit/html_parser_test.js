@@ -272,6 +272,18 @@ testGroup("HTMLParser", () => {
     assert.documentHTMLEqual(HTMLParser.parse(html).getDocument(), expectedHTML)
   })
 
+  test("forbids javascript: protocol in attachment href", () => {
+    const html = "<figure data-trix-attachment=\"{&quot;href&quot;:&quot;javascript:alert(1)&quot;,&quot;contentType&quot;:&quot;application/pdf&quot;,&quot;filename&quot;:&quot;report.pdf&quot;}\"></figure>"
+    const finalHTML = getHTML(HTMLParser.parse(html).getDocument())
+    assert.notOk(finalHTML.includes("href=\"javascript:"), "javascript: protocol found in href attribute: " + JSON.stringify(finalHTML))
+  })
+
+  test("forbids data:text/html protocol in attachment href", () => {
+    const html = "<figure data-trix-attachment=\"{&quot;href&quot;:&quot;data:text/html,&lt;script&gt;alert(1)&lt;/script&gt;&quot;,&quot;contentType&quot;:&quot;application/pdf&quot;,&quot;filename&quot;:&quot;report.pdf&quot;}\"></figure>"
+    const finalHTML = getHTML(HTMLParser.parse(html).getDocument())
+    assert.notOk(finalHTML.includes("href=\"data:text/html"), "data:text/html protocol found in href attribute: " + JSON.stringify(finalHTML))
+  })
+
   test("ignores attachment elements with malformed JSON", () => {
     const html =
       "<div>a</div><div data-trix-attachment data-trix-attributes></div>" +

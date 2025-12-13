@@ -3,6 +3,7 @@ import { ZERO_WIDTH_SPACE } from "trix/constants"
 import { copyObject, makeElement } from "trix/core/helpers"
 import ObjectView from "trix/views/object_view"
 import HTMLSanitizer from "trix/models/html_sanitizer"
+import DOMPurify from "dompurify"
 
 const { css } = config
 
@@ -126,7 +127,10 @@ export default class AttachmentView extends ObjectView {
 
   getHref() {
     if (!htmlContainsTagName(this.attachment.getContent(), "a")) {
-      return this.attachment.getHref()
+      const href = this.attachment.getHref()
+      if (href && DOMPurify.isValidAttribute("a", "href", href)) {
+        return href
+      }
     }
   }
 

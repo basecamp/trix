@@ -3363,7 +3363,10 @@ $\
     }
     getHref() {
       if (!htmlContainsTagName(this.attachment.getContent(), "a")) {
-        return this.attachment.getHref();
+        const href = this.attachment.getHref();
+        if (href && purify.isValidAttribute("a", "href", href)) {
+          return href;
+        }
       }
     }
     getCaptionConfig() {
