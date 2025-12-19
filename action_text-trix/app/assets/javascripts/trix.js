@@ -12476,12 +12476,12 @@ $\
       this.attributes = {};
       this.actions = {};
       this.resetDialogInputs();
-      handleEvent("click", {
+      handleEvent("mousedown", {
         onElement: this.element,
         matchingSelector: actionButtonSelector,
         withCallback: this.didClickActionButton
       });
-      handleEvent("click", {
+      handleEvent("mousedown", {
         onElement: this.element,
         matchingSelector: attributeButtonSelector,
         withCallback: this.didClickAttributeButton
