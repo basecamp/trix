@@ -38,6 +38,9 @@ jobs:
           tunnelName: ${{ env.SAUCE_TUNNEL_IDENTIFIER }}
           region: ${{ env.SAUCE_REGION }}
           proxyLocalhost: allow
+      - name: Install Playwright Browsers
+        if: ${{ env.SAUCE_ACCESS_KEY == '' }}
+        run: npx playwright install --with-deps chromium
       - run: bin/ci
       - name: Fail when generated npm changes are not checked-in
         run: |
