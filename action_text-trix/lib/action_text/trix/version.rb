@@ -1,3 +1,3 @@
 module Trix
-  VERSION = "2.1.15"
+  VERSION = "2.1.16"
 end
