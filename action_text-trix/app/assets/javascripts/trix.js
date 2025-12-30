@@ -75,6 +75,7 @@ Copyright © 2025 37signals, LLC
   	lint: "eslint .",
   	pretest: "yarn run lint && yarn run build",
   	test: "karma start",
+  	version: "yarn build && git add action_text-trix",
   	prerelease: "yarn version && yarn test",
   	"release-npm": "npm adduser && npm publish",
   	"release-ruby": "rake -C action_text-trix release",
