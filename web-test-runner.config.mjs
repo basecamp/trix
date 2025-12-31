@@ -89,6 +89,9 @@ const defaultBrowsers = [
   playwrightLauncher({ product: 'chromium' }),
 ];
 
+// Enable real-time progress reporting for local dev (single browser)
+const localDev = !sauceLabsConfig && !process.env.CI;
+
 export default {
   // The test file(s)
   files: ['dist/test.js'],
@@ -113,8 +116,51 @@ export default {
   // Parallel browser execution
   concurrency: sauceLabsConfig ? 4 : 1,
 
+  // Use static logging for real-time progress (local dev only)
+  staticLogging: localDev,
+
+  // Custom reporter for local dev; undefined falls back to default for CI
+  reporters: localDev ? [
+    {
+      onTestRunFinished({ sessions }) {
+        let passed = 0, failed = 0, skipped = 0;
+        for (const session of sessions) {
+          const countTests = (suite) => {
+            for (const test of suite.tests || []) {
+              if (test.skipped) skipped++;
+              else if (test.passed) passed++;
+              else failed++;
+            }
+            for (const child of suite.suites || []) countTests(child);
+          };
+          if (session.testResults) countTests(session.testResults);
+        }
+        const total = passed + failed + skipped;
+        process.stdout.write(`\n\n${total} tests: ${passed} passed, ${failed} failed, ${skipped} skipped.\n\n`);
+      },
+    },
+  ] : undefined,
+
   // Middleware to serve test fixtures and QUnit from local files
   middleware: [
+    // Real-time test progress reporting
+    async function testProgressReporter(context, next) {
+      if (context.method === 'POST' && context.url === '/test-progress') {
+        const chunks = [];
+        for await (const chunk of context.req) {
+          chunks.push(chunk);
+        }
+        const body = Buffer.concat(chunks).toString();
+        const { status } = JSON.parse(body);
+        // Match the same logic used in the reporter: skipped, failed, or passed (everything else)
+        const progressIndicator = status === 'skipped' ? 'S' : status === 'failed' ? 'F' : '.';
+        process.stdout.write(progressIndicator);
+        context.status = 200;
+        context.body = 'ok';
+        return;
+      }
+      return next();
+    },
     function serveLocalFiles(context, next) {
       // Serve test fixtures from src/test/test_helpers/fixtures/
       if (context.url.startsWith('/test_helpers/fixtures/')) {
@@ -177,6 +223,9 @@ export default {
     import { getConfig, sessionStarted, sessionFinished, sessionFailed }
       from '@web/test-runner-core/browser/session.js';
 
+    // Real-time progress reporting only for local dev (single browser)
+    const reportProgress = ${localDev};
+
     try {
       await sessionStarted();
 
@@ -192,6 +241,15 @@ export default {
       });
 
       QUnit.on('testEnd', (result) => {
+        // POST progress to server for real-time output
+        if (reportProgress) {
+          fetch('/test-progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: result.status })
+          }).catch(() => {});
+        }
+
         // Navigate to correct suite in hierarchy
         const modules = result.fullName.slice(0, -1);
         let currentSuite = testSuite;
