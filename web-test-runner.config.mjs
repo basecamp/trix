@@ -36,7 +36,8 @@ const createSauceLabsLaunchers = async () => {
   const sauceOptions = {
     name: 'Trix',
     build: buildId,
-    ...(SAUCE_TUNNEL_IDENTIFIER && { tunnelIdentifier: SAUCE_TUNNEL_IDENTIFIER }),
+    // Use tunnelName for SC5 (tunnelIdentifier is SC4 legacy)
+    ...(SAUCE_TUNNEL_IDENTIFIER && { tunnelName: SAUCE_TUNNEL_IDENTIFIER }),
   };
 
   return [
@@ -66,6 +67,21 @@ const createSauceLabsLaunchers = async () => {
         browserVersion: 'latest',
         platformName: 'Windows 10',
         'sauce:options': sauceOptions,
+      },
+    }),
+    // Android emulator - Chrome browser
+    webdriverLauncher({
+      ...sauceLabsConfig,
+      capabilities: {
+        browserName: 'chrome',
+        platformName: 'Android',
+        'appium:deviceName': 'Android GoogleAPI Emulator',
+        'appium:platformVersion': '14.0',
+        'appium:automationName': 'UiAutomator2',
+        'sauce:options': {
+          ...sauceOptions,
+          appiumVersion: 'latest',
+        },
       },
     }),
   ];
