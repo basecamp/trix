@@ -80,7 +80,7 @@ const createSauceLabsLaunchers = async () => {
         'appium:automationName': 'UiAutomator2',
         'sauce:options': {
           ...sauceOptions,
-          appiumVersion: 'latest',
+          appiumVersion: 'appium2-20250901',
         },
       },
     }),
