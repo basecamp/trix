@@ -20,6 +20,15 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app %>
     <%= javascript_importmap_tags %>
+    <script type="module">
+      import "trix"
+
+      <% if ActionText.version < "8.2.0" %>
+        import "@rails/actiontext"
+      <% else %>
+        import "trix/actiontext"
+      <% end %>
+    </script>
   </head>
 
   <body>
