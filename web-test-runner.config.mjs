@@ -78,10 +78,7 @@ const createSauceLabsLaunchers = async () => {
         'appium:deviceName': 'Android GoogleAPI Emulator',
         'appium:platformVersion': '14.0',
         'appium:automationName': 'UiAutomator2',
-        'sauce:options': {
-          ...sauceOptions,
-          appiumVersion: 'appium2-20250901',
-        },
+        'sauce:options': sauceOptions,
       },
     }),
   ];
