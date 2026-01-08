@@ -10255,6 +10255,1042 @@ $\
     }
   }
 
+  const mutableAttributeName = "data-trix-mutable";
+  const mutableSelector = "[".concat(mutableAttributeName, "]");
+  const options = {
+    attributes: true,
+    childList: true,
+    characterData: true,
+    characterDataOldValue: true,
+    subtree: true
+  };
+  class MutationObserver extends BasicObject {
+    constructor(element) {
+      super(element);
+      this.didMutate = this.didMutate.bind(this);
+      this.element = element;
+      this.observer = new window.MutationObserver(this.didMutate);
+      this.start();
+    }
+    start() {
+      this.reset();
+      return this.observer.observe(this.element, options);
+    }
+    stop() {
+      return this.observer.disconnect();
+    }
+    didMutate(mutations) {
+      this.mutations.push(...Array.from(this.findSignificantMutations(mutations) || []));
+      if (this.mutations.length) {
+        var _this$delegate, _this$delegate$elemen;
+        (_this$delegate = this.delegate) === null || _this$delegate === void 0 || (_this$delegate$elemen = _this$delegate.elementDidMutate) === null || _this$delegate$elemen === void 0 || _this$delegate$elemen.call(_this$delegate, this.getMutationSummary());
+        return this.reset();
+      }
+    }
+
+    // Private
+
+    reset() {
+      this.mutations = [];
+    }
+    findSignificantMutations(mutations) {
+      return mutations.filter(mutation => {
+        return this.mutationIsSignificant(mutation);
+      });
+    }
+    mutationIsSignificant(mutation) {
+      if (this.nodeIsMutable(mutation.target)) {
+        return false;
+      }
+      for (const node of Array.from(this.nodesModifiedByMutation(mutation))) {
+        if (this.nodeIsSignificant(node)) return true;
+      }
+      return false;
+    }
+    nodeIsSignificant(node) {
+      return node !== this.element && !this.nodeIsMutable(node) && !nodeIsEmptyTextNode(node);
+    }
+    nodeIsMutable(node) {
+      return findClosestElementFromNode(node, {
+        matchingSelector: mutableSelector
+      });
+    }
+    nodesModifiedByMutation(mutation) {
+      const nodes = [];
+      switch (mutation.type) {
+        case "attributes":
+          if (mutation.attributeName !== mutableAttributeName) {
+            nodes.push(mutation.target);
+          }
+          break;
+        case "characterData":
+          // Changes to text nodes should consider the parent element
+          nodes.push(mutation.target.parentNode);
+          nodes.push(mutation.target);
+          break;
+        case "childList":
+          // Consider each added or removed node
+          nodes.push(...Array.from(mutation.addedNodes || []));
+          nodes.push(...Array.from(mutation.removedNodes || []));
+          break;
+      }
+      return nodes;
+    }
+    getMutationSummary() {
+      return this.getTextMutationSummary();
+    }
+    getTextMutationSummary() {
+      const {
+        additions,
+        deletions
+      } = this.getTextChangesFromCharacterData();
+      const textChanges = this.getTextChangesFromChildList();
+      Array.from(textChanges.additions).forEach(addition => {
+        if (!Array.from(additions).includes(addition)) {
+          additions.push(addition);
+        }
+      });
+      deletions.push(...Array.from(textChanges.deletions || []));
+      const summary = {};
+      const added = additions.join("");
+      if (added) {
+        summary.textAdded = added;
+      }
+      const deleted = deletions.join("");
+      if (deleted) {
+        summary.textDeleted = deleted;
+      }
+      return summary;
+    }
+    getMutationsByType(type) {
+      return Array.from(this.mutations).filter(mutation => mutation.type === type);
+    }
+    getTextChangesFromChildList() {
+      let textAdded, textRemoved;
+      const addedNodes = [];
+      const removedNodes = [];
+      Array.from(this.getMutationsByType("childList")).forEach(mutation => {
+        addedNodes.push(...Array.from(mutation.addedNodes || []));
+        removedNodes.push(...Array.from(mutation.removedNodes || []));
+      });
+      const singleBlockCommentRemoved = addedNodes.length === 0 && removedNodes.length === 1 && nodeIsBlockStartComment(removedNodes[0]);
+      if (singleBlockCommentRemoved) {
+        textAdded = [];
+        textRemoved = ["\n"];
+      } else {
+        textAdded = getTextForNodes(addedNodes);
+        textRemoved = getTextForNodes(removedNodes);
+      }
+      const additions = textAdded.filter((text, index) => text !== textRemoved[index]).map(normalizeSpaces);
+      const deletions = textRemoved.filter((text, index) => text !== textAdded[index]).map(normalizeSpaces);
+      return {
+        additions,
+        deletions
+      };
+    }
+    getTextChangesFromCharacterData() {
+      let added, removed;
+      const characterMutations = this.getMutationsByType("characterData");
+      if (characterMutations.length) {
+        const startMutation = characterMutations[0],
+          endMutation = characterMutations[characterMutations.length - 1];
+        const oldString = normalizeSpaces(startMutation.oldValue);
+        const newString = normalizeSpaces(endMutation.target.data);
+        const summarized = summarizeStringChange(oldString, newString);
+        added = summarized.added;
+        removed = summarized.removed;
+      }
+      return {
+        additions: added ? [added] : [],
+        deletions: removed ? [removed] : []
+      };
+    }
+  }
+  const getTextForNodes = function () {
+    let nodes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    const text = [];
+    for (const node of Array.from(nodes)) {
+      switch (node.nodeType) {
+        case Node.TEXT_NODE:
+          text.push(node.data);
+          break;
+        case Node.ELEMENT_NODE:
+          if (tagName(node) === "br") {
+            text.push("\n");
+          } else {
+            text.push(...Array.from(getTextForNodes(node.childNodes) || []));
+          }
+          break;
+      }
+    }
+    return text;
+  };
+
+  /* eslint-disable
+      no-empty,
+  */
+  class FileVerificationOperation extends Operation {
+    constructor(file) {
+      super(...arguments);
+      this.file = file;
+    }
+    perform(callback) {
+      const reader = new FileReader();
+      reader.onerror = () => callback(false);
+      reader.onload = () => {
+        reader.onerror = null;
+        try {
+          reader.abort();
+        } catch (error) {}
+        return callback(true, this.file);
+      };
+      return reader.readAsArrayBuffer(this.file);
+    }
+  }
+
+  // Each software keyboard on Android emits its own set of events and some of them can be buggy.
+  // This class detects when some buggy events are being emitted and lets know the input controller
+  // that they should be ignored.
+  class FlakyAndroidKeyboardDetector {
+    constructor(element) {
+      this.element = element;
+    }
+    shouldIgnore(event) {
+      if (!browser$1.samsungAndroid) return false;
+      this.previousEvent = this.event;
+      this.event = event;
+      this.checkSamsungKeyboardBuggyModeStart();
+      this.checkSamsungKeyboardBuggyModeEnd();
+      return this.buggyMode;
+    }
+
+    // private
+
+    // The Samsung keyboard on Android can enter a buggy state in which it emits a flurry of confused events that,
+    // if processed, corrupts the editor. The buggy mode always starts with an insertText event, right after a
+    // keydown event with for an "Unidentified" key, with the same text as the editor element, except for a few
+    // extra whitespace, or exotic utf8, characters.
+    checkSamsungKeyboardBuggyModeStart() {
+      if (this.insertingLongTextAfterUnidentifiedChar() && differsInWhitespace(this.element.innerText, this.event.data)) {
+        this.buggyMode = true;
+        this.event.preventDefault();
+      }
+    }
+
+    // The flurry of buggy events are always insertText. If we see any other type, it means it's over.
+    checkSamsungKeyboardBuggyModeEnd() {
+      if (this.buggyMode && this.event.inputType !== "insertText") {
+        this.buggyMode = false;
+      }
+    }
+    insertingLongTextAfterUnidentifiedChar() {
+      var _this$event$data;
+      return this.isBeforeInputInsertText() && this.previousEventWasUnidentifiedKeydown() && ((_this$event$data = this.event.data) === null || _this$event$data === void 0 ? void 0 : _this$event$data.length) > 50;
+    }
+    isBeforeInputInsertText() {
+      return this.event.type === "beforeinput" && this.event.inputType === "insertText";
+    }
+    previousEventWasUnidentifiedKeydown() {
+      var _this$previousEvent, _this$previousEvent2;
+      return ((_this$previousEvent = this.previousEvent) === null || _this$previousEvent === void 0 ? void 0 : _this$previousEvent.type) === "keydown" && ((_this$previousEvent2 = this.previousEvent) === null || _this$previousEvent2 === void 0 ? void 0 : _this$previousEvent2.key) === "Unidentified";
+    }
+  }
+  const differsInWhitespace = (text1, text2) => {
+    return normalize(text1) === normalize(text2);
+  };
+  const whiteSpaceNormalizerRegexp = new RegExp("(".concat(OBJECT_REPLACEMENT_CHARACTER, "|").concat(ZERO_WIDTH_SPACE, "|").concat(NON_BREAKING_SPACE, "|\\s)+"), "g");
+  const normalize = text => text.replace(whiteSpaceNormalizerRegexp, " ").trim();
+
+  class InputController extends BasicObject {
+    constructor(element) {
+      super(...arguments);
+      this.element = element;
+      this.mutationObserver = new MutationObserver(this.element);
+      this.mutationObserver.delegate = this;
+      this.flakyKeyboardDetector = new FlakyAndroidKeyboardDetector(this.element);
+      for (const eventName in this.constructor.events) {
+        handleEvent(eventName, {
+          onElement: this.element,
+          withCallback: this.handlerFor(eventName)
+        });
+      }
+    }
+    elementDidMutate(mutationSummary) {}
+    editorWillSyncDocumentView() {
+      return this.mutationObserver.stop();
+    }
+    editorDidSyncDocumentView() {
+      return this.mutationObserver.start();
+    }
+    requestRender() {
+      var _this$delegate, _this$delegate$inputC;
+      return (_this$delegate = this.delegate) === null || _this$delegate === void 0 || (_this$delegate$inputC = _this$delegate.inputControllerDidRequestRender) === null || _this$delegate$inputC === void 0 ? void 0 : _this$delegate$inputC.call(_this$delegate);
+    }
+    requestReparse() {
+      var _this$delegate2, _this$delegate2$input;
+      (_this$delegate2 = this.delegate) === null || _this$delegate2 === void 0 || (_this$delegate2$input = _this$delegate2.inputControllerDidRequestReparse) === null || _this$delegate2$input === void 0 || _this$delegate2$input.call(_this$delegate2);
+      return this.requestRender();
+    }
+    attachFiles(files) {
+      const operations = Array.from(files).map(file => new FileVerificationOperation(file));
+      return Promise.all(operations).then(files => {
+        this.handleInput(function () {
+          var _this$delegate3, _this$responder;
+          (_this$delegate3 = this.delegate) === null || _this$delegate3 === void 0 || _this$delegate3.inputControllerWillAttachFiles();
+          (_this$responder = this.responder) === null || _this$responder === void 0 || _this$responder.insertFiles(files);
+          return this.requestRender();
+        });
+      });
+    }
+
+    // Private
+
+    handlerFor(eventName) {
+      return event => {
+        if (!event.defaultPrevented) {
+          this.handleInput(() => {
+            if (!innerElementIsActive(this.element)) {
+              if (this.flakyKeyboardDetector.shouldIgnore(event)) return;
+              this.eventName = eventName;
+              this.constructor.events[eventName].call(this, event);
+            }
+          });
+        }
+      };
+    }
+    handleInput(callback) {
+      try {
+        var _this$delegate4;
+        (_this$delegate4 = this.delegate) === null || _this$delegate4 === void 0 || _this$delegate4.inputControllerWillHandleInput();
+        callback.call(this);
+      } finally {
+        var _this$delegate5;
+        (_this$delegate5 = this.delegate) === null || _this$delegate5 === void 0 || _this$delegate5.inputControllerDidHandleInput();
+      }
+    }
+    createLinkHTML(href, text) {
+      const link = document.createElement("a");
+      link.href = href;
+      link.textContent = text ? text : href;
+      return link.outerHTML;
+    }
+  }
+  _defineProperty(InputController, "events", {});
+
+  // Safari Smart Quotes bug workaround constants
+  // Maximum character distance from cursor to consider a replacement "at cursor" vs "before cursor"
+  const AT_CURSOR_DISTANCE_THRESHOLD = 2;
+
+  // Number of input events to ignore after Smart Quotes replacement
+  // Safari fires multiple input events that would corrupt our cursor position
+  const INPUT_EVENTS_TO_IGNORE_COUNT = 3;
+
+  // WeakMap to associate editor elements with their Smart Quotes workaround state
+  const editorStates = new WeakMap();
+
+  // Export function for SelectionManager to check if it should skip syncing
+  const shouldPreventSelectionSync = element => {
+    const state = editorStates.get(element);
+    return (state === null || state === void 0 ? void 0 : state.preventSelectionSync) || false;
+  };
+  class Level2InputController extends InputController {
+    constructor() {
+      super(...arguments);
+      this.render = this.render.bind(this);
+      // Initialize state for this editor instance
+      editorStates.set(this.element, {
+        pendingInputEventsToIgnore: 0,
+        preventSelectionSync: false
+      });
+    }
+    elementDidMutate() {
+      if (this.scheduledRender) {
+        if (this.composing) {
+          var _this$delegate, _this$delegate$inputC;
+          return (_this$delegate = this.delegate) === null || _this$delegate === void 0 || (_this$delegate$inputC = _this$delegate.inputControllerDidAllowUnhandledInput) === null || _this$delegate$inputC === void 0 ? void 0 : _this$delegate$inputC.call(_this$delegate);
+        }
+      } else {
+        return this.reparse();
+      }
+    }
+    scheduleRender() {
+      return this.scheduledRender ? this.scheduledRender : this.scheduledRender = requestAnimationFrame(this.render);
+    }
+    render() {
+      var _this$afterRender;
+      cancelAnimationFrame(this.scheduledRender);
+      this.scheduledRender = null;
+      if (!this.composing) {
+        var _this$delegate2;
+        (_this$delegate2 = this.delegate) === null || _this$delegate2 === void 0 || _this$delegate2.render();
+      }
+      (_this$afterRender = this.afterRender) === null || _this$afterRender === void 0 || _this$afterRender.call(this);
+      this.afterRender = null;
+    }
+    reparse() {
+      var _this$delegate3;
+      return (_this$delegate3 = this.delegate) === null || _this$delegate3 === void 0 ? void 0 : _this$delegate3.reparse();
+    }
+
+    // Responder helpers
+
+    insertString() {
+      var _this$delegate4;
+      let string = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+      let options = arguments.length > 1 ? arguments[1] : undefined;
+      (_this$delegate4 = this.delegate) === null || _this$delegate4 === void 0 || _this$delegate4.inputControllerWillPerformTyping();
+      return this.withTargetDOMRange(function () {
+        var _this$responder;
+        return (_this$responder = this.responder) === null || _this$responder === void 0 ? void 0 : _this$responder.insertString(string, options);
+      });
+    }
+    toggleAttributeIfSupported(attributeName) {
+      if (getAllAttributeNames().includes(attributeName)) {
+        var _this$delegate5;
+        (_this$delegate5 = this.delegate) === null || _this$delegate5 === void 0 || _this$delegate5.inputControllerWillPerformFormatting(attributeName);
+        return this.withTargetDOMRange(function () {
+          var _this$responder2;
+          return (_this$responder2 = this.responder) === null || _this$responder2 === void 0 ? void 0 : _this$responder2.toggleCurrentAttribute(attributeName);
+        });
+      }
+    }
+    activateAttributeIfSupported(attributeName, value) {
+      if (getAllAttributeNames().includes(attributeName)) {
+        var _this$delegate6;
+        (_this$delegate6 = this.delegate) === null || _this$delegate6 === void 0 || _this$delegate6.inputControllerWillPerformFormatting(attributeName);
+        return this.withTargetDOMRange(function () {
+          var _this$responder3;
+          return (_this$responder3 = this.responder) === null || _this$responder3 === void 0 ? void 0 : _this$responder3.setCurrentAttribute(attributeName, value);
+        });
+      }
+    }
+    deleteInDirection(direction) {
+      let {
+        recordUndoEntry
+      } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+        recordUndoEntry: true
+      };
+      if (recordUndoEntry) {
+        var _this$delegate7;
+        (_this$delegate7 = this.delegate) === null || _this$delegate7 === void 0 || _this$delegate7.inputControllerWillPerformTyping();
+      }
+      const perform = () => {
+        var _this$responder4;
+        return (_this$responder4 = this.responder) === null || _this$responder4 === void 0 ? void 0 : _this$responder4.deleteInDirection(direction);
+      };
+      const domRange = this.getTargetDOMRange({
+        minLength: this.composing ? 1 : 2
+      });
+      if (domRange) {
+        return this.withTargetDOMRange(domRange, perform);
+      } else {
+        return perform();
+      }
+    }
+
+    // Replacement text helpers
+
+    // Determines if replacement is at cursor (Smart Quotes) vs before cursor (autocorrect)
+    isReplacementAtCursor(domRange) {
+      var _this$responder5, _this$responder6, _this$responder6$crea, _this$responder7, _this$responder8;
+      const cursorPosition = (_this$responder5 = this.responder) === null || _this$responder5 === void 0 || (_this$responder5 = _this$responder5.getSelectedRange()) === null || _this$responder5 === void 0 ? void 0 : _this$responder5[1];
+      const targetLocationRange = (_this$responder6 = this.responder) === null || _this$responder6 === void 0 || (_this$responder6$crea = _this$responder6.createLocationRangeFromDOMRange) === null || _this$responder6$crea === void 0 ? void 0 : _this$responder6$crea.call(_this$responder6, domRange, {
+        strict: false
+      });
+      const targetStart = targetLocationRange ? (_this$responder7 = this.responder) === null || _this$responder7 === void 0 || (_this$responder7 = _this$responder7.document) === null || _this$responder7 === void 0 ? void 0 : _this$responder7.positionFromLocation(targetLocationRange[0]) : null;
+      const targetEnd = targetLocationRange ? (_this$responder8 = this.responder) === null || _this$responder8 === void 0 || (_this$responder8 = _this$responder8.document) === null || _this$responder8 === void 0 ? void 0 : _this$responder8.positionFromLocation(targetLocationRange[1]) : null;
+      if (cursorPosition == null || targetEnd == null) {
+        return {
+          isAtCursor: false,
+          cursorPosition: null,
+          targetStart: null,
+          targetEnd: null
+        };
+      }
+      const distanceFromCursor = Math.abs(cursorPosition - targetEnd);
+      const isAtCursor = distanceFromCursor <= AT_CURSOR_DISTANCE_THRESHOLD;
+      return {
+        isAtCursor,
+        cursorPosition,
+        targetStart,
+        targetEnd
+      };
+    }
+
+    // Selection helpers
+
+    withTargetDOMRange(domRange, fn) {
+      if (typeof domRange === "function") {
+        fn = domRange;
+        domRange = this.getTargetDOMRange();
+      }
+      if (domRange) {
+        var _this$responder9;
+        return (_this$responder9 = this.responder) === null || _this$responder9 === void 0 ? void 0 : _this$responder9.withTargetDOMRange(domRange, fn.bind(this));
+      } else {
+        selectionChangeObserver.reset();
+        return fn.call(this);
+      }
+    }
+    getTargetDOMRange() {
+      var _this$event$getTarget, _this$event;
+      let {
+        minLength
+      } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+        minLength: 0
+      };
+      const targetRanges = (_this$event$getTarget = (_this$event = this.event).getTargetRanges) === null || _this$event$getTarget === void 0 ? void 0 : _this$event$getTarget.call(_this$event);
+      if (targetRanges) {
+        if (targetRanges.length) {
+          const domRange = staticRangeToRange(targetRanges[0]);
+          if (minLength === 0 || domRange.toString().length >= minLength) {
+            return domRange;
+          }
+        }
+      }
+    }
+    withEvent(event, fn) {
+      let result;
+      this.event = event;
+      try {
+        result = fn.call(this);
+      } finally {
+        this.event = null;
+      }
+      return result;
+    }
+  }
+  _defineProperty(Level2InputController, "events", {
+    keydown(event) {
+      if (keyEventIsKeyboardCommand(event)) {
+        var _this$delegate8;
+        const command = keyboardCommandFromKeyEvent(event);
+        if ((_this$delegate8 = this.delegate) !== null && _this$delegate8 !== void 0 && _this$delegate8.inputControllerDidReceiveKeyboardCommand(command)) {
+          event.preventDefault();
+        }
+      } else {
+        let name = event.key;
+        if (event.altKey) {
+          name += "+Alt";
+        }
+        if (event.shiftKey) {
+          name += "+Shift";
+        }
+        const handler = this.constructor.keys[name];
+        if (handler) {
+          return this.withEvent(event, handler);
+        }
+      }
+    },
+    // Handle paste event to work around beforeinput.insertFromPaste browser bugs.
+    // Safe to remove each condition once fixed upstream.
+    paste(event) {
+      var _event$clipboardData;
+      // https://bugs.webkit.org/show_bug.cgi?id=194921
+      let paste;
+      const href = (_event$clipboardData = event.clipboardData) === null || _event$clipboardData === void 0 ? void 0 : _event$clipboardData.getData("URL");
+      if (pasteEventHasFilesOnly(event)) {
+        event.preventDefault();
+        return this.attachFiles(event.clipboardData.files);
+
+        // https://bugs.chromium.org/p/chromium/issues/detail?id=934448
+      } else if (pasteEventHasPlainTextOnly(event)) {
+        var _this$delegate9, _this$responder10, _this$delegate10;
+        event.preventDefault();
+        paste = {
+          type: "text/plain",
+          string: event.clipboardData.getData("text/plain")
+        };
+        (_this$delegate9 = this.delegate) === null || _this$delegate9 === void 0 || _this$delegate9.inputControllerWillPaste(paste);
+        (_this$responder10 = this.responder) === null || _this$responder10 === void 0 || _this$responder10.insertString(paste.string);
+        this.render();
+        return (_this$delegate10 = this.delegate) === null || _this$delegate10 === void 0 ? void 0 : _this$delegate10.inputControllerDidPaste(paste);
+
+        // https://bugs.webkit.org/show_bug.cgi?id=196702
+      } else if (href) {
+        var _this$delegate11, _this$responder11, _this$delegate12;
+        event.preventDefault();
+        paste = {
+          type: "text/html",
+          html: this.createLinkHTML(href)
+        };
+        (_this$delegate11 = this.delegate) === null || _this$delegate11 === void 0 || _this$delegate11.inputControllerWillPaste(paste);
+        (_this$responder11 = this.responder) === null || _this$responder11 === void 0 || _this$responder11.insertHTML(paste.html);
+        this.render();
+        return (_this$delegate12 = this.delegate) === null || _this$delegate12 === void 0 ? void 0 : _this$delegate12.inputControllerDidPaste(paste);
+      }
+    },
+    beforeinput(event) {
+      const handler = this.constructor.inputTypes[event.inputType];
+      const immmediateRender = shouldRenderInmmediatelyToDealWithIOSDictation(event);
+      if (handler) {
+        this.withEvent(event, handler);
+        if (!immmediateRender) {
+          this.scheduleRender();
+        }
+      }
+      if (immmediateRender) {
+        this.render();
+      }
+    },
+    input(event) {
+      const state = editorStates.get(this.element);
+      if (state.pendingInputEventsToIgnore > 0) {
+        state.pendingInputEventsToIgnore--;
+        return;
+      }
+      selectionChangeObserver.reset();
+    },
+    dragstart(event) {
+      var _this$responder12;
+      if ((_this$responder12 = this.responder) !== null && _this$responder12 !== void 0 && _this$responder12.selectionContainsAttachments()) {
+        var _this$responder13;
+        event.dataTransfer.setData("application/x-trix-dragging", true);
+        this.dragging = {
+          range: (_this$responder13 = this.responder) === null || _this$responder13 === void 0 ? void 0 : _this$responder13.getSelectedRange(),
+          point: pointFromEvent(event)
+        };
+      }
+    },
+    dragenter(event) {
+      if (dragEventHasFiles(event)) {
+        event.preventDefault();
+      }
+    },
+    dragover(event) {
+      if (this.dragging) {
+        event.preventDefault();
+        const point = pointFromEvent(event);
+        if (!objectsAreEqual(point, this.dragging.point)) {
+          var _this$responder14;
+          this.dragging.point = point;
+          return (_this$responder14 = this.responder) === null || _this$responder14 === void 0 ? void 0 : _this$responder14.setLocationRangeFromPointRange(point);
+        }
+      } else if (dragEventHasFiles(event)) {
+        event.preventDefault();
+      }
+    },
+    drop(event) {
+      if (this.dragging) {
+        var _this$delegate13, _this$responder15;
+        event.preventDefault();
+        (_this$delegate13 = this.delegate) === null || _this$delegate13 === void 0 || _this$delegate13.inputControllerWillMoveText();
+        (_this$responder15 = this.responder) === null || _this$responder15 === void 0 || _this$responder15.moveTextFromRange(this.dragging.range);
+        this.dragging = null;
+        return this.scheduleRender();
+      } else if (dragEventHasFiles(event)) {
+        var _this$responder16;
+        event.preventDefault();
+        const point = pointFromEvent(event);
+        (_this$responder16 = this.responder) === null || _this$responder16 === void 0 || _this$responder16.setLocationRangeFromPointRange(point);
+        return this.attachFiles(event.dataTransfer.files);
+      }
+    },
+    dragend() {
+      if (this.dragging) {
+        var _this$responder17;
+        (_this$responder17 = this.responder) === null || _this$responder17 === void 0 || _this$responder17.setSelectedRange(this.dragging.range);
+        this.dragging = null;
+      }
+    },
+    compositionend(event) {
+      if (this.composing) {
+        this.composing = false;
+        if (!browser$1.recentAndroid) this.scheduleRender();
+      }
+    }
+  });
+  _defineProperty(Level2InputController, "keys", {
+    ArrowLeft() {
+      var _this$responder18;
+      if ((_this$responder18 = this.responder) !== null && _this$responder18 !== void 0 && _this$responder18.shouldManageMovingCursorInDirection("backward")) {
+        var _this$responder19;
+        this.event.preventDefault();
+        return (_this$responder19 = this.responder) === null || _this$responder19 === void 0 ? void 0 : _this$responder19.moveCursorInDirection("backward");
+      }
+    },
+    ArrowRight() {
+      var _this$responder20;
+      if ((_this$responder20 = this.responder) !== null && _this$responder20 !== void 0 && _this$responder20.shouldManageMovingCursorInDirection("forward")) {
+        var _this$responder21;
+        this.event.preventDefault();
+        return (_this$responder21 = this.responder) === null || _this$responder21 === void 0 ? void 0 : _this$responder21.moveCursorInDirection("forward");
+      }
+    },
+    Backspace() {
+      var _this$responder22;
+      if ((_this$responder22 = this.responder) !== null && _this$responder22 !== void 0 && _this$responder22.shouldManageDeletingInDirection("backward")) {
+        var _this$delegate14, _this$responder23;
+        this.event.preventDefault();
+        (_this$delegate14 = this.delegate) === null || _this$delegate14 === void 0 || _this$delegate14.inputControllerWillPerformTyping();
+        (_this$responder23 = this.responder) === null || _this$responder23 === void 0 || _this$responder23.deleteInDirection("backward");
+        return this.render();
+      }
+    },
+    Tab() {
+      var _this$responder24;
+      if ((_this$responder24 = this.responder) !== null && _this$responder24 !== void 0 && _this$responder24.canIncreaseNestingLevel()) {
+        var _this$responder25;
+        this.event.preventDefault();
+        (_this$responder25 = this.responder) === null || _this$responder25 === void 0 || _this$responder25.increaseNestingLevel();
+        return this.render();
+      }
+    },
+    "Tab+Shift"() {
+      var _this$responder26;
+      if ((_this$responder26 = this.responder) !== null && _this$responder26 !== void 0 && _this$responder26.canDecreaseNestingLevel()) {
+        var _this$responder27;
+        this.event.preventDefault();
+        (_this$responder27 = this.responder) === null || _this$responder27 === void 0 || _this$responder27.decreaseNestingLevel();
+        return this.render();
+      }
+    }
+  });
+  _defineProperty(Level2InputController, "inputTypes", {
+    deleteByComposition() {
+      return this.deleteInDirection("backward", {
+        recordUndoEntry: false
+      });
+    },
+    deleteByCut() {
+      return this.deleteInDirection("backward");
+    },
+    deleteByDrag() {
+      this.event.preventDefault();
+      return this.withTargetDOMRange(function () {
+        var _this$responder28;
+        this.deleteByDragRange = (_this$responder28 = this.responder) === null || _this$responder28 === void 0 ? void 0 : _this$responder28.getSelectedRange();
+      });
+    },
+    deleteCompositionText() {
+      return this.deleteInDirection("backward", {
+        recordUndoEntry: false
+      });
+    },
+    deleteContent() {
+      return this.deleteInDirection("backward");
+    },
+    deleteContentBackward() {
+      return this.deleteInDirection("backward");
+    },
+    deleteContentForward() {
+      return this.deleteInDirection("forward");
+    },
+    deleteEntireSoftLine() {
+      return this.deleteInDirection("forward");
+    },
+    deleteHardLineBackward() {
+      return this.deleteInDirection("backward");
+    },
+    deleteHardLineForward() {
+      return this.deleteInDirection("forward");
+    },
+    deleteSoftLineBackward() {
+      return this.deleteInDirection("backward");
+    },
+    deleteSoftLineForward() {
+      return this.deleteInDirection("forward");
+    },
+    deleteWordBackward() {
+      return this.deleteInDirection("backward");
+    },
+    deleteWordForward() {
+      return this.deleteInDirection("forward");
+    },
+    formatBackColor() {
+      return this.activateAttributeIfSupported("backgroundColor", this.event.data);
+    },
+    formatBold() {
+      return this.toggleAttributeIfSupported("bold");
+    },
+    formatFontColor() {
+      return this.activateAttributeIfSupported("color", this.event.data);
+    },
+    formatFontName() {
+      return this.activateAttributeIfSupported("font", this.event.data);
+    },
+    formatIndent() {
+      var _this$responder29;
+      if ((_this$responder29 = this.responder) !== null && _this$responder29 !== void 0 && _this$responder29.canIncreaseNestingLevel()) {
+        return this.withTargetDOMRange(function () {
+          var _this$responder30;
+          return (_this$responder30 = this.responder) === null || _this$responder30 === void 0 ? void 0 : _this$responder30.increaseNestingLevel();
+        });
+      }
+    },
+    formatItalic() {
+      return this.toggleAttributeIfSupported("italic");
+    },
+    formatJustifyCenter() {
+      return this.toggleAttributeIfSupported("justifyCenter");
+    },
+    formatJustifyFull() {
+      return this.toggleAttributeIfSupported("justifyFull");
+    },
+    formatJustifyLeft() {
+      return this.toggleAttributeIfSupported("justifyLeft");
+    },
+    formatJustifyRight() {
+      return this.toggleAttributeIfSupported("justifyRight");
+    },
+    formatOutdent() {
+      var _this$responder31;
+      if ((_this$responder31 = this.responder) !== null && _this$responder31 !== void 0 && _this$responder31.canDecreaseNestingLevel()) {
+        return this.withTargetDOMRange(function () {
+          var _this$responder32;
+          return (_this$responder32 = this.responder) === null || _this$responder32 === void 0 ? void 0 : _this$responder32.decreaseNestingLevel();
+        });
+      }
+    },
+    formatRemove() {
+      this.withTargetDOMRange(function () {
+        for (const attributeName in (_this$responder33 = this.responder) === null || _this$responder33 === void 0 ? void 0 : _this$responder33.getCurrentAttributes()) {
+          var _this$responder33, _this$responder34;
+          (_this$responder34 = this.responder) === null || _this$responder34 === void 0 || _this$responder34.removeCurrentAttribute(attributeName);
+        }
+      });
+    },
+    formatSetBlockTextDirection() {
+      return this.activateAttributeIfSupported("blockDir", this.event.data);
+    },
+    formatSetInlineTextDirection() {
+      return this.activateAttributeIfSupported("textDir", this.event.data);
+    },
+    formatStrikeThrough() {
+      return this.toggleAttributeIfSupported("strike");
+    },
+    formatSubscript() {
+      return this.toggleAttributeIfSupported("sub");
+    },
+    formatSuperscript() {
+      return this.toggleAttributeIfSupported("sup");
+    },
+    formatUnderline() {
+      return this.toggleAttributeIfSupported("underline");
+    },
+    historyRedo() {
+      var _this$delegate15;
+      return (_this$delegate15 = this.delegate) === null || _this$delegate15 === void 0 ? void 0 : _this$delegate15.inputControllerWillPerformRedo();
+    },
+    historyUndo() {
+      var _this$delegate16;
+      return (_this$delegate16 = this.delegate) === null || _this$delegate16 === void 0 ? void 0 : _this$delegate16.inputControllerWillPerformUndo();
+    },
+    insertCompositionText() {
+      this.composing = true;
+      return this.insertString(this.event.data);
+    },
+    insertFromComposition() {
+      this.composing = false;
+      return this.insertString(this.event.data);
+    },
+    insertFromDrop() {
+      const range = this.deleteByDragRange;
+      if (range) {
+        var _this$delegate17;
+        this.deleteByDragRange = null;
+        (_this$delegate17 = this.delegate) === null || _this$delegate17 === void 0 || _this$delegate17.inputControllerWillMoveText();
+        return this.withTargetDOMRange(function () {
+          var _this$responder35;
+          return (_this$responder35 = this.responder) === null || _this$responder35 === void 0 ? void 0 : _this$responder35.moveTextFromRange(range);
+        });
+      }
+    },
+    insertFromPaste() {
+      const {
+        dataTransfer
+      } = this.event;
+      const paste = {
+        dataTransfer
+      };
+      const href = dataTransfer.getData("URL");
+      const html = dataTransfer.getData("text/html");
+      if (href) {
+        var _this$delegate18;
+        let string;
+        this.event.preventDefault();
+        paste.type = "text/html";
+        const name = dataTransfer.getData("public.url-name");
+        if (name) {
+          string = squishBreakableWhitespace(name).trim();
+        } else {
+          string = href;
+        }
+        paste.html = this.createLinkHTML(href, string);
+        (_this$delegate18 = this.delegate) === null || _this$delegate18 === void 0 || _this$delegate18.inputControllerWillPaste(paste);
+        this.withTargetDOMRange(function () {
+          var _this$responder36;
+          return (_this$responder36 = this.responder) === null || _this$responder36 === void 0 ? void 0 : _this$responder36.insertHTML(paste.html);
+        });
+        this.afterRender = () => {
+          var _this$delegate19;
+          return (_this$delegate19 = this.delegate) === null || _this$delegate19 === void 0 ? void 0 : _this$delegate19.inputControllerDidPaste(paste);
+        };
+      } else if (dataTransferIsPlainText(dataTransfer)) {
+        var _this$delegate20;
+        paste.type = "text/plain";
+        paste.string = dataTransfer.getData("text/plain");
+        (_this$delegate20 = this.delegate) === null || _this$delegate20 === void 0 || _this$delegate20.inputControllerWillPaste(paste);
+        this.withTargetDOMRange(function () {
+          var _this$responder37;
+          return (_this$responder37 = this.responder) === null || _this$responder37 === void 0 ? void 0 : _this$responder37.insertString(paste.string);
+        });
+        this.afterRender = () => {
+          var _this$delegate21;
+          return (_this$delegate21 = this.delegate) === null || _this$delegate21 === void 0 ? void 0 : _this$delegate21.inputControllerDidPaste(paste);
+        };
+      } else if (processableFilePaste(this.event)) {
+        var _this$delegate22;
+        paste.type = "File";
+        paste.file = dataTransfer.files[0];
+        (_this$delegate22 = this.delegate) === null || _this$delegate22 === void 0 || _this$delegate22.inputControllerWillPaste(paste);
+        this.withTargetDOMRange(function () {
+          var _this$responder38;
+          return (_this$responder38 = this.responder) === null || _this$responder38 === void 0 ? void 0 : _this$responder38.insertFile(paste.file);
+        });
+        this.afterRender = () => {
+          var _this$delegate23;
+          return (_this$delegate23 = this.delegate) === null || _this$delegate23 === void 0 ? void 0 : _this$delegate23.inputControllerDidPaste(paste);
+        };
+      } else if (html) {
+        var _this$delegate24;
+        this.event.preventDefault();
+        paste.type = "text/html";
+        paste.html = html;
+        (_this$delegate24 = this.delegate) === null || _this$delegate24 === void 0 || _this$delegate24.inputControllerWillPaste(paste);
+        this.withTargetDOMRange(function () {
+          var _this$responder39;
+          return (_this$responder39 = this.responder) === null || _this$responder39 === void 0 ? void 0 : _this$responder39.insertHTML(paste.html);
+        });
+        this.afterRender = () => {
+          var _this$delegate25;
+          return (_this$delegate25 = this.delegate) === null || _this$delegate25 === void 0 ? void 0 : _this$delegate25.inputControllerDidPaste(paste);
+        };
+      }
+    },
+    insertFromYank() {
+      return this.insertString(this.event.data);
+    },
+    insertLineBreak() {
+      return this.insertString("\n");
+    },
+    insertLink() {
+      return this.activateAttributeIfSupported("href", this.event.data);
+    },
+    insertOrderedList() {
+      return this.toggleAttributeIfSupported("number");
+    },
+    insertParagraph() {
+      var _this$delegate26;
+      (_this$delegate26 = this.delegate) === null || _this$delegate26 === void 0 || _this$delegate26.inputControllerWillPerformTyping();
+      return this.withTargetDOMRange(function () {
+        var _this$responder40;
+        return (_this$responder40 = this.responder) === null || _this$responder40 === void 0 ? void 0 : _this$responder40.insertLineBreak();
+      });
+    },
+    insertReplacementText() {
+      var _this$event$getTarget2;
+      const replacement = this.event.dataTransfer.getData("text/plain");
+      const domRange = (_this$event$getTarget2 = this.event.getTargetRanges()) === null || _this$event$getTarget2 === void 0 ? void 0 : _this$event$getTarget2[0];
+      if (!domRange) return;
+      const {
+        isAtCursor,
+        cursorPosition,
+        targetStart,
+        targetEnd
+      } = this.isReplacementAtCursor(domRange);
+      this.withTargetDOMRange(domRange, () => {
+        this.insertString(replacement, {
+          updatePosition: false
+        });
+      });
+
+      // Safari has a bug where it positions the cursor incorrectly after Smart Quotes and similar
+      // text replacement operations. We need to manually calculate and set the correct cursor position,
+      // then prevent Safari from overwriting it.
+      if (isAtCursor) {
+        var _this$responder41;
+        const oldLength = targetEnd - targetStart;
+        const newLength = replacement.length;
+        // +1 accounts for the triggering character (e.g., space that triggered Smart Quotes)
+        const newCursor = cursorPosition + (newLength - oldLength) + 1;
+        (_this$responder41 = this.responder) === null || _this$responder41 === void 0 || _this$responder41.setSelectedRange([newCursor, newCursor]);
+
+        // Prevent selection syncing until Safari has finished its buggy cursor positioning
+        const state = editorStates.get(this.element);
+        state.preventSelectionSync = true;
+        state.pendingInputEventsToIgnore = INPUT_EVENTS_TO_IGNORE_COUNT;
+
+        // Use requestAnimationFrame to restore cursor after Safari's events complete
+        requestAnimationFrame(() => {
+          var _this$responder42;
+          (_this$responder42 = this.responder) === null || _this$responder42 === void 0 || _this$responder42.setSelectedRange([newCursor, newCursor]);
+          state.preventSelectionSync = false;
+        });
+      }
+    },
+    insertText() {
+      var _this$event$dataTrans;
+      return this.insertString(this.event.data || ((_this$event$dataTrans = this.event.dataTransfer) === null || _this$event$dataTrans === void 0 ? void 0 : _this$event$dataTrans.getData("text/plain")));
+    },
+    insertTranspose() {
+      return this.insertString(this.event.data);
+    },
+    insertUnorderedList() {
+      return this.toggleAttributeIfSupported("bullet");
+    }
+  });
+  const staticRangeToRange = function (staticRange) {
+    const range = document.createRange();
+    range.setStart(staticRange.startContainer, staticRange.startOffset);
+    range.setEnd(staticRange.endContainer, staticRange.endOffset);
+    return range;
+  };
+
+  // Event helpers
+
+  const dragEventHasFiles = event => {
+    var _event$dataTransfer;
+    return Array.from(((_event$dataTransfer = event.dataTransfer) === null || _event$dataTransfer === void 0 ? void 0 : _event$dataTransfer.types) || []).includes("Files");
+  };
+  const processableFilePaste = event => {
+    var _event$dataTransfer$f;
+    // Paste events that only have files are handled by the paste event handler,
+    // to work around Safari not supporting beforeinput.insertFromPaste for files.
+
+    // MS Office text pastes include a file with a screenshot of the text, but we should
+    // handle them as text pastes.
+    return ((_event$dataTransfer$f = event.dataTransfer.files) === null || _event$dataTransfer$f === void 0 ? void 0 : _event$dataTransfer$f[0]) && !pasteEventHasFilesOnly(event) && !dataTransferIsMsOfficePaste(event);
+  };
+  const pasteEventHasFilesOnly = function (event) {
+    const clipboard = event.clipboardData;
+    if (clipboard) {
+      const fileTypes = Array.from(clipboard.types).filter(type => type.match(/file/i)); // "Files", "application/x-moz-file"
+      return fileTypes.length === clipboard.types.length && clipboard.files.length >= 1;
+    }
+  };
+  const pasteEventHasPlainTextOnly = function (event) {
+    const clipboard = event.clipboardData;
+    if (clipboard) {
+      return clipboard.types.includes("text/plain") && clipboard.types.length === 1;
+    }
+  };
+  const keyboardCommandFromKeyEvent = function (event) {
+    const command = [];
+    if (event.altKey) {
+      command.push("alt");
+    }
+    if (event.shiftKey) {
+      command.push("shift");
+    }
+    command.push(event.key);
+    return command;
+  };
+  const pointFromEvent = event => ({
+    x: event.clientX,
+    y: event.clientY
+  });
+
   /* eslint-disable
   */
   class SelectionManager extends BasicObject {
@@ -10366,6 +11402,8 @@ $\
       }));
     }
     selectionDidChange() {
+      // Skip selection sync if we're working around Safari Smart Quotes bug
+      if (shouldPreventSelectionSync !== null && shouldPreventSelectionSync !== void 0 && shouldPreventSelectionSync(this.element)) return;
       if (!this.paused && !innerElementIsActive(this.element)) {
         return this.updateCurrentLocationRange();
       }
@@ -10865,328 +11903,6 @@ $\
   }
 
   class Controller extends BasicObject {}
-
-  const mutableAttributeName = "data-trix-mutable";
-  const mutableSelector = "[".concat(mutableAttributeName, "]");
-  const options = {
-    attributes: true,
-    childList: true,
-    characterData: true,
-    characterDataOldValue: true,
-    subtree: true
-  };
-  class MutationObserver extends BasicObject {
-    constructor(element) {
-      super(element);
-      this.didMutate = this.didMutate.bind(this);
-      this.element = element;
-      this.observer = new window.MutationObserver(this.didMutate);
-      this.start();
-    }
-    start() {
-      this.reset();
-      return this.observer.observe(this.element, options);
-    }
-    stop() {
-      return this.observer.disconnect();
-    }
-    didMutate(mutations) {
-      this.mutations.push(...Array.from(this.findSignificantMutations(mutations) || []));
-      if (this.mutations.length) {
-        var _this$delegate, _this$delegate$elemen;
-        (_this$delegate = this.delegate) === null || _this$delegate === void 0 || (_this$delegate$elemen = _this$delegate.elementDidMutate) === null || _this$delegate$elemen === void 0 || _this$delegate$elemen.call(_this$delegate, this.getMutationSummary());
-        return this.reset();
-      }
-    }
-
-    // Private
-
-    reset() {
-      this.mutations = [];
-    }
-    findSignificantMutations(mutations) {
-      return mutations.filter(mutation => {
-        return this.mutationIsSignificant(mutation);
-      });
-    }
-    mutationIsSignificant(mutation) {
-      if (this.nodeIsMutable(mutation.target)) {
-        return false;
-      }
-      for (const node of Array.from(this.nodesModifiedByMutation(mutation))) {
-        if (this.nodeIsSignificant(node)) return true;
-      }
-      return false;
-    }
-    nodeIsSignificant(node) {
-      return node !== this.element && !this.nodeIsMutable(node) && !nodeIsEmptyTextNode(node);
-    }
-    nodeIsMutable(node) {
-      return findClosestElementFromNode(node, {
-        matchingSelector: mutableSelector
-      });
-    }
-    nodesModifiedByMutation(mutation) {
-      const nodes = [];
-      switch (mutation.type) {
-        case "attributes":
-          if (mutation.attributeName !== mutableAttributeName) {
-            nodes.push(mutation.target);
-          }
-          break;
-        case "characterData":
-          // Changes to text nodes should consider the parent element
-          nodes.push(mutation.target.parentNode);
-          nodes.push(mutation.target);
-          break;
-        case "childList":
-          // Consider each added or removed node
-          nodes.push(...Array.from(mutation.addedNodes || []));
-          nodes.push(...Array.from(mutation.removedNodes || []));
-          break;
-      }
-      return nodes;
-    }
-    getMutationSummary() {
-      return this.getTextMutationSummary();
-    }
-    getTextMutationSummary() {
-      const {
-        additions,
-        deletions
-      } = this.getTextChangesFromCharacterData();
-      const textChanges = this.getTextChangesFromChildList();
-      Array.from(textChanges.additions).forEach(addition => {
-        if (!Array.from(additions).includes(addition)) {
-          additions.push(addition);
-        }
-      });
-      deletions.push(...Array.from(textChanges.deletions || []));
-      const summary = {};
-      const added = additions.join("");
-      if (added) {
-        summary.textAdded = added;
-      }
-      const deleted = deletions.join("");
-      if (deleted) {
-        summary.textDeleted = deleted;
-      }
-      return summary;
-    }
-    getMutationsByType(type) {
-      return Array.from(this.mutations).filter(mutation => mutation.type === type);
-    }
-    getTextChangesFromChildList() {
-      let textAdded, textRemoved;
-      const addedNodes = [];
-      const removedNodes = [];
-      Array.from(this.getMutationsByType("childList")).forEach(mutation => {
-        addedNodes.push(...Array.from(mutation.addedNodes || []));
-        removedNodes.push(...Array.from(mutation.removedNodes || []));
-      });
-      const singleBlockCommentRemoved = addedNodes.length === 0 && removedNodes.length === 1 && nodeIsBlockStartComment(removedNodes[0]);
-      if (singleBlockCommentRemoved) {
-        textAdded = [];
-        textRemoved = ["\n"];
-      } else {
-        textAdded = getTextForNodes(addedNodes);
-        textRemoved = getTextForNodes(removedNodes);
-      }
-      const additions = textAdded.filter((text, index) => text !== textRemoved[index]).map(normalizeSpaces);
-      const deletions = textRemoved.filter((text, index) => text !== textAdded[index]).map(normalizeSpaces);
-      return {
-        additions,
-        deletions
-      };
-    }
-    getTextChangesFromCharacterData() {
-      let added, removed;
-      const characterMutations = this.getMutationsByType("characterData");
-      if (characterMutations.length) {
-        const startMutation = characterMutations[0],
-          endMutation = characterMutations[characterMutations.length - 1];
-        const oldString = normalizeSpaces(startMutation.oldValue);
-        const newString = normalizeSpaces(endMutation.target.data);
-        const summarized = summarizeStringChange(oldString, newString);
-        added = summarized.added;
-        removed = summarized.removed;
-      }
-      return {
-        additions: added ? [added] : [],
-        deletions: removed ? [removed] : []
-      };
-    }
-  }
-  const getTextForNodes = function () {
-    let nodes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-    const text = [];
-    for (const node of Array.from(nodes)) {
-      switch (node.nodeType) {
-        case Node.TEXT_NODE:
-          text.push(node.data);
-          break;
-        case Node.ELEMENT_NODE:
-          if (tagName(node) === "br") {
-            text.push("\n");
-          } else {
-            text.push(...Array.from(getTextForNodes(node.childNodes) || []));
-          }
-          break;
-      }
-    }
-    return text;
-  };
-
-  /* eslint-disable
-      no-empty,
-  */
-  class FileVerificationOperation extends Operation {
-    constructor(file) {
-      super(...arguments);
-      this.file = file;
-    }
-    perform(callback) {
-      const reader = new FileReader();
-      reader.onerror = () => callback(false);
-      reader.onload = () => {
-        reader.onerror = null;
-        try {
-          reader.abort();
-        } catch (error) {}
-        return callback(true, this.file);
-      };
-      return reader.readAsArrayBuffer(this.file);
-    }
-  }
-
-  // Each software keyboard on Android emits its own set of events and some of them can be buggy.
-  // This class detects when some buggy events are being emitted and lets know the input controller
-  // that they should be ignored.
-  class FlakyAndroidKeyboardDetector {
-    constructor(element) {
-      this.element = element;
-    }
-    shouldIgnore(event) {
-      if (!browser$1.samsungAndroid) return false;
-      this.previousEvent = this.event;
-      this.event = event;
-      this.checkSamsungKeyboardBuggyModeStart();
-      this.checkSamsungKeyboardBuggyModeEnd();
-      return this.buggyMode;
-    }
-
-    // private
-
-    // The Samsung keyboard on Android can enter a buggy state in which it emits a flurry of confused events that,
-    // if processed, corrupts the editor. The buggy mode always starts with an insertText event, right after a
-    // keydown event with for an "Unidentified" key, with the same text as the editor element, except for a few
-    // extra whitespace, or exotic utf8, characters.
-    checkSamsungKeyboardBuggyModeStart() {
-      if (this.insertingLongTextAfterUnidentifiedChar() && differsInWhitespace(this.element.innerText, this.event.data)) {
-        this.buggyMode = true;
-        this.event.preventDefault();
-      }
-    }
-
-    // The flurry of buggy events are always insertText. If we see any other type, it means it's over.
-    checkSamsungKeyboardBuggyModeEnd() {
-      if (this.buggyMode && this.event.inputType !== "insertText") {
-        this.buggyMode = false;
-      }
-    }
-    insertingLongTextAfterUnidentifiedChar() {
-      var _this$event$data;
-      return this.isBeforeInputInsertText() && this.previousEventWasUnidentifiedKeydown() && ((_this$event$data = this.event.data) === null || _this$event$data === void 0 ? void 0 : _this$event$data.length) > 50;
-    }
-    isBeforeInputInsertText() {
-      return this.event.type === "beforeinput" && this.event.inputType === "insertText";
-    }
-    previousEventWasUnidentifiedKeydown() {
-      var _this$previousEvent, _this$previousEvent2;
-      return ((_this$previousEvent = this.previousEvent) === null || _this$previousEvent === void 0 ? void 0 : _this$previousEvent.type) === "keydown" && ((_this$previousEvent2 = this.previousEvent) === null || _this$previousEvent2 === void 0 ? void 0 : _this$previousEvent2.key) === "Unidentified";
-    }
-  }
-  const differsInWhitespace = (text1, text2) => {
-    return normalize(text1) === normalize(text2);
-  };
-  const whiteSpaceNormalizerRegexp = new RegExp("(".concat(OBJECT_REPLACEMENT_CHARACTER, "|").concat(ZERO_WIDTH_SPACE, "|").concat(NON_BREAKING_SPACE, "|\\s)+"), "g");
-  const normalize = text => text.replace(whiteSpaceNormalizerRegexp, " ").trim();
-
-  class InputController extends BasicObject {
-    constructor(element) {
-      super(...arguments);
-      this.element = element;
-      this.mutationObserver = new MutationObserver(this.element);
-      this.mutationObserver.delegate = this;
-      this.flakyKeyboardDetector = new FlakyAndroidKeyboardDetector(this.element);
-      for (const eventName in this.constructor.events) {
-        handleEvent(eventName, {
-          onElement: this.element,
-          withCallback: this.handlerFor(eventName)
-        });
-      }
-    }
-    elementDidMutate(mutationSummary) {}
-    editorWillSyncDocumentView() {
-      return this.mutationObserver.stop();
-    }
-    editorDidSyncDocumentView() {
-      return this.mutationObserver.start();
-    }
-    requestRender() {
-      var _this$delegate, _this$delegate$inputC;
-      return (_this$delegate = this.delegate) === null || _this$delegate === void 0 || (_this$delegate$inputC = _this$delegate.inputControllerDidRequestRender) === null || _this$delegate$inputC === void 0 ? void 0 : _this$delegate$inputC.call(_this$delegate);
-    }
-    requestReparse() {
-      var _this$delegate2, _this$delegate2$input;
-      (_this$delegate2 = this.delegate) === null || _this$delegate2 === void 0 || (_this$delegate2$input = _this$delegate2.inputControllerDidRequestReparse) === null || _this$delegate2$input === void 0 || _this$delegate2$input.call(_this$delegate2);
-      return this.requestRender();
-    }
-    attachFiles(files) {
-      const operations = Array.from(files).map(file => new FileVerificationOperation(file));
-      return Promise.all(operations).then(files => {
-        this.handleInput(function () {
-          var _this$delegate3, _this$responder;
-          (_this$delegate3 = this.delegate) === null || _this$delegate3 === void 0 || _this$delegate3.inputControllerWillAttachFiles();
-          (_this$responder = this.responder) === null || _this$responder === void 0 || _this$responder.insertFiles(files);
-          return this.requestRender();
-        });
-      });
-    }
-
-    // Private
-
-    handlerFor(eventName) {
-      return event => {
-        if (!event.defaultPrevented) {
-          this.handleInput(() => {
-            if (!innerElementIsActive(this.element)) {
-              if (this.flakyKeyboardDetector.shouldIgnore(event)) return;
-              this.eventName = eventName;
-              this.constructor.events[eventName].call(this, event);
-            }
-          });
-        }
-      };
-    }
-    handleInput(callback) {
-      try {
-        var _this$delegate4;
-        (_this$delegate4 = this.delegate) === null || _this$delegate4 === void 0 || _this$delegate4.inputControllerWillHandleInput();
-        callback.call(this);
-      } finally {
-        var _this$delegate5;
-        (_this$delegate5 = this.delegate) === null || _this$delegate5 === void 0 || _this$delegate5.inputControllerDidHandleInput();
-      }
-    }
-    createLinkHTML(href, text) {
-      const link = document.createElement("a");
-      link.href = href;
-      link.textContent = text ? text : href;
-      return link.outerHTML;
-    }
-  }
-  _defineProperty(InputController, "events", {});
 
   var _$codePointAt, _;
   const {
@@ -11823,633 +12539,6 @@ $\
   CompositionInput.proxyMethod("responder?.insertPlaceholder");
   CompositionInput.proxyMethod("responder?.selectPlaceholder");
   CompositionInput.proxyMethod("responder?.forgetPlaceholder");
-
-  class Level2InputController extends InputController {
-    constructor() {
-      super(...arguments);
-      this.render = this.render.bind(this);
-    }
-    elementDidMutate() {
-      if (this.scheduledRender) {
-        if (this.composing) {
-          var _this$delegate, _this$delegate$inputC;
-          return (_this$delegate = this.delegate) === null || _this$delegate === void 0 || (_this$delegate$inputC = _this$delegate.inputControllerDidAllowUnhandledInput) === null || _this$delegate$inputC === void 0 ? void 0 : _this$delegate$inputC.call(_this$delegate);
-        }
-      } else {
-        return this.reparse();
-      }
-    }
-    scheduleRender() {
-      return this.scheduledRender ? this.scheduledRender : this.scheduledRender = requestAnimationFrame(this.render);
-    }
-    render() {
-      var _this$afterRender;
-      cancelAnimationFrame(this.scheduledRender);
-      this.scheduledRender = null;
-      if (!this.composing) {
-        var _this$delegate2;
-        (_this$delegate2 = this.delegate) === null || _this$delegate2 === void 0 || _this$delegate2.render();
-      }
-      (_this$afterRender = this.afterRender) === null || _this$afterRender === void 0 || _this$afterRender.call(this);
-      this.afterRender = null;
-    }
-    reparse() {
-      var _this$delegate3;
-      return (_this$delegate3 = this.delegate) === null || _this$delegate3 === void 0 ? void 0 : _this$delegate3.reparse();
-    }
-
-    // Responder helpers
-
-    insertString() {
-      var _this$delegate4;
-      let string = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
-      let options = arguments.length > 1 ? arguments[1] : undefined;
-      (_this$delegate4 = this.delegate) === null || _this$delegate4 === void 0 || _this$delegate4.inputControllerWillPerformTyping();
-      return this.withTargetDOMRange(function () {
-        var _this$responder;
-        return (_this$responder = this.responder) === null || _this$responder === void 0 ? void 0 : _this$responder.insertString(string, options);
-      });
-    }
-    toggleAttributeIfSupported(attributeName) {
-      if (getAllAttributeNames().includes(attributeName)) {
-        var _this$delegate5;
-        (_this$delegate5 = this.delegate) === null || _this$delegate5 === void 0 || _this$delegate5.inputControllerWillPerformFormatting(attributeName);
-        return this.withTargetDOMRange(function () {
-          var _this$responder2;
-          return (_this$responder2 = this.responder) === null || _this$responder2 === void 0 ? void 0 : _this$responder2.toggleCurrentAttribute(attributeName);
-        });
-      }
-    }
-    activateAttributeIfSupported(attributeName, value) {
-      if (getAllAttributeNames().includes(attributeName)) {
-        var _this$delegate6;
-        (_this$delegate6 = this.delegate) === null || _this$delegate6 === void 0 || _this$delegate6.inputControllerWillPerformFormatting(attributeName);
-        return this.withTargetDOMRange(function () {
-          var _this$responder3;
-          return (_this$responder3 = this.responder) === null || _this$responder3 === void 0 ? void 0 : _this$responder3.setCurrentAttribute(attributeName, value);
-        });
-      }
-    }
-    deleteInDirection(direction) {
-      let {
-        recordUndoEntry
-      } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
-        recordUndoEntry: true
-      };
-      if (recordUndoEntry) {
-        var _this$delegate7;
-        (_this$delegate7 = this.delegate) === null || _this$delegate7 === void 0 || _this$delegate7.inputControllerWillPerformTyping();
-      }
-      const perform = () => {
-        var _this$responder4;
-        return (_this$responder4 = this.responder) === null || _this$responder4 === void 0 ? void 0 : _this$responder4.deleteInDirection(direction);
-      };
-      const domRange = this.getTargetDOMRange({
-        minLength: this.composing ? 1 : 2
-      });
-      if (domRange) {
-        return this.withTargetDOMRange(domRange, perform);
-      } else {
-        return perform();
-      }
-    }
-
-    // Selection helpers
-
-    withTargetDOMRange(domRange, fn) {
-      if (typeof domRange === "function") {
-        fn = domRange;
-        domRange = this.getTargetDOMRange();
-      }
-      if (domRange) {
-        var _this$responder5;
-        return (_this$responder5 = this.responder) === null || _this$responder5 === void 0 ? void 0 : _this$responder5.withTargetDOMRange(domRange, fn.bind(this));
-      } else {
-        selectionChangeObserver.reset();
-        return fn.call(this);
-      }
-    }
-    getTargetDOMRange() {
-      var _this$event$getTarget, _this$event;
-      let {
-        minLength
-      } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-        minLength: 0
-      };
-      const targetRanges = (_this$event$getTarget = (_this$event = this.event).getTargetRanges) === null || _this$event$getTarget === void 0 ? void 0 : _this$event$getTarget.call(_this$event);
-      if (targetRanges) {
-        if (targetRanges.length) {
-          const domRange = staticRangeToRange(targetRanges[0]);
-          if (minLength === 0 || domRange.toString().length >= minLength) {
-            return domRange;
-          }
-        }
-      }
-    }
-    withEvent(event, fn) {
-      let result;
-      this.event = event;
-      try {
-        result = fn.call(this);
-      } finally {
-        this.event = null;
-      }
-      return result;
-    }
-  }
-  _defineProperty(Level2InputController, "events", {
-    keydown(event) {
-      if (keyEventIsKeyboardCommand(event)) {
-        var _this$delegate8;
-        const command = keyboardCommandFromKeyEvent(event);
-        if ((_this$delegate8 = this.delegate) !== null && _this$delegate8 !== void 0 && _this$delegate8.inputControllerDidReceiveKeyboardCommand(command)) {
-          event.preventDefault();
-        }
-      } else {
-        let name = event.key;
-        if (event.altKey) {
-          name += "+Alt";
-        }
-        if (event.shiftKey) {
-          name += "+Shift";
-        }
-        const handler = this.constructor.keys[name];
-        if (handler) {
-          return this.withEvent(event, handler);
-        }
-      }
-    },
-    // Handle paste event to work around beforeinput.insertFromPaste browser bugs.
-    // Safe to remove each condition once fixed upstream.
-    paste(event) {
-      var _event$clipboardData;
-      // https://bugs.webkit.org/show_bug.cgi?id=194921
-      let paste;
-      const href = (_event$clipboardData = event.clipboardData) === null || _event$clipboardData === void 0 ? void 0 : _event$clipboardData.getData("URL");
-      if (pasteEventHasFilesOnly(event)) {
-        event.preventDefault();
-        return this.attachFiles(event.clipboardData.files);
-
-        // https://bugs.chromium.org/p/chromium/issues/detail?id=934448
-      } else if (pasteEventHasPlainTextOnly(event)) {
-        var _this$delegate9, _this$responder6, _this$delegate10;
-        event.preventDefault();
-        paste = {
-          type: "text/plain",
-          string: event.clipboardData.getData("text/plain")
-        };
-        (_this$delegate9 = this.delegate) === null || _this$delegate9 === void 0 || _this$delegate9.inputControllerWillPaste(paste);
-        (_this$responder6 = this.responder) === null || _this$responder6 === void 0 || _this$responder6.insertString(paste.string);
-        this.render();
-        return (_this$delegate10 = this.delegate) === null || _this$delegate10 === void 0 ? void 0 : _this$delegate10.inputControllerDidPaste(paste);
-
-        // https://bugs.webkit.org/show_bug.cgi?id=196702
-      } else if (href) {
-        var _this$delegate11, _this$responder7, _this$delegate12;
-        event.preventDefault();
-        paste = {
-          type: "text/html",
-          html: this.createLinkHTML(href)
-        };
-        (_this$delegate11 = this.delegate) === null || _this$delegate11 === void 0 || _this$delegate11.inputControllerWillPaste(paste);
-        (_this$responder7 = this.responder) === null || _this$responder7 === void 0 || _this$responder7.insertHTML(paste.html);
-        this.render();
-        return (_this$delegate12 = this.delegate) === null || _this$delegate12 === void 0 ? void 0 : _this$delegate12.inputControllerDidPaste(paste);
-      }
-    },
-    beforeinput(event) {
-      const handler = this.constructor.inputTypes[event.inputType];
-      const immmediateRender = shouldRenderInmmediatelyToDealWithIOSDictation(event);
-      if (handler) {
-        this.withEvent(event, handler);
-        if (!immmediateRender) {
-          this.scheduleRender();
-        }
-      }
-      if (immmediateRender) {
-        this.render();
-      }
-    },
-    input(event) {
-      selectionChangeObserver.reset();
-    },
-    dragstart(event) {
-      var _this$responder8;
-      if ((_this$responder8 = this.responder) !== null && _this$responder8 !== void 0 && _this$responder8.selectionContainsAttachments()) {
-        var _this$responder9;
-        event.dataTransfer.setData("application/x-trix-dragging", true);
-        this.dragging = {
-          range: (_this$responder9 = this.responder) === null || _this$responder9 === void 0 ? void 0 : _this$responder9.getSelectedRange(),
-          point: pointFromEvent(event)
-        };
-      }
-    },
-    dragenter(event) {
-      if (dragEventHasFiles(event)) {
-        event.preventDefault();
-      }
-    },
-    dragover(event) {
-      if (this.dragging) {
-        event.preventDefault();
-        const point = pointFromEvent(event);
-        if (!objectsAreEqual(point, this.dragging.point)) {
-          var _this$responder10;
-          this.dragging.point = point;
-          return (_this$responder10 = this.responder) === null || _this$responder10 === void 0 ? void 0 : _this$responder10.setLocationRangeFromPointRange(point);
-        }
-      } else if (dragEventHasFiles(event)) {
-        event.preventDefault();
-      }
-    },
-    drop(event) {
-      if (this.dragging) {
-        var _this$delegate13, _this$responder11;
-        event.preventDefault();
-        (_this$delegate13 = this.delegate) === null || _this$delegate13 === void 0 || _this$delegate13.inputControllerWillMoveText();
-        (_this$responder11 = this.responder) === null || _this$responder11 === void 0 || _this$responder11.moveTextFromRange(this.dragging.range);
-        this.dragging = null;
-        return this.scheduleRender();
-      } else if (dragEventHasFiles(event)) {
-        var _this$responder12;
-        event.preventDefault();
-        const point = pointFromEvent(event);
-        (_this$responder12 = this.responder) === null || _this$responder12 === void 0 || _this$responder12.setLocationRangeFromPointRange(point);
-        return this.attachFiles(event.dataTransfer.files);
-      }
-    },
-    dragend() {
-      if (this.dragging) {
-        var _this$responder13;
-        (_this$responder13 = this.responder) === null || _this$responder13 === void 0 || _this$responder13.setSelectedRange(this.dragging.range);
-        this.dragging = null;
-      }
-    },
-    compositionend(event) {
-      if (this.composing) {
-        this.composing = false;
-        if (!browser$1.recentAndroid) this.scheduleRender();
-      }
-    }
-  });
-  _defineProperty(Level2InputController, "keys", {
-    ArrowLeft() {
-      var _this$responder14;
-      if ((_this$responder14 = this.responder) !== null && _this$responder14 !== void 0 && _this$responder14.shouldManageMovingCursorInDirection("backward")) {
-        var _this$responder15;
-        this.event.preventDefault();
-        return (_this$responder15 = this.responder) === null || _this$responder15 === void 0 ? void 0 : _this$responder15.moveCursorInDirection("backward");
-      }
-    },
-    ArrowRight() {
-      var _this$responder16;
-      if ((_this$responder16 = this.responder) !== null && _this$responder16 !== void 0 && _this$responder16.shouldManageMovingCursorInDirection("forward")) {
-        var _this$responder17;
-        this.event.preventDefault();
-        return (_this$responder17 = this.responder) === null || _this$responder17 === void 0 ? void 0 : _this$responder17.moveCursorInDirection("forward");
-      }
-    },
-    Backspace() {
-      var _this$responder18;
-      if ((_this$responder18 = this.responder) !== null && _this$responder18 !== void 0 && _this$responder18.shouldManageDeletingInDirection("backward")) {
-        var _this$delegate14, _this$responder19;
-        this.event.preventDefault();
-        (_this$delegate14 = this.delegate) === null || _this$delegate14 === void 0 || _this$delegate14.inputControllerWillPerformTyping();
-        (_this$responder19 = this.responder) === null || _this$responder19 === void 0 || _this$responder19.deleteInDirection("backward");
-        return this.render();
-      }
-    },
-    Tab() {
-      var _this$responder20;
-      if ((_this$responder20 = this.responder) !== null && _this$responder20 !== void 0 && _this$responder20.canIncreaseNestingLevel()) {
-        var _this$responder21;
-        this.event.preventDefault();
-        (_this$responder21 = this.responder) === null || _this$responder21 === void 0 || _this$responder21.increaseNestingLevel();
-        return this.render();
-      }
-    },
-    "Tab+Shift"() {
-      var _this$responder22;
-      if ((_this$responder22 = this.responder) !== null && _this$responder22 !== void 0 && _this$responder22.canDecreaseNestingLevel()) {
-        var _this$responder23;
-        this.event.preventDefault();
-        (_this$responder23 = this.responder) === null || _this$responder23 === void 0 || _this$responder23.decreaseNestingLevel();
-        return this.render();
-      }
-    }
-  });
-  _defineProperty(Level2InputController, "inputTypes", {
-    deleteByComposition() {
-      return this.deleteInDirection("backward", {
-        recordUndoEntry: false
-      });
-    },
-    deleteByCut() {
-      return this.deleteInDirection("backward");
-    },
-    deleteByDrag() {
-      this.event.preventDefault();
-      return this.withTargetDOMRange(function () {
-        var _this$responder24;
-        this.deleteByDragRange = (_this$responder24 = this.responder) === null || _this$responder24 === void 0 ? void 0 : _this$responder24.getSelectedRange();
-      });
-    },
-    deleteCompositionText() {
-      return this.deleteInDirection("backward", {
-        recordUndoEntry: false
-      });
-    },
-    deleteContent() {
-      return this.deleteInDirection("backward");
-    },
-    deleteContentBackward() {
-      return this.deleteInDirection("backward");
-    },
-    deleteContentForward() {
-      return this.deleteInDirection("forward");
-    },
-    deleteEntireSoftLine() {
-      return this.deleteInDirection("forward");
-    },
-    deleteHardLineBackward() {
-      return this.deleteInDirection("backward");
-    },
-    deleteHardLineForward() {
-      return this.deleteInDirection("forward");
-    },
-    deleteSoftLineBackward() {
-      return this.deleteInDirection("backward");
-    },
-    deleteSoftLineForward() {
-      return this.deleteInDirection("forward");
-    },
-    deleteWordBackward() {
-      return this.deleteInDirection("backward");
-    },
-    deleteWordForward() {
-      return this.deleteInDirection("forward");
-    },
-    formatBackColor() {
-      return this.activateAttributeIfSupported("backgroundColor", this.event.data);
-    },
-    formatBold() {
-      return this.toggleAttributeIfSupported("bold");
-    },
-    formatFontColor() {
-      return this.activateAttributeIfSupported("color", this.event.data);
-    },
-    formatFontName() {
-      return this.activateAttributeIfSupported("font", this.event.data);
-    },
-    formatIndent() {
-      var _this$responder25;
-      if ((_this$responder25 = this.responder) !== null && _this$responder25 !== void 0 && _this$responder25.canIncreaseNestingLevel()) {
-        return this.withTargetDOMRange(function () {
-          var _this$responder26;
-          return (_this$responder26 = this.responder) === null || _this$responder26 === void 0 ? void 0 : _this$responder26.increaseNestingLevel();
-        });
-      }
-    },
-    formatItalic() {
-      return this.toggleAttributeIfSupported("italic");
-    },
-    formatJustifyCenter() {
-      return this.toggleAttributeIfSupported("justifyCenter");
-    },
-    formatJustifyFull() {
-      return this.toggleAttributeIfSupported("justifyFull");
-    },
-    formatJustifyLeft() {
-      return this.toggleAttributeIfSupported("justifyLeft");
-    },
-    formatJustifyRight() {
-      return this.toggleAttributeIfSupported("justifyRight");
-    },
-    formatOutdent() {
-      var _this$responder27;
-      if ((_this$responder27 = this.responder) !== null && _this$responder27 !== void 0 && _this$responder27.canDecreaseNestingLevel()) {
-        return this.withTargetDOMRange(function () {
-          var _this$responder28;
-          return (_this$responder28 = this.responder) === null || _this$responder28 === void 0 ? void 0 : _this$responder28.decreaseNestingLevel();
-        });
-      }
-    },
-    formatRemove() {
-      this.withTargetDOMRange(function () {
-        for (const attributeName in (_this$responder29 = this.responder) === null || _this$responder29 === void 0 ? void 0 : _this$responder29.getCurrentAttributes()) {
-          var _this$responder29, _this$responder30;
-          (_this$responder30 = this.responder) === null || _this$responder30 === void 0 || _this$responder30.removeCurrentAttribute(attributeName);
-        }
-      });
-    },
-    formatSetBlockTextDirection() {
-      return this.activateAttributeIfSupported("blockDir", this.event.data);
-    },
-    formatSetInlineTextDirection() {
-      return this.activateAttributeIfSupported("textDir", this.event.data);
-    },
-    formatStrikeThrough() {
-      return this.toggleAttributeIfSupported("strike");
-    },
-    formatSubscript() {
-      return this.toggleAttributeIfSupported("sub");
-    },
-    formatSuperscript() {
-      return this.toggleAttributeIfSupported("sup");
-    },
-    formatUnderline() {
-      return this.toggleAttributeIfSupported("underline");
-    },
-    historyRedo() {
-      var _this$delegate15;
-      return (_this$delegate15 = this.delegate) === null || _this$delegate15 === void 0 ? void 0 : _this$delegate15.inputControllerWillPerformRedo();
-    },
-    historyUndo() {
-      var _this$delegate16;
-      return (_this$delegate16 = this.delegate) === null || _this$delegate16 === void 0 ? void 0 : _this$delegate16.inputControllerWillPerformUndo();
-    },
-    insertCompositionText() {
-      this.composing = true;
-      return this.insertString(this.event.data);
-    },
-    insertFromComposition() {
-      this.composing = false;
-      return this.insertString(this.event.data);
-    },
-    insertFromDrop() {
-      const range = this.deleteByDragRange;
-      if (range) {
-        var _this$delegate17;
-        this.deleteByDragRange = null;
-        (_this$delegate17 = this.delegate) === null || _this$delegate17 === void 0 || _this$delegate17.inputControllerWillMoveText();
-        return this.withTargetDOMRange(function () {
-          var _this$responder31;
-          return (_this$responder31 = this.responder) === null || _this$responder31 === void 0 ? void 0 : _this$responder31.moveTextFromRange(range);
-        });
-      }
-    },
-    insertFromPaste() {
-      const {
-        dataTransfer
-      } = this.event;
-      const paste = {
-        dataTransfer
-      };
-      const href = dataTransfer.getData("URL");
-      const html = dataTransfer.getData("text/html");
-      if (href) {
-        var _this$delegate18;
-        let string;
-        this.event.preventDefault();
-        paste.type = "text/html";
-        const name = dataTransfer.getData("public.url-name");
-        if (name) {
-          string = squishBreakableWhitespace(name).trim();
-        } else {
-          string = href;
-        }
-        paste.html = this.createLinkHTML(href, string);
-        (_this$delegate18 = this.delegate) === null || _this$delegate18 === void 0 || _this$delegate18.inputControllerWillPaste(paste);
-        this.withTargetDOMRange(function () {
-          var _this$responder32;
-          return (_this$responder32 = this.responder) === null || _this$responder32 === void 0 ? void 0 : _this$responder32.insertHTML(paste.html);
-        });
-        this.afterRender = () => {
-          var _this$delegate19;
-          return (_this$delegate19 = this.delegate) === null || _this$delegate19 === void 0 ? void 0 : _this$delegate19.inputControllerDidPaste(paste);
-        };
-      } else if (dataTransferIsPlainText(dataTransfer)) {
-        var _this$delegate20;
-        paste.type = "text/plain";
-        paste.string = dataTransfer.getData("text/plain");
-        (_this$delegate20 = this.delegate) === null || _this$delegate20 === void 0 || _this$delegate20.inputControllerWillPaste(paste);
-        this.withTargetDOMRange(function () {
-          var _this$responder33;
-          return (_this$responder33 = this.responder) === null || _this$responder33 === void 0 ? void 0 : _this$responder33.insertString(paste.string);
-        });
-        this.afterRender = () => {
-          var _this$delegate21;
-          return (_this$delegate21 = this.delegate) === null || _this$delegate21 === void 0 ? void 0 : _this$delegate21.inputControllerDidPaste(paste);
-        };
-      } else if (processableFilePaste(this.event)) {
-        var _this$delegate22;
-        paste.type = "File";
-        paste.file = dataTransfer.files[0];
-        (_this$delegate22 = this.delegate) === null || _this$delegate22 === void 0 || _this$delegate22.inputControllerWillPaste(paste);
-        this.withTargetDOMRange(function () {
-          var _this$responder34;
-          return (_this$responder34 = this.responder) === null || _this$responder34 === void 0 ? void 0 : _this$responder34.insertFile(paste.file);
-        });
-        this.afterRender = () => {
-          var _this$delegate23;
-          return (_this$delegate23 = this.delegate) === null || _this$delegate23 === void 0 ? void 0 : _this$delegate23.inputControllerDidPaste(paste);
-        };
-      } else if (html) {
-        var _this$delegate24;
-        this.event.preventDefault();
-        paste.type = "text/html";
-        paste.html = html;
-        (_this$delegate24 = this.delegate) === null || _this$delegate24 === void 0 || _this$delegate24.inputControllerWillPaste(paste);
-        this.withTargetDOMRange(function () {
-          var _this$responder35;
-          return (_this$responder35 = this.responder) === null || _this$responder35 === void 0 ? void 0 : _this$responder35.insertHTML(paste.html);
-        });
-        this.afterRender = () => {
-          var _this$delegate25;
-          return (_this$delegate25 = this.delegate) === null || _this$delegate25 === void 0 ? void 0 : _this$delegate25.inputControllerDidPaste(paste);
-        };
-      }
-    },
-    insertFromYank() {
-      return this.insertString(this.event.data);
-    },
-    insertLineBreak() {
-      return this.insertString("\n");
-    },
-    insertLink() {
-      return this.activateAttributeIfSupported("href", this.event.data);
-    },
-    insertOrderedList() {
-      return this.toggleAttributeIfSupported("number");
-    },
-    insertParagraph() {
-      var _this$delegate26;
-      (_this$delegate26 = this.delegate) === null || _this$delegate26 === void 0 || _this$delegate26.inputControllerWillPerformTyping();
-      return this.withTargetDOMRange(function () {
-        var _this$responder36;
-        return (_this$responder36 = this.responder) === null || _this$responder36 === void 0 ? void 0 : _this$responder36.insertLineBreak();
-      });
-    },
-    insertReplacementText() {
-      const replacement = this.event.dataTransfer.getData("text/plain");
-      const domRange = this.event.getTargetRanges()[0];
-      this.withTargetDOMRange(domRange, () => {
-        this.insertString(replacement, {
-          updatePosition: false
-        });
-      });
-    },
-    insertText() {
-      var _this$event$dataTrans;
-      return this.insertString(this.event.data || ((_this$event$dataTrans = this.event.dataTransfer) === null || _this$event$dataTrans === void 0 ? void 0 : _this$event$dataTrans.getData("text/plain")));
-    },
-    insertTranspose() {
-      return this.insertString(this.event.data);
-    },
-    insertUnorderedList() {
-      return this.toggleAttributeIfSupported("bullet");
-    }
-  });
-  const staticRangeToRange = function (staticRange) {
-    const range = document.createRange();
-    range.setStart(staticRange.startContainer, staticRange.startOffset);
-    range.setEnd(staticRange.endContainer, staticRange.endOffset);
-    return range;
-  };
-
-  // Event helpers
-
-  const dragEventHasFiles = event => {
-    var _event$dataTransfer;
-    return Array.from(((_event$dataTransfer = event.dataTransfer) === null || _event$dataTransfer === void 0 ? void 0 : _event$dataTransfer.types) || []).includes("Files");
-  };
-  const processableFilePaste = event => {
-    var _event$dataTransfer$f;
-    // Paste events that only have files are handled by the paste event handler,
-    // to work around Safari not supporting beforeinput.insertFromPaste for files.
-
-    // MS Office text pastes include a file with a screenshot of the text, but we should
-    // handle them as text pastes.
-    return ((_event$dataTransfer$f = event.dataTransfer.files) === null || _event$dataTransfer$f === void 0 ? void 0 : _event$dataTransfer$f[0]) && !pasteEventHasFilesOnly(event) && !dataTransferIsMsOfficePaste(event);
-  };
-  const pasteEventHasFilesOnly = function (event) {
-    const clipboard = event.clipboardData;
-    if (clipboard) {
-      const fileTypes = Array.from(clipboard.types).filter(type => type.match(/file/i)); // "Files", "application/x-moz-file"
-      return fileTypes.length === clipboard.types.length && clipboard.files.length >= 1;
-    }
-  };
-  const pasteEventHasPlainTextOnly = function (event) {
-    const clipboard = event.clipboardData;
-    if (clipboard) {
-      return clipboard.types.includes("text/plain") && clipboard.types.length === 1;
-    }
-  };
-  const keyboardCommandFromKeyEvent = function (event) {
-    const command = [];
-    if (event.altKey) {
-      command.push("alt");
-    }
-    if (event.shiftKey) {
-      command.push("shift");
-    }
-    command.push(event.key);
-    return command;
-  };
-  const pointFromEvent = event => ({
-    x: event.clientX,
-    y: event.clientY
-  });
 
   const attributeButtonSelector = "[data-trix-attribute]";
   const actionButtonSelector = "[data-trix-action]";
