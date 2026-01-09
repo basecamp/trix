@@ -1,6 +1,38 @@
 import { playwrightLauncher } from '@web/test-runner-playwright';
 import path from 'path';
 import fs from 'fs';
+import { SourceMapConsumer } from 'source-map';
+
+// Load source map for translating stack traces (local dev only)
+let sourceMapConsumer = null;
+const sourceMapPath = path.join(process.cwd(), 'dist/test.js.map');
+if (fs.existsSync(sourceMapPath)) {
+  const sourceMapData = JSON.parse(fs.readFileSync(sourceMapPath, 'utf8'));
+  sourceMapConsumer = await new SourceMapConsumer(sourceMapData);
+}
+
+// Translate a stack trace using source maps
+function translateStack(stack) {
+  if (!sourceMapConsumer || !stack) return stack;
+
+  return stack.split('\n').map(line => {
+    // Match stack frame pattern: "at ... (url:line:col)" or "at url:line:col"
+    const match = line.match(/^(\s*at\s+.*?)(?:\()?(?:https?:\/\/[^/]+)?\/dist\/test\.js[^:]*:(\d+):(\d+)\)?$/);
+    if (!match) return line;
+
+    const [, prefix, lineNum, colNum] = match;
+    const pos = sourceMapConsumer.originalPositionFor({
+      line: parseInt(lineNum, 10),
+      column: parseInt(colNum, 10)
+    });
+
+    if (pos.source) {
+      const source = pos.source.replace(/^\.\.\//, '');
+      return `${prefix}(${source}:${pos.line}:${pos.column})`;
+    }
+    return line;
+  }).join('\n');
+}
 
 // Map SAUCE_REGION env var to hostname
 const sauceRegionHostnames = {
@@ -170,7 +202,8 @@ export default {
               process.stdout.write(`  Actual: ${error.actual}\n`);
             }
             if (error.stack) {
-              process.stdout.write(`  Stack:\n    ${error.stack.split('\n').join('\n    ')}\n`);
+              const translatedStack = translateStack(error.stack);
+              process.stdout.write(`  Stack:\n    ${translatedStack.split('\n').join('\n    ')}\n`);
             }
           }
           process.stdout.write('\n');
