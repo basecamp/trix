@@ -58,6 +58,7 @@ Copyright © 2026 37signals, LLC
   	"rollup-plugin-includepaths": "^0.2.4",
   	"rollup-plugin-terser": "^7.0.2",
   	sass: "^1.83.0",
+  	"source-map": "^0.7.6",
   	svgo: "^2.8.0",
   	webdriverio: "^7.19.5"
   };

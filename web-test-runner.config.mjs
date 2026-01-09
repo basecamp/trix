@@ -1,6 +1,38 @@
 import { playwrightLauncher } from '@web/test-runner-playwright';
 import path from 'path';
 import fs from 'fs';
+import { SourceMapConsumer } from 'source-map';
+
+// Load source map for translating stack traces (local dev only)
+let sourceMapConsumer = null;
+const sourceMapPath = path.join(process.cwd(), 'dist/test.js.map');
+if (fs.existsSync(sourceMapPath)) {
+  const sourceMapData = JSON.parse(fs.readFileSync(sourceMapPath, 'utf8'));
+  sourceMapConsumer = await new SourceMapConsumer(sourceMapData);
+}
+
+// Translate a stack trace using source maps
+function translateStack(stack) {
+  if (!sourceMapConsumer || !stack) return stack;
+
+  return stack.split('\n').map(line => {
+    // Match stack frame pattern: "at ... (url:line:col)" or "at url:line:col"
+    const match = line.match(/^(\s*at\s+.*?)(?:\()?(?:https?:\/\/[^/]+)?\/dist\/test\.js[^:]*:(\d+):(\d+)\)?$/);
+    if (!match) return line;
+
+    const [, prefix, lineNum, colNum] = match;
+    const pos = sourceMapConsumer.originalPositionFor({
+      line: parseInt(lineNum, 10),
+      column: parseInt(colNum, 10)
+    });
+
+    if (pos.source) {
+      const source = pos.source.replace(/^\.\.\//, '');
+      return `${prefix}(${source}:${pos.line}:${pos.column})`;
+    }
+    return line;
+  }).join('\n');
+}
 
 // Map SAUCE_REGION env var to hostname
 const sauceRegionHostnames = {
@@ -151,10 +183,32 @@ export default {
           chunks.push(chunk);
         }
         const body = Buffer.concat(chunks).toString();
-        const { status } = JSON.parse(body);
+        const { status, name, error } = JSON.parse(body);
         // Match the same logic used in the reporter: skipped, failed, or passed (everything else)
         const progressIndicator = status === 'skipped' ? 'S' : status === 'failed' ? 'F' : '.';
         process.stdout.write(progressIndicator);
+
+        // Print failure details immediately
+        if (status === 'failed') {
+          process.stdout.write(`\n\nFAIL: ${name}\n`);
+          if (error) {
+            if (error.message) {
+              process.stdout.write(`  Message: ${error.message}\n`);
+            }
+            if (error.expected !== undefined) {
+              process.stdout.write(`  Expected: ${error.expected}\n`);
+            }
+            if (error.actual !== undefined) {
+              process.stdout.write(`  Actual: ${error.actual}\n`);
+            }
+            if (error.stack) {
+              const translatedStack = translateStack(error.stack);
+              process.stdout.write(`  Stack:\n    ${translatedStack.split('\n').join('\n    ')}\n`);
+            }
+          }
+          process.stdout.write('\n');
+        }
+
         context.status = 200;
         context.body = 'ok';
         return;
@@ -243,10 +297,23 @@ export default {
       QUnit.on('testEnd', (result) => {
         // POST progress to server for real-time output
         if (reportProgress) {
+          const payload = { status: result.status };
+          if (result.status === 'failed') {
+            payload.name = result.fullName.join(' > ');
+            if (result.errors?.[0]) {
+              const err = result.errors[0];
+              payload.error = {
+                message: err.message || 'Assertion Error',
+                expected: JSON.stringify(err.expected, null, 2),
+                actual: JSON.stringify(err.actual, null, 2),
+                stack: err.stack
+              };
+            }
+          }
           fetch('/test-progress', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: result.status })
+            body: JSON.stringify(payload)
           }).catch(() => {});
         }
 
