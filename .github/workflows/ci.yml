@@ -105,14 +105,16 @@ jobs:
             rails_branch: 8-1-stable
           - ruby: "3.4"
             rails_branch: 8-1-stable
+          - ruby: "4.0"
+            rails_branch: 8-1-stable
 
-          - ruby: "3.2"
-            rails_branch: main
-            experimental: true
           - ruby: "3.3"
             rails_branch: main
             experimental: true
           - ruby: "3.4"
+            rails_branch: main
+            experimental: true
+          - ruby: "4.0"
             rails_branch: main
             experimental: true
 
