@@ -81,5 +81,8 @@
   },
   "engines": {
     "node": ">= 18"
+  },
+  "peerDependencies": {
+    "@rails/actiontext": "^8.1.100"
   }
 }
