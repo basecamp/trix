@@ -1,6 +1,6 @@
 /*
 Trix 2.1.16
-Copyright © 2025 37signals, LLC
+Copyright © 2026 37signals, LLC
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :

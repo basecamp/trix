@@ -73,6 +73,8 @@ jobs:
           bundle add action_text-trix --path ".."
           bundle show --paths action_text-trix
       - name: Action Text tests
+        env:
+          RACK_ENV: test # see https://github.com/rails/rails/issues/56563
         run: |
           cd rails/actiontext
           bundle exec rake test test:system
@@ -103,14 +105,16 @@ jobs:
             rails_branch: 8-1-stable
           - ruby: "3.4"
             rails_branch: 8-1-stable
+          - ruby: "4.0"
+            rails_branch: 8-1-stable
 
-          - ruby: "3.2"
-            rails_branch: main
-            experimental: true
           - ruby: "3.3"
             rails_branch: main
             experimental: true
           - ruby: "3.4"
+            rails_branch: main
+            experimental: true
+          - ruby: "4.0"
             rails_branch: main
             experimental: true
 
