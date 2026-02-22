@@ -7,14 +7,57 @@
     <meta name="csp-nonce" content="topsecret">
     <link rel="icon" href="data:,">
     <link rel="stylesheet" type="text/css" href="trix.css">
+    <body style="font-family: sans-serif"></body>
+    <link href='https://fonts.googleapis.com' rel='stylesheet'>
     <style type="text/css">
       * {
         box-sizing: border-box;
       }
 
+      body {
+        font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+      }
+
       main {
         margin: 20px auto;
         max-width: 700px;
+      }
+
+
+      #text-editor-wrapper {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background-color: #ffffff;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin: 2rem auto;
+        max-width: 800px;
+      }
+
+      trix-toolbar .trix-button-group {
+        border: none;
+
+      }
+
+      trix-toolbar .trix-button:hover {
+        background-color: #f1f2f2;
+        border-radius: 8px;
+      }
+
+      trix-editor {
+        border: none !important; 
+        padding: 1.5rem !important;
+        min-height: 250px;
+        outline: none !important;
+        line-height: 1.6;
+        color: #334155;
+        background-color: aliceblue;
+        width: 628px;
+      }
+
+
+      trix-editor:empty:not(:focus)::before {
+        color: #94a3b8;
       }
 
       trix-editor:invalid {
@@ -41,9 +84,9 @@
       Trix.config.attachments.preview.caption.name = true
       Trix.config.attachments.preview.caption.size = false
 
-      document.addEventListener("trix-initialize", function(event) {
-        Trix.Inspector.install(event.target);
-      });
+      // document.addEventListener("trix-initialize", function(event) {
+      //   Trix.Inspector.install(event.target);
+      // });
 
       document.addEventListener("trix-attachment-add", function(event) {
         var attachment = event.attachment;
@@ -76,11 +119,13 @@
   </head>
   <body>
     <main>
-      <trix-editor autofocus class="trix-content" input="input"></trix-editor>
-      <details id="output">
-        <summary>Output</summary>
-        <textarea readonly id="input"></textarea>
-      </details>
+      <div id="trix-editor-wrapper">
+        <trix-editor autofocus class="trix-content" input="input"></trix-editor>
+        <!-- <details id="output">
+          <summary>Output</summary>
+          <textarea readonly id="input"></textarea>
+        </details> -->
+      </div>
     </main>
   </body>
 </html>

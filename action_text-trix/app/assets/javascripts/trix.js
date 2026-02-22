@@ -66,24 +66,24 @@ Copyright © 2026 37signals, LLC
   	webdriverio: "^7.19.5"
   };
   var scripts = {
-  	"build-css": "node bin/sass-build assets/trix.scss dist/trix.css action_text-trix/app/assets/stylesheets/trix.css",
+  	"build-css": "node bin/sass-build.js assets/trix.scss dist/trix.css action_text-trix/app/assets/stylesheets/trix.css",
   	"build-js": "rollup -c",
-  	"build-assets": "cp -f assets/*.html dist/",
+  	"build-assets": "npx shx cp -f assets/*.html dist/",
   	"build-ruby": "rake -C action_text-trix sync",
-  	watch: "npx rollup -c -w",
+  	build: "npm run build-js && npm run build-css && npm run build-assets && npm run build-ruby",
+  	watch: "rollup -c -w",
   	lint: "eslint .",
-  	pretest: "yarn run lint && yarn run build",
+  	pretest: "npm run lint && npm run build",
   	test: "web-test-runner",
   	"test:watch": "web-test-runner --watch",
-  	version: "yarn build && git add action_text-trix",
-  	prerelease: "yarn version && yarn test",
+  	version: "npm run build && git add action_text-trix",
+  	prerelease: "npm run version && npm run test",
   	"release-npm": "npm adduser && npm publish",
   	"release-ruby": "rake -C action_text-trix release",
-  	release: "yarn run release-npm && yarn run release-ruby",
+  	release: "npm run release-npm && npm run release-ruby",
   	postrelease: "git push && git push --tags",
-  	dev: "npx web-dev-server --app-index index.html --root-dir dist --node-resolve --open",
-  	build: "npm run build-js && npm run build-css && npm run build-assets",
-  	start: "npm run build-assets && npx concurrently --kill-others --names \"js,css,dev-server\" \"npm run watch\" \"npm run build-css -- --watch\" \"npm run dev\""
+  	dev: "web-dev-server --app-index index.html --root-dir dist --node-resolve --open",
+  	start: "npm run build-assets && npx concurrently --kill-others --names js,css,dev-server \"npm run watch\" \"npm run build-css -- --watch\" \"npm run dev\""
   };
   var dependencies = {
   	dompurify: "^3.2.5"
