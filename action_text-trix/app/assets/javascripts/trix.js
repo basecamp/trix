@@ -49,6 +49,7 @@ Copyright © 2026 37signals, LLC
   	"babel-eslint": "^10.1.0",
   	chokidar: "^4.0.2",
   	concurrently: "^7.4.0",
+  	"cpy-cli": "^7.0.0",
   	eslint: "^7.32.0",
   	esm: "^3.2.25",
   	idiomorph: "^0.7.3",
@@ -66,24 +67,25 @@ Copyright © 2026 37signals, LLC
   	webdriverio: "^7.19.5"
   };
   var scripts = {
-  	"build-css": "node bin/sass-build.js assets/trix.scss dist/trix.css action_text-trix/app/assets/stylesheets/trix.css",
+  	"build-css": "node bin/sass-build assets/trix.scss dist/trix.css action_text-trix/app/assets/stylesheets/trix.css",
   	"build-js": "rollup -c",
-  	"build-assets": "npx shx cp -f assets/*.html dist/",
+  	"build-assets": "cpy assets/*.html dist/",
   	"build-ruby": "rake -C action_text-trix sync",
-  	build: "npm run build-js && npm run build-css && npm run build-assets && npm run build-ruby",
+  	build: "yarn run build-js && yarn run build-css && yarn run build-assets && yarn run build-ruby",
   	watch: "rollup -c -w",
+  	"watch-assets": "npx onchange \"assets/**/*.html\" -- yarn build-assets",
   	lint: "eslint .",
-  	pretest: "npm run lint && npm run build",
+  	pretest: "yarn run lint && yarn run build",
   	test: "web-test-runner",
   	"test:watch": "web-test-runner --watch",
-  	version: "npm run build && git add action_text-trix",
-  	prerelease: "npm run version && npm run test",
+  	version: "yarn build && git add action_text-trix",
+  	prerelease: "yarn version && yarn test",
   	"release-npm": "npm adduser && npm publish",
   	"release-ruby": "rake -C action_text-trix release",
-  	release: "npm run release-npm && npm run release-ruby",
+  	release: "yarn run release-npm && yarn run release-ruby",
   	postrelease: "git push && git push --tags",
-  	dev: "web-dev-server --app-index index.html --root-dir dist --node-resolve --open",
-  	start: "npm run build-assets && npx concurrently --kill-others --names js,css,dev-server \"npm run watch\" \"npm run build-css -- --watch\" \"npm run dev\""
+  	dev: "web-dev-server --app-index index.html  --root-dir dist --node-resolve --open",
+  	start: "set NODE_OPTIONS=\"--no-deprecation\" && yarn build-assets && concurrently --kill-others --names js,css,dev-server \"yarn watch\" \"yarn build-css --watch\" \"yarn dev\" \"yarn watch-assets\""
   };
   var dependencies = {
   	dompurify: "^3.2.5"
