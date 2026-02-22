@@ -49,6 +49,7 @@ Copyright © 2026 37signals, LLC
   	"babel-eslint": "^10.1.0",
   	chokidar: "^4.0.2",
   	concurrently: "^7.4.0",
+  	"cpy-cli": "^7.0.0",
   	eslint: "^7.32.0",
   	esm: "^3.2.25",
   	idiomorph: "^0.7.3",
@@ -68,9 +69,11 @@ Copyright © 2026 37signals, LLC
   var scripts = {
   	"build-css": "node bin/sass-build assets/trix.scss dist/trix.css action_text-trix/app/assets/stylesheets/trix.css",
   	"build-js": "rollup -c",
-  	"build-assets": "cp -f assets/*.html dist/",
+  	"build-assets": "cpy assets/*.html dist/",
   	"build-ruby": "rake -C action_text-trix sync",
-  	watch: "npx rollup -c -w",
+  	build: "yarn run build-js && yarn run build-css && yarn run build-assets && yarn run build-ruby",
+  	watch: "rollup -c -w",
+  	"watch-assets": "npx onchange \"assets/**/*.html\" -- yarn build-assets",
   	lint: "eslint .",
   	pretest: "yarn run lint && yarn run build",
   	test: "web-test-runner",
@@ -81,9 +84,8 @@ Copyright © 2026 37signals, LLC
   	"release-ruby": "rake -C action_text-trix release",
   	release: "yarn run release-npm && yarn run release-ruby",
   	postrelease: "git push && git push --tags",
-  	dev: "npx web-dev-server --app-index index.html --root-dir dist --node-resolve --open",
-  	build: "npm run build-js && npm run build-css && npm run build-assets",
-  	start: "npm run build-assets && npx concurrently --kill-others --names \"js,css,dev-server\" \"npm run watch\" \"npm run build-css -- --watch\" \"npm run dev\""
+  	dev: "web-dev-server --app-index index.html  --root-dir dist --node-resolve --open",
+  	start: "yarn build-assets && concurrently --kill-others --names js,css,dev-server \"yarn watch\" \"yarn build-css --watch\" \"yarn dev\" \"yarn watch-assets\""
   };
   var dependencies = {
   	dompurify: "^3.2.5"
