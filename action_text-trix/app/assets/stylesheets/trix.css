@@ -216,12 +216,12 @@ trix-editor [data-trix-mutable]:not(.attachment__caption-editor) {
   user-select: none;
 }
 
-trix-editor [data-trix-mutable] ::-moz-selection, trix-editor [data-trix-mutable]::-moz-selection,
-trix-editor [data-trix-cursor-target]::-moz-selection {
+trix-editor [data-trix-mutable]::-moz-selection,
+trix-editor [data-trix-cursor-target]::-moz-selection, trix-editor [data-trix-mutable] ::-moz-selection {
   background: none;
 }
-trix-editor [data-trix-mutable] ::selection, trix-editor [data-trix-mutable]::selection,
-trix-editor [data-trix-cursor-target]::selection {
+trix-editor [data-trix-mutable]::selection,
+trix-editor [data-trix-cursor-target]::selection, trix-editor [data-trix-mutable] ::selection {
   background: none;
 }
 

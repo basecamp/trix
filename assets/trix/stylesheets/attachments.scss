@@ -1,5 +1,5 @@
-@import "./icons";
-@import "./selection";
+@use "./icons" as icons;
+@use "./selection";
 
 trix-editor {
   [data-trix-mutable],
@@ -139,7 +139,7 @@ trix-editor {
       left: 0;
       opacity: 0.7;
       content: "";
-      background-image: $icon-remove;
+      background-image: icons.$icon-remove;
       background-position: center;
       background-repeat: no-repeat;
       background-size: 90%;
