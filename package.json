@@ -76,7 +76,7 @@
     "release": "yarn run release-npm && yarn run release-ruby",
     "postrelease": "git push && git push --tags",
     "dev": "web-dev-server --app-index index.html  --root-dir dist --node-resolve --open",
-    "start": "yarn build-assets && concurrently --kill-others --names js,css,dev-server \"yarn watch\" \"yarn build-css --watch\" \"yarn dev\" \"yarn watch-assets\""
+    "start": "set NODE_OPTIONS=\"--no-deprecation\" && yarn build-assets && concurrently --kill-others --names js,css,dev-server \"yarn watch\" \"yarn build-css --watch\" \"yarn dev\" \"yarn watch-assets\""
   },
   "dependencies": {
     "dompurify": "^3.2.5"
