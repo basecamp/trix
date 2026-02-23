@@ -70,3 +70,42 @@ trix-editor:invalid {
     border: solid 1px #444;
     padding: 10px;
 }
+
+
+.app-navbar {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.95); 
+  backdrop-filter: blur(8px); 
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: center; 
+}
+
+trix-toolbar#my-toolbar {
+  width: 100%;
+  max-width: 1200px; 
+  padding: 8px 20px;
+  border: none !important; 
+  margin: 0 auto;
+}
+
+trix-toolbar .trix-button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.content-container {
+  margin-top: 40px;
+  padding: 0 20px;
+}
+
+.icon {
+    height: 20px;
+    width: 20px;
+}
