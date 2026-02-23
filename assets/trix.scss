@@ -2,3 +2,71 @@
 @use "trix/stylesheets/toolbar";
 @use "trix/stylesheets/attachments";
 @use "trix/stylesheets/content";
+
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+main {
+    margin: 20px auto;
+    max-width: 700px;
+}
+
+
+#text-editor-wrapper {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 2rem auto;
+    max-width: 800px;
+}
+
+trix-toolbar .trix-button-group {
+    border: none;
+}
+
+trix-toolbar .trix-button:hover {
+    background-color: #f1f2f2;
+    border-radius: 8px;
+}
+
+trix-editor {
+    border: none !important; 
+    padding: 1.5rem !important;
+    min-height: 250px;
+    outline: none !important;
+    line-height: 1.6;
+    color: #334155;
+    background-color: aliceblue;
+    width: 628px;
+}
+
+
+trix-editor:empty:not(:focus)::before {
+    color: #94a3b8;
+}
+
+trix-editor:invalid {
+    border: solid 1px red;
+}
+
+#output {
+    margin: 1rem 0 0;
+}
+
+#output textarea {
+    width: 100%;
+    height: 6rem;
+    resize: vertical;
+    font-family: monospace;
+    border-radius: 5px;
+    border: solid 1px #444;
+    padding: 10px;
+}
