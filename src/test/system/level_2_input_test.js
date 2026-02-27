@@ -272,6 +272,41 @@ testGroup("Level 2 Input", testOptions, () => {
     }
     expectDocument("a\n\nb\n\nc\n")
   })
+
+  // Firefox provides element-level target ranges (startContainer: <li>)
+  // rather than text-node-level ranges for deleteContentBackward. When the
+  // container is an element and offset is 0, the location mapper must count
+  // the block-start comment before breaking, or the block index will be wrong
+  // and the bullet list structure gets corrupted.
+  // - https://github.com/basecamp/trix/issues/1259
+  test("deleteContentBackward with element-level target range in a bullet list (Firefox)", async () => {
+    await clickToolbarButton({ attribute: "bullet" })
+    insertString("foo bar")
+    getComposition().setSelectedRange([ 0, 3 ])
+    await nextFrame()
+
+    // Simulate Firefox's target range: startContainer is the <li> element
+    // (not the text node), startOffset 0, endContainer is the text node, endOffset 3
+    const element = getEditorElement()
+    const li = element.querySelector("li")
+    const textNode = li.lastChild
+
+    const targetRange = document.createRange()
+    targetRange.setStart(li, 0)
+    targetRange.setEnd(textNode, 3)
+
+    const event = createEvent("beforeinput", {
+      inputType: "deleteContentBackward",
+      getTargetRanges: () => [ targetRange ],
+    })
+    document.activeElement.dispatchEvent(event)
+
+    await nextFrame()
+    await nextFrame()
+
+    assert.blockAttributes([ 0, 5 ], [ "bulletList", "bullet" ])
+    expectDocument(" bar\n")
+  })
 })
 
 const createFile = () => {
