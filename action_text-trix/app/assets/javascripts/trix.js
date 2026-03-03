@@ -10044,6 +10044,15 @@ $\
         } else {
           if (node.parentNode === container) {
             if (childIndex++ === offset) {
+              if (!strict && nodeIsBlockStart(node, {
+                strict
+              })) {
+                if (foundBlock) {
+                  location.index++;
+                }
+                location.offset = 0;
+                foundBlock = true;
+              }
               break;
             }
           } else if (!elementContainsNode(container, node)) {
