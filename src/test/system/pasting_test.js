@@ -164,6 +164,23 @@ testGroup("Pasting", { template: "editor_empty" }, () => {
     delete window.unsanitized
   })
 
+  test("paste data-trix-attachment with serialized-attributes XSS", async () => {
+    const pasteData = {
+      "text/plain": "x",
+      "text/html": `\
+      copy<div data-trix-attachment="{&quot;contentType&quot;:&quot;text/html&quot;,&quot;content&quot;:&quot;&lt;img src=\\&quot;x\\&quot; data-trix-serialized-attributes=\\&quot;{&amp;quot;onerror&amp;quot;:&amp;quot;alert(1)&amp;quot;}\\&quot;&gt;&quot;}"></div>me
+      `,
+    }
+
+    await pasteContent(pasteData)
+    await delay(20)
+    const div = document.createElement("div")
+    div.innerHTML = getEditorElement().value
+    const img = div.querySelector("img")
+    assert.ok(img, "serialized HTML should contain an img element")
+    assert.notOk(img.hasAttribute("onerror"), "img should not have an onerror attribute")
+  })
+
   test("prefers plain text when html lacks formatting", async () => {
     const pasteData = {
       "text/html": "<meta charset='utf-8'>a\nb",
