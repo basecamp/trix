@@ -3118,6 +3118,10 @@ $\
   var purify = createDOMPurify();
 
   purify.addHook("uponSanitizeAttribute", function (node, data) {
+    if (data.attrName === "data-trix-serialized-attributes") {
+      data.keepAttr = false;
+      return;
+    }
     const allowedAttributePattern = /^data-trix-/;
     if (allowedAttributePattern.test(data.attrName)) {
       data.forceKeepAttr = true;
