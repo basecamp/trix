@@ -521,7 +521,18 @@ export default class Composition extends BasicObject {
   }
 
   setSelectedRange(selectedRange) {
-    const locationRange = this.document.locationRangeFromRange(selectedRange)
+    const [ start, end ] = normalizeRange(selectedRange)
+
+    // Make sure that surrogate pairs are always selected both or neither.
+    const correctedSelectedRange = [
+      this.translateUTF16PositionFromOffset(start, 0),
+      this.translateUTF16PositionFromOffset(end, 0),
+    ]
+
+    const locationRange = this.document.locationRangeFromRange(
+      correctedSelectedRange,
+    )
+
     return this.getSelectionManager().setLocationRange(locationRange)
   }
 
