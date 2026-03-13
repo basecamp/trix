@@ -107,6 +107,12 @@ export default class PieceView extends ObjectView {
         element.style[key] = value
       }
     }
+
+    if (this.attributes.classList) {
+      if (!element) { element = makeElement("span") }
+      element.classList.add(...this.attributes.classList.split(" "))
+    }
+
     return element
   }
 
