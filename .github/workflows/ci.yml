@@ -19,6 +19,23 @@ env:
   SAUCE_TUNNEL_IDENTIFIER: trix-${{ github.run_id }}
 
 jobs:
+  lint-actions:
+    name: GitHub Actions audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Run actionlint
+        uses: rhysd/actionlint@v1.7.11
+
+      - name: Run zizmor
+        uses: zizmorcore/zizmor-action@v0.5.2
+        with:
+          advanced-security: false
+
   build:
     name: Browser tests
     runs-on: ubuntu-latest
