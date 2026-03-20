@@ -12,6 +12,8 @@ on:
     types: [opened, synchronize]
     branches: [ '*' ]
 
+permissions: {}
+
 env:
   SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
   SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
@@ -19,12 +21,35 @@ env:
   SAUCE_TUNNEL_IDENTIFIER: trix-${{ github.run_id }}
 
 jobs:
+  lint-actions:
+    name: GitHub Actions audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Run actionlint
+        uses: rhysd/actionlint@393031adb9afb225ee52ae2ccd7a5af5525e03e8 # v1.7.11
+
+      - name: Run zizmor
+        uses: zizmorcore/zizmor-action@71321a20a9ded102f6e9ce5718a2fcec2c4f70d8 # v0.5.2
+        with:
+          advanced-security: false
+
   build:
     name: Browser tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
         with:
           node-version: 18
           cache: "yarn"
@@ -32,7 +57,7 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Start Sauce Connect
         if: ${{ env.SAUCE_ACCESS_KEY != '' }}
-        uses: saucelabs/sauce-connect-action@v3
+        uses: saucelabs/sauce-connect-action@cb88b508c6f9ff4d84490093733315dbd55de022 # v3
         with:
           username: ${{ env.SAUCE_USERNAME }}
           accessKey: ${{ env.SAUCE_ACCESS_KEY }}
@@ -50,13 +75,17 @@ jobs:
   rails-tests:
     name: Downstream Rails integration tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
         with:
           node-version: 18
           cache: "yarn"
-      - uses: ruby/setup-ruby-pkgs@v1
+      - uses: ruby/setup-ruby-pkgs@2233d39c1315c667a2970436418b520a6300124e # v1.33.5
         with:
           ruby-version: "3.4"
           apt-get: libvips-tools
@@ -81,6 +110,8 @@ jobs:
   action_text-trix:
     name: Action Text tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -122,12 +153,14 @@ jobs:
             rails_branch: main
             experimental: true
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
         with:
           node-version: 18
           cache: "yarn"
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@319994f95fa847cf3fb3cd3dbe89f6dcde9f178f # v1.295.0
         env:
           RAILS_BRANCH: ${{ matrix.rails_branch }}
         with:
