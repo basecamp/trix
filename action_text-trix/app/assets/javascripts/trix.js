@@ -1,5 +1,5 @@
 /*
-Trix 2.1.17
+Trix 2.1.18
 Copyright © 2026 37signals, LLC
  */
 (function (global, factory) {
@@ -9,7 +9,7 @@ Copyright © 2026 37signals, LLC
 })(this, (function () { 'use strict';
 
   var name = "trix";
-  var version = "2.1.17";
+  var version = "2.1.18";
   var description = "A rich text editor for everyday writing";
   var main = "dist/trix.umd.min.js";
   var module = "dist/trix.esm.min.js";
