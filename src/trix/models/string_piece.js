@@ -1,10 +1,16 @@
+import DOMPurify from "dompurify"
+
 import Piece from "trix/models/piece"
 
 import { normalizeNewlines } from "trix/core/helpers"
 
 export default class StringPiece extends Piece {
   static fromJSON(pieceJSON) {
-    return new this(pieceJSON.string, pieceJSON.attributes)
+    const attributes = { ...pieceJSON.attributes }
+    if (attributes.href && !DOMPurify.isValidAttribute("a", "href", attributes.href)) {
+      delete attributes.href
+    }
+    return new this(pieceJSON.string, attributes)
   }
 
   constructor(string) {
