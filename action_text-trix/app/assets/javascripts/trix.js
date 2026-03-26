@@ -6862,7 +6862,13 @@ $\
 
   class StringPiece extends Piece {
     static fromJSON(pieceJSON) {
-      return new this(pieceJSON.string, pieceJSON.attributes);
+      const attributes = {
+        ...pieceJSON.attributes
+      };
+      if (attributes.href && !purify.isValidAttribute("a", "href", attributes.href)) {
+        delete attributes.href;
+      }
+      return new this(pieceJSON.string, attributes);
     }
     constructor(string) {
       super(...arguments);
