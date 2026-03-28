@@ -18,6 +18,8 @@ import {
   setDOMRange,
 } from "trix/core/helpers"
 
+import { shouldPreventSelectionSync } from "trix/controllers/level_2_input_controller"
+
 export default class SelectionManager extends BasicObject {
   constructor(element) {
     super(...arguments)
@@ -143,6 +145,9 @@ export default class SelectionManager extends BasicObject {
   }
 
   selectionDidChange() {
+    // Skip selection sync if we're working around Safari Smart Quotes bug
+    if (shouldPreventSelectionSync?.(this.element)) return
+
     if (!this.paused && !innerElementIsActive(this.element)) {
       return this.updateCurrentLocationRange()
     }
