@@ -31,6 +31,15 @@ abort() {
   return 2
 }
 
+echo "--- Installing GitHub Actions linting tools"
+{
+  for tool in actionlint shellcheck zizmor; do
+    if ! which "$tool" > /dev/null; then
+      brew_install_missing "$tool" || abort "Can't find or install $tool. Install it manually."
+    fi
+  done
+} >&3 2>&1
+
 echo "--- Installing Ruby gems"
 {
   if which rbenv > /dev/null; then

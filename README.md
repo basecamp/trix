@@ -3,7 +3,7 @@
 
 **Compose beautifully formatted text in your web application.** Trix is a WYSIWYG editor for writing messages, comments, articles, and lists—the simple documents most web apps are made of. It features a sophisticated document model, support for embedded attachments, and outputs terse and consistent HTML.
 
-Trix is an open-source project from [37signals](https://37signals.com), the creators of [Ruby on Rails](http://rubyonrails.org/). Millions of people trust their text to us, and we built Trix to give them the best possible editing experience. See Trix in action in [Basecamp 3](https://basecamp.com).
+Trix is an open-source project from [37signals](https://37signals.com), the creators of [Ruby on Rails](http://rubyonrails.org/). Millions of people trust their text to us, and we built Trix to give them the best possible editing experience. See Trix in action in [Basecamp](https://basecamp.com).
 
 ### Different By Design
 

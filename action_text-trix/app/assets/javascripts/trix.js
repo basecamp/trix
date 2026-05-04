@@ -1,6 +1,6 @@
 /*
-Trix 2.1.15
-Copyright © 2025 37signals, LLC
+Trix 2.1.18
+Copyright © 2026 37signals, LLC
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -9,7 +9,7 @@ Copyright © 2025 37signals, LLC
 })(this, (function () { 'use strict';
 
   var name = "trix";
-  var version = "2.1.15";
+  var version = "2.1.18";
   var description = "A rich text editor for everyday writing";
   var main = "dist/trix.umd.min.js";
   var module = "dist/trix.esm.min.js";
@@ -43,22 +43,22 @@ Copyright © 2025 37signals, LLC
   	"@rollup/plugin-json": "^4.1.0",
   	"@rollup/plugin-node-resolve": "^13.3.0",
   	"@web/dev-server": "^0.1.34",
+  	"@web/test-runner": "^0.20.2",
+  	"@web/test-runner-playwright": "^0.11.1",
+  	"@web/test-runner-webdriver": "^0.9.0",
   	"babel-eslint": "^10.1.0",
   	chokidar: "^4.0.2",
   	concurrently: "^7.4.0",
   	eslint: "^7.32.0",
   	esm: "^3.2.25",
   	idiomorph: "^0.7.3",
-  	karma: "6.4.1",
-  	"karma-chrome-launcher": "3.2.0",
-  	"karma-qunit": "^4.1.2",
-  	"karma-sauce-launcher": "^4.3.6",
   	qunit: "2.19.1",
   	rangy: "^1.3.0",
   	rollup: "^2.56.3",
   	"rollup-plugin-includepaths": "^0.2.4",
   	"rollup-plugin-terser": "^7.0.2",
   	sass: "^1.83.0",
+  	"source-map": "^0.7.6",
   	svgo: "^2.8.0",
   	webdriverio: "^7.19.5"
   };
@@ -74,7 +74,9 @@ Copyright © 2025 37signals, LLC
   	watch: "rollup -c -w",
   	lint: "eslint .",
   	pretest: "yarn run lint && yarn run build",
-  	test: "karma start",
+  	test: "web-test-runner",
+  	"test:watch": "web-test-runner --watch",
+  	version: "yarn build && git add action_text-trix",
   	prerelease: "yarn version && yarn test",
   	"release-npm": "npm adduser && npm publish",
   	"release-ruby": "rake -C action_text-trix release",
@@ -3116,6 +3118,10 @@ $\
   var purify = createDOMPurify();
 
   purify.addHook("uponSanitizeAttribute", function (node, data) {
+    if (data.attrName === "data-trix-serialized-attributes") {
+      data.keepAttr = false;
+      return;
+    }
     const allowedAttributePattern = /^data-trix-/;
     if (allowedAttributePattern.test(data.attrName)) {
       data.forceKeepAttr = true;
@@ -3362,7 +3368,10 @@ $\
     }
     getHref() {
       if (!htmlContainsTagName(this.attachment.getContent(), "a")) {
-        return this.attachment.getHref();
+        const href = this.attachment.getHref();
+        if (href && purify.isValidAttribute("a", "href", href)) {
+          return href;
+        }
       }
     }
     getCaptionConfig() {
@@ -3451,11 +3460,15 @@ $\
       }
       const width = this.attachment.getWidth();
       const height = this.attachment.getHeight();
+      const alt = this.attachment.getAttribute("alt");
       if (width != null) {
         image.width = width;
       }
       if (height != null) {
         image.height = height;
+      }
+      if (alt != null) {
+        image.alt = alt;
       }
       const storeKey = ["imageElement", this.attachment.id, image.src, image.width, image.height].join("/");
       image.dataset.trixStoreKey = storeKey;
@@ -6616,6 +6629,11 @@ $\
       this.attributes = Hash.box(attributes);
       this.didChangeAttributes();
     }
+    setAttribute(attribute, value) {
+      this.setAttributes({
+        [attribute]: value
+      });
+    }
     getAttribute(attribute) {
       return this.attributes.get(attribute);
     }
@@ -6844,7 +6862,13 @@ $\
 
   class StringPiece extends Piece {
     static fromJSON(pieceJSON) {
-      return new this(pieceJSON.string, pieceJSON.attributes);
+      const attributes = {
+        ...pieceJSON.attributes
+      };
+      if (attributes.href && !purify.isValidAttribute("a", "href", attributes.href)) {
+        delete attributes.href;
+      }
+      return new this(pieceJSON.string, attributes);
     }
     constructor(string) {
       super(...arguments);
@@ -8855,6 +8879,8 @@ $\
   ManagedAttachment.proxyMethod("attachment.isPending");
   ManagedAttachment.proxyMethod("attachment.isPreviewable");
   ManagedAttachment.proxyMethod("attachment.getURL");
+  ManagedAttachment.proxyMethod("attachment.getPreviewURL");
+  ManagedAttachment.proxyMethod("attachment.setPreviewURL");
   ManagedAttachment.proxyMethod("attachment.getHref");
   ManagedAttachment.proxyMethod("attachment.getFilename");
   ManagedAttachment.proxyMethod("attachment.getFilesize");
@@ -10028,6 +10054,15 @@ $\
         } else {
           if (node.parentNode === container) {
             if (childIndex++ === offset) {
+              if (!strict && nodeIsBlockStart(node, {
+                strict
+              })) {
+                if (foundBlock) {
+                  location.index++;
+                }
+                location.offset = 0;
+                foundBlock = true;
+              }
               break;
             }
           } else if (!elementContainsNode(container, node)) {
@@ -13247,6 +13282,22 @@ $\
       if (this.innerHTML === "") {
         this.innerHTML = toolbar.getDefaultHTML();
       }
+    }
+
+    // Properties
+
+    get editorElements() {
+      if (this.id) {
+        var _this$ownerDocument;
+        const nodeList = (_this$ownerDocument = this.ownerDocument) === null || _this$ownerDocument === void 0 ? void 0 : _this$ownerDocument.querySelectorAll("trix-editor[toolbar=\"".concat(this.id, "\"]"));
+        return Array.from(nodeList);
+      } else {
+        return [];
+      }
+    }
+    get editorElement() {
+      const [editorElement] = this.editorElements;
+      return editorElement;
     }
   }
 

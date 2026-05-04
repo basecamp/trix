@@ -12,4 +12,5 @@ gem "sqlite3"
 
 group :test do
   gem "cuprite", require: "capybara/cuprite"
+  gem "minitest", "< 6.0" # can be removed once Rails' line_filtering supports Minitest 6+
 end

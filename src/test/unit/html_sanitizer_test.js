@@ -15,6 +15,18 @@ testGroup("HTMLSanitizer", () => {
     assert.equal(document, expectedHTML)
   })
 
+  test("strips data-trix-serialized-attributes", () => {
+    const html = "<div data-trix-serialized-attributes=\"{}\">content</div>"
+    const sanitized = HTMLSanitizer.sanitize(html).body.innerHTML
+    assert.notOk(sanitized.includes("data-trix-serialized-attributes"))
+  })
+
+  test("preserves other data-trix-* attributes", () => {
+    const html = "<div data-trix-attachment=\"{}\">content</div>"
+    const sanitized = HTMLSanitizer.sanitize(html).body.innerHTML
+    assert.ok(sanitized.includes("data-trix-attachment"))
+  })
+
   test("keeps custom tags configured for DOMPurify", () => {
     const config = {
       ADD_TAGS: [ "custom-tag" ],
@@ -27,6 +39,7 @@ testGroup("HTMLSanitizer", () => {
       assert.equal(document, expectedHTML)
     })
   })
+
 })
 
 const withDOMPurifyConfig = (attrConfig = {}, fn) => {

@@ -13,4 +13,12 @@ if [ -n "$CI" ]; then
   echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
 fi
 
+# Lint GitHub Actions workflows
+if command -v actionlint &> /dev/null; then
+  actionlint
+fi
+if command -v zizmor &> /dev/null; then
+  zizmor .
+fi
+
 yarn test
