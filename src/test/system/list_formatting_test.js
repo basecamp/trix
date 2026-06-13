@@ -96,6 +96,38 @@ testGroup("List formatting", { template: "editor_empty" }, () => {
     expectDocument("ab\nc\n")
   })
 
+  test("increasing nesting level applies to all selected items", async () => {
+    await clickToolbarButton({ attribute: "bullet" })
+    await typeCharacters("a\nb\nc")
+    getSelectionManager().setLocationRange([
+      { index: 0, offset: 0 },
+      { index: 2, offset: 1 },
+    ])
+    await clickToolbarButton({ action: "increaseNestingLevel" })
+    assert.blockAttributes([ 0, 2 ], [ "bulletList", "bullet", "bulletList", "bullet" ])
+    assert.blockAttributes([ 2, 4 ], [ "bulletList", "bullet", "bulletList", "bullet" ])
+    assert.blockAttributes([ 4, 6 ], [ "bulletList", "bullet", "bulletList", "bullet" ])
+    expectDocument("a\nb\nc\n")
+  })
+
+  test("decreasing nesting level applies to all selected items", async () => {
+    await clickToolbarButton({ attribute: "bullet" })
+    await typeCharacters("a\n")
+    await clickToolbarButton({ action: "increaseNestingLevel" })
+    await typeCharacters("b\n")
+    await clickToolbarButton({ action: "increaseNestingLevel" })
+    await typeCharacters("c")
+    getSelectionManager().setLocationRange([
+      { index: 1, offset: 0 },
+      { index: 2, offset: 1 },
+    ])
+    await clickToolbarButton({ action: "decreaseNestingLevel" })
+    assert.blockAttributes([ 0, 2 ], [ "bulletList", "bullet" ])
+    assert.blockAttributes([ 2, 4 ], [ "bulletList", "bullet" ])
+    assert.blockAttributes([ 4, 6 ], [ "bulletList", "bullet" ])
+    expectDocument("a\nb\nc\n")
+  })
+
   test("decreasing list item's level decreases its nested items level too", async () => {
     await clickToolbarButton({ attribute: "bullet" })
     await typeCharacters("a\n")

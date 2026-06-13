@@ -415,15 +415,25 @@ export default class Composition extends BasicObject {
   }
 
   decreaseNestingLevel() {
-    const block = this.getBlock()
-    if (!block) return
-    return this.setDocument(this.document.replaceBlock(block, block.decreaseNestingLevel()))
+    const locationRange = this.getLocationRange()
+    if (!locationRange) return
+    let document = this.document
+    for (let i = locationRange[0].index; i <= locationRange[1].index; i++) {
+      const block = document.getBlockAtIndex(i)
+      if (block) document = document.replaceBlock(block, block.decreaseNestingLevel())
+    }
+    return this.setDocument(document)
   }
 
   increaseNestingLevel() {
-    const block = this.getBlock()
-    if (!block) return
-    return this.setDocument(this.document.replaceBlock(block, block.increaseNestingLevel()))
+    const locationRange = this.getLocationRange()
+    if (!locationRange) return
+    let document = this.document
+    for (let i = locationRange[0].index; i <= locationRange[1].index; i++) {
+      const block = document.getBlockAtIndex(i)
+      if (block) document = document.replaceBlock(block, block.increaseNestingLevel())
+    }
+    return this.setDocument(document)
   }
 
   canDecreaseBlockAttributeLevel() {
