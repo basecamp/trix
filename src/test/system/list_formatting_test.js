@@ -124,7 +124,7 @@ testGroup("List formatting", { template: "editor_empty" }, () => {
     await clickToolbarButton({ action: "decreaseNestingLevel" })
     assert.blockAttributes([ 0, 2 ], [ "bulletList", "bullet" ])
     assert.blockAttributes([ 2, 4 ], [ "bulletList", "bullet" ])
-    assert.blockAttributes([ 4, 6 ], [ "bulletList", "bullet" ])
+    assert.blockAttributes([ 4, 6 ], [ "bulletList", "bullet", "bulletList", "bullet" ])
     expectDocument("a\nb\nc\n")
   })
 

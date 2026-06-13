@@ -417,8 +417,12 @@ export default class Composition extends BasicObject {
   decreaseNestingLevel() {
     const locationRange = this.getLocationRange()
     if (!locationRange) return
+    const startIndex = locationRange[0].index
+    const endIndex = locationRange[1].offset === 0 && locationRange[1].index > startIndex
+      ? locationRange[1].index - 1
+      : locationRange[1].index
     let document = this.document
-    for (let i = locationRange[0].index; i <= locationRange[1].index; i++) {
+    for (let i = startIndex; i <= endIndex; i++) {
       const block = document.getBlockAtIndex(i)
       if (block) document = document.replaceBlock(block, block.decreaseNestingLevel())
     }
@@ -428,8 +432,12 @@ export default class Composition extends BasicObject {
   increaseNestingLevel() {
     const locationRange = this.getLocationRange()
     if (!locationRange) return
+    const startIndex = locationRange[0].index
+    const endIndex = locationRange[1].offset === 0 && locationRange[1].index > startIndex
+      ? locationRange[1].index - 1
+      : locationRange[1].index
     let document = this.document
-    for (let i = locationRange[0].index; i <= locationRange[1].index; i++) {
+    for (let i = startIndex; i <= endIndex; i++) {
       const block = document.getBlockAtIndex(i)
       if (block) document = document.replaceBlock(block, block.increaseNestingLevel())
     }
