@@ -1,0 +1,22 @@
+src/test/system/reinflation_security_test.js
+  s_bd5219752b2e96::t_402647bf381ba3 2-3,7-46
+  s_bd5219752b2e96::t_aceeced786a83a 1,4-6
+src/test/system.js
+  s_bd5219752b2e96::t_5c37ef1335bea6 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "eed374bbccc0a6cf2549355385b0e67b72e7ad58",
+  "prompts": {},
+  "sessions": {
+    "s_bd5219752b2e96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d1c27314-93fb-458b-9a28-446b0145757d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
