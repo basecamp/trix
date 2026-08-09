@@ -140,7 +140,10 @@ export default class Composition extends BasicObject {
   }
 
   replaceHTML(html) {
-    const document = HTMLParser.parse(html).getDocument().copyUsingObjectsFromDocument(this.document)
+    // Reparsing the live editor DOM is an untrusted re-inflation path, so run
+    // DOMPurify's mXSS-safe mode. Serialized `data-trix-*` attachment data
+    // (including comments) is preserved by the sanitizer hook (basecamp/trix#1213).
+    const document = HTMLParser.parse(html, { purifyOptions: { SAFE_FOR_XML: true } }).getDocument().copyUsingObjectsFromDocument(this.document)
     const locationRange = this.getLocationRange({ strict: false })
     const selectedRange = this.document.rangeFromLocationRange(locationRange)
     this.setDocument(document)
