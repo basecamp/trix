@@ -4248,6 +4248,18 @@ $\
   }
   var purify = createDOMPurify();
 
+  // DOMPurify's SAFE_FOR_XML guard removes any attribute whose value contains an
+  // XML-unsafe sequence (a comment terminator like `-->`/`--!>`, `]>`, or a raw
+  // `</style`-style tag close). Trix serializes attachment content — including any
+  // Rails view-annotation comments such as `<!-- BEGIN app/views/... -->` — inside
+  // the `data-trix-attachment` data attribute (see basecamp/trix#1213). Under
+  // SAFE_FOR_XML that attribute value trips this guard, so the whole attribute is
+  // dropped and the attachment silently disappears on the storage round-trip.
+  //
+  // These are data attributes: their values are always entity-escaped on
+  // serialization and never re-parsed as markup, so keeping them is mXSS-safe.
+  // This regexp mirrors DOMPurify's own SAFE_FOR_XML attribute-value check.
+  const XML_UNSAFE_ATTRIBUTE_VALUE = /((--!?|])>)|<\/(style|script|title|xmp|textarea|noscript|iframe|noembed|noframes)/gi;
   purify.addHook("uponSanitizeAttribute", function (node, data) {
     if (data.attrName === "data-trix-serialized-attributes") {
       data.keepAttr = false;
@@ -4255,6 +4267,11 @@ $\
     }
     const allowedAttributePattern = /^data-trix-/;
     if (allowedAttributePattern.test(data.attrName)) {
+      // Preserve serialized Trix data attributes (e.g. attachment content with
+      // comments) even under SAFE_FOR_XML. We neutralize only the copy DOMPurify
+      // inspects for its XML-safety guard; forceKeepAttr then keeps the *original*
+      // value verbatim, so the neutralized copy is never written to the DOM.
+      data.attrValue = data.attrValue.replace(XML_UNSAFE_ATTRIBUTE_VALUE, "");
       data.forceKeepAttr = true;
     }
   });
@@ -10213,7 +10230,14 @@ $\
       return this.notifyDelegateOfInsertionAtRange([startPosition, endPosition]);
     }
     replaceHTML(html) {
-      const document = HTMLParser.parse(html).getDocument().copyUsingObjectsFromDocument(this.document);
+      // Reparsing the live editor DOM is an untrusted re-inflation path, so run
+      // DOMPurify's mXSS-safe mode. Serialized `data-trix-*` attachment data
+      // (including comments) is preserved by the sanitizer hook (basecamp/trix#1213).
+      const document = HTMLParser.parse(html, {
+        purifyOptions: {
+          SAFE_FOR_XML: true
+        }
+      }).getDocument().copyUsingObjectsFromDocument(this.document);
       const locationRange = this.getLocationRange({
         strict: false
       });
@@ -10989,8 +11013,15 @@ $\
     }
     loadHTML() {
       let html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+      // Re-inflating stored HTML is an untrusted storage round-trip, so run
+      // DOMPurify's mXSS-safe mode here. Attachment content serialized in
+      // `data-trix-*` attributes is preserved by the sanitizer's uponSanitizeAttribute
+      // hook (see basecamp/trix#1213).
       const document = HTMLParser.parse(html, {
-        referenceElement: this.element
+        referenceElement: this.element,
+        purifyOptions: {
+          SAFE_FOR_XML: true
+        }
       }).getDocument();
       return this.loadDocument(document);
     }

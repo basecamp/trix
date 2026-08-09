@@ -20,11 +20,22 @@ testGroup("re-inflation round-trip (SAFE_FOR_XML)", () => {
     return serializeToContentType(document, "text/html")
   }
 
+  // The security invariant is that no executable vector survives the round-trip:
+  // no `onerror`, no event-handler attribute, and no `<script>`. Whether a *neutralized*
+  // bare element survives is browser-parser-dependent and is NOT a security property, so we
+  // don't assert on element presence: Firefox parses this payload such that a handler-stripped
+  // `<img src="x">` remains and Trix promotes it to a benign image attachment, while Chromium
+  // collapses the payload entirely. Re-inflating the sanitized output a second time proves it
+  // is a stable fixed point that cannot mutate back into an executable form.
   test("neutralizes a mutation-XSS payload after round-trip", () => {
     const payload = "<noscript><p title=\"</noscript><img src=x onerror=alert(1)>\">"
-    const output = reinflate(payload)
-    assert.notOk(/onerror/i.test(output), `mXSS onerror survived: ${output}`)
-    assert.notOk(/<img/i.test(output), `mXSS img survived: ${output}`)
+    const once = reinflate(payload)
+    const twice = reinflate(once)
+    for (const output of [ once, twice ]) {
+      assert.notOk(/onerror/i.test(output), `mXSS onerror survived: ${output}`)
+      assert.notOk(/\son\w+\s*=/i.test(output), `mXSS event handler survived: ${output}`)
+      assert.notOk(/<script/i.test(output), `mXSS script survived: ${output}`)
+    }
   })
 
   test("preserves HTML comments serialized inside an attachment after round-trip", () => {
