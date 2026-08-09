@@ -1,0 +1,21 @@
+src/test/unit/serialization_test.js
+  s_bd5219752b2e96::t_f6ba3c7823e201 23-29,32-38
+action_text-trix/app/assets/javascripts/trix.js
+  s_bd5219752b2e96::t_b1a4eabe5655c9 3235-3246,3254-3258,9217-9224,10000-10003,10005-10008
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "3c4019227ec4a9a182911a0256ab6d1e03a8e0cd",
+  "prompts": {},
+  "sessions": {
+    "s_bd5219752b2e96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d1c27314-93fb-458b-9a28-446b0145757d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
