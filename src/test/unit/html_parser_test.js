@@ -294,6 +294,14 @@ testGroup("HTMLParser", () => {
     assert.documentHTMLEqual(HTMLParser.parse(html).getDocument(), expectedHTML)
   })
 
+  test("parses attachments whose content contains markup when sanitizing for XML", () => {
+    const attachment = JSON.stringify({ contentType: "text/html", content: "<style>p { color: red; }</style><p>a</p>" })
+    const html = `<div data-trix-attachment='${attachment}'></div>`
+    const document = HTMLParser.parse(html, { purifyOptions: { SAFE_FOR_XML: true } }).getDocument()
+
+    assert.equal(document.getAttachmentPieces().length, 1)
+  })
+
   test("parses attachment caption from large html string", () => {
     let { html } = fixtures["image attachment with edited caption"]
 
