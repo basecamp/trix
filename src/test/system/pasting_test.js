@@ -104,6 +104,16 @@ testGroup("Pasting", { template: "editor_empty" }, () => {
     delete window.unsanitized
   })
 
+  test("paste data-trix-attachment with markup in content", async () => {
+    const content = "<style>p { color: red; }</style><p>a</p>"
+    const attachment = JSON.stringify({ contentType: "text/html", content })
+    await pasteContent("text/html", `<div data-trix-attachment='${attachment}'></div>`)
+
+    const attachments = getDocument().getAttachments()
+    assert.equal(attachments.length, 1)
+    assert.equal(attachments[0].getContent(), content)
+  })
+
   test("paste data-trix-attachment unsafe html", async () => {
     window.unsanitized = []
     const pasteData = {
