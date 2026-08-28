@@ -1,6 +1,6 @@
 import BasicObject from "trix/core/basic_object"
 
-import { nodeIsAttachmentElement, removeNode, tagName, walkTree } from "trix/core/helpers"
+import { escapeAngleBracketsInJSON, nodeIsAttachmentElement, removeNode, tagName, walkTree } from "trix/core/helpers"
 import DOMPurify from "dompurify"
 import * as config from "trix/config"
 
@@ -32,6 +32,7 @@ DOMPurify.addHook("afterSanitizeAttributes", function (node) {
   stashedAttributes = []
 })
 
+const JSON_ATTRIBUTES = "data-trix-attachment data-trix-attributes".split(" ")
 const DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height language class".split(" ")
 const DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ")
 const DEFAULT_FORBIDDEN_ELEMENTS = "script iframe form noscript".split(" ")
@@ -116,6 +117,20 @@ export default class HTMLSanitizer extends BasicObject {
       }
     })
 
+    // HTML from older Trix versions, server-side renderers and stored content carries the
+    // JSON with literal angle brackets. The hooks above put back a data-trix-* attribute that
+    // SAFE_FOR_XML drops for containing "</style>" or another raw-text closing sequence, but
+    // the restored value still carries it. Escaping the brackets before DOMPurify sees the
+    // value leaves it nothing to drop, and JSON.parse reads the same value back. A value that
+    // doesn't parse is left alone: HTMLParser ignores it either way, and rewriting it could
+    // only turn it into something that parses.
+    JSON_ATTRIBUTES.forEach((name) => {
+      const value = element.getAttribute(name)
+      if (value && parsesAsJSON(value)) {
+        element.setAttribute(name, escapeAngleBracketsInJSON(value))
+      }
+    })
+
     return element
   }
 
@@ -143,6 +158,15 @@ export default class HTMLSanitizer extends BasicObject {
 
   elementIsntSerializable(element) {
     return element.getAttribute("data-trix-serialize") === "false" && !nodeIsAttachmentElement(element)
+  }
+}
+
+const parsesAsJSON = (string) => {
+  try {
+    JSON.parse(string)
+    return true
+  } catch (error) {
+    return false
   }
 }
 
