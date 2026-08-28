@@ -73,3 +73,14 @@ const utf16StringDifference = function(a, b) {
     offset: leftIndex,
   }
 }
+
+const angleBracketEscapes = { "<": "\\u003c", ">": "\\u003e" }
+
+// Escapes "<" and ">" in JSON text as "\u003c" and "\u003e". In JSON they can only occur
+// inside string literals, where the escapes spell the same characters, so JSON.parse reads
+// the result back to the same value.
+//
+// This keeps sequences such as "</style>", "-->" and "]]>" out of the HTML attributes Trix
+// stores JSON in: DOMPurify's SAFE_FOR_XML mode drops any attribute containing one, and it
+// does so before honoring the hook that keeps data-trix-* attributes.
+export const escapeAngleBracketsInJSON = (json) => json.replace(/[<>]/g, (bracket) => angleBracketEscapes[bracket])
