@@ -58,3 +58,16 @@ export const replaceDocument = function (document) {
 
 
 const render = () => getEditorController().render()
+
+// Attachment markup as stored content and server-side renderers emit it: the JSON is
+// escaped only as far as an attribute value needs, so any angle brackets in it are
+// literal. (Browsers that escape angle brackets when serializing attributes would hide
+// that shape, so this doesn't go through outerHTML.)
+export const attachmentHTML = function (attachment, attributes) {
+  const attributeHTML = (name, value) =>
+    ` ${name}="${JSON.stringify(value).replace(/&/g, "&amp;").replace(/"/g, "&quot;")}"`
+
+  const attributesHTML = attributes ? attributeHTML("data-trix-attributes", attributes) : ""
+
+  return `<figure${attributeHTML("data-trix-attachment", attachment)}${attributesHTML}></figure>`
+}

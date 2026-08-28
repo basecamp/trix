@@ -4,10 +4,12 @@ import { OBJECT_REPLACEMENT_CHARACTER } from "trix/constants"
 import {
   TEST_IMAGE_URL,
   assert,
+  attachmentHTML,
   clickToolbarButton,
   createFile,
   expandSelection,
   expectDocument,
+  insertText,
   moveCursor,
   pasteContent,
   pressKey,
@@ -18,6 +20,8 @@ import {
   typeCharacters,
 } from "test/test_helper"
 import { delay, nextFrame } from "../test_helpers/timing_helpers"
+import Attachment from "trix/models/attachment"
+import Text from "trix/models/text"
 
 testGroup("Pasting", { template: "editor_empty" }, () => {
   test("paste plain text", async () => {
@@ -189,6 +193,34 @@ testGroup("Pasting", { template: "editor_empty" }, () => {
     const img = div.querySelector("img")
     assert.ok(img, "serialized HTML should contain an img element")
     assert.notOk(img.hasAttribute("onerror"), "img should not have an onerror attribute")
+  })
+
+  test("paste Trix's own HTML for an attachment whose content and caption close a style tag", async () => {
+    const content = "<style>.quoted { color: red }</style><p>quoted mail</p>"
+    const attachment = new Attachment({ content, contentType: "text/html" })
+    insertText(Text.textForAttachmentWithAttributes(attachment, { caption: "</style>" }))
+    await nextFrame()
+
+    await pasteContent("text/html", getEditorElement().value)
+    const pieces = getDocument().getAttachmentPieces()
+
+    assert.equal(pieces.length, 2, "pasted attachment was dropped")
+    assert.equal(pieces[1].attachment.getContent(), content)
+    assert.equal(pieces[1].getCaption(), "</style>")
+    expectDocument(`${OBJECT_REPLACEMENT_CHARACTER}${OBJECT_REPLACEMENT_CHARACTER}\n`)
+  })
+
+  test("paste stored HTML for an attachment whose content and caption close a style tag", async () => {
+    const content = "<style>.quoted { color: red }</style><p>quoted mail</p>"
+    const html = attachmentHTML({ content, contentType: "text/html" }, { caption: "</style>" })
+
+    await pasteContent("text/html", `copy${html}me`)
+    const [ piece ] = getDocument().getAttachmentPieces()
+
+    assert.ok(piece, "pasted attachment was dropped")
+    assert.equal(piece.attachment.getContent(), content)
+    assert.equal(piece.getCaption(), "</style>")
+    expectDocument(`copy${OBJECT_REPLACEMENT_CHARACTER}me\n`)
   })
 
   test("prefers plain text when html lacks formatting", async () => {

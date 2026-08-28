@@ -1,6 +1,6 @@
 import * as config from "trix/config"
 import { ZERO_WIDTH_SPACE } from "trix/constants"
-import { copyObject, makeElement } from "trix/core/helpers"
+import { copyObject, escapeAngleBracketsInJSON, makeElement } from "trix/core/helpers"
 import ObjectView from "trix/views/object_view"
 import HTMLSanitizer from "trix/models/html_sanitizer"
 import DOMPurify from "dompurify"
@@ -108,14 +108,14 @@ export default class AttachmentView extends ObjectView {
 
   getData() {
     const data = {
-      trixAttachment: JSON.stringify(this.attachment),
+      trixAttachment: toJSONAttribute(this.attachment),
       trixContentType: this.attachment.getContentType(),
       trixId: this.attachment.id,
     }
 
     const { attributes } = this.attachmentPiece
     if (!attributes.isEmpty()) {
-      data.trixAttributes = JSON.stringify(attributes)
+      data.trixAttributes = toJSONAttribute(attributes)
     }
 
     if (this.attachment.isPending()) {
@@ -167,6 +167,11 @@ const createCursorTarget = (name) =>
       trixSerialize: false,
     },
   })
+
+// Attachment JSON is emitted with angle brackets escaped so that the HTML Trix produces
+// survives being pasted back into Trix, whose insertHTML parses under DOMPurify's
+// SAFE_FOR_XML mode.
+const toJSONAttribute = (object) => escapeAngleBracketsInJSON(JSON.stringify(object))
 
 const htmlContainsTagName = function(html, tagName) {
   const div = makeElement("div")
