@@ -63,7 +63,8 @@ Copyright © 2026 37signals, LLC
   	webdriverio: "^7.19.5"
   };
   var resolutions = {
-  	webdriverio: "^7.19.5"
+  	webdriverio: "^7.19.5",
+  	"shell-quote": "^1.8.4"
   };
   var scripts = {
   	"build-css": "bin/sass-build assets/trix.scss dist/trix.css action_text-trix/app/assets/stylesheets/trix.css",
