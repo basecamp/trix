@@ -6,30 +6,19 @@ import * as config from "trix/config"
 
 const ALLOWED_ATTRIBUTE_PATTERN = /^data-trix-/
 
-// DOMPurify's SAFE_FOR_XML check drops attributes whose values contain markup before it
-// honors forceKeepAttr, so allowed attributes are stashed here and restored afterwards.
-let stashedAttributes = []
-
 DOMPurify.addHook("uponSanitizeAttribute", function (node, data) {
   if (data.attrName === "data-trix-serialized-attributes") {
     data.keepAttr = false
     return
   }
 
+  // Keep Trix's own data-trix-* attributes. SAFE_FOR_XML still drops any whose value carries
+  // a raw-text closing sequence before forceKeepAttr is honored, but sanitizeElement escapes
+  // those brackets in the JSON attachment attributes beforehand so nothing legitimate is
+  // dropped; a value that can't be parsed as JSON is left for SAFE_FOR_XML to remove.
   if (ALLOWED_ATTRIBUTE_PATTERN.test(data.attrName)) {
     data.forceKeepAttr = true
-    stashedAttributes.push([ data.attrName, node.getAttribute(data.attrName) ])
   }
-})
-
-DOMPurify.addHook("afterSanitizeAttributes", function (node) {
-  stashedAttributes.forEach(([ name, value ]) => {
-    if (value !== null && !node.hasAttribute(name)) {
-      node.setAttribute(name, value)
-    }
-  })
-
-  stashedAttributes = []
 })
 
 const JSON_ATTRIBUTES = "data-trix-attachment data-trix-attributes".split(" ")
