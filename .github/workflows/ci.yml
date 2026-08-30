@@ -83,7 +83,8 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: 18
+          # Rails' own yarn.lock requires node >= 24
+          node-version: 24
           cache: "yarn"
       - uses: ruby/setup-ruby-pkgs@2233d39c1315c667a2970436418b520a6300124e # v1.33.5
         with:
