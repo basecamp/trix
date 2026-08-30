@@ -4262,28 +4262,18 @@ $\
   var purify = createDOMPurify();
 
   const ALLOWED_ATTRIBUTE_PATTERN = /^data-trix-/;
-
-  // DOMPurify's SAFE_FOR_XML check drops attributes whose values contain markup before it
-  // honors forceKeepAttr, so allowed attributes are stashed here and restored afterwards.
-  let stashedAttributes = [];
   purify.addHook("uponSanitizeAttribute", function (node, data) {
     if (data.attrName === "data-trix-serialized-attributes") {
       data.keepAttr = false;
       return;
     }
+
+    // SAFE_FOR_XML drops an attribute whose value carries a raw-text closing sequence before
+    // forceKeepAttr is honored. sanitizeElement escapes those brackets in the JSON attachment
+    // attributes first, so only a value that isn't JSON is left for SAFE_FOR_XML to remove.
     if (ALLOWED_ATTRIBUTE_PATTERN.test(data.attrName)) {
       data.forceKeepAttr = true;
-      stashedAttributes.push([data.attrName, node.getAttribute(data.attrName)]);
     }
-  });
-  purify.addHook("afterSanitizeAttributes", function (node) {
-    stashedAttributes.forEach(_ref => {
-      let [name, value] = _ref;
-      if (value !== null && !node.hasAttribute(name)) {
-        node.setAttribute(name, value);
-      }
-    });
-    stashedAttributes = [];
   });
   const JSON_ATTRIBUTES = "data-trix-attachment data-trix-attributes".split(" ");
   const DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height language class".split(" ");
@@ -4358,22 +4348,21 @@ $\
           element.removeAttribute("href");
         }
       }
-      Array.from(element.attributes).forEach(_ref2 => {
+      Array.from(element.attributes).forEach(_ref => {
         let {
           name
-        } = _ref2;
+        } = _ref;
         if (!this.allowedAttributes.includes(name) && name.indexOf("data-trix") !== 0) {
           element.removeAttribute(name);
         }
       });
 
       // HTML from older Trix versions, server-side renderers and stored content carries the
-      // JSON with literal angle brackets. The hooks above put back a data-trix-* attribute that
-      // SAFE_FOR_XML drops for containing "</style>" or another raw-text closing sequence, but
-      // the restored value still carries it. Escaping the brackets before DOMPurify sees the
-      // value leaves it nothing to drop, and JSON.parse reads the same value back. A value that
-      // doesn't parse is left alone: HTMLParser ignores it either way, and rewriting it could
-      // only turn it into something that parses.
+      // JSON with literal angle brackets, and SAFE_FOR_XML drops any attribute whose value
+      // contains "</style>" or another raw-text closing sequence. Escaping the brackets before
+      // DOMPurify sees the value leaves it nothing to drop, and JSON.parse reads the same value
+      // back. A value that doesn't parse is left for SAFE_FOR_XML to remove: HTMLParser ignores
+      // it either way, and rewriting it could only turn it into something that parses.
       JSON_ATTRIBUTES.forEach(name => {
         const value = element.getAttribute(name);
         if (value && parsesAsJSON(value)) {

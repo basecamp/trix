@@ -68,9 +68,9 @@ testGroup("HTMLSanitizer", () => {
 
   // DOMPurify's SAFE_FOR_XML attribute rule drops any attribute whose value contains a
   // sequence that could close a raw-text element or a comment, before the forceKeepAttr set
-  // by Trix's uponSanitizeAttribute hook is honored. The afterSanitizeAttributes hook in
-  // html_sanitizer.js puts the attribute back; escaping the JSON first means the value never
-  // trips the rule, so what comes out carries no raw angle brackets either.
+  // by Trix's uponSanitizeAttribute hook is honored. sanitizeElement escapes the angle
+  // brackets in the JSON attachment attributes first, so the value never trips the rule and
+  // what comes out carries no raw angle brackets either.
   const safeForXMLTriggers = [
     "</style>", "</script>", "</title>", "</xmp>", "</textarea>", "</noscript>", "</iframe>", "</noembed>", "</noframes>",
     "-->", "--!>", "]]>",
