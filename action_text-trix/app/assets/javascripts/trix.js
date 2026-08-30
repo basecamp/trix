@@ -3233,15 +3233,29 @@ $\
   }
   var purify = createDOMPurify();
 
+  const ALLOWED_ATTRIBUTE_PATTERN = /^data-trix-/;
+
+  // DOMPurify's SAFE_FOR_XML check drops attributes whose values contain markup before it
+  // honors forceKeepAttr, so allowed attributes are stashed here and restored afterwards.
+  let stashedAttributes = [];
   purify.addHook("uponSanitizeAttribute", function (node, data) {
     if (data.attrName === "data-trix-serialized-attributes") {
       data.keepAttr = false;
       return;
     }
-    const allowedAttributePattern = /^data-trix-/;
-    if (allowedAttributePattern.test(data.attrName)) {
+    if (ALLOWED_ATTRIBUTE_PATTERN.test(data.attrName)) {
       data.forceKeepAttr = true;
+      stashedAttributes.push([data.attrName, node.getAttribute(data.attrName)]);
     }
+  });
+  purify.addHook("afterSanitizeAttributes", function (node) {
+    stashedAttributes.forEach(_ref => {
+      let [name, value] = _ref;
+      if (value !== null && !node.hasAttribute(name)) {
+        node.setAttribute(name, value);
+      }
+    });
+    stashedAttributes = [];
   });
   const DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height language class".split(" ");
   const DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ");
@@ -3315,10 +3329,10 @@ $\
           element.removeAttribute("href");
         }
       }
-      Array.from(element.attributes).forEach(_ref => {
+      Array.from(element.attributes).forEach(_ref2 => {
         let {
           name
-        } = _ref;
+        } = _ref2;
         if (!this.allowedAttributes.includes(name) && name.indexOf("data-trix") !== 0) {
           element.removeAttribute(name);
         }
