@@ -1061,7 +1061,6 @@ $\
   };
   const insertStyleElementForTagName = function (tagName) {
     const element = document.createElement("style");
-    element.setAttribute("type", "text/css");
     element.setAttribute("data-tag-name", tagName.toLowerCase());
     const nonce = getCSPNonce();
     if (nonce) {
