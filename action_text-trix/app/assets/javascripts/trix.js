@@ -1398,7 +1398,7 @@ $\
         const result = [];
         for (const key in this.values) {
           const value = this.values[key];
-          result.push(result.push(key, value));
+          result.push(key, value);
         }
         this.array = result.slice(0);
       }
