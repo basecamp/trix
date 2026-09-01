@@ -357,6 +357,18 @@ addEventListener("trix-attachment-add", (event) => {
 })
 ```
 
+You can also set image-specific attributes in the same handler. For example, set an attachment's `alt` text with `setAttributes`:
+
+```js
+addEventListener("trix-attachment-add", (event) => {
+  if (event.attachment.file instanceof File) {
+    event.attachment.setAttributes({ alt: "A friendly description of the image" })
+  }
+})
+```
+
+`figcaption` content is edited through the attachment `caption`, but it does not automatically become the image's `alt` text. If you need both, set them explicitly.
+
 # Editing Text Programmatically
 
 You can manipulate a Trix editor programmatically through the `Trix.Editor` interface, available on each `<trix-editor>` element through its `editor` property.
