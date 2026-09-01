@@ -3,6 +3,8 @@ import { makeElement, removeNode } from "trix/core/helpers/dom"
 
 const input = {
   level2Enabled: true,
+  fileInputId: `trix-file-input-${Date.now().toString(16)}`,
+  acceptedFileTypes: "*",
 
   getLevel() {
     if (this.level2Enabled && browser.supportsInputEvents) {
@@ -12,7 +14,7 @@ const input = {
     }
   },
   pickFiles(callback) {
-    const input = makeElement("input", { type: "file", multiple: true, hidden: true, id: this.fileInputId })
+    const input = makeElement("input", { type: "file", multiple: true, hidden: true, id: this.fileInputId, accept: this.acceptedFileTypes })
 
     input.addEventListener("change", () => {
       callback(input.files)
