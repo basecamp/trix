@@ -181,13 +181,26 @@ To populate a `<trix-editor>` with stored content, include that content in the a
 </form>
 ```
 
-Use an associated input element to initially populate an editor. When an associated input element is absent, Trix will safely sanitize then load any HTML content inside a `<trix-editor>…</trix-editor>` tag.
+Use an associated input element to initially populate an editor. When an associated input element is absent, Trix sanitizes the HTML content inside a `<trix-editor>…</trix-editor>` tag as it loads that content into the editor.
 
 ```html
 <form …>
   <trix-editor>Editor content goes here</trix-editor>
 </form>
 ```
+
+> [!CAUTION]
+> Never place untrusted or user-controlled HTML directly inside a
+> `<trix-editor>` tag. This inline content is live DOM: the browser parses it
+> before Trix connects and sanitizes the editor value, so any active content in
+> it — for example an `<img onerror>` — runs on page load. Trix's sanitization
+> applies to the value it loads into the editor, not to the raw children as the
+> browser parses them. To initialize an editor with untrusted initial content,
+> put it in an associated hidden input — with the value HTML-attribute-escaped,
+> as server-side templating does by default, or assigned through the input's DOM
+> `value` property. An unescaped value interpolated into the `value="…"`
+> attribute can itself break out of the attribute and become live DOM,
+> recreating the same problem.
 
 > [!WARNING]
 > When a `<trix-editor>` element initially connects with both HTML content *and*
