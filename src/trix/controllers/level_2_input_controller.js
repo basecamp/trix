@@ -6,10 +6,34 @@ import { dataTransferIsMsOfficePaste, dataTransferIsPlainText, keyEventIsKeyboar
 
 import { selectionChangeObserver } from "trix/observers/selection_change_observer"
 
+// Safari Smart Quotes bug workaround constants
+// Maximum character distance from cursor to consider a replacement "at cursor" vs "before cursor"
+const AT_CURSOR_DISTANCE_THRESHOLD = 2
+
+// Number of input events to ignore after Smart Quotes replacement
+// Safari fires multiple input events that would corrupt our cursor position
+const INPUT_EVENTS_TO_IGNORE_COUNT = 3
+
+// WeakMap to associate editor elements with their Smart Quotes workaround state.
+// Using WeakMap instead of instance properties to avoid GC leaks from circular references
+// between element → controller → element, especially if editors aren't properly cleaned up.
+const editorStates = new WeakMap()
+
+// Export function for SelectionManager to check if it should skip syncing
+export const shouldPreventSelectionSync = (element) => {
+  const state = editorStates.get(element)
+  return state?.preventSelectionSync || false
+}
+
 export default class Level2InputController extends InputController {
   constructor(...args) {
     super(...args)
     this.render = this.render.bind(this)
+    // Initialize state for this editor instance
+    editorStates.set(this.element, {
+      pendingInputEventsToIgnore: 0,
+      preventSelectionSync: false,
+    })
   }
 
   static events = {
@@ -89,6 +113,11 @@ export default class Level2InputController extends InputController {
     },
 
     input(event) {
+      const state = editorStates.get(this.element)
+      if (state.pendingInputEventsToIgnore > 0) {
+        state.pendingInputEventsToIgnore--
+        return
+      }
       selectionChangeObserver.reset()
     },
 
@@ -452,11 +481,37 @@ export default class Level2InputController extends InputController {
 
     insertReplacementText() {
       const replacement = this.event.dataTransfer.getData("text/plain")
-      const domRange = this.event.getTargetRanges()[0]
+      const domRange = this.event.getTargetRanges()?.[0]
+      if (!domRange) return
+
+      const { isAtCursor, cursorPosition, targetStart, targetEnd } = this.isReplacementAtCursor(domRange)
 
       this.withTargetDOMRange(domRange, () => {
         this.insertString(replacement, { updatePosition: false })
       })
+
+      // Safari has a bug where it positions the cursor incorrectly after Smart Quotes and similar
+      // text replacement operations. We need to manually calculate and set the correct cursor position,
+      // then prevent Safari from overwriting it.
+      if (isAtCursor) {
+        const oldLength = targetEnd - targetStart
+        const newLength = replacement.length
+        // +1 accounts for the triggering character (e.g., space that triggered Smart Quotes)
+        const newCursor = cursorPosition + (newLength - oldLength) + 1
+
+        this.responder?.setSelectedRange([ newCursor, newCursor ])
+
+        // Prevent selection syncing until Safari has finished its buggy cursor positioning
+        const state = editorStates.get(this.element)
+        state.preventSelectionSync = true
+        state.pendingInputEventsToIgnore = INPUT_EVENTS_TO_IGNORE_COUNT
+
+        // Use requestAnimationFrame to restore cursor after Safari's events complete
+        requestAnimationFrame(() => {
+          this.responder?.setSelectedRange([ newCursor, newCursor ])
+          state.preventSelectionSync = false
+        })
+      }
     },
 
     insertText() {
@@ -537,6 +592,35 @@ export default class Level2InputController extends InputController {
       return this.withTargetDOMRange(domRange, perform)
     } else {
       return perform()
+    }
+  }
+
+  // Replacement text helpers
+
+  // Determines if replacement is at cursor (Smart Quotes) vs before cursor (autocorrect)
+  isReplacementAtCursor(domRange) {
+    const cursorPosition = this.responder?.getSelectedRange()?.[1]
+    const targetLocationRange = this.responder?.createLocationRangeFromDOMRange?.(domRange, { strict: false })
+    const targetStart = targetLocationRange ? this.responder?.document?.positionFromLocation(targetLocationRange[0]) : null
+    const targetEnd = targetLocationRange ? this.responder?.document?.positionFromLocation(targetLocationRange[1]) : null
+
+    if (cursorPosition == null || targetEnd == null) {
+      return {
+        isAtCursor: false,
+        cursorPosition: null,
+        targetStart: null,
+        targetEnd: null,
+      }
+    }
+
+    const distanceFromCursor = Math.abs(cursorPosition - targetEnd)
+    const isAtCursor = distanceFromCursor <= AT_CURSOR_DISTANCE_THRESHOLD
+
+    return {
+      isAtCursor,
+      cursorPosition,
+      targetStart,
+      targetEnd,
     }
   }
 
