@@ -20,7 +20,14 @@ export default class Editor {
   }
 
   loadHTML(html = "") {
-    const document = HTMLParser.parse(html, { referenceElement: this.element }).getDocument()
+    // Re-inflating stored HTML is an untrusted storage round-trip, so run
+    // DOMPurify's mXSS-safe mode here. Attachment content serialized in
+    // `data-trix-*` attributes is preserved by the sanitizer's uponSanitizeAttribute
+    // hook (see basecamp/trix#1213).
+    const document = HTMLParser.parse(html, {
+      referenceElement: this.element,
+      purifyOptions: { SAFE_FOR_XML: true },
+    }).getDocument()
     return this.loadDocument(document)
   }
 

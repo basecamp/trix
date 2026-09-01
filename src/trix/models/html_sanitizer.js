@@ -4,6 +4,20 @@ import { nodeIsAttachmentElement, removeNode, tagName, walkTree } from "trix/cor
 import DOMPurify from "dompurify"
 import * as config from "trix/config"
 
+// DOMPurify's SAFE_FOR_XML guard removes any attribute whose value contains an
+// XML-unsafe sequence (a comment terminator like `-->`/`--!>`, `]>`, or a raw
+// `</style`-style tag close). Trix serializes attachment content — including any
+// Rails view-annotation comments such as `<!-- BEGIN app/views/... -->` — inside
+// the `data-trix-attachment` data attribute (see basecamp/trix#1213). Under
+// SAFE_FOR_XML that attribute value trips this guard, so the whole attribute is
+// dropped and the attachment silently disappears on the storage round-trip.
+//
+// These are data attributes: their values are always entity-escaped on
+// serialization and never re-parsed as markup, so keeping them is mXSS-safe.
+// This regexp mirrors DOMPurify's own SAFE_FOR_XML attribute-value check.
+const XML_UNSAFE_ATTRIBUTE_VALUE =
+  /((--!?|])>)|<\/(style|script|title|xmp|textarea|noscript|iframe|noembed|noframes)/gi
+
 DOMPurify.addHook("uponSanitizeAttribute", function (node, data) {
   if (data.attrName === "data-trix-serialized-attributes") {
     data.keepAttr = false
@@ -12,6 +26,11 @@ DOMPurify.addHook("uponSanitizeAttribute", function (node, data) {
 
   const allowedAttributePattern = /^data-trix-/
   if (allowedAttributePattern.test(data.attrName)) {
+    // Preserve serialized Trix data attributes (e.g. attachment content with
+    // comments) even under SAFE_FOR_XML. We neutralize only the copy DOMPurify
+    // inspects for its XML-safety guard; forceKeepAttr then keeps the *original*
+    // value verbatim, so the neutralized copy is never written to the DOM.
+    data.attrValue = data.attrValue.replace(XML_UNSAFE_ATTRIBUTE_VALUE, "")
     data.forceKeepAttr = true
   }
 })
