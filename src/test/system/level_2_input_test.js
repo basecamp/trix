@@ -205,6 +205,25 @@ testGroup("Level 2 Input", testOptions, () => {
     expectDocument(`${OBJECT_REPLACEMENT_CHARACTER}\n`)
   })
 
+  test("pasting a file alongside HTML cancels the browser's default paste", async () => {
+    const file = await createFile()
+    const dataTransfer = createDataTransfer({
+      "text/html": "<img src=x data-trix-serialized-attributes='{\"onerror\":\"alert(1)\"}'>",
+      "text/plain": "x",
+      Files: [ file ],
+    })
+
+    const inputEvent = createEvent("beforeinput", { inputType: "insertFromPaste", dataTransfer })
+    const notPrevented = document.activeElement.dispatchEvent(inputEvent)
+    await delay(60)
+
+    assert.notOk(notPrevented, "the default paste must be canceled so the browser cannot insert the clipboard HTML")
+
+    const attachments = getDocument().getAttachments()
+    assert.equal(attachments.length, 1, "the pasted file is inserted as an attachment")
+    assert.notOk(getEditorElement().value.includes("onerror"), "no attribute from the clipboard HTML survives")
+  })
+
   // "insertFromPaste InputEvent missing pasted files in dataTransfer"
   // - https://bugs.webkit.org/show_bug.cgi?id=194921
   test("pasting a file in Safari", async () => {
