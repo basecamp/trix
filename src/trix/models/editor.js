@@ -20,7 +20,10 @@ export default class Editor {
   }
 
   loadHTML(html = "") {
-    const document = HTMLParser.parse(html, { referenceElement: this.element }).getDocument()
+    const document = HTMLParser.parse(html, {
+      referenceElement: this.element,
+      purifyOptions: { SAFE_FOR_XML: true },
+    }).getDocument()
     return this.loadDocument(document)
   }
 

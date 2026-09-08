@@ -27,6 +27,23 @@ testGroup("HTMLSanitizer", () => {
     assert.ok(sanitized.includes("data-trix-attachment"))
   })
 
+  // Regression: basecamp/trix#1213. Attachment content can carry HTML comments, and
+  // SAFE_FOR_XML would otherwise drop the whole attribute for containing "-->".
+  test("preserves data-trix-* attribute values with comment markers under SAFE_FOR_XML", () => {
+    const content = "<!-- BEGIN app/views/users/_user.html.erb --><span>Chris</span><!-- END app/views/users/_user.html.erb -->"
+    const html = `<figure data-trix-attachment="${content.replace(/"/g, "&quot;")}"></figure>`
+    const sanitized = HTMLSanitizer.sanitize(html, { purifyOptions: { SAFE_FOR_XML: true } }).body.innerHTML
+    assert.ok(sanitized.includes("data-trix-attachment"), `attachment attribute lost: ${sanitized}`)
+    assert.ok(sanitized.includes("BEGIN app/views/users/_user.html.erb"), `comment marker lost: ${sanitized}`)
+  })
+
+  test("still strips XML-unsafe values on non-data-trix attributes under SAFE_FOR_XML", () => {
+    const html = "<div class=\"foo--></div><img src=x onerror=alert(1)>\">hi</div>"
+    const sanitized = HTMLSanitizer.sanitize(html, { purifyOptions: { SAFE_FOR_XML: true } }).body.innerHTML
+    assert.notOk(/onerror/i.test(sanitized), `mXSS payload survived: ${sanitized}`)
+    assert.notOk(sanitized.includes("foo--"), `XML-unsafe class value survived: ${sanitized}`)
+  })
+
   test("keeps custom tags configured for DOMPurify", () => {
     const config = {
       ADD_TAGS: [ "custom-tag" ],

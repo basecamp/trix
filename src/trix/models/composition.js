@@ -140,7 +140,8 @@ export default class Composition extends BasicObject {
   }
 
   replaceHTML(html) {
-    const document = HTMLParser.parse(html).getDocument().copyUsingObjectsFromDocument(this.document)
+    const parsedDocument = HTMLParser.parse(html, { purifyOptions: { SAFE_FOR_XML: true } }).getDocument()
+    const document = parsedDocument.copyUsingObjectsFromDocument(this.document)
     const locationRange = this.getLocationRange({ strict: false })
     const selectedRange = this.document.rangeFromLocationRange(locationRange)
     this.setDocument(document)

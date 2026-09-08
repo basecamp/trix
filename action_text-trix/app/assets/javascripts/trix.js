@@ -4248,6 +4248,12 @@ $\
   }
   var purify = createDOMPurify();
 
+  // Mirrors DOMPurify's own SAFE_FOR_XML attribute-value check. Trix serializes attachment
+  // content into data-trix-attachment, and that content legitimately carries HTML comments
+  // (basecamp/trix#1213), so the guard runs against a neutralized copy while forceKeepAttr
+  // keeps the original value. Attribute values serialize quote-delimited, so angle brackets
+  // inside them stay inert when the sanitized HTML is reparsed.
+  const XML_UNSAFE_ATTRIBUTE_VALUE = /((--!?|])>)|<\/(style|script|title|xmp|textarea|noscript|iframe|noembed|noframes)/gi;
   purify.addHook("uponSanitizeAttribute", function (node, data) {
     if (data.attrName === "data-trix-serialized-attributes") {
       data.keepAttr = false;
@@ -4255,6 +4261,7 @@ $\
     }
     const allowedAttributePattern = /^data-trix-/;
     if (allowedAttributePattern.test(data.attrName)) {
+      data.attrValue = data.attrValue.replace(XML_UNSAFE_ATTRIBUTE_VALUE, "");
       data.forceKeepAttr = true;
     }
   });
@@ -10213,7 +10220,12 @@ $\
       return this.notifyDelegateOfInsertionAtRange([startPosition, endPosition]);
     }
     replaceHTML(html) {
-      const document = HTMLParser.parse(html).getDocument().copyUsingObjectsFromDocument(this.document);
+      const parsedDocument = HTMLParser.parse(html, {
+        purifyOptions: {
+          SAFE_FOR_XML: true
+        }
+      }).getDocument();
+      const document = parsedDocument.copyUsingObjectsFromDocument(this.document);
       const locationRange = this.getLocationRange({
         strict: false
       });
@@ -10990,7 +11002,10 @@ $\
     loadHTML() {
       let html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
       const document = HTMLParser.parse(html, {
-        referenceElement: this.element
+        referenceElement: this.element,
+        purifyOptions: {
+          SAFE_FOR_XML: true
+        }
       }).getDocument();
       return this.loadDocument(document);
     }
