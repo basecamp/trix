@@ -181,6 +181,90 @@ testGroup("Level 2 Input", testOptions, () => {
     expectDocument("one\n")
   })
 
+  // Smart Quotes replacement at cursor
+  test("Smart Quotes apostrophe replacement", async () => {
+    insertString("I'll")
+    await nextFrame()
+
+    const inputType = "insertReplacementText"
+    const dataTransfer = createDataTransfer({ "text/plain": "'" })
+
+    const targetRange = document.createRange()
+    const textNode = getEditorElement().firstElementChild.lastChild
+    targetRange.setStart(textNode, 1)
+    targetRange.setEnd(textNode, 2)
+
+    const event = createEvent("beforeinput", { inputType, dataTransfer, getTargetRanges: () => [ targetRange ] })
+    document.activeElement.dispatchEvent(event)
+
+    // Simulate typing the space that triggers Smart Quotes
+    insertString(" ")
+
+    await nextFrame()
+    await nextFrame()
+
+    expectDocument("I'll \n")
+    assert.locationRange({ index: 0, offset: 5 })
+  })
+
+  // Smart Quotes after blank line (Safari bug scenario)
+  test("Smart Quotes apostrophe replacement after blank line", async () => {
+    insertString("First line")
+    insertString("\n")
+    insertString("\n")
+    insertString("I'll")
+    await nextFrame()
+
+    const inputType = "insertReplacementText"
+    const dataTransfer = createDataTransfer({ "text/plain": "'" })
+
+    const element = getEditorElement()
+    const divs = element.querySelectorAll("div")
+    const lastDiv = divs[divs.length - 1]
+    const textNode = lastDiv.lastChild
+
+    const targetRange = document.createRange()
+    targetRange.setStart(textNode, 1)
+    targetRange.setEnd(textNode, 2)
+
+    const event = createEvent("beforeinput", { inputType, dataTransfer, getTargetRanges: () => [ targetRange ] })
+    document.activeElement.dispatchEvent(event)
+
+    // Simulate typing the space that triggers Smart Quotes
+    insertString(" ")
+
+    await nextFrame()
+    await nextFrame()
+
+    expectDocument("First line\n\nI'll \n")
+    // Cursor should be after the space
+    assert.locationRange({ index: 0, offset: 17 })
+  })
+
+  // Autocorrect while typing ahead (cursor should stay in place)
+  test("autocorrect before cursor preserves cursor position", async () => {
+    insertString("teh quick")
+    getComposition().setSelectedRange([ 9, 9 ]) // After "quick"
+    await nextFrame()
+
+    const inputType = "insertReplacementText"
+    const dataTransfer = createDataTransfer({ "text/plain": "the" })
+
+    const targetRange = document.createRange()
+    const textNode = getEditorElement().firstElementChild.lastChild
+    targetRange.setStart(textNode, 0)
+    targetRange.setEnd(textNode, 3)
+
+    const event = createEvent("beforeinput", { inputType, dataTransfer, getTargetRanges: () => [ targetRange ] })
+    document.activeElement.dispatchEvent(event)
+
+    await nextFrame()
+
+    expectDocument("the quick\n")
+    // Cursor should stay after "quick" (position 9)
+    assert.locationRange({ index: 0, offset: 9 })
+  })
+
   // https://input-inspector.now.sh/profiles/yZlsrfG93QMzp2oyr0BE
   test("deleting the last character in a composed word on Android", async () => {
     insertString("c")
