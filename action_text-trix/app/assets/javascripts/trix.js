@@ -4401,7 +4401,8 @@ $\
       return false;
     }
   };
-  const CLOSING_HTML_TAG_PATTERN = /<\/html(?=[\s/>])/gi;
+  const CLOSING_HTML_TAG_PATTERN = /<\/html(?=[\t\n\f\r />])/gi;
+  const CLOSING_HTML_TAG_AT_OFFSET_PATTERN = new RegExp(CLOSING_HTML_TAG_PATTERN.source, "iy");
   const CLOSING_HTML_TAG_MARKER = "trix-closing-html-tag";
 
   // Windows browsers can paste clipboard bytes after the closing </html> tag, and the HTML
@@ -4414,12 +4415,17 @@ $\
   // The browser's own tokenizer decides which "</html>" is the closing tag: each one is
   // swapped for a marker start tag and the string parsed, and the first marker that comes out
   // as an element was a real tag rather than text inside an attribute value, a comment or a
-  // style element.
+  // style element. The marker's offset is an unquoted attribute value so that, wherever the
+  // marker lands, it carries nothing that would change the tokenizer's state there.
   const offsetOfClosingHTMLTag = function (html) {
     const doc = document.implementation.createHTMLDocument("");
-    doc.documentElement.innerHTML = html.replace(CLOSING_HTML_TAG_PATTERN, (tag, offset) => "<".concat(CLOSING_HTML_TAG_MARKER, " data-offset=\"").concat(offset, "\""));
-    const offsets = Array.from(doc.querySelectorAll(CLOSING_HTML_TAG_MARKER), marker => parseInt(marker.getAttribute("data-offset"), 10));
+    doc.documentElement.innerHTML = html.replace(CLOSING_HTML_TAG_PATTERN, (tag, offset) => "<".concat(CLOSING_HTML_TAG_MARKER, " data-offset=").concat(offset));
+    const offsets = Array.from(doc.querySelectorAll(CLOSING_HTML_TAG_MARKER), marker => parseInt(marker.getAttribute("data-offset"), 10)).filter(offset => closingHTMLTagAt(html, offset));
     return offsets.length ? offsets.reduce((lowest, offset) => Math.min(lowest, offset)) : -1;
+  };
+  const closingHTMLTagAt = function (html, offset) {
+    CLOSING_HTML_TAG_AT_OFFSET_PATTERN.lastIndex = offset;
+    return offset >= 0 && CLOSING_HTML_TAG_AT_OFFSET_PATTERN.test(html);
   };
   const createBodyElementForHTML = function () {
     let html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";

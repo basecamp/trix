@@ -135,6 +135,26 @@ testGroup("HTMLSanitizer", () => {
     assert.ok(sanitized.endsWith("<div>c</div>"), sanitized)
   })
 
+  test("keeps content after two closing html tags inside one attribute value", () => {
+    const attributes = { caption: "<html><body>one</body></html><html><body>two</body></html>" }
+    const html = `${attachmentHTML({ contentType: "image/png" }, attributes)}<div title="</html> and </html>">a</div></html>gunk`
+    const body = HTMLSanitizer.sanitize(html).getBody()
+
+    assert.deepEqual(JSON.parse(body.querySelector("figure").getAttribute("data-trix-attributes")), attributes)
+    assert.equal(body.querySelector("div").textContent, "a")
+    assert.notOk(body.textContent.includes("gunk"), body.innerHTML)
+  })
+
+  test("ignores marker elements supplied by the input when finding the closing html tag", () => {
+    const html = "<trix-closing-html-tag data-offset=0></trix-closing-html-tag><trix-closing-html-tag></trix-closing-html-tag><div title=\"</html>\">a</div><div>b</div>"
+    assert.equal(HTMLSanitizer.sanitize(html).getHTML(), "<div>a</div><div>b</div>")
+  })
+
+  test("treats a closing html tag followed by non-ASCII whitespace as the browser does", () => {
+    const html = "<div>a</div></html\u00a0><div>b</div>"
+    assert.equal(HTMLSanitizer.sanitize(html).getHTML(), "<div>a</div><div>b</div>")
+  })
+
   test("leaves malformed attachment JSON alone", () => {
     const html = "<figure data-trix-attachment=\"{&quot;x:}<\" data-trix-attributes=\"<>\"></figure>"
     const figure = HTMLSanitizer.sanitize(html).body.querySelector("figure")
