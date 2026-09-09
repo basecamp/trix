@@ -91,6 +91,16 @@ testGroup("HTMLSanitizer", () => {
     })
   })
 
+  test("removes a Trix attribute that isn't JSON when its value contains a trigger under SAFE_FOR_XML", () => {
+    const html = "<figure data-trix-attachment='{\"contentType\":\"image/png\"}' data-trix-attributes='caption -->' data-trix-content-type='</style>'></figure>"
+    const figure = HTMLSanitizer.sanitize(html, { purifyOptions: { SAFE_FOR_XML: true } }).body.querySelector("figure")
+
+    assert.ok(figure, "attachment element was dropped")
+    assert.equal(figure.getAttribute("data-trix-attachment"), "{\"contentType\":\"image/png\"}")
+    assert.notOk(figure.hasAttribute("data-trix-attributes"), "non-JSON attribute was kept")
+    assert.notOk(figure.hasAttribute("data-trix-content-type"), "non-JSON attribute was kept")
+  })
+
   test("keeps nested attachment JSON containing </style> under SAFE_FOR_XML", () => {
     const inner = { contentType: "text/html", content: "<style>p { color: red }</style><p>quoted</p>" }
     const attachment = { contentType: "text/html", content: `<p>reply</p>${attachmentHTML(inner)}` }
