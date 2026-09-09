@@ -127,9 +127,12 @@ testGroup("HTMLSanitizer", () => {
     assert.equal(HTMLSanitizer.sanitize(html).getHTML(), "<div>a</div>")
   })
 
-  test("keeps content after a closing html tag inside an attribute or a comment", () => {
-    const html = "<div data-trix-attributes='{\"a\":\"</html>\"}'>a</div><!-- </html> --><div title=\"</html>\">b</div>"
-    assert.equal(HTMLSanitizer.sanitize(html).getHTML(), "<div data-trix-attributes=\"{&quot;a&quot;:&quot;\\u003c/html\\u003e&quot;}\">a</div><div>b</div>")
+  test("keeps content after a closing html tag inside an attribute, a comment or raw text", () => {
+    const html = "<div data-trix-attributes='{\"a\":\"</html>\"}'>a</div><!-- </html> --!><div title=\"</html>\">b</div><textarea></html></textarea><style>.x::after { content: \"</html>\" }</style><div>c</div></html>gunk"
+    const sanitized = HTMLSanitizer.sanitize(html).getHTML()
+
+    assert.ok(sanitized.startsWith("<div data-trix-attributes=\"{&quot;a&quot;:&quot;\\u003c/html\\u003e&quot;}\">a</div><div>b</div><textarea>&lt;/html&gt;</textarea>"), sanitized)
+    assert.ok(sanitized.endsWith("<div>c</div>"), sanitized)
   })
 
   test("leaves malformed attachment JSON alone", () => {

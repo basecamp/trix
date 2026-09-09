@@ -157,21 +157,26 @@ const parsesAsJSON = (string) => {
   }
 }
 
-// Matches a comment or a tag with its quoted attribute values, so a "</html>" inside an
-// attribute value or a comment isn't taken for the closing tag. Every part of a tag has a
-// single way to match, and an unterminated comment, quoted value or tag runs to the end of
-// the string as it does in the HTML tokenizer, so the scan stays linear on any input.
-const HTML_TOKEN_PATTERN = /<!--(?:[^]*?-->|[^]*)|<\/?[a-zA-Z][^\s/>]*(?:\s+[^\s"'<>/=]+(?:\s*=\s*(?:"[^"]*(?:"|$)|'[^']*(?:'|$)|[^\s"'<>`]+))?)*(?:\s*\/?>|$)/g
+const CLOSING_HTML_TAG_PATTERN = /<\/html(?=[\s/>])/gi
+const CLOSING_HTML_TAG_MARKER = "trix-closing-html-tag"
 
 // Windows browsers can paste clipboard bytes after the closing </html> tag, and the HTML
 // parser would append them to the body as text.
 const removeContentAfterClosingHTMLTag = function(html) {
-  for (const match of html.matchAll(HTML_TOKEN_PATTERN)) {
-    if (/^<\/html/i.test(match[0])) {
-      return html.slice(0, match.index) + "</html>"
-    }
-  }
-  return html
+  const offset = html.search(CLOSING_HTML_TAG_PATTERN) < 0 ? -1 : offsetOfClosingHTMLTag(html)
+  return offset < 0 ? html : html.slice(0, offset)
+}
+
+// The browser's own tokenizer decides which "</html>" is the closing tag: each one is
+// swapped for a marker start tag and the string parsed, and the first marker that comes out
+// as an element was a real tag rather than text inside an attribute value, a comment or a
+// style element.
+const offsetOfClosingHTMLTag = function(html) {
+  const doc = document.implementation.createHTMLDocument("")
+  doc.documentElement.innerHTML = html.replace(CLOSING_HTML_TAG_PATTERN, (tag, offset) => `<${CLOSING_HTML_TAG_MARKER} data-offset="${offset}"`)
+
+  const offsets = Array.from(doc.querySelectorAll(CLOSING_HTML_TAG_MARKER), (marker) => parseInt(marker.getAttribute("data-offset"), 10))
+  return offsets.length ? offsets.reduce((lowest, offset) => Math.min(lowest, offset)) : -1
 }
 
 const createBodyElementForHTML = function(html = "") {
