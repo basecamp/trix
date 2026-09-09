@@ -119,7 +119,7 @@ testGroup("HTML loading", () => {
   testGroup("attachment content", { template: "editor_empty" }, () => {
     test("drops a style element whose text would parse as markup", async () => {
       window.trixProbe = 0
-      const content = `<svg><p><style><a title="</style><img src="${TEST_IMAGE_URL}" onerror="window.trixProbe = 1">"></style></p></svg>`
+      const content = "<svg><p><style><a title=\"</style><img src=\"data:image/gif;base64,TOTALLYBOGUS\" onerror=\"window.trixProbe = 1\">\"></style></p></svg>"
       getEditor().loadHTML(attachmentHTML({ contentType: "text/html", content }))
       await delay(20)
 
