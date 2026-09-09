@@ -158,8 +158,6 @@ const parsesAsJSON = (string) => {
 }
 
 const CLOSING_HTML_TAG_PATTERN = /<\/html(?=[\t\n\f\r />])/gi
-const CLOSING_HTML_TAG_AT_OFFSET_PATTERN = new RegExp(CLOSING_HTML_TAG_PATTERN.source, "iy")
-const CLOSING_HTML_TAG_MARKER = "trix-closing-html-tag"
 
 // Windows browsers can paste clipboard bytes after the closing </html> tag, and the HTML
 // parser would append them to the body as text.
@@ -171,20 +169,16 @@ const removeContentAfterClosingHTMLTag = function(html) {
 // The browser's own tokenizer decides which "</html>" is the closing tag: each one is
 // swapped for a marker start tag and the string parsed, and the first marker that comes out
 // as an element was a real tag rather than text inside an attribute value, a comment or a
-// style element. The marker's offset is an unquoted attribute value so that, wherever the
-// marker lands, it carries nothing that would change the tokenizer's state there.
+// style element. The marker's name carries a token chosen per call, so no element in the
+// input can pass for one, and its offset is an unquoted attribute value, so that wherever
+// the marker lands it carries nothing that would change the tokenizer's state there.
 const offsetOfClosingHTMLTag = function(html) {
+  const marker = `trix-closing-html-tag-${Math.random().toString(36).slice(2)}`
   const doc = document.implementation.createHTMLDocument("")
-  doc.documentElement.innerHTML = html.replace(CLOSING_HTML_TAG_PATTERN, (tag, offset) => `<${CLOSING_HTML_TAG_MARKER} data-offset=${offset}`)
+  doc.documentElement.innerHTML = html.replace(CLOSING_HTML_TAG_PATTERN, (tag, offset) => `<${marker} data-offset=${offset}`)
 
-  const offsets = Array.from(doc.querySelectorAll(CLOSING_HTML_TAG_MARKER), (marker) => parseInt(marker.getAttribute("data-offset"), 10))
-    .filter((offset) => closingHTMLTagAt(html, offset))
+  const offsets = Array.from(doc.querySelectorAll(marker), (element) => parseInt(element.getAttribute("data-offset"), 10))
   return offsets.length ? offsets.reduce((lowest, offset) => Math.min(lowest, offset)) : -1
-}
-
-const closingHTMLTagAt = function(html, offset) {
-  CLOSING_HTML_TAG_AT_OFFSET_PATTERN.lastIndex = offset
-  return offset >= 0 && CLOSING_HTML_TAG_AT_OFFSET_PATTERN.test(html)
 }
 
 const createBodyElementForHTML = function(html = "") {

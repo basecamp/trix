@@ -146,8 +146,10 @@ testGroup("HTMLSanitizer", () => {
   })
 
   test("ignores marker elements supplied by the input when finding the closing html tag", () => {
-    const html = "<trix-closing-html-tag data-offset=0></trix-closing-html-tag><trix-closing-html-tag></trix-closing-html-tag><div title=\"</html>\">a</div><div>b</div>"
-    assert.equal(HTMLSanitizer.sanitize(html).getHTML(), "<div>a</div><div>b</div>")
+    const content = "<div title=\"</html>\">a</div><div>b</div>"
+    const offset = content.indexOf("</html>")
+    const markers = `<trix-closing-html-tag data-offset=${offset}></trix-closing-html-tag><trix-closing-html-tag></trix-closing-html-tag>`
+    assert.equal(HTMLSanitizer.sanitize(markers + content).getHTML(), "<div>a</div><div>b</div>")
   })
 
   test("treats a closing html tag followed by non-ASCII whitespace as the browser does", () => {
