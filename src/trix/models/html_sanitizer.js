@@ -158,8 +158,10 @@ const parsesAsJSON = (string) => {
 }
 
 // Matches a comment or a tag with its quoted attribute values, so a "</html>" inside an
-// attribute value or a comment isn't taken for the closing tag.
-const HTML_TOKEN_PATTERN = /<!--[^]*?-->|<\/?[a-zA-Z][^\s/>]*(?:\s+[^\s=/>]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]*))?)*\s*\/?>/g
+// attribute value or a comment isn't taken for the closing tag. Every part of a tag has a
+// single way to match, and an unterminated comment, quoted value or tag runs to the end of
+// the string as it does in the HTML tokenizer, so the scan stays linear on any input.
+const HTML_TOKEN_PATTERN = /<!--(?:[^]*?-->|[^]*)|<\/?[a-zA-Z][^\s/>]*(?:\s+[^\s"'<>/=]+(?:\s*=\s*(?:"[^"]*(?:"|$)|'[^']*(?:'|$)|[^\s"'<>`]+))?)*(?:\s*\/?>|$)/g
 
 // Windows browsers can paste clipboard bytes after the closing </html> tag, and the HTML
 // parser would append them to the body as text.
