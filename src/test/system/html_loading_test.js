@@ -1,4 +1,4 @@
-import { TEST_IMAGE_URL, assert, expectDocument, test, testGroup } from "test/test_helper"
+import { TEST_IMAGE_URL, assert, attachmentHTML, expectDocument, test, testGroup } from "test/test_helper"
 import { OBJECT_REPLACEMENT_CHARACTER } from "trix/constants"
 import { delay } from "../test_helpers/timing_helpers"
 
@@ -113,6 +113,22 @@ testGroup("HTML loading", () => {
       assert.blockAttributes([ 0, 2 ], [ "heading1" ])
       assert.blockAttributes([ 2, 4 ], [])
       expectDocument("a\nb\n")
+    })
+  })
+
+  testGroup("attachment content", { template: "editor_empty" }, () => {
+    test("drops a style element whose text would parse as markup", async () => {
+      window.trixProbe = 0
+      const content = `<svg><p><style><a title="</style><img src="${TEST_IMAGE_URL}" onerror="window.trixProbe = 1">"></style></p></svg>`
+      getEditor().loadHTML(attachmentHTML({ contentType: "text/html", content }))
+      await delay(20)
+
+      const figure = getEditorElement().querySelector("figure")
+      assert.ok(figure, "attachment was dropped")
+      assert.notOk(figure.querySelector("style"), figure.innerHTML)
+      assert.notOk(figure.querySelector("[onerror]"), figure.innerHTML)
+      assert.equal(window.trixProbe, 0, "attachment content ran a handler")
+      delete window.trixProbe
     })
   })
 })

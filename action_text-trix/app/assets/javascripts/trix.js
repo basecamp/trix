@@ -223,7 +223,7 @@ Copyright © 2026 37signals, LLC
 
   var dompurify = {
     ADD_ATTR: ["language"],
-    SAFE_FOR_XML: false,
+    SAFE_FOR_XML: true,
     RETURN_DOM: true
   };
 
@@ -10264,11 +10264,7 @@ $\
       }
     }
     insertHTML(html) {
-      const document = HTMLParser.parse(html, {
-        purifyOptions: {
-          SAFE_FOR_XML: true
-        }
-      }).getDocument();
+      const document = HTMLParser.parse(html).getDocument();
       const selectedRange = this.getSelectedRange();
       this.setDocument(this.document.mergeDocumentAtRange(document, selectedRange));
       const startPosition = selectedRange[0];
