@@ -210,8 +210,8 @@ testGroup("Pasting", { template: "editor_empty" }, () => {
     expectDocument(`${OBJECT_REPLACEMENT_CHARACTER}${OBJECT_REPLACEMENT_CHARACTER}\n`)
   })
 
-  test("paste stored HTML for an attachment whose content and caption close a style tag", async () => {
-    const content = "<style>.quoted { color: red }</style><p>quoted mail</p>"
+  test("paste stored HTML for an attachment whose content and caption close style and html tags", async () => {
+    const content = "<html><body><style>.quoted { color: red }</style><p>quoted mail</p></body></html>"
     const html = attachmentHTML({ content, contentType: "text/html" }, { caption: "</style>" })
 
     await pasteContent("text/html", `copy${html}me`)

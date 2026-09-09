@@ -157,11 +157,24 @@ const parsesAsJSON = (string) => {
   }
 }
 
+// Matches a comment or a tag with its quoted attribute values, so a "</html>" inside an
+// attribute value or a comment isn't taken for the closing tag.
+const HTML_TOKEN_PATTERN = /<!--[^]*?-->|<\/?[a-zA-Z][^\s/>]*(?:\s+[^\s=/>]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]*))?)*\s*\/?>/g
+
+// Windows browsers can paste clipboard bytes after the closing </html> tag, and the HTML
+// parser would append them to the body as text.
+const removeContentAfterClosingHTMLTag = function(html) {
+  for (const match of html.matchAll(HTML_TOKEN_PATTERN)) {
+    if (/^<\/html/i.test(match[0])) {
+      return html.slice(0, match.index) + "</html>"
+    }
+  }
+  return html
+}
+
 const createBodyElementForHTML = function(html = "") {
-  // Remove everything after </html>
-  html = html.replace(/<\/html[^>]*>[^]*$/i, "</html>")
   const doc = document.implementation.createHTMLDocument("")
-  doc.documentElement.innerHTML = html
+  doc.documentElement.innerHTML = removeContentAfterClosingHTMLTag(html)
 
   Array.from(doc.head.querySelectorAll("style")).forEach((element) => {
     doc.body.appendChild(element)

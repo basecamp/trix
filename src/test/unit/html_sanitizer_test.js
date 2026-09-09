@@ -112,6 +112,16 @@ testGroup("HTMLSanitizer", () => {
     assert.deepEqual(JSON.parse(figure.getAttribute("data-trix-attributes")), attributes)
   })
 
+  test("removes content after the closing html tag", () => {
+    const html = "<html><body><div>a</div></body></html>\u0000gunk"
+    assert.equal(HTMLSanitizer.sanitize(html).getHTML(), "<div>a</div>")
+  })
+
+  test("keeps content after a closing html tag inside an attribute or a comment", () => {
+    const html = "<div data-trix-attributes='{\"a\":\"</html>\"}'>a</div><!-- </html> --><div title=\"</html>\">b</div>"
+    assert.equal(HTMLSanitizer.sanitize(html).getHTML(), "<div data-trix-attributes=\"{&quot;a&quot;:&quot;\\u003c/html\\u003e&quot;}\">a</div><div>b</div>")
+  })
+
   test("leaves malformed attachment JSON alone", () => {
     const html = "<figure data-trix-attachment=\"{&quot;x:}<\" data-trix-attributes=\"<>\"></figure>"
     const figure = HTMLSanitizer.sanitize(html).body.querySelector("figure")
