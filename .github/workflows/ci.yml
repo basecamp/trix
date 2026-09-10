@@ -103,7 +103,7 @@ jobs:
         # and the request body fails to serialize. Rails' own CI runs only `rake actiontext`
         # (no system tests), so upstream doesn't see it. Keep json 2.x here until the helper
         # or selenium-webdriver stops mixing key types.
-        run: |
+        run: | # zizmor: ignore[adhoc-packages] -- the two bundle add lines pin json 2.x with a written version and install the gem under test from this checkout
           cd rails
           yarn install --frozen-lockfile
           bundle remove json
