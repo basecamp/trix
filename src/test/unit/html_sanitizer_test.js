@@ -40,6 +40,28 @@ testGroup("HTMLSanitizer", () => {
     })
   })
 
+  test("strips data-trix-serialized-attributes containing markup when sanitizing for XML", () => {
+    const html = "<div data-trix-serialized-attributes='{\"a\":\"</style>\"}'>content</div>"
+    const body = HTMLSanitizer.sanitize(html, { purifyOptions: { SAFE_FOR_XML: true } }).getBody()
+    assert.notOk(body.innerHTML.includes("data-trix-serialized-attributes"))
+  })
+
+  test("keeps Trix attributes containing markup when sanitizing for XML", () => {
+    const markupValues = [ "</style>", "</title>", "</textarea>", "<![endif]-->", "]>" ]
+
+    markupValues.forEach((markup) => {
+      const value = `{"contentType":"text/html","content":"${markup}"}`
+      const html = `<figure data-trix-attachment='${value}'></figure>`
+      const body = HTMLSanitizer.sanitize(html, { purifyOptions: { SAFE_FOR_XML: true } }).getBody()
+      assert.equal(body.querySelector("figure").getAttribute("data-trix-attachment"), value)
+    })
+  })
+
+  test("removes other attributes containing markup when sanitizing for XML", () => {
+    const html = "<a href=\"#\" class=\"</style>\">a</a>"
+    const body = HTMLSanitizer.sanitize(html, { purifyOptions: { SAFE_FOR_XML: true } }).getBody()
+    assert.equal(body.querySelector("a").hasAttribute("class"), false)
+  })
 })
 
 const withDOMPurifyConfig = (attrConfig = {}, fn) => {
