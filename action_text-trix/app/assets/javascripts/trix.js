@@ -9976,7 +9976,6 @@ $\
   const unserializableAttributeNames = ["contenteditable", "data-trix-id", "data-trix-store-key", "data-trix-mutable", "data-trix-placeholder", "tabindex"];
   const serializedAttributesAttribute = "data-trix-serialized-attributes";
   const serializedAttributesSelector = "[".concat(serializedAttributesAttribute, "]");
-  const blockCommentPattern = new RegExp("<!--block-->", "g");
   const serializers = {
     "application/json": function (serializable) {
       let document;
@@ -10022,7 +10021,21 @@ $\
           }
         } catch (error) {}
       });
-      return element.innerHTML.replace(blockCommentPattern, "");
+
+      // Strip Trix's block boundary markers structurally, as comment nodes. A
+      // string replace over serialized HTML cannot tell Trix's own <!--block-->
+      // comment nodes from the identical byte sequence sitting in a text node
+      // (e.g. inside a raw-text <style> element), where removing it corrupts
+      // benign content and can fuse inert text into real markup.
+      const walker = document.createTreeWalker(element, NodeFilter.SHOW_COMMENT);
+      const markers = [];
+      while (walker.nextNode()) {
+        if (walker.currentNode.data === "block") {
+          markers.push(walker.currentNode);
+        }
+      }
+      markers.forEach(node => node.remove());
+      return element.innerHTML;
     }
   };
   const deserializers = {
