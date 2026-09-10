@@ -97,9 +97,17 @@ jobs:
       - name: Clone Rails
         run: git clone --depth=1 https://github.com/rails/rails
       - name: Configure Rails
+        # Rails main locks json 3.0, which rejects hashes whose string and symbol keys collide.
+        # Action Text's `while_offline` system-test helper restores Chrome's string-keyed
+        # network conditions through `Object#with`, selenium-webdriver re-adds them as symbols,
+        # and the request body fails to serialize. Rails' own CI runs only `rake actiontext`
+        # (no system tests), so upstream doesn't see it. Keep json 2.x here until the helper
+        # or selenium-webdriver stops mixing key types.
         run: |
           cd rails
           yarn install --frozen-lockfile
+          bundle remove json
+          bundle add json --version "~> 2.21"
           bundle add action_text-trix --path ".."
           bundle show --paths action_text-trix
       - name: Action Text tests
