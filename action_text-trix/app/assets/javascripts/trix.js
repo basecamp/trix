@@ -10264,7 +10264,11 @@ $\
       }
     }
     insertHTML(html) {
-      const document = HTMLParser.parse(html).getDocument();
+      const document = HTMLParser.parse(html, {
+        purifyOptions: {
+          SAFE_FOR_XML: true
+        }
+      }).getDocument();
       const selectedRange = this.getSelectedRange();
       this.setDocument(this.document.mergeDocumentAtRange(document, selectedRange));
       const startPosition = selectedRange[0];
