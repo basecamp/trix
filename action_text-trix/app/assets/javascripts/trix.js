@@ -13548,6 +13548,7 @@ $\
         };
       } else if (processableFilePaste(this.event)) {
         var _this$delegate22;
+        this.event.preventDefault();
         paste.type = "File";
         paste.file = dataTransfer.files[0];
         (_this$delegate22 = this.delegate) === null || _this$delegate22 === void 0 || _this$delegate22.inputControllerWillPaste(paste);

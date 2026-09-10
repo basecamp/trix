@@ -403,6 +403,7 @@ export default class Level2InputController extends InputController {
           return this.delegate?.inputControllerDidPaste(paste)
         }
       } else if (processableFilePaste(this.event)) {
+        this.event.preventDefault()
         paste.type = "File"
         paste.file = dataTransfer.files[0]
         this.delegate?.inputControllerWillPaste(paste)
