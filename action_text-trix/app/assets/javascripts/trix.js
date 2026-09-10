@@ -1333,6 +1333,19 @@ $\
       offset: leftIndex
     };
   };
+  const angleBracketEscapes = {
+    "<": "\\u003c",
+    ">": "\\u003e"
+  };
+
+  // Escapes "<" and ">" in JSON text as "\u003c" and "\u003e". In JSON they can only occur
+  // inside string literals, where the escapes spell the same characters, so JSON.parse reads
+  // the result back to the same value.
+  //
+  // This keeps sequences such as "</style>", "-->" and "]]>" out of the HTML attributes Trix
+  // stores JSON in: DOMPurify's SAFE_FOR_XML mode drops any attribute containing one, and it
+  // does so before honoring the hook that keeps data-trix-* attributes.
+  const escapeAngleBracketsInJSON = json => json.replace(/[<>]/g, bracket => angleBracketEscapes[bracket]);
 
   class Hash extends TrixObject {
     static fromCommonAttributesOfObjects() {
@@ -4249,29 +4262,20 @@ $\
   var purify = createDOMPurify();
 
   const ALLOWED_ATTRIBUTE_PATTERN = /^data-trix-/;
-
-  // DOMPurify's SAFE_FOR_XML check drops attributes whose values contain markup before it
-  // honors forceKeepAttr, so allowed attributes are stashed here and restored afterwards.
-  let stashedAttributes = [];
   purify.addHook("uponSanitizeAttribute", function (node, data) {
     if (data.attrName === "data-trix-serialized-attributes") {
       data.keepAttr = false;
       return;
     }
+
+    // SAFE_FOR_XML drops an attribute whose value carries a raw-text closing sequence before
+    // forceKeepAttr is honored. sanitizeElement escapes those brackets in the JSON attachment
+    // attributes first, so only a value that isn't JSON is left for SAFE_FOR_XML to remove.
     if (ALLOWED_ATTRIBUTE_PATTERN.test(data.attrName)) {
       data.forceKeepAttr = true;
-      stashedAttributes.push([data.attrName, node.getAttribute(data.attrName)]);
     }
   });
-  purify.addHook("afterSanitizeAttributes", function (node) {
-    stashedAttributes.forEach(_ref => {
-      let [name, value] = _ref;
-      if (value !== null && !node.hasAttribute(name)) {
-        node.setAttribute(name, value);
-      }
-    });
-    stashedAttributes = [];
-  });
+  const JSON_ATTRIBUTES = "data-trix-attachment data-trix-attributes".split(" ");
   const DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height language class".split(" ");
   const DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ");
   const DEFAULT_FORBIDDEN_ELEMENTS = "script iframe form noscript".split(" ");
@@ -4344,12 +4348,25 @@ $\
           element.removeAttribute("href");
         }
       }
-      Array.from(element.attributes).forEach(_ref2 => {
+      Array.from(element.attributes).forEach(_ref => {
         let {
           name
-        } = _ref2;
+        } = _ref;
         if (!this.allowedAttributes.includes(name) && name.indexOf("data-trix") !== 0) {
           element.removeAttribute(name);
+        }
+      });
+
+      // HTML from older Trix versions, server-side renderers and stored content carries the
+      // JSON with literal angle brackets, and SAFE_FOR_XML drops any attribute whose value
+      // contains "</style>" or another raw-text closing sequence. Escaping the brackets before
+      // DOMPurify sees the value leaves it nothing to drop, and JSON.parse reads the same value
+      // back. A value that doesn't parse is left for SAFE_FOR_XML to remove: HTMLParser ignores
+      // it either way, and rewriting it could only turn it into something that parses.
+      JSON_ATTRIBUTES.forEach(name => {
+        const value = element.getAttribute(name);
+        if (value && parsesAsJSON(value)) {
+          element.setAttribute(name, escapeAngleBracketsInJSON(value));
         }
       });
       return element;
@@ -4376,12 +4393,40 @@ $\
       return element.getAttribute("data-trix-serialize") === "false" && !nodeIsAttachmentElement(element);
     }
   }
+  const parsesAsJSON = string => {
+    try {
+      JSON.parse(string);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+  const CLOSING_HTML_TAG_PATTERN = /<\/html(?=[\t\n\f\r />])/gi;
+
+  // Windows browsers can paste clipboard bytes after the closing </html> tag, and the HTML
+  // parser would append them to the body as text.
+  const removeContentAfterClosingHTMLTag = function (html) {
+    const offset = html.search(CLOSING_HTML_TAG_PATTERN) < 0 ? -1 : offsetOfClosingHTMLTag(html);
+    return offset < 0 ? html : html.slice(0, offset);
+  };
+
+  // The browser's own tokenizer decides which "</html>" is the closing tag: each one is
+  // swapped for a marker start tag and the string parsed, and the first marker that comes out
+  // as an element was a real tag rather than text inside an attribute value, a comment or a
+  // style element. The marker's name carries a token chosen per call, so no element in the
+  // input can pass for one, and its offset is an unquoted attribute value, so that wherever
+  // the marker lands it carries nothing that would change the tokenizer's state there.
+  const offsetOfClosingHTMLTag = function (html) {
+    const marker = "trix-closing-html-tag-".concat(Math.random().toString(36).slice(2));
+    const doc = document.implementation.createHTMLDocument("");
+    doc.documentElement.innerHTML = html.replace(CLOSING_HTML_TAG_PATTERN, (tag, offset) => "<".concat(marker, " data-offset=").concat(offset));
+    const offsets = Array.from(doc.querySelectorAll(marker), element => parseInt(element.getAttribute("data-offset"), 10));
+    return offsets.length ? offsets.reduce((lowest, offset) => Math.min(lowest, offset)) : -1;
+  };
   const createBodyElementForHTML = function () {
     let html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
-    // Remove everything after </html>
-    html = html.replace(/<\/html[^>]*>[^]*$/i, "</html>");
     const doc = document.implementation.createHTMLDocument("");
-    doc.documentElement.innerHTML = html;
+    doc.documentElement.innerHTML = removeContentAfterClosingHTMLTag(html);
     Array.from(doc.head.querySelectorAll("style")).forEach(element => {
       doc.body.appendChild(element);
     });
@@ -4496,7 +4541,7 @@ $\
     }
     getData() {
       const data = {
-        trixAttachment: JSON.stringify(this.attachment),
+        trixAttachment: toJSONAttribute(this.attachment),
         trixContentType: this.attachment.getContentType(),
         trixId: this.attachment.id
       };
@@ -4504,7 +4549,7 @@ $\
         attributes
       } = this.attachmentPiece;
       if (!attributes.isEmpty()) {
-        data.trixAttributes = JSON.stringify(attributes);
+        data.trixAttributes = toJSONAttribute(attributes);
       }
       if (this.attachment.isPending()) {
         data.trixSerialize = false;
@@ -4551,6 +4596,11 @@ $\
       trixSerialize: false
     }
   });
+
+  // Attachment JSON is emitted with angle brackets escaped so that the HTML Trix produces
+  // survives being pasted back into Trix, whose insertHTML parses under DOMPurify's
+  // SAFE_FOR_XML mode.
+  const toJSONAttribute = object => escapeAngleBracketsInJSON(JSON.stringify(object));
   const htmlContainsTagName = function (html, tagName) {
     const div = makeElement("div");
     HTMLSanitizer.setHTML(div, html || "");

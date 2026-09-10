@@ -477,12 +477,13 @@ export const fixtures = {
     const attachment = new Attachment({ content, contentType, href })
     const text = Text.textForAttachmentWithAttributes(attachment)
 
+    // Mirrors what AttachmentView emits: angle brackets in the JSON are escaped.
     const figure = makeElement({
       tagName: "figure",
       className: "attachment attachment--content",
       editable: false,
       data: {
-        trixAttachment: JSON.stringify(attachment),
+        trixAttachment: JSON.stringify(attachment).replace(/</g, "\\u003c").replace(/>/g, "\\u003e"),
         trixContentType: contentType,
         trixId: attachment.id,
       },

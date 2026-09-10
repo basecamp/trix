@@ -1,6 +1,7 @@
 import {
   TEST_IMAGE_URL,
   assert,
+  attachmentHTML,
   createCursorTarget,
   eachFixture,
   fixtures,
@@ -10,6 +11,7 @@ import {
 } from "test/test_helper"
 
 import * as config from "trix/config"
+import { OBJECT_REPLACEMENT_CHARACTER } from "trix/constants"
 import HTMLParser from "trix/models/html_parser"
 import { delay } from "../test_helpers/timing_helpers"
 
@@ -300,6 +302,39 @@ testGroup("HTMLParser", () => {
     const document = HTMLParser.parse(html, { purifyOptions: { SAFE_FOR_XML: true } }).getDocument()
 
     assert.equal(document.getAttachmentPieces().length, 1)
+  })
+
+  test("parses attachment whose content closes a style tag when pasting", () => {
+    const content = "<style>p { color: red }</style><p>quoted mail</p>"
+    const html = attachmentHTML({ contentType: "text/html", content }, { caption: "</style>" })
+    const document = HTMLParser.parse(html, { purifyOptions: { SAFE_FOR_XML: true } }).getDocument()
+    const [ piece ] = document.getAttachmentPieces()
+
+    assert.ok(piece, "attachment was dropped")
+    assert.equal(piece.attachment.getContent(), content)
+    assert.equal(piece.getCaption(), "</style>")
+  })
+
+  test("parses attachment whose content closes an html tag when pasting", () => {
+    const content = "<html><body><p>quoted mail</p></body></html>"
+    const html = `<div>before</div>${attachmentHTML({ contentType: "text/html", content })}<div>after</div>`
+    const document = HTMLParser.parse(html, { purifyOptions: { SAFE_FOR_XML: true } }).getDocument()
+    const [ attachment ] = document.getAttachments()
+
+    assert.ok(attachment, "attachment was dropped")
+    assert.equal(attachment.getContent(), content)
+    assert.equal(document.toString(), `before\n${OBJECT_REPLACEMENT_CHARACTER}\nafter\n`)
+  })
+
+  test("parses attachment whose content nests an attachment closing a style tag when pasting", () => {
+    const inner = attachmentHTML({ contentType: "text/html", content: "<style>p { color: red }</style><p>quoted</p>" })
+    const content = `<p>reply</p>${inner}`
+    const html = attachmentHTML({ contentType: "text/html", content })
+    const document = HTMLParser.parse(html, { purifyOptions: { SAFE_FOR_XML: true } }).getDocument()
+    const [ attachment ] = document.getAttachments()
+
+    assert.ok(attachment, "attachment was dropped")
+    assert.equal(attachment.getContent(), content)
   })
 
   test("parses attachment caption from large html string", () => {
