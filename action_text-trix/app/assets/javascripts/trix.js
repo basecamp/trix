@@ -1447,7 +1447,17 @@ $\
     const sortedKeys = Object.keys(object).sort();
     sortedKeys.forEach(key => {
       if (key !== keyToRemove) {
-        result[key] = object[key];
+        // Define rather than assign. JSON.parse materializes "__proto__" as an ordinary
+        // own key, so Object.keys() yields it and a plain assignment would invoke the
+        // inherited setter, replacing result's prototype with the parsed value instead of
+        // storing it. Hash then reads that value through get()/has(), while callers
+        // inspecting the same data with Object.keys() or toObject() cannot see it.
+        Object.defineProperty(result, key, {
+          value: object[key],
+          writable: true,
+          enumerable: true,
+          configurable: true
+        });
       }
     });
     return result;
