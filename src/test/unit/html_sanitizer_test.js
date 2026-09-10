@@ -41,6 +41,14 @@ testGroup("HTMLSanitizer", () => {
     })
   })
 
+  test("removes a style element whose text would parse as markup", () => {
+    const html = "<svg><p><style><a title=\"</style><img src=x onerror=xss()>\"></style></p></svg>"
+    const body = HTMLSanitizer.sanitize(html).getBody()
+
+    assert.notOk(body.querySelector("style"), body.innerHTML)
+    assert.notOk(body.querySelector("[onerror]"), body.innerHTML)
+  })
+
   test("strips data-trix-serialized-attributes containing markup when sanitizing for XML", () => {
     const html = "<div data-trix-serialized-attributes='{\"a\":\"</style>\"}'>content</div>"
     const body = HTMLSanitizer.sanitize(html, { purifyOptions: { SAFE_FOR_XML: true } }).getBody()
@@ -185,6 +193,7 @@ const withConfig = (section, newConfig = {}, fn) => {
     copy(section, newConfig)
     fn()
   } finally {
-    copy(section, originalConfig)
+    Object.keys(config[section]).forEach((key) => delete config[section][key])
+    Object.assign(config[section], originalConfig)
   }
 }
