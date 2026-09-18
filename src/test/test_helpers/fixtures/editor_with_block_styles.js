@@ -1,5 +1,5 @@
 export default () =>
-  `<style type="text/css">
+  `<style>
     blockquote { font-style: italic; }
     li { font-weight: bold; }
   </style>

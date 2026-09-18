@@ -1,5 +1,5 @@
 export default () =>
-  `<style type="text/css">
+  `<style>
     .trix-content figure.attachment {
       display: inline-block;
     }

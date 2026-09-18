@@ -22,7 +22,7 @@ QUnit.config.testTimeout = 20000
 
 document.head.insertAdjacentHTML(
   "beforeend",
-  `<style type="text/css">
+  `<style>
     #trix-container { height: 150px; }
     trix-toolbar { margin-bottom: 10px; }
     trix-toolbar button { border: 1px solid #ccc; background: #fff; }
