@@ -57,7 +57,7 @@ export default class SelectionManager extends BasicObject {
 
   domRangeMatchesSelection(domRange) {
     const selection = getDOMSelection()
-    if (!selection || selection.rangeCount === 0) return false
+    if (!selection || selection.rangeCount !== 1) return false
 
     const currentRange = selection.getRangeAt(0)
     return (
