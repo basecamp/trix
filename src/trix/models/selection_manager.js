@@ -48,11 +48,26 @@ export default class SelectionManager extends BasicObject {
 
     const domRange = this.createDOMRangeFromLocationRange(locationRange)
     if (domRange) {
-      setDOMRange(domRange)
+      if (!this.domRangeMatchesSelection(domRange)) {
+        setDOMRange(domRange)
+      }
       this.updateCurrentLocationRange(locationRange)
     }
   }
 
+  domRangeMatchesSelection(domRange) {
+    const selection = getDOMSelection()
+    if (!selection || selection.rangeCount === 0) return false
+
+    const currentRange = selection.getRangeAt(0)
+    return (
+      currentRange.startContainer === domRange.startContainer &&
+      currentRange.startOffset === domRange.startOffset &&
+      currentRange.endContainer === domRange.endContainer &&
+      currentRange.endOffset === domRange.endOffset
+    )
+  }
+  
   setLocationRangeFromPointRange(pointRange) {
     pointRange = normalizeRange(pointRange)
     const startLocation = this.getLocationAtPoint(pointRange[0])
