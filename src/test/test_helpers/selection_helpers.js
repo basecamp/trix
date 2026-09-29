@@ -1,7 +1,12 @@
 import * as config from "trix/config"
 
 import { triggerEvent } from "event_helpers"
-import { selectionChangeObserver } from "trix/observers/selection_change_observer"
+import {
+  getDOMRange,
+  getDOMSelection,
+  selectionChangeObserver,
+  setDOMRange,
+} from "trix/observers/selection_change_observer"
 
 import rangy from "rangy"
 import "rangy/lib/rangy-textrange"
@@ -144,3 +149,23 @@ const getCursorCoordinates = () => {
     }
   }
 }
+
+export const addSelectionRange = (range) => {
+  try {
+    getDOMSelection()?.addRange(range)
+  } catch (error) {
+    // Multi-range selection not supported by browser
+  }
+}
+
+export const withMockSelection = (mockSelection, callback) => {
+  const originalGetSelection = window.getSelection
+  try {
+    window.getSelection = () => mockSelection
+    return callback()
+  } finally {
+    window.getSelection = originalGetSelection
+  }
+}
+
+export { getDOMSelection, getDOMRange, setDOMRange }
