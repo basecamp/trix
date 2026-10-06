@@ -176,6 +176,16 @@ export default class Level2InputController extends InputController {
       }
     },
 
+    // Safari on macOS reports Shift+Return as insertParagraph, the same inputType as a plain
+    // Return, so beforeinput can't tell them apart. Insert the line break on keydown instead.
+    "Enter+Shift"() {
+      if (this.event.isComposing) return
+
+      this.event.preventDefault()
+      this.insertString("\n")
+      return this.render()
+    },
+
     Tab() {
       if (this.responder?.canIncreaseNestingLevel()) {
         this.event.preventDefault()

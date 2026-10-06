@@ -71,6 +71,21 @@ const performInputTypeUsingExecCommand = async (command, { inputType, data }) =>
   await nextFrame()
 }
 
+// Simulates the event sequence a browser fires for Return: a keydown and, unless it was
+// canceled, a beforeinput carrying the inputType that browser assigns to the keystroke.
+const pressReturn = async ({ shiftKey, inputType }) => {
+  inputEvents = []
+  await nextFrame()
+
+  const element = document.activeElement
+  if (triggerEvent(element, "keydown", { key: "Enter", keyCode: 13, shiftKey })) {
+    triggerInputEvent(element, "beforeinput", { inputType })
+  }
+
+  await nextFrame()
+  await nextFrame()
+}
+
 testGroup("Level 2 Input", testOptions, () => {
   test("insertText", async () => {
     await performInputTypeUsingExecCommand("insertText", { inputType: "insertText", data: "abc" })
@@ -113,6 +128,42 @@ testGroup("Level 2 Input", testOptions, () => {
     assert.blockAttributes([ 0, 4 ], [ "quote" ])
     assert.blockAttributes([ 4, 5 ], [])
     expectDocument("abc\n\n")
+  })
+
+  // Safari on macOS reports Shift+Return as insertParagraph, the same inputType as a plain Return,
+  // while Chrome and Firefox report it as insertLineBreak.
+  test("Shift+Return inside a list item inserts a line break when the browser reports insertParagraph", async () => {
+    await clickToolbarButton({ attribute: "bullet" })
+    insertString("abc")
+    await pressReturn({ shiftKey: true, inputType: "insertParagraph" })
+    insertString("def")
+
+    assert.equal(getDocument().getBlockCount(), 1)
+    assert.blockAttributes([ 0, 8 ], [ "bulletList", "bullet" ])
+    expectDocument("abc\ndef\n")
+  })
+
+  test("Shift+Return inside a list item inserts a line break when the browser reports insertLineBreak", async () => {
+    await clickToolbarButton({ attribute: "bullet" })
+    insertString("abc")
+    await pressReturn({ shiftKey: true, inputType: "insertLineBreak" })
+    insertString("def")
+
+    assert.equal(getDocument().getBlockCount(), 1)
+    assert.blockAttributes([ 0, 8 ], [ "bulletList", "bullet" ])
+    expectDocument("abc\ndef\n")
+  })
+
+  test("Return inside a list item starts a new list item", async () => {
+    await clickToolbarButton({ attribute: "bullet" })
+    insertString("abc")
+    await pressReturn({ shiftKey: false, inputType: "insertParagraph" })
+    insertString("def")
+
+    assert.equal(getDocument().getBlockCount(), 2)
+    assert.blockAttributes([ 0, 4 ], [ "bulletList", "bullet" ])
+    assert.blockAttributes([ 4, 8 ], [ "bulletList", "bullet" ])
+    expectDocument("abc\ndef\n")
   })
 
   test("formatBold", async () => {
