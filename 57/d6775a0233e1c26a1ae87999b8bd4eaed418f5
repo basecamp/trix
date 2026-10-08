@@ -1,0 +1,29 @@
+src/trix/models/html_sanitizer.js
+  s_c8ecb2a9cf2c3a::t_1871e4acbe3bb7 26-30
+src/test/system/html_loading_test.js
+  s_c8ecb2a9cf2c3a::t_981244fc9075e2 133-143
+src/trix/models/html_parser.js
+  s_c8ecb2a9cf2c3a::t_540237ee4be567 8
+  s_c8ecb2a9cf2c3a::t_8028f64028218b 25-30
+  s_c8ecb2a9cf2c3a::t_d92ef9cdd59d84 94
+action_text-trix/app/assets/javascripts/trix.js
+  s_c8ecb2a9cf2c3a::t_1a7873178b72c7 4281-4285,9511-9516,9594
+src/test/unit/html_sanitizer_test.js
+  s_c8ecb2a9cf2c3a::t_d9a44212d8cf16 52-69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "57d6775a0233e1c26a1ae87999b8bd4eaed418f5",
+  "prompts": {},
+  "sessions": {
+    "s_c8ecb2a9cf2c3a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ecceba0b-b8c3-41b6-89cd-16be89dcf9c8",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
