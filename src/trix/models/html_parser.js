@@ -13,6 +13,7 @@ import {
   elementContainsNode,
   findClosestElementFromNode,
   getBlockTagNames,
+  getDocumentProperty,
   makeElement,
   nodeIsAttachmentElement,
   normalizeSpaces,
@@ -105,7 +106,7 @@ export default class HTMLParser extends BasicObject {
       return this.referenceElement.parentNode.insertBefore(this.containerElement, this.referenceElement.nextSibling)
     } else {
       this.containerElement = makeElement({ tagName: "div", style: { display: "none" } })
-      return document.body.appendChild(this.containerElement)
+      return getDocumentProperty("body").appendChild(this.containerElement)
     }
   }
 

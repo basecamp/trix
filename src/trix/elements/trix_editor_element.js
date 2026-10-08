@@ -1,7 +1,10 @@
 import * as config from "trix/config"
 
 import {
+  callDocumentMethod,
+  callDocumentMethodOn,
   findClosestElementFromNode,
+  getDocumentProperty,
   handleEvent,
   handleEventOnce,
   installDefaultCSSForTagName,
@@ -18,8 +21,8 @@ let id = 0
 // Contenteditable support helpers
 
 const autofocus = function(element) {
-  if (!document.querySelector(":focus")) {
-    if (element.hasAttribute("autofocus") && document.querySelector("[autofocus]") === element) {
+  if (!callDocumentMethod("querySelector", ":focus")) {
+    if (element.hasAttribute("autofocus") && callDocumentMethod("querySelector", "[autofocus]") === element) {
       return element.focus()
     }
   }
@@ -44,17 +47,17 @@ const configureContentEditable = function(element) {
 }
 
 const disableObjectResizing = function(element) {
-  if (document.queryCommandSupported?.("enableObjectResizing")) {
-    document.execCommand("enableObjectResizing", false, false)
+  if (getDocumentProperty("queryCommandSupported") && callDocumentMethod("queryCommandSupported", "enableObjectResizing")) {
+    callDocumentMethod("execCommand", "enableObjectResizing", false, false)
     return handleEvent("mscontrolselect", { onElement: element, preventDefault: true })
   }
 }
 
 const setDefaultParagraphSeparator = function(element) {
-  if (document.queryCommandSupported?.("DefaultParagraphSeparator")) {
+  if (getDocumentProperty("queryCommandSupported") && callDocumentMethod("queryCommandSupported", "DefaultParagraphSeparator")) {
     const { tagName } = config.blockAttributes.default
     if ([ "div", "p" ].includes(tagName)) {
-      return document.execCommand("DefaultParagraphSeparator", false, tagName)
+      return callDocumentMethod("execCommand", "DefaultParagraphSeparator", false, tagName)
     }
   }
 }
@@ -278,7 +281,7 @@ class LegacyDelegate {
   get labels() {
     const labels = []
     if (this.element.id && this.element.ownerDocument) {
-      labels.push(...Array.from(this.element.ownerDocument.querySelectorAll(`label[for='${this.element.id}']`) || []))
+      labels.push(...Array.from(callDocumentMethodOn(this.element.ownerDocument, "querySelectorAll", `label[for='${this.element.id}']`) || []))
     }
 
     const label = findClosestElementFromNode(this.element, { matchingSelector: "label" })
@@ -460,7 +463,7 @@ export default class TrixEditorElement extends HTMLElement {
 
   get toolbarElement() {
     if (this.hasAttribute("toolbar")) {
-      return this.ownerDocument?.getElementById(this.getAttribute("toolbar"))
+      return this.#getElementByIdInOwnerDocument(this.getAttribute("toolbar"))
     } else if (this.parentNode) {
       const toolbarId = `trix-toolbar-${this.trixId}`
       this.setAttribute("toolbar", toolbarId)
@@ -484,7 +487,7 @@ export default class TrixEditorElement extends HTMLElement {
 
   get inputElement() {
     if (this.hasAttribute("input")) {
-      return this.ownerDocument?.getElementById(this.getAttribute("input"))
+      return this.#getElementByIdInOwnerDocument(this.getAttribute("input"))
     } else {
       return undefined
     }
@@ -631,5 +634,11 @@ export default class TrixEditorElement extends HTMLElement {
 
   reset() {
     this.value = this.defaultValue
+  }
+
+  #getElementByIdInOwnerDocument(id) {
+    if (this.ownerDocument) {
+      return callDocumentMethodOn(this.ownerDocument, "getElementById", id)
+    }
   }
 }

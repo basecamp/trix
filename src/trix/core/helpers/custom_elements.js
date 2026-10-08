@@ -1,19 +1,22 @@
 /* eslint-disable
 */
+import { callDocumentMethod, getDocumentProperty } from "./document_properties"
+
 export const installDefaultCSSForTagName = function(tagName, defaultCSS) {
   const styleElement = insertStyleElementForTagName(tagName)
   styleElement.textContent = defaultCSS.replace(/%t/g, tagName)
 }
 
 const insertStyleElementForTagName = function(tagName) {
-  const element = document.createElement("style")
+  const element = callDocumentMethod("createElement", "style")
   element.setAttribute("type", "text/css")
   element.setAttribute("data-tag-name", tagName.toLowerCase())
   const nonce = getCSPNonce()
   if (nonce) {
     element.setAttribute("nonce", nonce)
   }
-  document.head.insertBefore(element, document.head.firstChild)
+  const head = getDocumentProperty("head")
+  head.insertBefore(element, head.firstChild)
   return element
 }
 
@@ -25,4 +28,4 @@ const getCSPNonce = function() {
   }
 }
 
-const getMetaElement = (name) => document.head.querySelector(`meta[name=${name}]`)
+const getMetaElement = (name) => getDocumentProperty("head").querySelector(`meta[name=${name}]`)

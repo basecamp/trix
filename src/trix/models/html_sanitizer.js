@@ -1,10 +1,25 @@
 import BasicObject from "trix/core/basic_object"
 
-import { escapeAngleBracketsInJSON, nodeIsAttachmentElement, removeNode, tagName, walkTree } from "trix/core/helpers"
+import {
+  callDocumentMethodOn,
+  escapeAngleBracketsInJSON,
+  getDocumentProperty,
+  nodeIsAttachmentElement,
+  removeNode,
+  tagName,
+  walkTree,
+} from "trix/core/helpers"
 import DOMPurify from "dompurify"
 import * as config from "trix/config"
 
 const ALLOWED_ATTRIBUTE_PATTERN = /^data-trix-/
+const EVENT_HANDLER_ATTRIBUTE_PATTERN = /^on/i
+
+// Configuring the shared DOMPurify instance would replace the configuration an application
+// set on it, so attributes are validated with an instance of their own. It produces no HTML,
+// so it needs no Trusted Types policy, and a second "dompurify" policy would violate a CSP
+// that allows only one.
+const attributePurifier = DOMPurify()
 
 DOMPurify.addHook("uponSanitizeAttribute", function (node, data) {
   if (data.attrName === "data-trix-serialized-attributes") {
@@ -30,6 +45,18 @@ export default class HTMLSanitizer extends BasicObject {
     const sanitizedElement = new this(html, options).sanitize()
     const sanitizedHtml = sanitizedElement.getHTML ? sanitizedElement.getHTML() : sanitizedElement.outerHTML
     element.innerHTML = sanitizedHtml
+  }
+
+  static createAttributeValidator() {
+    attributePurifier.setConfig(Object.assign({}, config.dompurify, { TRUSTED_TYPES_POLICY: null }))
+
+    return (element, name, value) => {
+      if (EVENT_HANDLER_ATTRIBUTE_PATTERN.test(name)) {
+        return false
+      } else {
+        return attributePurifier.isValidAttribute(tagName(element), name, value)
+      }
+    }
   }
 
   static sanitize(html, options) {
@@ -174,20 +201,24 @@ const removeContentAfterClosingHTMLTag = function(html) {
 // the marker lands it carries nothing that would change the tokenizer's state there.
 const offsetOfClosingHTMLTag = function(html) {
   const marker = `trix-closing-html-tag-${Math.random().toString(36).slice(2)}`
-  const doc = document.implementation.createHTMLDocument("")
-  doc.documentElement.innerHTML = html.replace(CLOSING_HTML_TAG_PATTERN, (tag, offset) => `<${marker} data-offset=${offset}`)
+  const doc = createInertHTMLDocument()
+  getDocumentProperty("documentElement", doc).innerHTML = html.replace(CLOSING_HTML_TAG_PATTERN, (tag, offset) => `<${marker} data-offset=${offset}`)
 
-  const offsets = Array.from(doc.querySelectorAll(marker), (element) => parseInt(element.getAttribute("data-offset"), 10))
+  const markers = callDocumentMethodOn(doc, "querySelectorAll", marker)
+  const offsets = Array.from(markers, (element) => parseInt(element.getAttribute("data-offset"), 10))
   return offsets.length ? offsets.reduce((lowest, offset) => Math.min(lowest, offset)) : -1
 }
 
 const createBodyElementForHTML = function(html = "") {
-  const doc = document.implementation.createHTMLDocument("")
-  doc.documentElement.innerHTML = removeContentAfterClosingHTMLTag(html)
+  const doc = createInertHTMLDocument()
+  getDocumentProperty("documentElement", doc).innerHTML = removeContentAfterClosingHTMLTag(html)
 
-  Array.from(doc.head.querySelectorAll("style")).forEach((element) => {
-    doc.body.appendChild(element)
+  const body = getDocumentProperty("body", doc)
+  Array.from(getDocumentProperty("head", doc).querySelectorAll("style")).forEach((element) => {
+    body.appendChild(element)
   })
 
-  return doc.body
+  return body
 }
+
+const createInertHTMLDocument = () => getDocumentProperty("implementation").createHTMLDocument("")

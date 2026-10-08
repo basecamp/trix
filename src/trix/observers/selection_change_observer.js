@@ -1,4 +1,5 @@
 import BasicObject from "trix/core/basic_object"
+import { callDocumentMethod } from "trix/core/helpers/document_properties"
 
 export default class SelectionChangeObserver extends BasicObject {
   constructor() {
@@ -10,14 +11,14 @@ export default class SelectionChangeObserver extends BasicObject {
   start() {
     if (!this.started) {
       this.started = true
-      document.addEventListener("selectionchange", this.update, true)
+      callDocumentMethod("addEventListener", "selectionchange", this.update, true)
     }
   }
 
   stop() {
     if (this.started) {
       this.started = false
-      return document.removeEventListener("selectionchange", this.update, true)
+      return callDocumentMethod("removeEventListener", "selectionchange", this.update, true)
     }
   }
 

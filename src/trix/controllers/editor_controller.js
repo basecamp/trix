@@ -15,7 +15,7 @@ import Editor from "trix/models/editor"
 import AttachmentManager from "trix/models/attachment_manager"
 import SelectionManager from "trix/models/selection_manager"
 
-import { getBlockConfig, objectsAreEqual, rangeIsCollapsed, rangesAreEqual } from "trix/core/helpers"
+import { getBlockConfig, getDocumentProperty, objectsAreEqual, rangeIsCollapsed, rangesAreEqual } from "trix/core/helpers"
 import { selectionChangeObserver } from "trix/observers/selection_change_observer"
 
 const snapshotsAreEqual = (a, b) => rangesAreEqual(a.selectedRange, b.selectedRange) && a.document.isEqualTo(b.document)
@@ -571,7 +571,12 @@ export default class EditorController extends Controller {
   }
 
   isFocused() {
-    return this.editorElement === this.editorElement.ownerDocument?.activeElement
+    const { ownerDocument } = this.editorElement
+    if (ownerDocument) {
+      return this.editorElement === getDocumentProperty("activeElement", ownerDocument)
+    } else {
+      return false
+    }
   }
 
   // Detect "Cursor disappears sporadically" Firefox bug.

@@ -1,4 +1,4 @@
-import { createEvent, makeElement } from "trix/core/helpers"
+import { callDocumentMethod, createEvent, makeElement } from "trix/core/helpers"
 
 import ElementStore from "trix/core/collections/element_store"
 import ObjectGroup from "trix/core/collections/object_group"
@@ -72,7 +72,7 @@ export default class DocumentView extends ObjectView {
   }
 
   createDocumentFragmentForSync() {
-    const fragment = document.createDocumentFragment()
+    const fragment = callDocumentMethod("createDocumentFragment")
 
     Array.from(this.shadowElement.childNodes).forEach((node) => {
       fragment.appendChild(node.cloneNode(true))

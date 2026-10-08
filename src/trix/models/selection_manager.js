@@ -6,6 +6,7 @@ import LocationMapper from "trix/models/location_mapper"
 import PointMapper from "trix/models/point_mapper"
 
 import {
+  callDocumentMethod,
   elementContainsNode,
   getDOMRange,
   getDOMSelection,
@@ -164,7 +165,7 @@ export default class SelectionManager extends BasicObject {
       : this.findContainerAndOffsetFromLocation(locationRange[1]) || rangeStart
 
     if (rangeStart != null && rangeEnd != null) {
-      const domRange = document.createRange()
+      const domRange = callDocumentMethod("createRange")
       domRange.setStart(...Array.from(rangeStart || []))
       domRange.setEnd(...Array.from(rangeEnd || []))
       return domRange
