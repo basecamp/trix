@@ -4384,8 +4384,19 @@ $\
     // Private
 
     sanitizeElements() {
-      const walker = walkTree(this.body);
       const nodesToRemove = [];
+      this.sanitizeTree(this.body, nodesToRemove);
+      nodesToRemove.forEach(node => removeNode(node));
+      return this.body;
+    }
+
+    // A TreeWalker does not descend into a <template>'s content: that content lives in a
+    // separate DocumentFragment rather than as child nodes of the element. Since both the
+    // forbidden-element list and the attribute allowlist ride this one traversal, anything
+    // inside a template would otherwise be left entirely unsanitized. Recurse into the
+    // fragment, the same way DOMPurify handles this structure in _sanitizeShadowDOM.
+    sanitizeTree(root, nodesToRemove) {
+      const walker = walkTree(root);
       while (walker.nextNode()) {
         const node = walker.currentNode;
         switch (node.nodeType) {
@@ -4394,6 +4405,9 @@ $\
               nodesToRemove.push(node);
             } else {
               this.sanitizeElement(node);
+              if (node.content instanceof DocumentFragment) {
+                this.sanitizeTree(node.content, nodesToRemove);
+              }
             }
             break;
           case Node.COMMENT_NODE:
@@ -4401,8 +4415,6 @@ $\
             break;
         }
       }
-      nodesToRemove.forEach(node => removeNode(node));
-      return this.body;
     }
     sanitizeElement(element) {
       if (element.hasAttribute("href")) {
