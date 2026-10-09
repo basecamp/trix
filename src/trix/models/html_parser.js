@@ -5,7 +5,7 @@
 import * as config from "trix/config"
 import BasicObject from "trix/core/basic_object"
 import Document from "trix/models/document"
-import HTMLSanitizer from "trix/models/html_sanitizer"
+import HTMLSanitizer, { DEFAULT_FORBIDDEN_ELEMENTS } from "trix/models/html_sanitizer"
 
 import {
   arraysAreEqual,
@@ -21,6 +21,12 @@ import {
   tagName,
   walkTree,
 } from "trix/core/helpers"
+
+// Pasted HTML can carry a stylesheet that getComputedStyle needs to map external
+// formatting (e.g. `.bold { font-weight: bold }`) onto Trix attributes, so the parser
+// keeps <style> elements the sanitizer forbids by default. nodeFilter rejects them as
+// content and the hidden container is discarded, so a <style> never reaches the document.
+const PARSER_FORBIDDEN_ELEMENTS = DEFAULT_FORBIDDEN_ELEMENTS.filter((element) => element !== "style")
 
 const pieceForString = (string, attributes = {}) => {
   const type = "string"
@@ -85,7 +91,7 @@ export default class HTMLParser extends BasicObject {
   parse() {
     try {
       this.createHiddenContainer()
-      HTMLSanitizer.setHTML(this.containerElement, this.html, { purifyOptions: this.purifyOptions })
+      HTMLSanitizer.setHTML(this.containerElement, this.html, { forbiddenElements: PARSER_FORBIDDEN_ELEMENTS, purifyOptions: this.purifyOptions })
       const walker = walkTree(this.containerElement, { usingFilter: nodeFilter })
       while (walker.nextNode()) {
         this.processNode(walker.currentNode)

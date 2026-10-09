@@ -4278,7 +4278,11 @@ $\
   const JSON_ATTRIBUTES = "data-trix-attachment data-trix-attributes".split(" ");
   const DEFAULT_ALLOWED_ATTRIBUTES = "style href src width height language class".split(" ");
   const DEFAULT_FORBIDDEN_PROTOCOLS = "javascript:".split(" ");
-  const DEFAULT_FORBIDDEN_ELEMENTS = "script iframe form noscript".split(" ");
+  // A <style> element in sanitized content applies its rules to the whole document, so
+  // attachment content carrying one can exfiltrate data from the page it renders in through
+  // attribute-selector CSS. It's forbidden like <script>. HTMLParser opts back out: it reads
+  // pasted stylesheets through getComputedStyle and never emits the <style> as content.
+  const DEFAULT_FORBIDDEN_ELEMENTS = "script iframe form noscript style".split(" ");
   class HTMLSanitizer extends BasicObject {
     static setHTML(element, html, options) {
       const sanitizedElement = new this(html, options).sanitize();
@@ -9504,6 +9508,12 @@ $\
       no-case-declarations,
       no-irregular-whitespace,
   */
+
+  // Pasted HTML can carry a stylesheet that getComputedStyle needs to map external
+  // formatting (e.g. `.bold { font-weight: bold }`) onto Trix attributes, so the parser
+  // keeps <style> elements the sanitizer forbids by default. nodeFilter rejects them as
+  // content and the hidden container is discarded, so a <style> never reaches the document.
+  const PARSER_FORBIDDEN_ELEMENTS = DEFAULT_FORBIDDEN_ELEMENTS.filter(element => element !== "style");
   const pieceForString = function (string) {
     let attributes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     const type = "string";
@@ -9581,6 +9591,7 @@ $\
       try {
         this.createHiddenContainer();
         HTMLSanitizer.setHTML(this.containerElement, this.html, {
+          forbiddenElements: PARSER_FORBIDDEN_ELEMENTS,
           purifyOptions: this.purifyOptions
         });
         const walker = walkTree(this.containerElement, {
