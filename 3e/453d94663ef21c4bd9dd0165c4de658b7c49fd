@@ -1,0 +1,30 @@
+src/test/unit/html_sanitizer_test.js
+  s_35d7904b431cb5::t_eb5f987ac2506e 193-256
+  s_c8ecb2a9cf2c3a::t_59219bc8bd7b8b 192
+src/trix/models/html_sanitizer.js
+  s_35d7904b431cb5::t_4b35c762b57405 104-117,126-128
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3e453d94663ef21c4bd9dd0165c4de658b7c49fd",
+  "prompts": {},
+  "sessions": {
+    "s_35d7904b431cb5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5600e83e-2977-4fb2-8a29-178c7255a71c",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    },
+    "s_c8ecb2a9cf2c3a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ecceba0b-b8c3-41b6-89cd-16be89dcf9c8",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
