@@ -10102,7 +10102,7 @@ $\
       // comment nodes from the identical byte sequence sitting in a text node
       // (e.g. inside a raw-text <style> element), where removing it corrupts
       // benign content and can fuse inert text into real markup.
-      const walker = document.createTreeWalker(element, NodeFilter.SHOW_COMMENT);
+      const walker = callDocumentMethodOn(element.ownerDocument, "createTreeWalker", element, NodeFilter.SHOW_COMMENT);
       const markers = [];
       while (walker.nextNode()) {
         if (walker.currentNode.data === "block") {
