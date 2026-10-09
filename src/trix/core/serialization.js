@@ -1,7 +1,7 @@
 /* eslint-disable
     no-empty,
 */
-import { removeNode } from "trix/core/helpers"
+import { callDocumentMethodOn, removeNode } from "trix/core/helpers"
 
 import DocumentView from "trix/views/document_view"
 import Document from "trix/models/document"
@@ -19,8 +19,6 @@ const unserializableAttributeNames = [
 ]
 const serializedAttributesAttribute = "data-trix-serialized-attributes"
 const serializedAttributesSelector = `[${serializedAttributesAttribute}]`
-
-const blockCommentPattern = new RegExp("<!--block-->", "g")
 
 const serializers = {
   "application/json": function(serializable) {
@@ -73,7 +71,21 @@ const serializers = {
       } catch (error) {}
     })
 
-    return element.innerHTML.replace(blockCommentPattern, "")
+    // Strip Trix's block boundary markers structurally, as comment nodes. A
+    // string replace over serialized HTML cannot tell Trix's own <!--block-->
+    // comment nodes from the identical byte sequence sitting in a text node
+    // (e.g. inside a raw-text <style> element), where removing it corrupts
+    // benign content and can fuse inert text into real markup.
+    const walker = callDocumentMethodOn(element.ownerDocument, "createTreeWalker", element, NodeFilter.SHOW_COMMENT)
+    const markers = []
+    while (walker.nextNode()) {
+      if (walker.currentNode.data === "block") {
+        markers.push(walker.currentNode)
+      }
+    }
+    markers.forEach((node) => node.remove())
+
+    return element.innerHTML
   },
 }
 
