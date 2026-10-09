@@ -1,0 +1,14 @@
+action_text-trix/app/assets/javascripts/trix.js
+  h_7c48a88bf05c0d 4388-4399,4408-4410
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b0ee8179f89d7a5bc37f7756ab8cb3995e38e11e",
+  "prompts": {},
+  "humans": {
+    "h_7c48a88bf05c0d": {
+      "author": "Jeremy Daer <jeremy@37signals.com>"
+    }
+  }
+}
