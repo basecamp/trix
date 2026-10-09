@@ -3,7 +3,7 @@ import MutationObserver from "trix/observers/mutation_observer"
 import FileVerificationOperation from "trix/operations/file_verification_operation"
 import FlakyAndroidKeyboardDetector from "../models/flaky_android_keyboard_detector"
 
-import { handleEvent, innerElementIsActive } from "trix/core/helpers"
+import { callDocumentMethod, handleEvent, innerElementIsActive } from "trix/core/helpers"
 
 export default class InputController extends BasicObject {
 
@@ -77,7 +77,7 @@ export default class InputController extends BasicObject {
   }
 
   createLinkHTML(href, text) {
-    const link = document.createElement("a")
+    const link = callDocumentMethod("createElement", "a")
     link.href = href
     link.textContent = text ? text : href
     return link.outerHTML

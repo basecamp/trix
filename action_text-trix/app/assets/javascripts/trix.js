@@ -285,6 +285,41 @@ Copyright © 2026 37signals, LLC
     }
   };
 
+  // An element with a name attribute, such as <img name="createElement">, shadows the document
+  // property of the same name. Read document properties from the document's prototype chain
+  // instead, so markup in the page can't replace them.
+  const getDocumentProperty = function (name) {
+    let doc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
+    const descriptor = findPrototypePropertyDescriptor(doc, name);
+    if (descriptor !== null && descriptor !== void 0 && descriptor.get) {
+      return descriptor.get.call(doc);
+    } else {
+      return descriptor === null || descriptor === void 0 ? void 0 : descriptor.value;
+    }
+  };
+  const callDocumentMethod = function (name) {
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+    return callDocumentMethodOn(document, name, ...args);
+  };
+  const callDocumentMethodOn = function (doc, name) {
+    for (var _len2 = arguments.length, args = new Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+      args[_key2 - 2] = arguments[_key2];
+    }
+    return getDocumentProperty(name, doc).apply(doc, args);
+  };
+  const findPrototypePropertyDescriptor = function (object, name) {
+    let prototype = Object.getPrototypeOf(object);
+    while (prototype) {
+      const descriptor = Object.getOwnPropertyDescriptor(prototype, name);
+      if (descriptor) {
+        return descriptor;
+      }
+      prototype = Object.getPrototypeOf(prototype);
+    }
+  };
+
   const ZERO_WIDTH_SPACE = "\uFEFF";
   const NON_BREAKING_SPACE = "\u00A0";
   const OBJECT_REPLACEMENT_CHARACTER = "\uFFFC";
@@ -297,7 +332,7 @@ Copyright © 2026 37signals, LLC
     return this;
   };
 
-  const html$2 = document.documentElement;
+  const html$2 = getDocumentProperty("documentElement");
   const match = html$2.matches;
   const handleEvent = function (eventName) {
     let {
@@ -342,7 +377,7 @@ Copyright © 2026 37signals, LLC
     } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     bubbles = bubbles !== false;
     cancelable = cancelable !== false;
-    const event = document.createEvent("Events");
+    const event = callDocumentMethod("createEvent", "Events");
     event.initEvent(eventName, bubbles, cancelable);
     if (attributes != null) {
       extend.call(event, attributes);
@@ -402,7 +437,10 @@ Copyright © 2026 37signals, LLC
     }
     return element;
   };
-  const innerElementIsActive = element => document.activeElement !== element && elementContainsNode(element, document.activeElement);
+  const innerElementIsActive = function (element) {
+    const activeElement = getDocumentProperty("activeElement");
+    return activeElement !== element && elementContainsNode(element, activeElement);
+  };
   const elementContainsNode = function (element, node) {
     if (!element || !node) {
       return;
@@ -465,7 +503,7 @@ Copyright © 2026 37signals, LLC
           return NodeFilter.SHOW_ALL;
       }
     })();
-    return document.createTreeWalker(tree, whatToShow, usingFilter != null ? usingFilter : null, expandEntityReferences === true);
+    return callDocumentMethod("createTreeWalker", tree, whatToShow, usingFilter != null ? usingFilter : null, expandEntityReferences === true);
   };
   const tagName = element => {
     var _element$tagName;
@@ -482,7 +520,7 @@ Copyright © 2026 37signals, LLC
         attributes: options
       };
     }
-    const element = document.createElement(tag);
+    const element = callDocumentMethod("createElement", tag);
     if (options.editable != null) {
       if (options.attributes == null) {
         options.attributes = {};
@@ -597,8 +635,8 @@ Copyright © 2026 37signals, LLC
         callback(input.files);
         removeNode(input);
       });
-      removeNode(document.getElementById(this.fileInputId));
-      document.body.appendChild(input);
+      removeNode(callDocumentMethod("getElementById", this.fileInputId));
+      getDocumentProperty("body").appendChild(input);
       input.click();
     }
   };
@@ -1060,14 +1098,15 @@ $\
     styleElement.textContent = defaultCSS.replace(/%t/g, tagName);
   };
   const insertStyleElementForTagName = function (tagName) {
-    const element = document.createElement("style");
+    const element = callDocumentMethod("createElement", "style");
     element.setAttribute("type", "text/css");
     element.setAttribute("data-tag-name", tagName.toLowerCase());
     const nonce = getCSPNonce();
     if (nonce) {
       element.setAttribute("nonce", nonce);
     }
-    document.head.insertBefore(element, document.head.firstChild);
+    const head = getDocumentProperty("head");
+    head.insertBefore(element, head.firstChild);
     return element;
   };
   const getCSPNonce = function () {
@@ -1080,7 +1119,7 @@ $\
       return nonce == "" ? content : nonce;
     }
   };
-  const getMetaElement = name => document.head.querySelector("meta[name=".concat(name, "]"));
+  const getMetaElement = name => getDocumentProperty("head").querySelector("meta[name=".concat(name, "]"));
 
   const testTransferData = {
     "application/x-trix-feature-detection": "test"
@@ -1210,13 +1249,13 @@ $\
     start() {
       if (!this.started) {
         this.started = true;
-        document.addEventListener("selectionchange", this.update, true);
+        callDocumentMethod("addEventListener", "selectionchange", this.update, true);
       }
     }
     stop() {
       if (this.started) {
         this.started = false;
-        return document.removeEventListener("selectionchange", this.update, true);
+        return callDocumentMethod("removeEventListener", "selectionchange", this.update, true);
       }
     }
     registerSelectionManager(selectionManager) {
@@ -4262,6 +4301,13 @@ $\
   var purify = createDOMPurify();
 
   const ALLOWED_ATTRIBUTE_PATTERN = /^data-trix-/;
+  const EVENT_HANDLER_ATTRIBUTE_PATTERN = /^on/i;
+
+  // Configuring the shared DOMPurify instance would replace the configuration an application
+  // set on it, so attributes are validated with an instance of their own. It produces no HTML,
+  // so it needs no Trusted Types policy, and a second "dompurify" policy would violate a CSP
+  // that allows only one.
+  const attributePurifier = purify();
   purify.addHook("uponSanitizeAttribute", function (node, data) {
     if (data.attrName === "data-trix-serialized-attributes") {
       data.keepAttr = false;
@@ -4288,6 +4334,18 @@ $\
       const sanitizedElement = new this(html, options).sanitize();
       const sanitizedHtml = sanitizedElement.getHTML ? sanitizedElement.getHTML() : sanitizedElement.outerHTML;
       element.innerHTML = sanitizedHtml;
+    }
+    static createAttributeValidator() {
+      attributePurifier.setConfig(Object.assign({}, dompurify, {
+        TRUSTED_TYPES_POLICY: null
+      }));
+      return (element, name, value) => {
+        if (EVENT_HANDLER_ATTRIBUTE_PATTERN.test(name)) {
+          return false;
+        } else {
+          return attributePurifier.isValidAttribute(tagName(element), name, value);
+        }
+      };
     }
     static sanitize(html, options) {
       const sanitizer = new this(html, options);
@@ -4422,20 +4480,23 @@ $\
   // the marker lands it carries nothing that would change the tokenizer's state there.
   const offsetOfClosingHTMLTag = function (html) {
     const marker = "trix-closing-html-tag-".concat(Math.random().toString(36).slice(2));
-    const doc = document.implementation.createHTMLDocument("");
-    doc.documentElement.innerHTML = html.replace(CLOSING_HTML_TAG_PATTERN, (tag, offset) => "<".concat(marker, " data-offset=").concat(offset));
-    const offsets = Array.from(doc.querySelectorAll(marker), element => parseInt(element.getAttribute("data-offset"), 10));
+    const doc = createInertHTMLDocument();
+    getDocumentProperty("documentElement", doc).innerHTML = html.replace(CLOSING_HTML_TAG_PATTERN, (tag, offset) => "<".concat(marker, " data-offset=").concat(offset));
+    const markers = callDocumentMethodOn(doc, "querySelectorAll", marker);
+    const offsets = Array.from(markers, element => parseInt(element.getAttribute("data-offset"), 10));
     return offsets.length ? offsets.reduce((lowest, offset) => Math.min(lowest, offset)) : -1;
   };
   const createBodyElementForHTML = function () {
     let html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
-    const doc = document.implementation.createHTMLDocument("");
-    doc.documentElement.innerHTML = removeContentAfterClosingHTMLTag(html);
-    Array.from(doc.head.querySelectorAll("style")).forEach(element => {
-      doc.body.appendChild(element);
+    const doc = createInertHTMLDocument();
+    getDocumentProperty("documentElement", doc).innerHTML = removeContentAfterClosingHTMLTag(html);
+    const body = getDocumentProperty("body", doc);
+    Array.from(getDocumentProperty("head", doc).querySelectorAll("style")).forEach(element => {
+      body.appendChild(element);
     });
-    return doc.body;
+    return body;
   };
+  const createInertHTMLDocument = () => getDocumentProperty("implementation").createHTMLDocument("");
 
   const {
     css: css$2
@@ -4523,7 +4584,7 @@ $\
         }
         if (size) {
           if (name) {
-            figcaption.appendChild(document.createTextNode(" "));
+            figcaption.appendChild(callDocumentMethod("createTextNode", " "));
           }
           const sizeElement = makeElement({
             tagName: "span",
@@ -4720,7 +4781,7 @@ $\
     createStringNodes() {
       var _this$textConfig;
       if ((_this$textConfig = this.textConfig) !== null && _this$textConfig !== void 0 && _this$textConfig.plaintext) {
-        return [document.createTextNode(this.string)];
+        return [callDocumentMethod("createTextNode", this.string)];
       } else {
         const nodes = [];
         const iterable = this.string.split("\n");
@@ -4731,7 +4792,7 @@ $\
             nodes.push(element);
           }
           if (substring.length) {
-            const node = document.createTextNode(this.preserveSpaces(substring));
+            const node = callDocumentMethod("createTextNode", this.preserveSpaces(substring));
             nodes.push(node);
           }
         }
@@ -4852,7 +4913,7 @@ $\
       this.attributes = this.block.getAttributes();
     }
     createNodes() {
-      const comment = document.createComment("block");
+      const comment = callDocumentMethod("createComment", "block");
       const nodes = [comment];
       if (this.block.isEmpty()) {
         nodes.push(makeElement("br"));
@@ -4987,7 +5048,7 @@ $\
       return defer(() => this.garbageCollectCachedViews());
     }
     createDocumentFragmentForSync() {
-      const fragment = document.createDocumentFragment();
+      const fragment = callDocumentMethod("createDocumentFragment");
       Array.from(this.shadowElement.childNodes).forEach(node => {
         fragment.appendChild(node.cloneNode(true));
       });
@@ -9619,7 +9680,7 @@ $\
             display: "none"
           }
         });
-        return document.body.appendChild(this.containerElement);
+        return getDocumentProperty("body").appendChild(this.containerElement);
       }
     }
     removeHiddenContainer() {
@@ -10023,13 +10084,16 @@ $\
       });
 
       // Rewrite elements with serialized attribute overrides
+      const attributeIsAllowed = HTMLSanitizer.createAttributeValidator();
       Array.from(element.querySelectorAll(serializedAttributesSelector)).forEach(el => {
         try {
           const attributes = JSON.parse(el.getAttribute(serializedAttributesAttribute));
           el.removeAttribute(serializedAttributesAttribute);
           for (const name in attributes) {
-            const value = attributes[name];
-            el.setAttribute(name, value);
+            const value = String(attributes[name]);
+            if (attributeIsAllowed(el, name, value)) {
+              el.setAttribute(name, value);
+            }
           }
         } catch (error) {}
       });
@@ -11449,22 +11513,22 @@ $\
         y
       } = _ref;
       let domRange;
-      if (document.caretPositionFromPoint) {
+      if (getDocumentProperty("caretPositionFromPoint")) {
         const {
           offsetNode,
           offset
-        } = document.caretPositionFromPoint(x, y);
-        domRange = document.createRange();
+        } = callDocumentMethod("caretPositionFromPoint", x, y);
+        domRange = callDocumentMethod("createRange");
         domRange.setStart(offsetNode, offset);
         return domRange;
-      } else if (document.caretRangeFromPoint) {
-        return document.caretRangeFromPoint(x, y);
-      } else if (document.body.createTextRange) {
+      } else if (getDocumentProperty("caretRangeFromPoint")) {
+        return callDocumentMethod("caretRangeFromPoint", x, y);
+      } else if (getDocumentProperty("body").createTextRange) {
         const originalDOMRange = getDOMRange();
         try {
           // IE 11 throws "Unspecified error" when using moveToPoint
           // during a drag-and-drop operation.
-          const textRange = document.body.createTextRange();
+          const textRange = getDocumentProperty("body").createTextRange();
           textRange.moveToPoint(x, y);
           textRange.select();
         } catch (error) {}
@@ -11609,7 +11673,7 @@ $\
       const rangeStart = this.findContainerAndOffsetFromLocation(locationRange[0]);
       const rangeEnd = rangeIsCollapsed(locationRange) ? rangeStart : this.findContainerAndOffsetFromLocation(locationRange[1]) || rangeStart;
       if (rangeStart != null && rangeEnd != null) {
-        const domRange = document.createRange();
+        const domRange = callDocumentMethod("createRange");
         domRange.setStart(...Array.from(rangeStart || []));
         domRange.setEnd(...Array.from(rangeEnd || []));
         return domRange;
@@ -12406,7 +12470,7 @@ $\
       }
     }
     createLinkHTML(href, text) {
-      const link = document.createElement("a");
+      const link = callDocumentMethod("createElement", "a");
       link.href = href;
       link.textContent = text ? text : href;
       return link.outerHTML;
@@ -12547,7 +12611,7 @@ $\
         tagName: "div",
         editable: true
       });
-      document.body.appendChild(element);
+      getDocumentProperty("body").appendChild(element);
       element.focus();
       return requestAnimationFrame(() => {
         const html = element.innerHTML;
@@ -13628,7 +13692,7 @@ $\
     }
   });
   const staticRangeToRange = function (staticRange) {
-    const range = document.createRange();
+    const range = callDocumentMethod("createRange");
     range.setStart(staticRange.startContainer, staticRange.startOffset);
     range.setEnd(staticRange.endContainer, staticRange.endOffset);
     return range;
@@ -14394,8 +14458,14 @@ $\
       }
     }
     isFocused() {
-      var _this$editorElement$o;
-      return this.editorElement === ((_this$editorElement$o = this.editorElement.ownerDocument) === null || _this$editorElement$o === void 0 ? void 0 : _this$editorElement$o.activeElement);
+      const {
+        ownerDocument
+      } = this.editorElement;
+      if (ownerDocument) {
+        return this.editorElement === getDocumentProperty("activeElement", ownerDocument);
+      } else {
+        return false;
+      }
     }
 
     // Detect "Cursor disappears sporadically" Firefox bug.
@@ -14495,8 +14565,7 @@ $\
 
     get editorElements() {
       if (this.id) {
-        var _this$ownerDocument;
-        const nodeList = (_this$ownerDocument = this.ownerDocument) === null || _this$ownerDocument === void 0 ? void 0 : _this$ownerDocument.querySelectorAll("trix-editor[toolbar=\"".concat(this.id, "\"]"));
+        const nodeList = callDocumentMethodOn(this.ownerDocument, "querySelectorAll", "trix-editor[toolbar=\"".concat(this.id, "\"]"));
         return Array.from(nodeList);
       } else {
         return [];
@@ -14513,8 +14582,8 @@ $\
   // Contenteditable support helpers
 
   const autofocus = function (element) {
-    if (!document.querySelector(":focus")) {
-      if (element.hasAttribute("autofocus") && document.querySelector("[autofocus]") === element) {
+    if (!callDocumentMethod("querySelector", ":focus")) {
+      if (element.hasAttribute("autofocus") && callDocumentMethod("querySelector", "[autofocus]") === element) {
         return element.focus();
       }
     }
@@ -14536,9 +14605,8 @@ $\
     return setDefaultParagraphSeparator(element);
   };
   const disableObjectResizing = function (element) {
-    var _document$queryComman, _document;
-    if ((_document$queryComman = (_document = document).queryCommandSupported) !== null && _document$queryComman !== void 0 && _document$queryComman.call(_document, "enableObjectResizing")) {
-      document.execCommand("enableObjectResizing", false, false);
+    if (getDocumentProperty("queryCommandSupported") && callDocumentMethod("queryCommandSupported", "enableObjectResizing")) {
+      callDocumentMethod("execCommand", "enableObjectResizing", false, false);
       return handleEvent("mscontrolselect", {
         onElement: element,
         preventDefault: true
@@ -14546,13 +14614,12 @@ $\
     }
   };
   const setDefaultParagraphSeparator = function (element) {
-    var _document$queryComman2, _document2;
-    if ((_document$queryComman2 = (_document2 = document).queryCommandSupported) !== null && _document$queryComman2 !== void 0 && _document$queryComman2.call(_document2, "DefaultParagraphSeparator")) {
+    if (getDocumentProperty("queryCommandSupported") && callDocumentMethod("queryCommandSupported", "DefaultParagraphSeparator")) {
       const {
         tagName
       } = attributes.default;
       if (["div", "p"].includes(tagName)) {
-        return document.execCommand("DefaultParagraphSeparator", false, tagName);
+        return callDocumentMethod("execCommand", "DefaultParagraphSeparator", false, tagName);
       }
     }
   };
@@ -14741,7 +14808,7 @@ $\
     get labels() {
       const labels = [];
       if (this.element.id && this.element.ownerDocument) {
-        labels.push(...Array.from(this.element.ownerDocument.querySelectorAll("label[for='".concat(this.element.id, "']")) || []));
+        labels.push(...Array.from(callDocumentMethodOn(this.element.ownerDocument, "querySelectorAll", "label[for='".concat(this.element.id, "']")) || []));
       }
       const label = findClosestElementFromNode(this.element, {
         matchingSelector: "label"
@@ -14805,9 +14872,11 @@ $\
     }
   }
   var _delegate = /*#__PURE__*/new WeakMap();
+  var _getElementByIdInOwnerDocument = /*#__PURE__*/new WeakSet();
   class TrixEditorElement extends HTMLElement {
     constructor() {
       super();
+      _classPrivateMethodInitSpec(this, _getElementByIdInOwnerDocument);
       _classPrivateFieldInitSpec(this, _delegate, {
         writable: true,
         value: void 0
@@ -14868,8 +14937,7 @@ $\
     }
     get toolbarElement() {
       if (this.hasAttribute("toolbar")) {
-        var _this$ownerDocument;
-        return (_this$ownerDocument = this.ownerDocument) === null || _this$ownerDocument === void 0 ? void 0 : _this$ownerDocument.getElementById(this.getAttribute("toolbar"));
+        return _classPrivateMethodGet(this, _getElementByIdInOwnerDocument, _getElementByIdInOwnerDocument2).call(this, this.getAttribute("toolbar"));
       } else if (this.parentNode) {
         const toolbarId = "trix-toolbar-".concat(this.trixId);
         this.setAttribute("toolbar", toolbarId);
@@ -14894,8 +14962,7 @@ $\
     }
     get inputElement() {
       if (this.hasAttribute("input")) {
-        var _this$ownerDocument2;
-        return (_this$ownerDocument2 = this.ownerDocument) === null || _this$ownerDocument2 === void 0 ? void 0 : _this$ownerDocument2.getElementById(this.getAttribute("input"));
+        return _classPrivateMethodGet(this, _getElementByIdInOwnerDocument, _getElementByIdInOwnerDocument2).call(this, this.getAttribute("input"));
       } else {
         return undefined;
       }
@@ -15045,6 +15112,11 @@ $\
     }
     reset() {
       this.value = this.defaultValue;
+    }
+  }
+  function _getElementByIdInOwnerDocument2(id) {
+    if (this.ownerDocument) {
+      return callDocumentMethodOn(this.ownerDocument, "getElementById", id);
     }
   }
   _defineProperty(TrixEditorElement, "formAssociated", "ElementInternals" in window);

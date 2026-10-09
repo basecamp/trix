@@ -2,7 +2,7 @@ import * as config from "trix/config"
 import ObjectView from "trix/views/object_view"
 import TextView from "trix/views/text_view"
 
-import { getBlockConfig, makeElement } from "trix/core/helpers"
+import { callDocumentMethod, getBlockConfig, makeElement } from "trix/core/helpers"
 const { css } = config
 
 export default class BlockView extends ObjectView {
@@ -13,7 +13,7 @@ export default class BlockView extends ObjectView {
   }
 
   createNodes() {
-    const comment = document.createComment("block")
+    const comment = callDocumentMethod("createComment", "block")
     const nodes = [ comment ]
     if (this.block.isEmpty()) {
       nodes.push(makeElement("br"))

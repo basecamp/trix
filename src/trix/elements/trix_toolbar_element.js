@@ -1,6 +1,6 @@
 import * as config from "trix/config"
 
-import { installDefaultCSSForTagName } from "trix/core/helpers"
+import { callDocumentMethodOn, installDefaultCSSForTagName } from "trix/core/helpers"
 
 installDefaultCSSForTagName("trix-toolbar", `\
 %t {
@@ -37,7 +37,7 @@ export default class TrixToolbarElement extends HTMLElement {
 
   get editorElements() {
     if (this.id) {
-      const nodeList = this.ownerDocument?.querySelectorAll(`trix-editor[toolbar="${this.id}"]`)
+      const nodeList = callDocumentMethodOn(this.ownerDocument, "querySelectorAll", `trix-editor[toolbar="${this.id}"]`)
 
       return Array.from(nodeList)
     } else {

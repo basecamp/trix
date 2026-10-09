@@ -440,6 +440,31 @@ testGroup("Pasting", { template: "editor_empty" }, () => {
     await expectDocument(`a${OBJECT_REPLACEMENT_CHARACTER}\n`)
   })
 
+  test("paste html while named elements in the page shadow document methods", async () => {
+    const names = [ "body", "createComment", "createDocumentFragment", "createElement", "createRange", "createTreeWalker", "implementation" ]
+    const container = document.getElementById("trix-container")
+    const namedElements = names.map((name) => {
+      container.insertAdjacentHTML("beforeend", `<img name="${name}">`)
+      return container.lastElementChild
+    })
+
+    // The test harness itself calls document methods, so the shadowing elements are removed
+    // before any assertion runs.
+    let shadowed, value
+    try {
+      shadowed = names.every((name, index) => document[name] === namedElements[index])
+      await typeCharacters("a")
+      await pasteContent("text/html", "<strong>b</strong>")
+      value = getEditorElement().value
+    } finally {
+      namedElements.forEach((element) => element.remove())
+    }
+
+    assert.ok(shadowed)
+    expectDocument("ab\n")
+    assert.equal(value, "<div>a<strong>b</strong></div>")
+  })
+
   testIf(config.input.getLevel() === 0, "paste event with no clipboardData", async () => {
     await typeCharacters("a")
     triggerEvent(document.activeElement, "paste")

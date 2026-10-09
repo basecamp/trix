@@ -1,4 +1,5 @@
 import browser from "trix/config/browser"
+import { callDocumentMethod, getDocumentProperty } from "trix/core/helpers/document_properties"
 import { makeElement, removeNode } from "trix/core/helpers/dom"
 
 const input = {
@@ -19,8 +20,8 @@ const input = {
       removeNode(input)
     })
 
-    removeNode(document.getElementById(this.fileInputId))
-    document.body.appendChild(input)
+    removeNode(callDocumentMethod("getElementById", this.fileInputId))
+    getDocumentProperty("body").appendChild(input)
     input.click()
   }
 }

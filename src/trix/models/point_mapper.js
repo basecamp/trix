@@ -2,24 +2,24 @@
     id-length,
     no-empty,
 */
-import { getDOMRange, setDOMRange } from "trix/core/helpers"
+import { callDocumentMethod, getDOMRange, getDocumentProperty, setDOMRange } from "trix/core/helpers"
 
 export default class PointMapper {
   createDOMRangeFromPoint({ x, y }) {
     let domRange
-    if (document.caretPositionFromPoint) {
-      const { offsetNode, offset } = document.caretPositionFromPoint(x, y)
-      domRange = document.createRange()
+    if (getDocumentProperty("caretPositionFromPoint")) {
+      const { offsetNode, offset } = callDocumentMethod("caretPositionFromPoint", x, y)
+      domRange = callDocumentMethod("createRange")
       domRange.setStart(offsetNode, offset)
       return domRange
-    } else if (document.caretRangeFromPoint) {
-      return document.caretRangeFromPoint(x, y)
-    } else if (document.body.createTextRange) {
+    } else if (getDocumentProperty("caretRangeFromPoint")) {
+      return callDocumentMethod("caretRangeFromPoint", x, y)
+    } else if (getDocumentProperty("body").createTextRange) {
       const originalDOMRange = getDOMRange()
       try {
         // IE 11 throws "Unspecified error" when using moveToPoint
         // during a drag-and-drop operation.
-        const textRange = document.body.createTextRange()
+        const textRange = getDocumentProperty("body").createTextRange()
         textRange.moveToPoint(x, y)
         textRange.select()
       } catch (error) {}

@@ -6,6 +6,7 @@ import { removeNode } from "trix/core/helpers"
 import DocumentView from "trix/views/document_view"
 import Document from "trix/models/document"
 import HTMLParser from "trix/models/html_parser"
+import HTMLSanitizer from "trix/models/html_sanitizer"
 
 const unserializableElementSelector = "[data-trix-serialize=false]"
 const unserializableAttributeNames = [
@@ -58,13 +59,16 @@ const serializers = {
     })
 
     // Rewrite elements with serialized attribute overrides
+    const attributeIsAllowed = HTMLSanitizer.createAttributeValidator()
     Array.from(element.querySelectorAll(serializedAttributesSelector)).forEach((el) => {
       try {
         const attributes = JSON.parse(el.getAttribute(serializedAttributesAttribute))
         el.removeAttribute(serializedAttributesAttribute)
         for (const name in attributes) {
-          const value = attributes[name]
-          el.setAttribute(name, value)
+          const value = String(attributes[name])
+          if (attributeIsAllowed(el, name, value)) {
+            el.setAttribute(name, value)
+          }
         }
       } catch (error) {}
     })

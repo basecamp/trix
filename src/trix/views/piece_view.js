@@ -8,7 +8,7 @@ import ObjectView from "trix/views/object_view"
 import AttachmentView from "trix/views/attachment_view"
 import PreviewableAttachmentView from "trix/views/previewable_attachment_view"
 
-import { findInnerElement, getTextConfig, makeElement } from "trix/core/helpers"
+import { callDocumentMethod, findInnerElement, getTextConfig, makeElement } from "trix/core/helpers"
 
 export default class PieceView extends ObjectView {
   constructor() {
@@ -47,7 +47,7 @@ export default class PieceView extends ObjectView {
 
   createStringNodes() {
     if (this.textConfig?.plaintext) {
-      return [ document.createTextNode(this.string) ]
+      return [ callDocumentMethod("createTextNode", this.string) ]
     } else {
       const nodes = []
       const iterable = this.string.split("\n")
@@ -59,7 +59,7 @@ export default class PieceView extends ObjectView {
         }
 
         if (substring.length) {
-          const node = document.createTextNode(this.preserveSpaces(substring))
+          const node = callDocumentMethod("createTextNode", this.preserveSpaces(substring))
           nodes.push(node)
         }
       }

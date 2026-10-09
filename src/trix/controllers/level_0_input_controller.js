@@ -8,6 +8,7 @@ import Document from "trix/models/document"
 import {
   dataTransferIsPlainText,
   dataTransferIsWritable,
+  getDocumentProperty,
   keyEventIsKeyboardCommand,
   makeElement,
   objectsAreEqual,
@@ -490,7 +491,7 @@ export default class Level0InputController extends InputController {
     }
 
     const element = makeElement({ style, tagName: "div", editable: true })
-    document.body.appendChild(element)
+    getDocumentProperty("body").appendChild(element)
     element.focus()
 
     return requestAnimationFrame(() => {

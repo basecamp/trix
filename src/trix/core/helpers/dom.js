@@ -1,9 +1,10 @@
 import blockAttributes from "trix/config/block_attributes"
 import { ZERO_WIDTH_SPACE } from "trix/constants"
+import { callDocumentMethod, getDocumentProperty } from "./document_properties"
 import { extend } from "./extend"
 import { attachmentSelector } from "trix/config/attachments"
 
-const html = document.documentElement
+const html = getDocumentProperty("documentElement")
 const match = html.matches
 
 export const handleEvent = function(eventName, { onElement, matchingSelector, withCallback, inPhase, preventDefault, times } = {}) {
@@ -39,7 +40,7 @@ export const createEvent = function(eventName, { bubbles, cancelable, attributes
   bubbles = bubbles !== false
   cancelable = cancelable !== false
 
-  const event = document.createEvent("Events")
+  const event = callDocumentMethod("createEvent", "Events")
   event.initEvent(eventName, bubbles, cancelable)
   if (attributes != null) {
     extend.call(event, attributes)
@@ -90,8 +91,10 @@ export const findInnerElement = function(element) {
   return element
 }
 
-export const innerElementIsActive = (element) =>
-  document.activeElement !== element && elementContainsNode(element, document.activeElement)
+export const innerElementIsActive = function(element) {
+  const activeElement = getDocumentProperty("activeElement")
+  return activeElement !== element && elementContainsNode(element, activeElement)
+}
 
 export const elementContainsNode = function(element, node) {
   if (!element || !node) {
@@ -152,7 +155,8 @@ export const walkTree = function(tree, { onlyNodesOfType, usingFilter, expandEnt
     }
   })()
 
-  return document.createTreeWalker(
+  return callDocumentMethod(
+    "createTreeWalker",
     tree,
     whatToShow,
     usingFilter != null ? usingFilter : null,
@@ -171,7 +175,7 @@ export const makeElement = function(tag, options = {}) {
     options = { attributes: options }
   }
 
-  const element = document.createElement(tag)
+  const element = callDocumentMethod("createElement", tag)
 
   if (options.editable != null) {
     if (options.attributes == null) {

@@ -1,6 +1,6 @@
 import * as config from "trix/config"
 import { ZERO_WIDTH_SPACE } from "trix/constants"
-import { copyObject, escapeAngleBracketsInJSON, makeElement } from "trix/core/helpers"
+import { callDocumentMethod, copyObject, escapeAngleBracketsInJSON, makeElement } from "trix/core/helpers"
 import ObjectView from "trix/views/object_view"
 import HTMLSanitizer from "trix/models/html_sanitizer"
 import DOMPurify from "dompurify"
@@ -87,7 +87,7 @@ export default class AttachmentView extends ObjectView {
 
       if (size) {
         if (name) {
-          figcaption.appendChild(document.createTextNode(" "))
+          figcaption.appendChild(callDocumentMethod("createTextNode", " "))
         }
         const sizeElement = makeElement({ tagName: "span", className: css.attachmentSize, textContent: size })
         figcaption.appendChild(sizeElement)

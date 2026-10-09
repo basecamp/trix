@@ -2,7 +2,7 @@ import { getAllAttributeNames, shouldRenderInmmediatelyToDealWithIOSDictation, s
 import InputController from "trix/controllers/input_controller"
 import * as config from "trix/config"
 
-import { dataTransferIsMsOfficePaste, dataTransferIsPlainText, keyEventIsKeyboardCommand, objectsAreEqual } from "trix/core/helpers"
+import { callDocumentMethod, dataTransferIsMsOfficePaste, dataTransferIsPlainText, keyEventIsKeyboardCommand, objectsAreEqual } from "trix/core/helpers"
 
 import { selectionChangeObserver } from "trix/observers/selection_change_observer"
 
@@ -581,7 +581,7 @@ export default class Level2InputController extends InputController {
 }
 
 const staticRangeToRange = function(staticRange) {
-  const range = document.createRange()
+  const range = callDocumentMethod("createRange")
   range.setStart(staticRange.startContainer, staticRange.startOffset)
   range.setEnd(staticRange.endContainer, staticRange.endOffset)
   return range
