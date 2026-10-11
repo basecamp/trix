@@ -1150,7 +1150,7 @@ $\
       const value = testTransferData[key];
       try {
         dataTransfer.setData(key, value);
-        if (!dataTransfer.getData(key) === value) return false;
+        if (dataTransfer.getData(key) !== value) return false;
       } catch (error) {
         return false;
       }
