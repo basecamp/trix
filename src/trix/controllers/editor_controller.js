@@ -115,6 +115,7 @@ export default class EditorController extends Controller {
     const { toolbarElement } = this.editorElement
     if (!toolbarElement || this.toolbarController.element === toolbarElement) return
 
+    this.thawSelection()
     this.toolbarController = new ToolbarController(toolbarElement)
     this.toolbarController.delegate = this
     if (this.currentActions) this.toolbarController.updateActions(this.currentActions)

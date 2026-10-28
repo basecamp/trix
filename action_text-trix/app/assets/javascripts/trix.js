@@ -14033,6 +14033,17 @@ $\
     unregisterSelectionManager() {
       return selectionChangeObserver.unregisterSelectionManager(this.selectionManager);
     }
+    connectToolbar() {
+      const {
+        toolbarElement
+      } = this.editorElement;
+      if (!toolbarElement || this.toolbarController.element === toolbarElement) return;
+      this.thawSelection();
+      this.toolbarController = new ToolbarController(toolbarElement);
+      this.toolbarController.delegate = this;
+      if (this.currentActions) this.toolbarController.updateActions(this.currentActions);
+      if (this.currentAttributes) this.toolbarController.updateAttributes(this.currentAttributes);
+    }
     render() {
       return this.compositionController.render();
     }
@@ -15089,12 +15100,17 @@ $\
       this.toggleAttribute("connected", false);
     }
     reconnect() {
+      var _this$editorControlle3;
       this.removeInternalToolbar();
       this.disconnectedCallback();
       this.connectedCallback();
+      (_this$editorControlle3 = this.editorController) === null || _this$editorControlle3 === void 0 || _this$editorControlle3.connectToolbar();
     }
     removeInternalToolbar() {
       var _this$internalToolbar;
+      if (this.internalToolbar && this.getAttribute("toolbar") === this.internalToolbar.id) {
+        this.removeAttribute("toolbar");
+      }
       (_this$internalToolbar = this.internalToolbar) === null || _this$internalToolbar === void 0 || _this$internalToolbar.remove();
       this.internalToolbar = null;
     }
