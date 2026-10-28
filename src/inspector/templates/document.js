@@ -10,11 +10,11 @@ window.JST["trix/inspector/templates/document"] = function() {
         Block ${block.id}, Index: ${index}
       </summary>
       <div class="attributes">
-        Attributes: ${JSON.stringify(block.attributes)}
+        Attributes: ${escapeHTML(JSON.stringify(block.attributes))}
       </div>
 
       <div class="htmlAttributes">
-        HTML Attributes: ${JSON.stringify(block.htmlAttributes)}
+        HTML Attributes: ${escapeHTML(JSON.stringify(block.htmlAttributes))}
       </div>
 
       <div class="text">
@@ -31,15 +31,24 @@ window.JST["trix/inspector/templates/document"] = function() {
   return details.join("\n")
 }
 
+const escapeHTML = (string) =>
+  string.replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    ["\""]: "&quot;",
+    "'": "&#39;",
+  })[character])
+
 const piecePartials = (pieces) =>
   pieces.map((piece, index) =>`<div class="piece">
       <div class="title">
         Piece ${piece.id}, Index: ${index}
       </div>
       <div class="attributes">
-        Attributes: ${JSON.stringify(piece.attributes)}
+        Attributes: ${escapeHTML(JSON.stringify(piece.attributes))}
       </div>
       <div class="content">
-        ${JSON.stringify(piece.toString())}
+        ${escapeHTML(JSON.stringify(piece.toString()))}
       </div>
     </div>`)
