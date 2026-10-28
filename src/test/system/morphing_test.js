@@ -1,4 +1,4 @@
-import { assert, test, testGroup } from "test/test_helper"
+import { assert, clickToolbarButton, expandSelection, test, testGroup, typeCharacters } from "test/test_helper"
 import { nextFrame } from "../test_helpers/timing_helpers"
 
 import { Idiomorph } from "idiomorph"
@@ -66,6 +66,33 @@ testGroup("morphing with internal toolbar", { template: "editor_empty" }, () => 
     await nextFrame()
 
     assert.ok(element.hasAttribute("connected"))
+    assert.ok(element.toolbarElement)
+    assert.notEqual(originalToolbar, element.toolbarElement)
+  })
+
+  test("the recreated toolbar is connected to the editor", async () => {
+    const element = getEditorElement()
+
+    element.toolbarElement.remove()
+    element.removeAttribute("toolbar")
+    element.removeAttribute("connected")
+    await nextFrame()
+
+    assert.ok(element.toolbarElement.querySelector("[data-trix-input][name='href']").disabled)
+
+    await typeCharacters("abc")
+    await expandSelection("left")
+    await clickToolbarButton({ attribute: "bold" })
+    assert.textAttributes([ 2, 3 ], { bold: true })
+  })
+
+  test("removing only the 'connected' attribute will recreate toolbar", async () => {
+    const element = getEditorElement()
+
+    const originalToolbar = element.toolbarElement
+    element.removeAttribute("connected")
+    await nextFrame()
+
     assert.ok(element.toolbarElement)
     assert.notEqual(originalToolbar, element.toolbarElement)
   })

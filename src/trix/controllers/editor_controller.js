@@ -111,6 +111,16 @@ export default class EditorController extends Controller {
     return selectionChangeObserver.unregisterSelectionManager(this.selectionManager)
   }
 
+  connectToolbar() {
+    const { toolbarElement } = this.editorElement
+    if (!toolbarElement || this.toolbarController.element === toolbarElement) return
+
+    this.toolbarController = new ToolbarController(toolbarElement)
+    this.toolbarController.delegate = this
+    if (this.currentActions) this.toolbarController.updateActions(this.currentActions)
+    if (this.currentAttributes) this.toolbarController.updateAttributes(this.currentAttributes)
+  }
+
   render() {
     return this.compositionController.render()
   }
