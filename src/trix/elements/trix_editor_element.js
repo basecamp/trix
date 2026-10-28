@@ -597,9 +597,13 @@ export default class TrixEditorElement extends HTMLElement {
     this.removeInternalToolbar()
     this.disconnectedCallback()
     this.connectedCallback()
+    this.editorController?.connectToolbar()
   }
 
   removeInternalToolbar() {
+    if (this.internalToolbar && this.getAttribute("toolbar") === this.internalToolbar.id) {
+      this.removeAttribute("toolbar")
+    }
     this.internalToolbar?.remove()
     this.internalToolbar = null
   }

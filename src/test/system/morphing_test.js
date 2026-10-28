@@ -1,4 +1,14 @@
-import { assert, test, testGroup } from "test/test_helper"
+import {
+  assert,
+  clickToolbarButton,
+  expandSelection,
+  isToolbarButtonActive,
+  isToolbarButtonDisabled,
+  isToolbarDialogActive,
+  test,
+  testGroup,
+  typeCharacters,
+} from "test/test_helper"
 import { nextFrame } from "../test_helpers/timing_helpers"
 
 import { Idiomorph } from "idiomorph"
@@ -69,6 +79,118 @@ testGroup("morphing with internal toolbar", { template: "editor_empty" }, () => 
     assert.ok(element.toolbarElement)
     assert.notEqual(originalToolbar, element.toolbarElement)
   })
+
+  test("the recreated toolbar is connected to the editor", async () => {
+    const element = getEditorElement()
+
+    element.toolbarElement.remove()
+    element.removeAttribute("connected")
+    await nextFrame()
+
+    assert.ok(element.toolbarElement.querySelector("[data-trix-input][name='href']").disabled)
+
+    await typeCharacters("abc")
+    await expandSelection("left")
+    await clickToolbarButton({ attribute: "bold" })
+    assert.textAttributes([ 2, 3 ], { bold: true })
+  })
+
+  test("removing only the 'connected' attribute will recreate toolbar", async () => {
+    const element = getEditorElement()
+
+    const originalToolbar = element.toolbarElement
+    element.removeAttribute("connected")
+    await nextFrame()
+
+    assert.ok(element.toolbarElement)
+    assert.notEqual(originalToolbar, element.toolbarElement)
+    assert.ok(element.toolbarElement.querySelector("[data-trix-input][name='href']").disabled)
+
+    await typeCharacters("abc")
+    await expandSelection("left")
+    await clickToolbarButton({ attribute: "bold" })
+    assert.textAttributes([ 2, 3 ], { bold: true })
+  })
+
+  test("morphing an ancestor recreates a working toolbar", async () => {
+    const element = getEditorElement()
+    const originalToolbar = element.toolbarElement
+    const editor = element.editor
+
+    Idiomorph.morph(
+      element.parentElement,
+      `<trix-editor id="${element.id}" toolbar="${originalToolbar.id}"></trix-editor>`,
+      { morphStyle: "innerHTML" }
+    )
+    await nextFrame()
+
+    assert.strictEqual(getEditorElement(), element)
+    assert.strictEqual(element.editor, editor)
+    assert.notStrictEqual(element.toolbarElement, originalToolbar)
+    assert.ok(element.closest("form").checkValidity())
+
+    element.focus()
+    await typeCharacters("abc")
+    await expandSelection("left")
+    await clickToolbarButton({ attribute: "bold" })
+    assert.textAttributes([ 2, 3 ], { bold: true })
+  })
+
+  test("reconnecting restores formatting and undo/redo button states", async () => {
+    const element = getEditorElement()
+    await typeCharacters("abc")
+    await expandSelection("left")
+    await clickToolbarButton({ attribute: "bold" })
+
+    element.removeAttribute("connected")
+    await nextFrame()
+
+    assert.ok(isToolbarButtonActive({ attribute: "bold" }))
+    assert.notOk(isToolbarButtonDisabled({ action: "undo" }))
+    assert.ok(isToolbarButtonDisabled({ action: "redo" }))
+
+    await clickToolbarButton({ action: "undo" })
+    await clickToolbarButton({ action: "undo" })
+    element.removeAttribute("connected")
+    await nextFrame()
+
+    assert.notOk(isToolbarButtonActive({ attribute: "bold" }))
+    assert.ok(isToolbarButtonDisabled({ action: "undo" }))
+    assert.notOk(isToolbarButtonDisabled({ action: "redo" }))
+
+    await clickToolbarButton({ action: "redo" })
+    await clickToolbarButton({ action: "redo" })
+    assert.textAttributes([ 2, 3 ], { bold: true })
+  })
+
+  for (const removeDialog of [ false, true ]) {
+    test(`reconnecting thaws an open link dialog ${removeDialog ? "after its markup is removed" : "with its markup intact"}`, async () => {
+      const element = getEditorElement()
+      await typeCharacters("abc")
+      await expandSelection("left")
+      await clickToolbarButton({ attribute: "href" })
+      assert.ok(isToolbarDialogActive({ attribute: "href" }))
+      assert.textAttributes([ 2, 3 ], { frozen: true })
+      assert.notOk(element.closest("form").checkValidity())
+
+      if (removeDialog) element.toolbarElement.replaceChildren()
+      element.removeAttribute("connected")
+      await nextFrame()
+
+      assert.notOk(isToolbarDialogActive({ attribute: "href" }))
+      assert.textAttributes([ 2, 3 ], {})
+      assert.ok(element.closest("form").checkValidity())
+      assert.ok(element.toolbarElement.querySelector("[data-trix-input][name='href']").disabled)
+
+      element.focus()
+      element.editor.setSelectedRange([ 0, 1 ])
+      await nextFrame()
+      assert.selectedRange([ 0, 1 ])
+      await clickToolbarButton({ attribute: "bold" })
+      assert.textAttributes([ 0, 1 ], { bold: true })
+      assert.textAttributes([ 2, 3 ], {})
+    })
+  }
 })
 
 testGroup("morphing with external toolbar", { template: "editor_with_toolbar_and_input" }, () => {
@@ -83,6 +205,11 @@ testGroup("morphing with external toolbar", { template: "editor_with_toolbar_and
 
     assert.ok(element.hasAttribute("connected"))
     assert.ok(element.toolbarElement)
-    assert.equal(originalToolbar, element.toolbarElement)
+    assert.strictEqual(originalToolbar, element.toolbarElement)
+
+    await typeCharacters("abc")
+    await expandSelection("left")
+    await clickToolbarButton({ attribute: "bold" })
+    assert.textAttributes([ 2, 3 ], { bold: true })
   })
 })
