@@ -189,6 +189,71 @@ testGroup("HTMLSanitizer", () => {
     assert.equal(figure.getAttribute("data-trix-attachment"), "{\"x:}<")
     assert.equal(figure.getAttribute("data-trix-attributes"), "<>")
   })
+
+  // A TreeWalker does not enter a <template>'s content fragment, so before the recursive
+  // pass in sanitizeTree() every forbidden element survived there. DOMPurify runs after us
+  // and does recurse, and its default allowlist already excludes script/iframe/noscript --
+  // so <form> was the one that made it through end to end. The paired witnesses below are
+  // what isolate the traversal boundary as the cause rather than a general filter failure:
+  // without the <script> control, a green <form> assertion could equally mean "nothing in
+  // templates is ever sanitized" or "the whole sanitizer stopped running".
+  testGroup("template content", () => {
+    // Reproduces the configuration a host application supplies when it renders attachment
+    // content, which is how attacker-authored markup reaches this sanitizer in practice.
+    const hostAppConfig = {
+      ADD_TAGS: [ "shadow-content" ],
+      RETURN_DOM: true,
+    }
+
+    const sanitizeInTemplate = (inner) => {
+      let body
+      withDOMPurifyConfig(hostAppConfig, () => {
+        body = HTMLSanitizer.sanitize(`<shadow-content><template>${inner}</template></shadow-content>`).body
+      })
+      return body
+    }
+
+    const countInTemplates = (body, selector) =>
+      Array.from(body.querySelectorAll("template"))
+        .reduce((count, template) => count + template.content.querySelectorAll(selector).length, 0)
+
+    test("removes forbidden elements inside template content", () => {
+      const body = sanitizeInTemplate("<form action=\"/steal\" method=\"post\"><input name=\"a\"></form>")
+      assert.equal(countInTemplates(body, "form"), 0, "a <form> inside a <template> must be removed")
+    })
+
+    test("strips disallowed attributes inside template content", () => {
+      const body = sanitizeInTemplate("<div id=\"keep-me\" onclick=\"pwn()\">text</div>")
+      const div = Array.from(body.querySelectorAll("template"))
+        .map((template) => template.content.querySelector("div"))
+        .find(Boolean)
+
+      assert.ok(div, "the <div> itself should survive")
+      assert.notOk(div.hasAttribute("id"), "id is not in allowedAttributes and must be stripped")
+      assert.notOk(div.hasAttribute("onclick"), "onclick must be stripped")
+    })
+
+    test("still removes a forbidden element at the top level", () => {
+      let body
+      withDOMPurifyConfig(hostAppConfig, () => {
+        body = HTMLSanitizer.sanitize("<form action=\"/steal\" method=\"post\"></form>").body
+      })
+      assert.equal(body.querySelectorAll("form").length, 0)
+    })
+
+    test("still removes a script inside template content", () => {
+      const body = sanitizeInTemplate("<script>window.pwned = true</script>")
+      assert.equal(countInTemplates(body, "script"), 0)
+    })
+
+    test("leaves permitted content inside a template alone", () => {
+      const body = sanitizeInTemplate("<table><tbody><tr><td>cell</td></tr></tbody></table><a href=\"https://example.com/\">link</a>")
+
+      assert.equal(countInTemplates(body, "table"), 1, "a table must survive")
+      assert.equal(countInTemplates(body, "a[href^=\"https:\"]"), 1, "an https link must survive")
+    })
+  })
+
 })
 
 const withDOMPurifyConfig = (attrConfig = {}, fn) => {
