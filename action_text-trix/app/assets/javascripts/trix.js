@@ -13784,31 +13784,33 @@ $\
       this.attributes = {};
       this.actions = {};
       this.resetDialogInputs();
-      handleEvent("mousedown", {
+      this.eventHandlers = [handleEvent("mousedown", {
         onElement: this.element,
         matchingSelector: actionButtonSelector,
         withCallback: this.didClickActionButton
-      });
-      handleEvent("mousedown", {
+      }), handleEvent("mousedown", {
         onElement: this.element,
         matchingSelector: attributeButtonSelector,
         withCallback: this.didClickAttributeButton
-      });
-      handleEvent("click", {
+      }), handleEvent("click", {
         onElement: this.element,
         matchingSelector: toolbarButtonSelector,
         preventDefault: true
-      });
-      handleEvent("click", {
+      }), handleEvent("click", {
         onElement: this.element,
         matchingSelector: dialogButtonSelector,
         withCallback: this.didClickDialogButton
-      });
-      handleEvent("keydown", {
+      }), handleEvent("keydown", {
         onElement: this.element,
         matchingSelector: dialogInputSelector,
         withCallback: this.didKeyDownDialogInput
-      });
+      })];
+    }
+    destroy() {
+      this.eventHandlers.forEach(handler => handler.destroy());
+      this.eventHandlers = [];
+      this.delegate = null;
+      this.hideDialog();
     }
 
     // Event handlers
@@ -14032,6 +14034,18 @@ $\
     }
     unregisterSelectionManager() {
       return selectionChangeObserver.unregisterSelectionManager(this.selectionManager);
+    }
+    connectToolbar() {
+      const {
+        toolbarElement
+      } = this.editorElement;
+      if (!toolbarElement || this.toolbarController.element === toolbarElement) return;
+      this.toolbarController.destroy();
+      this.thawSelection();
+      this.toolbarController = new ToolbarController(toolbarElement);
+      this.toolbarController.delegate = this;
+      if (this.currentActions) this.toolbarController.updateActions(this.currentActions);
+      if (this.currentAttributes) this.toolbarController.updateAttributes(this.currentAttributes);
     }
     render() {
       return this.compositionController.render();
@@ -15089,12 +15103,17 @@ $\
       this.toggleAttribute("connected", false);
     }
     reconnect() {
+      var _this$editorControlle3;
       this.removeInternalToolbar();
       this.disconnectedCallback();
       this.connectedCallback();
+      (_this$editorControlle3 = this.editorController) === null || _this$editorControlle3 === void 0 || _this$editorControlle3.connectToolbar();
     }
     removeInternalToolbar() {
       var _this$internalToolbar;
+      if (this.internalToolbar && this.getAttribute("toolbar") === this.internalToolbar.id) {
+        this.removeAttribute("toolbar");
+      }
       (_this$internalToolbar = this.internalToolbar) === null || _this$internalToolbar === void 0 || _this$internalToolbar.remove();
       this.internalToolbar = null;
     }

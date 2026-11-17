@@ -33,27 +33,36 @@ export default class ToolbarController extends BasicObject {
     this.actions = {}
     this.resetDialogInputs()
 
-    handleEvent("mousedown", {
-      onElement: this.element,
-      matchingSelector: actionButtonSelector,
-      withCallback: this.didClickActionButton,
-    })
-    handleEvent("mousedown", {
-      onElement: this.element,
-      matchingSelector: attributeButtonSelector,
-      withCallback: this.didClickAttributeButton,
-    })
-    handleEvent("click", { onElement: this.element, matchingSelector: toolbarButtonSelector, preventDefault: true })
-    handleEvent("click", {
-      onElement: this.element,
-      matchingSelector: dialogButtonSelector,
-      withCallback: this.didClickDialogButton,
-    })
-    handleEvent("keydown", {
-      onElement: this.element,
-      matchingSelector: dialogInputSelector,
-      withCallback: this.didKeyDownDialogInput,
-    })
+    this.eventHandlers = [
+      handleEvent("mousedown", {
+        onElement: this.element,
+        matchingSelector: actionButtonSelector,
+        withCallback: this.didClickActionButton,
+      }),
+      handleEvent("mousedown", {
+        onElement: this.element,
+        matchingSelector: attributeButtonSelector,
+        withCallback: this.didClickAttributeButton,
+      }),
+      handleEvent("click", { onElement: this.element, matchingSelector: toolbarButtonSelector, preventDefault: true }),
+      handleEvent("click", {
+        onElement: this.element,
+        matchingSelector: dialogButtonSelector,
+        withCallback: this.didClickDialogButton,
+      }),
+      handleEvent("keydown", {
+        onElement: this.element,
+        matchingSelector: dialogInputSelector,
+        withCallback: this.didKeyDownDialogInput,
+      }),
+    ]
+  }
+
+  destroy() {
+    this.eventHandlers.forEach((handler) => handler.destroy())
+    this.eventHandlers = []
+    this.delegate = null
+    this.hideDialog()
   }
 
   // Event handlers
