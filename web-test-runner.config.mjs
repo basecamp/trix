@@ -121,6 +121,14 @@ const defaultBrowsers = [
   playwrightLauncher({ product: 'chromium' }),
 ];
 
+function isWithin(root, filePath) {
+  return filePath === root || filePath.startsWith(root + path.sep);
+}
+
+function isLoopback(address) {
+  return address === '::1' || /^(::ffff:)?127\./.test(address);
+}
+
 // Enable real-time progress reporting for local dev (single browser)
 const localDev = !sauceLabsConfig && !process.env.CI;
 
@@ -133,6 +141,18 @@ export default {
 
   // Bind to all interfaces so Sauce Connect can reach the server
   hostname: '0.0.0.0',
+
+  // Refuse connections from other machines unless Sauce Connect needs to reach the server
+  plugins: sauceLabsConfig ? [] : [
+    {
+      name: 'loopback-only',
+      serverStart({ server }) {
+        server.on('connection', socket => {
+          if (!isLoopback(socket.remoteAddress)) socket.destroy();
+        });
+      },
+    },
+  ],
 
   // Enable node module resolution for WTR core imports
   nodeResolve: true,
@@ -218,8 +238,9 @@ export default {
     function serveLocalFiles(context, next) {
       // Serve test fixtures from src/test/test_helpers/fixtures/
       if (context.url.startsWith('/test_helpers/fixtures/')) {
-        const filePath = path.join(process.cwd(), 'src/test', context.url);
-        if (fs.existsSync(filePath)) {
+        const root = path.resolve(process.cwd(), 'src/test/test_helpers/fixtures');
+        const filePath = path.resolve(process.cwd(), 'src/test', '.' + context.url);
+        if (isWithin(root, filePath) && fs.existsSync(filePath)) {
           context.body = fs.createReadStream(filePath);
           const ext = path.extname(filePath).toLowerCase();
           const mimeTypes = { '.png': 'image/png', '.jpg': 'image/jpeg', '.gif': 'image/gif' };
@@ -229,8 +250,9 @@ export default {
       }
       // Serve QUnit from node_modules (avoid CDN issues with SauceLabs)
       if (context.url.startsWith('/qunit/')) {
-        const filePath = path.join(process.cwd(), 'node_modules', context.url);
-        if (fs.existsSync(filePath)) {
+        const root = path.resolve(process.cwd(), 'node_modules/qunit');
+        const filePath = path.resolve(process.cwd(), 'node_modules', '.' + context.url);
+        if (isWithin(root, filePath) && fs.existsSync(filePath)) {
           context.body = fs.createReadStream(filePath);
           const ext = path.extname(filePath).toLowerCase();
           const mimeTypes = { '.js': 'application/javascript', '.css': 'text/css' };
