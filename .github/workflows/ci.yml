@@ -51,7 +51,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: 18
+          node-version: 24
           cache: "yarn"
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
@@ -169,7 +169,7 @@ jobs:
         with:
           node-version: 18
           cache: "yarn"
-      - uses: ruby/setup-ruby@7372622e62b60b3cb750dcd2b9e32c247ffec26a # v1.302.0
+      - uses: ruby/setup-ruby@145243922b4465b78e04dd66294782c7de45901f # v1.345.0
         env:
           RAILS_BRANCH: ${{ matrix.rails_branch }}
         with:
